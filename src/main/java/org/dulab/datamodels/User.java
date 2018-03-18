@@ -1,4 +1,4 @@
-package org.dulab;
+package org.dulab.datamodels;
 
 import java.io.Serializable;
 

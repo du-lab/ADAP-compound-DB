@@ -3,7 +3,7 @@
     <nav>
         <ul>
             <li><a class="current" href="<c:url value="/" />">Home</a></li>
-            <li><a class="current" href="<c:url value="/" />">Library</a></li>
+            <li><a class="current" href="<c:url value="/library" />">Library</a></li>
         </ul>
     </nav>
 </aside>
