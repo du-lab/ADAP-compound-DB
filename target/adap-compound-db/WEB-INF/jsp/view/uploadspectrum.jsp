@@ -4,8 +4,13 @@
 <!-- Start the middle column -->
 
 <section>
-    <h1>Library</h1>
-    <a href="/library?action=uploadspectrum">Upload spectrum</a>
+    <h2>Upload spectrum</h2>
+
+    <form method="POST" action="library" enctype="multipart/form-data">
+        <input type="hidden" name="action" value="upload"/>
+        <input type="file" name="file1"/><br/><br/>
+        <input type="submit" value="Submit"/>
+    </form>
 </section>
 
 <!-- End the middle column -->
