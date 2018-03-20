@@ -1,15 +1,14 @@
 package org.dulab.controllers;
 
+import org.dulab.models.Spectrum;
 import org.dulab.models.readers.MspReader;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
+import javax.servlet.http.*;
 import java.io.IOException;
+import java.util.List;
 
 @WebServlet (
         name = "libraryServlet",
@@ -32,7 +31,7 @@ public class LibraryController extends HttpServlet {
 
         switch (action) {
             case "uploadspectrum":
-                request.getRequestDispatcher("/WEB-INF/jsp/view/uploadspectrum.jsp")
+                request.getRequestDispatcher("/WEB-INF/jsp/view/fileupload.jsp")
                         .forward(request, response);
                 break;
             case "view":
@@ -63,11 +62,23 @@ public class LibraryController extends HttpServlet {
     private void uploadSpectrum(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        List<Spectrum> spectra = null;
         Part filePart = request.getPart("file1");
         if (filePart != null && filePart.getSize() > 0) {
-            MspReader.read(filePart.getInputStream());
+            spectra = MspReader.read(filePart.getInputStream());
         }
 
+        if (spectra == null || spectra.isEmpty()) {
+            request.setAttribute("emptyFile", false);
+            request.getRequestDispatcher("/WEB-INF/jsp/view/fileupload.jsp")
+                    .forward(request, response);
+            return;
+        }
+
+        HttpSession session = request.getSession();
+        session.setAttribute("spectrumList", spectra);
+        request.getRequestDispatcher("/WEB-INF/jsp/view/fileview.jsp")
+                .forward(request, response);
     }
 
     private void library(HttpServletRequest request, HttpServletResponse response)

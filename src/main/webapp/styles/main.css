@@ -156,6 +156,21 @@ section img {
     clear: both;
 }
 
+section table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+section td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+section tr:nth-child(even) {
+    background-color: #dddddd;
+}
+
 /* email list */
 section label {
     float: left;
