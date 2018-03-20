@@ -1,5 +1,7 @@
 package org.dulab.controllers;
 
+import org.dulab.models.readers.MspReader;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -63,7 +65,7 @@ public class LibraryController extends HttpServlet {
 
         Part filePart = request.getPart("file1");
         if (filePart != null && filePart.getSize() > 0) {
-            filePart.
+            MspReader.read(filePart.getInputStream());
         }
 
     }
