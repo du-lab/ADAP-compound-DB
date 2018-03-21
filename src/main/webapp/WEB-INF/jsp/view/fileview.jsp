@@ -16,36 +16,24 @@
                 <th>Export</th>
                 <th>Name</th>
             </tr>
-            <c:forEach items="${spectrumList}" var="spectrum">
+            <c:forEach var="i" begin="0" end="${spectrumList.size()}">
                 <tr>
-                    <td><input type="checkbox" name="export" value="${spectrum}" checked/></td>
-                    <td>${spectrum.getProperty("Name").orElse("UNKNOWN")}</td>
+                    <td><input type="checkbox" name="export" value="${spectrumList[i]}" checked/></td>
+                    <td>
+                        <a href="<c:url value="/library/submission/spectrum">
+                            <c:param name="spectrumIndex" value="${i}" />
+                        </c:url>">${spectrumList[i].getProperty("Name").orElse("UNKNOWN")}</a>
+                    </td>
                 </tr>
             </c:forEach>
         </table>
     </div>
 
-    <div id="chartDiv"></div>
+
 
 </section>
 
-<script>
-    var chartData = {
-        type: 'bar',
-        title: {text: 'My First Chart'},
-        legend: {},
-        series: [
-            {values: [35, 42, 67, 89]},
-            {values: [28, 40, 39, 36]}
-        ]
-    };
-    zingchart.render({
-        id: 'chartDiv',
-        data: chartData,
-        height: 400,
-        width: 600
-    });
-</script>
+
 
 <!-- End the middle column -->
 

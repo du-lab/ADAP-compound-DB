@@ -15,9 +15,13 @@ public class Spectrum {
     private static final String NO_PEAKS_MSG = "Attempt to create spectrum with no peaks";
     private static final String NO_PROPERTIES_MSG = "Spectrum contains no properties";
 
+    private static final String NAME_PROPERTY = "name";
+
     private final double[] mzValues;
     private final double[] intensities;
     private final Map<String, String> properties;
+
+    private String name = "UNKNOWN";
 
     public Spectrum(double[] mzValues, double[] intensities, Map<String, String> properties)
             throws IllegalArgumentException {
@@ -31,6 +35,12 @@ public class Spectrum {
             LOG.error(e);
             throw e;
         }
+
+        for (Map.Entry<String, String> e : properties.entrySet())
+            if (e.getKey().equalsIgnoreCase(NAME_PROPERTY)) {
+                this.name = e.getValue();
+                break;
+            }
     }
 
     public Spectrum(double[] mzValues, double[] intensities) {
@@ -49,10 +59,30 @@ public class Spectrum {
             LOG.error(e);
             throw e;
         }
+
+        if (propertyName.equalsIgnoreCase(NAME_PROPERTY))
+            name = propertyValue;
     }
 
     public Optional<String> getProperty(String propertyName) {
         return Optional.ofNullable(
                 properties.get(propertyName));
+    }
+
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    public double[] getMzValues() {
+        return mzValues;
+    }
+
+    public double[] getIntensities() {
+        return intensities;
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }
