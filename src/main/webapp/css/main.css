@@ -1,20 +1,27 @@
+/* Colors
+
+Background grey: #ccdbdc
+Background white: #ffffff
+Hyperlink: #263d42
+Hyperlink focus: #8e6c88
+ */
+
 /* type selectors */
 article, aside, figure, footer, header, nav, section {
     display: block;
 }
 
 html {
-    background-image: -moz-linear-gradient(top, white 0%, #facd8a 100%);
+    background-color: #ccdbdc;
 }
 
 body {
-    font-family: Verdana, Arial, Helvetica, sans-serif;
-    font-size: 87.5%;
+    /*font-family: Verdana, Arial, Helvetica, sans-serif;*/
+    /*font-size: 87.5%;*/
     width: 964px;
-    background-color: white;
+    background-color: #ffffff;
     margin: 15px auto;
     padding: 15px 25px;
-    border: 1px solid black;
 }
 
 section, aside, h1, h2, p, ul {
@@ -27,24 +34,21 @@ section, aside {
     margin-bottom: 1em;
 }
 
-h1 {
-    font-size: 175%;
-}
+/*h1 {*/
+    /*font-size: 175%;*/
+/*}*/
 
-h2 {
-    font-size: 125%;
-}
+/*h2 {*/
+    /*font-size: 125%;*/
+/*}*/
 
 a {
-    font-weight: bold;
+    /*font-weight: bold;*/
+    text-decoration: none;
 }
 
-a:link {
-    color: green;
-}
-
-a:visited {
-    color: green;
+a:link, a:visited {
+    color: #263d42;
 }
 
 a.current {
@@ -52,7 +56,8 @@ a.current {
 }
 
 a:hover, a:focus {
-    color: blue;
+    color: #8e6c88;
+    text-decoration: underline;
 }
 
 ul {

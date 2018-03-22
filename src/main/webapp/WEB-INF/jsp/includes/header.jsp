@@ -6,7 +6,7 @@
 <head>
     <meta charset="utf-8">
     <title>ADAP Compound Library</title>
-    <link rel="stylesheet" href="<c:url value="/styles/main.css"/>">
+    <link rel="stylesheet" href="<c:url value="/css/main.css"/>">
     <script src="https://cdn.zingchart.com/zingchart.min.js"></script>
 </head>
 

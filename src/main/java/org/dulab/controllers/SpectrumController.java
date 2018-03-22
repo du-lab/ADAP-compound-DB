@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.List;
 
 @WebServlet(
-        name = "spectrumServlet",
+        name = "spectrumController",
         urlPatterns = {"/library/submission/spectrum"}
 )
 public class SpectrumController extends HttpServlet {
@@ -23,7 +23,7 @@ public class SpectrumController extends HttpServlet {
 
         List<Spectrum> spectrumList = (List<Spectrum>) request.getSession().getAttribute("spectrumList");
         if (spectrumList == null) {
-            request.getRequestDispatcher("/WEB-INF/jsp/view/fileview.jsp");
+            request.getRequestDispatcher("/WEB-INF/jsp/view/submission.jsp");
             return;
         }
 
@@ -33,12 +33,12 @@ public class SpectrumController extends HttpServlet {
             spectrum = spectrumList.get(index);
         }
         catch (NumberFormatException | NullPointerException | IndexOutOfBoundsException e) {
-            request.getRequestDispatcher("/WEB-INF/jsp/view/fileview.jsp");
+            request.getRequestDispatcher("/WEB-INF/jsp/view/submission.jsp");
             return;
         }
 
         if (spectrum == null) {
-            request.getRequestDispatcher("/WEB-INF/jsp/view/fileview.jsp");
+            request.getRequestDispatcher("/WEB-INF/jsp/view/submission.jsp");
             return;
         }
 
@@ -58,7 +58,7 @@ public class SpectrumController extends HttpServlet {
 
         request.setAttribute("jsonPeaks", stringBuilder.toString());
 
-        request.getRequestDispatcher("/WEB-INF/jsp/view/spectrumview.jsp")
+        request.getRequestDispatcher("/WEB-INF/jsp/view/spectrum.jsp")
                 .forward(request, response);
     }
 }
