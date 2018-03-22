@@ -5,7 +5,7 @@
 
 <section>
     <h1>Library</h1>
-    <a href="/library/submission">New submission</a>
+    <a href="/library/submission" class="button">New submission</a>
 </section>
 
 <!-- End the middle column -->

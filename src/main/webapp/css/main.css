@@ -2,8 +2,12 @@
 
 Background grey: #ccdbdc
 Background white: #ffffff
+Background dark: #8e6c88
+Background button: #63c7b2
 Hyperlink: #263d42
 Hyperlink focus: #8e6c88
+Title: #263d42
+Subtitle: #ccdbdc
  */
 
 /* type selectors */
@@ -16,12 +20,10 @@ html {
 }
 
 body {
-    /*font-family: Verdana, Arial, Helvetica, sans-serif;*/
-    /*font-size: 87.5%;*/
     width: 964px;
     background-color: #ffffff;
     margin: 15px auto;
-    padding: 15px 25px;
+    padding: 5px 5px;
 }
 
 section, aside, h1, h2, p, ul {
@@ -34,93 +36,69 @@ section, aside {
     margin-bottom: 1em;
 }
 
-/*h1 {*/
-    /*font-size: 175%;*/
-/*}*/
-
-/*h2 {*/
-    /*font-size: 125%;*/
-/*}*/
-
-a {
-    /*font-weight: bold;*/
-    text-decoration: none;
+aside {
+    color: #8e6c88;
+    width: 100px;
+    float: left;
 }
 
-a:link, a:visited {
-    color: #263d42;
-}
 
-a.current {
-    color: #ef9c00;
-}
+
+/*****************************************
+Style for hyperlinks and hyperlink-buttons
+ *****************************************/
+
+a {text-decoration: none;}
+
+a:link, a:visited {color: #263d42;}
+
+/*a.current {color: #ef9c00;}*/
 
 a:hover, a:focus {
     color: #8e6c88;
     text-decoration: underline;
 }
 
-ul {
-    margin-left: 1.5em;
-    margin-bottom: 1.5em;
+a.button {
+    text-decoration: none;
+    border: none;
+    padding: 8px 15px 8px 15px;
+    background: #63c7b2;
+    color: #ffffff;
+    box-shadow: 1px 1px 4px #263d42;
+    border-radius: 5px;
 }
 
-li {
-    padding-bottom: 0.25em;
-}
+a.button:hover {background: #ccdbdc;}
 
-p {
-    padding-bottom: 0.5em;
-}
+/********************
+Styles for the header
+ ********************/
 
-em {
-    font-weight: bold;
-}
-
-/* the styles for the header */
 header {
-    padding-bottom: 2em;
-    border-bottom: 2px solid #ef9c00;
+    padding: 1em;
+    background: #8e6c88;
 }
 
 header h1 {
-    color: #ef9c00;
+    color: #263d42;
+    text-shadow: 0 2px 2px #ccdbdc;
     margin-left: 120px;
-    margin-bottom: 0.25em;
 }
 
 header h2 {
-    color: green;
-    font-style: italic;
+    color: #ffffff;
     margin-left: 120px;
+    font-size: small;
+    letter-spacing: 0.1em;
 }
 
-header img {
-    float: left;
-}
+header img {float: left;}
 
-/* the styles for the top navigation bar */
-#nav_bar {
-    clear: left;
-    margin: 0;
-    padding: 0;
-    border-bottom: 2px solid #ef9c00;
-    text-align: right;
-}
+/*********************************
+Styles for the side navigation bar
+ *********************************/
 
-#nav_bar ul {
-    margin-bottom: .5em;
-    list-style: none;
-    padding-top: .5em;
-}
-
-#nav_bar li {
-    display: inline;
-    padding: 0 1.5em;
-    border-left: 2px solid black;
-}
-
-/* the styles for the side navigation bar */
 #sidebarA ul {
     margin-left: 0;
     list-style: none;
@@ -130,24 +108,27 @@ header img {
     margin-bottom: .5em;
 }
 
-/* the styles for the section */
+/*********************
+Styles for the section
+ *********************/
+
 section {
-    width: 520px;
+    /*width: 520px;*/
     padding-right: 20px;
     padding-left: 20px;
     float: left;
+    border-left: 2px solid #8e6c88;
 }
 
 section h1 {
-    margin-bottom: 0.35em;
+    color: #263d42;
+    text-shadow: 0 2px 2px #ccdbdc;
+    margin-bottom: 1em;
 }
 
 section h2 {
-    margin-bottom: 0.35em;
-}
-
-.top_margin {
-    margin-top: 1em;
+    color: #80ced7;
+    margin-bottom: 1em;
 }
 
 /* product */
@@ -166,34 +147,49 @@ section table {
     width: 100%;
 }
 
+section th {color: #8e6c88}
+
 section td, th {
-    border: 1px solid #dddddd;
+    border: 1px solid #ccdbdc;
     text-align: left;
     padding: 8px;
 }
 
 section tr:nth-child(even) {
-    background-color: #dddddd;
+    background-color: #ccdbdc;
 }
 
-/* email list */
-section label {
-    float: left;
-    width: 8em;
-    margin-bottom: 0.5em;
-    font-weight: bold;
-    padding-top: 0.25em;
+section input[type=submit], input[type=file] {
+    border: none;
+    padding: 8px 15px 8px 15px;
+    background: #63c7b2;
+    color: #ffffff;
+    box-shadow: 1px 1px 4px #263d42;
+    border-radius: 5px;
 }
 
-section input[type="text"], input[type="email"], input[type="password"] {
-    width: 12em;
-    margin-left: 0.5em;
-    margin-bottom: 0.5em;
+section input[type=submit]:hover, input[type=file]:hover {
+    background: #ccdbdc;
 }
 
-section input[type="submit"] {
-    margin-left: 0.5em;
-}
+/*!* email list *!*/
+/*section label {*/
+    /*float: left;*/
+    /*width: 8em;*/
+    /*margin-bottom: 0.5em;*/
+    /*font-weight: bold;*/
+    /*padding-top: 0.25em;*/
+/*}*/
+
+/*section input[type="text"], input[type="email"], input[type="password"] {*/
+    /*width: 12em;*/
+    /*margin-left: 0.5em;*/
+    /*margin-bottom: 0.5em;*/
+/*}*/
+
+/*section input[type="submit"] {*/
+    /*margin-left: 0.5em;*/
+/*}*/
 
 br {
     clear: both;
@@ -295,46 +291,46 @@ th, td {
     margin-left: 0;
 }
 
-/* the styles for the sidebars */
-aside h1 {
-    font-size: 125%;
-    padding-bottom: .5em;
-}
+/*!* the styles for the sidebars *!*/
+/*aside h1 {*/
+    /*font-size: 125%;*/
+    /*padding-bottom: .5em;*/
+/*}*/
 
-aside h2 {
-    font-size: 100%;
-    color: green;
-    padding-bottom: .5em;
-}
+/*aside h2 {*/
+    /*font-size: 100%;*/
+    /*color: green;*/
+    /*padding-bottom: .5em;*/
+/*}*/
 
-aside p {
-    margin-bottom: .5em;
-}
+/*aside p {*/
+    /*margin-bottom: .5em;*/
+/*}*/
 
-aside img {
-    margin-bottom: 1em;
-}
+/*aside img {*/
+    /*margin-bottom: 1em;*/
+/*}*/
 
-#sidebarA {
-    width: 180px;
-    float: left;
-    height: 400px;
-    border-right: 2px solid #ef9c00;
-}
+/*#sidebarA {*/
+    /*width: 100px;*/
+    /*float: left;*/
+    /*height: 400px;*/
+    /*border-right: 2px solid #ef9c00;*/
+/*}*/
 
-#sidebarB {
-    width: 180px;
-    float: right;
-    height: 400px;
-    padding-left: 20px;
-    border-left: 2px solid #ef9c00;
-}
+/*#sidebarB {*/
+    /*width: 100px;*/
+    /*float: right;*/
+    /*height: 400px;*/
+    /*padding-left: 20px;*/
+    /*border-left: 2px solid #ef9c00;*/
+/*}*/
 
 /* the styles for the footer */
 footer {
     clear: both;
     margin-top: 1em;
-    border-top: 2px solid #ef9c00;
+    border-top: 2px solid #8e6c88;
     padding-top: 0.7em;
 }
 

@@ -6,7 +6,7 @@
 <!-- Start the middle column -->
 
 <section>
-    <h2>File content</h2>
+    <h1>File content</h1>
 
     Number of spectra: ${fn:length(spectrumList)}<br/><br/>
 

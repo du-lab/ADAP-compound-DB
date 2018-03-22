@@ -5,16 +5,14 @@
 <!-- Start the middle column -->
 
 <section>
-    <a href="<c:url value="/library/submission"/>">Back to submission</a><br/><br/>
+    <div align="right">
+        <a href="<c:url value="/library/submission"/>" class="button">Back to submission</a>
+    </div>
+    <br/>
     <h1>Spectrum</h1>
     <h2>${name}</h2>
-    <br/>
-    <h2>Properties</h2>
+    <h3>Properties</h3>
     <table>
-        <tr>
-            <th>Name</th>
-            <th>Value</th>
-        </tr>
         <c:forEach var="e" items="${properties}">
             <tr>
                 <td>${e.key}</td>
@@ -25,7 +23,9 @@
     <br/>
     <div id="chartDiv"></div>
     <br/>
-    <a href="<c:url value="/library/submission"/>">Back to submission</a>
+    <div align="right">
+        <a href="<c:url value="/library/submission"/>" class="button">Back to submission</a>
+    </div>
 </section>
 
 <script>
