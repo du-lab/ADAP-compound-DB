@@ -22,21 +22,32 @@
         </c:forEach>
     </table>
     <br/>
-    <h2>Spectrum</h2>
     <div id="chartDiv"></div>
 </section>
 
 <script>
     var chartData = {
         type: 'bar',
-        title: {text: 'My First Chart'},
-        legend: {},
+        title: {text: 'Spectrum Peaks'},
+        scaleX: {
+            label: {text: 'M/z'},
+            zooming: true
+        },
+        scaleY: {
+            values: '0:100:20'
+            // format: '%v%'
+        },
         series: [
             {values: JSON.parse('${jsonPeaks}')}
         ],
         plot: {
             tooltip: {
-                text: 'm/z: %kt<br>int: %vt'
+                text: 'm/z: %k<br>int: %v',
+                decimals: 4,
+                fontColor: 'black',
+                backgroundColor: 'white',
+                borderWidth: 1,
+                borderColor: 'grey'
             }
         }
     };

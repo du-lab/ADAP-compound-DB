@@ -3,10 +3,7 @@ package org.dulab.models;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 public class Spectrum {
 
@@ -25,6 +22,14 @@ public class Spectrum {
 
     public Spectrum(double[] mzValues, double[] intensities, Map<String, String> properties)
             throws IllegalArgumentException {
+
+        double maxIntensity = Arrays.stream(intensities)
+                .max()
+                .orElseThrow(IllegalArgumentException::new);
+
+        intensities = Arrays.stream(intensities)
+                .map(i -> 100.0 * i / maxIntensity)
+                .toArray();
 
         try {
             this.mzValues = Objects.requireNonNull(mzValues, NO_PEAKS_MSG);
