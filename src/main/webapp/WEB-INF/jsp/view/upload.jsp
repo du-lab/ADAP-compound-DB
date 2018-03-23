@@ -5,7 +5,7 @@
 <!-- Start the middle column -->
 
 <section>
-    <h1>Upload spectrum</h1>
+    <h1>Upload file</h1>
 
     <c:if test="${emptyFile != null}">
         No spectra found in the file.<br/><br/>

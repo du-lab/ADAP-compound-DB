@@ -4,7 +4,7 @@
 <!-- Start the middle column -->
 
 <section>
-    <h1>Welcome to ADAP Compound Library</h1>
+    <h1>Library</h1>
 </section>
 
 <!-- End the middle column -->
