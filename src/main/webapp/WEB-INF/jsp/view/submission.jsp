@@ -7,16 +7,19 @@
 
 <section>
     <h1>File content</h1>
+    <h2>${fileName}</h2>
+    Number of spectra: ${fn:length(spectrumList)}
+</section>
 
-    Number of spectra: ${fn:length(spectrumList)}<br/><br/>
-
+<section>
+    <h1>Contained spectra</h1>
     <div style="overflow: auto; height: 400px">
         <table>
             <tr>
                 <th>Export</th>
                 <th>Name</th>
             </tr>
-            <c:forEach var="i" begin="0" end="${spectrumList.size()}">
+            <c:forEach var="i" begin="0" end="${spectrumList.size() - 1}">
                 <tr>
                     <td><input type="checkbox" name="export" value="${spectrumList[i]}" checked/></td>
                     <td>
@@ -28,11 +31,15 @@
             </c:forEach>
         </table>
     </div>
-
-
-
 </section>
 
+<section>
+    <h1>Submit</h1>
+    <form method="POST" action="/library/submission">
+        <textarea name="comment" cols="80"></textarea><br/><br/>
+        <input type="button" value="Discard"/><input type="submit" value="Submit"/>
+    </form>
+</section>
 
 
 <!-- End the middle column -->

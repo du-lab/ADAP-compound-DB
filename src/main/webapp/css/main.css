@@ -1,15 +1,15 @@
 /***** Colors *****
 White: #ffffff
-Grey:  #ccdbdc
+Grey:  #c2b9b0
 Grey-10%: #bdc1c2
-Dark:  #263d42
+Dark:  #7e685a
 Black: #000000
-Red:   #8e6c88
-Green: #63c7b2
-Blue:  #80ced7
+Red:   #e7717d
+Green: #afd275
+Blue:  #c2cad0
 ********************/
 
-html {background: #ccdbdc;}
+html {background: #c2b9b0;}
 
 body, header, aside, section, article, h1, h2 {
     display: block;
@@ -23,8 +23,8 @@ header {
     display: block;
     height: 40px;
     padding: 10px;
-    background: #8e6c88;
-    box-shadow: 0 4px 4px #8e6c88;
+    background: #e7717d;
+    box-shadow: 0 4px 4px #e7717d;
 }
 
 header h1 {
@@ -32,7 +32,7 @@ header h1 {
     margin: 0 120px 0 120px;
     color: #ffffff;
     letter-spacing: 0.05em;
-    text-shadow: 0 1px 1px #ccdbdc;
+    text-shadow: 0 1px 1px #c2b9b0;
 }
 
 header h2 {
@@ -81,16 +81,14 @@ article section {
     border-radius: 10px;
 }
 
-article section.transparent {
-    background: none;
-}
+article section.transparent {background: none;}
 
 /***** Section *****/
 
 section h1 {
     display: block;
     margin: 10px;
-    color: #8e6c88;
+    color: #e7717d;
     text-align: center;
     font-size: 2em;
 }
@@ -98,22 +96,23 @@ section h1 {
 section h1:after {
     content: ' ';
     display: block;
-    border: 1px solid #8e6c88;
+    border: 1px solid #e7717d;
 }
 
 section table {
+    display: inline-block;
     border-collapse: collapse;
-    width: 100%;
+    /*width: 100%;*/
 }
 
-section th {color: #8e6c88}
+section th {color: #e7717d}
 
 section td, th {
-    /*border: 1px solid #ccdbdc;*/
+    /*border: 1px solid #c2b9b0;*/
     text-align: left;
     padding: 8px;
 }
 
 section tr:nth-child(even) {
-    background-color: #ccdbdc;
+    background-color: #c2b9b0;
 }

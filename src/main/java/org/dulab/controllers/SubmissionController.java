@@ -56,6 +56,7 @@ public class SubmissionController extends HttpServlet {
         }
 
         request.getSession().setAttribute("spectrumList", spectra);
+        request.getSession().setAttribute("fileName", filePart.getSubmittedFileName());
         request.getRequestDispatcher("/WEB-INF/jsp/view/submission.jsp")
                 .forward(request, response);
     }

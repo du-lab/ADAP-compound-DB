@@ -66,7 +66,7 @@ public class MspReader {
                                     Map<String, String> properties,
                                     Map<Double, Double> peaks) {
 
-        if (peaks.isEmpty()) {
+        if (peaks.isEmpty() || properties.isEmpty()) {
             LOG.warn("Attempt to save a spectrum with zero peaks");
             return;
         }
