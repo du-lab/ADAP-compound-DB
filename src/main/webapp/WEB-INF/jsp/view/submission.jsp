@@ -13,7 +13,7 @@
 
 <section>
     <h1>Contained spectra</h1>
-    <div style="overflow: auto; height: 400px">
+    <div style="overflow: auto; max-height: 400px">
         <table>
             <tr>
                 <th>Export</th>
@@ -23,7 +23,7 @@
                 <tr>
                     <td><input type="checkbox" name="export" value="${spectrumList[i]}" checked/></td>
                     <td>
-                        <a href="<c:url value="/library/submission/spectrum">
+                        <a href="<c:url value="/spectrum">
                             <c:param name="spectrumIndex" value="${i}" />
                         </c:url>">${spectrumList[i].getProperty("Name").orElse("UNKNOWN")}</a>
                     </td>
@@ -36,8 +36,15 @@
 <section>
     <h1>Submit</h1>
     <form method="POST" action="/library/submission">
-        <textarea name="comment" cols="80"></textarea><br/><br/>
-        <input type="button" value="Discard"/><input type="submit" value="Submit"/>
+        <label>
+            <span>Comment:</span>
+            <textarea name="comment" rows="5" cols="80"></textarea>
+        </label><br/><br/>
+        <label>
+            <span>&nbsp;</span>
+            <input type="button" value="Discard"/>
+            <input type="submit" value="Submit"/>
+        </label>
     </form>
 </section>
 

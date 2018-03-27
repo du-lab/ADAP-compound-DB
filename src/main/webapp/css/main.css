@@ -1,15 +1,15 @@
 /***** Colors *****
 White: #ffffff
-Grey:  #c2b9b0
+Grey:  #aaadad
 Grey-10%: #bdc1c2
-Dark:  #7e685a
+Dark:  #474853
 Black: #000000
-Red:   #e7717d
-Green: #afd275
-Blue:  #c2cad0
+Red:   #844d36
+Green: #8e8268
+Blue:  #86b3d1
 ********************/
 
-html {background: #c2b9b0;}
+html {background: #aaadad;}
 
 body, header, aside, section, article, h1, h2 {
     display: block;
@@ -23,8 +23,8 @@ header {
     display: block;
     height: 40px;
     padding: 10px;
-    background: #e7717d;
-    box-shadow: 0 4px 4px #e7717d;
+    background: #844d36;
+    box-shadow: 0 4px 4px #844d36;
 }
 
 header h1 {
@@ -32,7 +32,7 @@ header h1 {
     margin: 0 120px 0 120px;
     color: #ffffff;
     letter-spacing: 0.05em;
-    text-shadow: 0 1px 1px #c2b9b0;
+    text-shadow: 0 1px 1px #aaadad;
 }
 
 header h2 {
@@ -75,7 +75,7 @@ article {
 }
 
 article section {
-    margin: 10px 40px;
+    margin: 20px 40px;
     padding: 10px;
     background: #ffffff;
     border-radius: 10px;
@@ -88,7 +88,7 @@ article section.transparent {background: none;}
 section h1 {
     display: block;
     margin: 10px;
-    color: #e7717d;
+    color: #844d36;
     text-align: center;
     font-size: 2em;
 }
@@ -96,23 +96,84 @@ section h1 {
 section h1:after {
     content: ' ';
     display: block;
-    border: 1px solid #e7717d;
+    border: 1px solid #844d36;
+}
+
+section h2 {
+    display: block;
+    color: #86b3d1;
+    margin: 20px 0;
 }
 
 section table {
     display: inline-block;
     border-collapse: collapse;
-    /*width: 100%;*/
 }
 
-section th {color: #e7717d}
+section th {color: #844d36}
 
 section td, th {
-    /*border: 1px solid #c2b9b0;*/
     text-align: left;
     padding: 8px;
 }
 
 section tr:nth-child(even) {
-    background-color: #c2b9b0;
+    background-color: #aaadad;
+}
+
+section a {
+    text-decoration: none;
+    color: #474853;
+}
+
+section a:hover {text-decoration: underline;}
+
+section a.button {
+    text-decoration: none;
+    border: none;
+    padding: 8px 15px 8px 15px;
+    background: #8e8268;
+    color: #ffffff;
+    box-shadow: 1px 1px 4px #474853;
+    border-radius: 5px;
+}
+
+section a.button:hover {background: #aaadad;}
+
+section div.heading {
+    border-bottom: 1px solid #844d36;
+    margin-bottom: 15px;
+}
+
+section input[type=submit], input[type=button], input[type=file] {
+    border: none;
+    cursor: pointer;
+    padding: 8px 15px 8px 15px;
+    background: #8e8268;
+    color: #ffffff;
+    box-shadow: 1px 1px 4px #474853;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+section input[type=submit]:hover, input[type=button]:hover, input[type=file]:hover {
+    background: #aaadad;
+}
+
+section textarea, input[type=text] {
+    /*border: 1px solid #aaadad;*/
+    box-shadow: 0.5px 0.5px 0.5px #aaadad;
+    border-radius: 5px;
+}
+
+section label {
+    display: block;
+    margin: 10px 0;
+    clear: both;
+}
+
+section label > span {
+    width: 150px;
+    font-weight: bold;
+    float: left;
 }

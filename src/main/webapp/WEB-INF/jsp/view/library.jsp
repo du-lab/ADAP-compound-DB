@@ -5,7 +5,7 @@
 
 <section>
     <h1>Library</h1>
-    <a href="/library/submission" class="button">New submission</a>
+    <a href="/newfile" class="button">Upload MSP file</a>
 </section>
 
 <!-- End the middle column -->

@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context path="/">
+<Context path="/adapcompounddb">
     <Resource name="jdbc/adapcompounddb" auth="Container"
               driverClassName="com.mysql.jdbc.Driver"
               url="jdbc:mysql://localhost:3306/adapcompounddb?autoReconnect=true"
-              username="adapcompounddb_user" password="sesame"
+              username="root" password="sesame"
               maxActive="100" maxIdle="30" maxWait="10000"
               logAbandoned="true" removeAbandoned="true" removeAbandonedTimeout="60"
               type="javax.sql.DataSource"/>
+
+    <Realm className="org.apache.catalina.realm.DataSourceRealm" debug="99"
+           dataSourceName="jdbc/adapcompounddb" localDataSource="true"
+           userTable="User" userNameCol="username" userCredCol="password"
+           userRoleTable="UserRole" roleNameCol="rolename"/>
 </Context>

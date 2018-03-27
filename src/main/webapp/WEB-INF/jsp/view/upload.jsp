@@ -11,10 +11,16 @@
         No spectra found in the file.<br/><br/>
     </c:if>
 
-    <form method="POST" action="submission" enctype="multipart/form-data">
+    <form method="POST" action="/newfile" enctype="multipart/form-data">
         <input type="hidden" name="action" value="upload"/>
-        <input type="file" name="file1"/><br/><br/>
-        <input type="submit" value="Upload"/>
+        <label>
+            <span>File</span>
+            <input type="file" name="file1"/>
+        </label><br/><br/>
+        <label>
+            <span>&nbsp;</span>
+            <input type="submit" value="Upload"/>
+        </label>
     </form>
 </section>
 

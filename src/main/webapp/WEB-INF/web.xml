@@ -6,4 +6,28 @@
     version="3.0">
 
     <display-name>ADAP Compound Library</display-name>
+
+    <!-- User Authentication -->
+
+    <security-role>
+        <description>Registered User</description>
+        <role-name>registered</role-name>
+    </security-role>
+
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Protected Area</web-resource-name>
+            <url-pattern>/submission</url-pattern>
+            <url-pattern>/submission/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>registered</role-name>
+        </auth-constraint>
+    </security-constraint>
+
+    <!-- Use basic authentication -->
+    <login-config>
+        <auth-method>BASIC</auth-method>
+        <realm-name>User Login</realm-name>
+    </login-config>
 </web-app>

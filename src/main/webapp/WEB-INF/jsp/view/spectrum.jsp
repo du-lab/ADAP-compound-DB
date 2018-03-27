@@ -5,7 +5,9 @@
 <!-- Start the middle column -->
 
 <section class="transparent" align="right">
-    <a href="<c:url value="/library/submission"/>" class="button">Back to submission</a>
+    <div align="right">
+        <a href="<c:url value="/newfile"/>" class="button">Back to submission</a>
+    </div>
 </section>
 
 <section>
@@ -32,7 +34,9 @@
 </section>
 
 <section class="transparent" align="right">
-    <a href="<c:url value="/library/submission"/>" class="button">Back to submission</a>
+    <div align="right">
+        <a href="<c:url value="/newfile"/>" class="button">Back to submission</a>
+    </div>
 </section>
 
 <script>

@@ -12,7 +12,7 @@ import java.util.List;
 
 @WebServlet(
         name = "spectrumController",
-        urlPatterns = {"/library/submission/spectrum"}
+        urlPatterns = {"/spectrum"}
 )
 public class SpectrumController extends HttpServlet {
 
