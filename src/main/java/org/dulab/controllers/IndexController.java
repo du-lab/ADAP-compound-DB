@@ -4,10 +4,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-public class LibraryController {
+public class IndexController {
 
-    @RequestMapping("/library")
-    public String library() {
-        return "library";
+    @RequestMapping("/")
+    public String index() {
+        return "index";
     }
 }
