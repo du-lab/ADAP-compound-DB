@@ -135,7 +135,7 @@ section a.button {
     background: #8e8268;
     color: #ffffff;
     box-shadow: 1px 1px 4px #474853;
-    border-radius: 5px;
+    border-radius: 3px;
 }
 
 section a.button:hover {background: #aaadad;}
@@ -152,7 +152,7 @@ section input[type=submit], input[type=button], input[type=file] {
     background: #8e8268;
     color: #ffffff;
     box-shadow: 1px 1px 4px #474853;
-    border-radius: 5px;
+    border-radius: 3px;
     margin-right: 10px;
 }
 
@@ -160,15 +160,16 @@ section input[type=submit]:hover, input[type=button]:hover, input[type=file]:hov
     background: #aaadad;
 }
 
-section textarea, input[type=text] {
+section textarea, input[type=text], input[type=password] {
     /*border: 1px solid #aaadad;*/
-    box-shadow: 0.5px 0.5px 0.5px #aaadad;
-    border-radius: 5px;
+    margin: 5px 0;
+    box-shadow: 1px 1px 1px #aaadad;
+    border-radius: 3px;
 }
 
 section label {
     display: block;
-    margin: 10px 0;
+    margin: 5px 0;
     clear: both;
 }
 
