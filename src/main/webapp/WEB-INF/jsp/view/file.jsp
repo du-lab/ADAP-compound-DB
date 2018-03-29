@@ -1,3 +1,5 @@
+<%--@elvariable id="spectrumList" type="List<Spectrum>"--%>
+<%--@elvariable if="fileName" type="String"--%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <jsp:include page="/WEB-INF/jsp/includes/header.jsp" />
@@ -18,14 +20,16 @@
             <tr>
                 <th>Export</th>
                 <th>Name</th>
+                <th>Properties</th>
             </tr>
             <c:forEach var="i" begin="0" end="${spectrumList.size() - 1}">
                 <tr>
                     <td><input type="checkbox" name="export" value="${spectrumList[i]}" checked/></td>
                     <td>
-                        <a href="<c:url value="/spectrum">
-                            <c:param name="spectrumIndex" value="${i}" />
-                        </c:url>">${spectrumList[i].getProperty("Name").orElse("UNKNOWN")}</a>
+                        <a href="<c:url value="/file/${i}"/>">${spectrumList[i]}</a>
+                    </td>
+                    <td>
+                        ${spectrumList[i].properties}
                     </td>
                 </tr>
             </c:forEach>
@@ -35,7 +39,7 @@
 
 <section>
     <h1>Submit</h1>
-    <form method="POST" action="/library/submission">
+    <form method="POST" action="<c:url value="/submission"/>">
         <label>
             <span>Comment:</span>
             <textarea name="comment" rows="5" cols="80"></textarea>

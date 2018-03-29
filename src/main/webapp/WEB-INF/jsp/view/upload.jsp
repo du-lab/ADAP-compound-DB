@@ -7,15 +7,19 @@
 <section>
     <h1>Upload file</h1>
 
-    <c:if test="${emptyFile != null}">
-        No spectra found in the file.<br/><br/>
-    </c:if>
+    <p style="color: red">
+        ${message}
+    </p>
+
+    <%--<c:if test="${emptyFile != null}">--%>
+        <%--No spectra found in the file.<br/><br/>--%>
+    <%--</c:if>--%>
 
     <form method="POST" action="/file/upload" enctype="multipart/form-data">
         <input type="hidden" name="action" value="upload"/>
         <label>
             <span>File</span>
-            <input type="file" name="file1"/>
+            <input type="file" name="file"/>
         </label>
         <label>
             <span>&nbsp;</span>
