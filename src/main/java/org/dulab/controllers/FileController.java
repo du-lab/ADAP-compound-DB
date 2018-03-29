@@ -1,7 +1,9 @@
 package org.dulab.controllers;
 
 import org.dulab.models.Spectrum;
-import org.dulab.models.readers.MspReader;
+import org.dulab.services.FileReaderService;
+import org.dulab.services.MspFileReaderService;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +21,12 @@ import java.util.List;
 @Controller
 public class FileController {
 
+    private FileReaderService fileReaderService;
+
+    public FileController() {
+        fileReaderService = new MspFileReaderService();
+    }
+
     @RequestMapping(value="/file/upload", method=RequestMethod.POST, consumes={"multipart/form-data"})
     public View fileUpload(Model model,
                            HttpSession session,
@@ -30,7 +38,7 @@ public class FileController {
             return new RedirectView("/file/upload");
         }
 
-        List<Spectrum> spectra = MspReader.read(file.getInputStream());
+        List<Spectrum> spectra = fileReaderService.read(file.getInputStream());
         if (spectra == null || spectra.isEmpty()) {
             model.addAttribute("message", "Cannot read this file");
             return new RedirectView("/file/upload");

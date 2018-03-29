@@ -1,10 +1,14 @@
 package org.dulab.models;
 
 import java.io.Serializable;
+import javax.persistence.*;
 
+import static com.sun.xml.internal.ws.api.model.wsdl.WSDLBoundOperation.ANONYMOUS.optional;
+
+@Entity
 public class User implements Serializable {
 
-    private Long userId;
+    private long id;
     private String firstName;
     private String lastName;
     private String email;
@@ -12,31 +16,20 @@ public class User implements Serializable {
     private String address1;
     private String address2;
     private String city;
-    private String st;
+    private String state;
     private String zip;
     private String country;
 
-    public User() {
-        firstName = "";
-        lastName = "";
-        email = "";
-        companyName = "";
-        address1 = "";
-        address2 = "";
-        city = "";
-        st = "";
-        zip = "";
-        country = "";
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public long getId() {
+        return id;
     }
 
-    public Long getUserId() {
-        return userId;
+    public void setId(long id) {
+        this.id = id;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
+    @Basic(optional = false)
     public String getFirstName() {
         return firstName;
     }
@@ -45,6 +38,7 @@ public class User implements Serializable {
         this.firstName = firstName;
     }
 
+    @Basic(optional = false)
     public String getLastName() {
         return lastName;
     }
@@ -53,6 +47,7 @@ public class User implements Serializable {
         this.lastName = lastName;
     }
 
+    @Basic(optional = false)
     public String getEmail() {
         return email;
     }
@@ -93,12 +88,12 @@ public class User implements Serializable {
         this.city = city;
     }
 
-    public String getSt() {
-        return st;
+    public String getState() {
+        return state;
     }
 
-    public void setSt(String st) {
-        this.st = st;
+    public void setState(String state) {
+        this.state = state;
     }
 
     public String getZip() {

@@ -1,17 +1,23 @@
-package org.dulab.models.readers;
+package org.dulab.services;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.models.Spectrum;
+import org.springframework.stereotype.Service;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.*;
 
-public class MspReader {
+@Service
+public class MspFileReaderService implements FileReaderService {
 
     private static final Logger LOG = LogManager.getLogger();
 
-    public static List<Spectrum> read(InputStream inputStream)
+    @Override
+    public List<Spectrum> read(InputStream inputStream)
             throws IOException {
 
         BufferedReader reader = new BufferedReader(
@@ -38,7 +44,7 @@ public class MspReader {
         return spectra;
     }
 
-    private static void addProperty(Map<String, String> properties, String line) {
+    private void addProperty(Map<String, String> properties, String line) {
         for (String s : line.split(";")) {
             String[] nameValuePair = s.split(":");
             if (nameValuePair.length == 2)
@@ -46,7 +52,7 @@ public class MspReader {
         }
     }
 
-    private static void addPeak(Map<Double, Double> peaks, String line) {
+    private void addPeak(Map<Double, Double> peaks, String line) {
         for (String s : line.split(";")) {
             String[] mzIntensityPair = s.split(" ");
             if (mzIntensityPair.length == 2) {
@@ -62,7 +68,7 @@ public class MspReader {
         }
     }
 
-    private static void addSpectrum(List<Spectrum> spectra,
+    private void addSpectrum(List<Spectrum> spectra,
                                     Map<String, String> properties,
                                     Map<Double, Double> peaks) {
 
