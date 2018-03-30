@@ -1,4 +1,4 @@
-package org.dulab.data;
+package org.dulab.site.data;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -8,7 +8,7 @@
        http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd">
 
     <context:annotation-config/>
-    <context:component-scan base-package="org.dulab.controllers org.dulab.services"/>
+    <context:component-scan base-package="org.dulab.site.controllers org.dulab.site.services"/>
 
     <!--<jee:jndi-lookup id="dataSource" jndi-name="jdbc/adapcompounddb"/>-->
 
@@ -29,7 +29,7 @@
                 <prop key="javax.persistence.schema-generation.database.action">none</prop>
             </props>
         </property>
-        <property name="packagesToScan" value="org.dulab.models"/>
+        <property name="packagesToScan" value="org.dulab.site.models"/>
         <property name="sharedCacheMode" value="ENABLE_SELECTIVE"/>
         <property name="validationMode" value="NONE"/>
     </bean>

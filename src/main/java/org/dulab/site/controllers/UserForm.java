@@ -1,4 +1,4 @@
-package org.dulab.controllers;
+package org.dulab.site.controllers;
 
 public class UserForm {
 

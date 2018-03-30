@@ -1,8 +1,8 @@
-package org.dulab.controllers;
+package org.dulab.site.controllers;
 
-import org.dulab.models.Spectrum;
-import org.dulab.services.FileReaderService;
-import org.dulab.services.MspFileReaderService;
+import org.dulab.site.models.Spectrum;
+import org.dulab.site.services.FileReaderService;
+import org.dulab.site.services.MspFileReaderService;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

@@ -1,6 +1,6 @@
-package org.dulab.services;
+package org.dulab.site.services;
 
-import org.dulab.models.Spectrum;
+import org.dulab.site.models.Spectrum;
 
 import java.io.IOException;
 import java.io.InputStream;

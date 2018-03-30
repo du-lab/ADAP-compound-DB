@@ -1,9 +1,7 @@
-package org.dulab.models;
+package org.dulab.site.models;
 
 import java.io.Serializable;
 import javax.persistence.*;
-
-import static com.sun.xml.internal.ws.api.model.wsdl.WSDLBoundOperation.ANONYMOUS.optional;
 
 @Entity
 public class User implements Serializable {

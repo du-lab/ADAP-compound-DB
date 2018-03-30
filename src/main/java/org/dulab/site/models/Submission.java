@@ -1,4 +1,4 @@
-package org.dulab.models;
+package org.dulab.site.models;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

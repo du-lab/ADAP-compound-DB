@@ -1,8 +1,8 @@
-package org.dulab.services;
+package org.dulab.site.services;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dulab.models.Spectrum;
+import org.dulab.site.models.Spectrum;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;

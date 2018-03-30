@@ -1,4 +1,4 @@
-package org.dulab.controllers;
+package org.dulab.site.controllers;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
