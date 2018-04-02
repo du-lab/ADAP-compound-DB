@@ -20,7 +20,7 @@
     <table>
         <c:forEach var="e" items="${properties}">
             <tr>
-                <td>${e.key}</td>
+                <td>${e.name}</td>
                 <td>${e.value}</td>
             </tr>
         </c:forEach>
@@ -33,7 +33,7 @@
     <br/>
 </section>
 
-<section class="transparent" align="right">
+<section class="transparent">
     <div align="right">
         <a href="<c:url value="/file"/>" class="button">Back to file</a>
     </div>

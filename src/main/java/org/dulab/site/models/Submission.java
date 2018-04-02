@@ -1,17 +1,30 @@
 package org.dulab.site.models;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
+@Entity
 public class Submission {
 
+    private long id;
     private List<Spectrum> spectra;
-    private LocalDate submissionDate;
-    private LocalTime submissionTime;
-    private Long userId;
-    private String comments;
+    private User user;
+    private Date dateTime;
+    private String note;
+    private String fileName;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    @OneToMany
     public List<Spectrum> getSpectra() {
         return spectra;
     }
@@ -20,35 +33,37 @@ public class Submission {
         this.spectra = spectra;
     }
 
-    public LocalDate getSubmissionDate() {
-        return submissionDate;
+    @ManyToOne
+    public User getUser() {
+        return user;
     }
 
-    public void setSubmissionDate(LocalDate submissionDate) {
-        this.submissionDate = submissionDate;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public LocalTime getSubmissionTime() {
-        return submissionTime;
+    @Temporal(TemporalType.TIMESTAMP)
+    public Date getDateTime() {
+        return dateTime;
     }
 
-    public void setSubmissionTime(LocalTime submissionTime) {
-        this.submissionTime = submissionTime;
+    public void setDateTime(Date dateTime) {
+        this.dateTime = dateTime;
     }
 
-    public Long getUserId() {
-        return userId;
+    public String getNote() {
+        return note;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setNote(String note) {
+        this.note = note;
     }
 
-    public String getComments() {
-        return comments;
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setComments(String comments) {
-        this.comments = comments;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 }

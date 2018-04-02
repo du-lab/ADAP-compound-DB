@@ -1,5 +1,6 @@
 package org.dulab.site.controllers;
 
+import org.dulab.site.models.Peak;
 import org.dulab.site.models.Spectrum;
 import org.dulab.site.services.FileReaderService;
 import org.dulab.site.services.MspFileReaderService;
@@ -27,7 +28,7 @@ public class FileController {
         fileReaderService = new MspFileReaderService();
     }
 
-    @RequestMapping(value="/file/upload", method=RequestMethod.POST, consumes={"multipart/form-data"})
+    @RequestMapping(value = "/file/upload", method = RequestMethod.POST, consumes = {"multipart/form-data"})
     public View fileUpload(Model model,
                            HttpSession session,
                            @RequestParam("file") MultipartFile file)
@@ -49,7 +50,7 @@ public class FileController {
         return new RedirectView("/file");
     }
 
-    @RequestMapping(value={"/file", "/file/upload"}, method=RequestMethod.GET)
+    @RequestMapping(value = {"/file", "/file/upload"}, method = RequestMethod.GET)
     public String file(HttpSession session) {
 
         if (session.getAttribute("spectrumList") != null)
@@ -58,7 +59,7 @@ public class FileController {
         return "upload";
     }
 
-    @RequestMapping(value="/file/{spectrumId:\\d+}", method=RequestMethod.GET)
+    @RequestMapping(value = "/file/{spectrumId:\\d+}", method = RequestMethod.GET)
     public String spectrum(@PathVariable("spectrumId") int spectrumId,
                            Model model,
                            HttpSession session) {
@@ -71,18 +72,25 @@ public class FileController {
         model.addAttribute("properties", spectrum.getProperties());
 
         // Generate JSON string with mz-values and intensities
-        double[] mzValues = spectrum.getMzValues();
-        double[] intensities = spectrum.getIntensities();
+        List<Peak> peaks = spectrum.getPeaks();
         StringBuilder stringBuilder = new StringBuilder("[");
-        for (int i = 0; i < mzValues.length; ++i) {
-            if (i != 0)
-                stringBuilder.append(',');
-            stringBuilder.append('[').append(mzValues[i]).append(',').append(intensities[i]).append(']');
+        for (int i = 0; i < peaks.size(); ++i) {
+            if (i != 0) stringBuilder.append(',');
+            stringBuilder.append('[')
+                    .append(peaks.get(i).getMz())
+                    .append(',')
+                    .append(peaks.get(i).getIntensity())
+                    .append(']');
         }
         stringBuilder.append(']');
 
         model.addAttribute("jsonPeaks", stringBuilder.toString());
 
         return "spectrum";
+    }
+
+    @RequestMapping(value = "file/submit", method = RequestMethod.POST)
+    public View fileSubmit() {
+
     }
 }

@@ -2,7 +2,9 @@ package org.dulab.site.services;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dulab.site.models.Peak;
 import org.dulab.site.models.Spectrum;
+import org.dulab.site.models.SpectrumProperty;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -25,13 +27,16 @@ public class MspFileReaderService implements FileReaderService {
                         Objects.requireNonNull(inputStream, "Input stream is empty")));
 
         List<Spectrum> spectra = new ArrayList<>();
+        List<SpectrumProperty> properties = new ArrayList<>();
+        List<Peak> peaks = new ArrayList<>();
 
-        Map<String, String> properties = new HashMap<>();
-        Map<Double, Double> peaks = new HashMap<>();
         String line;
         while ((line = reader.readLine()) != null) {
-            if (line.trim().isEmpty())
+            if (line.trim().isEmpty()) {
                 addSpectrum(spectra, properties, peaks);
+                properties = new ArrayList<>();
+                peaks = new ArrayList<>();
+            }
             else if (line.contains(":"))
                 addProperty(properties, line);
             else
@@ -44,22 +49,27 @@ public class MspFileReaderService implements FileReaderService {
         return spectra;
     }
 
-    private void addProperty(Map<String, String> properties, String line) {
+    private void addProperty(List<SpectrumProperty> properties, String line) {
         for (String s : line.split(";")) {
             String[] nameValuePair = s.split(":");
-            if (nameValuePair.length == 2)
-                properties.put(nameValuePair[0].trim(), nameValuePair[1].trim());
+            if (nameValuePair.length == 2) {
+                SpectrumProperty property = new SpectrumProperty();
+                property.setName(nameValuePair[0].trim());
+                property.setValue(nameValuePair[1].trim());
+                properties.add(property);
+            }
         }
     }
 
-    private void addPeak(Map<Double, Double> peaks, String line) {
+    private void addPeak(List<Peak> peaks, String line) {
         for (String s : line.split(";")) {
             String[] mzIntensityPair = s.split(" ");
             if (mzIntensityPair.length == 2) {
                 try {
-                    Double mz = Double.valueOf(mzIntensityPair[0]);
-                    Double intensity = Double.valueOf(mzIntensityPair[1]);
-                    peaks.put(mz, intensity);
+                    Peak peak = new Peak();
+                    peak.setMz(Double.valueOf(mzIntensityPair[0]));
+                    peak.setIntensity(Double.valueOf(mzIntensityPair[1]));
+                    peaks.add(peak);
                 }
                 catch (NumberFormatException e) {
                     LOG.warn("Wrong format of mz-intensity pair: " + mzIntensityPair[0] + ", " + mzIntensityPair[1]);
@@ -69,24 +79,17 @@ public class MspFileReaderService implements FileReaderService {
     }
 
     private void addSpectrum(List<Spectrum> spectra,
-                                    Map<String, String> properties,
-                                    Map<Double, Double> peaks) {
+                             List<SpectrumProperty> properties,
+                             List<Peak> peaks) {
 
         if (peaks.isEmpty() || properties.isEmpty()) {
             LOG.warn("Attempt to save a spectrum with zero peaks");
             return;
         }
 
-        double[] mzValues = peaks.entrySet().stream()
-                .mapToDouble(Map.Entry::getKey)
-                .toArray();
-
-        double[] intensities = peaks.entrySet().stream()
-                .mapToDouble(Map.Entry::getValue)
-                .toArray();
-
-        spectra.add(new Spectrum(mzValues, intensities, new HashMap<>(properties)));
-        peaks.clear();
-        properties.clear();
+        Spectrum spectrum = new Spectrum();
+        spectrum.setProperties(properties);
+        spectrum.setPeaks(peaks);
+        spectra.add(spectrum);
     }
 }
