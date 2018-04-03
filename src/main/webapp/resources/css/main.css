@@ -182,17 +182,17 @@ section input[type=submit], input[type=button], input[type=file] {
     border-radius: 3px;
 }
 
-section input[type=submit]:hover, input[type=button]:hover, input[type=file]:hover {
-    background: #f2f2f2;
-}
+section input[type=submit]:hover, input[type=button]:hover, input[type=file]:hover {background: #f2f2f2;}
 
 section textarea, input[type=text], input[type=password] {
-    /*border: 1px solid #f2f2f2;*/
     margin: 5px 0;
     height: 2em;
     width: 200px;
+    padding: 0 10px;
     box-shadow: 1px 1px 1px #f2f2f2;
     border-radius: 3px;
+    font-family: Verdana, Georgia, sans-serif;
+    font-size: 1em;
 }
 
 section label {
@@ -202,12 +202,6 @@ section label {
     font-family: "Courier New", Courier, monospace;
     color: #8e8268;
 }
-
-/*section label > span {*/
-    /*width: 150px;*/
-    /*font-weight: bold;*/
-    /*float: left;*/
-/*}*/
 
 section div.subsection {
     display: inline-block;
