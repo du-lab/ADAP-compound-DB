@@ -44,8 +44,14 @@ public abstract class GenericJpaRepository<I extends Serializable, E extends Ser
     @Override
     public void add(E entity) {
         EntityManager entityManager = DBUtil.getEmFactory().createEntityManager();
+        EntityTransaction entityTransaction = entityManager.getTransaction();
         try {
+            entityTransaction.begin();
             entityManager.persist(entity);
+            entityTransaction.commit();
+        }
+        catch (Exception e) {
+            entityTransaction.rollback();
         }
         finally {
             entityManager.close();

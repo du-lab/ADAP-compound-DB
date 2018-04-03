@@ -28,20 +28,34 @@ header {
     padding: 10px;
     background: #844d36;
     box-shadow: 0 4px 4px #844d36;
+    color: #ffffff;
 }
 
 header h1 {
     display: inline-block;
     margin: 0 120px 0 120px;
-    color: #ffffff;
     letter-spacing: 0.05em;
     text-shadow: 0 1px 1px #f2f2f2;
 }
 
 header h2 {
     display: inline-block;
-    color: #ffffff;
     font-size: smaller;
+}
+
+header div.user {
+    display: inline-block;
+    margin: 0 40px;
+    /*float: right;*/
+}
+
+header a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+header a:hover {
+    text-decoration: underline;
 }
 
 /***** Side *****/
@@ -109,6 +123,7 @@ section h2 {
     display: block;
     color: #86b3d1;
     margin: 20px 0;
+    font-size: 1.3em;
 }
 
 section table {
@@ -151,15 +166,20 @@ section div.heading {
     margin-bottom: 15px;
 }
 
+section form {
+    padding: 0 20px;
+}
+
 section input[type=submit], input[type=button], input[type=file] {
     border: none;
     cursor: pointer;
+    margin-top: 1em;
+    margin-right: 10px;
     padding: 8px 15px 8px 15px;
     background: #8e8268;
     color: #ffffff;
     box-shadow: 1px 1px 4px #474853;
     border-radius: 3px;
-    margin-right: 10px;
 }
 
 section input[type=submit]:hover, input[type=button]:hover, input[type=file]:hover {
@@ -169,6 +189,8 @@ section input[type=submit]:hover, input[type=button]:hover, input[type=file]:hov
 section textarea, input[type=text], input[type=password] {
     /*border: 1px solid #f2f2f2;*/
     margin: 5px 0;
+    height: 2em;
+    width: 200px;
     box-shadow: 1px 1px 1px #f2f2f2;
     border-radius: 3px;
 }
@@ -177,10 +199,30 @@ section label {
     display: block;
     margin: 5px 0;
     clear: both;
+    font-family: "Courier New", Courier, monospace;
+    color: #8e8268;
 }
 
-section label > span {
-    width: 150px;
-    font-weight: bold;
-    float: left;
+/*section label > span {*/
+    /*width: 150px;*/
+    /*font-weight: bold;*/
+    /*float: left;*/
+/*}*/
+
+section div.subsection {
+    display: inline-block;
+    width: 49%;
+    min-width: 260px;
+    vertical-align: top;
+}
+
+section div.subsection div.submit {
+    width: 220px;
+    text-align: right;
+}
+
+/***** Misc ******/
+
+.errors {
+    color: #ff0000
 }

@@ -1,5 +1,5 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%--@elvariable id="userForm" type="org.dulab.site.controllers.UserForm"--%>
+<%--@elvariable id="userForm" type="org.dulab.site.controllers.SignUpForm"--%>
 <form:form method="post" modelAttribute="userForm">
     <form:label path="username">Username</form:label>
     <form:input path="username"/>

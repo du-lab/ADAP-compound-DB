@@ -89,8 +89,8 @@ public class FileController {
         return "spectrum";
     }
 
-    @RequestMapping(value = "file/submit", method = RequestMethod.POST)
-    public View fileSubmit() {
-
-    }
+//    @RequestMapping(value = "file/submit", method = RequestMethod.POST)
+//    public View fileSubmit() {
+//
+//    }
 }
