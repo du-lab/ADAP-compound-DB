@@ -8,8 +8,8 @@
               logAbandoned="true" removeAbandoned="true" removeAbandonedTimeout="60"
               type="javax.sql.DataSource"/>
 
-    <Realm className="org.apache.catalina.realm.DataSourceRealm" debug="99"
-           dataSourceName="jdbc/adapcompounddb" localDataSource="true"
-           userTable="User" userNameCol="username" userCredCol="password"
-           userRoleTable="UserRole" roleNameCol="rolename"/>
+    <!--<Realm className="org.apache.catalina.realm.DataSourceRealm" debug="99"-->
+           <!--dataSourceName="jdbc/adapcompounddb" localDataSource="true"-->
+           <!--userTable="User" userNameCol="username" userCredCol="password"-->
+           <!--userRoleTable="UserRole" roleNameCol="rolename"/>-->
 </Context>

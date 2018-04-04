@@ -26,6 +26,7 @@
 
             <c:if test="${validationErrors != null}">
                 <div class="errors">
+                    <p>Errors:</p>
                     <ul>
                         <c:forEach items="${validationErrors}" var="error">
                             <li><c:out value="${error.message}"/></li>
@@ -40,24 +41,24 @@
                 <form:input path="username"/><br/>
                 <form:errors path="username" cssClass="errors"/><br/>
                 <div>
-                    <span style="display: inline-block">
+                    <span>
                         <form:label path="email">E-mail address</form:label><br/>
                         <form:input path="email"/><br/>
                         <form:errors path="email" cssClass="errors"/><br/>
                     </span>
-                    <span style="display: inline-block">
+                    <span>
                         <form:label path="confirmedEmail">Confirm E-mail address</form:label><br/>
                         <form:input path="confirmedEmail"/><br/>
                         <form:errors path="confirmedEmail" cssClass="errors"/><br/>
                     </span>
                 </div>
                 <div>
-                    <span style="display: inline-block">
+                    <span>
                         <form:label path="password">Password:</form:label><br/>
                         <form:password path="password"/><br/>
                         <form:errors path="password" cssClass="errors"/><br/>
                     </span>
-                    <span style="display: inline-block">
+                    <span>
                         <form:label path="confirmedPassword">Confirm password:</form:label><br/>
                         <form:password path="confirmedPassword"/><br/>
                         <form:errors path="confirmedPassword" cssClass="errors"/><br/>

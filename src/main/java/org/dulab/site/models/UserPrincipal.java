@@ -1,5 +1,8 @@
 package org.dulab.site.models;
 
+import org.dulab.site.validation.Email;
+import org.dulab.site.validation.NotBlank;
+
 import javax.persistence.*;
 import javax.servlet.http.HttpSession;
 import javax.validation.constraints.NotNull;
@@ -17,7 +20,15 @@ public class UserPrincipal implements Principal, Cloneable, Serializable {
     private static final String SESSION_ATTRIBUTE_KEY = "userPrincipal";
 
     private long id;
+
+    @NotBlank
     private String username;
+
+    @NotBlank
+    @Email
+    private String email;
+
+    @NotNull
     private byte[] hashedPassword;
 
     @Id
@@ -30,7 +41,7 @@ public class UserPrincipal implements Principal, Cloneable, Serializable {
         this.id = id;
     }
 
-    @Basic
+    @Basic(optional = false)
     public String getUsername() {
         return username;
     }
@@ -39,7 +50,16 @@ public class UserPrincipal implements Principal, Cloneable, Serializable {
         this.username = username;
     }
 
-    @Basic
+    @Basic(optional = false)
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    @Basic(optional = false)
     public byte[] getHashedPassword() {
         return hashedPassword;
     }
@@ -70,8 +90,7 @@ public class UserPrincipal implements Principal, Cloneable, Serializable {
     protected UserPrincipal clone() {
         try {
             return (UserPrincipal) super.clone();
-        }
-        catch (CloneNotSupportedException e) {
+        } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e); // not possible
         }
     }
@@ -81,8 +100,8 @@ public class UserPrincipal implements Principal, Cloneable, Serializable {
         return username;
     }
 
-    public static Principal getPrincipal(HttpSession session) {
-        return session == null ? null : (Principal) session.getAttribute(SESSION_ATTRIBUTE_KEY);
+    public static UserPrincipal getPrincipal(HttpSession session) {
+        return session == null ? null : (UserPrincipal) session.getAttribute(SESSION_ATTRIBUTE_KEY);
     }
 
     public static void setPrincipal(HttpSession session, Principal principal) {

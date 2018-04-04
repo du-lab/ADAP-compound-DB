@@ -106,6 +106,7 @@ public class AuthenticationController {
 
         UserPrincipal principal = new UserPrincipal();
         principal.setUsername(form.getUsername());
+        principal.setEmail(form.getEmail());
         try {
             authenticationService.saveUser(principal, form.getPassword());
         }

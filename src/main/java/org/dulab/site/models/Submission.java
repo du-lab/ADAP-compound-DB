@@ -1,18 +1,44 @@
 package org.dulab.site.models;
 
+import org.dulab.site.validation.NotBlank;
+
 import javax.persistence.*;
+import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 
 @Entity
-public class Submission {
+public class Submission implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    private static final String SESSION_ATTRIBUTE_KEY = "submission";
 
     private long id;
-    private List<Spectrum> spectra;
-    private User user;
+
+    @NotBlank
+    private String name;
+
+    @NotBlank
+    private String description;
+
+    @NotNull
     private Date dateTime;
-    private String note;
-    private String fileName;
+
+    @NotBlank
+    private String filename;
+
+    @NotNull
+    @Valid
+    private List<Spectrum> spectra;
+
+    @NotNull
+    @Valid
+    private User user;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +50,23 @@ public class Submission {
         this.id = id;
     }
 
-    @OneToMany
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String desription) {
+        this.description = desription;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     public List<Spectrum> getSpectra() {
         return spectra;
     }
@@ -34,6 +76,7 @@ public class Submission {
     }
 
     @ManyToOne
+    @JoinColumn(name = "userId")
     public User getUser() {
         return user;
     }
@@ -51,19 +94,19 @@ public class Submission {
         this.dateTime = dateTime;
     }
 
-    public String getNote() {
-        return note;
+    public String getFilename() {
+        return filename;
     }
 
-    public void setNote(String note) {
-        this.note = note;
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
 
-    public String getFileName() {
-        return fileName;
+    public static Submission getPrincipal(HttpSession session) {
+        return session == null ? null : (Submission) session.getAttribute(SESSION_ATTRIBUTE_KEY);
     }
 
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
+    public static void setPrincipal(HttpSession session, Submission submission) {
+        session.setAttribute(SESSION_ATTRIBUTE_KEY, submission);
     }
 }

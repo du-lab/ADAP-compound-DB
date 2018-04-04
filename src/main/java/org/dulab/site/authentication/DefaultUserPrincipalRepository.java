@@ -12,7 +12,8 @@ import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 
 @Repository
-public class DefaultUserPrincipalRepository extends GenericJpaRepository<Long, UserPrincipal> implements UserPrincipalRepository {
+public class DefaultUserPrincipalRepository extends GenericJpaRepository<Long, UserPrincipal>
+        implements UserPrincipalRepository {
 
     private static final Logger LOG = LogManager.getLogger();
 

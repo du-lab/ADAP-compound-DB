@@ -1,13 +1,19 @@
 package org.dulab.site.data;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.validation.ConstraintViolationException;
 import java.io.Serializable;
 
 public abstract class GenericJpaRepository<I extends Serializable, E extends Serializable>
         extends GenericBaseRepository<I, E> {
+
+    private static final Logger LOG = LogManager.getLogger();
 
     public GenericJpaRepository(Class<I> idClass, Class<E> entityClass) {
         super(idClass, entityClass);
@@ -42,7 +48,8 @@ public abstract class GenericJpaRepository<I extends Serializable, E extends Ser
     }
 
     @Override
-    public void add(E entity) {
+    public void add(E entity) throws ConstraintViolationException {
+
         EntityManager entityManager = DBUtil.getEmFactory().createEntityManager();
         EntityTransaction entityTransaction = entityManager.getTransaction();
         try {
@@ -52,6 +59,7 @@ public abstract class GenericJpaRepository<I extends Serializable, E extends Ser
         }
         catch (Exception e) {
             entityTransaction.rollback();
+            throw e;
         }
         finally {
             entityManager.close();

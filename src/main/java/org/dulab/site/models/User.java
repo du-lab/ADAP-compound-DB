@@ -1,24 +1,46 @@
 package org.dulab.site.models;
 
+import org.dulab.site.validation.NotBlank;
+
 import java.io.Serializable;
 import javax.persistence.*;
+import javax.validation.Valid;
 
 @Entity
 public class User implements Serializable {
 
     private long id;
+
+    @Valid
+    private UserPrincipal principal;
+
+    @NotBlank
     private String firstName;
+
+    @NotBlank
     private String lastName;
-    private String email;
+
+    @NotBlank
     private String companyName;
+
+    @NotBlank
     private String address1;
+
     private String address2;
+
+    @NotBlank
     private String city;
+
     private String state;
+
+    @NotBlank
     private String zip;
+
+    @NotBlank
     private String country;
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public long getId() {
         return id;
     }
@@ -27,7 +49,15 @@ public class User implements Serializable {
         this.id = id;
     }
 
-    @Basic(optional = false)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    public UserPrincipal getPrincipal() {
+        return principal;
+    }
+
+    public void setPrincipal(UserPrincipal userPrincipal) {
+        this.principal = userPrincipal;
+    }
+
     public String getFirstName() {
         return firstName;
     }
@@ -36,22 +66,12 @@ public class User implements Serializable {
         this.firstName = firstName;
     }
 
-    @Basic(optional = false)
     public String getLastName() {
         return lastName;
     }
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    @Basic(optional = false)
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getCompanyName() {
