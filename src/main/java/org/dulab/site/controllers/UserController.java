@@ -1,11 +1,10 @@
 package org.dulab.site.controllers;
 
 import org.dulab.site.models.UserPrincipal;
-import org.dulab.site.authentication.DefaultUserPrincipalManager;
-import org.dulab.site.authentication.UserPrincipalManager;
+import org.dulab.site.services.DefaultUserPrincipalManager;
+import org.dulab.site.services.UserPrincipalManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.View;

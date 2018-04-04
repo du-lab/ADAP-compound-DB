@@ -1,4 +1,4 @@
-package org.dulab.site.authentication;
+package org.dulab.site.services;
 
 import org.dulab.site.models.UserPrincipal;
 

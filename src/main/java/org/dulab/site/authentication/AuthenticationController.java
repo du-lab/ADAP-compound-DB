@@ -1,13 +1,16 @@
 package org.dulab.site.authentication;
 
 import org.dulab.site.models.UserPrincipal;
+import org.dulab.site.validation.Email;
+import org.dulab.site.validation.FieldMatch;
+import org.dulab.site.validation.NotBlank;
+import org.dulab.site.validation.Password;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,19 +28,22 @@ public class AuthenticationController {
         authenticationService = new DefaultAuthenticationService();
     }
 
-    @RequestMapping(value = "login", method = RequestMethod.GET)
+    /****************
+    ***** Log In *****
+     ****************/
+
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
     public ModelAndView login(Model model, HttpSession session) {
         if (UserPrincipal.getPrincipal(session) != null)
             return getHomeRedirect();
 
         model.addAttribute("loginFailed", false);
         model.addAttribute("logInForm", new LogInForm());
-        model.addAttribute("signUpForm", new SignUpForm());
 
         return new ModelAndView("login");
     }
 
-    @RequestMapping(value = "login", method = RequestMethod.POST)
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ModelAndView login(Model model, HttpSession session, HttpServletRequest request,
                               @Valid LogInForm form, Errors errors) {
 
@@ -63,7 +69,6 @@ public class AuthenticationController {
             form.setPassword(null);
             model.addAttribute("loginFailed", true);
             model.addAttribute("logInForm", form);
-            model.addAttribute("signUpForm", new SignUpForm());
             return new ModelAndView("login");
         }
 
@@ -72,7 +77,22 @@ public class AuthenticationController {
         return getHomeRedirect();
     }
 
-    @RequestMapping(value = "signup", method = RequestMethod.POST)
+    /*****************
+    ***** Sign Up *****
+     *****************/
+
+    @RequestMapping(value = "/signup", method = RequestMethod.GET)
+    public ModelAndView signup(Model model, HttpSession session) {
+        if (UserPrincipal.getPrincipal(session) != null)
+            return getHomeRedirect();
+
+        model.addAttribute("signupFailed", false);
+        model.addAttribute("signUpForm", new SignUpForm());
+
+        return new ModelAndView("signup");
+    }
+
+    @RequestMapping(value = "/signup", method = RequestMethod.POST)
     public ModelAndView signup(Model model, HttpSession session, HttpServletRequest request,
                                @Valid SignUpForm form, Errors errors) {
         if (UserPrincipal.getPrincipal(session) != null)
@@ -80,8 +100,8 @@ public class AuthenticationController {
 
         if (errors.hasErrors()) {
             form.setPassword(null);
-            form.setRepeatPassword(null);
-            return new ModelAndView("login");
+            form.setConfirmedPassword(null);
+            return new ModelAndView("signup");
         }
 
         UserPrincipal principal = new UserPrincipal();
@@ -91,7 +111,7 @@ public class AuthenticationController {
         }
         catch (ConstraintViolationException e) {
             form.setPassword(null);
-            form.setRepeatPassword(null);
+            form.setConfirmedPassword(null);
             model.addAttribute("validationErrors", e.getConstraintViolations());
             return new ModelAndView("signup");
         }
@@ -100,6 +120,10 @@ public class AuthenticationController {
         request.changeSessionId();
         return getHomeRedirect();
     }
+
+    /*****************
+    ***** Log Out *****
+     *****************/
 
     @RequestMapping(value = "logout", method = RequestMethod.GET)
     public ModelAndView logout(HttpSession session) {
@@ -112,10 +136,16 @@ public class AuthenticationController {
         return new ModelAndView(new RedirectView("/", true, false));
     }
 
+    /**********************
+    ***** Form classes *****
+     **********************/
 
     public static class LogInForm {
 
+        @NotBlank(message = "The username is required.")
         private String username;
+
+        @NotBlank(message = "The password is required.")
         private String password;
 
         public String getUsername() {
@@ -135,11 +165,27 @@ public class AuthenticationController {
         }
     }
 
+    @FieldMatch.List({
+            @FieldMatch(first = "email", second = "confirmedEmail", message = "The E-mail fields must match."),
+            @FieldMatch(first = "password", second = "confirmedPassword",
+                    message = "The Password fields must match.")
+    })
     public static class SignUpForm {
 
+        @NotBlank(message = "The username is required.")
         private String username;
+
+        @NotBlank(message = "E-mail address is required.")
+        @Email
+        private String email;
+
+        private String confirmedEmail;
+
+        @NotBlank(message = "The password is required.")
+        @Password(message = "Please match the requested format.")
         private String password;
-        private String repeatPassword;
+
+        private String confirmedPassword;
 
         public String getUsername() {
             return username;
@@ -147,6 +193,22 @@ public class AuthenticationController {
 
         public void setUsername(String username) {
             this.username = username;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public String getConfirmedEmail() {
+            return confirmedEmail;
+        }
+
+        public void setConfirmedEmail(String confirmedEmail) {
+            this.confirmedEmail = confirmedEmail;
         }
 
         public String getPassword() {
@@ -157,12 +219,12 @@ public class AuthenticationController {
             this.password = password;
         }
 
-        public String getRepeatPassword() {
-            return repeatPassword;
+        public String getConfirmedPassword() {
+            return confirmedPassword;
         }
 
-        public void setRepeatPassword(String repeatPassword) {
-            this.repeatPassword = repeatPassword;
+        public void setConfirmedPassword(String confirmedPassword) {
+            this.confirmedPassword = confirmedPassword;
         }
     }
 }

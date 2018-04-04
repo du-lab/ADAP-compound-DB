@@ -2,6 +2,7 @@ package org.dulab.site.models;
 
 import javax.persistence.*;
 import javax.servlet.http.HttpSession;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.security.Principal;
 
@@ -11,13 +12,13 @@ import java.security.Principal;
 })
 public class UserPrincipal implements Principal, Cloneable, Serializable {
 
-    private static final long SERIAL_VERSION_UID = 1L;
+    private static final long serialVersionUID = 1L;
 
     private static final String SESSION_ATTRIBUTE_KEY = "userPrincipal";
 
     private long id;
     private String username;
-    private byte[] password;
+    private byte[] hashedPassword;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,13 +40,12 @@ public class UserPrincipal implements Principal, Cloneable, Serializable {
     }
 
     @Basic
-    @Column(name = "HashedPassword")
-    public byte[] getPassword() {
-        return password;
+    public byte[] getHashedPassword() {
+        return hashedPassword;
     }
 
-    public void setPassword(byte[] password) {
-        this.password = password;
+    public void setHashedPassword(byte[] password) {
+        this.hashedPassword = password;
     }
 
     @Override

@@ -3,19 +3,21 @@ package org.dulab.site.validation;
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import javax.validation.ReportAsSingleViolation;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.lang.annotation.*;
 
 @Target({ElementType.METHOD, ElementType.FIELD, ElementType.ANNOTATION_TYPE,
         ElementType.CONSTRUCTOR, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Constraint(validatedBy = {NotBlankValidator.class})
-@NotNull
+@Constraint(validatedBy = {})
+@Pattern(regexp = "^[a-z0-9`!#$%^&*'{}?/+=|_~-]+(\\.[a-z0-9`!#$%^&*'{}?/+=|" +
+        "_~-]+)*@([a-z0-9]([a-z0-9-]*[a-z0-9])?)+(\\.[a-z0-9]" +
+        "([a-z0-9-]*[a-z0-9])?)*$", flags = {Pattern.Flag.CASE_INSENSITIVE})
 @ReportAsSingleViolation
-public @interface NotBlank {
+public @interface Email {
 
-    String message() default "The field is required.";
+    String message() default "Email address is not correct.";
 
     Class<?>[] groups() default {};
 
@@ -26,6 +28,6 @@ public @interface NotBlank {
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
     @interface List {
-        NotBlank[] value();
+        Email[] value();
     }
 }

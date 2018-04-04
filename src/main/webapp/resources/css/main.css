@@ -96,6 +96,7 @@ article {
 article section {
     margin: 20px 40px;
     padding: 10px;
+    min-width: 320px;
     background: #ffffff;
     border-radius: 10px;
     font-family: "Times New Roman", Times, serif;
@@ -150,16 +151,17 @@ section a {
 section a:hover {text-decoration: underline;}
 
 section a.button {
-    text-decoration: none;
+    display: inline-block;
     border: none;
     padding: 8px 15px 8px 15px;
+    text-decoration: none;
     background: #8e8268;
     color: #ffffff;
     box-shadow: 1px 1px 4px #474853;
     border-radius: 3px;
 }
 
-section a.button:hover {background: #f2f2f2;}
+section a.button:hover {background: #844d36;}
 
 section div.heading {
     border-bottom: 1px solid #844d36;
@@ -170,7 +172,7 @@ section form {
     padding: 0 20px;
 }
 
-section input[type=submit], input[type=button], input[type=file] {
+section form input[type=submit], input[type=button], input[type=file] {
     border: none;
     cursor: pointer;
     margin-top: 1em;
@@ -182,9 +184,9 @@ section input[type=submit], input[type=button], input[type=file] {
     border-radius: 3px;
 }
 
-section input[type=submit]:hover, input[type=button]:hover, input[type=file]:hover {background: #f2f2f2;}
+section form input[type=submit]:hover, input[type=button]:hover, input[type=file]:hover {background: #844d36;}
 
-section textarea, input[type=text], input[type=password] {
+section form textarea, input[type=text], input[type=password] {
     margin: 5px 0;
     height: 2em;
     width: 200px;
@@ -195,23 +197,31 @@ section textarea, input[type=text], input[type=password] {
     font-size: 1em;
 }
 
-section label {
-    display: block;
+/*section form span {*/
+    /*display: block;*/
+/*}*/
+
+section form label {
+    /*display: block;*/
     margin: 5px 0;
     clear: both;
     font-family: "Courier New", Courier, monospace;
     color: #8e8268;
 }
 
+section form span {
+    display: inline-block;
+    vertical-align: top;
+}
+
 section div.subsection {
     display: inline-block;
-    width: 49%;
-    min-width: 260px;
+    /*width: 300px;*/
     vertical-align: top;
 }
 
 section div.subsection div.submit {
-    width: 220px;
+    width: 240px;
     text-align: right;
 }
 
