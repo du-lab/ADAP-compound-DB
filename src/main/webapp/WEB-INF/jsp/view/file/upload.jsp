@@ -1,3 +1,5 @@
+<%--@elvariable id="chromatographyTypeList" type="org.dulab.models.ChromatographyType[]"--%>
+<%--@elvariable id="form" type="org.dulab.site.submission.FileUploadController.Form"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <jsp:include page="/WEB-INF/jsp/includes/header.jsp" />
@@ -8,15 +10,32 @@
 <section>
     <h1>Upload file</h1>
 
-    <p style="color: red">
-        ${message}
-    </p>
+    <p class="errors">${message}</p>
+    <c:if test="${validationErrors != null}"><div class="errors">
+        <ul>
+            <c:forEach items="${validationErrors}" var="error">
+                <li><c:out value="${error.message}"/></li>
+            </c:forEach>
+        </ul>
+    </div></c:if>
 
-    <form:form method="POST" enctype="multipart/form-data">
-        <label>Chromatography Type</label>
+    <form:form method="POST" modelAttribute="form" enctype="multipart/form-data">
+        <form:errors path="" cssClass="errors"/><br/>
 
-        <label for="file">File</label><br/>
-        <input type="file" name="file" id="file"/><br/>
+        <form:label path="chromatographyType">Chromatography type:</form:label><br/>
+        <form:select path="chromatographyType">
+            <form:option value="" label="Please select..."/>
+            <form:options items="${chromatographyTypeList}" itemLabel="label"/>
+        </form:select><br/>
+        <form:errors path="chromatographyType" cssClass="errors"/><br/>
+
+        <form:label path="fileType">File type:</form:label><br/>
+        <form:radiobuttons path="fileType" items="${fileTypeList}" itemLabel="label"/><br/>
+        <form:errors path="fileType" cssClass="errors"/><br/>
+
+        <form:label path="file">File:</form:label><br/>
+        <input type="file" name="file"/><br/>
+        <form:errors path="file" cssClass="errors"/>
         <div align="center">
             <input type="submit" value="Upload"/>
         </div>

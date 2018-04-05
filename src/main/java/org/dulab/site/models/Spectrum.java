@@ -1,10 +1,13 @@
 package org.dulab.site.models;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
-public class Spectrum {
+public class Spectrum implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private String name = null;
 

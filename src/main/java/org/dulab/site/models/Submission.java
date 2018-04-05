@@ -14,8 +14,6 @@ import java.util.List;
 @Entity
 public class Submission implements Serializable {
 
-    public enum ChromatographyType {GAS, LIQUID_POSITITIVE, LIQUID_NEGATIVE}
-
     private static final long serialVersionUID = 1L;
 
     private static final String SESSION_ATTRIBUTE_KEY = "submission";
@@ -33,6 +31,9 @@ public class Submission implements Serializable {
 
     @NotBlank
     private String filename;
+
+    @NotNull
+    private byte[] file;
 
     @NotNull
     private ChromatographyType chromatographyType;
@@ -114,6 +115,14 @@ public class Submission implements Serializable {
 
     public void setFilename(String filename) {
         this.filename = filename;
+    }
+
+    public byte[] getFile() {
+        return file;
+    }
+
+    public void setFile(byte[] file) {
+        this.file = file;
     }
 
     public static Submission getSubmission(HttpSession session) {

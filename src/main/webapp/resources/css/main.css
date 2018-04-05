@@ -168,9 +168,7 @@ section div.heading {
     margin-bottom: 15px;
 }
 
-section form {
-    padding: 0 20px;
-}
+section form {padding: 0 20px;}
 
 section form input[type=submit], input[type=button] {
     border: none;
@@ -193,33 +191,31 @@ section form input[type=submit], input[type=button] {
 
 section form input[type=submit]:hover, input[type=button]:hover{background: #844d36;}
 
-section form textarea, input[type=text], input[type=password] {
+section form input[type=radio] + label {
     margin: 5px 0;
-    height: 2em;
-    width: 200px;
     padding: 0 10px;
+}
+
+/* Default values for many form elements */
+section form textarea, select, input[type=text], input[type=password], input[type=file]{
+    margin: 5px 0;
+    padding: 0 10px;
+    height: 2em;
+    font-family: Verdana, Georgia, sans-serif;
+}
+
+section form textarea, input[type=text], input[type=password] {
+    width: 200px;
     box-shadow: 1px 1px 1px #f2f2f2;
     border-radius: 3px;
-    font-family: Verdana, Georgia, sans-serif;
-    font-size: 1em;
 }
 
 section form input[type=file] {
     cursor: pointer;
-    margin: 5px 0;
-    height: 2em;
-    padding: 0 10px;
     border-radius: 3px;
-    font-family: Verdana, Georgia, sans-serif;
-    font-size: 1em;
 }
 
-/*section form span {*/
-    /*display: block;*/
-/*}*/
-
-section form label {
-    /*display: block;*/
+section form > label {
     margin: 5px 0;
     clear: both;
     font-family: "Courier New", Courier, monospace;
@@ -246,4 +242,8 @@ section div.subsection div.submit {
 
 .errors {
     color: #ff0000
+}
+
+span.highlighted {
+    color: #86b3d1;
 }
