@@ -28,66 +28,66 @@ public class FileController {
         fileReaderService = new MspFileReaderService();
     }
 
-    @RequestMapping(value = "/file/upload", method = RequestMethod.POST, consumes = {"multipart/form-data"})
-    public View fileUpload(Model model,
-                           HttpSession session,
-                           @RequestParam("file") MultipartFile file)
-            throws IOException {
-
-        if (file.getSize() == 0) {
-            model.addAttribute("message", "Uploaded file is empty");
-            return new RedirectView("/file/upload");
-        }
-
-        List<Spectrum> spectra = fileReaderService.read(file.getInputStream());
-        if (spectra == null || spectra.isEmpty()) {
-            model.addAttribute("message", "Cannot read this file");
-            return new RedirectView("/file/upload");
-        }
-
-        session.setAttribute("spectrumList", spectra);
-        session.setAttribute("fileName", file.getOriginalFilename());
-        return new RedirectView("/file");
-    }
-
-    @RequestMapping(value = {"/file", "/file/upload"}, method = RequestMethod.GET)
-    public String file(HttpSession session) {
-
-        if (session.getAttribute("spectrumList") != null)
-            return "file";
-
-        return "upload";
-    }
-
-    @RequestMapping(value = "/file/{spectrumId:\\d+}", method = RequestMethod.GET)
-    public String spectrum(@PathVariable("spectrumId") int spectrumId,
-                           Model model,
-                           HttpSession session) {
-
-        @SuppressWarnings("unchecked")
-        List<Spectrum> spectrumList = (List<Spectrum>) session.getAttribute("spectrumList");
-        Spectrum spectrum = spectrumList.get(spectrumId);
-
-        model.addAttribute("name", spectrum.toString());
-        model.addAttribute("properties", spectrum.getProperties());
-
-        // Generate JSON string with mz-values and intensities
-        List<Peak> peaks = spectrum.getPeaks();
-        StringBuilder stringBuilder = new StringBuilder("[");
-        for (int i = 0; i < peaks.size(); ++i) {
-            if (i != 0) stringBuilder.append(',');
-            stringBuilder.append('[')
-                    .append(peaks.get(i).getMz())
-                    .append(',')
-                    .append(peaks.get(i).getIntensity())
-                    .append(']');
-        }
-        stringBuilder.append(']');
-
-        model.addAttribute("jsonPeaks", stringBuilder.toString());
-
-        return "spectrum";
-    }
+//    @RequestMapping(value = "/file/upload", method = RequestMethod.POST, consumes = {"multipart/form-data"})
+//    public View fileUpload(Model model,
+//                           HttpSession session,
+//                           @RequestParam("file") MultipartFile file)
+//            throws IOException {
+//
+//        if (file.getSize() == 0) {
+//            model.addAttribute("message", "Uploaded file is empty");
+//            return new RedirectView("/file/upload");
+//        }
+//
+//        List<Spectrum> spectra = fileReaderService.read(file.getInputStream());
+//        if (spectra == null || spectra.isEmpty()) {
+//            model.addAttribute("message", "Cannot read this file");
+//            return new RedirectView("/file/upload");
+//        }
+//
+//        session.setAttribute("spectrumList", spectra);
+//        session.setAttribute("fileName", file.getOriginalFilename());
+//        return new RedirectView("/file");
+//    }
+//
+//    @RequestMapping(value = {"/file", "/file/upload"}, method = RequestMethod.GET)
+//    public String file(HttpSession session) {
+//
+//        if (session.getAttribute("spectrumList") != null)
+//            return "file";
+//
+//        return "upload";
+//    }
+//
+//    @RequestMapping(value = "/file/{spectrumId:\\d+}", method = RequestMethod.GET)
+//    public String spectrum(@PathVariable("spectrumId") int spectrumId,
+//                           Model model,
+//                           HttpSession session) {
+//
+//        @SuppressWarnings("unchecked")
+//        List<Spectrum> spectrumList = (List<Spectrum>) session.getAttribute("spectrumList");
+//        Spectrum spectrum = spectrumList.get(spectrumId);
+//
+//        model.addAttribute("name", spectrum.toString());
+//        model.addAttribute("properties", spectrum.getProperties());
+//
+//        // Generate JSON string with mz-values and intensities
+//        List<Peak> peaks = spectrum.getPeaks();
+//        StringBuilder stringBuilder = new StringBuilder("[");
+//        for (int i = 0; i < peaks.size(); ++i) {
+//            if (i != 0) stringBuilder.append(',');
+//            stringBuilder.append('[')
+//                    .append(peaks.get(i).getMz())
+//                    .append(',')
+//                    .append(peaks.get(i).getIntensity())
+//                    .append(']');
+//        }
+//        stringBuilder.append(']');
+//
+//        model.addAttribute("jsonPeaks", stringBuilder.toString());
+//
+//        return "spectrum";
+//    }
 
 //    @RequestMapping(value = "file/submit", method = RequestMethod.POST)
 //    public View fileSubmit() {

@@ -172,7 +172,7 @@ section form {
     padding: 0 20px;
 }
 
-section form input[type=submit], input[type=button], input[type=file] {
+section form input[type=submit], input[type=button] {
     border: none;
     cursor: pointer;
     margin-top: 1em;
@@ -184,7 +184,14 @@ section form input[type=submit], input[type=button], input[type=file] {
     border-radius: 3px;
 }
 
-section form input[type=submit]:hover, input[type=button]:hover, input[type=file]:hover {background: #844d36;}
+/*section form input[type=file] {*/
+    /*cursor: pointer;*/
+    /*padding: 8px 15px 8px 15px;*/
+    /*border: 1px solid #8e8268;*/
+    /*border-radius: 3px;*/
+/*}*/
+
+section form input[type=submit]:hover, input[type=button]:hover{background: #844d36;}
 
 section form textarea, input[type=text], input[type=password] {
     margin: 5px 0;
@@ -192,6 +199,16 @@ section form textarea, input[type=text], input[type=password] {
     width: 200px;
     padding: 0 10px;
     box-shadow: 1px 1px 1px #f2f2f2;
+    border-radius: 3px;
+    font-family: Verdana, Georgia, sans-serif;
+    font-size: 1em;
+}
+
+section form input[type=file] {
+    cursor: pointer;
+    margin: 5px 0;
+    height: 2em;
+    padding: 0 10px;
     border-radius: 3px;
     font-family: Verdana, Georgia, sans-serif;
     font-size: 1em;
