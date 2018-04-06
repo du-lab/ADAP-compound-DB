@@ -22,7 +22,10 @@
 </section>
 
 <section>
-    <h1>Contained spectra</h1>
+    <h1>Mass spectra</h1>
+    <p>
+        Click on name to view the mass spectrum
+    </p>
     <div align="center" style="overflow: auto; max-height: 400px">
         <table>
             <tr>

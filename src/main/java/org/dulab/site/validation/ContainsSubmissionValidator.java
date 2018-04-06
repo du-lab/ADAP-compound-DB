@@ -10,6 +10,6 @@ public class ContainsSubmissionValidator implements ConstraintValidator<Contains
 
     @Override
     public boolean isValid(HttpSession session, ConstraintValidatorContext context) {
-        return Submission.getSubmission(session) != null;
+        return Submission.get(session) != null;
     }
 }

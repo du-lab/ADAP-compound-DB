@@ -136,11 +136,11 @@ public class Submission implements Serializable {
         this.file = file;
     }
 
-    public static Submission getSubmission(HttpSession session) {
+    public static Submission get(HttpSession session) {
         return session == null ? null : (Submission) session.getAttribute(SESSION_ATTRIBUTE_KEY);
     }
 
-    public static void setSubmission(HttpSession session, Submission submission) {
+    public static void set(HttpSession session, Submission submission) {
         session.setAttribute(SESSION_ATTRIBUTE_KEY, submission);
     }
 }

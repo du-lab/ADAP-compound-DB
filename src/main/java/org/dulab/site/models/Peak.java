@@ -1,9 +1,12 @@
 package org.dulab.site.models;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
-public class Peak {
+public class Peak implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private long id;
     private Spectrum spectrum;

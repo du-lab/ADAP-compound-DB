@@ -48,7 +48,7 @@ public class FileUploadController {
 
     @RequestMapping(value = "/file", method = RequestMethod.GET)
     public View submission(HttpSession session) {
-        if (Submission.getSubmission(session) == null)
+        if (Submission.get(session) == null)
             return new RedirectView("/file/upload", true, false);
 
         return new RedirectView("/file/view", true, false);
@@ -56,7 +56,7 @@ public class FileUploadController {
 
     @RequestMapping(value = "/file/upload", method = RequestMethod.GET)
     public ModelAndView upload(Model model, HttpSession session) {
-        if (Submission.getSubmission(session) != null)
+        if (Submission.get(session) != null)
             return new ModelAndView(new RedirectView("/file/view", true, false));
 
         Form form = new Form();
@@ -68,7 +68,7 @@ public class FileUploadController {
     @RequestMapping(value = "file/upload", method = RequestMethod.POST, consumes = "multipart/form-data")
     public ModelAndView upload(Model model, HttpSession session, @Valid Form form, Errors errors) {
 
-        if (Submission.getSubmission(session) != null)
+        if (Submission.get(session) != null)
             return new ModelAndView(new RedirectView("/file/view", true, false));
 
         if (errors.hasErrors())
@@ -102,7 +102,7 @@ public class FileUploadController {
             return new ModelAndView("file/upload");
         }
 
-        Submission.setSubmission(session, submission);
+        Submission.set(session, submission);
         return new ModelAndView(new RedirectView("/file/view", true, false));
     }
 

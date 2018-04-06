@@ -4,7 +4,6 @@
 <head>
     <title>ADAP Compound Library</title>
     <link rel="stylesheet" href="<c:url value="/resources/css/main.css"/>">
-    <script src="https://cdn.zingchart.com/zingchart.min.js"></script>
 </head>
 <body>
 
