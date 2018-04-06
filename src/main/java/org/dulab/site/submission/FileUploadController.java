@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpSession;
@@ -46,11 +47,11 @@ public class FileUploadController {
     }
 
     @RequestMapping(value = "/file", method = RequestMethod.GET)
-    public ModelAndView submission(HttpSession session) {
+    public View submission(HttpSession session) {
         if (Submission.getSubmission(session) == null)
-            return new ModelAndView(new RedirectView("/file/upload", true, false));
+            return new RedirectView("/file/upload", true, false);
 
-        return new ModelAndView("file/view");
+        return new RedirectView("/file/view", true, false);
     }
 
     @RequestMapping(value = "/file/upload", method = RequestMethod.GET)
@@ -76,6 +77,7 @@ public class FileUploadController {
         MultipartFile file = form.getFile();
         Submission submission = new Submission();
         submission.setFilename(file.getOriginalFilename());
+        submission.setFileType(form.getFileType());
         submission.setChromatographyType(form.getChromatographyType());
 
         FileReaderService service = fileReaderServiceMap.get(form.fileType);

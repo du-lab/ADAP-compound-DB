@@ -145,7 +145,7 @@ section tr:nth-child(even) {
 
 section a {
     text-decoration: none;
-    color: #474853;
+    color: #844d36;
 }
 
 section a:hover {text-decoration: underline;}
@@ -197,15 +197,22 @@ section form input[type=radio] + label {
 }
 
 /* Default values for many form elements */
-section form textarea, select, input[type=text], input[type=password], input[type=file]{
+section form select, input[type=text], input[type=password], input[type=file]{
     margin: 5px 0;
     padding: 0 10px;
     height: 2em;
     font-family: Verdana, Georgia, sans-serif;
 }
 
-section form textarea, input[type=text], input[type=password] {
+section form input[type=text], input[type=password] {
     width: 200px;
+    box-shadow: 1px 1px 1px #f2f2f2;
+    border-radius: 3px;
+}
+
+section form textarea {
+    margin: 5px 0;
+    padding: 10px;
     box-shadow: 1px 1px 1px #f2f2f2;
     border-radius: 3px;
 }

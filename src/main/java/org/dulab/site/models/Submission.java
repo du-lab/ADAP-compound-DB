@@ -33,6 +33,9 @@ public class Submission implements Serializable {
     private String filename;
 
     @NotNull
+    private FileType fileType;
+
+    @NotNull
     private byte[] file;
 
     @NotNull
@@ -115,6 +118,14 @@ public class Submission implements Serializable {
 
     public void setFilename(String filename) {
         this.filename = filename;
+    }
+
+    public FileType getFileType() {
+        return fileType;
+    }
+
+    public void setFileType(FileType fileType) {
+        this.fileType = fileType;
     }
 
     public byte[] getFile() {
