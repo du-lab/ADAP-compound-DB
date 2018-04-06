@@ -59,6 +59,7 @@
         <div align="left" class="subsection">
             <c:if test="${validationErrors != null}">
                 <div class="errors">
+                    <p>Errors:</p>
                     <ul>
                         <c:forEach items="${validationErrors}" var="error">
                             <li><c:out value="${error.message}"/></li>
@@ -75,7 +76,7 @@
 
                 <form:label path="description">Description:</form:label><br/>
                 <form:textarea path="description" rows="12" cols="80"/><br/>
-                <form:errors path="description"/><br/>
+                <form:errors path="description" cssClass="errors"/><br/>
 
                 <div align="center">
                     <input type="submit" value="Submit"/>

@@ -8,6 +8,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -20,34 +21,34 @@ public class Submission implements Serializable {
 
     private long id;
 
-    @NotBlank
+    @NotBlank(message = "The field Name is required.")
     private String name;
 
-    @NotBlank
+    @NotBlank(message = "The field Description is required.")
     private String description;
 
-    @NotNull
-    private Date dateTime;
+    @NotNull(message = "Date/Time of submission is required.")
+    private LocalDateTime dateTime;
 
-    @NotBlank
+    @NotBlank(message = "Filename of the raw file is required.")
     private String filename;
 
-    @NotNull
+    @NotNull(message = "Type of the raw file is required.")
     private FileType fileType;
 
-    @NotNull
+    @NotNull(message = "Raw file is required.")
     private byte[] file;
 
-    @NotNull
+    @NotNull(message = "Chromatography type is required.")
     private ChromatographyType chromatographyType;
 
-    @NotNull
+    @NotNull (message = "Spectrum list is required.")
     @Valid
     private List<Spectrum> spectra;
 
-    @NotNull
+    @NotNull (message = "You must log in to submit mass spectra to the library.")
     @Valid
-    private User user;
+    private UserPrincipal user;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -95,20 +96,20 @@ public class Submission implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "userId")
-    public User getUser() {
+    public UserPrincipal getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(UserPrincipal user) {
         this.user = user;
     }
 
     @Temporal(TemporalType.TIMESTAMP)
-    public Date getDateTime() {
+    public LocalDateTime getDateTime() {
         return dateTime;
     }
 
-    public void setDateTime(Date dateTime) {
+    public void setDateTime(LocalDateTime dateTime) {
         this.dateTime = dateTime;
     }
 

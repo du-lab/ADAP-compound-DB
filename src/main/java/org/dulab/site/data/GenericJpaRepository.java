@@ -58,7 +58,8 @@ public abstract class GenericJpaRepository<I extends Serializable, E extends Ser
             entityTransaction.commit();
         }
         catch (Exception e) {
-            entityTransaction.rollback();
+            if (entityTransaction.isActive())
+                entityTransaction.rollback();
             throw e;
         }
         finally {

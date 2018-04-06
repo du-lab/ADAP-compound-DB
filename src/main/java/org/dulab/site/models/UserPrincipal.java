@@ -21,14 +21,14 @@ public class UserPrincipal implements Principal, Cloneable, Serializable {
 
     private long id;
 
-    @NotBlank
+    @NotBlank(message = "The field Username is required.")
     private String username;
 
-    @NotBlank
+    @NotBlank(message = "The field Email is required.")
     @Email
     private String email;
 
-    @NotNull
+    @NotNull(message = "Hashed password is required.")
     private byte[] hashedPassword;
 
     @Id
