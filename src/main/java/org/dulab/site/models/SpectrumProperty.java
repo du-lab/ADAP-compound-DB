@@ -1,13 +1,22 @@
 package org.dulab.site.models;
 
 import javax.persistence.*;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Entity
 public class SpectrumProperty {
 
     private long id;
+
+    @NotNull(message = "SpectrumProperty requires to specify Spectrum.")
+    @Valid
     private Spectrum spectrum;
+
+    @NotBlank(message = "Spectrum property name is required.")
     private String name;
+
     private String value;
 
     @Id
@@ -20,7 +29,8 @@ public class SpectrumProperty {
         this.id = id;
     }
 
-    @ManyToOne
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "SpectrumId", referencedColumnName = "Id")
     public Spectrum getSpectrum() {
         return spectrum;
     }

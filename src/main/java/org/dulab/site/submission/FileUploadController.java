@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.site.models.ChromatographyType;
 import org.dulab.site.models.FileType;
+import org.dulab.site.models.Spectrum;
 import org.dulab.site.models.Submission;
 import org.dulab.site.services.FileReaderService;
 import org.dulab.site.services.MspFileReaderService;
@@ -90,6 +91,8 @@ public class FileUploadController {
         try {
             submission.setFile(file.getBytes());
             submission.setSpectra(service.read(file.getInputStream()));
+            for (Spectrum s : submission.getSpectra())
+                s.setSubmission(submission);
         }
         catch (IOException e) {
             LOG.warn(e);

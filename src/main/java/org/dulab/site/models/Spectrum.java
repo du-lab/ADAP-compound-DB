@@ -1,7 +1,9 @@
 package org.dulab.site.models;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -12,7 +14,14 @@ public class Spectrum implements Serializable {
     private String name = null;
 
     private long id;
+
+    @NotNull(message = "Spectrum requires to specify Submission.")
+    private Submission submission;
+
+    @NotNull(message = "Peak list is required.")
     private List<Peak> peaks;
+
+    @NotNull(message = "Property list is required.")
     private List<SpectrumProperty> properties;
 
     @Id
@@ -25,7 +34,21 @@ public class Spectrum implements Serializable {
         this.id = id;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "SubmissionId", referencedColumnName = "Id")
+    public Submission getSubmission() {
+        return submission;
+    }
+
+    public void setSubmission(Submission submission) {
+        this.submission = submission;
+    }
+
+    @OneToMany(
+            targetEntity = Peak.class,
+            mappedBy = "spectrum",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
     public List<Peak> getPeaks() {
         return peaks;
     }
@@ -34,21 +57,28 @@ public class Spectrum implements Serializable {
         double maxIntensity = peaks.stream()
                 .mapToDouble(Peak::getIntensity)
                 .max()
-                .orElseThrow(() -> new IllegalArgumentException("Peak list is empty"));
+                .orElse(Double.NaN);
+
+        if (Double.isNaN(maxIntensity)) return;
 
         for (Peak peak : peaks)
             peak.setIntensity(100 * peak.getIntensity() / maxIntensity);
 
-        this.peaks = peaks;
+        this.peaks = Collections.unmodifiableList(peaks);
+
     }
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(
+            targetEntity = SpectrumProperty.class,
+            mappedBy = "spectrum",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
     public List<SpectrumProperty> getProperties() {
         return properties;
     }
 
     public void setProperties(List<SpectrumProperty> properties) {
-        this.properties = properties;
+        this.properties = Collections.unmodifiableList(properties);
         for (SpectrumProperty property : properties)
             if (property.getName().equalsIgnoreCase("name"))
                 name = property.getValue();

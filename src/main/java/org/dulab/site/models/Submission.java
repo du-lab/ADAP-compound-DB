@@ -85,7 +85,12 @@ public class Submission implements Serializable {
         this.chromatographyType = chromatographyType;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(
+            targetEntity = Spectrum.class,
+            mappedBy = "submission",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL
+    )
     public List<Spectrum> getSpectra() {
         return spectra;
     }
@@ -94,8 +99,8 @@ public class Submission implements Serializable {
         this.spectra = spectra;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "userId")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "UserPrincipalId", referencedColumnName = "Id")
     public UserPrincipal getUser() {
         return user;
     }

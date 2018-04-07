@@ -8,6 +8,7 @@ import javax.servlet.http.HttpSession;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.security.Principal;
+import java.util.List;
 
 @Entity
 @Table(uniqueConstraints = {
@@ -30,6 +31,8 @@ public class UserPrincipal implements Principal, Cloneable, Serializable {
 
     @NotNull(message = "Hashed password is required.")
     private byte[] hashedPassword;
+
+    List<Submission> submissions;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -66,6 +69,20 @@ public class UserPrincipal implements Principal, Cloneable, Serializable {
 
     public void setHashedPassword(byte[] password) {
         this.hashedPassword = password;
+    }
+
+    @OneToMany(
+            targetEntity = Submission.class,
+            mappedBy = "user",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL
+    )
+    public List<Submission> getSubmissions() {
+        return submissions;
+    }
+
+    public void setSubmissions(List<Submission> submissions) {
+        this.submissions = submissions;
     }
 
     @Override

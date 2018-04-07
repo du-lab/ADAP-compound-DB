@@ -1,6 +1,10 @@
 package org.dulab.site.models;
 
+import org.hibernate.annotations.Fetch;
+
 import javax.persistence.*;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Entity
@@ -9,7 +13,11 @@ public class Peak implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private long id;
+
+    @NotNull(message = "Peak requires to specify Spectrum.")
+    @Valid
     private Spectrum spectrum;
+
     private double mz;
     private double intensity;
 
@@ -23,7 +31,8 @@ public class Peak implements Serializable {
         this.id = id;
     }
 
-    @ManyToOne
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "SpectrumId", referencedColumnName = "Id")
     public Spectrum getSpectrum() {
         return spectrum;
     }
