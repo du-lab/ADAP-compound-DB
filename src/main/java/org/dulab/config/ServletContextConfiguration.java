@@ -1,6 +1,5 @@
 package org.dulab.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -42,7 +41,7 @@ public class ServletContextConfiguration extends WebMvcConfigurerAdapter {
     @Bean
     public MultipartResolver multipartResolver() {
         CommonsMultipartResolver resolver = new CommonsMultipartResolver();
-        resolver.setMaxUploadSize(40 * 1024 * 1024);  // 40GB
+        resolver.setMaxUploadSize(4 * 1024 * 1024);  // 4MB
         return resolver;
     }
 

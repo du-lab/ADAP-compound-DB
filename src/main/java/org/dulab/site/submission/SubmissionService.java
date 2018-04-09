@@ -9,6 +9,8 @@ import javax.validation.constraints.NotNull;
 @Validated
 public interface SubmissionService {
 
+    Submission findSubmission(long submissionId);
+
     void saveSubmission(
             @NotNull(message = "The submission is required.")
             @Valid Submission submission);

@@ -15,6 +15,12 @@ public class DefaultSubmissionService implements SubmissionService {
 
     @Override
     @Transactional
+    public Submission findSubmission(long submissionId) {
+        return submissionRepository.get(submissionId);
+    }
+
+    @Override
+    @Transactional
     public void saveSubmission(Submission submission) {
         if (submission.getId() < 1)
             submissionRepository.add(submission);

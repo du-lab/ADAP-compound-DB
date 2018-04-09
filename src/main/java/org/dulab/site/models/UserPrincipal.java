@@ -117,11 +117,11 @@ public class UserPrincipal implements Principal, Cloneable, Serializable {
         return username;
     }
 
-    public static UserPrincipal getPrincipal(HttpSession session) {
+    public static UserPrincipal from(HttpSession session) {
         return session == null ? null : (UserPrincipal) session.getAttribute(SESSION_ATTRIBUTE_KEY);
     }
 
-    public static void setPrincipal(HttpSession session, Principal principal) {
+    public static void assign(HttpSession session, Principal principal) {
         session.setAttribute(SESSION_ATTRIBUTE_KEY, principal);
     }
 }

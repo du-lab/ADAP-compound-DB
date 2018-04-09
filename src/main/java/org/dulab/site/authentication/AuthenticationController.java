@@ -34,7 +34,7 @@ public class AuthenticationController {
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public ModelAndView login(Model model, HttpSession session) {
-        if (UserPrincipal.getPrincipal(session) != null)
+        if (UserPrincipal.from(session) != null)
             return getHomeRedirect();
 
         model.addAttribute("loginFailed", false);
@@ -47,7 +47,7 @@ public class AuthenticationController {
     public ModelAndView login(Model model, HttpSession session, HttpServletRequest request,
                               @Valid LogInForm form, Errors errors) {
 
-        if (UserPrincipal.getPrincipal(session) != null)
+        if (UserPrincipal.from(session) != null)
             return getHomeRedirect();
 
         if (errors.hasErrors()) {
@@ -72,7 +72,7 @@ public class AuthenticationController {
             return new ModelAndView("login");
         }
 
-        UserPrincipal.setPrincipal(session, principal);
+        UserPrincipal.assign(session, principal);
         request.changeSessionId();
         return getHomeRedirect();
     }
@@ -83,7 +83,7 @@ public class AuthenticationController {
 
     @RequestMapping(value = "/signup", method = RequestMethod.GET)
     public ModelAndView signup(Model model, HttpSession session) {
-        if (UserPrincipal.getPrincipal(session) != null)
+        if (UserPrincipal.from(session) != null)
             return getHomeRedirect();
 
         model.addAttribute("signupFailed", false);
@@ -95,7 +95,7 @@ public class AuthenticationController {
     @RequestMapping(value = "/signup", method = RequestMethod.POST)
     public ModelAndView signup(Model model, HttpSession session, HttpServletRequest request,
                                @Valid SignUpForm form, Errors errors) {
-        if (UserPrincipal.getPrincipal(session) != null)
+        if (UserPrincipal.from(session) != null)
             return getHomeRedirect();
 
         if (errors.hasErrors()) {
@@ -117,7 +117,7 @@ public class AuthenticationController {
             return new ModelAndView("signup");
         }
 
-        UserPrincipal.setPrincipal(session, principal);
+        UserPrincipal.assign(session, principal);
         request.changeSessionId();
         return getHomeRedirect();
     }

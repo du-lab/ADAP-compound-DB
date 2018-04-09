@@ -28,7 +28,7 @@ public class Submission implements Serializable {
     private String description;
 
     @NotNull(message = "Date/Time of submission is required.")
-    private LocalDateTime dateTime;
+    private Date dateTime;
 
     @NotBlank(message = "Filename of the raw file is required.")
     private String filename;
@@ -110,11 +110,11 @@ public class Submission implements Serializable {
     }
 
     @Temporal(TemporalType.TIMESTAMP)
-    public LocalDateTime getDateTime() {
+    public Date getDateTime() {
         return dateTime;
     }
 
-    public void setDateTime(LocalDateTime dateTime) {
+    public void setDateTime(Date dateTime) {
         this.dateTime = dateTime;
     }
 
@@ -142,11 +142,11 @@ public class Submission implements Serializable {
         this.file = file;
     }
 
-    public static Submission get(HttpSession session) {
+    public static Submission from(HttpSession session) {
         return session == null ? null : (Submission) session.getAttribute(SESSION_ATTRIBUTE_KEY);
     }
 
-    public static void set(HttpSession session, Submission submission) {
+    public static void assign(HttpSession session, Submission submission) {
         session.setAttribute(SESSION_ATTRIBUTE_KEY, submission);
     }
 }

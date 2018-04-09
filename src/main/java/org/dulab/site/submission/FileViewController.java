@@ -6,7 +6,6 @@ import org.dulab.site.models.Submission;
 import org.dulab.site.models.UserPrincipal;
 import org.dulab.site.validation.ContainsSubmission;
 import org.dulab.site.validation.NotBlank;
-import org.eclipse.persistence.jpa.jpql.parser.SumFunction;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -19,7 +18,7 @@ import javax.servlet.http.HttpSession;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -37,16 +36,25 @@ public class FileViewController {
         return "file/view";
     }
 
+    @RequestMapping(value = "file/view/{submissionId:\\d+}", method = RequestMethod.GET)
+    public String viewSubmission(Model model, @PathVariable("submissionId") long submissionId) {
+        Submission submission = submissionService.findSubmission(submissionId);
+        if (submission == null)
+            return "file/submissionnotfound";
+        model.addAttribute("submission", submission);
+        return "file/view";
+    }
+
     @RequestMapping(value = "file/view", method = RequestMethod.POST)
     public String submit(@ContainsSubmission HttpSession session, Model model, @Valid Form form, Errors errors) {
         if (errors.hasErrors())
             return "file/view";
 
-        Submission submission = Submission.get(session);
+        Submission submission = Submission.from(session);
         submission.setName(form.getName());
         submission.setDescription(form.getDescription());
-        submission.setDateTime(LocalDateTime.now());
-        submission.setUser(UserPrincipal.getPrincipal(session));
+        submission.setDateTime(new Date());
+        submission.setUser(UserPrincipal.from(session));
 
         try {
             submissionService.saveSubmission(submission);
@@ -63,7 +71,7 @@ public class FileViewController {
     @RequestMapping(value = "file/raw/view", method = RequestMethod.GET)
     public void rawView(@ContainsSubmission HttpSession session, HttpServletResponse response) throws IOException {
 
-        Submission submission = Submission.get(session);
+        Submission submission = Submission.from(session);
         response.setContentType("text/plain");
         response.setHeader("Content-Disposition", "inline; filename=\"" + submission.getFilename() + "\"");
         response.getOutputStream().write(submission.getFile());
@@ -72,7 +80,7 @@ public class FileViewController {
     @RequestMapping(value = "file/raw/download", method = RequestMethod.GET)
     public void rawDownload(@ContainsSubmission HttpSession session, HttpServletResponse response) throws IOException {
 
-        Submission submission = Submission.get(session);
+        Submission submission = Submission.from(session);
         response.setContentType("text/plain");
         response.setHeader("Content-Disposition", "attachment; filename=\"" + submission.getFilename() + "\"");
         response.getOutputStream().write(submission.getFile());
@@ -83,7 +91,7 @@ public class FileViewController {
                            Model model,
                            @ContainsSubmission HttpSession session) {
 
-        Submission submission = Submission.get(session);
+        Submission submission = Submission.from(session);
         Spectrum spectrum = submission.getSpectra().get(spectrumId);
 
         model.addAttribute("name", spectrum.toString());

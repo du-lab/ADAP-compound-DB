@@ -66,7 +66,7 @@ public class FileController {
 //
 //        @SuppressWarnings("unchecked")
 //        List<Spectrum> spectrumList = (List<Spectrum>) session.getAttribute("spectrumList");
-//        Spectrum spectrum = spectrumList.get(spectrumId);
+//        Spectrum spectrum = spectrumList.from(spectrumId);
 //
 //        model.addAttribute("name", spectrum.toString());
 //        model.addAttribute("properties", spectrum.getProperties());
@@ -77,9 +77,9 @@ public class FileController {
 //        for (int i = 0; i < peaks.size(); ++i) {
 //            if (i != 0) stringBuilder.append(',');
 //            stringBuilder.append('[')
-//                    .append(peaks.get(i).getMz())
+//                    .append(peaks.from(i).getMz())
 //                    .append(',')
-//                    .append(peaks.get(i).getIntensity())
+//                    .append(peaks.from(i).getIntensity())
 //                    .append(']');
 //        }
 //        stringBuilder.append(']');
