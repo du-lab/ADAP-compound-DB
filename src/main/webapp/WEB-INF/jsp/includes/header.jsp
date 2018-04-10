@@ -4,6 +4,7 @@
 <head>
     <title>ADAP Compound Library</title>
     <link rel="stylesheet" href="<c:url value="/resources/css/main.css"/>">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 </head>
 <body>
 

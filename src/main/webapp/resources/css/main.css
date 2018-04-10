@@ -148,7 +148,13 @@ section a {
     color: #844d36;
 }
 
-section a:hover {text-decoration: underline;}
+section a:hover {
+    text-decoration: underline;
+}
+
+section a > i.material-icons {color: #8e8268;}
+
+section a > i.material-icons:hover {color: #844d36;}
 
 section a.button {
     display: inline-block;

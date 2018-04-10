@@ -22,6 +22,7 @@
                 <th>Time</th>
                 <th>Name</th>
                 <th>Description</th>
+                <th></th>
             </tr>
             <c:forEach items="${user.submissions}" var="submission">
                 <tr>
@@ -32,6 +33,13 @@
                         <a href="/file/view/${submission.id}">${submission.name}</a>
                     </td>
                     <td>${dulab:abbreviateString(submission.description, 80)}</td>
+                    <td>
+                        <!-- mode edit -->
+                        <a href="/file/view/${submission.id}"><i class="material-icons">&#xE254</i></a>
+
+                        <!-- delete -->
+                        <a href="/file/view/${submission.id}/delete"><i class="material-icons">&#xE872</i></a>
+                    </td>
                 </tr>
             </c:forEach>
         </table>
