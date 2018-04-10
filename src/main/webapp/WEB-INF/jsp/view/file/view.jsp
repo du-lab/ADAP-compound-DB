@@ -12,8 +12,10 @@
 <section>
     <h1>File content</h1>
     <div align="right" style="float: right">
-        <p><a href="raw/download" class="button" target="_blank">Download file</a></p>
-        <p><a href="raw/view" class="button" target="_blank">View file</a></p>
+        <p><a href="<c:url value="/file/view/${submission.id}/download"/>" class="button" target="_blank">
+            Download file</a></p>
+        <p><a href="<c:url value="/file/view/${submission.id}/view"/>" class="button" target="_blank">
+            View file</a></p>
     </div>
     <p>Filename: <span class="highlighted">${submission.filename}</span></p>
     <p>File Type: <span class="highlighted">${submission.fileType.label}</span></p>
@@ -33,18 +35,30 @@
                 <th>Name</th>
                 <th>Properties</th>
             </tr>
-            <c:forEach var="i" begin="0" end="${submission.spectra.size() - 1}">
-                <tr>
-                    <td>${i + 1}</td>
-                    <td>
-                        <a href="<c:url value="/file/${i}"/>">${submission.spectra[i]}</a>
-                    </td>
-                    <td>${dulab:abbreviateString(submission.spectra[i].properties, 80)}</td>
-                </tr>
-            </c:forEach>
+            <c:if test="${submission.spectra.size() > 0}">
+                <c:forEach var="i" begin="0" end="${submission.spectra.size() - 1}">
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td>
+                            <a href="<c:url value="/file/view/${submission.id}/${i}"/>">
+                                    ${submission.spectra[i]}</a>
+                        </td>
+                        <td>${dulab:abbreviateString(submission.spectra[i].properties, 80)}</td>
+                    </tr>
+                </c:forEach>
+            </c:if>
         </table>
     </div>
 </section>
+
+        <%--<section>--%>
+            <%--<h1>Submitted By</h1>--%>
+            <%--<div align="center">--%>
+                    <%--${submission.user.username} (<a href="mailto:${submission.user.email}" target="_top">--%>
+                    <%--${submission.user.email}--%>
+            <%--</a>)--%>
+            <%--</div>--%>
+        <%--</section>--%>
 
 <section>
     <h1>Submit</h1>
@@ -79,13 +93,15 @@
                 <form:errors path="description" cssClass="errors"/><br/>
 
                 <div align="center">
-                    <input type="submit" value="Submit"/>
+                    <input type="submit" value="<c:choose>
+                        <c:when test="${submission.id > 0}">Save</c:when>
+                        <c:otherwise>Submit</c:otherwise>
+                    </c:choose>"/>
                 </div>
-        </form:form>
+            </form:form>
         </div>
     </div>
 </section>
-
 
 <!-- End the middle column -->
 

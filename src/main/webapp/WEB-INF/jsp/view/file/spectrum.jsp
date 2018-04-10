@@ -6,7 +6,7 @@
 
 <section class="transparent">
     <div align="right">
-        <a href="<c:url value="/file"/>" class="button">Back to file</a>
+        <a href="<c:url value="${header.referer}"/>" class="button">Back to file</a>
     </div>
 </section>
 
@@ -31,7 +31,7 @@
 
 <section class="transparent">
     <div align="right">
-        <a href="<c:url value="/file"/>" class="button">Back to file</a>
+        <a href="<c:url value="${header.referer}"/>" class="button">Back to file</a>
     </div>
 </section>
 

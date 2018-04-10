@@ -142,11 +142,20 @@ public class Submission implements Serializable {
         this.file = file;
     }
 
+    @Override
+    public int hashCode() {
+        return Long.hashCode(id);
+    }
+
     public static Submission from(HttpSession session) {
         return session == null ? null : (Submission) session.getAttribute(SESSION_ATTRIBUTE_KEY);
     }
 
     public static void assign(HttpSession session, Submission submission) {
         session.setAttribute(SESSION_ATTRIBUTE_KEY, submission);
+    }
+
+    public static void clear(HttpSession session) {
+        session.removeAttribute(SESSION_ATTRIBUTE_KEY);
     }
 }

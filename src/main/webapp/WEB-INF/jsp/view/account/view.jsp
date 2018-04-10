@@ -29,7 +29,7 @@
                     <td><fmt:formatDate value="${submission.dateTime}" type="DATE" dateStyle="FULL"/></td>
                     <td><fmt:formatDate value="${submission.dateTime}" type="TIME"/></td>
                     <td>
-                        <a href="/submission/view/${submission.id}">${submission.name}</a>
+                        <a href="/file/view/${submission.id}">${submission.name}</a>
                     </td>
                     <td>${dulab:abbreviateString(submission.description, 80)}</td>
                 </tr>

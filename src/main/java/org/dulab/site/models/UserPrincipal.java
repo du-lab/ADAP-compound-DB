@@ -32,7 +32,7 @@ public class UserPrincipal implements Principal, Cloneable, Serializable {
     @NotNull(message = "Hashed password is required.")
     private byte[] hashedPassword;
 
-    List<Submission> submissions;
+    private List<Submission> submissions;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
