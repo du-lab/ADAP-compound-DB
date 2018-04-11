@@ -68,4 +68,10 @@ public class DefaultAuthenticationService implements AuthenticationService {
         else
             userPrincipalRepository.update(principal);
     }
+
+    @Override
+    @Transactional
+    public UserPrincipal findUser(long id) {
+        return userPrincipalRepository.get(id);
+    }
 }

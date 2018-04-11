@@ -81,8 +81,12 @@ public abstract class GenericJpaRepository<I extends Serializable, E extends Ser
     @Override
     public void delete(E entity) {
         EntityManager entityManager = DBUtil.getEmFactory().createEntityManager();
+        EntityTransaction entityTransaction = entityManager.getTransaction();
         try {
-            entityManager.remove(entity);
+            entityTransaction.begin();
+            entityManager.remove(entityManager.merge(entity));
+            entityManager.flush();
+            entityTransaction.commit();
         }
         finally {
             entityManager.close();
@@ -92,7 +96,9 @@ public abstract class GenericJpaRepository<I extends Serializable, E extends Ser
     @Override
     public void deleteById(I id) {
         EntityManager entityManager = DBUtil.getEmFactory().createEntityManager();
+        EntityTransaction entityTransaction = entityManager.getTransaction();
         try {
+            entityTransaction.begin();
             CriteriaBuilder builder = entityManager.getCriteriaBuilder();
             CriteriaDelete<E> query = builder.createCriteriaDelete(entityClass);
             entityManager.createQuery(
@@ -100,6 +106,7 @@ public abstract class GenericJpaRepository<I extends Serializable, E extends Ser
                             builder.equal(
                                     query.from(entityClass).get("id"), id)))
                     .executeUpdate();
+            entityTransaction.commit();
         }
         finally {
             entityManager.close();

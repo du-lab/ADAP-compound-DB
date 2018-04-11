@@ -106,7 +106,7 @@ public class FileUploadController {
         }
 
         Submission.assign(session, submission);
-        return new ModelAndView(new RedirectView("/file/view", true, false));
+        return new ModelAndView(new RedirectView("/submission/", true, false));
     }
 
     private static class Form {

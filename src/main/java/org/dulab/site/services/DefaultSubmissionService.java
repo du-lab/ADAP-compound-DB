@@ -33,4 +33,11 @@ public class DefaultSubmissionService implements SubmissionService {
         else
             submissionRepository.update(submission);
     }
+
+    @Override
+    @Transactional
+    public void deleteSubmission(Submission submission) {
+        submissionRepository.delete(submission);
+
+    }
 }

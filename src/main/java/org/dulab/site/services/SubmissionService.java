@@ -14,4 +14,6 @@ public interface SubmissionService {
     void saveSubmission(
             @NotNull(message = "The submission is required.")
             @Valid Submission submission);
+
+    void deleteSubmission(Submission submission);
 }

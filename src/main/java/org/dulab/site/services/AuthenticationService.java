@@ -15,6 +15,8 @@ public interface AuthenticationService {
             @NotBlank(message = "The username is required.") String username,
             @NotBlank(message = "The password is required.") String password);
 
+    UserPrincipal findUser(long id);
+
     void saveUser(
             @NotNull(message = "The user principal is required.") @Valid UserPrincipal principal,
             @Password(message = "Please match the requested format.") String password);

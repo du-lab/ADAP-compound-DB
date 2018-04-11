@@ -16,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.ConstraintViolationException;
@@ -65,7 +66,7 @@ public class SubmissionController {
                                @Valid Form form, Errors errors) {
 
         if (errors.hasErrors())
-            return new ModelAndView("file/view");
+            return new ModelAndView("");
 
         Submission submission = getSubmission(submissionId, session);
         submission.setName(form.getName());
@@ -78,12 +79,12 @@ public class SubmissionController {
         }
         catch (ConstraintViolationException e) {
             model.addAttribute("validationErrors", e.getConstraintViolations());
-            return new ModelAndView("file/view");
+            return new ModelAndView("");
         }
 
         model.addAttribute("message", "Mass spectra are submitted successfully.");
         Submission.clear(session);
-        return new ModelAndView(new RedirectView(submission.getId() + "/"));
+        return new ModelAndView(new RedirectView("/submission/" + submission.getId() + "/", true));
     }
 
     @RequestMapping(value = "{submissionId:\\d+}/fileview/", method = RequestMethod.GET)
@@ -106,6 +107,16 @@ public class SubmissionController {
         response.getOutputStream().write(submission.getFile());
     }
 
+    @RequestMapping(value = "{submissionId:\\d+}/delete/")
+    public View delete(HttpServletRequest request, @PathVariable("submissionId") long id) {
+
+        Submission submission = submissionService.findSubmission(id);
+
+        submissionService.deleteSubmission(submission);
+        submission.getUser().getSubmissions().remove(submission);
+        return new RedirectView("/account/", true);
+    }
+
     @RequestMapping(value = "{submissionId:\\d+}/{spectrumId:\\d+}/", method = RequestMethod.GET)
     public String spectrum(@PathVariable("submissionId") long submissionId,
                            @PathVariable("spectrumId") int spectrumId,
@@ -123,7 +134,7 @@ public class SubmissionController {
     }
 
 
-    @RequestMapping(value = "file/view/{submissionId:\\d+}/{spectrumId:\\d+}/match/", method = RequestMethod.GET)
+    @RequestMapping(value = "{submissionId:\\d+}/{spectrumId:\\d+}/match/", method = RequestMethod.GET)
     public String match(@PathVariable("submissionId") long submissionId,
                         @PathVariable("spectrumId") int spectrumId,
                         HttpSession session,
