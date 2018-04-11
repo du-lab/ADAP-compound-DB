@@ -13,6 +13,7 @@
 <section>
     <h1>Spectrum properties</h1>
     <div align="center">
+        <p>${name}</p>
         <table>
             <c:forEach var="e" items="${properties}">
                 <tr>
@@ -29,13 +30,21 @@
     <div id="chartDiv" align="center"></div>
 </section>
 
+<section>
+    <h1>Search</h1>
+    <p>Search library for similar spectra</p>
+    <div align="center">
+        <a href="match/">Search</a>
+    </div>
+
+</section>
+
 <section class="transparent">
     <div align="right">
         <a href="<c:url value="${header.referer}"/>" class="button">Back to file</a>
     </div>
 </section>
 
-<%--<script src="https://cdn.zingchart.com/zingchart.min.js"></script>--%>
 <script src="<c:url value="/resources/js/zingchart/zingchart.min.js"/>"></script>
 <script type="text/javascript" src="<c:url value="/resources/js/spectrum.js"/>"></script>
 <script>

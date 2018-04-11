@@ -1,5 +1,5 @@
-<%--@elvariable id="submission" type="org.dulab.site.models.Submission"--%>
-<%--@elvariable id="form" type="org.dulab.site.submission.FileViewController.Form"--%>
+<%--@elvariable id="submission" type="org.dulab.models.Submission"--%>
+<%--@elvariable id="form" type="org.dulab.site.controllers.SubmissionController.Form"--%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
@@ -12,9 +12,9 @@
 <section>
     <h1>File content</h1>
     <div align="right" style="float: right">
-        <p><a href="<c:url value="/file/view/${submission.id}/download"/>" class="button" target="_blank">
+        <p><a href="filedownload/" class="button" target="_blank">
             Download file</a></p>
-        <p><a href="<c:url value="/file/view/${submission.id}/view"/>" class="button" target="_blank">
+        <p><a href="fileview/" class="button" target="_blank">
             View file</a></p>
     </div>
     <p>Filename: <span class="highlighted">${submission.filename}</span></p>
@@ -39,10 +39,7 @@
                 <c:forEach var="i" begin="0" end="${submission.spectra.size() - 1}">
                     <tr>
                         <td>${i + 1}</td>
-                        <td>
-                            <a href="<c:url value="/file/view/${submission.id}/${i}"/>">
-                                    ${submission.spectra[i]}</a>
-                        </td>
+                        <td><a href="${i}/">${submission.spectra[i]}</a></td>
                         <td>${dulab:abbreviateString(submission.spectra[i].properties, 80)}</td>
                     </tr>
                 </c:forEach>

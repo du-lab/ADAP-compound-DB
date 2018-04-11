@@ -1,8 +1,8 @@
 package org.dulab.site.services;
 
-import org.dulab.site.authentication.DefaultUserPrincipalRepository;
-import org.dulab.site.authentication.UserPrincipalRepository;
-import org.dulab.site.models.UserPrincipal;
+import org.dulab.site.repositories.DefaultUserPrincipalRepository;
+import org.dulab.site.repositories.UserPrincipalRepository;
+import org.dulab.models.UserPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

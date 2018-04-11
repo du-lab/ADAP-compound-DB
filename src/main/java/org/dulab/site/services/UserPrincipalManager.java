@@ -1,6 +1,6 @@
 package org.dulab.site.services;
 
-import org.dulab.site.models.UserPrincipal;
+import org.dulab.models.UserPrincipal;
 
 import java.util.List;
 

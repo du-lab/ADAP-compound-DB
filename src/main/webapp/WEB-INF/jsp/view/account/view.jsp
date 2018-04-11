@@ -30,15 +30,15 @@
                     <td><fmt:formatDate value="${submission.dateTime}" type="DATE" dateStyle="FULL"/></td>
                     <td><fmt:formatDate value="${submission.dateTime}" type="TIME"/></td>
                     <td>
-                        <a href="/file/view/${submission.id}">${submission.name}</a>
+                        <a href="/submission/${submission.id}/">${submission.name}</a>
                     </td>
                     <td>${dulab:abbreviateString(submission.description, 80)}</td>
                     <td>
                         <!-- mode edit -->
-                        <a href="/file/view/${submission.id}"><i class="material-icons">&#xE254</i></a>
+                        <a href="/submission/${submission.id}/"><i class="material-icons">&#xE254</i></a>
 
                         <!-- delete -->
-                        <a href="/file/view/${submission.id}/delete"><i class="material-icons">&#xE872</i></a>
+                        <a href="/submission/${submission.id}/delete/"><i class="material-icons">&#xE872</i></a>
                     </td>
                 </tr>
             </c:forEach>
