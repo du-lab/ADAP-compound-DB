@@ -3,7 +3,7 @@ package org.dulab.site.services;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.models.UserPrincipal;
-import org.dulab.site.repositories.DefaultUserPrincipalRepository;
+import org.dulab.site.repositories.UserPrincipalRepositoryImpl;
 import org.dulab.site.repositories.UserPrincipalRepository;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
@@ -32,7 +32,7 @@ public class DefaultAuthenticationService implements AuthenticationService {
     private UserPrincipalRepository userPrincipalRepository;
 
     public DefaultAuthenticationService() {
-        userPrincipalRepository = new DefaultUserPrincipalRepository();
+        userPrincipalRepository = new UserPrincipalRepositoryImpl();
     }
 
     @Override

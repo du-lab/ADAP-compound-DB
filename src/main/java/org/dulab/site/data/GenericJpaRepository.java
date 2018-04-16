@@ -70,8 +70,11 @@ public abstract class GenericJpaRepository<I extends Serializable, E extends Ser
     @Override
     public void update(E entity) {
         EntityManager entityManager = DBUtil.getEmFactory().createEntityManager();
+        EntityTransaction entityTransaction = entityManager.getTransaction();
         try {
+            entityTransaction.begin();
             entityManager.merge(entity);
+            entityTransaction.commit();
         }
         finally {
             entityManager.close();
@@ -85,7 +88,6 @@ public abstract class GenericJpaRepository<I extends Serializable, E extends Ser
         try {
             entityTransaction.begin();
             entityManager.remove(entityManager.merge(entity));
-            entityManager.flush();
             entityTransaction.commit();
         }
         finally {

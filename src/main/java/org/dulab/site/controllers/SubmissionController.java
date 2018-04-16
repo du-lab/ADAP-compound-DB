@@ -1,10 +1,7 @@
 package org.dulab.site.controllers;
 
 import org.dulab.models.*;
-import org.dulab.site.services.DefaultSpectrumService;
-import org.dulab.site.services.SpectrumService;
-import org.dulab.site.services.DefaultSubmissionService;
-import org.dulab.site.services.SubmissionService;
+import org.dulab.site.services.*;
 import org.dulab.validation.NotBlank;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,10 +28,12 @@ public class SubmissionController {
 
     private SubmissionService submissionService;
     private SpectrumService spectrumService;
+    private UserPrincipalService userPrincipalService;
 
     public SubmissionController() {
-        submissionService = new DefaultSubmissionService();
+        submissionService = new SubmissionServiceImpl();
         spectrumService = new DefaultSpectrumService();
+        userPrincipalService = new UserPrincipalServiceImpl();
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET)
@@ -111,9 +110,8 @@ public class SubmissionController {
     public View delete(HttpServletRequest request, @PathVariable("submissionId") long id) {
 
         Submission submission = submissionService.findSubmission(id);
-
         submissionService.deleteSubmission(submission);
-        submission.getUser().getSubmissions().remove(submission);
+//        submission.getUser().getSubmissions().remove(submission);
         return new RedirectView("/account/", true);
     }
 

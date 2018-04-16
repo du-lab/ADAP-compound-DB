@@ -24,7 +24,7 @@
                 <th>Description</th>
                 <th></th>
             </tr>
-            <c:forEach items="${user.submissions}" var="submission">
+            <c:forEach items="${submissions}" var="submission">
                 <tr>
                     <td>${submission.id}</td>
                     <td><fmt:formatDate value="${submission.dateTime}" type="DATE" dateStyle="FULL"/></td>

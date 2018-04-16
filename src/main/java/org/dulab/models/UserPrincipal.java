@@ -8,6 +8,7 @@ import javax.servlet.http.HttpSession;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -32,7 +33,7 @@ public class UserPrincipal implements Principal, Cloneable, Serializable {
     @NotNull(message = "Hashed password is required.")
     private byte[] hashedPassword;
 
-    private List<Submission> submissions;
+//    private List<Submission> submissions;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -71,19 +72,33 @@ public class UserPrincipal implements Principal, Cloneable, Serializable {
         this.hashedPassword = password;
     }
 
-    @OneToMany(
-            targetEntity = Submission.class,
-            mappedBy = "user",
-            fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL
-    )
-    public List<Submission> getSubmissions() {
-        return submissions;
-    }
-
-    public void setSubmissions(List<Submission> submissions) {
-        this.submissions = submissions;
-    }
+//    @OneToMany(
+//            targetEntity = Submission.class,
+//            mappedBy = "user",
+//            cascade = CascadeType.ALL,
+//            orphanRemoval = true
+//    )
+//    public List<Submission> getSubmissions() {
+//        return submissions;
+//    }
+//
+//    public void setSubmissions(List<Submission> submissions) {
+//        this.submissions = submissions;
+//    }
+//
+//    public void addSubmission(Submission submission) {
+//        if (submissions == null)
+//            submissions = new ArrayList<>();
+//
+//        submissions.add(submission);
+//        submission.setUser(this);
+//    }
+//
+//    public void removeSubmission(Submission submission) {
+//        if (submissions != null)
+//            submissions.remove(submission);
+//        submission.setUser(null);
+//    }
 
     @Override
     @Transient

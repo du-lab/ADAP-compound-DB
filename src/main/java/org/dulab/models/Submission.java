@@ -97,7 +97,7 @@ public class Submission implements Serializable {
         this.spectra = spectra;
     }
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "UserPrincipalId", referencedColumnName = "Id")
     public UserPrincipal getUser() {
         return user;
@@ -138,6 +138,13 @@ public class Submission implements Serializable {
 
     public void setFile(byte[] file) {
         this.file = file;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (!(other instanceof Submission)) return false;
+        return id == ((Submission) other).id;
     }
 
     @Override

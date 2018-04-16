@@ -6,11 +6,12 @@ import org.dulab.site.data.DBUtil;
 import org.dulab.site.data.GenericJpaRepository;
 import org.dulab.models.Hit;
 import org.dulab.models.Spectrum;
+import org.hibernate.Session;
+import org.hibernate.type.StandardBasicTypes;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
+import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,9 +29,9 @@ public class DefaultSpectrumRepository extends GenericJpaRepository<Long, Spectr
 
         EntityManager entityManager = DBUtil.getEmFactory().createEntityManager();
         try {
-            StringBuilder builder = new StringBuilder();
-            builder.append("SELECT SpectrumId, SUM(Score) AS Score FROM (\n");
-            builder.append(querySpectrum.getPeaks()
+            StringBuilder sqlBuilder = new StringBuilder();
+            sqlBuilder.append("SELECT SpectrumId, SUM(Score) AS Score FROM (\n");
+            sqlBuilder.append(querySpectrum.getPeaks()
                     .stream()
                     .map(p -> "SELECT SpectrumId, Intensity * "
                             + p.getIntensity()
@@ -38,12 +39,20 @@ public class DefaultSpectrumRepository extends GenericJpaRepository<Long, Spectr
                             + p.getMz()
                             + ") < 0.1\n")
                     .collect(Collectors.joining("\nUNION\n")));
-            builder.append(") AS Result\n GROUP BY SpectrumId\n ORDER BY Score DESC\n LIMIT 10;");
+            sqlBuilder.append(") AS Result\n GROUP BY SpectrumId\n ORDER BY Score DESC\n LIMIT 10;");
 
-
-            List resultList = entityManager
-                    .createNativeQuery(builder.toString())
+            List<Object[]> resultList = entityManager
+                    .createNativeQuery(sqlBuilder.toString())
                     .getResultList();
+
+            List<Hit> hitList = new ArrayList<>();
+            for (Object[] objects : resultList) {
+
+                Hit hit = new Hit();
+                hit.setSpectrum(get(Long.valueOf(objects[0].toString())));
+                hit.setScore((Double) objects[1]);
+                hitList.add(hit);
+            }
 
             System.out.println();
 
