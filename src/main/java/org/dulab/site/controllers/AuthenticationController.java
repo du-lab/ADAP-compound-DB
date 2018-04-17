@@ -7,6 +7,7 @@ import org.dulab.validation.Email;
 import org.dulab.validation.FieldMatch;
 import org.dulab.validation.NotBlank;
 import org.dulab.validation.Password;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -24,10 +25,11 @@ import java.security.Principal;
 @Controller
 public class AuthenticationController {
 
-    private AuthenticationService authenticationService;
+    private final AuthenticationService authenticationService;
 
-    public AuthenticationController() {
-        authenticationService = new DefaultAuthenticationService();
+    @Autowired
+    public AuthenticationController(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
     }
 
     /****************

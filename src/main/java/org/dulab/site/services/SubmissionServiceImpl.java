@@ -3,6 +3,7 @@ package org.dulab.site.services;
 import org.dulab.models.Submission;
 import org.dulab.site.repositories.SubmissionRepositoryImpl;
 import org.dulab.site.repositories.SubmissionRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,10 +12,11 @@ import java.util.List;
 @Service
 public class SubmissionServiceImpl implements SubmissionService {
 
-    private SubmissionRepository submissionRepository;
+    private final SubmissionRepository submissionRepository;
 
-    public SubmissionServiceImpl() {
-        submissionRepository = new SubmissionRepositoryImpl();
+    @Autowired
+    public SubmissionServiceImpl(SubmissionRepository submissionRepository) {
+        this.submissionRepository = submissionRepository;
     }
 
     @Override

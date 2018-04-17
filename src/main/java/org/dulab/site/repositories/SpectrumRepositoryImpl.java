@@ -6,8 +6,6 @@ import org.dulab.site.data.DBUtil;
 import org.dulab.site.data.GenericJpaRepository;
 import org.dulab.models.Hit;
 import org.dulab.models.Spectrum;
-import org.hibernate.Session;
-import org.hibernate.type.StandardBasicTypes;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.*;
@@ -16,11 +14,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Repository
-public class DefaultSpectrumRepository extends GenericJpaRepository<Long, Spectrum> implements SpectrumRepository {
+public class SpectrumRepositoryImpl extends GenericJpaRepository<Long, Spectrum> implements SpectrumRepository {
 
     private static final Logger LOG = LogManager.getLogger();
 
-    public DefaultSpectrumRepository() {
+    public SpectrumRepositoryImpl() {
         super(Long.class, Spectrum.class);
     }
 
@@ -41,18 +39,18 @@ public class DefaultSpectrumRepository extends GenericJpaRepository<Long, Spectr
                     .collect(Collectors.joining("\nUNION\n")));
             sqlBuilder.append(") AS Result\n GROUP BY SpectrumId\n ORDER BY Score DESC\n LIMIT 10;");
 
-            List<Object[]> resultList = entityManager
-                    .createNativeQuery(sqlBuilder.toString())
+            List resultList = entityManager
+                    .createNativeQuery(sqlBuilder.toString(), "SpectrumScoreMapping")
                     .getResultList();
 
-            List<Hit> hitList = new ArrayList<>();
-            for (Object[] objects : resultList) {
-
-                Hit hit = new Hit();
-                hit.setSpectrum(get(Long.valueOf(objects[0].toString())));
-                hit.setScore((Double) objects[1]);
-                hitList.add(hit);
-            }
+//            List<Hit> hitList = new ArrayList<>();
+//            for (Object[] objects : resultList) {
+//
+//                Hit hit = new Hit();
+//                hit.setSpectrum(get(Long.valueOf(objects[0].toString())));
+//                hit.setScore((Double) objects[1]);
+//                hitList.add(hit);
+//            }
 
             System.out.println();
 

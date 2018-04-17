@@ -15,103 +15,52 @@ public abstract class GenericJpaRepository<I extends Serializable, E extends Ser
 
     private static final Logger LOG = LogManager.getLogger();
 
+    @PersistenceContext
+    protected EntityManager entityManager;
+
     public GenericJpaRepository(Class<I> idClass, Class<E> entityClass) {
         super(idClass, entityClass);
     }
 
     @Override
     public Iterable<E> getAll() {
-        EntityManager entityManager = DBUtil.getEmFactory().createEntityManager();
-        try {
-            CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-            CriteriaQuery<E> query = builder.createQuery(entityClass);
-            return entityManager
-                    .createQuery(
-                            query.select(
-                                    query.from(entityClass)))
-                    .getResultList();
-        }
-        finally {
-            entityManager.close();
-        }
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<E> query = builder.createQuery(entityClass);
+        return entityManager
+                .createQuery(
+                        query.select(
+                                query.from(entityClass)))
+                .getResultList();
     }
 
     @Override
     public E get(I id) {
-        EntityManager entityManager = DBUtil.getEmFactory().createEntityManager();
-        try {
-            return entityManager.find(entityClass, id);
-        }
-        finally {
-            entityManager.close();
-        }
+        return entityManager.find(entityClass, id);
     }
 
     @Override
-    public void add(E entity) throws ConstraintViolationException {
-
-        EntityManager entityManager = DBUtil.getEmFactory().createEntityManager();
-        EntityTransaction entityTransaction = entityManager.getTransaction();
-        try {
-            entityTransaction.begin();
-            entityManager.persist(entity);
-            entityTransaction.commit();
-        }
-        catch (Exception e) {
-            if (entityTransaction.isActive())
-                entityTransaction.rollback();
-            throw e;
-        }
-        finally {
-            entityManager.close();
-        }
+    public void add(E entity){
+        entityManager.persist(entity);
     }
 
     @Override
     public void update(E entity) {
-        EntityManager entityManager = DBUtil.getEmFactory().createEntityManager();
-        EntityTransaction entityTransaction = entityManager.getTransaction();
-        try {
-            entityTransaction.begin();
-            entityManager.merge(entity);
-            entityTransaction.commit();
-        }
-        finally {
-            entityManager.close();
-        }
+        entityManager.merge(entity);
     }
 
     @Override
     public void delete(E entity) {
-        EntityManager entityManager = DBUtil.getEmFactory().createEntityManager();
-        EntityTransaction entityTransaction = entityManager.getTransaction();
-        try {
-            entityTransaction.begin();
-            entityManager.remove(entityManager.merge(entity));
-            entityTransaction.commit();
-        }
-        finally {
-            entityManager.close();
-        }
+        entityManager.remove(entityManager.merge(entity));
     }
 
     @Override
     public void deleteById(I id) {
-        EntityManager entityManager = DBUtil.getEmFactory().createEntityManager();
-        EntityTransaction entityTransaction = entityManager.getTransaction();
-        try {
-            entityTransaction.begin();
-            CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-            CriteriaDelete<E> query = builder.createCriteriaDelete(entityClass);
-            entityManager.createQuery(
-                    query.where(
-                            builder.equal(
-                                    query.from(entityClass).get("id"), id)))
-                    .executeUpdate();
-            entityTransaction.commit();
-        }
-        finally {
-            entityManager.close();
-        }
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaDelete<E> query = builder.createCriteriaDelete(entityClass);
+        entityManager.createQuery(
+                query.where(
+                        builder.equal(
+                                query.from(entityClass).get("id"), id)))
+                .executeUpdate();
     }
 }

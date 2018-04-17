@@ -23,8 +23,6 @@ public class UserPrincipalRepositoryImpl extends GenericJpaRepository<Long, User
 
     @Override
     public UserPrincipal getByUsername(String username) {
-
-        EntityManager entityManager = DBUtil.getEmFactory().createEntityManager();
         try {
             return entityManager.createQuery(
                     "SELECT u FROM UserPrincipal u WHERE u.username = :username", UserPrincipal.class)
@@ -34,9 +32,6 @@ public class UserPrincipalRepositoryImpl extends GenericJpaRepository<Long, User
         catch (NoResultException | NonUniqueResultException e) {
             LOG.warn(e);
             return null;
-        }
-        finally {
-            entityManager.close();
         }
     }
 }

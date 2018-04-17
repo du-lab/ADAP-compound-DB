@@ -6,6 +6,7 @@ import org.dulab.site.services.DefaultAuthenticationService;
 import org.dulab.site.services.SubmissionService;
 import org.dulab.site.services.SubmissionServiceImpl;
 import org.dulab.validation.ContainsUser;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,13 +19,18 @@ import javax.servlet.http.HttpSession;
 @Controller
 public class AccountController {
 
-    private AuthenticationService authenticationService;
-    private SubmissionService submissionService;
+    private final AuthenticationService authenticationService;
 
-    public AccountController() {
-        authenticationService = new DefaultAuthenticationService();
-        submissionService = new SubmissionServiceImpl();
+    private final SubmissionService submissionService;
+
+    @Autowired
+    public AccountController(AuthenticationService authenticationService,
+                             SubmissionService submissionService) {
+
+        this.authenticationService = authenticationService;
+        this.submissionService = submissionService;
     }
+
 
     @RequestMapping(value = "account/", method = RequestMethod.GET)
     public String view(HttpSession session, Model model) {
@@ -39,7 +45,5 @@ public class AccountController {
 //        user = authenticationService.findUser(user.getId());
 
         return "account/view";
-
-        //TODO List of submissions doesn't update after deleting of a submission
     }
 }

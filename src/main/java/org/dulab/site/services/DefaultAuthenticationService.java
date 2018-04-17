@@ -6,6 +6,7 @@ import org.dulab.models.UserPrincipal;
 import org.dulab.site.repositories.UserPrincipalRepositoryImpl;
 import org.dulab.site.repositories.UserPrincipalRepository;
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,10 +30,11 @@ public class DefaultAuthenticationService implements AuthenticationService {
         }
     }
 
-    private UserPrincipalRepository userPrincipalRepository;
+    private final UserPrincipalRepository userPrincipalRepository;
 
-    public DefaultAuthenticationService() {
-        userPrincipalRepository = new UserPrincipalRepositoryImpl();
+    @Autowired
+    public DefaultAuthenticationService(UserPrincipalRepository userPrincipalRepository) {
+        this.userPrincipalRepository = userPrincipalRepository;
     }
 
     @Override

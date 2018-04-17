@@ -3,6 +3,7 @@ package org.dulab.site.controllers;
 import org.dulab.models.*;
 import org.dulab.site.services.*;
 import org.dulab.validation.NotBlank;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -26,14 +27,16 @@ import java.util.List;
 @RequestMapping("submission/")
 public class SubmissionController {
 
-    private SubmissionService submissionService;
-    private SpectrumService spectrumService;
-    private UserPrincipalService userPrincipalService;
+    private final SubmissionService submissionService;
 
-    public SubmissionController() {
-        submissionService = new SubmissionServiceImpl();
-        spectrumService = new DefaultSpectrumService();
-        userPrincipalService = new UserPrincipalServiceImpl();
+    private final SpectrumService spectrumService;
+
+    @Autowired
+    public SubmissionController(SubmissionService submissionService,
+                                SpectrumService spectrumService) {
+
+        this.submissionService = submissionService;
+        this.spectrumService = spectrumService;
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET)

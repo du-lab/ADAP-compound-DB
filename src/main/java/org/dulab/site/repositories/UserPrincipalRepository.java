@@ -1,9 +1,9 @@
 package org.dulab.site.repositories;
 
-import org.dulab.site.data.GenericRepository;
 import org.dulab.models.UserPrincipal;
+import org.springframework.data.repository.CrudRepository;
 
-public interface UserPrincipalRepository extends GenericRepository<Long, UserPrincipal> {
+public interface UserPrincipalRepository extends CrudRepository<UserPrincipal, Long> {
 
-    UserPrincipal getByUsername(String username);
+    UserPrincipal getOneByUsername(String username);
 }
