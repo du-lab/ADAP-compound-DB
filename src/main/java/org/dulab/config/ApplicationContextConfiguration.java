@@ -1,7 +1,5 @@
 package org.dulab.config;
 
-import org.dulab.site.services.AuthenticationService;
-import org.dulab.site.services.DefaultAuthenticationService;
 import org.hibernate.validator.HibernateValidator;
 import org.springframework.context.annotation.AdviceMode;
 import org.springframework.context.annotation.Bean;

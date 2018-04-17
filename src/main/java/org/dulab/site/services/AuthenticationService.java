@@ -7,6 +7,7 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.Optional;
 
 @Validated
 public interface AuthenticationService {
@@ -15,7 +16,7 @@ public interface AuthenticationService {
             @NotBlank(message = "The username is required.") String username,
             @NotBlank(message = "The password is required.") String password);
 
-    UserPrincipal findUser(long id);
+    Optional<UserPrincipal> findUser(long id);
 
     void saveUser(
             @NotNull(message = "The user principal is required.") @Valid UserPrincipal principal,

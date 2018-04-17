@@ -1,7 +1,6 @@
 package org.dulab.site.controllers;
 
 import org.dulab.site.services.AuthenticationService;
-import org.dulab.site.services.DefaultAuthenticationService;
 import org.dulab.models.UserPrincipal;
 import org.dulab.validation.Email;
 import org.dulab.validation.FieldMatch;

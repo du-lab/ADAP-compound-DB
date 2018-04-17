@@ -6,11 +6,12 @@ import org.springframework.validation.annotation.Validated;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Optional;
 
 @Validated
 public interface SubmissionService {
 
-    Submission findSubmission(long submissionId);
+    Optional<Submission> findSubmission(long submissionId);
 
     List<Submission> getSubmissionsByUserId(long userId);
 

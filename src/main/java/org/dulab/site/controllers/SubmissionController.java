@@ -112,9 +112,11 @@ public class SubmissionController {
     @RequestMapping(value = "{submissionId:\\d+}/delete/")
     public View delete(HttpServletRequest request, @PathVariable("submissionId") long id) {
 
-        Submission submission = submissionService.findSubmission(id);
+        Submission submission = submissionService
+                .findSubmission(id)
+                .orElseThrow(() -> new IllegalStateException("Submission with Id = " + id + " does not exist."));
+
         submissionService.deleteSubmission(submission);
-//        submission.getUser().getSubmissions().remove(submission);
         return new RedirectView("/account/", true);
     }
 
@@ -172,10 +174,9 @@ public class SubmissionController {
     }
 
     private Submission getSubmission(long id, HttpSession session) {
-        if (id > 0)
-            return submissionService.findSubmission(id);
-        else
-            return Submission.from(session);
+        return submissionService
+                .findSubmission(id)
+                .orElse(Submission.from(session));
     }
 
     public static class Form {

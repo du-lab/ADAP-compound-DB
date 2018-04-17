@@ -3,7 +3,6 @@ package org.dulab.site.services;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.models.UserPrincipal;
-import org.dulab.site.repositories.UserPrincipalRepositoryImpl;
 import org.dulab.site.repositories.UserPrincipalRepository;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Optional;
 
 @Service
-public class DefaultAuthenticationService implements AuthenticationService {
+public class AuthenticationServiceImpl implements AuthenticationService {
 
     private static final Logger LOG = LogManager.getLogger();
     private static final SecureRandom RANDOM;
@@ -33,7 +33,7 @@ public class DefaultAuthenticationService implements AuthenticationService {
     private final UserPrincipalRepository userPrincipalRepository;
 
     @Autowired
-    public DefaultAuthenticationService(UserPrincipalRepository userPrincipalRepository) {
+    public AuthenticationServiceImpl(UserPrincipalRepository userPrincipalRepository) {
         this.userPrincipalRepository = userPrincipalRepository;
     }
 
@@ -41,7 +41,7 @@ public class DefaultAuthenticationService implements AuthenticationService {
     @Transactional
     public UserPrincipal authenticate(String username, String password) {
 
-        UserPrincipal principal = userPrincipalRepository.getByUsername(username);
+        UserPrincipal principal = userPrincipalRepository.findByUsername(username);
         if (principal == null) {
             LOG.warn("Authentication failed for non-existent user {}.", username);
             return null;
@@ -65,15 +65,12 @@ public class DefaultAuthenticationService implements AuthenticationService {
             principal.setHashedPassword(BCrypt.hashpw(password, salt).getBytes());
         }
 
-        if (principal.getId() < 1)
-            userPrincipalRepository.add(principal);
-        else
-            userPrincipalRepository.update(principal);
+        userPrincipalRepository.save(principal);
     }
 
     @Override
     @Transactional
-    public UserPrincipal findUser(long id) {
-        return userPrincipalRepository.get(id);
+    public Optional<UserPrincipal> findUser(long id) {
+        return Optional.ofNullable(userPrincipalRepository.findOne(id));
     }
 }

@@ -2,25 +2,23 @@ package org.dulab.site.services;
 
 import org.dulab.models.UserPrincipal;
 import org.dulab.site.repositories.UserPrincipalRepository;
-import org.dulab.site.repositories.UserPrincipalRepositoryImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserPrincipalServiceImpl implements UserPrincipalService {
 
-    private UserPrincipalRepository repository;
+    private final UserPrincipalRepository repository;
 
-    public UserPrincipalServiceImpl() {
-        repository = new UserPrincipalRepositoryImpl();
+    @Autowired
+    public UserPrincipalServiceImpl(UserPrincipalRepository repository) {
+        this.repository = repository;
     }
 
     @Override
     @Transactional
     public void saveUserPrincipal(UserPrincipal userPrincipal) {
-        if (userPrincipal.getId() < 1)
-            repository.add(userPrincipal);
-        else
-            repository.update(userPrincipal);
+        repository.save(userPrincipal);
     }
 }

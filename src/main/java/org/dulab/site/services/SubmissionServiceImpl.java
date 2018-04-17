@@ -1,13 +1,13 @@
 package org.dulab.site.services;
 
 import org.dulab.models.Submission;
-import org.dulab.site.repositories.SubmissionRepositoryImpl;
 import org.dulab.site.repositories.SubmissionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SubmissionServiceImpl implements SubmissionService {
@@ -21,27 +21,20 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     @Override
     @Transactional
-    public Submission findSubmission(long submissionId) {
-        return submissionRepository.get(submissionId);
+    public Optional<Submission> findSubmission(long submissionId) {
+        return Optional.ofNullable(submissionRepository.findOne(submissionId));
     }
 
     @Override
     @Transactional
     public List<Submission> getSubmissionsByUserId(long userId) {
-        return submissionRepository.getSubmissionsByUserId(userId);
+        return submissionRepository.findByUserPrincipalId(userId);
     }
 
     @Override
     @Transactional
     public void saveSubmission(Submission submission) {
-        if (submission.getId() < 1) {
-            submissionRepository.add(submission);
-
-//            if (submission.getId() > 0 && !submission.getUser().getSubmissions().contains(submission))
-//                submission.getUser().getSubmissions().add(submission);
-        }
-        else
-            submissionRepository.update(submission);
+        submissionRepository.save(submission);
     }
 
     @Override
