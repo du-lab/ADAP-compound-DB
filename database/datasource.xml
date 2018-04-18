@@ -1,0 +1,6 @@
+<Resource name="jdbc/AdapCompoundDbDataSource"
+        type="javax.sql.DataSource"
+        maxActive="20" maxIdle="5" maxWait="10000"
+        username="root" password="sesame"
+        driverClassName="com.mysql.jdbc.Driver"
+        url="jdbc:mysql://localhost:3306/adapcompounddb"/>
