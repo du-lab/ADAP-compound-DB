@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface SpectrumRepository extends CrudRepository<Spectrum, Long> {
 
-    List<Hit> match(Spectrum spectrum);
+//    List<Hit> match(Spectrum spectrum);
 }

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration status="WARN">
+    <appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+        <RollingFile name="DulabFileAppender"
+                     fileName="../logs/application.log"
+                     filePattern="../logs/application-%d{MM-dd-yyyy}-%i.log">
+            <PatternLayout>
+                <pattern>%d{HH:mm:ss.SSS} [%t] %X{id} %X{username} %-5level %c{36} %l: %msg%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy min="1" max="4"/>
+        </RollingFile>
+    </appenders>
+
+    <loggers>
+        <root level="WARN">
+            <appender-ref ref="Console"/>
+        </root>
+        <logger name="org.dulab" level="info" additivity="false">
+            <appender-ref ref="DulabFileAppender"/>
+            <appender-ref ref="Console">
+                <MarkerFilter marker="DULAB_CONSOLE" onMatch="NEUTRAL" onMismatch="DENY"/>
+            </appender-ref>
+        </logger>
+        <logger name="org.apache" level="info">
+            <appender-ref ref="DulabFileAppender"/>
+        </logger>
+    </loggers>
+</configuration>

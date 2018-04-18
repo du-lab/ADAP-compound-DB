@@ -28,7 +28,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     @Transactional
     public List<Submission> getSubmissionsByUserId(long userId) {
-        return submissionRepository.findByUserPrincipalId(userId);
+        return submissionRepository.findByUserId(userId);
     }
 
     @Override

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,6 +23,7 @@ public class DefaultSpectrumService implements SpectrumService {
     @Override
     @Transactional
     public List<Hit> match(Spectrum querySpectrum) {
-        return spectrumRepository.match(querySpectrum);
+//        return spectrumRepository.match(querySpectrum);
+        return new ArrayList<>();
     }
 }
