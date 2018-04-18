@@ -1,12 +1,7 @@
 -- -----------------------------------------------------
 -- Schema adapcompounddb
 -- -----------------------------------------------------
-DROP SCHEMA IF EXISTS `adapcompounddb` ;
-
--- -----------------------------------------------------
--- Schema adapcompounddb
--- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `adapcompounddb` DEFAULT CHARACTER SET utf8 ;
+CREATE SCHEMA IF NOT EXISTS `adapcompounddb` DEFAULT CHARACTER SET latin1 ;
 USE `adapcompounddb` ;
 
 -- -----------------------------------------------------
@@ -20,7 +15,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`UserPrincipal` (
   PRIMARY KEY (`Id`),
   UNIQUE INDEX `UserPrincipal_Username_uindex` (`Username` ASC))
 ENGINE = InnoDB
-AUTO_INCREMENT = 2
+AUTO_INCREMENT = 3
 DEFAULT CHARACTER SET = utf8;
 
 
@@ -34,7 +29,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Submission` (
   `DateTime` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `Filename` VARCHAR(100) NOT NULL,
   `FileType` VARCHAR(30) NOT NULL,
-  `File` BLOB NOT NULL,
+  `File` LONGBLOB NOT NULL,
   `ChromatographyType` VARCHAR(30) NOT NULL,
   `UserPrincipalId` BIGINT(20) UNSIGNED NOT NULL,
   PRIMARY KEY (`Id`),
@@ -42,9 +37,11 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Submission` (
   INDEX `Submission_UserPrincipalId_index` (`UserPrincipalId` ASC),
   CONSTRAINT `Submission_UserPrincipal_Id_fk`
     FOREIGN KEY (`UserPrincipalId`)
-    REFERENCES `adapcompounddb`.`UserPrincipal` (`Id`))
+    REFERENCES `adapcompounddb`.`UserPrincipal` (`Id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 3
+AUTO_INCREMENT = 30
 DEFAULT CHARACTER SET = utf8;
 
 
@@ -59,9 +56,11 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Spectrum` (
   INDEX `Spectrum_SubmissionId_index` (`SubmissionId` ASC),
   CONSTRAINT `Spectrum_Submission_Id_fk`
     FOREIGN KEY (`SubmissionId`)
-    REFERENCES `adapcompounddb`.`Submission` (`Id`))
+    REFERENCES `adapcompounddb`.`Submission` (`Id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 11
+AUTO_INCREMENT = 3952
 DEFAULT CHARACTER SET = utf8;
 
 
@@ -78,9 +77,11 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Peak` (
   INDEX `Peak_SpectrumId_index` (`SpectrumId` ASC),
   CONSTRAINT `Peak_Spectrum_Id_fk`
     FOREIGN KEY (`SpectrumId`)
-    REFERENCES `adapcompounddb`.`Spectrum` (`Id`))
+    REFERENCES `adapcompounddb`.`Spectrum` (`Id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 291
+AUTO_INCREMENT = 351911
 DEFAULT CHARACTER SET = utf8;
 
 
@@ -97,8 +98,9 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SpectrumProperty` (
   INDEX `SpectrumProperty_Spectrum_Id_fk` (`SpectrumId` ASC),
   CONSTRAINT `SpectrumProperty_Spectrum_Id_fk`
     FOREIGN KEY (`SpectrumId`)
-    REFERENCES `adapcompounddb`.`Spectrum` (`Id`))
+    REFERENCES `adapcompounddb`.`Spectrum` (`Id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 91
+AUTO_INCREMENT = 7387
 DEFAULT CHARACTER SET = utf8;
-

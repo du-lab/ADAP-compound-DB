@@ -7,6 +7,13 @@ import java.util.Collections;
 import java.util.List;
 
 @Entity
+@SqlResultSetMapping(
+        name = "SpectrumScoreMapping",
+        columns = {
+                @ColumnResult(name = "SpectrumId", type = Long.class),
+                @ColumnResult(name = "Score", type = Double.class)
+        }
+)
 public class Spectrum implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -32,6 +39,14 @@ public class Spectrum implements Serializable {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)

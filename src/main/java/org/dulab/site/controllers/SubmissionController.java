@@ -148,7 +148,10 @@ public class SubmissionController {
 
         List<Hit> hits = spectrumService.match(querySpectrum);
 
-        return null;
+        model.addAttribute("querySpectrum", querySpectrum);
+        model.addAttribute("hits", hits);
+
+        return "file/match";
     }
 
     private String peaksToJson(List<Peak> peaks) {

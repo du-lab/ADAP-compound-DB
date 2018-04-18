@@ -30,7 +30,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     @Transactional
     public List<Submission> getSubmissionsByUserId(long userId) {
-        return toList(submissionRepository.findByUserId(userId));
+        return ServiceUtils.toList(submissionRepository.findByUserId(userId));
     }
 
     @Override
@@ -46,9 +46,9 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     }
 
-    private <E> List<E> toList(Iterable<E> iterable) {
-        List<E> list = new ArrayList<>();
-        iterable.forEach(list::add);
-        return list;
-    }
+//    private <E> List<E> toList(Iterable<E> iterable) {
+//        List<E> list = new ArrayList<>();
+//        iterable.forEach(list::add);
+//        return list;
+//    }
 }
