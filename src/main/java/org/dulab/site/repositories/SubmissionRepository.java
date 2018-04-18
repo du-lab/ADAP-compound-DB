@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface SubmissionRepository extends CrudRepository<Submission, Long> {
 
-    List<Submission> findByUserId(long userPrincipalId);
+    Iterable<Submission> findByUserId(long userPrincipalId);
 }

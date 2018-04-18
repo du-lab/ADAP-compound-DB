@@ -4,8 +4,10 @@ import org.dulab.models.Submission;
 import org.dulab.site.repositories.SubmissionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,7 +30,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     @Transactional
     public List<Submission> getSubmissionsByUserId(long userId) {
-        return submissionRepository.findByUserId(userId);
+        return toList(submissionRepository.findByUserId(userId));
     }
 
     @Override
@@ -42,5 +44,11 @@ public class SubmissionServiceImpl implements SubmissionService {
     public void deleteSubmission(Submission submission) {
         submissionRepository.delete(submission);
 
+    }
+
+    private <E> List<E> toList(Iterable<E> iterable) {
+        List<E> list = new ArrayList<>();
+        iterable.forEach(list::add);
+        return list;
     }
 }

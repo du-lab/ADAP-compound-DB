@@ -25,4 +25,14 @@
         </cookie-config>
         <tracking-mode>COOKIE</tracking-mode>
     </session-config>
+
+    <!-- This filter performs lazy initialization if needed. -->
+    <filter>
+        <filter-name>springOpenEntityManagerInViewFilter</filter-name>
+        <filter-class>org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>springOpenEntityManagerInViewFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 </web-app>

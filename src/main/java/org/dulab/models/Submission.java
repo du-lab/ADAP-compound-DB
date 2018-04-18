@@ -84,10 +84,10 @@ public class Submission implements Serializable {
     }
 
     @OneToMany(
-            targetEntity = Spectrum.class,
             mappedBy = "submission",
             fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
     )
     public List<Spectrum> getSpectra() {
         return spectra;

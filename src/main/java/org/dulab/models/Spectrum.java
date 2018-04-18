@@ -34,7 +34,7 @@ public class Spectrum implements Serializable {
         this.id = id;
     }
 
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "SubmissionId", referencedColumnName = "Id")
     public Submission getSubmission() {
         return submission;
