@@ -1,11 +1,9 @@
 package org.dulab.config;
 
 import org.hibernate.validator.HibernateValidator;
-import org.springframework.context.annotation.AdviceMode;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.*;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -24,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
+@Import({DataSourceConfigurationImpl.class, DataSourceTestConfigurationImpl.class})
 @EnableTransactionManagement(
         mode = AdviceMode.PROXY,
         proxyTargetClass = false
@@ -54,38 +53,44 @@ public class ApplicationContextConfiguration {
     }
 
     @Bean
+    @Profile("!test")
     public DataSource adapCompoundDbDataSource() {
         JndiDataSourceLookup lookup = new JndiDataSourceLookup();
         return lookup.getDataSource("jdbc/AdapCompoundDbDataSource");
     }
 
-    @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean() {
-
-        HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
-        adapter.setDatabasePlatform("org.hibernate.dialect.MySQL5InnoDBDialect");
-
-        LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-        factory.setJpaVendorAdapter(adapter);
-        factory.setDataSource(adapCompoundDbDataSource());
-        factory.setPackagesToScan("org.dulab.models");
-        factory.setSharedCacheMode(SharedCacheMode.ENABLE_SELECTIVE);
-        factory.setValidationMode(ValidationMode.NONE);
-
-        Map<String, Object> jpaPropertyMap = new HashMap<>();
-        jpaPropertyMap.put("javax.persistence.schema-generation.database.action", "none");
-        factory.setJpaPropertyMap(jpaPropertyMap);
-
-        return factory;
-    }
-
-    @Bean
-    public PlatformTransactionManager jpaTransactionManager() {
-        return new JpaTransactionManager(entityManagerFactoryBean().getObject());
-    }
-
 //    @Bean
-//    public AuthenticationService authenticationService() {
-//        return new DefaultAuthenticationService();
+//    @Profile("test")
+//    public DataSource adapCompoundDbDataSourceTest() {
+//        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+//        dataSource.setUrl("jdbc:mysql://localhost:3306/adapcompounddb");
+//        dataSource.setUsername("root");
+//        dataSource.setPassword("sesame");
+//        return dataSource;
+//    }
+//
+//    @Bean
+//    public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean() {
+//
+//        HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
+//        adapter.setDatabasePlatform("org.hibernate.dialect.MySQL5InnoDBDialect");
+//
+//        LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
+//        factory.setJpaVendorAdapter(adapter);
+//        factory.setDataSource(adapCompoundDbDataSource());
+//        factory.setPackagesToScan("org.dulab.models");
+//        factory.setSharedCacheMode(SharedCacheMode.ENABLE_SELECTIVE);
+//        factory.setValidationMode(ValidationMode.NONE);
+//
+//        Map<String, Object> jpaPropertyMap = new HashMap<>();
+//        jpaPropertyMap.put("javax.persistence.schema-generation.database.action", "none");
+//        factory.setJpaPropertyMap(jpaPropertyMap);
+//
+//        return factory;
+//    }
+//
+//    @Bean
+//    public PlatformTransactionManager jpaTransactionManager() {
+//        return new JpaTransactionManager(entityManagerFactoryBean().getObject());
 //    }
 }
