@@ -19,6 +19,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -138,49 +140,50 @@ public class SubmissionController {
 
 
     @RequestMapping(value = "{submissionId:\\d+}/{spectrumId:\\d+}/match/", method = RequestMethod.GET)
-    public String match(@PathVariable("submissionId") long submissionId,
+    public String matchGet(@PathVariable("submissionId") long submissionId,
                         @PathVariable("spectrumId") int spectrumId,
                         HttpSession session,
                         Model model) {
-
         Submission submission = getSubmission(submissionId, session);
         Spectrum querySpectrum = submission.getSpectra().get(spectrumId);
 
-        List<Hit> hits = spectrumService.match(querySpectrum);
+        UserParameters userParameters = new UserParameters();
+
+        SpectrumSearchForm form = new SpectrumSearchForm();
+        form.fromUserParameters(userParameters);
 
         model.addAttribute("querySpectrum", querySpectrum);
-        model.addAttribute("hits", hits);
+        model.addAttribute("form", form);
 
         return "file/match";
     }
 
-//    private String peaksToJson(List<Peak> peaks) {
-//
-//        double maxIntensity = peaks.stream()
-//                .mapToDouble(Peak::getIntensity)
-//                .max()
-//                .orElseThrow(() -> new IllegalStateException("Cannot determine maximum intensity of the peak list"));
-//
-//        StringBuilder stringBuilder = new StringBuilder("[");
-//        for (int i = 0; i < peaks.size(); ++i) {
-//            if (i != 0)
-//                stringBuilder.append(',');
-//            stringBuilder.append('[')
-//                    .append(peaks.get(i).getMz())
-//                    .append(',')
-//                    .append(100 * peaks.get(i).getIntensity() / maxIntensity)
-//                    .append(']');
-//        }
-//        stringBuilder.append(']');
-//
-//        return stringBuilder.toString();
-//    }
+    @RequestMapping(value = "{submissionId:\\d+}/{spectrumId:\\d+}/match/", method = RequestMethod.POST)
+    public String matchPost(@PathVariable("submissionId") long submissionId,
+                            @PathVariable("spectrumId") int spectrumId,
+                            HttpSession session, Model model,
+                            @Valid SpectrumSearchForm form, Errors errors) {
+
+        Submission submission = getSubmission(submissionId, session);
+        Spectrum querySpectrum = submission.getSpectra().get(spectrumId);
+
+        UserParameters userParameters = new UserParameters();
+        form.toUserParameters(userParameters);
+        List<Hit> hits = spectrumService.match(querySpectrum, userParameters);
+
+        model.addAttribute("querySpectrum", querySpectrum);
+        model.addAttribute("hits", hits);
+        model.addAttribute("form", form);
+
+        return "file/match";
+    }
 
     private Submission getSubmission(long id, HttpSession session) {
         return submissionService
                 .findSubmission(id)
                 .orElse(Submission.from(session));
     }
+
 
     public static class Form {
 
@@ -204,6 +207,55 @@ public class SubmissionController {
 
         public void setDescription(String description) {
             this.description = description;
+        }
+    }
+
+    public static class SpectrumSearchForm {
+
+        @Min(value = 0, message = "M/z tolerance must be positive.")
+        private float mzTolerance;
+
+        @Min(value = 1, message = "Maximum number of hits must be greater than or equal to one.")
+        private int numHits;
+
+        @Min(value = 0, message = "Matching score threshold must be between 0 and 1000.")
+        @Max(value = 1000, message = "Matching score threshold must be between 0 and 1000.")
+        private int scoreThreshold;
+
+        public float getMzTolerance() {
+            return mzTolerance;
+        }
+
+        public void setMzTolerance(float mzTolerance) {
+            this.mzTolerance = mzTolerance;
+        }
+
+        public int getNumHits() {
+            return numHits;
+        }
+
+        public void setNumHits(int numHits) {
+            this.numHits = numHits;
+        }
+
+        public int getScoreThreshold() {
+            return scoreThreshold;
+        }
+
+        public void setScoreThreshold(int scoreThreshold) {
+            this.scoreThreshold = scoreThreshold;
+        }
+
+        void fromUserParameters(UserParameters ups) {
+            mzTolerance = ups.getSpectrumSearchMzTolerance();
+            numHits = ups.getSpectrumSearchNumHits();
+            scoreThreshold = Math.round(1000 * ups.getSpectrumSearchScoreThreshold());
+        }
+
+        void toUserParameters(UserParameters ups) {
+            ups.setSpectrumSearchMzTolerance(mzTolerance);
+            ups.setSpectrumSearchNumHits(numHits);
+            ups.setSpectrumSearchScoreThreshold(scoreThreshold / 1000.0F);
         }
     }
 }

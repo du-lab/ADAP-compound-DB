@@ -2,6 +2,7 @@ package org.dulab.site.repositories;
 
 import org.dulab.models.Hit;
 import org.dulab.models.Spectrum;
+import org.dulab.models.UserParameters;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -15,7 +16,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustomization {
     private EntityManager entityManager;
 
     @Override
-    public Iterable<Hit> searchSpectra(Spectrum querySpectrum) {
+    public Iterable<Hit> searchSpectra(Spectrum querySpectrum, UserParameters parameters) {
 
         StringBuilder sqlBuilder = new StringBuilder();
         sqlBuilder.append("SELECT SpectrumId, POWER(SUM(Product), 2) AS Score FROM (\n");
@@ -36,9 +37,9 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustomization {
         @SuppressWarnings("unchecked")
         List<Object[]> resultList = entityManager
                 .createNativeQuery(sqlBuilder.toString(), "SpectrumScoreMapping")
-                .setParameter("eps", 0.1) // mz-tolerance
-                .setParameter("num", 10) // number of hits
-                .setParameter("threshold", 0.75) // matching score threshold (0..1)
+                .setParameter("eps", parameters.getSpectrumSearchMzTolerance())
+                .setParameter("num", parameters.getSpectrumSearchNumHits())
+                .setParameter("threshold", parameters.getSpectrumSearchScoreThreshold())
                 .getResultList();
 
         List<Hit> hitList = new ArrayList<>(resultList.size());

@@ -1,8 +1,10 @@
 <%--@elvariable id="querySpectrum" type="org.dulab.models.Spectrum"--%>
 <%--@elvariable id="hits" type="java.util.List<org.dulab.models.Hit>"--%>
+<%--@elvariable id="form" type="org.dulab.site.controllers.SubmissionController.SpectrumSearchForm"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <jsp:include page="/WEB-INF/jsp/includes/header.jsp" />
 <jsp:include page="/WEB-INF/jsp/includes/column_left_home.jsp" />
 
@@ -61,6 +63,36 @@
 
 <section>
     <h1>Query Parameters</h1>
+    <div align="center">
+        <div align="left" class="subsection">
+            <c:if test="${validationErrors != null}">
+                <div class="errors">
+                    <ul>
+                        <c:forEach items="${validationErrors}" var="error">
+                            <li><c:out value="${error.message}"/></li>
+                        </c:forEach>
+                    </ul>
+                </div>
+            </c:if>
+            <form:form method="post" modelAttribute="form">
+                <form:label path="mzTolerance">M/z tolerance:</form:label><br/>
+                <form:input path="mzTolerance"/><br/>
+                <form:errors path="mzTolerance" cssClass="errors"/><br/>
+
+                <form:label path="numHits">Maximum number of hits:</form:label><br/>
+                <form:input path="numHits"/><br/>
+                <form:errors path="numHits" cssClass="errors"/><br/>
+
+                <form:label path="scoreThreshold">Matching score threshold:</form:label><br/>
+                <form:input path="scoreThreshold"/><br/>
+                <form:errors path="scoreThreshold" cssClass="errors"/><br/>
+
+                <div align="center">
+                    <input type="submit" value="Search"/>
+                </div>
+            </form:form>
+        </div>
+    </div>
 </section>
 
 <script src="<c:url value="/resources/js/select.js"/>"></script>

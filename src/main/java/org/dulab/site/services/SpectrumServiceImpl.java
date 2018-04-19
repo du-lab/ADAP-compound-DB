@@ -2,6 +2,7 @@ package org.dulab.site.services;
 
 import org.dulab.models.Hit;
 import org.dulab.models.Spectrum;
+import org.dulab.models.UserParameters;
 import org.dulab.site.repositories.SpectrumRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ public class SpectrumServiceImpl implements SpectrumService {
 
     @Override
     @Transactional
-    public List<Hit> match(Spectrum querySpectrum) {
-        return ServiceUtils.toList(spectrumRepository.searchSpectra(querySpectrum));
+    public List<Hit> match(Spectrum querySpectrum, UserParameters parameters) {
+        return ServiceUtils.toList(spectrumRepository.searchSpectra(querySpectrum, parameters));
     }
 }
