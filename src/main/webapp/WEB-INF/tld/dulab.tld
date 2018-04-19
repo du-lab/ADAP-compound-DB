@@ -23,4 +23,13 @@
         </function-signature>
     </function>
 
+    <function>
+        <description>Transforms list of Peaks to JSON string.</description>
+        <name>peaksToJson</name>
+        <function-class>org.dulab.site.controllers.ControllerUtils</function-class>
+        <function-signature>
+            java.lang.String peaksToJson(java.util.List)
+        </function-signature>
+    </function>
+
 </taglib>

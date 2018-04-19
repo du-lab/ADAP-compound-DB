@@ -22,6 +22,7 @@ body, header, aside, section, article, h1, h2 {
 header {
     display: block;
     position: fixed;
+    z-index: 10;
     top: 0;
     height: 40px;
     width: 100%;
@@ -123,8 +124,8 @@ section h1:after {
 section h2 {
     display: block;
     color: #86b3d1;
-    margin: 20px 0;
-    font-size: 1.3em;
+    margin: 10px;
+    text-align: center;
 }
 
 section table {
@@ -141,6 +142,15 @@ section td, th {
 
 section tr:nth-child(even) {
     background-color: #f2f2f2;
+}
+
+section table.clickable tr:hover td {
+    cursor: pointer;
+    background-color: #e4e4e4;
+}
+
+section table.clickable tr.selected {
+    border: 2px solid #86b3d1;
 }
 
 section a {

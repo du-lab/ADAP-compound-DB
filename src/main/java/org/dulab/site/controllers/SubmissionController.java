@@ -131,7 +131,7 @@ public class SubmissionController {
 
         model.addAttribute("name", spectrum.toString());
         model.addAttribute("properties", spectrum.getProperties());
-        model.addAttribute("jsonPeaks", peaksToJson(spectrum.getPeaks()));
+        model.addAttribute("jsonPeaks", ControllerUtils.peaksToJson(spectrum.getPeaks()));
 
         return "file/spectrum";
     }
@@ -154,27 +154,27 @@ public class SubmissionController {
         return "file/match";
     }
 
-    private String peaksToJson(List<Peak> peaks) {
-
-        double maxIntensity = peaks.stream()
-                .mapToDouble(Peak::getIntensity)
-                .max()
-                .orElseThrow(() -> new IllegalStateException("Cannot determine maximum intensity of the peak list"));
-
-        StringBuilder stringBuilder = new StringBuilder("[");
-        for (int i = 0; i < peaks.size(); ++i) {
-            if (i != 0)
-                stringBuilder.append(',');
-            stringBuilder.append('[')
-                    .append(peaks.get(i).getMz())
-                    .append(',')
-                    .append(100 * peaks.get(i).getIntensity() / maxIntensity)
-                    .append(']');
-        }
-        stringBuilder.append(']');
-
-        return stringBuilder.toString();
-    }
+//    private String peaksToJson(List<Peak> peaks) {
+//
+//        double maxIntensity = peaks.stream()
+//                .mapToDouble(Peak::getIntensity)
+//                .max()
+//                .orElseThrow(() -> new IllegalStateException("Cannot determine maximum intensity of the peak list"));
+//
+//        StringBuilder stringBuilder = new StringBuilder("[");
+//        for (int i = 0; i < peaks.size(); ++i) {
+//            if (i != 0)
+//                stringBuilder.append(',');
+//            stringBuilder.append('[')
+//                    .append(peaks.get(i).getMz())
+//                    .append(',')
+//                    .append(100 * peaks.get(i).getIntensity() / maxIntensity)
+//                    .append(']');
+//        }
+//        stringBuilder.append(']');
+//
+//        return stringBuilder.toString();
+//    }
 
     private Submission getSubmission(long id, HttpSession session) {
         return submissionService
