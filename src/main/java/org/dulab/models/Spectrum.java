@@ -70,6 +70,8 @@ public class Spectrum implements Serializable {
 
     public void setPeaks(List<Peak> peaks) {
 
+        if (peaks == null) return;
+
         double totalIntensity = peaks.stream()
                 .mapToDouble(Peak::getIntensity)
                 .sum();

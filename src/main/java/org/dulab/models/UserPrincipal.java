@@ -30,7 +30,7 @@ public class UserPrincipal implements Principal, Cloneable, Serializable {
     @Email
     private String email;
 
-    @NotNull(message = "Hashed password is required.")
+//    @NotNull(message = "Hashed password is required.")
     private byte[] hashedPassword;
 
 //    private List<Submission> submissions;

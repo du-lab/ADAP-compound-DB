@@ -50,7 +50,7 @@ DEFAULT CHARACTER SET = utf8;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Spectrum` (
   `Id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `Name` VARCHAR(60) NULL DEFAULT NULL,
+  `Name` VARCHAR(200) NULL DEFAULT NULL,
   `SubmissionId` BIGINT(20) UNSIGNED NOT NULL,
   PRIMARY KEY (`Id`),
   INDEX `Spectrum_SubmissionId_index` (`SubmissionId` ASC),
