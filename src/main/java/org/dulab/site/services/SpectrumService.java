@@ -8,9 +8,12 @@ import org.springframework.validation.annotation.Validated;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Optional;
 
 @Validated
 public interface SpectrumService {
+
+    Optional<Spectrum> find(long id);
 
     List<Hit> match(@NotNull(message = "Query spectrum is required.") @Valid Spectrum querySpectrum,
                     @NotNull(message = "Parameters are required.") @Valid UserParameters parameters);

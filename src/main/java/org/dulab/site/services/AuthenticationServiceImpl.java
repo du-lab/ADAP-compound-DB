@@ -71,6 +71,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     @Transactional
     public Optional<UserPrincipal> findUser(long id) {
+//        return userPrincipalRepository.findById(id);
         return Optional.ofNullable(userPrincipalRepository.findOne(id));
     }
 }

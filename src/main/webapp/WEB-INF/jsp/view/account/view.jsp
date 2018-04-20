@@ -32,7 +32,7 @@
                     <td>
                         <a href="/submission/${submission.id}/">${submission.name}</a>
                     </td>
-                    <td>${dulab:abbreviateString(submission.description, 80)}</td>
+                    <td>${dulab:abbreviate(submission.description, 80)}</td>
                     <td>
                         <!-- mode edit -->
                         <a href="/submission/${submission.id}/"><i class="material-icons">&#xE254</i></a>

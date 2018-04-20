@@ -1,54 +1,89 @@
+<%--@elvariable id="spectrum" type="org.dulab.models.Spectrum"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <jsp:include page="/WEB-INF/jsp/includes/header.jsp"/>
 <jsp:include page="/WEB-INF/jsp/includes/column_left_home.jsp"/>
 
 <!-- Start the middle column -->
 
-<section class="transparent">
-    <div align="right">
-        <a href="<c:url value="${header.referer}"/>" class="button">Back to file</a>
-    </div>
-</section>
+<%--<section class="transparent">--%>
+    <%--<div align="right">--%>
+        <%--<a href="<c:url value="${header.referer}"/>" class="button">Back to file</a>--%>
+    <%--</div>--%>
+<%--</section>--%>
 
 <section>
-    <h1>Spectrum properties</h1>
+    <h1>Spectrum ${spectrum.name}</h1>
+
+    <div align="left" style="float: left">
+        <p><a href="/submission/${spectrum.submission.id}/" class="button">Submission</a></p>
+    </div>
+
+    <div align="right" style="float: right">
+        <p><a href="match/" class="button">Library Search</a></p>
+    </div>
+
     <div align="center">
-        <p>${name}</p>
         <table>
-            <c:forEach var="e" items="${properties}">
+            <tr>
+                <th>Property</th>
+                <th>Value</th>
+            </tr>
+            <c:forEach var="e" items="${spectrum.properties}">
                 <tr>
                     <td>${e.name}</td>
                     <td>${e.value}</td>
                 </tr>
             </c:forEach>
+            <tr>
+                <td>Submission</td>
+                <td>
+                    <a href="/submission/${spectrum.submission.id}/">
+                        ${spectrum.submission.name} (${spectrum.submission.chromatographyType.label})<br>
+                        <small>${spectrum.submission.description}</small>
+                    </a>
+                </td>
+            </tr>
         </table>
     </div>
 </section>
 
 <section>
-    <h1>Spectrum peaks</h1>
-    <div id="chartDiv" align="center"></div>
-</section>
-
-<section>
-    <h1>Search</h1>
-    <p>Search library for similar spectra</p>
+    <h1>Peaks</h1>
     <div align="center">
-        <a href="match/">Search</a>
+        <div id="chartDiv" style="display: inline-block;"></div>
+        <div style="display: inline-block; max-width: 400px; max-height: 400px; overflow-y: scroll;">
+            <table>
+                <tr>
+                    <th>M/z</th>
+                    <th>Intensity</th>
+                </tr>
+                <c:forEach items="${dulab:peaksToJson(spectrum.peaks)}" var="peak">
+                    <tr>
+                        <td>
+                            <fmt:formatNumber maxFractionDigits="4" groupingUsed="false">${peak[0]}</fmt:formatNumber>
+                        </td>
+                        <td>
+                            <fmt:formatNumber maxFractionDigits="4" groupingUsed="false">${peak[1]}</fmt:formatNumber>
+                        </td>
+                    </tr>
+                </c:forEach>
+            </table>
+        </div>
     </div>
-
 </section>
 
-<section class="transparent">
-    <div align="right">
-        <a href="<c:url value="${header.referer}"/>" class="button">Back to file</a>
-    </div>
-</section>
+<%--<section class="transparent">--%>
+    <%--<div align="right">--%>
+        <%--<a href="<c:url value="${header.referer}"/>" class="button">Back to file</a>--%>
+    <%--</div>--%>
+<%--</section>--%>
 
 <script src="<c:url value="/resources/js/zingchart/zingchart.min.js"/>"></script>
 <script type="text/javascript" src="<c:url value="/resources/js/spectrum.js"/>"></script>
 <script>
-    addPlot("chartDiv", '${jsonPeaks}');
+    addPlot("chartDiv", '${dulab:peaksToJson(spectrum.peaks)}');
 </script>
 
 <!-- End the middle column -->
