@@ -8,26 +8,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.*;
 
-//@RunWith(SpringJUnit4ClassRunner.class)
-//@ContextConfiguration(classes = {
-//        ApplicationContextConfiguration.class,
-//        ServletContextConfiguration.class
-//})
-//@ActiveProfiles(profiles = "test")
-//@Transactional
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {
+        ApplicationContextConfiguration.class,
+        ServletContextConfiguration.class
+})
+@ActiveProfiles(profiles = "test")
+@WebAppConfiguration
+@Transactional
 public class AuthenticationServiceImplTest {
 
-//    @Autowired
-//    AuthenticationService authenticationService;
+    @Autowired
+    AuthenticationService authenticationService;
 
-//    @Test
-//    public void saveUser() {
-//
-//        assertThat(authenticationService, instanceOf(AuthenticationServiceImpl.class));
-//    }
+    @Test
+    public void saveUser() {
+
+        assertTrue(authenticationService instanceof AuthenticationServiceImpl);
+    }
 }
