@@ -164,7 +164,10 @@ section a:hover {
 
 section a > i.material-icons {color: #8e8268;}
 
-section a > i.material-icons:hover {color: #844d36;}
+section a > i.material-icons:hover {
+    cursor: pointer;
+    color: #844d36;
+}
 
 section a.button {
     display: inline-block;

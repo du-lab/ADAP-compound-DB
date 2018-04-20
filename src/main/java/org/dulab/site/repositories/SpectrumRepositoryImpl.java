@@ -4,6 +4,7 @@ import org.dulab.models.Hit;
 import org.dulab.models.Spectrum;
 import org.dulab.models.UserParameters;
 
+import javax.naming.directory.SearchResult;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
@@ -44,9 +45,14 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustomization {
 
         List<Hit> hitList = new ArrayList<>(resultList.size());
         for (Object[] columns : resultList) {
+            long spectrumId = (long) columns[0];
+            double score = (double) columns[1];
+
+            if (spectrumId == querySpectrum.getId()) continue;
+
             Hit hit = new Hit();
-            hit.setSpectrum(entityManager.find(Spectrum.class, columns[0]));
-            hit.setScore((Double) columns[1]);
+            hit.setSpectrum(entityManager.find(Spectrum.class, spectrumId));
+            hit.setScore(score);
             hitList.add(hit);
         }
 

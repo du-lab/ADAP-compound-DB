@@ -1,5 +1,6 @@
 package org.dulab.site.controllers;
 
+import org.dulab.exceptions.EmptySearchResultException;
 import org.dulab.models.*;
 import org.dulab.site.services.*;
 import org.dulab.validation.NotBlank;
@@ -31,13 +32,17 @@ public class SubmissionController {
 
     private final SubmissionService submissionService;
 
+    private final SubmissionCategoryService submissionCategoryService;
+
     private final SpectrumService spectrumService;
 
     @Autowired
     public SubmissionController(SubmissionService submissionService,
+                                SubmissionCategoryService submissionCategoryService,
                                 SpectrumService spectrumService) {
 
         this.submissionService = submissionService;
+        this.submissionCategoryService = submissionCategoryService;
         this.spectrumService = spectrumService;
     }
 
@@ -59,7 +64,10 @@ public class SubmissionController {
         Form form = new Form();
         form.setName(submission.getName());
         form.setDescription(submission.getDescription());
+        form.setCategory(submission.getCategory());
         model.addAttribute("form", form);
+
+        model.addAttribute("submissionCategories", submissionCategoryService.findAll());
 
         return "file/view";
     }
@@ -131,9 +139,7 @@ public class SubmissionController {
         Submission submission = getSubmission(submissionId, session);
         Spectrum spectrum = submission.getSpectra().get(spectrumId);
 
-        model.addAttribute("name", spectrum.toString());
-        model.addAttribute("properties", spectrum.getProperties());
-        model.addAttribute("jsonPeaks", ControllerUtils.peaksToJson(spectrum.getPeaks()));
+        model.addAttribute("spectrum", spectrum);
 
         return "file/spectrum";
     }
@@ -169,10 +175,16 @@ public class SubmissionController {
 
         UserParameters userParameters = new UserParameters();
         form.toUserParameters(userParameters);
-        List<Hit> hits = spectrumService.match(querySpectrum, userParameters);
+
+        try {
+            List<Hit> hits = spectrumService.match(querySpectrum, userParameters);
+            model.addAttribute("hits", hits);
+        }
+        catch (EmptySearchResultException e) {
+            model.addAttribute("searchResultMessage", e.getMessage());
+        }
 
         model.addAttribute("querySpectrum", querySpectrum);
-        model.addAttribute("hits", hits);
         model.addAttribute("form", form);
 
         return "file/match";
@@ -193,6 +205,8 @@ public class SubmissionController {
         @NotBlank(message = "The field Description is required.")
         private String description;
 
+        private SubmissionCategory category;
+
         public String getName() {
             return name;
         }
@@ -208,7 +222,16 @@ public class SubmissionController {
         public void setDescription(String description) {
             this.description = description;
         }
+
+        public SubmissionCategory getCategory() {
+            return category;
+        }
+
+        public void setCategory(SubmissionCategory category) {
+            this.category = category;
+        }
     }
+
 
     public static class SpectrumSearchForm {
 

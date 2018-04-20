@@ -40,6 +40,8 @@ public class Submission implements Serializable {
     @NotNull(message = "Chromatography type is required.")
     private ChromatographyType chromatographyType;
 
+    private SubmissionCategory category;
+
     @NotNull (message = "Spectrum list is required.")
     @Valid
     private List<Spectrum> spectra;
@@ -81,6 +83,16 @@ public class Submission implements Serializable {
 
     public void setChromatographyType(ChromatographyType chromatographyType) {
         this.chromatographyType = chromatographyType;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "SubmissionCategoryId", referencedColumnName = "Id")
+    public SubmissionCategory getCategory() {
+        return category;
+    }
+
+    public void setCategory(SubmissionCategory category) {
+        this.category = category;
     }
 
     @OneToMany(

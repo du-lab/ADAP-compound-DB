@@ -24,6 +24,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     @Transactional
     public Optional<Submission> findSubmission(long submissionId) {
+//        return submissionRepository.findById(submissionId);
         return Optional.ofNullable(submissionRepository.findOne(submissionId));
     }
 
@@ -45,10 +46,4 @@ public class SubmissionServiceImpl implements SubmissionService {
         submissionRepository.delete(submission);
 
     }
-
-//    private <E> List<E> toList(Iterable<E> iterable) {
-//        List<E> list = new ArrayList<>();
-//        iterable.forEach(list::add);
-//        return list;
-//    }
 }

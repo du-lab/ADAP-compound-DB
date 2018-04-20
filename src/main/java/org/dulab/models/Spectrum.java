@@ -81,7 +81,8 @@ public class Spectrum implements Serializable {
         for (Peak peak : peaks)
             peak.setIntensity(peak.getIntensity() / totalIntensity);
 
-        this.peaks = Collections.unmodifiableList(peaks);
+//        this.peaks = Collections.unmodifiableList(peaks);
+        this.peaks = peaks;
     }
 
     @OneToMany(

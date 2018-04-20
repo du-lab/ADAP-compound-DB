@@ -1,7 +1,8 @@
 -- -----------------------------------------------------
 -- Schema adapcompounddb
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `adapcompounddb` DEFAULT CHARACTER SET latin1 ;
+DROP SCHEMA IF EXISTS `adapcompounddb`
+CREATE SCHEMA `adapcompounddb` DEFAULT CHARACTER SET latin1 ;
 USE `adapcompounddb` ;
 
 -- -----------------------------------------------------
@@ -20,6 +21,26 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
+-- Table `adapcompounddb`.`SubmissionCategory`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SubmissionCategory` (
+  `Id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `Name` VARCHAR(200) NOT NULL,
+  `Description` TEXT NOT NULL,
+  `UserPrincipalId` BIGINT(20) UNSIGNED NOT NULL,
+  PRIMARY KEY (`Id`),
+  INDEX `SubmissionCategory_UserPrincipal_Id_fk` (`UserPrincipalId` ASC),
+  CONSTRAINT `SubmissionCategory_UserPrincipal_Id_fk`
+    FOREIGN KEY (`UserPrincipalId`)
+    REFERENCES `adapcompounddb`.`UserPrincipal` (`Id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB
+AUTO_INCREMENT = 2
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
 -- Table `adapcompounddb`.`Submission`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Submission` (
@@ -32,9 +53,16 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Submission` (
   `File` LONGBLOB NOT NULL,
   `ChromatographyType` VARCHAR(30) NOT NULL,
   `UserPrincipalId` BIGINT(20) UNSIGNED NOT NULL,
+  `SubmissionCategoryId` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
   PRIMARY KEY (`Id`),
   INDEX `Submission_DateTime_Id_index` (`DateTime` ASC, `Id` ASC),
   INDEX `Submission_UserPrincipalId_index` (`UserPrincipalId` ASC),
+  INDEX `Submission_SubmissionCategory_Id_fk` (`SubmissionCategoryId` ASC),
+  CONSTRAINT `Submission_SubmissionCategory_Id_fk`
+    FOREIGN KEY (`SubmissionCategoryId`)
+    REFERENCES `adapcompounddb`.`SubmissionCategory` (`Id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
   CONSTRAINT `Submission_UserPrincipal_Id_fk`
     FOREIGN KEY (`UserPrincipalId`)
     REFERENCES `adapcompounddb`.`UserPrincipal` (`Id`)
@@ -50,7 +78,7 @@ DEFAULT CHARACTER SET = utf8;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Spectrum` (
   `Id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `Name` VARCHAR(200) NULL DEFAULT NULL,
+  `Name` VARCHAR(60) NULL DEFAULT NULL,
   `SubmissionId` BIGINT(20) UNSIGNED NOT NULL,
   PRIMARY KEY (`Id`),
   INDEX `Spectrum_SubmissionId_index` (`SubmissionId` ASC),

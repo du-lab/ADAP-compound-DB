@@ -1,5 +1,6 @@
 package org.dulab.site.services;
 
+import org.dulab.exceptions.EmptySearchResultException;
 import org.dulab.models.Hit;
 import org.dulab.models.Spectrum;
 import org.dulab.models.UserParameters;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SpectrumServiceImpl implements SpectrumService {
@@ -22,7 +24,21 @@ public class SpectrumServiceImpl implements SpectrumService {
 
     @Override
     @Transactional
-    public List<Hit> match(Spectrum querySpectrum, UserParameters parameters) {
-        return ServiceUtils.toList(spectrumRepository.searchSpectra(querySpectrum, parameters));
+    public Optional<Spectrum> find(long id) {
+//        return spectrumRepository.findById(id);
+        return Optional.ofNullable(spectrumRepository.findOne(id));
+    }
+
+    @Override
+    @Transactional
+    public List<Hit> match(Spectrum querySpectrum, UserParameters parameters)
+            throws EmptySearchResultException {
+
+        List<Hit> hits = ServiceUtils.toList(spectrumRepository.searchSpectra(querySpectrum, parameters));
+
+        if (hits.isEmpty())
+            throw new EmptySearchResultException();
+
+        return hits;
     }
 }

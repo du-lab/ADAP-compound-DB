@@ -10,54 +10,83 @@
 
 <!-- Start the middle column -->
 
-<section id="chartSection">
-    <h1>Spectrum peaks</h1>
-    <div id="chartDiv" align="center"></div>
+<section>
+    <h1>Query Spectrum</h1>
+
+    <%--<div align="right" style="float: right">--%>
+        <%--<p><a href="/submission/${querySpectrum.submission.id}/${dulab:getListIndex(querySpectrum.submission.spectra, querySpectrum)}/"--%>
+              <%--class="button">View Spectrum</a></p>--%>
+    <%--</div>--%>
+
+    <div align="center">
+        <table>
+            <tr>
+                <td>
+                    ${querySpectrum.name}<br/>
+                    <small>${dulab:abbreviate(querySpectrum.properties, 80)}</small>
+                </td>
+                <td>
+                    ${querySpectrum.submission.name}<br/>
+                    <small>${querySpectrum.submission.chromatographyType.label}</small>
+                </td>
+                <!--visibility-->
+                <td><a href="/spectrum/${querySpectrum.id}/"><i class="material-icons">&#xE8F4;</i></a></td>
+            </tr>
+        </table>
+    </div>
 </section>
+
+<c:if test="${hits != null && hits.size() > 0}">
+    <section id="chartSection">
+        <h1>Comparison</h1>
+        <div id="chartDiv" align="center"></div>
+    </section>
+</c:if>
 
 <section>
     <h1>Matching Hits</h1>
 
     <div align="center">
-        <table class="clickable">
-            <tr>
-                <th>Score</th>
-                <th>Spectrum</th>
-                <th>Submission</th>
-            </tr>
-            <c:forEach items="${hits}" var="hit" varStatus="status">
-                <fmt:formatNumber type="number"
-                                  maxFractionDigits="0"
-                                  groupingUsed="false"
-                                  value="${hit.score * 1000}"
-                                  var="score"/>
+        <c:choose>
+            <c:when test="${hits != null && hits.size() > 0}">
+                <table class="clickable">
+                    <tr>
+                        <th>Score</th>
+                        <th>Spectrum</th>
+                        <th>Submission</th>
+                        <th>View</th>
+                    </tr>
+                    <c:forEach items="${hits}" var="hit" varStatus="status">
+                        <fmt:formatNumber type="number"
+                                          maxFractionDigits="0"
+                                          groupingUsed="false"
+                                          value="${hit.score * 1000}"
+                                          var="score"/>
 
-                <tr ${status.first ? 'id="firstRow"' : ''} onclick="select(this);
-                            addPlot('chartDiv', '${dulab:peaksToJson(querySpectrum.peaks)}', '${querySpectrum.name}',
-                                                '${dulab:peaksToJson(hit.spectrum.peaks)}', '${hit.spectrum.name}',
-                                                '${score}');">
+                        <tr ${status.first ? 'id="firstRow"' : ''} onclick="select(this);
+                                    addPlot('chartDiv', '${dulab:peaksToJson(querySpectrum.peaks)}', '${querySpectrum.name}',
+                                                        '${dulab:peaksToJson(hit.spectrum.peaks)}', '${hit.spectrum.name}',
+                                                        '${score}');">
 
-                    <td>${score}</td>
-                    <td>${hit.spectrum.name}</td>
-                    <td>${hit.spectrum.submission.name}</td>
-                </tr>
-            </c:forEach>
-        </table>
-    </div>
-</section>
-
-<section>
-    <h1>Query Spectrum</h1>
-    <h2>${querySpectrum.name}</h2>
-    <div align="center">
-        <table>
-            <c:forEach var="e" items="${querySpectrum.properties}">
-                <tr>
-                    <td>${e.name}</td>
-                    <td>${e.value}</td>
-                </tr>
-            </c:forEach>
-        </table>
+                            <td>${score}</td>
+                            <td>
+                                ${hit.spectrum.name}<br/>
+                                <small>${dulab:abbreviate(hit.spectrum.properties, 80)}</small>
+                            </td>
+                            <td>
+                                ${hit.spectrum.submission.name}<br/>
+                                <small>${hit.spectrum.submission.chromatographyType.label}</small>
+                            </td>
+                            <!--visibility-->
+                            <td><a href="/spectrum/${hit.spectrum.id}/"><i class="material-icons">&#xE8F4;</i></a></td>
+                        </tr>
+                    </c:forEach>
+                </table>
+            </c:when>
+            <c:otherwise>
+                <p>There is no mass spectra to display.</p>
+            </c:otherwise>
+        </c:choose>
     </div>
 </section>
 
@@ -65,6 +94,7 @@
     <h1>Query Parameters</h1>
     <div align="center">
         <div align="left" class="subsection">
+            <p class="errors">${searchResultMessage}</p>
             <c:if test="${validationErrors != null}">
                 <div class="errors">
                     <ul>

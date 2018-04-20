@@ -34,28 +34,28 @@
                 <th>No</th>
                 <th>Name</th>
                 <th>Properties</th>
+                <th></th>
             </tr>
             <c:if test="${submission.spectra.size() > 0}">
                 <c:forEach var="i" begin="0" end="${submission.spectra.size() - 1}">
                     <tr>
                         <td>${i + 1}</td>
                         <td><a href="${i}/">${submission.spectra[i]}</a></td>
-                        <td>${dulab:abbreviateString(submission.spectra[i].properties, 80)}</td>
+                        <td>${dulab:abbreviate(submission.spectra[i].properties, 80)}</td>
+                        <td>
+                            <!-- forward -->
+                            <a href="${i}/"><i class="material-icons">&#xE154;</i></a>
+                            <!-- search -->
+                            <a href="${i}/match/"><i class="material-icons">&#xE8B6;</i></a>
+                            <!-- delete -->
+                            <a href="${i}/delete/"><i class="material-icons">&#xE872;</i></a>
+                        </td>
                     </tr>
                 </c:forEach>
             </c:if>
         </table>
     </div>
 </section>
-
-        <%--<section>--%>
-            <%--<h1>Submitted By</h1>--%>
-            <%--<div align="center">--%>
-                    <%--${submission.user.username} (<a href="mailto:${submission.user.email}" target="_top">--%>
-                    <%--${submission.user.email}--%>
-            <%--</a>)--%>
-            <%--</div>--%>
-        <%--</section>--%>
 
 <section>
     <h1>Submit</h1>
@@ -88,6 +88,12 @@
                 <form:label path="description">Description:</form:label><br/>
                 <form:textarea path="description" rows="12" cols="80"/><br/>
                 <form:errors path="description" cssClass="errors"/><br/>
+
+                <form:select path="category">
+                    <form:option value="" label="--- Select ---"/>
+                    <form:options items="${submissionCategories}"/>
+                    <form:option value="" label="Create new category..."/>
+                </form:select>
 
                 <div align="center">
                     <input type="submit" value="<c:choose>
