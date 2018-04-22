@@ -95,7 +95,8 @@ public class Spectrum implements Serializable {
     }
 
     public void setProperties(List<SpectrumProperty> properties) {
-        this.properties = Collections.unmodifiableList(properties);
+//        this.properties = Collections.unmodifiableList(properties);
+        this.properties = properties;
         for (SpectrumProperty property : properties)
             if (property.getName().equalsIgnoreCase("name"))
                 name = property.getValue();

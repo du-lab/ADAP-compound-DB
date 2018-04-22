@@ -25,8 +25,8 @@ public class SpectrumServiceImpl implements SpectrumService {
     @Override
     @Transactional
     public Optional<Spectrum> find(long id) {
-//        return spectrumRepository.findById(id);
-        return Optional.ofNullable(spectrumRepository.findOne(id));
+        return spectrumRepository.findById(id);
+//        return Optional.ofNullable(spectrumRepository.findOne(id));
     }
 
     @Override

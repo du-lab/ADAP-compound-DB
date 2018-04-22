@@ -58,7 +58,7 @@ public class AuthenticationController {
             return new ModelAndView("login");
         }
 
-        Principal principal;
+        UserPrincipal principal;
         try {
             principal = authenticationService.authenticate(form.getUsername(), form.getPassword());
         }

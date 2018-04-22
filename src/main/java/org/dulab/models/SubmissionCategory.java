@@ -59,4 +59,9 @@ public class SubmissionCategory implements Serializable {
     public void setUser(UserPrincipal user) {
         this.user = user;
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

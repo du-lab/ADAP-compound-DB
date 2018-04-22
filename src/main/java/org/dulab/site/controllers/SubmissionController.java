@@ -8,9 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.RedirectView;
@@ -27,23 +25,25 @@ import java.util.Date;
 import java.util.List;
 
 @Controller
+@ControllerAdvice
 @RequestMapping("submission/")
 public class SubmissionController {
 
     private final SubmissionService submissionService;
 
-    private final SubmissionCategoryService submissionCategoryService;
-
     private final SpectrumService spectrumService;
 
     @Autowired
     public SubmissionController(SubmissionService submissionService,
-                                SubmissionCategoryService submissionCategoryService,
                                 SpectrumService spectrumService) {
 
         this.submissionService = submissionService;
-        this.submissionCategoryService = submissionCategoryService;
         this.spectrumService = spectrumService;
+    }
+
+    @ModelAttribute
+    public void addAttributes(Model model) {
+        model.addAttribute("submissionCategories", submissionService.getAllSubmissionCategories());
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET)
@@ -64,10 +64,8 @@ public class SubmissionController {
         Form form = new Form();
         form.setName(submission.getName());
         form.setDescription(submission.getDescription());
-        form.setCategory(submission.getCategory());
+        form.setSubmissionCategoryId(submission.getCategory() == null ? 0 : submission.getCategory().getId());
         model.addAttribute("form", form);
-
-        model.addAttribute("submissionCategories", submissionCategoryService.findAll());
 
         return "file/view";
     }
@@ -78,20 +76,23 @@ public class SubmissionController {
                                @Valid Form form, Errors errors) {
 
         if (errors.hasErrors())
-            return new ModelAndView("");
+            return new ModelAndView("file/view");
 
         Submission submission = getSubmission(submissionId, session);
         submission.setName(form.getName());
         submission.setDescription(form.getDescription());
         submission.setDateTime(new Date());
         submission.setUser(UserPrincipal.from(session));
+        submission.setCategory(submissionService
+                .getSubmissionCategory(form.getSubmissionCategoryId())
+                .orElse(null));
 
         try {
             submissionService.saveSubmission(submission);
         }
         catch (ConstraintViolationException e) {
             model.addAttribute("validationErrors", e.getConstraintViolations());
-            return new ModelAndView("");
+            return new ModelAndView("file/view");
         }
 
         model.addAttribute("message", "Mass spectra are submitted successfully.");
@@ -205,7 +206,7 @@ public class SubmissionController {
         @NotBlank(message = "The field Description is required.")
         private String description;
 
-        private SubmissionCategory category;
+        private long submissionCategoryId;
 
         public String getName() {
             return name;
@@ -223,12 +224,12 @@ public class SubmissionController {
             this.description = description;
         }
 
-        public SubmissionCategory getCategory() {
-            return category;
+        public long getSubmissionCategoryId() {
+            return submissionCategoryId;
         }
 
-        public void setCategory(SubmissionCategory category) {
-            this.category = category;
+        public void setSubmissionCategoryId(long submissionCategoryId) {
+            this.submissionCategoryId = submissionCategoryId;
         }
     }
 

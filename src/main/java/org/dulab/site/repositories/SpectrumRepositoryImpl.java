@@ -4,14 +4,13 @@ import org.dulab.models.Hit;
 import org.dulab.models.Spectrum;
 import org.dulab.models.UserParameters;
 
-import javax.naming.directory.SearchResult;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class SpectrumRepositoryImpl implements SpectrumRepositoryCustomization {
+public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
     @PersistenceContext
     private EntityManager entityManager;

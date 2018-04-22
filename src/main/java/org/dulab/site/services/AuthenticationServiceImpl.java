@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.models.UserPrincipal;
 import org.dulab.site.repositories.UserPrincipalRepository;
+import org.hibernate.Hibernate;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,7 +42,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Transactional
     public UserPrincipal authenticate(String username, String password) {
 
-        UserPrincipal principal = userPrincipalRepository.findByUsername(username);
+        UserPrincipal principal = userPrincipalRepository.findUserPrincipalByUsername(username).orElse(null);
+
         if (principal == null) {
             LOG.warn("Authentication failed for non-existent user {}.", username);
             return null;
@@ -54,7 +56,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         LOG.debug("User {} successfully authenticated.", username);
 
-        return principal;
+        return (UserPrincipal) Hibernate.unproxy(principal);
     }
 
     @Override
@@ -71,7 +73,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     @Transactional
     public Optional<UserPrincipal> findUser(long id) {
-//        return userPrincipalRepository.findById(id);
-        return Optional.ofNullable(userPrincipalRepository.findOne(id));
+        return userPrincipalRepository.findById(id);
+//        return Optional.ofNullable(userPrincipalRepository.findOne(id));
     }
 }

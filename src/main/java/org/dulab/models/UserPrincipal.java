@@ -5,17 +5,14 @@ import org.dulab.validation.NotBlank;
 
 import javax.persistence.*;
 import javax.servlet.http.HttpSession;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(uniqueConstraints = {
         @UniqueConstraint(name = "UserPrincipal_Username", columnNames = "Username")
 })
-public class UserPrincipal implements Principal, Cloneable, Serializable {
+public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -45,7 +42,7 @@ public class UserPrincipal implements Principal, Cloneable, Serializable {
         this.id = id;
     }
 
-    @Basic(optional = false)
+    @Basic(optional = false, fetch = FetchType.EAGER)
     public String getUsername() {
         return username;
     }
@@ -54,7 +51,7 @@ public class UserPrincipal implements Principal, Cloneable, Serializable {
         this.username = username;
     }
 
-    @Basic(optional = false)
+    @Basic(optional = false, fetch = FetchType.EAGER)
     public String getEmail() {
         return email;
     }
@@ -63,7 +60,8 @@ public class UserPrincipal implements Principal, Cloneable, Serializable {
         this.email = email;
     }
 
-    @Basic(optional = false)
+//    @Basic(optional = false)
+    @Basic(fetch = FetchType.EAGER)
     public byte[] getHashedPassword() {
         return hashedPassword;
     }
@@ -100,7 +98,7 @@ public class UserPrincipal implements Principal, Cloneable, Serializable {
 //        submission.setUser(null);
 //    }
 
-    @Override
+//    @Override
     @Transient
     public String getName() {
         return username;
@@ -136,7 +134,7 @@ public class UserPrincipal implements Principal, Cloneable, Serializable {
         return session == null ? null : (UserPrincipal) session.getAttribute(SESSION_ATTRIBUTE_KEY);
     }
 
-    public static void assign(HttpSession session, Principal principal) {
+    public static void assign(HttpSession session, UserPrincipal principal) {
         session.setAttribute(SESSION_ATTRIBUTE_KEY, principal);
     }
 }

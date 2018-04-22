@@ -1,6 +1,7 @@
 package org.dulab.site.services;
 
 import org.dulab.models.Submission;
+import org.dulab.models.SubmissionCategory;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
@@ -20,4 +21,8 @@ public interface SubmissionService {
             @Valid Submission submission);
 
     void deleteSubmission(Submission submission);
+
+    Optional<SubmissionCategory> getSubmissionCategory(long submissionCategoryId);
+
+    List<SubmissionCategory> getAllSubmissionCategories();
 }

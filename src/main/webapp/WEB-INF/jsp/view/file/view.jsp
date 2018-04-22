@@ -89,11 +89,13 @@
                 <form:textarea path="description" rows="12" cols="80"/><br/>
                 <form:errors path="description" cssClass="errors"/><br/>
 
-                <form:select path="category">
-                    <form:option value="" label="--- Select ---"/>
-                    <form:options items="${submissionCategories}"/>
-                    <form:option value="" label="Create new category..."/>
+                <form:label path="submissionCategoryId">Submission Category</form:label><br/>
+                <form:select path="submissionCategoryId">
+                    <form:option value="0" label="--- Select ---"/>
+                    <form:options items="${submissionCategories}" itemValue="id"/>
                 </form:select>
+                <form:errors path="submissionCategoryId" cssClass="errors"/><br/>
+
 
                 <div align="center">
                     <input type="submit" value="<c:choose>
