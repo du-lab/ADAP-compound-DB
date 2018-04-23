@@ -103,6 +103,18 @@ public class Spectrum implements Serializable {
     }
 
     @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (!(other instanceof Spectrum)) return false;
+        return id == ((Spectrum) other).id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(id);
+    }
+
+    @Override
     public String toString() {
         return name != null ? name : "UNKNOWN";
     }

@@ -54,4 +54,16 @@ public class Peak implements Serializable {
     public void setIntensity(double intensity) {
         this.intensity = intensity;
     }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (!(other instanceof Peak)) return false;
+        return id == ((Peak) other).id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(id);
+    }
 }

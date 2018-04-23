@@ -56,6 +56,18 @@ public class SpectrumProperty {
     }
 
     @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (!(other instanceof SpectrumProperty)) return false;
+        return id == ((SpectrumProperty) other).id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(id);
+    }
+
+    @Override
     public String toString() {
         return name + " = " + value;
     }

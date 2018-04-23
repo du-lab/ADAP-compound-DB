@@ -61,6 +61,18 @@ public class SubmissionCategory implements Serializable {
     }
 
     @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (!(other instanceof SubmissionCategory)) return false;
+        return id == ((SubmissionCategory) other).id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(id);
+    }
+
+    @Override
     public String toString() {
         return name;
     }
