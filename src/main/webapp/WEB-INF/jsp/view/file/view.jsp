@@ -90,11 +90,22 @@
                 <form:errors path="description" cssClass="errors"/><br/>
 
                 <form:label path="submissionCategoryId">Submission Category</form:label><br/>
-                <form:select path="submissionCategoryId">
-                    <form:option value="0" label="--- Select ---"/>
-                    <form:options items="${submissionCategories}" itemValue="id"/>
-                </form:select>
-                <form:errors path="submissionCategoryId" cssClass="errors"/><br/>
+                <span style="vertical-align: bottom;">
+                    <form:select path="submissionCategoryId">
+                        <form:option value="0" label="--- Select ---"/>
+                        <form:options items="${submissionCategories}" itemValue="id"/>
+                    </form:select>
+                </span>
+                <a href="<c:url value="/submissioncategory/"/>">
+                    <!--list-->
+                    <i class="material-icons" title="Manage categories">&#xE896;</i>
+                </a>
+                <a href="<c:url value="/submissioncategory/add/"/>">
+                    <!--add circle-->
+                    <i class="material-icons" title="Add new category">&#xE147;</i>
+                </a><br/>
+                <form:errors path="submissionCategoryId" cssClass="errors"/>
+
 
 
                 <div align="center">

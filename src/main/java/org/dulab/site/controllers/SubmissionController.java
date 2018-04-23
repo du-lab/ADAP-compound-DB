@@ -84,8 +84,7 @@ public class SubmissionController {
         submission.setDateTime(new Date());
         submission.setUser(UserPrincipal.from(session));
         submission.setCategory(submissionService
-                .getSubmissionCategory(form.getSubmissionCategoryId())
-                .orElse(null));
+                .getSubmissionCategory(form.getSubmissionCategoryId()));
 
         try {
             submissionService.saveSubmission(submission);

@@ -9,4 +9,6 @@ import java.util.List;
 public interface SubmissionRepository extends CrudRepository<Submission, Long> {
 
     Iterable<Submission> findByUserId(long userPrincipalId);
+
+    long countByCategoryId(long submissionCategoryId);
 }

@@ -30,7 +30,6 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Transactional
     public Optional<Submission> findSubmission(long submissionId) {
         return submissionRepository.findById(submissionId);
-//        return Optional.ofNullable(submissionRepository.findOne(submissionId));
     }
 
     @Override
@@ -53,9 +52,22 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     @Override
     @Transactional
-    public Optional<SubmissionCategory> getSubmissionCategory(long submissionCategoryId) {
-        return submissionCategoryRespository.findById(submissionCategoryId);
-//        return submissionCategoryRespository.findOne(submissionCategoryId);
+    public long getSubmissionCountByCategory(long submissionCategoryId) {
+        return submissionRepository.countByCategoryId(submissionCategoryId);
+    }
+
+    @Override
+    @Transactional
+    public void saveSubmissionCategory(SubmissionCategory submissionCategory) {
+        submissionCategoryRespository.save(submissionCategory);
+    }
+
+    @Override
+    @Transactional
+    public SubmissionCategory getSubmissionCategory(long submissionCategoryId) {
+        return submissionCategoryRespository.findById(submissionCategoryId)
+                .orElseThrow(() -> new IllegalStateException(
+                        "Cannot find Submission Category with ID = " + submissionCategoryId));
     }
 
     @Override

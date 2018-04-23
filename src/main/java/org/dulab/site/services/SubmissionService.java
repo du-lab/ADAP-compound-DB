@@ -22,7 +22,11 @@ public interface SubmissionService {
 
     void deleteSubmission(Submission submission);
 
-    Optional<SubmissionCategory> getSubmissionCategory(long submissionCategoryId);
+    void saveSubmissionCategory(SubmissionCategory submissionCategory);
+
+    long getSubmissionCountByCategory(long submissionCategoryId);
+
+    SubmissionCategory getSubmissionCategory(long submissionCategoryId);
 
     List<SubmissionCategory> getAllSubmissionCategories();
 }
