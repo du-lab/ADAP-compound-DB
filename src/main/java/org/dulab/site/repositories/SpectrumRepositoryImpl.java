@@ -1,6 +1,7 @@
 package org.dulab.site.repositories;
 
 import org.dulab.models.Hit;
+import org.dulab.models.search.CriteriaBlock;
 import org.dulab.models.Spectrum;
 import org.dulab.models.UserParameters;
 
@@ -16,7 +17,9 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     private EntityManager entityManager;
 
     @Override
-    public Iterable<Hit> searchSpectra(Spectrum querySpectrum, UserParameters parameters) {
+    public Iterable<Hit> searchSpectra(Spectrum querySpectrum,
+                                       CriteriaBlock criteriaBlock,
+                                       UserParameters parameters) {
 
         StringBuilder sqlBuilder = new StringBuilder();
         sqlBuilder.append("SELECT SpectrumId, POWER(SUM(Product), 2) AS Score FROM (\n");
@@ -24,9 +27,9 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                 .stream()
                 .map(p -> "\tSELECT SpectrumId, SQRT(Intensity * "
                     + p.getIntensity()
-                    + ") AS Product FROM Peak WHERE ABS(Mz - "
+                    + ") AS Product FROM PeakView WHERE ABS(Mz - "
                     + p.getMz()
-                    + ") < :eps\n")
+                    + ") < :eps AND " + criteriaBlock.toString() + "\n")
                     .collect(Collectors.joining("\tUNION\n")));
         sqlBuilder.append(") AS Result\n");
         sqlBuilder.append("GROUP BY SpectrumId\n");

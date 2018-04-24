@@ -2,6 +2,7 @@ package org.dulab.site.controllers;
 
 import org.dulab.exceptions.EmptySearchResultException;
 import org.dulab.models.*;
+import org.dulab.models.search.*;
 import org.dulab.site.services.*;
 import org.dulab.validation.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -150,6 +151,7 @@ public class SubmissionController {
                         @PathVariable("spectrumId") int spectrumId,
                         HttpSession session,
                         Model model) {
+
         Submission submission = getSubmission(submissionId, session);
         Spectrum querySpectrum = submission.getSpectra().get(spectrumId);
 
@@ -157,9 +159,12 @@ public class SubmissionController {
 
         SpectrumSearchForm form = new SpectrumSearchForm();
         form.fromUserParameters(userParameters);
+        form.setChromatographyTypeCheck(false);
+        form.setSubmissionCategoryCheck(false);
 
         model.addAttribute("querySpectrum", querySpectrum);
         model.addAttribute("form", form);
+        model.addAttribute("chromatographyTypes", ChromatographyType.values());
 
         return "file/match";
     }
@@ -176,8 +181,20 @@ public class SubmissionController {
         UserParameters userParameters = new UserParameters();
         form.toUserParameters(userParameters);
 
+        CriteriaBlock criteria = new CriteriaBlock(SetOperator.AND);
+        if (form.isChromatographyTypeCheck())
+            criteria.add(
+                    new Criterion("ChromatographyType", ComparisonOperator.EQ, form.chromatographyType));
+        if (form.isSubmissionCategoryCheck()) {
+            CriteriaBlock categories = new CriteriaBlock(SetOperator.OR);
+            for (long id : form.getSubmissionCategoryIds())
+                categories.add(
+                        new Criterion("SubmissionCategoryId", ComparisonOperator.EQ, id));
+            criteria.add(new Criterion("", ComparisonOperator.BLOCK, categories));
+        }
+
         try {
-            List<Hit> hits = spectrumService.match(querySpectrum, userParameters);
+            List<Hit> hits = spectrumService.match(querySpectrum, criteria, userParameters);
             model.addAttribute("hits", hits);
         }
         catch (EmptySearchResultException e) {
@@ -245,6 +262,14 @@ public class SubmissionController {
         @Max(value = 1000, message = "Matching score threshold must be between 0 and 1000.")
         private int scoreThreshold;
 
+        private boolean chromatographyTypeCheck;
+
+        private ChromatographyType chromatographyType;
+
+        private boolean submissionCategoryCheck;
+
+        private List<Long> submissionCategoryIds;
+
         public float getMzTolerance() {
             return mzTolerance;
         }
@@ -267,6 +292,38 @@ public class SubmissionController {
 
         public void setScoreThreshold(int scoreThreshold) {
             this.scoreThreshold = scoreThreshold;
+        }
+
+        public boolean isChromatographyTypeCheck() {
+            return chromatographyTypeCheck;
+        }
+
+        public void setChromatographyTypeCheck(boolean chromatographyTypeCheck) {
+            this.chromatographyTypeCheck = chromatographyTypeCheck;
+        }
+
+        public ChromatographyType getChromatographyType() {
+            return chromatographyType;
+        }
+
+        public void setChromatographyType(ChromatographyType chromatographyType) {
+            this.chromatographyType = chromatographyType;
+        }
+
+        public boolean isSubmissionCategoryCheck() {
+            return submissionCategoryCheck;
+        }
+
+        public void setSubmissionCategoryCheck(boolean submissionCategoryCheck) {
+            this.submissionCategoryCheck = submissionCategoryCheck;
+        }
+
+        public List<Long> getSubmissionCategoryIds() {
+            return submissionCategoryIds;
+        }
+
+        public void setSubmissionCategoryIds(List<Long> submissionCategoryIds) {
+            this.submissionCategoryIds = submissionCategoryIds;
         }
 
         void fromUserParameters(UserParameters ups) {

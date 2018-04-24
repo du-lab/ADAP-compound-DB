@@ -216,10 +216,16 @@ section form input[type=radio] + label {
 }
 
 /* Default values for many form elements */
-section form select, input[type=text], input[type=password], input[type=file]{
+section form select:not([multiple]), input[type=text], input[type=password], input[type=file] {
     margin: 5px 0;
     padding: 0 10px;
     height: 2em;
+    font-family: Verdana, Georgia, sans-serif;
+}
+
+section form select[multiple] {
+    margin: 5px 0;
+    padding: 0 10px;
     font-family: Verdana, Georgia, sans-serif;
 }
 

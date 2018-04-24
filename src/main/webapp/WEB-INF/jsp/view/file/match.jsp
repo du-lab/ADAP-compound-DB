@@ -5,6 +5,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <jsp:include page="/WEB-INF/jsp/includes/header.jsp" />
 <jsp:include page="/WEB-INF/jsp/includes/column_left_home.jsp" />
 
@@ -105,17 +106,49 @@
                 </div>
             </c:if>
             <form:form method="post" modelAttribute="form">
-                <form:label path="mzTolerance">M/z tolerance:</form:label><br/>
-                <form:input path="mzTolerance"/><br/>
-                <form:errors path="mzTolerance" cssClass="errors"/><br/>
+                <form:errors path="" cssClass="errors"/>
 
-                <form:label path="numHits">Maximum number of hits:</form:label><br/>
-                <form:input path="numHits"/><br/>
-                <form:errors path="numHits" cssClass="errors"/><br/>
+                <div class="subsection">
+                    <form:label path="mzTolerance">M/z tolerance:</form:label><br/>
+                    <form:input path="mzTolerance"/><br/>
+                    <form:errors path="mzTolerance" cssClass="errors"/><br/>
 
-                <form:label path="scoreThreshold">Matching score threshold:</form:label><br/>
-                <form:input path="scoreThreshold"/><br/>
-                <form:errors path="scoreThreshold" cssClass="errors"/><br/>
+                    <form:label path="numHits">Maximum number of hits:</form:label><br/>
+                    <form:input path="numHits"/><br/>
+                    <form:errors path="numHits" cssClass="errors"/><br/>
+
+                    <form:label path="scoreThreshold">Matching score threshold:</form:label><br/>
+                    <form:input path="scoreThreshold"/><br/>
+                    <form:errors path="scoreThreshold" cssClass="errors"/><br/>
+                </div>
+
+                <div class="subsection">
+                    <label>
+                        <form:checkbox path="chromatographyTypeCheck"
+                                       onchange="document.getElementById('chromatographyTypeSelect').disabled = !this.checked"/>
+                        Chromatography Type
+                    </label><br/>
+                    <form:select id="chromatographyTypeSelect"
+                                 path="chromatographyType"
+                                 items="${chromatographyTypes}"
+                                 itemLabel="label"
+                                 disabled="true"/><br/>
+                    <form:errors path="chromatographyType" cssClass="errors"/><br/>
+
+                    <label>
+                        <form:checkbox path="submissionCategoryCheck"
+                                       onchange="document.getElementById('submissionCategorySelect').disabled = !this.checked"/>
+                        Submission Categories
+                    </label><br/>
+                    <form:select id="submissionCategorySelect"
+                                 path="submissionCategoryIds"
+                                 items="${submissionCategories}"
+                                 itemValue="Id"
+                                 disabled="true"
+                                 size="${fn:length(submissionCategories)}"
+                                 cssStyle="max-height: 200px;"/><br/>
+                    <form:errors path="submissionCategoryIds" cssClass="errors"/><br/>
+                </div>
 
                 <div align="center">
                     <input type="submit" value="Search"/>
@@ -129,7 +162,9 @@
 <script src="<c:url value="/resources/js/zingchart/zingchart.min.js"/>"></script>
 <script src="<c:url value="/resources/js/spectrumMatch.js"/>"></script>
 <script>
-    document.getElementById("firstRow").click();
+    var firstRow = document.getElementById("firstRow");
+    if (firstRow != null)
+        firstRow.click();
 </script>
 
 <!-- End the middle column -->

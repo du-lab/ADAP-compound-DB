@@ -1,6 +1,7 @@
 package org.dulab.site.services;
 
 import org.dulab.exceptions.EmptySearchResultException;
+import org.dulab.models.search.CriteriaBlock;
 import org.dulab.models.Hit;
 import org.dulab.models.Spectrum;
 import org.dulab.models.UserParameters;
@@ -31,10 +32,10 @@ public class SpectrumServiceImpl implements SpectrumService {
 
     @Override
     @Transactional
-    public List<Hit> match(Spectrum querySpectrum, UserParameters parameters)
+    public List<Hit> match(Spectrum querySpectrum, CriteriaBlock criteria, UserParameters parameters)
             throws EmptySearchResultException {
 
-        List<Hit> hits = ServiceUtils.toList(spectrumRepository.searchSpectra(querySpectrum, parameters));
+        List<Hit> hits = ServiceUtils.toList(spectrumRepository.searchSpectra(querySpectrum, criteria, parameters));
 
         if (hits.isEmpty())
             throw new EmptySearchResultException();
