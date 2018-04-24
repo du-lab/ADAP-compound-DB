@@ -12,7 +12,7 @@ import java.util.Optional;
 @Validated
 public interface SubmissionService {
 
-    Optional<Submission> findSubmission(long submissionId);
+    Submission findSubmission(long submissionId);
 
     List<Submission> getSubmissionsByUserId(long userId);
 

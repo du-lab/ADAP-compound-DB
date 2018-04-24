@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,8 +29,9 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     @Override
     @Transactional
-    public Optional<Submission> findSubmission(long submissionId) {
-        return submissionRepository.findById(submissionId);
+    public Submission findSubmission(long submissionId) {
+        return submissionRepository.findById(submissionId)
+                .orElseThrow(EmptyStackException::new);
     }
 
     @Override

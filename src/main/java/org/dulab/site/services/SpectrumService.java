@@ -14,7 +14,7 @@ import java.util.Optional;
 @Validated
 public interface SpectrumService {
 
-    Optional<Spectrum> find(long id);
+    Spectrum find(long id);
 
     List<Hit> match(@NotNull(message = "Query spectrum is required.") @Valid Spectrum querySpectrum,
                     @NotNull(message = "List of search criteria is required") CriteriaBlock criteria,
