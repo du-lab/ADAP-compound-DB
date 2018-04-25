@@ -26,9 +26,7 @@ public class SpectrumController {
     public String spectrum(@PathVariable("spectrumId") long spectrumId,
                            Model model) {
 
-        Spectrum spectrum = spectrumService
-                .find(spectrumId)
-                .orElseThrow(() -> new IllegalStateException("Cannot find spectrum with ID = " + spectrumId));
+        Spectrum spectrum = spectrumService.find(spectrumId);
 
         return spectrum(spectrum, model);
     }

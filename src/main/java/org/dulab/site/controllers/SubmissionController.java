@@ -123,9 +123,7 @@ public class SubmissionController {
     @RequestMapping(value = "{submissionId:\\d+}/delete/")
     public View delete(HttpServletRequest request, @PathVariable("submissionId") long id) {
 
-        Submission submission = submissionService
-                .findSubmission(id)
-                .orElseThrow(() -> new IllegalStateException("Submission with Id = " + id + " does not exist."));
+        Submission submission = submissionService.findSubmission(id);
 
         submissionService.deleteSubmission(submission);
         return new RedirectView("/account/", true);
@@ -208,9 +206,12 @@ public class SubmissionController {
     }
 
     private Submission getSubmission(long id, HttpSession session) {
-        return submissionService
-                .findSubmission(id)
-                .orElse(Submission.from(session));
+        try {
+            return submissionService.findSubmission(id);
+        }
+        catch (EmptySearchResultException e) {
+            return Submission.from(session);
+        }
     }
 
 
