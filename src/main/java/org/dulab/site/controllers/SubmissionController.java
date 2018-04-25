@@ -2,7 +2,6 @@ package org.dulab.site.controllers;
 
 import org.dulab.exceptions.EmptySearchResultException;
 import org.dulab.models.*;
-import org.dulab.models.search.*;
 import org.dulab.site.services.*;
 import org.dulab.validation.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -153,7 +152,7 @@ public class SubmissionController {
 //        Submission submission = getSubmission(submissionId, session);
 //        Spectrum querySpectrum = submission.getSpectra().get(spectrumId);
 //
-//        UserParameters userParameters = new UserParameters();
+//        UserParameter userParameters = new UserParameter();
 //
 //        SpectrumSearchForm form = new SpectrumSearchForm();
 //        form.fromUserParameters(userParameters);
@@ -176,7 +175,7 @@ public class SubmissionController {
 //        Submission submission = getSubmission(submissionId, session);
 //        Spectrum querySpectrum = submission.getSpectra().get(spectrumId);
 //
-//        UserParameters userParameters = new UserParameters();
+//        UserParameter userParameters = new UserParameter();
 //        form.toUserParameters(userParameters);
 //
 //        CriteriaBlock criteria = new CriteriaBlock(SetOperator.AND);
@@ -251,92 +250,92 @@ public class SubmissionController {
     }
 
 
-    public static class SpectrumSearchForm {
-
-        @Min(value = 0, message = "M/z tolerance must be positive.")
-        private float mzTolerance;
-
-        @Min(value = 1, message = "Maximum number of hits must be greater than or equal to one.")
-        private int numHits;
-
-        @Min(value = 0, message = "Matching score threshold must be between 0 and 1000.")
-        @Max(value = 1000, message = "Matching score threshold must be between 0 and 1000.")
-        private int scoreThreshold;
-
-        private boolean chromatographyTypeCheck;
-
-        private ChromatographyType chromatographyType;
-
-        private boolean submissionCategoryCheck;
-
-        private List<Long> submissionCategoryIds;
-
-        public float getMzTolerance() {
-            return mzTolerance;
-        }
-
-        public void setMzTolerance(float mzTolerance) {
-            this.mzTolerance = mzTolerance;
-        }
-
-        public int getNumHits() {
-            return numHits;
-        }
-
-        public void setNumHits(int numHits) {
-            this.numHits = numHits;
-        }
-
-        public int getScoreThreshold() {
-            return scoreThreshold;
-        }
-
-        public void setScoreThreshold(int scoreThreshold) {
-            this.scoreThreshold = scoreThreshold;
-        }
-
-        public boolean isChromatographyTypeCheck() {
-            return chromatographyTypeCheck;
-        }
-
-        public void setChromatographyTypeCheck(boolean chromatographyTypeCheck) {
-            this.chromatographyTypeCheck = chromatographyTypeCheck;
-        }
-
-        public ChromatographyType getChromatographyType() {
-            return chromatographyType;
-        }
-
-        public void setChromatographyType(ChromatographyType chromatographyType) {
-            this.chromatographyType = chromatographyType;
-        }
-
-        public boolean isSubmissionCategoryCheck() {
-            return submissionCategoryCheck;
-        }
-
-        public void setSubmissionCategoryCheck(boolean submissionCategoryCheck) {
-            this.submissionCategoryCheck = submissionCategoryCheck;
-        }
-
-        public List<Long> getSubmissionCategoryIds() {
-            return submissionCategoryIds;
-        }
-
-        public void setSubmissionCategoryIds(List<Long> submissionCategoryIds) {
-            this.submissionCategoryIds = submissionCategoryIds;
-        }
-
-        void fromUserParameters(UserParameters ups) {
-            mzTolerance = ups.getSpectrumSearchMzTolerance();
-            numHits = ups.getSpectrumSearchNumHits();
-            scoreThreshold = Math.round(1000 * ups.getSpectrumSearchScoreThreshold());
-        }
-
-        void toUserParameters(UserParameters ups) {
-            ups.setSpectrumSearchMzTolerance(mzTolerance);
-            ups.setSpectrumSearchNumHits(numHits);
-            ups.setSpectrumSearchScoreThreshold(scoreThreshold / 1000.0F);
-        }
-    }
+//    public static class SpectrumSearchForm {
+//
+//        @Min(value = 0, message = "M/z tolerance must be positive.")
+//        private float mzTolerance;
+//
+//        @Min(value = 1, message = "Maximum number of hits must be greater than or equal to one.")
+//        private int numHits;
+//
+//        @Min(value = 0, message = "Matching score threshold must be between 0 and 1000.")
+//        @Max(value = 1000, message = "Matching score threshold must be between 0 and 1000.")
+//        private int scoreThreshold;
+//
+//        private boolean chromatographyTypeCheck;
+//
+//        private ChromatographyType chromatographyType;
+//
+//        private boolean submissionCategoryCheck;
+//
+//        private List<Long> submissionCategoryIds;
+//
+//        public float getMzTolerance() {
+//            return mzTolerance;
+//        }
+//
+//        public void setMzTolerance(float mzTolerance) {
+//            this.mzTolerance = mzTolerance;
+//        }
+//
+//        public int getNumHits() {
+//            return numHits;
+//        }
+//
+//        public void setNumHits(int numHits) {
+//            this.numHits = numHits;
+//        }
+//
+//        public int getScoreThreshold() {
+//            return scoreThreshold;
+//        }
+//
+//        public void setScoreThreshold(int scoreThreshold) {
+//            this.scoreThreshold = scoreThreshold;
+//        }
+//
+//        public boolean isChromatographyTypeCheck() {
+//            return chromatographyTypeCheck;
+//        }
+//
+//        public void setChromatographyTypeCheck(boolean chromatographyTypeCheck) {
+//            this.chromatographyTypeCheck = chromatographyTypeCheck;
+//        }
+//
+//        public ChromatographyType getChromatographyType() {
+//            return chromatographyType;
+//        }
+//
+//        public void setChromatographyType(ChromatographyType chromatographyType) {
+//            this.chromatographyType = chromatographyType;
+//        }
+//
+//        public boolean isSubmissionCategoryCheck() {
+//            return submissionCategoryCheck;
+//        }
+//
+//        public void setSubmissionCategoryCheck(boolean submissionCategoryCheck) {
+//            this.submissionCategoryCheck = submissionCategoryCheck;
+//        }
+//
+//        public List<Long> getSubmissionCategoryIds() {
+//            return submissionCategoryIds;
+//        }
+//
+//        public void setSubmissionCategoryIds(List<Long> submissionCategoryIds) {
+//            this.submissionCategoryIds = submissionCategoryIds;
+//        }
+//
+//        void fromUserParameters(UserParameter ups) {
+//            mzTolerance = ups.getSpectrumSearchMzTolerance();
+//            numHits = ups.getSpectrumSearchNumHits();
+//            scoreThreshold = Math.round(1000 * ups.getSpectrumSearchScoreThreshold());
+//        }
+//
+//        void toUserParameters(UserParameter ups) {
+//            ups.setSpectrumSearchMzTolerance(mzTolerance);
+//            ups.setSpectrumSearchNumHits(numHits);
+//            ups.setSpectrumSearchScoreThreshold(scoreThreshold / 1000.0F);
+//        }
+//    }
 }
