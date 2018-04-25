@@ -6,10 +6,12 @@ import org.dulab.models.Hit;
 import org.dulab.models.Spectrum;
 import org.dulab.models.UserParameters;
 import org.dulab.site.repositories.SpectrumRepository;
+import org.hibernate.exception.SQLGrammarException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLSyntaxErrorException;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,7 +37,13 @@ public class SpectrumServiceImpl implements SpectrumService {
     public List<Hit> match(Spectrum querySpectrum, CriteriaBlock criteria, UserParameters parameters)
             throws EmptySearchResultException {
 
-        List<Hit> hits = ServiceUtils.toList(spectrumRepository.searchSpectra(querySpectrum, criteria, parameters));
+        List<Hit> hits;
+        try {
+            hits = ServiceUtils.toList(spectrumRepository.searchSpectra(querySpectrum, criteria, parameters));
+        } catch (SQLGrammarException e) {
+            throw new EmptySearchResultException(e.getMessage());
+        }
+
 
         if (hits.isEmpty())
             throw new EmptySearchResultException();

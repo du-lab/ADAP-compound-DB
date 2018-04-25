@@ -1,6 +1,6 @@
 <%--@elvariable id="querySpectrum" type="org.dulab.models.Spectrum"--%>
 <%--@elvariable id="hits" type="java.util.List<org.dulab.models.Hit>"--%>
-<%--@elvariable id="form" type="org.dulab.site.controllers.SubmissionController.SpectrumSearchForm"--%>
+<%--@elvariable id="form" type="org.dulab.site.controllers.SearchController.SearchForm"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
@@ -14,11 +14,6 @@
 <section>
     <h1>Query Spectrum</h1>
 
-    <%--<div align="right" style="float: right">--%>
-        <%--<p><a href="/submission/${querySpectrum.submission.id}/${dulab:getListIndex(querySpectrum.submission.spectra, querySpectrum)}/"--%>
-              <%--class="button">View Spectrum</a></p>--%>
-    <%--</div>--%>
-
     <div align="center">
         <table>
             <tr>
@@ -30,8 +25,8 @@
                     ${querySpectrum.submission.name}<br/>
                     <small>${querySpectrum.submission.chromatographyType.label}</small>
                 </td>
-                <!--visibility-->
-                <td><a href="/spectrum/${querySpectrum.id}/"><i class="material-icons">&#xE8F4;</i></a></td>
+                <!--more horiz-->
+                <td><a href="/spectrum/${querySpectrum.id}/"><i class="material-icons">&#xE5D3;</i></a></td>
             </tr>
         </table>
     </div>
@@ -78,8 +73,8 @@
                                 ${hit.spectrum.submission.name}<br/>
                                 <small>${hit.spectrum.submission.chromatographyType.label}</small>
                             </td>
-                            <!--visibility-->
-                            <td><a href="/spectrum/${hit.spectrum.id}/"><i class="material-icons">&#xE8F4;</i></a></td>
+                            <!--more horiz-->
+                            <td><a href="/spectrum/${hit.spectrum.id}/"><i class="material-icons">&#xE5D3;</i></a></td>
                         </tr>
                     </c:forEach>
                 </table>

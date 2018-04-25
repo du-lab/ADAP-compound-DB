@@ -43,12 +43,12 @@
                         <td><a href="${i}/">${submission.spectra[i]}</a></td>
                         <td>${dulab:abbreviate(submission.spectra[i].properties, 80)}</td>
                         <td>
-                            <!-- forward -->
-                            <a href="${i}/"><i class="material-icons">&#xE154;</i></a>
+                            <!-- more horiz -->
+                            <a href="${i}/"><i class="material-icons" title="View spectrum">&#xE5D3;</i></a>
                             <!-- search -->
-                            <a href="${i}/match/"><i class="material-icons">&#xE8B6;</i></a>
+                            <a href="${i}/search/"><i class="material-icons" title="Search spectrum">&#xE8B6;</i></a>
                             <!-- delete -->
-                            <a href="${i}/delete/"><i class="material-icons">&#xE872;</i></a>
+                            <a href="${i}/delete/"><i class="material-icons" title="Delete spectrum">&#xE872;</i></a>
                         </td>
                     </tr>
                 </c:forEach>

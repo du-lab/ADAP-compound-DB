@@ -144,66 +144,66 @@ public class SubmissionController {
     }
 
 
-    @RequestMapping(value = "{submissionId:\\d+}/{spectrumId:\\d+}/match/", method = RequestMethod.GET)
-    public String matchGet(@PathVariable("submissionId") long submissionId,
-                        @PathVariable("spectrumId") int spectrumId,
-                        HttpSession session,
-                        Model model) {
-
-        Submission submission = getSubmission(submissionId, session);
-        Spectrum querySpectrum = submission.getSpectra().get(spectrumId);
-
-        UserParameters userParameters = new UserParameters();
-
-        SpectrumSearchForm form = new SpectrumSearchForm();
-        form.fromUserParameters(userParameters);
-        form.setChromatographyTypeCheck(false);
-        form.setSubmissionCategoryCheck(false);
-
-        model.addAttribute("querySpectrum", querySpectrum);
-        model.addAttribute("form", form);
-        model.addAttribute("chromatographyTypes", ChromatographyType.values());
-
-        return "file/match";
-    }
-
-    @RequestMapping(value = "{submissionId:\\d+}/{spectrumId:\\d+}/match/", method = RequestMethod.POST)
-    public String matchPost(@PathVariable("submissionId") long submissionId,
-                            @PathVariable("spectrumId") int spectrumId,
-                            HttpSession session, Model model,
-                            @Valid SpectrumSearchForm form, Errors errors) {
-
-        Submission submission = getSubmission(submissionId, session);
-        Spectrum querySpectrum = submission.getSpectra().get(spectrumId);
-
-        UserParameters userParameters = new UserParameters();
-        form.toUserParameters(userParameters);
-
-        CriteriaBlock criteria = new CriteriaBlock(SetOperator.AND);
-        if (form.isChromatographyTypeCheck())
-            criteria.add(
-                    new Criterion("ChromatographyType", ComparisonOperator.EQ, form.chromatographyType));
-        if (form.isSubmissionCategoryCheck()) {
-            CriteriaBlock categories = new CriteriaBlock(SetOperator.OR);
-            for (long id : form.getSubmissionCategoryIds())
-                categories.add(
-                        new Criterion("SubmissionCategoryId", ComparisonOperator.EQ, id));
-            criteria.add(new Criterion("", ComparisonOperator.BLOCK, categories));
-        }
-
-        try {
-            List<Hit> hits = spectrumService.match(querySpectrum, criteria, userParameters);
-            model.addAttribute("hits", hits);
-        }
-        catch (EmptySearchResultException e) {
-            model.addAttribute("searchResultMessage", e.getMessage());
-        }
-
-        model.addAttribute("querySpectrum", querySpectrum);
-        model.addAttribute("form", form);
-
-        return "file/match";
-    }
+//    @RequestMapping(value = "{submissionId:\\d+}/{spectrumId:\\d+}/match/", method = RequestMethod.GET)
+//    public String matchGet(@PathVariable("submissionId") long submissionId,
+//                        @PathVariable("spectrumId") int spectrumId,
+//                        HttpSession session,
+//                        Model model) {
+//
+//        Submission submission = getSubmission(submissionId, session);
+//        Spectrum querySpectrum = submission.getSpectra().get(spectrumId);
+//
+//        UserParameters userParameters = new UserParameters();
+//
+//        SpectrumSearchForm form = new SpectrumSearchForm();
+//        form.fromUserParameters(userParameters);
+//        form.setChromatographyTypeCheck(false);
+//        form.setSubmissionCategoryCheck(false);
+//
+//        model.addAttribute("querySpectrum", querySpectrum);
+//        model.addAttribute("form", form);
+//        model.addAttribute("chromatographyTypes", ChromatographyType.values());
+//
+//        return "file/match";
+//    }
+//
+//    @RequestMapping(value = "{submissionId:\\d+}/{spectrumId:\\d+}/match/", method = RequestMethod.POST)
+//    public String matchPost(@PathVariable("submissionId") long submissionId,
+//                            @PathVariable("spectrumId") int spectrumId,
+//                            HttpSession session, Model model,
+//                            @Valid SpectrumSearchForm form, Errors errors) {
+//
+//        Submission submission = getSubmission(submissionId, session);
+//        Spectrum querySpectrum = submission.getSpectra().get(spectrumId);
+//
+//        UserParameters userParameters = new UserParameters();
+//        form.toUserParameters(userParameters);
+//
+//        CriteriaBlock criteria = new CriteriaBlock(SetOperator.AND);
+//        if (form.isChromatographyTypeCheck())
+//            criteria.add(
+//                    new Criterion("ChromatographyType", ComparisonOperator.EQ, form.chromatographyType));
+//        if (form.isSubmissionCategoryCheck()) {
+//            CriteriaBlock categories = new CriteriaBlock(SetOperator.OR);
+//            for (long id : form.getSubmissionCategoryIds())
+//                categories.add(
+//                        new Criterion("SubmissionCategoryId", ComparisonOperator.EQ, id));
+//            criteria.add(new Criterion("", ComparisonOperator.BLOCK, categories));
+//        }
+//
+//        try {
+//            List<Hit> hits = spectrumService.match(querySpectrum, criteria, userParameters);
+//            model.addAttribute("hits", hits);
+//        }
+//        catch (EmptySearchResultException e) {
+//            model.addAttribute("searchResultMessage", e.getMessage());
+//        }
+//
+//        model.addAttribute("querySpectrum", querySpectrum);
+//        model.addAttribute("form", form);
+//
+//        return "file/match";
+//    }
 
     private Submission getSubmission(long id, HttpSession session) {
         try {

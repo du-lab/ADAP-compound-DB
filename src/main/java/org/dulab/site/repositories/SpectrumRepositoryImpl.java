@@ -21,6 +21,10 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                                        CriteriaBlock criteriaBlock,
                                        UserParameters parameters) {
 
+        String criteriaBlockString = criteriaBlock.isEmpty()
+                ? ""
+                : " AND " + criteriaBlock.toString();
+
         StringBuilder sqlBuilder = new StringBuilder();
         sqlBuilder.append("SELECT SpectrumId, POWER(SUM(Product), 2) AS Score FROM (\n");
         sqlBuilder.append(querySpectrum.getPeaks()
@@ -29,7 +33,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                     + p.getIntensity()
                     + ") AS Product FROM PeakView WHERE ABS(Mz - "
                     + p.getMz()
-                    + ") < :eps AND " + criteriaBlock.toString() + "\n")
+                    + ") < :eps" + criteriaBlockString + "\n")
                     .collect(Collectors.joining("\tUNION\n")));
         sqlBuilder.append(") AS Result\n");
         sqlBuilder.append("GROUP BY SpectrumId\n");
