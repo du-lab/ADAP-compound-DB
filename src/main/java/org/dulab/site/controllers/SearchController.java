@@ -52,16 +52,16 @@ public class SearchController {
         model.addAttribute("submissionCategoryIds", submissionService.getAllSubmissionCategories());
     }
 
-    @PostConstruct
-    public void init() {
-        userPrincipalService.saveDefaultParameter(MZ_TOLERANCE_KEY, UserParameterType.FLOAT, 0.1F);
-        userPrincipalService.saveDefaultParameter(NUM_HITS_KEY, UserParameterType.INTEGER, 10);
-        userPrincipalService.saveDefaultParameter(SCORE_THRESHOLD_KEY, UserParameterType.FLOAT, 0.75F);
-        userPrincipalService.saveDefaultParameter(CHROMATOGRAPHY_TYPE_CHECK_KEY, UserParameterType.BOOLEAN, false);
-        userPrincipalService.saveDefaultParameter(CHROMATOGRAPHY_TYPE_KEY, UserParameterType.CHROMATOGRAPHY_TYPE, ChromatographyType.GAS);
-        userPrincipalService.saveDefaultParameter(SUBMISSION_CATEGORY_IDS_CHECK_KEY, UserParameterType.BOOLEAN, false);
-        userPrincipalService.saveDefaultParameter(SUBMISSION_CATEGORY_IDS_KEY, UserParameterType.INTEGER_LIST, new ArrayList<>(0));
-    }
+//    @PostConstruct
+//    public void init() {
+//        userPrincipalService.saveDefaultParameter(MZ_TOLERANCE_KEY, UserParameterType.FLOAT, 0.1F);
+//        userPrincipalService.saveDefaultParameter(NUM_HITS_KEY, UserParameterType.INTEGER, 10);
+//        userPrincipalService.saveDefaultParameter(SCORE_THRESHOLD_KEY, UserParameterType.FLOAT, 0.75F);
+//        userPrincipalService.saveDefaultParameter(CHROMATOGRAPHY_TYPE_CHECK_KEY, UserParameterType.BOOLEAN, false);
+//        userPrincipalService.saveDefaultParameter(CHROMATOGRAPHY_TYPE_KEY, UserParameterType.CHROMATOGRAPHY_TYPE, ChromatographyType.GAS);
+//        userPrincipalService.saveDefaultParameter(SUBMISSION_CATEGORY_IDS_CHECK_KEY, UserParameterType.BOOLEAN, false);
+//        userPrincipalService.saveDefaultParameter(SUBMISSION_CATEGORY_IDS_KEY, UserParameterType.INTEGER_LIST, new ArrayList<>(0));
+//    }
 
     @RequestMapping(
             value = "/submission/{submissionId:\\d+}/{spectrumListIndex:\\d+}/search/",
@@ -112,7 +112,7 @@ public class SearchController {
     private String searchGet(Spectrum querySpectrum, UserPrincipal user, Model model) {
 
         SearchForm form = new SearchForm();
-        form.initialize(userPrincipalService, user);
+//        form.initialize(userPrincipalService, user);
 
         model.addAttribute("querySpectrum", querySpectrum);
         model.addAttribute("form", form);
@@ -194,7 +194,7 @@ public class SearchController {
                     form.getMzTolerance(), form.getNumHits(), form.getFloatScoreThreshold());
             model.addAttribute("hits", hits);
 
-            form.saveParameters(userPrincipalService, user);
+//            form.saveParameters(userPrincipalService, user);
 
         } catch (EmptySearchResultException e) {
             model.addAttribute("searchResultMessage", e.getMessage());
