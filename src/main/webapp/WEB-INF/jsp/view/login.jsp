@@ -1,53 +1,65 @@
-<%--@elvariable id="logInForm" type="org.dulab.site.controllers.LogInForm"--%>
-
+<%--@elvariable id="logInForm" type="org.dulab.site.controllers.AuthenticationController.LogInForm"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="spring" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<!DOCTYPE html>
+<html>
+<head>
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link type="text/css" rel="stylesheet"
+          href="<c:url value="/resources/css/materialize.min.css"/>"
+          media="screen,projection">
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
 
-<jsp:include page="/WEB-INF/jsp/includes/header.jsp" />
-<jsp:include page="/WEB-INF/jsp/includes/column_left_home.jsp" />
+<body class="blue-grey lighten-5">
+    <nav class="brown" role="navigation">
+        <div class="nav-wrapper container">
+            <a id="logo-container" href="#" class="brand-logo">ADAP Compound Library</a>
+            <ul class="right hide-on-med-and-down">
+                <li><a href="#">Navbar Link</a></li>
+            </ul>
+            <ul id="nav-mobile" class="sidenav">
+                <li><a href="#">Navbar Link</a></li>
+            </ul>
+            <a href="#" data-target="nav-mobile" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+        </div>
+    </nav>
 
-<!-- Start the middle column -->
+    <div class="row  blue-grey lighten-5">
+        <div class="col s12 m4 l3 blue-grey">
+            asjghajkg
+        </div>
 
-<section>
-    <h1>Log-in</h1>
-    <div align="center">
-        <div align="left" class="subsection">
-            <p>You must log in to submit new mass spectra to the library.</p>
-            <c:if test="${loginFailed}">
-                <b class="errors">The username and password you entered are not correct. Please try again.</b><br/>
-            </c:if><c:if test="${validationErrors != null}"><div class="errors">
-                <ul>
-                    <c:forEach items="${validationErrors}" var="error">
-                        <li><c:out value="${error.message}"/></li>
-                    </c:forEach>
-                </ul>
-            </div></c:if>
-
-            <form:form method="POST" modelAttribute="logInForm">
-                <form:label path="username">Username:</form:label><br/>
-                <form:input path="username"/><br/>
-                <form:errors path="username" cssClass="errors"/><br/>
-                <form:label path="password">Password:</form:label><br/>
-                <form:password path="password"/><br/>
-                <form:errors path="password" cssClass="errors"/><br/>
-                <div align="center">
-                    <input type="submit" value="Log in"/>
-                </div>
-            </form:form>
+        <div class="col s12 m6 l6 offset-m1 offset-l1">
+            <div class="card-panel large">
+                <form:form method="post" modelAttribute="logInForm">
+                    <div class="card-content">
+                        <span class="card-title">Log-in</span>
+                        <div class="input-field">
+                            <form:label path="username" cssClass="validate">Username</form:label>
+                            <form:input path="username"/>
+                            <form:errors path="username" cssClass="errors"/>
+                        </div>
+                        <div class="input-field">
+                            <form:label path="password" cssClass="validate">Password</form:label>
+                            <form:input path="password"/>
+                            <form:errors path="password" cssClass="errors"/>
+                        </div>
+                    </div>
+                    <div class="card-action">
+                        <input type="submit" class="btn" value="Log in"/>
+                        <a href="/signup/" class="right">Register as a new user...</a>
+                    </div>
+                </form:form>
+            </div>
         </div>
     </div>
-</section>
 
-<section>
-    <h1>Sign-Up</h1>
-    <p>If you are not registered yet, please do it now:</p>
-    <div align="center">
-        <a href="<c:url value="/signup"/>" class="button">Register</a>
-    </div>
-</section>
-
-<!-- End the middle column -->
-
-<jsp:include page="/WEB-INF/jsp/includes/column_right_news.jsp" />
-<jsp:include page="/WEB-INF/jsp/includes/footer.jsp" />
+    <!--JavaScript at end of body for optimized loading-->
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="<c:url value="/resources/js/materialize.min.js"/>"></script>
+</body>
+</html>
