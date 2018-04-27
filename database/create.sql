@@ -1,8 +1,8 @@
 -- -----------------------------------------------------
 -- Schema adapcompounddb
 -- -----------------------------------------------------
-DROP SCHEMA IF EXISTS `adapcompounddb`
-CREATE SCHEMA `adapcompounddb` DEFAULT CHARACTER SET latin1 ;
+DROP SCHEMA  IF EXISTS `adapcompounddb`;
+CREATE SCHEMA IF NOT EXISTS `adapcompounddb` DEFAULT CHARACTER SET latin1 ;
 USE `adapcompounddb` ;
 
 -- -----------------------------------------------------
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SubmissionCategory` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 2
+AUTO_INCREMENT = 4
 DEFAULT CHARACTER SET = latin1;
 
 
@@ -132,3 +132,40 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SpectrumProperty` (
 ENGINE = InnoDB
 AUTO_INCREMENT = 7387
 DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `adapcompounddb`.`UserParameter`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `adapcompounddb`.`UserParameter` (
+  `Id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `UserPrincipalId` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
+  `Identifier` VARCHAR(200) NOT NULL,
+  `Value` TEXT NOT NULL,
+  `Type` VARCHAR(30) NOT NULL,
+  PRIMARY KEY (`Id`),
+  INDEX `UserParameter_UserPrincipalId_Identifier_index` (`UserPrincipalId` ASC, `Identifier` ASC),
+  CONSTRAINT `UserParameter_UserPrincipal_Id_fk`
+    FOREIGN KEY (`UserPrincipalId`)
+    REFERENCES `adapcompounddb`.`UserPrincipal` (`Id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB
+AUTO_INCREMENT = 23
+DEFAULT CHARACTER SET = latin1;
+
+USE `adapcompounddb` ;
+
+-- -----------------------------------------------------
+-- Placeholder table for view `adapcompounddb`.`peakview`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `adapcompounddb`.`peakview` (`SpectrumId` INT, `Mz` INT, `Intensity` INT, `ChromatographyType` INT, `SubmissionCategoryId` INT);
+
+-- -----------------------------------------------------
+-- View `adapcompounddb`.`peakview`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `adapcompounddb`.`peakview`;
+USE `adapcompounddb`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `adapcompounddb`.`peakview` AS select `adapcompounddb`.`peak`.`SpectrumId` AS `SpectrumId`,`adapcompounddb`.`peak`.`Mz` AS `Mz`,`adapcompounddb`.`peak`.`Intensity` AS `Intensity`,`adapcompounddb`.`submission`.`ChromatographyType` AS `ChromatographyType`,`adapcompounddb`.`submission`.`SubmissionCategoryId` AS `SubmissionCategoryId` from ((`adapcompounddb`.`peak` join `adapcompounddb`.`spectrum`) join `adapcompounddb`.`submission`) where ((`adapcompounddb`.`peak`.`SpectrumId` = `adapcompounddb`.`spectrum`.`Id`) and (`adapcompounddb`.`spectrum`.`SubmissionId` = `adapcompounddb`.`submission`.`Id`));
+
+
