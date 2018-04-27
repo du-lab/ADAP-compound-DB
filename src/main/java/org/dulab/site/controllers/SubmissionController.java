@@ -18,15 +18,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import java.io.IOException;
 import java.util.Date;
-import java.util.List;
 
 @Controller
 @ControllerAdvice
-@RequestMapping("submission/")
+//@RequestMapping("submission/")
 public class SubmissionController {
 
     private final SubmissionService submissionService;
@@ -46,22 +43,32 @@ public class SubmissionController {
         model.addAttribute("submissionCategories", submissionService.getAllSubmissionCategories());
     }
 
-    @RequestMapping(value = "", method = RequestMethod.GET)
-    public View view() {
-        return new RedirectView("0/");
+    @RequestMapping(value = "/file/view/", method = RequestMethod.GET)
+    public String fileView(HttpSession session, Model model) {
+
+        Submission submission = Submission.from(session);
+        if (submission == null)
+            return "redirect:/file/upload/";
+
+        return view(Submission.from(session), model);
     }
 
     @RequestMapping(value = "{submissionId:\\d+}/", method = RequestMethod.GET)
-    public String viewSubmission(HttpSession session, Model model,
-                                 @PathVariable("submissionId") long submissionId) {
+    public String viewSubmission(@PathVariable("submissionId") long submissionId, Model model) {
 
-        Submission submission = getSubmission(submissionId, session);
+        Submission submission = submissionService.findSubmission(submissionId);
+
         if (submission == null)
-            return "file/submissionnotfound";
+            return submissionNotFound(model, submissionId);
+
+        return view(submission, model);
+    }
+
+    private String view(Submission submission, Model model) {
 
         model.addAttribute("submission", submission);
 
-        Form form = new Form();
+        SubmissionForm form = new SubmissionForm();
         form.setName(submission.getName());
         form.setDescription(submission.getDescription());
         form.setSubmissionCategoryId(submission.getCategory() == null ? 0 : submission.getCategory().getId());
@@ -70,10 +77,38 @@ public class SubmissionController {
         return "file/view";
     }
 
+    @RequestMapping(value = "/file/rawview/", method = RequestMethod.GET)
+    public String fileRawFiew(HttpSession session, HttpServletResponse response) throws IOException {
+        Submission submission = Submission.from(session);
+
+        if (submission == null)
+            return "redirect:/file/upload/";
+
+        rawView(response, Submission.from(session));
+    }
+
+    @RequestMapping(value = "/submission/{submissionId:\\d+}/rawview/", method = RequestMethod.GET)
+    public String rawView(@PathVariable("submissionId") long id, HttpServletResponse response, Model model)
+            throws IOException {
+
+        Submission submission = submissionService.findSubmission(id);
+
+        if (submission == null)
+            return submissionNotFound(model, id);
+
+        rawView(response, submission);
+    }
+
+    private void rawView(HttpServletResponse response, Submission submission) throws IOException {
+        response.setContentType("text/plain");
+        response.setHeader("Content-Disposition", "inline; filename=\"" + submission.getFilename() + "\"");
+        response.getOutputStream().write(submission.getFile());
+    }
+
     @RequestMapping(value = "{submissionId:\\d+}/", method = RequestMethod.POST)
     public ModelAndView submit(HttpSession session, Model model,
                                @PathVariable("submissionId") long submissionId,
-                               @Valid Form form, Errors errors) {
+                               @Valid SubmissionController.SubmissionForm form, Errors errors) {
 
         if (errors.hasErrors())
             return new ModelAndView("file/view");
@@ -99,15 +134,7 @@ public class SubmissionController {
         return new ModelAndView(new RedirectView("/submission/" + submission.getId() + "/", true));
     }
 
-    @RequestMapping(value = "{submissionId:\\d+}/fileview/", method = RequestMethod.GET)
-    public void rawView(HttpSession session, HttpServletResponse response,
-                        @PathVariable("submissionId") long id) throws IOException {
 
-        Submission submission = getSubmission(id, session);
-        response.setContentType("text/plain");
-        response.setHeader("Content-Disposition", "inline; filename=\"" + submission.getFilename() + "\"");
-        response.getOutputStream().write(submission.getFile());
-    }
 
     @RequestMapping(value = "{submissionId:\\d+}/filedownload/", method = RequestMethod.GET)
     public void rawDownload(HttpSession session, HttpServletResponse response,
@@ -142,67 +169,10 @@ public class SubmissionController {
         return "file/spectrum";
     }
 
-
-//    @RequestMapping(value = "{submissionId:\\d+}/{spectrumId:\\d+}/match/", method = RequestMethod.GET)
-//    public String matchGet(@PathVariable("submissionId") long submissionId,
-//                        @PathVariable("spectrumId") int spectrumId,
-//                        HttpSession session,
-//                        Model model) {
-//
-//        Submission submission = getSubmission(submissionId, session);
-//        Spectrum querySpectrum = submission.getSpectra().get(spectrumId);
-//
-//        UserParameter userParameters = new UserParameter();
-//
-//        SpectrumSearchForm form = new SpectrumSearchForm();
-//        form.fromUserParameters(userParameters);
-//        form.setChromatographyTypeCheck(false);
-//        form.setSubmissionCategoryCheck(false);
-//
-//        model.addAttribute("querySpectrum", querySpectrum);
-//        model.addAttribute("form", form);
-//        model.addAttribute("chromatographyTypes", ChromatographyType.values());
-//
-//        return "file/match";
-//    }
-//
-//    @RequestMapping(value = "{submissionId:\\d+}/{spectrumId:\\d+}/match/", method = RequestMethod.POST)
-//    public String matchPost(@PathVariable("submissionId") long submissionId,
-//                            @PathVariable("spectrumId") int spectrumId,
-//                            HttpSession session, Model model,
-//                            @Valid SpectrumSearchForm form, Errors errors) {
-//
-//        Submission submission = getSubmission(submissionId, session);
-//        Spectrum querySpectrum = submission.getSpectra().get(spectrumId);
-//
-//        UserParameter userParameters = new UserParameter();
-//        form.toUserParameters(userParameters);
-//
-//        CriteriaBlock criteria = new CriteriaBlock(SetOperator.AND);
-//        if (form.isChromatographyTypeCheck())
-//            criteria.add(
-//                    new Criterion("ChromatographyType", ComparisonOperator.EQ, form.chromatographyType));
-//        if (form.isSubmissionCategoryCheck()) {
-//            CriteriaBlock categories = new CriteriaBlock(SetOperator.OR);
-//            for (long id : form.getSubmissionCategoryIds())
-//                categories.add(
-//                        new Criterion("SubmissionCategoryId", ComparisonOperator.EQ, id));
-//            criteria.add(new Criterion("", ComparisonOperator.BLOCK, categories));
-//        }
-//
-//        try {
-//            List<Hit> hits = spectrumService.match(querySpectrum, criteria, userParameters);
-//            model.addAttribute("hits", hits);
-//        }
-//        catch (EmptySearchResultException e) {
-//            model.addAttribute("searchResultMessage", e.getMessage());
-//        }
-//
-//        model.addAttribute("querySpectrum", querySpectrum);
-//        model.addAttribute("form", form);
-//
-//        return "file/match";
-//    }
+    private String submissionNotFound(Model model, long submissionId) {
+        model.addAttribute("errorMessage", "Cannot find submission ID = " + submissionId);
+        return "/notfound/";
+    }
 
     private Submission getSubmission(long id, HttpSession session) {
         try {
@@ -214,7 +184,7 @@ public class SubmissionController {
     }
 
 
-    public static class Form {
+    public static class SubmissionForm {
 
         @NotBlank(message = "The field Name is required.")
         private String name;
@@ -248,94 +218,4 @@ public class SubmissionController {
             this.submissionCategoryId = submissionCategoryId;
         }
     }
-
-
-//    public static class SpectrumSearchForm {
-//
-//        @Min(value = 0, message = "M/z tolerance must be positive.")
-//        private float mzTolerance;
-//
-//        @Min(value = 1, message = "Maximum number of hits must be greater than or equal to one.")
-//        private int numHits;
-//
-//        @Min(value = 0, message = "Matching score threshold must be between 0 and 1000.")
-//        @Max(value = 1000, message = "Matching score threshold must be between 0 and 1000.")
-//        private int scoreThreshold;
-//
-//        private boolean chromatographyTypeCheck;
-//
-//        private ChromatographyType chromatographyType;
-//
-//        private boolean submissionCategoryCheck;
-//
-//        private List<Long> submissionCategoryIds;
-//
-//        public float getMzTolerance() {
-//            return mzTolerance;
-//        }
-//
-//        public void setMzTolerance(float mzTolerance) {
-//            this.mzTolerance = mzTolerance;
-//        }
-//
-//        public int getNumHits() {
-//            return numHits;
-//        }
-//
-//        public void setNumHits(int numHits) {
-//            this.numHits = numHits;
-//        }
-//
-//        public int getScoreThreshold() {
-//            return scoreThreshold;
-//        }
-//
-//        public void setScoreThreshold(int scoreThreshold) {
-//            this.scoreThreshold = scoreThreshold;
-//        }
-//
-//        public boolean isChromatographyTypeCheck() {
-//            return chromatographyTypeCheck;
-//        }
-//
-//        public void setChromatographyTypeCheck(boolean chromatographyTypeCheck) {
-//            this.chromatographyTypeCheck = chromatographyTypeCheck;
-//        }
-//
-//        public ChromatographyType getChromatographyType() {
-//            return chromatographyType;
-//        }
-//
-//        public void setChromatographyType(ChromatographyType chromatographyType) {
-//            this.chromatographyType = chromatographyType;
-//        }
-//
-//        public boolean isSubmissionCategoryCheck() {
-//            return submissionCategoryCheck;
-//        }
-//
-//        public void setSubmissionCategoryCheck(boolean submissionCategoryCheck) {
-//            this.submissionCategoryCheck = submissionCategoryCheck;
-//        }
-//
-//        public List<Long> getSubmissionCategoryIds() {
-//            return submissionCategoryIds;
-//        }
-//
-//        public void setSubmissionCategoryIds(List<Long> submissionCategoryIds) {
-//            this.submissionCategoryIds = submissionCategoryIds;
-//        }
-//
-//        void fromUserParameters(UserParameter ups) {
-//            mzTolerance = ups.getSpectrumSearchMzTolerance();
-//            numHits = ups.getSpectrumSearchNumHits();
-//            scoreThreshold = Math.round(1000 * ups.getSpectrumSearchScoreThreshold());
-//        }
-//
-//        void toUserParameters(UserParameter ups) {
-//            ups.setSpectrumSearchMzTolerance(mzTolerance);
-//            ups.setSpectrumSearchNumHits(numHits);
-//            ups.setSpectrumSearchScoreThreshold(scoreThreshold / 1000.0F);
-//        }
-//    }
 }

@@ -11,8 +11,8 @@ import org.springframework.web.servlet.view.RedirectView;
 @Controller
 public class IndexController {
 
-    @RequestMapping(value = "", method = RequestMethod.GET)
-    public View index() {
-        return new RedirectView("/account/");
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public String index() {
+        return "index";
     }
 }

@@ -141,7 +141,7 @@ public class AuthenticationController {
     }
 
     /**********************
-    ***** Form classes *****
+    ***** SubmissionForm classes *****
      **********************/
 
     public static class LogInForm {
