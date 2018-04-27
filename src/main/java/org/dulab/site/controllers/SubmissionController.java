@@ -43,12 +43,16 @@ public class SubmissionController {
         model.addAttribute("submissionCategories", submissionService.getAllSubmissionCategories());
     }
 
+    /********************************
+    ***** View File / Submission *****
+     ********************************/
+
     @RequestMapping(value = "/file/view/", method = RequestMethod.GET)
     public String fileView(HttpSession session, Model model) {
 
         Submission submission = Submission.from(session);
         if (submission == null)
-            return "redirect:/file/upload/";
+            return fileUpload();
 
         return view(Submission.from(session), model);
     }
@@ -77,12 +81,16 @@ public class SubmissionController {
         return "file/view";
     }
 
+    /************************************
+    ***** File / Submission Raw View *****
+     ************************************/
+
     @RequestMapping(value = "/file/rawview/", method = RequestMethod.GET)
-    public String fileRawFiew(HttpSession session, HttpServletResponse response) throws IOException {
+    public String fileRawView(HttpSession session, HttpServletResponse response) throws IOException {
         Submission submission = Submission.from(session);
 
         if (submission == null)
-            return "redirect:/file/upload/";
+            return fileUpload();
 
         rawView(response, Submission.from(session));
     }
@@ -104,6 +112,42 @@ public class SubmissionController {
         response.setHeader("Content-Disposition", "inline; filename=\"" + submission.getFilename() + "\"");
         response.getOutputStream().write(submission.getFile());
     }
+
+    /****************************************
+    ***** File / Submission Raw Download *****
+     ****************************************/
+
+    @RequestMapping(value = "/file/filedownload/", method = RequestMethod.GET)
+    public String fileRawDownload(HttpSession session, HttpServletResponse response, Model model)
+            throws IOException {
+
+        Submission submission = Submission.from(session);
+        if (submission == null)
+            return fileUpload();
+
+        rawDownload(response, submission);
+    }
+
+    @RequestMapping(value = "/submission/{submissionId:\\d+}/filedownload/", method = RequestMethod.GET)
+    public String submissionRawDownload(@PathVariable("submissionId") long id, HttpServletResponse response, Model model)
+            throws IOException {
+
+        Submission submission = submissionService.findSubmission(id);
+        if (submission == null)
+            return submissionNotFound(model, id);
+
+        rawDownload(response, submission);
+    }
+
+    private void rawDownload(HttpServletResponse response, Submission submission) throws IOException {
+        response.setContentType("text/plain");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + submission.getFilename() + "\"");
+        response.getOutputStream().write(submission.getFile());
+    }
+
+    /**********************************
+    ***** File / Submission Submit *****
+     **********************************/
 
     @RequestMapping(value = "{submissionId:\\d+}/", method = RequestMethod.POST)
     public ModelAndView submit(HttpSession session, Model model,
@@ -136,15 +180,7 @@ public class SubmissionController {
 
 
 
-    @RequestMapping(value = "{submissionId:\\d+}/filedownload/", method = RequestMethod.GET)
-    public void rawDownload(HttpSession session, HttpServletResponse response,
-                            @PathVariable("submissionId") long id) throws IOException {
 
-        Submission submission = getSubmission(id, session);
-        response.setContentType("text/plain");
-        response.setHeader("Content-Disposition", "attachment; filename=\"" + submission.getFilename() + "\"");
-        response.getOutputStream().write(submission.getFile());
-    }
 
     @RequestMapping(value = "{submissionId:\\d+}/delete/")
     public View delete(HttpServletRequest request, @PathVariable("submissionId") long id) {
@@ -167,6 +203,10 @@ public class SubmissionController {
         model.addAttribute("spectrum", spectrum);
 
         return "file/spectrum";
+    }
+
+    private String fileUpload() {
+        return "redirect:/file/upload/";
     }
 
     private String submissionNotFound(Model model, long submissionId) {
