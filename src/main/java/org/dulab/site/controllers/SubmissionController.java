@@ -52,7 +52,7 @@ public class SubmissionController {
 
         Submission submission = Submission.from(session);
         if (submission == null)
-            return fileUpload();
+            return redirectFileUpload();
 
         return view(Submission.from(session), model);
     }
@@ -90,9 +90,10 @@ public class SubmissionController {
         Submission submission = Submission.from(session);
 
         if (submission == null)
-            return fileUpload();
+            return redirectFileUpload();
 
         rawView(response, Submission.from(session));
+        return null;
     }
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/rawview/", method = RequestMethod.GET)
@@ -105,6 +106,7 @@ public class SubmissionController {
             return submissionNotFound(model, id);
 
         rawView(response, submission);
+        return null;
     }
 
     private void rawView(HttpServletResponse response, Submission submission) throws IOException {
@@ -123,9 +125,10 @@ public class SubmissionController {
 
         Submission submission = Submission.from(session);
         if (submission == null)
-            return fileUpload();
+            return redirectFileUpload();
 
         rawDownload(response, submission);
+        return null;
     }
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/filedownload/", method = RequestMethod.GET)
@@ -137,6 +140,7 @@ public class SubmissionController {
             return submissionNotFound(model, id);
 
         rawDownload(response, submission);
+        return null;
     }
 
     private void rawDownload(HttpServletResponse response, Submission submission) throws IOException {
@@ -149,78 +153,92 @@ public class SubmissionController {
     ***** File / Submission Submit *****
      **********************************/
 
-    @RequestMapping(value = "{submissionId:\\d+}/", method = RequestMethod.POST)
-    public ModelAndView submit(HttpSession session, Model model,
-                               @PathVariable("submissionId") long submissionId,
-                               @Valid SubmissionController.SubmissionForm form, Errors errors) {
+    @RequestMapping(value = "/file/view/", method = RequestMethod.POST)
+    public String fileView(HttpSession session, Model model, @Valid SubmissionForm form, Errors errors) {
 
-        if (errors.hasErrors())
-            return new ModelAndView("file/view");
+        if (errors.hasErrors()) {
+            model.addAttribute("form", form);
+            return "file/view";
+        }
 
-        Submission submission = getSubmission(submissionId, session);
+        Submission submission = Submission.from(session);
+        if (submission == null)
+            return redirectFileUpload();
+
+        submission.setUser(UserPrincipal.from(session));
+
+        String response = submit(submission, model, form);
+        Submission.clear(session);
+        return response;
+    }
+
+    @RequestMapping(value = "/submission/{submissionId://d+}/view/", method = RequestMethod.POST)
+    public String submissionView(@PathVariable("submissionId") long submissionId, Model model,
+                                 @Valid SubmissionForm form, Errors errors) {
+
+        if (errors.hasErrors()) {
+            model.addAttribute("form", form);
+            return "file/view";
+        }
+
+        Submission submission = submissionService.findSubmission(submissionId);
+        if (submission == null)
+            return submissionNotFound(model, submissionId);
+
+        return submit(submission, model, form);
+    }
+
+    private String submit(Submission submission, Model model, SubmissionForm form) {
+
         submission.setName(form.getName());
         submission.setDescription(form.getDescription());
         submission.setDateTime(new Date());
-        submission.setUser(UserPrincipal.from(session));
-        submission.setCategory(submissionService
-                .getSubmissionCategory(form.getSubmissionCategoryId()));
+        if (form.getSubmissionCategoryId() != 0)
+            submission.setCategory(submissionService.getSubmissionCategory(form.getSubmissionCategoryId()));
 
         try {
             submissionService.saveSubmission(submission);
         }
         catch (ConstraintViolationException e) {
             model.addAttribute("validationErrors", e.getConstraintViolations());
-            return new ModelAndView("file/view");
+            model.addAttribute("form", form);
+            return "file/view";
         }
 
         model.addAttribute("message", "Mass spectra are submitted successfully.");
-        Submission.clear(session);
-        return new ModelAndView(new RedirectView("/submission/" + submission.getId() + "/", true));
+        return "redirect:/submission/" + submission.getId() + "/";
     }
 
-
-
-
-
-    @RequestMapping(value = "{submissionId:\\d+}/delete/")
-    public View delete(HttpServletRequest request, @PathVariable("submissionId") long id) {
+    @RequestMapping(value = "/submission/{submissionId:\\d+}/delete/")
+    public String delete(@PathVariable("submissionId") long id) {
 
         Submission submission = submissionService.findSubmission(id);
 
         submissionService.deleteSubmission(submission);
-        return new RedirectView("/account/", true);
+        return "redirect:/account/";
     }
 
-    @RequestMapping(value = "{submissionId:\\d+}/{spectrumId:\\d+}/", method = RequestMethod.GET)
-    public String spectrum(@PathVariable("submissionId") long submissionId,
-                           @PathVariable("spectrumId") int spectrumId,
-                           HttpSession session,
-                           Model model) {
+//    @RequestMapping(value = "{submissionId:\\d+}/{spectrumId:\\d+}/", method = RequestMethod.GET)
+//    public String spectrum(@PathVariable("submissionId") long submissionId,
+//                           @PathVariable("spectrumId") int spectrumId,
+//                           HttpSession session,
+//                           Model model) {
+//
+//        Submission submission = getSubmission(submissionId, session);
+//        Spectrum spectrum = submission.getSpectra().get(spectrumId);
+//
+//        model.addAttribute("spectrum", spectrum);
+//
+//        return "file/spectrum";
+//    }
 
-        Submission submission = getSubmission(submissionId, session);
-        Spectrum spectrum = submission.getSpectra().get(spectrumId);
-
-        model.addAttribute("spectrum", spectrum);
-
-        return "file/spectrum";
-    }
-
-    private String fileUpload() {
+    private String redirectFileUpload() {
         return "redirect:/file/upload/";
     }
 
     private String submissionNotFound(Model model, long submissionId) {
         model.addAttribute("errorMessage", "Cannot find submission ID = " + submissionId);
         return "/notfound/";
-    }
-
-    private Submission getSubmission(long id, HttpSession session) {
-        try {
-            return submissionService.findSubmission(id);
-        }
-        catch (EmptySearchResultException e) {
-            return Submission.from(session);
-        }
     }
 
 
