@@ -18,15 +18,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import java.io.IOException;
 import java.util.Date;
-import java.util.List;
 
 @Controller
 @ControllerAdvice
-@RequestMapping("submission/")
+//@RequestMapping("submission/")
 public class SubmissionController {
 
     private final SubmissionService submissionService;
@@ -46,22 +43,34 @@ public class SubmissionController {
         model.addAttribute("submissionCategories", submissionService.getAllSubmissionCategories());
     }
 
-    @RequestMapping(value = "", method = RequestMethod.GET)
-    public View view() {
-        return new RedirectView("0/");
+    @RequestMapping(value = "/file/view/", method = RequestMethod.GET)
+    public String fileView(HttpSession session, Model model) {
+
+        Submission submission = Submission.from(session);
+        if (submission == null)
+            return "redirect:/file/upload/";
+
+        return view(Submission.from(session), model);
     }
 
     @RequestMapping(value = "{submissionId:\\d+}/", method = RequestMethod.GET)
-    public String viewSubmission(HttpSession session, Model model,
-                                 @PathVariable("submissionId") long submissionId) {
+    public String viewSubmission(@PathVariable("submissionId") long submissionId, Model model) {
 
-        Submission submission = getSubmission(submissionId, session);
-        if (submission == null)
-            return "file/submissionnotfound";
+        Submission submission = submissionService.findSubmission(submissionId);
+
+        if (submission == null) {
+            model.addAttribute("errorMessage", "Cannot find submission ID = " + submissionId);
+            return "redirect:/notfound/";
+        }
+
+        return view(submission, model);
+    }
+
+    private String view(Submission submission, Model model) {
 
         model.addAttribute("submission", submission);
 
-        Form form = new Form();
+        SubmissionForm form = new SubmissionForm();
         form.setName(submission.getName());
         form.setDescription(submission.getDescription());
         form.setSubmissionCategoryId(submission.getCategory() == null ? 0 : submission.getCategory().getId());
@@ -73,7 +82,7 @@ public class SubmissionController {
     @RequestMapping(value = "{submissionId:\\d+}/", method = RequestMethod.POST)
     public ModelAndView submit(HttpSession session, Model model,
                                @PathVariable("submissionId") long submissionId,
-                               @Valid Form form, Errors errors) {
+                               @Valid SubmissionController.SubmissionForm form, Errors errors) {
 
         if (errors.hasErrors())
             return new ModelAndView("file/view");
@@ -214,7 +223,7 @@ public class SubmissionController {
     }
 
 
-    public static class Form {
+    public static class SubmissionForm {
 
         @NotBlank(message = "The field Name is required.")
         private String name;
@@ -248,94 +257,4 @@ public class SubmissionController {
             this.submissionCategoryId = submissionCategoryId;
         }
     }
-
-
-//    public static class SpectrumSearchForm {
-//
-//        @Min(value = 0, message = "M/z tolerance must be positive.")
-//        private float mzTolerance;
-//
-//        @Min(value = 1, message = "Maximum number of hits must be greater than or equal to one.")
-//        private int numHits;
-//
-//        @Min(value = 0, message = "Matching score threshold must be between 0 and 1000.")
-//        @Max(value = 1000, message = "Matching score threshold must be between 0 and 1000.")
-//        private int scoreThreshold;
-//
-//        private boolean chromatographyTypeCheck;
-//
-//        private ChromatographyType chromatographyType;
-//
-//        private boolean submissionCategoryCheck;
-//
-//        private List<Long> submissionCategoryIds;
-//
-//        public float getMzTolerance() {
-//            return mzTolerance;
-//        }
-//
-//        public void setMzTolerance(float mzTolerance) {
-//            this.mzTolerance = mzTolerance;
-//        }
-//
-//        public int getNumHits() {
-//            return numHits;
-//        }
-//
-//        public void setNumHits(int numHits) {
-//            this.numHits = numHits;
-//        }
-//
-//        public int getScoreThreshold() {
-//            return scoreThreshold;
-//        }
-//
-//        public void setScoreThreshold(int scoreThreshold) {
-//            this.scoreThreshold = scoreThreshold;
-//        }
-//
-//        public boolean isChromatographyTypeCheck() {
-//            return chromatographyTypeCheck;
-//        }
-//
-//        public void setChromatographyTypeCheck(boolean chromatographyTypeCheck) {
-//            this.chromatographyTypeCheck = chromatographyTypeCheck;
-//        }
-//
-//        public ChromatographyType getChromatographyType() {
-//            return chromatographyType;
-//        }
-//
-//        public void setChromatographyType(ChromatographyType chromatographyType) {
-//            this.chromatographyType = chromatographyType;
-//        }
-//
-//        public boolean isSubmissionCategoryCheck() {
-//            return submissionCategoryCheck;
-//        }
-//
-//        public void setSubmissionCategoryCheck(boolean submissionCategoryCheck) {
-//            this.submissionCategoryCheck = submissionCategoryCheck;
-//        }
-//
-//        public List<Long> getSubmissionCategoryIds() {
-//            return submissionCategoryIds;
-//        }
-//
-//        public void setSubmissionCategoryIds(List<Long> submissionCategoryIds) {
-//            this.submissionCategoryIds = submissionCategoryIds;
-//        }
-//
-//        void fromUserParameters(UserParameter ups) {
-//            mzTolerance = ups.getSpectrumSearchMzTolerance();
-//            numHits = ups.getSpectrumSearchNumHits();
-//            scoreThreshold = Math.round(1000 * ups.getSpectrumSearchScoreThreshold());
-//        }
-//
-//        void toUserParameters(UserParameter ups) {
-//            ups.setSpectrumSearchMzTolerance(mzTolerance);
-//            ups.setSpectrumSearchNumHits(numHits);
-//            ups.setSpectrumSearchScoreThreshold(scoreThreshold / 1000.0F);
-//        }
-//    }
 }
