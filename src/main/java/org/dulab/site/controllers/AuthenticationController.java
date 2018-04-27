@@ -77,7 +77,8 @@ public class AuthenticationController {
 
         UserPrincipal.assign(session, principal);
         request.changeSessionId();
-        return getHomeRedirect();
+        return new ModelAndView("login");
+//        return getHomeRedirect();
     }
 
     /*****************

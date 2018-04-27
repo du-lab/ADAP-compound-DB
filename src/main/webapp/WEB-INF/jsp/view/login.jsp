@@ -1,32 +1,7 @@
 <%--@elvariable id="logInForm" type="org.dulab.site.controllers.AuthenticationController.LogInForm"--%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<!DOCTYPE html>
-<html>
-<head>
-    <!--Import Google Icon Font-->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!--Import materialize.css-->
-    <link type="text/css" rel="stylesheet"
-          href="<c:url value="/resources/css/materialize.min.css"/>"
-          media="screen,projection">
-    <!--Let browser know website is optimized for mobile-->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-</head>
 
-<body class="blue-grey lighten-5">
-    <nav class="brown" role="navigation">
-        <div class="nav-wrapper container">
-            <a id="logo-container" href="#" class="brand-logo">ADAP Compound Library</a>
-            <ul class="right hide-on-med-and-down">
-                <li><a href="#">Navbar Link</a></li>
-            </ul>
-            <ul id="nav-mobile" class="sidenav">
-                <li><a href="#">Navbar Link</a></li>
-            </ul>
-            <a href="#" data-target="nav-mobile" class="sidenav-trigger"><i class="material-icons">menu</i></a>
-        </div>
-    </nav>
+<jsp:include page="/WEB-INF/jsp/includes/header.jsp"/>
 
     <div class="row  blue-grey lighten-5">
         <div class="col s12 m4 l3 blue-grey">
@@ -45,7 +20,7 @@
                         </div>
                         <div class="input-field">
                             <form:label path="password" cssClass="validate">Password</form:label>
-                            <form:input path="password"/>
+                            <form:password path="password"/>
                             <form:errors path="password" cssClass="errors"/>
                         </div>
                     </div>
@@ -58,8 +33,4 @@
         </div>
     </div>
 
-    <!--JavaScript at end of body for optimized loading-->
-    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-    <script type="text/javascript" src="<c:url value="/resources/js/materialize.min.js"/>"></script>
-</body>
-</html>
+<jsp:include page="/WEB-INF/jsp/includes/footer.jsp"/>
