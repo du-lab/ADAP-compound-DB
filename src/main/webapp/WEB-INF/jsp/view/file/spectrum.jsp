@@ -21,7 +21,7 @@
     </div>
 
     <div align="right" style="float: right">
-        <p><a href="match/" class="button">Library Search</a></p>
+        <p><a href="search/" class="button">Library Search</a></p>
     </div>
 
     <div align="center">

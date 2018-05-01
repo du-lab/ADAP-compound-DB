@@ -1,6 +1,6 @@
 <%--@elvariable id="querySpectrum" type="org.dulab.models.Spectrum"--%>
 <%--@elvariable id="hits" type="java.util.List<org.dulab.models.Hit>"--%>
-<%--@elvariable id="form" type="org.dulab.site.controllers.SearchController.SearchForm"--%>
+<%--@elvariable id="searchForm" type="org.dulab.site.controllers.SearchController.SearchForm"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
@@ -100,7 +100,7 @@
                     </ul>
                 </div>
             </c:if>
-            <form:form method="post" modelAttribute="form">
+            <form:form method="post" modelAttribute="searchForm">
                 <form:errors path="" cssClass="errors"/>
 
                 <div class="subsection">

@@ -57,7 +57,7 @@ public class SubmissionController {
         return view(Submission.from(session), model);
     }
 
-    @RequestMapping(value = "{submissionId:\\d+}/", method = RequestMethod.GET)
+    @RequestMapping(value = "/submission/{submissionId:\\d+}/", method = RequestMethod.GET)
     public String viewSubmission(@PathVariable("submissionId") long submissionId, Model model) {
 
         Submission submission = submissionService.findSubmission(submissionId);
@@ -85,7 +85,7 @@ public class SubmissionController {
     ***** File / Submission Raw View *****
      ************************************/
 
-    @RequestMapping(value = "/file/rawview/", method = RequestMethod.GET)
+    @RequestMapping(value = "/file/fileview/", method = RequestMethod.GET)
     public String fileRawView(HttpSession session, HttpServletResponse response) throws IOException {
         Submission submission = Submission.from(session);
 
@@ -96,7 +96,7 @@ public class SubmissionController {
         return null;
     }
 
-    @RequestMapping(value = "/submission/{submissionId:\\d+}/rawview/", method = RequestMethod.GET)
+    @RequestMapping(value = "/submission/{submissionId:\\d+}/fileview/", method = RequestMethod.GET)
     public String rawView(@PathVariable("submissionId") long id, HttpServletResponse response, Model model)
             throws IOException {
 

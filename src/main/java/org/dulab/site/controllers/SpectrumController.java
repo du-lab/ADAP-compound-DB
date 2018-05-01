@@ -3,6 +3,7 @@ package org.dulab.site.controllers;
 import org.dulab.models.Spectrum;
 import org.dulab.models.Submission;
 import org.dulab.site.services.SpectrumService;
+import org.dulab.site.services.SubmissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,13 +17,15 @@ import javax.servlet.http.HttpSession;
 public class SpectrumController {
 
     private final SpectrumService spectrumService;
+    private final SubmissionService submissionService;
 
     @Autowired
-    public SpectrumController(SpectrumService spectrumService) {
+    public SpectrumController(SpectrumService spectrumService, SubmissionService submissionService) {
         this.spectrumService = spectrumService;
+        this.submissionService = submissionService;
     }
 
-    @RequestMapping(value = "spectrum/{spectrumId:\\d+}/", method = RequestMethod.GET)
+    @RequestMapping(value = "/spectrum/{spectrumId:\\d+}/", method = RequestMethod.GET)
     public String spectrum(@PathVariable("spectrumId") long spectrumId,
                            Model model) {
 
@@ -31,7 +34,18 @@ public class SpectrumController {
         return spectrum(spectrum, model);
     }
 
-    @RequestMapping(value = "file/{spectrumListIndex:\\d+}/", method = RequestMethod.GET)
+    @RequestMapping(value = "/submission/{submissionId:\\d+}/{spectrumListIndex:\\d+}/")
+    public String spectrum(@PathVariable("submissionId") long submissionId,
+                           @PathVariable("spectrumListIndex") int spectrumListIndex,
+                           Model model) {
+
+        Submission submission = submissionService.findSubmission(submissionId);
+        Spectrum spectrum = submission.getSpectra().get(spectrumListIndex);
+
+        return spectrum(spectrum, model);
+    }
+
+    @RequestMapping(value = "/file/{spectrumListIndex:\\d+}/", method = RequestMethod.GET)
     public String spectrum(@PathVariable("spectrumListIndex") int listIndex,
                            HttpSession session, Model model) {
 
