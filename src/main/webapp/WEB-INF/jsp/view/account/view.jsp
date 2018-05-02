@@ -34,11 +34,11 @@
                     </td>
                     <td>${dulab:abbreviate(submission.description, 80)}</td>
                     <td>
-                        <!-- mode edit -->
-                        <a href="/submission/${submission.id}/"><i class="material-icons">&#xE254</i></a>
+                        <!-- more horiz -->
+                        <a href="/submission/${submission.id}/"><i class="material-icons">&#xE5D3;</i></a>
 
                         <!-- delete -->
-                        <a href="/submission/${submission.id}/delete/"><i class="material-icons">&#xE872</i></a>
+                        <a href="/submission/${submission.id}/delete/"><i class="material-icons">&#xE872;</i></a>
                     </td>
                 </tr>
             </c:forEach>

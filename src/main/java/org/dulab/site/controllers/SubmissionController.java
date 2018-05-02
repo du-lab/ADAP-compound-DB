@@ -47,7 +47,7 @@ public class SubmissionController {
     ***** View File / Submission *****
      ********************************/
 
-    @RequestMapping(value = "/file/view/", method = RequestMethod.GET)
+    @RequestMapping(value = "/file/", method = RequestMethod.GET)
     public String fileView(HttpSession session, Model model) {
 
         Submission submission = Submission.from(session);
@@ -153,7 +153,7 @@ public class SubmissionController {
     ***** File / Submission Submit *****
      **********************************/
 
-    @RequestMapping(value = "/file/view/", method = RequestMethod.POST)
+    @RequestMapping(value = "/file/", method = RequestMethod.POST)
     public String fileView(HttpSession session, Model model, @Valid SubmissionForm form, Errors errors) {
 
         if (errors.hasErrors()) {

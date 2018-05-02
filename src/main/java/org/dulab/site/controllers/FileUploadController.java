@@ -46,13 +46,13 @@ public class FileUploadController {
         model.addAttribute("fileTypeList", FileType.values());
     }
 
-    @RequestMapping(value = "/file/", method = RequestMethod.GET)
-    public String submission(HttpSession session) {
-        if (Submission.from(session) == null)
-            return "redirect:/file/upload/";
-
-        return "redirect:/file/view/";
-    }
+//    @RequestMapping(value = "/file/", method = RequestMethod.GET)
+//    public String submission(HttpSession session) {
+//        if (Submission.from(session) == null)
+//            return "redirect:/file/upload/";
+//
+//        return "redirect:/file/view/";
+//    }
 
     @RequestMapping(value = "/file/upload/", method = RequestMethod.GET)
     public String upload(Model model, HttpSession session) {
@@ -105,7 +105,7 @@ public class FileUploadController {
         }
 
         Submission.assign(session, submission);
-        return "redirect:/file/view/";
+        return "redirect:/file/";
     }
 
 
