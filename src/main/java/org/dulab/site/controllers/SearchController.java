@@ -44,7 +44,7 @@ public class SearchController {
     @Autowired
     public SearchController(UserPrincipalService userPrincipalService,
                             SubmissionService submissionService,
-                            SpectrumService spectrumService) {
+                            @Qualifier("spectrumServiceImpl") SpectrumService spectrumService) {
         this.userPrincipalService = userPrincipalService;
         this.submissionService = submissionService;
         this.spectrumService = spectrumService;

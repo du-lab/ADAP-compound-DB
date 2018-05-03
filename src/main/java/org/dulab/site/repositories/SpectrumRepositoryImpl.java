@@ -29,10 +29,10 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                 .stream()
                 .map(p -> "\tSELECT SpectrumId, SQRT(Intensity * "
                     + p.getIntensity()
-                    + ") AS Product FROM PeakView WHERE ABS(Mz - "
-                    + p.getMz()
-                    + ") < :eps" + criteriaBlockString + "\n")
-                    .collect(Collectors.joining("\tUNION\n")));
+                    + ") AS Product FROM Peak WHERE Mz > " + (p.getMz() - mzTolerance)
+                    + " AND Mz < " + (p.getMz() + mzTolerance)
+                    + "\n")  // + criteriaBlockString +
+                    .collect(Collectors.joining("\tUNION ALL\n")));
         sqlBuilder.append(") AS Result\n");
         sqlBuilder.append("GROUP BY SpectrumId\n");
         sqlBuilder.append("HAVING Score > :threshold\n"); // POWER(SUM(Product), 2)
@@ -42,7 +42,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         @SuppressWarnings("unchecked")
         List<Object[]> resultList = entityManager
                 .createNativeQuery(sqlBuilder.toString(), "SpectrumScoreMapping")
-                .setParameter("eps", mzTolerance)
+//                .setParameter("eps", mzTolerance)
                 .setParameter("num", numHits)
                 .setParameter("threshold", scoreThreshold)
                 .getResultList();
