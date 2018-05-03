@@ -2,9 +2,9 @@ package org.dulab.site.services;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dulab.models.Peak;
-import org.dulab.models.Spectrum;
-import org.dulab.models.SpectrumProperty;
+import org.dulab.models.entities.Peak;
+import org.dulab.models.entities.Spectrum;
+import org.dulab.models.entities.SpectrumProperty;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;

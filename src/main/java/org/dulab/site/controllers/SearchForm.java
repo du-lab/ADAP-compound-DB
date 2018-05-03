@@ -2,7 +2,7 @@ package org.dulab.site.controllers;
 
 import org.dulab.models.ChromatographyType;
 import org.dulab.models.UserParameterType;
-import org.dulab.models.UserPrincipal;
+import org.dulab.models.entities.UserPrincipal;
 import org.dulab.site.services.UserPrincipalService;
 
 import javax.validation.constraints.Max;

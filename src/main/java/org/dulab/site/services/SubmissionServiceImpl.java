@@ -1,18 +1,15 @@
 package org.dulab.site.services;
 
-import org.dulab.models.Submission;
-import org.dulab.models.SubmissionCategory;
+import org.dulab.models.entities.Submission;
+import org.dulab.models.entities.SubmissionCategory;
 import org.dulab.site.repositories.SubmissionCategoryRespository;
 import org.dulab.site.repositories.SubmissionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class SubmissionServiceImpl implements SubmissionService {

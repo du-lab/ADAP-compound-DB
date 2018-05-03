@@ -1,4 +1,4 @@
-package org.dulab.models;
+package org.dulab.models.entities;
 
 import org.dulab.validation.Email;
 import org.dulab.validation.NotBlank;
@@ -6,7 +6,6 @@ import org.dulab.validation.NotBlank;
 import javax.persistence.*;
 import javax.servlet.http.HttpSession;
 import java.io.Serializable;
-import java.security.Principal;
 
 @Entity
 @Table(uniqueConstraints = {

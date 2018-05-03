@@ -1,6 +1,6 @@
 package org.dulab.site.controllers;
 
-import org.dulab.models.Peak;
+import org.dulab.models.entities.Peak;
 
 import javax.json.*;
 import java.util.Comparator;

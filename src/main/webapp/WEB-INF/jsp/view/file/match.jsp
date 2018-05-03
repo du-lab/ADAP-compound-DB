@@ -1,4 +1,4 @@
-<%--@elvariable id="querySpectrum" type="org.dulab.models.Spectrum"--%>
+<%--@elvariable id="querySpectrum" type="org.dulab.models.entities.Spectrum"--%>
 <%--@elvariable id="hits" type="java.util.List<org.dulab.models.Hit>"--%>
 <%--@elvariable id="searchForm" type="org.dulab.site.controllers.SearchController.SearchForm"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>

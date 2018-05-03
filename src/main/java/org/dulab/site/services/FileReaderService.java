@@ -1,6 +1,6 @@
 package org.dulab.site.services;
 
-import org.dulab.models.Spectrum;
+import org.dulab.models.entities.Spectrum;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotNull;

@@ -1,11 +1,10 @@
 package org.dulab.site.controllers;
 
-import org.dulab.models.Peak;
+import org.dulab.models.entities.Peak;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.dulab.site.controllers.ControllerUtils.peaksToJson;
 import static org.junit.Assert.*;

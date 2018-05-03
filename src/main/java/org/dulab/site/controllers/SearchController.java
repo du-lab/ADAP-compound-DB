@@ -2,6 +2,9 @@ package org.dulab.site.controllers;
 
 import org.dulab.exceptions.EmptySearchResultException;
 import org.dulab.models.*;
+import org.dulab.models.entities.Spectrum;
+import org.dulab.models.entities.Submission;
+import org.dulab.models.entities.UserPrincipal;
 import org.dulab.models.search.ComparisonOperator;
 import org.dulab.models.search.CriteriaBlock;
 import org.dulab.models.search.Criterion;

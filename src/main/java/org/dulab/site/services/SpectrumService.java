@@ -2,8 +2,7 @@ package org.dulab.site.services;
 
 import org.dulab.models.search.CriteriaBlock;
 import org.dulab.models.Hit;
-import org.dulab.models.Spectrum;
-import org.dulab.models.UserParameter;
+import org.dulab.models.entities.Spectrum;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;

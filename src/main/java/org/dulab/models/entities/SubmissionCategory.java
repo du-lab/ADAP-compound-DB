@@ -1,4 +1,4 @@
-package org.dulab.models;
+package org.dulab.models.entities;
 
 import org.dulab.validation.NotBlank;
 

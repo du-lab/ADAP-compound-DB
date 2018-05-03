@@ -1,6 +1,6 @@
 package org.dulab.validation;
 
-import org.dulab.models.UserPrincipal;
+import org.dulab.models.entities.UserPrincipal;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.ConstraintValidator;

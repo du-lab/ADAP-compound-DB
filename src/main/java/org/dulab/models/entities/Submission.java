@@ -1,5 +1,7 @@
-package org.dulab.models;
+package org.dulab.models.entities;
 
+import org.dulab.models.ChromatographyType;
+import org.dulab.models.FileType;
 import org.dulab.validation.NotBlank;
 
 import javax.persistence.*;

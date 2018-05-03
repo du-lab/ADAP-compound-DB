@@ -1,7 +1,7 @@
 package org.dulab.site.controllers;
 
-import org.dulab.exceptions.EmptySearchResultException;
-import org.dulab.models.*;
+import org.dulab.models.entities.Submission;
+import org.dulab.models.entities.UserPrincipal;
 import org.dulab.site.services.*;
 import org.dulab.validation.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,11 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.View;
-import org.springframework.web.servlet.view.RedirectView;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.ConstraintViolationException;

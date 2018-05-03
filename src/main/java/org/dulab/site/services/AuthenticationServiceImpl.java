@@ -2,7 +2,7 @@ package org.dulab.site.services;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dulab.models.UserPrincipal;
+import org.dulab.models.entities.UserPrincipal;
 import org.dulab.site.repositories.UserPrincipalRepository;
 import org.hibernate.Hibernate;
 import org.mindrot.jbcrypt.BCrypt;

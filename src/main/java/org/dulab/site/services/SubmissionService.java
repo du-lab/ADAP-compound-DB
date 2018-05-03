@@ -1,13 +1,12 @@
 package org.dulab.site.services;
 
-import org.dulab.models.Submission;
-import org.dulab.models.SubmissionCategory;
+import org.dulab.models.entities.Submission;
+import org.dulab.models.entities.SubmissionCategory;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.Optional;
 
 @Validated
 public interface SubmissionService {

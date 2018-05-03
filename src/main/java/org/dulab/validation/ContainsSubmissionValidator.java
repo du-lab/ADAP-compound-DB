@@ -1,6 +1,6 @@
 package org.dulab.validation;
 
-import org.dulab.models.Submission;
+import org.dulab.models.entities.Submission;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.ConstraintValidator;

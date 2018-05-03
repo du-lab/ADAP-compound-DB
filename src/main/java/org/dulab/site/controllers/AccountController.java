@@ -1,6 +1,6 @@
 package org.dulab.site.controllers;
 
-import org.dulab.models.UserPrincipal;
+import org.dulab.models.entities.UserPrincipal;
 import org.dulab.site.services.AuthenticationService;
 import org.dulab.site.services.SubmissionService;
 import org.springframework.beans.factory.annotation.Autowired;

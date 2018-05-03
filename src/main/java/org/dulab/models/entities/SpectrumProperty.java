@@ -1,23 +1,23 @@
-package org.dulab.models;
+package org.dulab.models.entities;
 
 import javax.persistence.*;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 
 @Entity
-public class Peak implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class SpectrumProperty {
 
     private long id;
 
-    @NotNull(message = "Peak requires to specify Spectrum.")
+    @NotNull(message = "SpectrumProperty requires to specify Spectrum.")
     @Valid
     private Spectrum spectrum;
 
-    private double mz;
-    private double intensity;
+    @NotBlank(message = "Spectrum property name is required.")
+    private String name;
+
+    private String value;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,31 +39,36 @@ public class Peak implements Serializable {
         this.spectrum = spectrum;
     }
 
-    public double getMz() {
-        return mz;
+    public String getName() {
+        return name;
     }
 
-    public void setMz(double mz) {
-        this.mz = mz;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public double getIntensity() {
-        return intensity;
+    public String getValue() {
+        return value;
     }
 
-    public void setIntensity(double intensity) {
-        this.intensity = intensity;
+    public void setValue(String value) {
+        this.value = value;
     }
 
     @Override
     public boolean equals(Object other) {
         if (this == other) return true;
-        if (!(other instanceof Peak)) return false;
-        return id == ((Peak) other).id;
+        if (!(other instanceof SpectrumProperty)) return false;
+        return id == ((SpectrumProperty) other).id;
     }
 
     @Override
     public int hashCode() {
         return Long.hashCode(id);
+    }
+
+    @Override
+    public String toString() {
+        return name + " = " + value;
     }
 }

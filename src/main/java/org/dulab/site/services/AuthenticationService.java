@@ -1,6 +1,6 @@
 package org.dulab.site.services;
 
-import org.dulab.models.UserPrincipal;
+import org.dulab.models.entities.UserPrincipal;
 import org.dulab.validation.NotBlank;
 import org.dulab.validation.Password;
 import org.springframework.validation.annotation.Validated;

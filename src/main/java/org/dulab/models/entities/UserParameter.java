@@ -1,5 +1,6 @@
-package org.dulab.models;
+package org.dulab.models.entities;
 
+import org.dulab.models.UserParameterType;
 import org.dulab.validation.NotBlank;
 
 import javax.persistence.*;

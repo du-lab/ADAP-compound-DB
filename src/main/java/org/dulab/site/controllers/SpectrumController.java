@@ -1,7 +1,7 @@
 package org.dulab.site.controllers;
 
-import org.dulab.models.Spectrum;
-import org.dulab.models.Submission;
+import org.dulab.models.entities.Spectrum;
+import org.dulab.models.entities.Submission;
 import org.dulab.site.services.SpectrumService;
 import org.dulab.site.services.SubmissionService;
 import org.springframework.beans.factory.annotation.Autowired;

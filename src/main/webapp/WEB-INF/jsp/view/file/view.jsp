@@ -1,4 +1,4 @@
-<%--@elvariable id="submission" type="org.dulab.models.Submission"--%>
+<%--@elvariable id="submission" type="org.dulab.models.entities.Submission"--%>
 <%--@elvariable id="form" type="org.dulab.site.controllers.SubmissionController.Form"--%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>

@@ -1,8 +1,8 @@
 package org.dulab.site.services;
 
-import org.dulab.models.UserParameter;
+import org.dulab.models.entities.UserParameter;
 import org.dulab.models.UserParameterType;
-import org.dulab.models.UserPrincipal;
+import org.dulab.models.entities.UserPrincipal;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;

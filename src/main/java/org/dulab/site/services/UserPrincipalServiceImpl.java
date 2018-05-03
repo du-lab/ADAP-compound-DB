@@ -3,16 +3,14 @@ package org.dulab.site.services;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.exceptions.EmptySearchResultException;
-import org.dulab.models.UserParameter;
+import org.dulab.models.entities.UserParameter;
 import org.dulab.models.UserParameterType;
-import org.dulab.models.UserPrincipal;
+import org.dulab.models.entities.UserPrincipal;
 import org.dulab.site.repositories.UserParameterRepository;
 import org.dulab.site.repositories.UserPrincipalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.beans.Transient;
 
 @Service
 public class UserPrincipalServiceImpl implements UserPrincipalService {

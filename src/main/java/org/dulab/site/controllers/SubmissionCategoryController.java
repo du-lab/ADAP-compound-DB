@@ -1,7 +1,7 @@
 package org.dulab.site.controllers;
 
-import org.dulab.models.SubmissionCategory;
-import org.dulab.models.UserPrincipal;
+import org.dulab.models.entities.SubmissionCategory;
+import org.dulab.models.entities.UserPrincipal;
 import org.dulab.site.services.SubmissionService;
 import org.dulab.validation.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;

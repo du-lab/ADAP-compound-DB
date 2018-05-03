@@ -1,7 +1,7 @@
 package org.dulab.site.controllers;
 
 import org.dulab.site.services.AuthenticationService;
-import org.dulab.models.UserPrincipal;
+import org.dulab.models.entities.UserPrincipal;
 import org.dulab.validation.Email;
 import org.dulab.validation.FieldMatch;
 import org.dulab.validation.NotBlank;
@@ -19,7 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
-import java.security.Principal;
 
 @Controller
 public class AuthenticationController {

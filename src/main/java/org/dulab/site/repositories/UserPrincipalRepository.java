@@ -1,6 +1,6 @@
 package org.dulab.site.repositories;
 
-import org.dulab.models.UserPrincipal;
+import org.dulab.models.entities.UserPrincipal;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;

@@ -1,5 +1,7 @@
 package org.dulab.models;
 
+import org.dulab.models.entities.Spectrum;
+
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import java.io.Serializable;

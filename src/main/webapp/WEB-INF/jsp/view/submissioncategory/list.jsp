@@ -1,4 +1,4 @@
-<%--@elvariable id="submissionCategories" type="java.util.Map<org.dulab.models.SubmissionCategory,java.lang.Integer>"--%>
+<%--@elvariable id="submissionCategories" type="java.util.Map<org.dulab.models.entities.SubmissionCategory,java.lang.Integer>"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 <jsp:include page="/WEB-INF/jsp/includes/header.jsp" />
