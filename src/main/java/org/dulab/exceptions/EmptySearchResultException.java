@@ -8,6 +8,10 @@ public class EmptySearchResultException extends RuntimeException {
         super("The search result is empty.");
     }
 
+    public EmptySearchResultException(long id) {
+        super("Could not find entry wirth ID = " + id);
+    }
+
     public EmptySearchResultException(String message) {
         super(message);
     }

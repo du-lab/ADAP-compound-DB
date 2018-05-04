@@ -17,6 +17,10 @@ public class Spectrum implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    // *************************
+    // ***** Entity fields *****
+    // *************************
+
     private String name = null;
 
     private long id;
@@ -29,6 +33,15 @@ public class Spectrum implements Serializable {
 
     @NotNull(message = "Property list is required.")
     private List<SpectrumProperty> properties;
+
+    @NotNull(message = "List of spectrum matches is required.")
+    private List<SpectrumMatch> matches;
+
+    private SpectrumCluster cluster;
+
+    // *******************************
+    // ***** Getters and setters *****
+    // *******************************
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -80,7 +93,6 @@ public class Spectrum implements Serializable {
         for (Peak peak : peaks)
             peak.setIntensity(peak.getIntensity() / totalIntensity);
 
-//        this.peaks = Collections.unmodifiableList(peaks);
         this.peaks = peaks;
     }
 
@@ -94,12 +106,38 @@ public class Spectrum implements Serializable {
     }
 
     public void setProperties(List<SpectrumProperty> properties) {
-//        this.properties = Collections.unmodifiableList(properties);
         this.properties = properties;
         for (SpectrumProperty property : properties)
             if (property.getName().equalsIgnoreCase("name"))
                 name = property.getValue();
     }
+
+    @OneToMany(
+            targetEntity = SpectrumMatch.class,
+            mappedBy = "querySpectrum",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
+    public List<SpectrumMatch> getMatches() {
+        return matches;
+    }
+
+    public void setMatches(List<SpectrumMatch> matches) {
+        this.matches = matches;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ClusterId", referencedColumnName = "Id")
+    public SpectrumCluster getCluster() {
+        return cluster;
+    }
+
+    public void setCluster(SpectrumCluster cluster) {
+        this.cluster = cluster;
+    }
+
+    // ****************************
+    // ***** Standard methods *****
+    // ****************************
 
     @Override
     public boolean equals(Object other) {

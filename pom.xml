@@ -251,6 +251,13 @@
             <version>1.2.1</version>
             <scope>test</scope>
         </dependency>
+
+
+        <dependency>
+            <groupId>com.github.haifengl</groupId>
+            <artifactId>smile-core</artifactId>
+            <version>1.5.1</version>
+        </dependency>
     </dependencies>
     <build>
         <finalName>adap-compound-db</finalName>

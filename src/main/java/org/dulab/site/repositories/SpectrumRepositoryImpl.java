@@ -52,7 +52,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
             long spectrumId = (long) columns[0];
             double score = (double) columns[1];
 
-            if (spectrumId == querySpectrum.getId()) continue;
+//            if (spectrumId == querySpectrum.getId()) continue;
 
             Hit hit = new Hit();
             hit.setSpectrum(entityManager.find(Spectrum.class, spectrumId));

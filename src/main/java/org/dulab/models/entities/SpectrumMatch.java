@@ -56,4 +56,23 @@ public class SpectrumMatch implements Serializable {
     public void setScore(double score) {
         this.score = score;
     }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (!(other instanceof SpectrumMatch)) return false;
+        return querySpectrum.equals(((SpectrumMatch) other).querySpectrum)
+                && matchSpectrum.equals(((SpectrumMatch) other).matchSpectrum);
+    }
+
+    @Override
+    public int hashCode() {
+        return 3 * querySpectrum.hashCode() ^ 5 * matchSpectrum.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Match between spectra ID = %d and ID = %d: %f",
+                querySpectrum.getId(), matchSpectrum.getId(), score);
+    }
 }

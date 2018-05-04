@@ -4,7 +4,7 @@
         <ul>
             <li><a href="<c:url value="/" />">Home</a></li>
             <li><a href="<c:url value="/file/upload/" />">Upload File</a></li>
-            <li><a href="<c:url value="/library/" />">Library</a></li>
+            <li><a href="/admin/">Admin</a></li>
             <c:if test="${userPrincipal == null}">
                 <li><a href="/login/">Log-in / Sign-up</a></li>
             </c:if>

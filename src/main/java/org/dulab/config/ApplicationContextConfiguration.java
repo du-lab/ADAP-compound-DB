@@ -81,7 +81,7 @@ public class ApplicationContextConfiguration {
         LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
         factory.setJpaVendorAdapter(adapter);
         factory.setDataSource(dataSource);
-        factory.setPackagesToScan("org.dulab.models");
+        factory.setPackagesToScan("org.dulab.models.entities");
         factory.setSharedCacheMode(SharedCacheMode.ENABLE_SELECTIVE);
         factory.setValidationMode(ValidationMode.NONE);
 
