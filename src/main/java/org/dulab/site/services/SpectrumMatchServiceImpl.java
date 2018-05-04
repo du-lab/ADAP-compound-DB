@@ -145,4 +145,11 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     public List<SpectrumCluster> getAllClusters() {
         return ServiceUtils.toList(spectrumClusterRepository.findAll());
     }
+
+    @Transactional
+    @Override
+    public SpectrumCluster getCluster(long id) {
+        return spectrumClusterRepository.findById(id)
+                .orElseThrow(() -> new EmptySearchResultException(id));
+    }
 }

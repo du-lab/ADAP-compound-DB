@@ -12,4 +12,6 @@ public interface SpectrumMatchService {
     void cluster(float scoreTolerance, int minNumSpectra) throws EmptySearchResultException;
 
     List<SpectrumCluster> getAllClusters();
+
+    SpectrumCluster getCluster(long id);
 }

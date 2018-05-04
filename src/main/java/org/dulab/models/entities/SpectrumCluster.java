@@ -9,6 +9,8 @@ public class SpectrumCluster implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private String name = "Cluster";
+
     // *************************
     // ***** Entity fields *****
     // *************************
@@ -53,6 +55,7 @@ public class SpectrumCluster implements Serializable {
 
     public void setSpectra(List<Spectrum> spectra) {
         this.spectra = spectra;
+        this.name = String.format("Cluster of %d spectra", spectra.size());
     }
 
     // ****************************
@@ -73,6 +76,6 @@ public class SpectrumCluster implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("Cluster of %d spectra", spectra.size());
+        return name;
     }
 }

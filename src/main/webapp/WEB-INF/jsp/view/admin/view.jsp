@@ -34,7 +34,7 @@
                 <td>${fn:length(cluster.spectra)}</td>
                 <td>
                     <!--more horiz-->
-                    <a href="/cluster/${cluster.id}"><i class="material-icons" title="View">&#xE5D3;</i></a>
+                    <a href="/cluster/${cluster.id}/"><i class="material-icons" title="View">&#xE5D3;</i></a>
                 </td>
             </tr>
         </c:forEach>
