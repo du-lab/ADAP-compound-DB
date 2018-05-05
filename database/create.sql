@@ -1,9 +1,37 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
 -- -----------------------------------------------------
 -- Schema adapcompounddb
 -- -----------------------------------------------------
-DROP SCHEMA  IF EXISTS `adapcompounddb`;
+
+-- -----------------------------------------------------
+-- Schema adapcompounddb
+-- -----------------------------------------------------
 CREATE SCHEMA IF NOT EXISTS `adapcompounddb` DEFAULT CHARACTER SET latin1 ;
 USE `adapcompounddb` ;
+
+-- -----------------------------------------------------
+-- Table `adapcompounddb`.`SpectrumCluster`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SpectrumCluster` (
+  `Id` BIGINT(20) UNSIGNED NOT NULL DEFAULT '0',
+  `ConsensusSpectrumId` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
+  PRIMARY KEY (`Id`),
+  UNIQUE INDEX `SpectrumCluster_ConsensusSpectrumId_uindex` (`ConsensusSpectrumId` ASC),
+  CONSTRAINT `SpectrumCluster_Spectrum_Id_fk`
+    FOREIGN KEY (`ConsensusSpectrumId`)
+    REFERENCES `adapcompounddb`.`Spectrum` (`Id`)
+    ON UPDATE CASCADE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1;
+
 
 -- -----------------------------------------------------
 -- Table `adapcompounddb`.`UserPrincipal`
@@ -69,7 +97,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Submission` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 30
+AUTO_INCREMENT = 32
 DEFAULT CHARACTER SET = utf8;
 
 
@@ -80,15 +108,22 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Spectrum` (
   `Id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `Name` VARCHAR(60) NULL DEFAULT NULL,
   `SubmissionId` BIGINT(20) UNSIGNED NOT NULL,
+  `ClusterId` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
   PRIMARY KEY (`Id`),
   INDEX `Spectrum_SubmissionId_index` (`SubmissionId` ASC),
+  INDEX `Spectrum_ClusterId_index` (`ClusterId` ASC),
+  CONSTRAINT `Spectrum_SpectrumCluster_Id_fk`
+    FOREIGN KEY (`ClusterId`)
+    REFERENCES `adapcompounddb`.`SpectrumCluster` (`Id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
   CONSTRAINT `Spectrum_Submission_Id_fk`
     FOREIGN KEY (`SubmissionId`)
     REFERENCES `adapcompounddb`.`Submission` (`Id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 3952
+AUTO_INCREMENT = 5536
 DEFAULT CHARACTER SET = utf8;
 
 
@@ -109,8 +144,34 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Peak` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 351911
+AUTO_INCREMENT = 481377
 DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `adapcompounddb`.`SpectrumMatch`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SpectrumMatch` (
+  `Id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `QuerySpectrumId` BIGINT(20) UNSIGNED NOT NULL,
+  `MatchSpectrumId` BIGINT(20) UNSIGNED NOT NULL,
+  `Score` DOUBLE NOT NULL,
+  PRIMARY KEY (`Id`),
+  INDEX `SpectrumMatch_Spectrum_Id_fk_2` (`MatchSpectrumId` ASC),
+  INDEX `SpectrumMatch_QuerySpectrumId_index` (`QuerySpectrumId` ASC),
+  CONSTRAINT `SpectrumMatch_Spectrum_Id_fk`
+    FOREIGN KEY (`QuerySpectrumId`)
+    REFERENCES `adapcompounddb`.`Spectrum` (`Id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `SpectrumMatch_Spectrum_Id_fk_2`
+    FOREIGN KEY (`MatchSpectrumId`)
+    REFERENCES `adapcompounddb`.`Spectrum` (`Id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB
+AUTO_INCREMENT = 3429
+DEFAULT CHARACTER SET = latin1;
 
 
 -- -----------------------------------------------------
@@ -130,7 +191,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SpectrumProperty` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 7387
+AUTO_INCREMENT = 12139
 DEFAULT CHARACTER SET = utf8;
 
 
@@ -168,4 +229,7 @@ DROP TABLE IF EXISTS `adapcompounddb`.`peakview`;
 USE `adapcompounddb`;
 CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `adapcompounddb`.`peakview` AS select `adapcompounddb`.`peak`.`SpectrumId` AS `SpectrumId`,`adapcompounddb`.`peak`.`Mz` AS `Mz`,`adapcompounddb`.`peak`.`Intensity` AS `Intensity`,`adapcompounddb`.`submission`.`ChromatographyType` AS `ChromatographyType`,`adapcompounddb`.`submission`.`SubmissionCategoryId` AS `SubmissionCategoryId` from ((`adapcompounddb`.`peak` join `adapcompounddb`.`spectrum`) join `adapcompounddb`.`submission`) where ((`adapcompounddb`.`peak`.`SpectrumId` = `adapcompounddb`.`spectrum`.`Id`) and (`adapcompounddb`.`spectrum`.`SubmissionId` = `adapcompounddb`.`submission`.`Id`));
 
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
