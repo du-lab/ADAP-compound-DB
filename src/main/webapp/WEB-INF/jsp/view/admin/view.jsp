@@ -26,12 +26,14 @@
         <tr>
             <th>Name</th>
             <th>Num Spectra</th>
+            <th>Diameter</th>
             <th></th>
         </tr>
         <c:forEach items="${clusters}" var="cluster">
             <tr>
                 <td>${cluster}</td>
-                <td>${fn:length(cluster.spectra)}</td>
+                <td>${cluster.size}</td>
+                <td>${cluster.diameter}</td>
                 <td>
                     <!--more horiz-->
                     <a href="/cluster/${cluster.id}/"><i class="material-icons" title="View">&#xE5D3;</i></a>

@@ -34,7 +34,7 @@ public class Spectrum implements Serializable {
     @NotNull(message = "Property list is required.")
     private List<SpectrumProperty> properties;
 
-    @NotNull(message = "List of spectrum matches is required.")
+//    @NotNull(message = "List of spectrum matches is required.")
     private List<SpectrumMatch> matches;
 
     private SpectrumCluster cluster;

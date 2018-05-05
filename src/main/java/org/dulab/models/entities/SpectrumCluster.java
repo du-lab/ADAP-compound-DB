@@ -1,6 +1,7 @@
 package org.dulab.models.entities;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
 
@@ -18,6 +19,12 @@ public class SpectrumCluster implements Serializable {
     private long id;
 
     private Spectrum consensusSpectrum;
+
+    @NotNull(message = "Diameter of cluster is required.")
+    private Double diameter;
+
+    @NotNull(message = "Size of cluster is required.")
+    private Integer size;
 
     private List<Spectrum> spectra;
 
@@ -44,18 +51,35 @@ public class SpectrumCluster implements Serializable {
         this.consensusSpectrum = consensusSpectrum;
     }
 
+    public Double getDiameter() {
+        return diameter;
+    }
+
+    public void setDiameter(Double diameter) {
+        this.diameter = diameter;
+    }
+
+    public Integer getSize() {
+        return size;
+    }
+
+    public void setSize(Integer size) {
+        this.size = size;
+    }
+
     @OneToMany(
             targetEntity = Spectrum.class,
             mappedBy = "cluster",
             fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL)
+            cascade = CascadeType.MERGE)
     public List<Spectrum> getSpectra() {
         return spectra;
     }
 
     public void setSpectra(List<Spectrum> spectra) {
         this.spectra = spectra;
-        this.name = String.format("Cluster of %d spectra", spectra.size());
+        if (spectra != null)
+            this.name = String.format("Cluster of %d spectra", spectra.size());
     }
 
     // ****************************

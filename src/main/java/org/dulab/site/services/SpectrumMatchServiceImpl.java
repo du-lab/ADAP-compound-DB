@@ -90,6 +90,9 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         }
 
         double[][] distanceMatrix = new double[count][count];
+        Arrays.stream(distanceMatrix)
+                .forEach(a -> Arrays.fill(a, 1.0));
+
         for (SpectrumMatch spectrumMatch : spectrumMatchRepository.findAll()) {
 
             int queryIndex = spectrumIdToIndexMap.get(
@@ -97,7 +100,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
             int matchIndex = spectrumIdToIndexMap.get(
                     spectrumMatch.getMatchSpectrum().getId());
 
-            double distance = spectrumMatch.getScore();
+            double distance = 1.0 - spectrumMatch.getScore();
             distanceMatrix[queryIndex][matchIndex] = distance;
             distanceMatrix[matchIndex][queryIndex] = distance;
         }
@@ -105,7 +108,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         // Complete Hierarchical Clustering
         Linkage linkage = new CompleteLinkage(distanceMatrix);
         HierarchicalClustering clustering = new HierarchicalClustering(linkage);
-        int[] labels = clustering.partition(0.8);
+        int[] labels = clustering.partition(0.2);
 
         List<SpectrumCluster> clusters = new ArrayList<>();
         for (int label : Arrays.stream(labels).distinct().toArray()) {
@@ -117,6 +120,16 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
             SpectrumCluster cluster = new SpectrumCluster();
             cluster.setId(label);
+            cluster.setSize(indices.length);
+            cluster.setDiameter(Arrays
+                    .stream(indices)
+                    .mapToDouble(i -> Arrays
+                            .stream(indices)
+                            .mapToDouble(j -> distanceMatrix[i][j])
+                            .max()
+                            .orElse(0.0))
+                    .max()
+                    .orElse(0.0));
             cluster.setSpectra(Arrays
                     .stream(indices)
                     .mapToObj(i -> getSpectrum(spectrumIds.get(i)))
