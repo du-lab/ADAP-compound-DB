@@ -24,7 +24,7 @@ public class AdminController {
 
     @ModelAttribute
     public void addAttributes(Model model) {
-        model.addAttribute("numSpectra", spectrumService.getTotalNumberOfSpectra());
+        model.addAttribute("numSpectra", spectrumService.getNumberOfSubmittedSpectra());
         model.addAttribute("numClusters", spectrumMatchService.getTotalNumberOfClusters());
         model.addAttribute("clusters", spectrumMatchService.getAllClusters());
     }
@@ -43,7 +43,7 @@ public class AdminController {
     @RequestMapping(value = "/admin/cluster/", method = RequestMethod.GET)
     public String cluster() {
         try {
-            spectrumMatchService.cluster(0.25F, 2);
+            spectrumMatchService.cluster(0.1F, 2, 0.25F);
         }
         catch (EmptySearchResultException e) {
             System.out.println(e.getMessage());

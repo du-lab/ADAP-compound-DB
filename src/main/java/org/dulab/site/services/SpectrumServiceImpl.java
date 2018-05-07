@@ -62,7 +62,7 @@ public class SpectrumServiceImpl implements SpectrumService {
 
     @Override
     @Transactional
-    public long getTotalNumberOfSpectra() {
-        return spectrumRepository.count();
+    public long getNumberOfSubmittedSpectra() {
+        return spectrumRepository.countByConsensusIsFalse();
     }
 }

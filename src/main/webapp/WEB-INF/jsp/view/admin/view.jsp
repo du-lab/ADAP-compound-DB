@@ -17,7 +17,7 @@
             <td>${numSpectra}</td>
         </tr>
         <tr>
-            <td>Number of clusters (consensus spectra)</td>
+            <td>Number of consensus spectra</td>
             <td>${numClusters}</td>
         </tr>
     </table>
@@ -43,7 +43,7 @@
         <tr>
             <th>Name</th>
             <th>Num Spectra</th>
-            <th>Diameter</th>
+            <th>Matching Score</th>
             <th></th>
         </tr>
         <c:forEach items="${clusters}" var="cluster">

@@ -10,4 +10,6 @@ public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, Spec
 
     @Query("SELECT s FROM Spectrum s WHERE s.matches IS EMPTY")
     Iterable<Spectrum> findAllByMatchesIsEmpty();
+
+    long countByConsensusIsFalse();
 }

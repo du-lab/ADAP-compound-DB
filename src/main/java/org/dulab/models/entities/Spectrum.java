@@ -25,19 +25,21 @@ public class Spectrum implements Serializable {
 
     private long id;
 
-    @NotNull(message = "Spectrum requires to specify Submission.")
+//    @NotNull(message = "Spectrum requires to specify Submission.")
     private Submission submission;
 
     @NotNull(message = "Peak list is required.")
     private List<Peak> peaks;
 
-    @NotNull(message = "Property list is required.")
+//    @NotNull(message = "Property list is required.")
     private List<SpectrumProperty> properties;
 
 //    @NotNull(message = "List of spectrum matches is required.")
     private List<SpectrumMatch> matches;
 
     private SpectrumCluster cluster;
+
+    private boolean consensus;
 
     // *******************************
     // ***** Getters and setters *****
@@ -61,7 +63,7 @@ public class Spectrum implements Serializable {
         this.name = name;
     }
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SubmissionId", referencedColumnName = "Id")
     public Submission getSubmission() {
         return submission;
@@ -106,6 +108,9 @@ public class Spectrum implements Serializable {
     }
 
     public void setProperties(List<SpectrumProperty> properties) {
+
+        if (properties == null) return;
+
         this.properties = properties;
         for (SpectrumProperty property : properties)
             if (property.getName().equalsIgnoreCase("name"))
@@ -133,6 +138,14 @@ public class Spectrum implements Serializable {
 
     public void setCluster(SpectrumCluster cluster) {
         this.cluster = cluster;
+    }
+
+    public boolean isConsensus() {
+        return consensus;
+    }
+
+    public void setConsensus(boolean consensus) {
+        this.consensus = consensus;
     }
 
     // ****************************

@@ -18,5 +18,5 @@ public interface SpectrumService {
                     @NotNull(message = "List of search criteria is required") CriteriaBlock criteria,
                     float mzTolerance, int numHits, float scoreTolerance);
 
-    long getTotalNumberOfSpectra();
+    long getNumberOfSubmittedSpectra();
 }

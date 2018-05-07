@@ -4,9 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.exceptions.EmptySearchResultException;
 import org.dulab.models.Hit;
-import org.dulab.models.entities.Spectrum;
-import org.dulab.models.entities.SpectrumCluster;
-import org.dulab.models.entities.SpectrumMatch;
+import org.dulab.models.entities.*;
 import org.dulab.models.search.CriteriaBlock;
 import org.dulab.models.search.SetOperator;
 import org.dulab.site.repositories.SpectrumClusterRepository;
@@ -79,7 +77,8 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
     @Transactional
     @Override
-    public void cluster(float scoreThreshold, int minNumSpectra) throws EmptySearchResultException {
+    public void cluster(float mzTolerance, int minNumSpectra, float scoreThreshold)
+            throws EmptySearchResultException {
 
         Map<Long, Integer> spectrumIdToIndexMap = new HashMap<>();
         List<Long> spectrumIds = new ArrayList<>();
@@ -121,6 +120,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
             SpectrumCluster cluster = new SpectrumCluster();
             cluster.setId(label);
             cluster.setSize(indices.length);
+
             cluster.setDiameter(Arrays
                     .stream(indices)
                     .mapToDouble(i -> Arrays
@@ -130,6 +130,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
                             .orElse(0.0))
                     .max()
                     .orElse(0.0));
+
             cluster.setSpectra(Arrays
                     .stream(indices)
                     .mapToObj(i -> getSpectrum(spectrumIds.get(i)))
@@ -137,6 +138,8 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
             cluster.getSpectra()
                     .forEach(s -> s.setCluster(cluster));
+
+            addConsensusSpectrum(cluster, mzTolerance);
 
             clusters.add(cluster);
         }
@@ -151,6 +154,62 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     private Spectrum getSpectrum(long id) throws EmptySearchResultException {
         return spectrumRepository.findById(id)
                 .orElseThrow(() -> new EmptySearchResultException(id));
+    }
+
+    private void addConsensusSpectrum(SpectrumCluster cluster, float mzTolerance) {
+
+        Peak[] peaks = cluster.getSpectra()
+                .stream()
+                .flatMap(s -> s.getPeaks().stream())
+                .toArray(Peak[]::new);
+
+        double[][] mzDistance = new double[peaks.length][peaks.length];
+        for (int i = 0; i < peaks.length; ++i)
+            for (int j = i + 1; j <peaks.length; ++j) {
+                double distance = Math.abs(peaks[i].getMz() - peaks[j].getMz());
+                mzDistance[i][j] = distance;
+                mzDistance[j][i] = distance;
+            }
+
+        int[] labels = new HierarchicalClustering(new CompleteLinkage(mzDistance)).partition(mzTolerance);
+
+        int[] uniqueLabels = Arrays.stream(labels)
+                .distinct()
+                .toArray();
+
+        Spectrum consensusSpectrum = new Spectrum();
+        List<Peak> consensusPeaks = new ArrayList<>(uniqueLabels.length);
+
+        for (int label : uniqueLabels) {
+
+            double mz = IntStream.range(0, labels.length)
+                    .filter(i -> labels[i] == label)
+                    .mapToDouble(i -> peaks[i].getMz())
+                    .sum() / cluster.getSize();
+
+            double intensity = IntStream.range(0, labels.length)
+                    .filter(i -> labels[i] == label)
+                    .mapToDouble(i -> peaks[i].getIntensity())
+                    .sum() / cluster.getSize();
+
+            Peak consensusPeak = new Peak();
+            consensusPeak.setMz(mz);
+            consensusPeak.setIntensity(intensity);
+            consensusPeak.setSpectrum(consensusSpectrum);
+
+            consensusPeaks.add(consensusPeak);
+        }
+
+        SpectrumProperty nameProperty = new SpectrumProperty();
+        nameProperty.setName("Name");
+        nameProperty.setValue("Consensus Spectrum");
+        nameProperty.setSpectrum(consensusSpectrum);
+
+        consensusSpectrum.setConsensus(true);
+        consensusSpectrum.setPeaks(consensusPeaks);
+        consensusSpectrum.setProperties(Collections.singletonList(nameProperty));
+
+        cluster.setConsensusSpectrum(consensusSpectrum);
     }
 
     @Transactional

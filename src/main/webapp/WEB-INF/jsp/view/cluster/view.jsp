@@ -25,7 +25,11 @@
             <c:forEach items="${cluster.spectra}" var="spectrum" varStatus="status">
 
                 <tr ${status.first ? 'id="firstRow"' : ''} onclick="select(this);
-                        addPlot('chartDiv', '${dulab:peaksToJson(spectrum.peaks)}');">
+                        addPlot('chartDiv', '${dulab:peaksToJson(cluster.consensusSpectrum.peaks)}',
+                                            '${cluster.consensusSpectrum.name}',
+                                            '${dulab:peaksToJson(spectrum.peaks)}',
+                                            '${spectrum.name}', 0);">
+                        <%--addPlot('chartDiv', '${dulab:peaksToJson(spectrum.peaks)}');">--%>
 
                     <td>
                         ${spectrum.name}<br/>
@@ -45,7 +49,7 @@
 
 <script src="<c:url value="/resources/js/select.js"/>"></script>
 <script src="<c:url value="/resources/js/zingchart/zingchart.min.js"/>"></script>
-<script src="<c:url value="/resources/js/spectrum.js"/>"></script>
+<script src="<c:url value="/resources/js/spectrumMatch.js"/>"></script>
 <script>
     var firstRow = document.getElementById("firstRow");
     if (firstRow != null)
