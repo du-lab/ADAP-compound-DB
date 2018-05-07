@@ -17,4 +17,6 @@ public interface SpectrumService {
     List<Hit> match(@NotNull(message = "Query spectrum is required.") @Valid Spectrum querySpectrum,
                     @NotNull(message = "List of search criteria is required") CriteriaBlock criteria,
                     float mzTolerance, int numHits, float scoreTolerance);
+
+    long getTotalNumberOfSpectra();
 }

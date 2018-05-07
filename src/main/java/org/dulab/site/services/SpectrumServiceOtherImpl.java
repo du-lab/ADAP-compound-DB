@@ -80,4 +80,10 @@ public class SpectrumServiceOtherImpl implements SpectrumService {
 
         return sum * sum;
     }
+
+    @Override
+    @Transactional
+    public long getTotalNumberOfSpectra() {
+        return spectrumRepository.count();
+    }
 }

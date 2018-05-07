@@ -2,6 +2,7 @@ package org.dulab.site.controllers;
 
 import org.dulab.exceptions.EmptySearchResultException;
 import org.dulab.site.services.SpectrumMatchService;
+import org.dulab.site.services.SpectrumService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -14,13 +15,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class AdminController {
 
     private final SpectrumMatchService spectrumMatchService;
+    private final SpectrumService spectrumService;
 
-    public AdminController(SpectrumMatchService spectrumMatchService) {
+    public AdminController(SpectrumMatchService spectrumMatchService, SpectrumService spectrumService) {
         this.spectrumMatchService = spectrumMatchService;
+        this.spectrumService = spectrumService;
     }
 
     @ModelAttribute
     public void addAttributes(Model model) {
+        model.addAttribute("numSpectra", spectrumService.getTotalNumberOfSpectra());
+        model.addAttribute("numClusters", spectrumMatchService.getTotalNumberOfClusters());
         model.addAttribute("clusters", spectrumMatchService.getAllClusters());
     }
 

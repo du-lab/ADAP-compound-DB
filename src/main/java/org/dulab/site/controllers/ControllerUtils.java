@@ -42,4 +42,8 @@ public class ControllerUtils {
 
         return -1;
     }
+
+    public static int toIntegerScore(float score) {
+        return Math.round(1000 * score);
+    }
 }

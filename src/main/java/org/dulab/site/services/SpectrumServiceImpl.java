@@ -59,4 +59,10 @@ public class SpectrumServiceImpl implements SpectrumService {
 
         return hits;
     }
+
+    @Override
+    @Transactional
+    public long getTotalNumberOfSpectra() {
+        return spectrumRepository.count();
+    }
 }

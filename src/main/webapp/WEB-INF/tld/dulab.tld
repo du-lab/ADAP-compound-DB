@@ -33,11 +33,20 @@
     </function>
 
     <function>
-        <description>Return the index of an item in a list.</description>
+        <description>Returns the index of an item in a list.</description>
         <name>getListIndex</name>
         <function-class>org.dulab.site.controllers.ControllerUtils</function-class>
         <function-signature>
             int getEntryIndex(java.util.List,java.lang.Object)
+        </function-signature>
+    </function>
+
+    <function>
+        <description>Transforms float score (0..1) to integer score (0..1000)</description>
+        <name>toIntegerScore</name>
+        <function-class>org.dulab.site.controllers.ControllerUtils</function-class>
+        <function-signature>
+            int toIntegerScore(float)
         </function-signature>
     </function>
 

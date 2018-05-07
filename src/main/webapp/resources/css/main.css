@@ -1,7 +1,7 @@
 /***** Colors *****
 White: #ffffff
-Grey:  #f2f2f2
-Greyer:#e4e4e4
+Gray:  #f2f2f2
+Grayer:#e4e4e4
 Dark:  #474853
 Black: #000000
 Red:   #844d36
@@ -279,3 +279,7 @@ section div.subsection div.submit {
 span.highlighted {
     color: #86b3d1;
 }
+
+.dark {background-color: #474853;}
+
+.gray-text {color: #f2f2f2;}

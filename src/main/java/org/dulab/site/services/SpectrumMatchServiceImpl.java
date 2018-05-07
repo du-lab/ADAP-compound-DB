@@ -165,4 +165,10 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         return spectrumClusterRepository.findById(id)
                 .orElseThrow(() -> new EmptySearchResultException(id));
     }
+
+    @Transactional
+    @Override
+    public long getTotalNumberOfClusters() {
+        return spectrumClusterRepository.count();
+    }
 }

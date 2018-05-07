@@ -1,10 +1,27 @@
+<%--@elvariable id="numSpectra" type="java.lang.Long"--%>
+<%--@elvariable id="numClusters" type="java.lang.Long"--%>
 <%--@elvariable id="clusters" type="java.util.List<org.dulab.models.entities.SpectrumCluster>"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 <jsp:include page="/WEB-INF/jsp/includes/header.jsp" />
 <jsp:include page="/WEB-INF/jsp/includes/column_left_home.jsp" />
 
 <!-- Start the middle column -->
+
+<section>
+    <h1>Library Information</h1>
+    <table>
+        <tr>
+            <td>Number of submitted spectra</td>
+            <td>${numSpectra}</td>
+        </tr>
+        <tr>
+            <td>Number of clusters (consensus spectra)</td>
+            <td>${numClusters}</td>
+        </tr>
+    </table>
+</section>
 
 <section>
     <h1>Admin Tools</h1>
@@ -33,7 +50,7 @@
             <tr>
                 <td>${cluster}</td>
                 <td>${cluster.size}</td>
-                <td>${cluster.diameter}</td>
+                <td>${dulab:toIntegerScore(cluster.diameter)}</td>
                 <td>
                     <!--more horiz-->
                     <a href="/cluster/${cluster.id}/"><i class="material-icons" title="View">&#xE5D3;</i></a>
