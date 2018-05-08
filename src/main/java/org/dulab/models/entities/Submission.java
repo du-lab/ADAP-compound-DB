@@ -2,6 +2,7 @@ package org.dulab.models.entities;
 
 import org.dulab.models.ChromatographyType;
 import org.dulab.models.FileType;
+import org.dulab.models.SampleSourceType;
 import org.dulab.validation.NotBlank;
 
 import javax.persistence.*;
@@ -18,6 +19,10 @@ public class Submission implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private static final String SESSION_ATTRIBUTE_KEY = "submission";
+
+    // *************************
+    // ***** Entity Fields *****
+    // *************************
 
     private long id;
 
@@ -42,6 +47,9 @@ public class Submission implements Serializable {
     @NotNull(message = "Chromatography type is required.")
     private ChromatographyType chromatographyType;
 
+    @NotNull(message = "Sample source type is required.")
+    private SampleSourceType sampleSourceType;
+
     private SubmissionCategory category;
 
     @NotNull (message = "Spectrum list is required.")
@@ -51,6 +59,10 @@ public class Submission implements Serializable {
     @NotNull (message = "You must log in to submit mass spectra to the library.")
     @Valid
     private UserPrincipal user;
+
+    // *******************************
+    // ***** Getters and Setters *****
+    // *******************************
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -85,6 +97,15 @@ public class Submission implements Serializable {
 
     public void setChromatographyType(ChromatographyType chromatographyType) {
         this.chromatographyType = chromatographyType;
+    }
+
+    @Enumerated(EnumType.STRING)
+    public SampleSourceType getSampleSourceType() {
+        return sampleSourceType;
+    }
+
+    public void setSampleSourceType(SampleSourceType sampleSourceType) {
+        this.sampleSourceType = sampleSourceType;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -1,3 +1,4 @@
+<%--@elvariable id="submissionList" type="java.util.List<org.dulab.models.entities.Submission>"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
@@ -18,27 +19,30 @@
         <table>
             <tr>
                 <th>ID</th>
-                <th>Date</th>
-                <th>Time</th>
+                <th>Date / Time</th>
                 <th>Name</th>
-                <th>Description</th>
-                <th></th>
+                <th>Properties</th>
+                <th>View / Delete</th>
             </tr>
-            <c:forEach items="${submissions}" var="submission">
+            <c:forEach items="${submissionList}" var="submission">
                 <tr>
                     <td>${submission.id}</td>
-                    <td><fmt:formatDate value="${submission.dateTime}" type="DATE" dateStyle="FULL"/></td>
-                    <td><fmt:formatDate value="${submission.dateTime}" type="TIME"/></td>
+                    <td><fmt:formatDate value="${submission.dateTime}" type="DATE" dateStyle="FULL"/><br/>
+                        <small><fmt:formatDate value="${submission.dateTime}" type="TIME"/></small></td>
                     <td>
-                        <a href="/submission/${submission.id}/">${submission.name}</a>
+                        <a href="/submission/${submission.id}/">${submission.name}</a><br/>
+                        <small>${dulab:abbreviate(submission.description, 80)}</small>
                     </td>
-                    <td>${dulab:abbreviate(submission.description, 80)}</td>
+                    <td>
+                        <small>${submission.chromatographyType.label}<br/>
+                                ${submission.sampleSourceType.label}</small>
+                    </td>
                     <td>
                         <!-- more horiz -->
-                        <a href="/submission/${submission.id}/"><i class="material-icons">&#xE5D3;</i></a>
+                        <a href="/submission/${submission.id}/"><i class="material-icons" title="View">&#xE5D3;</i></a>
 
                         <!-- delete -->
-                        <a href="/submission/${submission.id}/delete/"><i class="material-icons">&#xE872;</i></a>
+                        <a href="/submission/${submission.id}/delete/"><i class="material-icons" title="Delete">&#xE872;</i></a>
                     </td>
                 </tr>
             </c:forEach>

@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Controller
-@ControllerAdvice
 public class FileUploadController {
 
     private static final Logger LOG = LogManager.getLogger();
@@ -43,14 +42,6 @@ public class FileUploadController {
         model.addAttribute("chromatographyTypeList", ChromatographyType.values());
         model.addAttribute("fileTypeList", FileType.values());
     }
-
-//    @RequestMapping(value = "/file/", method = RequestMethod.GET)
-//    public String submission(HttpSession session) {
-//        if (Submission.from(session) == null)
-//            return "redirect:/file/upload/";
-//
-//        return "redirect:/file/view/";
-//    }
 
     @RequestMapping(value = "/file/upload/", method = RequestMethod.GET)
     public String upload(Model model, HttpSession session) {
@@ -74,6 +65,7 @@ public class FileUploadController {
 
         MultipartFile file = form.getFile();
         Submission submission = new Submission();
+        submission.setName(file.getOriginalFilename());
         submission.setFilename(file.getOriginalFilename());
         submission.setFileType(form.getFileType());
         submission.setChromatographyType(form.getChromatographyType());

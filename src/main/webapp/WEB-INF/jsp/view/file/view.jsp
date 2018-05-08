@@ -1,5 +1,6 @@
+<%--@elvariable id="sampleSourceTypeList" type="org.dulab.models.SampleSourceType[]"--%>
 <%--@elvariable id="submission" type="org.dulab.models.entities.Submission"--%>
-<%--@elvariable id="form" type="org.dulab.site.controllers.SubmissionController.Form"--%>
+<%--@elvariable id="submissionForm" type="org.dulab.site.controllers.SubmissionController.SubmissionForm"--%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
@@ -78,7 +79,7 @@
                     </ul>
                 </div>
             </c:if>
-            <form:form method="POST" modelAttribute="form">
+            <form:form method="POST" modelAttribute="submissionForm">
                 <form:errors path="" cssClass="errors"/><br/>
 
                 <form:label path="name">Name:</form:label><br/>
@@ -88,6 +89,13 @@
                 <form:label path="description">Description:</form:label><br/>
                 <form:textarea path="description" rows="12" cols="80"/><br/>
                 <form:errors path="description" cssClass="errors"/><br/>
+
+                <form:label path="sampleSourceType">Sample Source Type:</form:label><br/>
+                <form:select path="sampleSourceType">
+                    <form:option value="" label="Please select..."/>
+                    <form:options items="${sampleSourceTypeList}" itemLabel="label"/>
+                </form:select><br/>
+                <form:errors path="sampleSourceType" cssClass="errors"/><br/>
 
                 <form:label path="submissionCategoryId">Submission Category</form:label><br/>
                 <span style="vertical-align: bottom;">

@@ -35,9 +35,7 @@ public class AccountController {
             return "redirect:/login/";
 
         model.addAttribute("user", user);
-        model.addAttribute("submissions", submissionService.getSubmissionsByUserId(user.getId()));
-
-//        user = authenticationService.findUser(user.getId());
+        model.addAttribute("submissionList", submissionService.getSubmissionsByUserId(user.getId()));
 
         return "account/view";
     }

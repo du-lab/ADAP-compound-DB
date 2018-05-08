@@ -1,5 +1,6 @@
 package org.dulab.site.controllers;
 
+import org.dulab.models.SampleSourceType;
 import org.dulab.models.entities.Submission;
 import org.dulab.models.entities.UserPrincipal;
 import org.dulab.site.services.*;
@@ -14,12 +15,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.Date;
 
 @Controller
-@ControllerAdvice
-//@RequestMapping("submission/")
+//@ControllerAdvice
 public class SubmissionController {
 
     private final SubmissionService submissionService;
@@ -37,6 +38,7 @@ public class SubmissionController {
     @ModelAttribute
     public void addAttributes(Model model) {
         model.addAttribute("submissionCategories", submissionService.getAllSubmissionCategories());
+        model.addAttribute("sampleSourceTypeList", SampleSourceType.values());
     }
 
     /********************************
@@ -72,7 +74,7 @@ public class SubmissionController {
         form.setName(submission.getName());
         form.setDescription(submission.getDescription());
         form.setSubmissionCategoryId(submission.getCategory() == null ? 0 : submission.getCategory().getId());
-        model.addAttribute("form", form);
+        model.addAttribute("submissionForm", form);
 
         return "file/view";
     }
@@ -153,7 +155,7 @@ public class SubmissionController {
     public String fileView(HttpSession session, Model model, @Valid SubmissionForm form, Errors errors) {
 
         if (errors.hasErrors()) {
-            model.addAttribute("form", form);
+//            model.addAttribute("form", form);
             return "file/view";
         }
 
@@ -188,6 +190,7 @@ public class SubmissionController {
 
         submission.setName(form.getName());
         submission.setDescription(form.getDescription());
+        submission.setSampleSourceType(form.getSampleSourceType());
         submission.setDateTime(new Date());
         if (form.getSubmissionCategoryId() != 0)
             submission.setCategory(submissionService.getSubmissionCategory(form.getSubmissionCategoryId()));
@@ -246,6 +249,9 @@ public class SubmissionController {
         @NotBlank(message = "The field Description is required.")
         private String description;
 
+        @NotNull(message = "The field Sample Source Type is required.")
+        private SampleSourceType sampleSourceType;
+
         private long submissionCategoryId;
 
         public String getName() {
@@ -262,6 +268,14 @@ public class SubmissionController {
 
         public void setDescription(String description) {
             this.description = description;
+        }
+
+        public SampleSourceType getSampleSourceType() {
+            return sampleSourceType;
+        }
+
+        public void setSampleSourceType(SampleSourceType sampleSourceType) {
+            this.sampleSourceType = sampleSourceType;
         }
 
         public long getSubmissionCategoryId() {
