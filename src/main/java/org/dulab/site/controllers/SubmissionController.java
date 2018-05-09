@@ -73,6 +73,7 @@ public class SubmissionController {
         SubmissionForm form = new SubmissionForm();
         form.setName(submission.getName());
         form.setDescription(submission.getDescription());
+        form.setSampleSourceType(submission.getSampleSourceType());
         form.setSubmissionCategoryId(submission.getCategory() == null ? 0 : submission.getCategory().getId());
         model.addAttribute("submissionForm", form);
 

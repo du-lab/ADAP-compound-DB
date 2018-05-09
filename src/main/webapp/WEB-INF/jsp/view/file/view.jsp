@@ -34,22 +34,27 @@
             <tr>
                 <th>No</th>
                 <th>Name</th>
-                <th>Properties</th>
-                <th></th>
+                <th>Ret Time (min)</th>
+                <th>Precursor mass</th>
+                <%--<th>Properties</th>--%>
+                <th>View / Search / Delete</th>
             </tr>
             <c:if test="${submission.spectra.size() > 0}">
-                <c:forEach var="i" begin="0" end="${submission.spectra.size() - 1}">
+                <c:forEach items="${submission.spectra}" var="spectrum" varStatus="loop">
                     <tr>
-                        <td>${i + 1}</td>
-                        <td><a href="${i}/">${submission.spectra[i]}</a></td>
-                        <td>${dulab:abbreviate(submission.spectra[i].properties, 80)}</td>
+                        <td>${loop.index + 1}</td>
+                        <td><a href="${loop.index}/">${spectrum}</a><br/>
+                        <small>${dulab:abbreviate(spectrum.properties, 80)}</small></td>
+                        <td>${spectrum.retentionTime}</td>
+                        <td>${spectrum.precursor}</td>
+                        <%--<td>${dulab:abbreviate(submission.spectra[i].properties, 80)}</td>--%>
                         <td>
                             <!-- more horiz -->
-                            <a href="${i}/"><i class="material-icons" title="View spectrum">&#xE5D3;</i></a>
+                            <a href="${loop.index}/"><i class="material-icons" title="View spectrum">&#xE5D3;</i></a>
                             <!-- search -->
-                            <a href="${i}/search/"><i class="material-icons" title="Search spectrum">&#xE8B6;</i></a>
+                            <a href="${loop.index}/search/"><i class="material-icons" title="Search spectrum">&#xE8B6;</i></a>
                             <!-- delete -->
-                            <a href="${i}/delete/"><i class="material-icons" title="Delete spectrum">&#xE872;</i></a>
+                            <a href="${loop.index}/delete/"><i class="material-icons" title="Delete spectrum">&#xE872;</i></a>
                         </td>
                     </tr>
                 </c:forEach>

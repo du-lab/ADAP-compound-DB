@@ -46,7 +46,7 @@ public class FileUploadController {
     @RequestMapping(value = "/file/upload/", method = RequestMethod.GET)
     public String upload(Model model, HttpSession session) {
         if (Submission.from(session) != null)
-            return "redirect:/file/view/";
+            return "redirect:/file/";
 
         FileUploadForm form = new FileUploadForm();
         form.setFileType(FileType.MSP);
@@ -58,7 +58,7 @@ public class FileUploadController {
     public String upload(Model model, HttpSession session, @Valid FileUploadForm form, Errors errors) {
 
         if (Submission.from(session) != null)
-            return "redirect:/file/view/";
+            return "redirect:/file/";
 
         if (errors.hasErrors())
             return "file/upload";

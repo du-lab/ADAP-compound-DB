@@ -17,6 +17,10 @@ public class Spectrum implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private static final String NAME_PROPERTY_NAME = "Name";
+    private static final String PRECURSOR_MASS_PROPERTY_NAME = "PrecursorMZ";
+    private static final String RETENTION_TIME_PROPERTY_NAME = "RT";
+
     // *************************
     // ***** Entity fields *****
     // *************************
@@ -25,21 +29,22 @@ public class Spectrum implements Serializable {
 
     private long id;
 
-//    @NotNull(message = "Spectrum requires to specify Submission.")
     private Submission submission;
 
     @NotNull(message = "Peak list is required.")
     private List<Peak> peaks;
 
-//    @NotNull(message = "Property list is required.")
     private List<SpectrumProperty> properties;
 
-//    @NotNull(message = "List of spectrum matches is required.")
     private List<SpectrumMatch> matches;
 
     private SpectrumCluster cluster;
 
     private boolean consensus;
+
+    private Double precursor;
+
+    private Double retentionTime;
 
     // *******************************
     // ***** Getters and setters *****
@@ -112,9 +117,17 @@ public class Spectrum implements Serializable {
         if (properties == null) return;
 
         this.properties = properties;
-        for (SpectrumProperty property : properties)
-            if (property.getName().equalsIgnoreCase("name"))
-                name = property.getValue();
+        for (SpectrumProperty property : properties) {
+
+            if (property.getName().equalsIgnoreCase(NAME_PROPERTY_NAME))
+                this.setName(property.getValue());
+
+            else if (property.getName().equalsIgnoreCase(PRECURSOR_MASS_PROPERTY_NAME))
+                this.setPrecursor(Double.valueOf(property.getValue()));
+
+            else if (property.getName().equalsIgnoreCase(RETENTION_TIME_PROPERTY_NAME))
+                this.setRetentionTime(Double.valueOf(property.getValue()));
+        }
     }
 
     @OneToMany(
@@ -146,6 +159,22 @@ public class Spectrum implements Serializable {
 
     public void setConsensus(boolean consensus) {
         this.consensus = consensus;
+    }
+
+    public Double getPrecursor() {
+        return precursor;
+    }
+
+    public void setPrecursor(Double precursor) {
+        this.precursor = precursor;
+    }
+
+    public Double getRetentionTime() {
+        return retentionTime;
+    }
+
+    public void setRetentionTime(Double retentionTime) {
+        this.retentionTime = retentionTime;
     }
 
     // ****************************

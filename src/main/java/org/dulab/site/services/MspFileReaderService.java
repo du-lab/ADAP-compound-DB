@@ -35,9 +35,11 @@ public class MspFileReaderService implements FileReaderService {
         while ((line = reader.readLine()) != null) {
             if (line.trim().isEmpty()) {
 
-                spectrum.setProperties(properties);
-                spectrum.setPeaks(peaks);
-                spectra.add(spectrum);
+                if (!peaks.isEmpty()) {
+                    spectrum.setProperties(properties);
+                    spectrum.setPeaks(peaks);
+                    spectra.add(spectrum);
+                }
 
                 spectrum = new Spectrum();
                 properties = new ArrayList<>();
