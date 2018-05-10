@@ -1,5 +1,7 @@
 package org.dulab.models.entities;
 
+import org.dulab.models.ChromatographyType;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -25,6 +27,9 @@ public class SpectrumCluster implements Serializable {
 
     @NotNull(message = "Size of cluster is required.")
     private Integer size;
+
+    @NotNull(message = "Chromatography type is required.")
+    private ChromatographyType chromatographyType;
 
     private List<Spectrum> spectra;
 
@@ -67,11 +72,19 @@ public class SpectrumCluster implements Serializable {
         this.size = size;
     }
 
+    @Enumerated(value = EnumType.STRING)
+    public ChromatographyType getChromatographyType() {
+        return chromatographyType;
+    }
+
+    public void setChromatographyType(ChromatographyType chromatographyType) {
+        this.chromatographyType = chromatographyType;
+    }
+
     @OneToMany(
-            targetEntity = Spectrum.class,
             mappedBy = "cluster",
             fetch = FetchType.LAZY,
-            cascade = CascadeType.MERGE)
+            cascade = CascadeType.DETACH)
     public List<Spectrum> getSpectra() {
         return spectra;
     }

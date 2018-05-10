@@ -85,68 +85,81 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     public void cluster(float mzTolerance, int minNumSpectra, float scoreThreshold)
             throws EmptySearchResultException {
 
-        Map<Long, Integer> spectrumIdToIndexMap = new HashMap<>();
-        List<Long> spectrumIds = new ArrayList<>();
-        int count = 0;
-        for (Spectrum spectrum : spectrumRepository.findAll()) {
-            spectrumIdToIndexMap.put(spectrum.getId(), count++);
-            spectrumIds.add(spectrum.getId());
-        }
-
-        double[][] distanceMatrix = new double[count][count];
-        Arrays.stream(distanceMatrix)
-                .forEach(a -> Arrays.fill(a, 1.0));
-
-        for (SpectrumMatch spectrumMatch : spectrumMatchRepository.findAll()) {
-
-            int queryIndex = spectrumIdToIndexMap.get(
-                    spectrumMatch.getQuerySpectrum().getId());
-            int matchIndex = spectrumIdToIndexMap.get(
-                    spectrumMatch.getMatchSpectrum().getId());
-
-            double distance = 1.0 - spectrumMatch.getScore();
-            distanceMatrix[queryIndex][matchIndex] = distance;
-            distanceMatrix[matchIndex][queryIndex] = distance;
-        }
-
-        // Complete Hierarchical Clustering
-        Linkage linkage = new CompleteLinkage(distanceMatrix);
-        HierarchicalClustering clustering = new HierarchicalClustering(linkage);
-        int[] labels = clustering.partition(0.2);
-
         List<SpectrumCluster> clusters = new ArrayList<>();
-        for (int label : Arrays.stream(labels).distinct().toArray()) {
-            int[] indices = IntStream.range(0, count)
-                    .filter(i -> labels[i] == label)
-                    .toArray();
 
-            if (indices.length < minNumSpectra) continue;
+        for (ChromatographyType type : ChromatographyType.values()) {
 
-            SpectrumCluster cluster = new SpectrumCluster();
-            cluster.setId(label);
-            cluster.setSize(indices.length);
+            Map<Long, Integer> spectrumIdToIndexMap = new HashMap<>();
+            List<Long> spectrumIds = new ArrayList<>();
+            int count = 0;
+            for (Spectrum spectrum : spectrumRepository
+                    .findAllByConsensusFalseAndSubmissionChromatographyType(type)) {
+                spectrumIdToIndexMap.put(spectrum.getId(), count++);
+                spectrumIds.add(spectrum.getId());
+            }
 
-            cluster.setDiameter(Arrays
-                    .stream(indices)
-                    .mapToDouble(i -> Arrays
-                            .stream(indices)
-                            .mapToDouble(j -> distanceMatrix[i][j])
-                            .max()
-                            .orElse(0.0))
-                    .max()
-                    .orElse(0.0));
+            double[][] distanceMatrix = new double[count][count];
+            Arrays.stream(distanceMatrix)
+                    .forEach(a -> Arrays.fill(a, 1.0));
 
-            cluster.setSpectra(Arrays
-                    .stream(indices)
-                    .mapToObj(i -> getSpectrum(spectrumIds.get(i)))
-                    .collect(Collectors.toList()));
+            for (SpectrumMatch spectrumMatch : spectrumMatchRepository
+                    .findAllByQuerySpectrumSubmissionChromatographyType(type)) {
 
-            cluster.getSpectra()
-                    .forEach(s -> s.setCluster(cluster));
+                int queryIndex = spectrumIdToIndexMap.get(
+                        spectrumMatch.getQuerySpectrum().getId());
+                int matchIndex = spectrumIdToIndexMap.get(
+                        spectrumMatch.getMatchSpectrum().getId());
 
-            addConsensusSpectrum(cluster, mzTolerance);
+                double distance = 1.0 - spectrumMatch.getScore();
+                distance = Math.max(0.0, distance);
+                distance = Math.min(1.0, distance);
 
-            clusters.add(cluster);
+                distanceMatrix[queryIndex][matchIndex] = distance;
+                distanceMatrix[matchIndex][queryIndex] = distance;
+            }
+
+            // Complete Hierarchical Clustering
+            Linkage linkage = new CompleteLinkage(distanceMatrix);
+            HierarchicalClustering clustering = new HierarchicalClustering(linkage);
+            int[] labels = clustering.partition(0.2);
+
+            for (int label : Arrays.stream(labels).distinct().toArray()) {
+
+                System.out.println(label + " " + type);
+
+                int[] indices = IntStream.range(0, count)
+                        .filter(i -> labels[i] == label)
+                        .toArray();
+
+                if (indices.length < minNumSpectra) continue;
+
+                SpectrumCluster cluster = new SpectrumCluster();
+                cluster.setId(label);
+                cluster.setChromatographyType(type);
+                cluster.setSize(indices.length);
+
+                cluster.setDiameter(Arrays
+                        .stream(indices)
+                        .mapToDouble(i -> Arrays
+                                .stream(indices)
+                                .mapToDouble(j -> distanceMatrix[i][j])
+                                .max()
+                                .orElse(0.0))
+                        .max()
+                        .orElse(0.0));
+
+                cluster.setSpectra(Arrays
+                        .stream(indices)
+                        .mapToObj(i -> getSpectrum(spectrumIds.get(i)))
+                        .collect(Collectors.toList()));
+
+                cluster.getSpectra()
+                        .forEach(s -> s.setCluster(cluster));
+
+                addConsensusSpectrum(cluster, mzTolerance);
+
+                clusters.add(cluster);
+            }
         }
 
         spectrumClusterRepository.saveAll(clusters);
@@ -211,6 +224,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         nameProperty.setSpectrum(consensusSpectrum);
 
         consensusSpectrum.setConsensus(true);
+//        consensusSpectrum.setCluster(cluster);
         consensusSpectrum.setPeaks(consensusPeaks);
         consensusSpectrum.setProperties(Collections.singletonList(nameProperty));
 

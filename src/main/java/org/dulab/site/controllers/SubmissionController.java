@@ -156,7 +156,6 @@ public class SubmissionController {
     public String fileView(HttpSession session, Model model, @Valid SubmissionForm form, Errors errors) {
 
         if (errors.hasErrors()) {
-//            model.addAttribute("form", form);
             return "file/view";
         }
 

@@ -38,6 +38,8 @@ public class Spectrum implements Serializable {
 
     private List<SpectrumMatch> matches;
 
+    private List<SpectrumMatch> matches2;
+
     private SpectrumCluster cluster;
 
     private boolean consensus;
@@ -141,6 +143,18 @@ public class Spectrum implements Serializable {
 
     public void setMatches(List<SpectrumMatch> matches) {
         this.matches = matches;
+    }
+
+    @OneToMany(
+            mappedBy = "matchSpectrum",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
+    public List<SpectrumMatch> getMatches2() {
+        return matches2;
+    }
+
+    public void setMatches2(List<SpectrumMatch> matches2) {
+        this.matches2 = matches2;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
