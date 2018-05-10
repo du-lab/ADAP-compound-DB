@@ -3,6 +3,7 @@ package org.dulab.site.services;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.exceptions.EmptySearchResultException;
+import org.dulab.models.ChromatographyType;
 import org.dulab.models.Hit;
 import org.dulab.models.entities.*;
 import org.dulab.models.search.CriteriaBlock;
@@ -42,37 +43,41 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
     @Transactional
     @Override
-    public void fillSpectrumMatchTable() {
+    public void fillSpectrumMatchTable(float mzTolerance, float scoreThreshold) {
 
-        long startingTime = System.currentTimeMillis();
-
-        List<Spectrum> unprocessedSpectra = ServiceUtils.toList(spectrumRepository.findAllByMatchesIsEmpty());
-
-        AtomicInteger count = new AtomicInteger(0);
         List<SpectrumMatch> spectrumMatches = new ArrayList<>();
-        unprocessedSpectra.parallelStream().forEach(querySpectrum -> {
 
-            Iterable<Hit> hits = spectrumRepository.searchSpectra(querySpectrum,
-                    new CriteriaBlock(SetOperator.AND),
-                    0.01F, Integer.MAX_VALUE, 0.75F);
+        for (ChromatographyType chromatographyType : ChromatographyType.values()) {
 
-            for (Hit hit : hits) {
-                SpectrumMatch spectrumMatch = new SpectrumMatch();
-                spectrumMatch.setQuerySpectrum(querySpectrum);
-                spectrumMatch.setMatchSpectrum(hit.getSpectrum());
-                spectrumMatch.setScore(hit.getScore());
-                spectrumMatches.add(spectrumMatch);
+            long startingTime = System.currentTimeMillis();
+
+            Iterable<Spectrum> unmatchedSpectra =
+                    spectrumRepository.findUnmatchedByChromatographyType(chromatographyType);
+            long count = 0;
+
+            for (Spectrum querySpectrum : unmatchedSpectra) {
+
+                Iterable<Hit> hits = spectrumRepository.findSimilarSpectra(querySpectrum, mzTolerance, scoreThreshold);
+
+                for (Hit hit : hits) {
+                    SpectrumMatch match = new SpectrumMatch();
+                    match.setQuerySpectrum(querySpectrum);
+                    match.setMatchSpectrum(hit.getSpectrum());
+                    match.setScore(hit.getScore());
+                    spectrumMatches.add(match);
+                }
+
+                ++count;
             }
 
-            System.out.println(String.format("[%d/%d] Calculating scores...",
-                    count.incrementAndGet(), unprocessedSpectra.size()));
-        });
+            long elapsedTime = System.currentTimeMillis() - startingTime;
+            LOGGER.info(String.format("%d query spectra searched with average time %d milliseconds.",
+                    count, count > 0 ? elapsedTime / count : 0));
+        }
 
         spectrumMatchRepository.saveAll(spectrumMatches);
 
-        long elapsedTime = System.currentTimeMillis() - startingTime;
-
-        LOGGER.info(String.format("Matching scores are calculated %d milliseconds.", elapsedTime));
+        LOGGER.info(String.format("Save %d matches to the database.", spectrumMatches.size()));
     }
 
     @Transactional

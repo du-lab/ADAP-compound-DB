@@ -211,26 +211,9 @@ public class SubmissionController {
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/delete/")
     public String delete(@PathVariable("submissionId") long id) {
-
-        Submission submission = submissionService.findSubmission(id);
-
-        submissionService.deleteSubmission(submission);
+        submissionService.delete(id);
         return "redirect:/account/";
     }
-
-//    @RequestMapping(value = "{submissionId:\\d+}/{spectrumId:\\d+}/", method = RequestMethod.GET)
-//    public String spectrum(@PathVariable("submissionId") long submissionId,
-//                           @PathVariable("spectrumId") int spectrumId,
-//                           HttpSession session,
-//                           Model model) {
-//
-//        Submission submission = getSubmission(submissionId, session);
-//        Spectrum spectrum = submission.getSpectra().get(spectrumId);
-//
-//        model.addAttribute("spectrum", spectrum);
-//
-//        return "file/spectrum";
-//    }
 
     private String redirectFileUpload() {
         return "redirect:/file/upload/";

@@ -3,6 +3,7 @@ package org.dulab.models.entities;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.Objects;
 
 @Entity
 public class SpectrumMatch implements Serializable {
@@ -67,7 +68,7 @@ public class SpectrumMatch implements Serializable {
 
     @Override
     public int hashCode() {
-        return 3 * querySpectrum.hashCode() ^ 5 * matchSpectrum.hashCode();
+        return Objects.hash(querySpectrum.getId(), matchSpectrum.getId());
     }
 
     @Override

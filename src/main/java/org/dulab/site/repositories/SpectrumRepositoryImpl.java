@@ -29,11 +29,11 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         sqlBuilder.append(querySpectrum.getPeaks()
                 .stream()
                 .map(p -> "\tSELECT SpectrumId, SQRT(Intensity * "
-                    + p.getIntensity()
-                    + ") AS Product FROM Peak WHERE Mz > " + (p.getMz() - mzTolerance)
-                    + " AND Mz < " + (p.getMz() + mzTolerance)
-                    + "\n")  // + criteriaBlockString +
-                    .collect(Collectors.joining("\tUNION ALL\n")));
+                        + p.getIntensity()
+                        + ") AS Product FROM Peak WHERE Mz > " + (p.getMz() - mzTolerance)
+                        + " AND Mz < " + (p.getMz() + mzTolerance)
+                        + "\n")  // + criteriaBlockString +
+                .collect(Collectors.joining("\tUNION ALL\n")));
         sqlBuilder.append(") AS Result\n");
         sqlBuilder.append("GROUP BY SpectrumId\n");
         sqlBuilder.append("HAVING Score > :threshold\n"); // POWER(SUM(Product), 2)
@@ -64,38 +64,42 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         return hitList;
     }
 
-    public Iterable<Hit> findSimilarSpectra(Spectrum querySpectrum,
-                                            float mzTolerance, float scoreThreshold) {
+    @Override
+    public Iterable<Hit> findSimilarSpectra(Spectrum querySpectrum, float mzTolerance, float scoreThreshold) {
 
         querySpectrum = Objects.requireNonNull(querySpectrum, "Query Spectum is Null.");
 
-        String peakMatchSubQuery = "SELECT SpectrumId, POWER(SUM(Product), 2) AS Score FROM (\n" +
-                querySpectrum.getPeaks()
-                .stream()
-                .map(peak -> String.format(
-                        "SELECT SpectrumId, SQRT(Intensity * %f) AS Product FROM Peak WHERE Mz > %f AND Mz < %f\n",
-                        peak.getIntensity(),
-                        peak.getMz() - mzTolerance,
-                        peak.getMz() + mzTolerance))
-                .collect(Collectors.joining("UNION ALL\n")) +
-                ") AS Match GROUP BY SpectrumId\n" +
-                String.format("HAVING Score > %f\n", scoreThreshold);
-
-        String precursorConstraint = querySpectrum.getPrecursor() == null ? "" : String.format(
-                "AND Spectrum.Precursor > %f AND Spectrum.Precursor < %f",
-                querySpectrum.getPrecursor() - mzTolerance,
-                querySpectrum.getPrecursor() + mzTolerance);
-
-        String sqlQuery = "SELECT Hit.SpectrumId, Hit.Score\n" +
-                String.format("FROM Spectrum, Submission, (%s) AS Hit\n", peakMatchSubQuery) +
-                "WHERE Hit.SpectrumId = Spectrum.Id\n" +
-                String.format("AND Hit.SpectrumId != %d\n", querySpectrum.getId()) +
-                "AND Spectrum.SubmissionId = Submission.Id\n" +
-                String.format(
-                        "AND Submission.ChromatographyType = %s\n",
-                        querySpectrum.getSubmission().getChromatographyType()) +
-                precursorConstraint +
+        String sqlTemplate = "SELECT Hit.SpectrumId, Hit.Score\n" +
+                "FROM Spectrum, Submission, (\n:peakMatchSubQuery\n) AS Hit\n" +
+                "WHERE Hit.SpectrumId = Spectrum.Id " +
+                "AND :precursorConstraint " +
+                "AND Spectrum.SubmissionId = Submission.Id " +
+                "AND Submission.ChromatographyType = \":queryChromatographyType\"\n" +
                 "ORDER BY Hit.Score DESC";
+
+        String peakMatchSubQuery = "\tSELECT SpectrumId, POWER(SUM(Product), 2) AS Score FROM (\n" +
+                querySpectrum.getPeaks()
+                        .stream()
+                        .map(peak -> String.format(
+                                "\tSELECT SpectrumId, SQRT(Intensity * %f) AS Product FROM Peak WHERE Mz > %f AND Mz < %f\n",
+                                peak.getIntensity(),
+                                peak.getMz() - mzTolerance,
+                                peak.getMz() + mzTolerance))
+                        .collect(Collectors.joining("\tUNION ALL\n")) +
+                "\t) AS Result\n" +
+                "\tGROUP BY SpectrumId\n" +
+                String.format("\tHAVING Score > %f\n", scoreThreshold);
+
+        String sqlQuery = sqlTemplate
+                .replace(":peakMatchSubQuery", peakMatchSubQuery)
+                .replace(":querySpectrumId", String.valueOf(querySpectrum.getId()))
+                .replace(":precursorConstraint",
+                        querySpectrum.getPrecursor() == null ? "Spectrum.Precursor IS NULL" : String.format(
+                                "Spectrum.Precursor > %f AND Spectrum.Precursor < %f",
+                                querySpectrum.getPrecursor() - mzTolerance,
+                                querySpectrum.getPrecursor() + mzTolerance))
+                .replace(":queryChromatographyType",
+                        querySpectrum.getSubmission().getChromatographyType().name());
 
         @SuppressWarnings("unchecked")
         List<Object[]> resultList = entityManager

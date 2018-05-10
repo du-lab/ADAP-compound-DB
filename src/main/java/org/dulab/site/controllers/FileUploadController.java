@@ -50,7 +50,7 @@ public class FileUploadController {
 
         FileUploadForm form = new FileUploadForm();
         form.setFileType(FileType.MSP);
-        model.addAttribute("form", form);
+        model.addAttribute("fileUploadForm", form);
         return "file/upload";
     }
 

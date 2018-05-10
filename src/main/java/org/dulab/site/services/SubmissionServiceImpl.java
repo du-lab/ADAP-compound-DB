@@ -51,6 +51,12 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     @Override
     @Transactional
+    public void delete(long submissionId) {
+        submissionRepository.deleteById(submissionId);
+    }
+
+    @Override
+    @Transactional
     public long getSubmissionCountByCategory(long submissionCategoryId) {
         return submissionRepository.countByCategoryId(submissionCategoryId);
     }

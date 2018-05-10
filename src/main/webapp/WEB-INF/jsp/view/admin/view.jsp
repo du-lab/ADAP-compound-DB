@@ -1,5 +1,4 @@
-<%--@elvariable id="numSpectra" type="java.lang.Long"--%>
-<%--@elvariable id="numClusters" type="java.lang.Long"--%>
+<%--@elvariable id="statistics" type="java.util.Map<org.dulab.models.ChromatographyType, org.dulab.models.DatabaseStatistics>"--%>
 <%--@elvariable id="clusters" type="java.util.List<org.dulab.models.entities.SpectrumCluster>"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -10,17 +9,25 @@
 <!-- Start the middle column -->
 
 <section>
-    <h1>Library Information</h1>
-    <table>
-        <tr>
-            <td>Number of submitted spectra</td>
-            <td>${numSpectra}</td>
-        </tr>
-        <tr>
-            <td>Number of consensus spectra</td>
-            <td>${numClusters}</td>
-        </tr>
-    </table>
+    <h1>Number of Spectra in Library</h1>
+    <div align="center">
+        <table>
+            <tr>
+                <th></th>
+                <th>Submitted</th>
+                <th>Unmatched</th>
+                <th>Consensus</th>
+            </tr>
+            <c:forEach items="${statistics}" var="mapEntry">
+                <tr>
+                    <td>${mapEntry.key.label}</td>
+                    <td>${mapEntry.value.numSubmittedSpectra}</td>
+                    <td>${mapEntry.value.numUnmatchedSpectra}</td>
+                    <td>${mapEntry.value.numConsensusSpectra}</td>
+                </tr>
+            </c:forEach>
+        </table>
+    </div>
 </section>
 
 <section>

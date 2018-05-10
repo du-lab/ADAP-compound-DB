@@ -7,5 +7,7 @@ public interface SubmissionRepository extends CrudRepository<Submission, Long> {
 
     Iterable<Submission> findByUserId(long userPrincipalId);
 
+    void deleteById(long id);
+
     long countByCategoryId(long submissionCategoryId);
 }

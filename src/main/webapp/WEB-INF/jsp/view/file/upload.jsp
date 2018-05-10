@@ -1,5 +1,5 @@
 <%--@elvariable id="chromatographyTypeList" type="org.dulab.models.ChromatographyType[]"--%>
-<%--@elvariable id="form" type="org.dulab.site.controllers.FileUploadController.FileUploadForm"--%>
+<%--@elvariable id="fileUploadForm" type="org.dulab.site.controllers.FileUploadController.FileUploadForm"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <jsp:include page="/WEB-INF/jsp/includes/header.jsp" />
@@ -19,7 +19,7 @@
         </ul>
     </div></c:if>
 
-    <form:form method="POST" modelAttribute="form" enctype="multipart/form-data">
+    <form:form method="POST" modelAttribute="fileUploadForm" enctype="multipart/form-data">
         <form:errors path="" cssClass="errors"/><br/>
 
         <form:label path="chromatographyType">Chromatography type:</form:label><br/>

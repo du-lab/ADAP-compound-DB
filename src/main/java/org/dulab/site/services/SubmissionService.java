@@ -21,6 +21,8 @@ public interface SubmissionService {
 
     void deleteSubmission(Submission submission);
 
+    void delete(long submissionId);
+
     void saveSubmissionCategory(SubmissionCategory submissionCategory);
 
     long getSubmissionCountByCategory(long submissionCategoryId);
