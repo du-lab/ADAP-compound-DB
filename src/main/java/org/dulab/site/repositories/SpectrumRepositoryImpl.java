@@ -8,6 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
@@ -53,6 +54,58 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
             double score = (double) columns[1];
 
 //            if (spectrumId == querySpectrum.getId()) continue;
+
+            Hit hit = new Hit();
+            hit.setSpectrum(entityManager.find(Spectrum.class, spectrumId));
+            hit.setScore(score);
+            hitList.add(hit);
+        }
+
+        return hitList;
+    }
+
+    public Iterable<Hit> findSimilarSpectra(Spectrum querySpectrum,
+                                            float mzTolerance, float scoreThreshold) {
+
+        querySpectrum = Objects.requireNonNull(querySpectrum, "Query Spectum is Null.");
+
+        String peakMatchSubQuery = "SELECT SpectrumId, POWER(SUM(Product), 2) AS Score FROM (\n" +
+                querySpectrum.getPeaks()
+                .stream()
+                .map(peak -> String.format(
+                        "SELECT SpectrumId, SQRT(Intensity * %f) AS Product FROM Peak WHERE Mz > %f AND Mz < %f\n",
+                        peak.getIntensity(),
+                        peak.getMz() - mzTolerance,
+                        peak.getMz() + mzTolerance))
+                .collect(Collectors.joining("UNION ALL\n")) +
+                ") AS Match GROUP BY SpectrumId\n" +
+                String.format("HAVING Score > %f\n", scoreThreshold);
+
+        String precursorConstraint = querySpectrum.getPrecursor() == null ? "" : String.format(
+                "AND Spectrum.Precursor > %f AND Spectrum.Precursor < %f",
+                querySpectrum.getPrecursor() - mzTolerance,
+                querySpectrum.getPrecursor() + mzTolerance);
+
+        String sqlQuery = "SELECT Hit.SpectrumId, Hit.Score\n" +
+                String.format("FROM Spectrum, Submission, (%s) AS Hit\n", peakMatchSubQuery) +
+                "WHERE Hit.SpectrumId = Spectrum.Id\n" +
+                String.format("AND Hit.SpectrumId != %d\n", querySpectrum.getId()) +
+                "AND Spectrum.SubmissionId = Submission.Id\n" +
+                String.format(
+                        "AND Submission.ChromatographyType = %s\n",
+                        querySpectrum.getSubmission().getChromatographyType()) +
+                precursorConstraint +
+                "ORDER BY Hit.Score DESC";
+
+        @SuppressWarnings("unchecked")
+        List<Object[]> resultList = entityManager
+                .createNativeQuery(sqlQuery, "SpectrumScoreMapping")
+                .getResultList();
+
+        List<Hit> hitList = new ArrayList<>(resultList.size());
+        for (Object[] columns : resultList) {
+            long spectrumId = (long) columns[0];
+            double score = (double) columns[1];
 
             Hit hit = new Hit();
             hit.setSpectrum(entityManager.find(Spectrum.class, spectrumId));
