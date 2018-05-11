@@ -82,13 +82,17 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     public void cluster(float mzTolerance, int minNumSpectra, float scoreThreshold)
             throws EmptySearchResultException {
 
-        List<SpectrumCluster> clusters = new ArrayList<>();
+//        spectrumClusterRepository.deleteAll();
+//        spectrumClusterRepository.flush();
+
+        List<Long> clusterIds = new ArrayList<>();
 
         for (ChromatographyType type : ChromatographyType.values()) {
 
             Map<Long, Integer> spectrumIdToIndexMap = new HashMap<>();
             List<Long> spectrumIds = new ArrayList<>();
             int count = 0;
+
             for (Spectrum spectrum : spectrumRepository
                     .findAllByConsensusFalseAndSubmissionChromatographyType(type)) {
                 spectrumIdToIndexMap.put(spectrum.getId(), count++);
@@ -118,7 +122,9 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
             // Complete Hierarchical Clustering
             Linkage linkage = new CompleteLinkage(distanceMatrix);
             HierarchicalClustering clustering = new HierarchicalClustering(linkage);
-            int[] labels = clustering.partition(0.2);
+            int[] labels = clustering.partition(scoreThreshold);
+
+            List<SpectrumCluster> clusters = new ArrayList<>();
 
             for (int label : Arrays.stream(labels).distinct().toArray()) {
 
@@ -156,13 +162,15 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
                 clusters.add(cluster);
             }
+
+            spectrumClusterRepository.saveAll(clusters);
+
+            for (SpectrumCluster cluster : clusters)
+                clusterIds.add(cluster.getId());
         }
 
-        spectrumClusterRepository.saveAll(clusters);
-        spectrumClusterRepository.deleteByIdNotIn(clusters
-                .stream()
-                .mapToLong(SpectrumCluster::getId)
-                .toArray());
+
+        spectrumClusterRepository.deleteByIdNotIn(clusterIds);
     }
 
     private Spectrum getSpectrum(long id) throws EmptySearchResultException {
@@ -220,7 +228,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         nameProperty.setSpectrum(consensusSpectrum);
 
         consensusSpectrum.setConsensus(true);
-//        consensusSpectrum.setCluster(cluster);
+        consensusSpectrum.setCluster(cluster);
         consensusSpectrum.setPeaks(consensusPeaks);
         consensusSpectrum.setProperties(Collections.singletonList(nameProperty));
 

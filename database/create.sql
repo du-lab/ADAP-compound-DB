@@ -21,7 +21,7 @@ USE `adapcompounddb` ;
 -- Table `adapcompounddb`.`SpectrumCluster`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SpectrumCluster` (
-  `Id` BIGINT(20) UNSIGNED NOT NULL DEFAULT '0',
+  `Id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `ConsensusSpectrumId` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
   `Diameter` DOUBLE NOT NULL,
   `Size` INT(11) NOT NULL,
@@ -30,8 +30,11 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SpectrumCluster` (
   UNIQUE INDEX `SpectrumCluster_ConsensusSpectrumId_uindex` (`ConsensusSpectrumId` ASC),
   CONSTRAINT `SpectrumCluster_Spectrum_Id_fk`
   FOREIGN KEY (`ConsensusSpectrumId`)
-  REFERENCES `adapcompounddb`.`Spectrum` (`Id`))
+  REFERENCES `adapcompounddb`.`Spectrum` (`Id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
   ENGINE = InnoDB
+  AUTO_INCREMENT = 534
   DEFAULT CHARACTER SET = latin1;
 
 
@@ -131,7 +134,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Spectrum` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB
-  AUTO_INCREMENT = 1358
+  AUTO_INCREMENT = 1892
   DEFAULT CHARACTER SET = utf8;
 
 
@@ -152,7 +155,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Peak` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB
-  AUTO_INCREMENT = 82438
+  AUTO_INCREMENT = 114984
   DEFAULT CHARACTER SET = utf8;
 
 
@@ -199,7 +202,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SpectrumProperty` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB
-  AUTO_INCREMENT = 8912
+  AUTO_INCREMENT = 9446
   DEFAULT CHARACTER SET = utf8;
 
 

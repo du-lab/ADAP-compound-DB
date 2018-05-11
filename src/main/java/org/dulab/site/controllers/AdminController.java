@@ -50,7 +50,7 @@ public class AdminController {
     @RequestMapping(value = "/admin/cluster/", method = RequestMethod.GET)
     public String cluster() {
         try {
-            spectrumMatchService.cluster(0.1F, 2, 0.25F);
+            spectrumMatchService.cluster(0.1F, 2, 0.5F);
         }
         catch (EmptySearchResultException e) {
             System.out.println(e.getMessage());

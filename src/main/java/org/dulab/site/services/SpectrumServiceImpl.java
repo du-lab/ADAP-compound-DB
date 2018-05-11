@@ -70,16 +70,14 @@ public class SpectrumServiceImpl implements SpectrumService {
 
     @Override
     @Transactional
-    public DatabaseStatistics getStatistics(ChromatographyType chromatographyType) {
+    public DatabaseStatistics getStatistics(ChromatographyType type) {
         DatabaseStatistics statistics = new DatabaseStatistics();
         statistics.setNumSubmittedSpectra(
-                spectrumRepository.countBySubmissionChromatographyTypeAndConsensus(
-                        chromatographyType, false));
+                spectrumRepository.countBySubmissionChromatographyTypeAndConsensusFalse(type));
         statistics.setNumConsensusSpectra(
-                spectrumRepository.countBySubmissionChromatographyTypeAndConsensus(
-                        chromatographyType, true));
+                spectrumRepository.countByClusterChromatographyTypeAndConsensusTrue(type));
         statistics.setNumUnmatchedSpectra(
-                spectrumRepository.countUnmatchedBySubmissionChromatographyType(chromatographyType));
+                spectrumRepository.countUnmatchedBySubmissionChromatographyType(type));
         return statistics;
     }
 }
