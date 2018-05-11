@@ -6,8 +6,6 @@ import org.dulab.exceptions.EmptySearchResultException;
 import org.dulab.models.ChromatographyType;
 import org.dulab.models.Hit;
 import org.dulab.models.entities.*;
-import org.dulab.models.search.CriteriaBlock;
-import org.dulab.models.search.SetOperator;
 import org.dulab.site.repositories.SpectrumClusterRepository;
 import org.dulab.site.repositories.SpectrumMatchRepository;
 import org.dulab.site.repositories.SpectrumRepository;
@@ -19,7 +17,6 @@ import smile.clustering.linkage.CompleteLinkage;
 import smile.clustering.linkage.Linkage;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -134,7 +131,6 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
                 if (indices.length < minNumSpectra) continue;
 
                 SpectrumCluster cluster = new SpectrumCluster();
-                cluster.setId(label);
                 cluster.setChromatographyType(type);
                 cluster.setSize(indices.length);
 
