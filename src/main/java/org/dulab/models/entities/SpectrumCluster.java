@@ -92,8 +92,6 @@ public class SpectrumCluster implements Serializable {
 
     public void setSpectra(List<Spectrum> spectra) {
         this.spectra = spectra;
-        if (spectra != null)
-            this.name = String.format("Cluster of %d spectra", spectra.size());
     }
 
     // ****************************

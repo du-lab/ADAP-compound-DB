@@ -46,14 +46,14 @@ public class AdminController {
 
     @RequestMapping(value = "/admin/calculatescores/", method = RequestMethod.GET)
     public String calculateScores() {
-        spectrumMatchService.fillSpectrumMatchTable(0.1F, 0.75F);
+        spectrumMatchService.fillSpectrumMatchTable(0.01F, 0.75F);
         return "redirect:/admin/";
     }
 
     @RequestMapping(value = "/admin/cluster/", method = RequestMethod.GET)
     public String cluster() {
         try {
-            spectrumMatchService.cluster(0.1F, 2, 0.5F);
+            spectrumMatchService.cluster(0.1F, 2, 0.75F);
         }
         catch (EmptySearchResultException e) {
             System.out.println(e.getMessage());

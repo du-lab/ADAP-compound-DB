@@ -82,9 +82,6 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     public void cluster(float mzTolerance, int minNumSpectra, float scoreThreshold)
             throws EmptySearchResultException {
 
-//        spectrumClusterRepository.deleteAll();
-//        spectrumClusterRepository.flush();
-
         List<Long> clusterIds = new ArrayList<>();
 
         for (ChromatographyType type : ChromatographyType.values()) {
@@ -99,6 +96,8 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
                 spectrumIds.add(spectrum.getId());
             }
 
+            if (count == 0) continue;
+
             double[][] distanceMatrix = new double[count][count];
             Arrays.stream(distanceMatrix)
                     .forEach(a -> Arrays.fill(a, 1.0));
@@ -111,9 +110,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
                 int matchIndex = spectrumIdToIndexMap.get(
                         spectrumMatch.getMatchSpectrum().getId());
 
-                double distance = 1.0 - spectrumMatch.getScore();
-                distance = Math.max(0.0, distance);
-                distance = Math.min(1.0, distance);
+                double distance = similarityToDistance(spectrumMatch.getScore());
 
                 distanceMatrix[queryIndex][matchIndex] = distance;
                 distanceMatrix[matchIndex][queryIndex] = distance;
@@ -122,7 +119,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
             // Complete Hierarchical Clustering
             Linkage linkage = new CompleteLinkage(distanceMatrix);
             HierarchicalClustering clustering = new HierarchicalClustering(linkage);
-            int[] labels = clustering.partition(scoreThreshold);
+            int[] labels = clustering.partition(similarityToDistance(scoreThreshold));
 
             List<SpectrumCluster> clusters = new ArrayList<>();
 
@@ -140,7 +137,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
                 cluster.setChromatographyType(type);
                 cluster.setSize(indices.length);
 
-                cluster.setDiameter(Arrays
+                cluster.setDiameter(distanceToSimilarity(Arrays
                         .stream(indices)
                         .mapToDouble(i -> Arrays
                                 .stream(indices)
@@ -148,7 +145,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
                                 .max()
                                 .orElse(0.0))
                         .max()
-                        .orElse(0.0));
+                        .orElse(0.0)));
 
                 cluster.setSpectra(Arrays
                         .stream(indices)
@@ -207,7 +204,8 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
             double mz = IntStream.range(0, labels.length)
                     .filter(i -> labels[i] == label)
                     .mapToDouble(i -> peaks[i].getMz())
-                    .sum() / cluster.getSize();
+                    .average()
+                    .orElseThrow(() -> new IllegalStateException("Could not calculate average m/z value."));
 
             double intensity = IntStream.range(0, labels.length)
                     .filter(i -> labels[i] == label)
@@ -233,6 +231,14 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         consensusSpectrum.setProperties(Collections.singletonList(nameProperty));
 
         cluster.setConsensusSpectrum(consensusSpectrum);
+    }
+
+    double similarityToDistance(double similarity) {
+        return Math.min(1.0, Math.exp(-similarity));
+    }
+
+    double distanceToSimilarity(double distance) {
+        return -Math.log(distance);
     }
 
     @Transactional

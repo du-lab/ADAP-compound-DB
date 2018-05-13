@@ -9,7 +9,7 @@ public interface SpectrumMatchService {
 
     void fillSpectrumMatchTable(float mzTolerance, float scoreThreshold);
 
-    void cluster(float mzTolerance, int minNumSpectra, float scoreTolerance) throws EmptySearchResultException;
+    void cluster(float mzTolerance, int minNumSpectra, float scoreThreshold) throws EmptySearchResultException;
 
     long getTotalNumberOfClusters();
 

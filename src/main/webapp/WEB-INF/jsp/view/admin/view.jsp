@@ -48,27 +48,29 @@
 
 <section>
     <h1>Clusters</h1>
-    <table>
-        <tr>
-            <th>Name</th>
-            <th>Num Spectra</th>
-            <th>Matching Score</th>
-            <th>Chromatography</th>
-            <th>View</th>
-        </tr>
-        <c:forEach items="${clusters}" var="cluster">
+    <div align="center" style="overflow: auto; max-height: 400px;">
+        <table>
             <tr>
-                <td>${cluster}</td>
-                <td>${cluster.size}</td>
-                <td>${dulab:toIntegerScore(cluster.diameter)}</td>
-                <td>${cluster.chromatographyType.label}</td>
-                <td>
-                    <!--more horiz-->
-                    <a href="/cluster/${cluster.id}/"><i class="material-icons" title="View">&#xE5D3;</i></a>
-                </td>
+                <th>Name</th>
+                <th>Num Spectra</th>
+                <th>Matching Score</th>
+                <th>Chromatography</th>
+                <th>View</th>
             </tr>
-        </c:forEach>
-    </table>
+            <c:forEach items="${clusters}" var="cluster">
+                <tr>
+                    <td>${cluster}</td>
+                    <td>${cluster.size}</td>
+                    <td>${dulab:toIntegerScore(cluster.diameter)}</td>
+                    <td>${cluster.chromatographyType.label}</td>
+                    <td>
+                        <!--more horiz-->
+                        <a href="/cluster/${cluster.id}/"><i class="material-icons" title="View">&#xE5D3;</i></a>
+                    </td>
+                </tr>
+            </c:forEach>
+        </table>
+    </div>
 </section>
 
 <!-- End the middle column -->
