@@ -3,8 +3,6 @@ package org.dulab.site.services;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.exceptions.EmptySearchResultException;
-import org.dulab.models.ChromatographyType;
-import org.dulab.models.DatabaseStatistics;
 import org.dulab.models.Hit;
 import org.dulab.models.entities.Peak;
 import org.dulab.models.entities.Spectrum;
@@ -87,18 +85,5 @@ public class SpectrumServiceOtherImpl implements SpectrumService {
     @Transactional
     public long getNumberOfSubmittedSpectra() {
         return spectrumRepository.countByConsensusIsFalse();
-    }
-
-    @Override
-    @Transactional
-    public DatabaseStatistics getStatistics(ChromatographyType type) {
-        DatabaseStatistics statistics = new DatabaseStatistics();
-        statistics.setNumSubmittedSpectra(
-                spectrumRepository.countBySubmissionChromatographyTypeAndConsensusFalse(type));
-        statistics.setNumConsensusSpectra(
-                spectrumRepository.countByClusterChromatographyTypeAndConsensusTrue(type));
-        statistics.setNumUnmatchedSpectra(
-                spectrumRepository.countUnmatchedBySubmissionChromatographyType(type));
-        return statistics;
     }
 }

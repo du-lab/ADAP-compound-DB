@@ -2,7 +2,8 @@ package org.dulab.site.controllers;
 
 import org.dulab.exceptions.EmptySearchResultException;
 import org.dulab.models.ChromatographyType;
-import org.dulab.models.DatabaseStatistics;
+import org.dulab.models.Statistics;
+import org.dulab.site.services.StatisticsService;
 import org.dulab.site.services.SpectrumMatchService;
 import org.dulab.site.services.SpectrumService;
 import org.springframework.stereotype.Controller;
@@ -18,19 +19,21 @@ import java.util.TreeMap;
 public class AdminController {
 
     private final SpectrumMatchService spectrumMatchService;
-    private final SpectrumService spectrumService;
+    private final StatisticsService statisticsService;
 
-    public AdminController(SpectrumMatchService spectrumMatchService, SpectrumService spectrumService) {
+    public AdminController(SpectrumMatchService spectrumMatchService,
+                           StatisticsService statisticsService) {
+
         this.spectrumMatchService = spectrumMatchService;
-        this.spectrumService = spectrumService;
+        this.statisticsService = statisticsService;
     }
 
     @ModelAttribute
     public void addAttributes(Model model) {
 
-        Map<ChromatographyType, DatabaseStatistics> statisticsMap = new TreeMap<>();
-        for (ChromatographyType chromatographyType : ChromatographyType.values())
-            statisticsMap.put(chromatographyType, spectrumService.getStatistics(chromatographyType));
+        Map<ChromatographyType, Statistics> statisticsMap = new TreeMap<>();
+        for (ChromatographyType type : ChromatographyType.values())
+            statisticsMap.put(type, statisticsService.getStatistics(type));
 
         model.addAttribute("statistics", statisticsMap);
         model.addAttribute("clusters", spectrumMatchService.getAllClusters());

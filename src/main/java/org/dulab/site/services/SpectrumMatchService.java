@@ -1,8 +1,6 @@
 package org.dulab.site.services;
 
 import org.dulab.exceptions.EmptySearchResultException;
-import org.dulab.models.ChromatographyType;
-import org.dulab.models.DatabaseStatistics;
 import org.dulab.models.entities.SpectrumCluster;
 
 import java.util.List;

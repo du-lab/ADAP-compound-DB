@@ -1,10 +1,11 @@
 package org.dulab.models;
 
-public class DatabaseStatistics {
+public class Statistics {
 
     private Long numSubmittedSpectra;
     private Long numUnmatchedSpectra;
     private Long numConsensusSpectra;
+    private Long numSpectrumMatches;
 
     public Long getNumSubmittedSpectra() {
         return numSubmittedSpectra;
@@ -28,5 +29,13 @@ public class DatabaseStatistics {
 
     public void setNumConsensusSpectra(Long numConsensusSpectra) {
         this.numConsensusSpectra = numConsensusSpectra;
+    }
+
+    public Long getNumSpectrumMatches() {
+        return numSpectrumMatches;
+    }
+
+    public void setNumSpectrumMatches(Long numSpectrumMatches) {
+        this.numSpectrumMatches = numSpectrumMatches;
     }
 }

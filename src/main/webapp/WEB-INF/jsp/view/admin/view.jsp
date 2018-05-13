@@ -1,4 +1,4 @@
-<%--@elvariable id="statistics" type="java.util.Map<org.dulab.models.ChromatographyType, org.dulab.models.DatabaseStatistics>"--%>
+<%--@elvariable id="statistics" type="java.util.Map<org.dulab.models.ChromatographyType, org.dulab.models.Statistics>"--%>
 <%--@elvariable id="clusters" type="java.util.List<org.dulab.models.entities.SpectrumCluster>"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -17,6 +17,7 @@
                 <th>Submitted</th>
                 <th>Unmatched</th>
                 <th>Consensus</th>
+                <th>Matches</th>
             </tr>
             <c:forEach items="${statistics}" var="mapEntry">
                 <tr>
@@ -24,6 +25,7 @@
                     <td>${mapEntry.value.numSubmittedSpectra}</td>
                     <td>${mapEntry.value.numUnmatchedSpectra}</td>
                     <td>${mapEntry.value.numConsensusSpectra}</td>
+                    <td>${mapEntry.value.numSpectrumMatches}</td>
                 </tr>
             </c:forEach>
         </table>

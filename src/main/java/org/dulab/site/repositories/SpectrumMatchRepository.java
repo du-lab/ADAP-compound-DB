@@ -15,4 +15,6 @@ public interface SpectrumMatchRepository extends CrudRepository<SpectrumMatch, L
 
     @Query("SELECT COUNT(DISTINCT sm.querySpectrum.id) FROM SpectrumMatch sm")
     int countDistinctQuerySpectrum();
+
+    long countByQuerySpectrumSubmissionChromatographyType(ChromatographyType type);
 }

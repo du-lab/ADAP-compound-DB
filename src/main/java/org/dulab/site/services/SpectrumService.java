@@ -1,7 +1,5 @@
 package org.dulab.site.services;
 
-import org.dulab.models.ChromatographyType;
-import org.dulab.models.DatabaseStatistics;
 import org.dulab.models.search.CriteriaBlock;
 import org.dulab.models.Hit;
 import org.dulab.models.entities.Spectrum;
@@ -21,6 +19,4 @@ public interface SpectrumService {
                     float mzTolerance, int numHits, float scoreTolerance);
 
     long getNumberOfSubmittedSpectra();
-
-    DatabaseStatistics getStatistics(ChromatographyType chromatographyType);
 }
