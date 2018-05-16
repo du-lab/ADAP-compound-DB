@@ -1,6 +1,6 @@
-<%--@elvariable id="sampleSourceTypeList" type="org.dulab.models.SampleSourceType[]"--%>
-<%--@elvariable id="submission" type="org.dulab.models.entities.Submission"--%>
-<%--@elvariable id="submissionForm" type="org.dulab.site.controllers.SubmissionController.SubmissionForm"--%>
+<%--@elvariable id="sampleSourceTypeList" type="org.dulab.adapcompounddb.models.SampleSourceType[]"--%>
+<%--@elvariable id="submission" type="org.dulab.adapcompounddb.models.entities.Submission"--%>
+<%--@elvariable id="submissionForm" type="org.dulab.adapcompounddb.site.controllers.SubmissionController.SubmissionForm"--%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>

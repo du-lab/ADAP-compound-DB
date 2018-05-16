@@ -1,4 +1,4 @@
-<%--@elvariable id="form" type="org.dulab.models.entities.SubmissionCategory.Form"--%>
+<%--@elvariable id="form" type="org.dulab.adapcompounddb.models.entities.SubmissionCategory.Form"--%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <jsp:include page="/WEB-INF/jsp/includes/header.jsp" />

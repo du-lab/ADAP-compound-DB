@@ -1,5 +1,5 @@
-<%--@elvariable id="statistics" type="java.util.Map<org.dulab.models.ChromatographyType, org.dulab.models.Statistics>"--%>
-<%--@elvariable id="clusters" type="java.util.List<org.dulab.models.entities.SpectrumCluster>"--%>
+<%--@elvariable id="statistics" type="java.util.Map<org.dulab.adapcompounddb.models.ChromatographyType, org.dulab.adapcompounddb.models.Statistics>"--%>
+<%--@elvariable id="clusters" type="java.util.List<org.dulab.adapcompounddb.models.entities.SpectrumCluster>"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>

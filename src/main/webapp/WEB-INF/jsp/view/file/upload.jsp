@@ -1,5 +1,5 @@
-<%--@elvariable id="chromatographyTypeList" type="org.dulab.models.ChromatographyType[]"--%>
-<%--@elvariable id="fileUploadForm" type="org.dulab.site.controllers.FileUploadController.FileUploadForm"--%>
+<%--@elvariable id="chromatographyTypeList" type="org.dulab.adapcompounddb.models.ChromatographyType[]"--%>
+<%--@elvariable id="fileUploadForm" type="org.dulab.adapcompounddb.site.controllers.FileUploadController.FileUploadForm"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <jsp:include page="/WEB-INF/jsp/includes/header.jsp" />
