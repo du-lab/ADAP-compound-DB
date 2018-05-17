@@ -21,6 +21,6 @@ git clone https://github.com/du-lab/ADAP-compound-DB.git
 * `org.dulab.adapcompounddb.models.entities` represent entities of tables in the MySQL database
 * `org.dulab.adapcompounddb.site.controllers` handle user interaction (HTTP requests and responses)
 * `org.dulab.adapcompounddb.site.services` perform the application logic for processing data
-* `org.dulab.adapcompounddb.repositories` perform interaction with the MySQL database
+* `org.dulab.adapcompounddb.site.repositories` perform interaction with the MySQL database
 * `org.dulab.adapcompounddb.validation` contains classes for data validation
 
