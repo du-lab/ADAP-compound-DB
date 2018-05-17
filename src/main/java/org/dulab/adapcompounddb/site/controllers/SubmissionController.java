@@ -171,8 +171,8 @@ public class SubmissionController {
         return response;
     }
 
-    @RequestMapping(value = "/submission/{submissionId://d+}/view/", method = RequestMethod.POST)
-    public String submissionView(@PathVariable("submissionId") long submissionId, Model model,
+    @RequestMapping(value = "/submission/{submissionId:\\d+}/", method = RequestMethod.POST)
+    public String submissionView(@PathVariable("submissionId") long submissionId, Model model, HttpSession session,
                                  @Valid SubmissionForm form, Errors errors) {
 
         if (errors.hasErrors()) {
