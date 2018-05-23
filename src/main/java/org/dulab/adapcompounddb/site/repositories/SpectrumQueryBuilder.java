@@ -89,13 +89,13 @@ public class SpectrumQueryBuilder {
         // -----------------------
 
         if (spectrum == null)
-            query += "SELECT DISTINCT(SpectrumId), 0 AS Score FROM PeakCTE\n";
+            query += "SELECT DISTINCT SpectrumId, 0 AS Score FROM PeakCTE\n";
         else {
             query += "SELECT SpectrumId, POWER(SUM(Product), 2) AS Score FROM (\n";
             query += spectrum.getPeaks()
                     .stream()
-                    .map(p -> String.format("\tSELECT SpectrumId, SQRT(Intensity * %f) AS Product FROM PeakCTE " +
-                                    "WHERE Mz > %f AND Mz < %f\n",
+                    .map(p -> String.format("\tSELECT SpectrumId, MAX(SQRT(Intensity * %f)) AS Product FROM PeakCTE " +
+                                    "WHERE Mz > %f AND Mz < %f GROUP BY SpectrumId\n",
                             p.getIntensity(), p.getMz() - mzTolerance, p.getMz() + mzTolerance))
                     .collect(Collectors.joining("\tUNION ALL\n"));
             query += ") AS Result\n";
