@@ -4,7 +4,7 @@
 - Java 8 EE
 - Maven
 - Tomcat 8.5
-- MySQL 5.7
+- MySQL 8.0
 
 ### Setup
 1. Clone GitHub repository of the project
@@ -13,7 +13,7 @@ git clone https://github.com/du-lab/ADAP-compound-DB.git
 ```
 2. Install Apache Tomcat server (tested with version 8.5) and add the content of the file **[repository]/database/datasource.xml** to the file **[tomcat]/conf/context.xml**
 
-3. Install MySQL, MySQL JDBC driver, and (optionally) MySQL Workbench (tested with version 5.7.21). Then, run the script **[repository]/databse/create.sql** in MySQL Workbench.
+3. Install MySQL, MySQL JDBC driver, and (optionally) MySQL Workbench (tested with version 5.0.11). Then, run the script **[repository]/databse/create.sql** in MySQL Workbench.
 
 4. Install IntelliJ IDEA (or other IDE of your choice) and configure it to deploy our project on Tomcat 
 

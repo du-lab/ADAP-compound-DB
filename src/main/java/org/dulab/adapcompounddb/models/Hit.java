@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.models;
 
 import org.dulab.adapcompounddb.models.entities.Spectrum;
+import org.dulab.adapcompounddb.site.services.SpectrumSearchService;
 
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
@@ -10,10 +11,11 @@ public class Hit implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-//    @NotNull(message = "Spectrum is required")
     private Spectrum spectrum;
 
     private double score;
+
+    private ConfidenceLevel confidenceLevel;
 
     @OneToOne(optional = false)
     @JoinColumn(name = "spectrumId", referencedColumnName = "Id")
@@ -31,5 +33,13 @@ public class Hit implements Serializable {
 
     public void setScore(double score) {
         this.score = score;
+    }
+
+    public ConfidenceLevel getConfidenceLevel() {
+        return confidenceLevel;
+    }
+
+    public void setConfidenceLevel(ConfidenceLevel confidenceLevel) {
+        this.confidenceLevel = confidenceLevel;
     }
 }
