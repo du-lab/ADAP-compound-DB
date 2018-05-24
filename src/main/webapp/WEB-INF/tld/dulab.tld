@@ -33,6 +33,17 @@
     </function>
 
     <function>
+        <description>
+            Returns Json array with the count of spectra in a cluster, based on their SampleSourceType.
+        </description>
+        <name>pieChartData</name>
+        <function-class>org.dulab.adapcompounddb.site.controllers.ControllerUtils</function-class>
+        <function-signature>
+            javax.json.JsonArray getPieChartData(org.dulab.adapcompounddb.models.entities.SpectrumCluster)
+        </function-signature>
+    </function>
+
+    <function>
         <description>Returns the index of an item in a list.</description>
         <name>getListIndex</name>
         <function-class>org.dulab.adapcompounddb.site.controllers.ControllerUtils</function-class>
