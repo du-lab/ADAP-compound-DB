@@ -37,6 +37,32 @@ public class ControllerUtils {
         return builder.build();
     }
 
+    public static JsonObject spectrumToJson(Spectrum spectrum) {
+
+        JsonObjectBuilder jsonObjectBuilder = Json.createObjectBuilder();
+        jsonObjectBuilder.add("name", spectrum.getName());
+
+        double maxIntensity = spectrum.getPeaks().stream()
+                .mapToDouble(Peak::getIntensity)
+                .max()
+                .orElse(0.0);
+
+        JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
+
+        if (maxIntensity > 0.0)
+            spectrum.getPeaks()
+                    .forEach(p -> jsonArrayBuilder.add(
+                            Json.createObjectBuilder()
+                                    .add("mz", p.getMz())
+                                    .add("intensity", 100 * p.getIntensity() / maxIntensity)
+                                    .build()
+                    ));
+
+        jsonObjectBuilder.add("peaks", jsonArrayBuilder.build());
+
+        return jsonObjectBuilder.build();
+    }
+
     public static JsonArray getPieChartData(SpectrumCluster cluster) {
 
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();

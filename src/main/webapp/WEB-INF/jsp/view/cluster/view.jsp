@@ -7,11 +7,6 @@
 
 <!-- Start the middle column -->
 
-<%--<section id="chartSection">--%>
-<%--<h1>Mass Spectrum</h1>--%>
-<%--<div id="chartDiv" align="center"></div>--%>
-<%--</section>--%>
-
 <section>
     <h1>Spectrum List</h1>
 
@@ -29,7 +24,7 @@
             <tbody>
             <c:forEach items="${cluster.spectra}" var="spectrum" varStatus="status">
 
-                <tr data-peaks='${dulab:peaksToJson(spectrum.peaks)}'>
+                <tr data-spectrum='${dulab:spectrumToJson(spectrum)}'>
                     <td>${spectrum.name}<br/>
                         <small>${spectrum.submission.name}</small>
                     </td>
@@ -48,6 +43,10 @@
     <div id="pieChart" align="center"></div>
 </section>
 
+<!-- End the middle column -->
+
+<script src="/resources/js/DataTables/jQuery-3.2.1/jquery-3.2.1.min.js"></script>
+<script src="/resources/js/DataTables/datatables.min.js"></script>
 <script>
     $(document).ready(function () {
 
@@ -59,66 +58,21 @@
 
         table.on('select', function (e, dt, type, indexes) {
             var row = table.row(indexes).node();
-            var data = $(row).attr('data-peaks');
-            <%--addPlot('chartDiv', '${dulab:peaksToJson(cluster.consensusSpectrum.peaks)}',--%>
-                <%--'${cluster.consensusSpectrum.name}',--%>
-                <%--data,--%>
-                <%--'${spectrum.name}', 0);--%>
-            addPlot(JSON.parse(data))
+            var spectrum = JSON.parse($(row).attr('data-spectrum'));
+            var consensusSpectrum = ${dulab:spectrumToJson(cluster.consensusSpectrum)};
+            addTwoSpectraPlot('plot', consensusSpectrum, spectrum);
         });
 
         table.rows(':eq(0)').select();
     });
 </script>
 
-<%--<script src="<c:url value="/resources/js/select.js"/>"></script>--%>
-<%--<script src="<c:url value="/resources/js/zingchart/zingchart.min.js"/>"></script>--%>
-<%--<script src="<c:url value="/resources/js/spectrumMatch.js"/>"></script>--%>
-
-<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="/resources/js/d3/d3.min.js"></script>
+<script src="/resources/js/twospectraplot.js"></script>
 <script src="/resources/js/piechart.js"></script>
 <script>
     addPieChart('pieChart', ${dulab:pieChartData(cluster)})
 </script>
-<script>
-    function addPlot(dataset) {
-
-        var width = 600;
-        var height = 400;
-
-        var xScale = d3.scaleLinear()
-            .domain([
-                d3.min(dataset, function(d) {return d[0]}),
-                d3.max(dataset, function(d) {return d[1]})
-            ])
-            .range([0, width]);
-
-        var yScale = d3.scaleLinear()
-            .domain([0, 100])
-            .range([height, 0]);
-
-        var line = d3.line()
-            .x(function(d) {console.log('d: ', d); return xScale(d[0])})
-            .y(function(d) {return yScale(d[1])});
-
-        var svg = d3.select('#plot')
-            .append('svg')
-            .attr('width', width)
-            .attr('height', height);
-
-        svg.selectAll('rect')
-            .data(dataset)
-            .enter()
-            .append('rect')
-            .attr('x', function(d) {return xScale(d[0])})
-            .attr('y', 0)
-            .attr('width', 5)
-            .attr('height', function(d) {return yScale(d[1])});
-    }
-
-</script>
-
-<!-- End the middle column -->
 
 <jsp:include page="/WEB-INF/jsp/includes/column_right_news.jsp"/>
 <jsp:include page="/WEB-INF/jsp/includes/footer.jsp"/>

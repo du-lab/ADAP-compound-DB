@@ -33,6 +33,15 @@
     </function>
 
     <function>
+        <description>Returns Json object that represents Spectrum</description>
+        <name>spectrumToJson</name>
+        <function-class>org.dulab.adapcompounddb.site.controllers.ControllerUtils</function-class>
+        <function-signature>
+            javax.json.JsonObject spectrumToJson(org.dulab.adapcompounddb.models.entities.Spectrum)
+        </function-signature>
+    </function>
+
+    <function>
         <description>
             Returns Json array with the count of spectra in a cluster, based on their SampleSourceType.
         </description>
