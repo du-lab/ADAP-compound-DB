@@ -8,14 +8,14 @@
 <!-- Start the middle column -->
 
 <%--<section id="chartSection">--%>
-    <%--<h1>Mass Spectrum</h1>--%>
-    <%--<div id="chartDiv" align="center"></div>--%>
+<%--<h1>Mass Spectrum</h1>--%>
+<%--<div id="chartDiv" align="center"></div>--%>
 <%--</section>--%>
 
 <section>
     <h1>Spectrum List</h1>
 
-    <div id="chartDiv" style="display: inline-block; vertical-align: top;"></div>
+    <div id="plot" style="display: inline-block; vertical-align: top;"></div>
 
     <div align="center" style="display: inline-block; vertical-align: top; width: 400px;">
         <table id="spectrum_table" class="display nowrap" style="width: 100%;">
@@ -30,7 +30,9 @@
             <c:forEach items="${cluster.spectra}" var="spectrum" varStatus="status">
 
                 <tr data-peaks='${dulab:peaksToJson(spectrum.peaks)}'>
-                    <td>${spectrum.name}<br/><small>${spectrum.submission.name}</small></td>
+                    <td>${spectrum.name}<br/>
+                        <small>${spectrum.submission.name}</small>
+                    </td>
                     <td>${spectrum.submission.sampleSourceType.label}</td>
                     <!--more horiz-->
                     <td><a href="/spectrum/${spectrum.id}/"><i class="material-icons">&#xE5D3;</i></a></td>
@@ -55,27 +57,61 @@
             select: {style: 'single'}
         });
 
-        table.on('select', function(e, dt, type, indexes) {
+        table.on('select', function (e, dt, type, indexes) {
             var row = table.row(indexes).node();
             var data = $(row).attr('data-peaks');
-            addPlot('chartDiv', '${dulab:peaksToJson(cluster.consensusSpectrum.peaks)}',
-                '${cluster.consensusSpectrum.name}',
-                data,
-                '${spectrum.name}', 0);
+            <%--addPlot('chartDiv', '${dulab:peaksToJson(cluster.consensusSpectrum.peaks)}',--%>
+                <%--'${cluster.consensusSpectrum.name}',--%>
+                <%--data,--%>
+                <%--'${spectrum.name}', 0);--%>
+            addPlot(JSON.parse(data))
         });
 
         table.rows(':eq(0)').select();
     });
 </script>
 
-<script src="<c:url value="/resources/js/select.js"/>"></script>
-<script src="<c:url value="/resources/js/zingchart/zingchart.min.js"/>"></script>
-<script src="<c:url value="/resources/js/spectrumMatch.js"/>"></script>
+<%--<script src="<c:url value="/resources/js/select.js"/>"></script>--%>
+<%--<script src="<c:url value="/resources/js/zingchart/zingchart.min.js"/>"></script>--%>
+<%--<script src="<c:url value="/resources/js/spectrumMatch.js"/>"></script>--%>
 
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="/resources/js/piechart.js"></script>
 <script>
     addPieChart('pieChart', ${dulab:pieChartData(cluster)})
+</script>
+<script>
+    function addPlot(dataset) {
+
+        var width = 600;
+        var height = 400;
+
+        var xScale = d3.scaleLinear()
+            .domain([
+                d3.min(dataset, function(d) {return d[0]}),
+                d3.max(dataset, function(d) {return d[1]})
+            ])
+            .range([0, width]);
+
+        var yScale = d3.scaleLinear()
+            .domain([0, 100])
+            .range([height, 0]);
+
+        var line = d3.line()
+            .x(function(d) {console.log('d: ', d); return xScale(d[0])})
+            .y(function(d) {return yScale(d[1])});
+
+        var svg = d3.select('#plot')
+            .append('svg')
+            .attr('width', width)
+            .attr('height', height);
+
+        svg.append('path')
+            .datum(dataset)
+            .attr('class', 'line')
+            .attr('d', line);
+    }
+
 </script>
 
 <!-- End the middle column -->
