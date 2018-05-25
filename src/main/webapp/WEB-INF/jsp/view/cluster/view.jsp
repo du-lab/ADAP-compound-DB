@@ -106,10 +106,14 @@
             .attr('width', width)
             .attr('height', height);
 
-        svg.append('path')
-            .datum(dataset)
-            .attr('class', 'line')
-            .attr('d', line);
+        svg.selectAll('rect')
+            .data(dataset)
+            .enter()
+            .append('rect')
+            .attr('x', function(d) {return xScale(d[0])})
+            .attr('y', 0)
+            .attr('width', 5)
+            .attr('height', function(d) {return yScale(d[1])});
     }
 
 </script>
