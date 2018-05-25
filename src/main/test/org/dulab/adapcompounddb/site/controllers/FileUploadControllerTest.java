@@ -63,11 +63,11 @@ public class FileUploadControllerTest extends TestCase {
     public void FileUploadRedirectTest() throws Exception{
         Submission.assign(mockHttpSession, submission);
         mockMvc.perform(get("/file/upload/").session(mockHttpSession))
-                .andExpect(status().is3xxRedirection()); // checks the status
-                //.andExpect(redirectedUrl("/file/"+submission));  // check the redirect url
+                .andExpect(status().is3xxRedirection()) // checks the status
+                .andExpect(redirectedUrl("/file/?chromatographyTypeList=GAS&chromatographyTypeList=LIQUID_POSITIVE&chromatographyTypeList=LIQUID_NEGATIVE&fileTypeList=MSP"));  // check the redirect url
 
         //Check that the redirected url is handled
-        //mockMvc.perform(get("/file/"))
+        //mockMvc.perform(get("/file/?chromatographyTypeList=GAS&chromatographyTypeList=LIQUID_POSITIVE&chromatographyTypeList=LIQUID_NEGATIVE&fileTypeList=MSP"))
           //      .andExpect(status().isOk());  // checks the status
 
     }
