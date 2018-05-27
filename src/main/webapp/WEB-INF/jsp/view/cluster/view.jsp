@@ -59,8 +59,7 @@
         table.on('select', function (e, dt, type, indexes) {
             var row = table.row(indexes).node();
             var spectrum = JSON.parse($(row).attr('data-spectrum'));
-            var consensusSpectrum = ${dulab:spectrumToJson(cluster.consensusSpectrum)};
-            addTwoSpectraPlot('plot', consensusSpectrum, spectrum);
+            plot.update(spectrum);
         });
 
         table.rows(':eq(0)').select();
@@ -71,7 +70,11 @@
 <script src="/resources/js/twospectraplot.js"></script>
 <script src="/resources/js/piechart.js"></script>
 <script>
-    addPieChart('pieChart', ${dulab:pieChartData(cluster)})
+    // Add Spectrum Plot
+    var plot = new TwoSpectraPlot('plot', ${dulab:spectrumToJson(cluster.consensusSpectrum)});
+
+    // Add pie chart
+    addPieChart('pieChart', ${dulab:pieChartData(cluster)});
 </script>
 
 <jsp:include page="/WEB-INF/jsp/includes/column_right_news.jsp"/>
