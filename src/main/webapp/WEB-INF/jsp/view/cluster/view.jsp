@@ -45,8 +45,9 @@
 
 <!-- End the middle column -->
 
-<script src="/resources/js/DataTables/jQuery-3.2.1/jquery-3.2.1.min.js"></script>
-<script src="/resources/js/DataTables/datatables.min.js"></script>
+<script src="<c:url value="/resources/js/DataTables/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
+<script src="<c:url value="/resources/js/DataTables/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
+<script src="<c:url value="/resources/js/DataTables/Select-1.2.5/js/dataTables.select.min.js"/>"></script>
 <script>
     $(document).ready(function () {
 

@@ -19,36 +19,52 @@ function TwoSpectraPlot(divId, topSpectrum) {
         .domain([-100, 100])
         .range([height - padding, padding]);
 
-    // var svg = d3.select('#' + divId)
-    //     .select('svg');
-    //
-    //
-    // if (svg.empty())
     var svg = d3.select('#' + divId)
         .append('svg')
         .attr('width', width)
         .attr('height', height);
 
-    // svg.selectAll('*')
-    //     .remove();
+    var key = function (d) {
+        return Math.round(d.mz);
+    };
 
-    svg.selectAll('line.top')
-        .data(topSpectrum.peaks)
-        .enter()
-        .append('line')
-        .attr('class', 'top')
-        .attr('x1', function (d) {
-            return xScale(d.mz);
-        })
-        .attr('x2', function (d) {
-            return xScale(d.mz);
-        })
-        .attr('y1', yScale(0))
-        .attr('y2', function (d) {
-            return yScale(d.intensity);
-        })
-        .attr('stroke', 'blue')
-        .attr('stroke-width', 1);
+    var addPeaks = function (peaks, top) {
+
+        if (top === undefined)
+            top = true;
+
+        return peaks.append('line')
+            .attr('class', top ? 'top' : 'bottom')
+            .attr('x1', function (d) {
+                return xScale(d.mz);
+            })
+            .attr('x2', function (d) {
+                return xScale(d.mz);
+            })
+            .attr('y1', yScale(0))
+            .attr('y2', yScale(0))
+            .attr('stroke', top ? 'blue' : 'red')
+            .attr('stroke-width', 1)
+            .on('mouseover', function () {
+                d3.select(this)
+                    .attr('stroke', 'orange');
+            })
+            .on('mouseout', function () {
+                d3.select(this)
+                    .transition()
+                    .duration(250)
+                    .attr('stroke', top ? 'blue' : 'red');
+            })
+            .transition()
+            .attr('y2', function (d) {
+                return yScale(d.intensity * (top ? 1 : -1));
+            });
+    };
+
+    addPeaks(svg.selectAll('line.top')
+            .data(topSpectrum.peaks, key)
+            .enter(),
+        true);
 
     var xAxis = d3.axisBottom()
         .scale(xScale);
@@ -84,13 +100,12 @@ function TwoSpectraPlot(divId, topSpectrum) {
 
     this.update = function (bottomSpectrum) {
 
-        svg.selectAll('line.bottom').remove();
+        var peaks = svg.selectAll('line.bottom')
+            .data(bottomSpectrum.peaks, key);
 
-        svg.selectAll('line.bottom')
-            .data(bottomSpectrum.peaks)
-            .enter()
-            .append('line')
-            .attr('class', 'bottom')
+        addPeaks(peaks.enter(), false);
+
+        peaks.transition()
             .attr('x1', function (d) {
                 return xScale(d.mz);
             })
@@ -100,8 +115,11 @@ function TwoSpectraPlot(divId, topSpectrum) {
             .attr('y1', yScale(0))
             .attr('y2', function (d) {
                 return yScale(-d.intensity);
-            })
-            .attr('stroke', 'red')
-            .attr('stroke-width', 1);
+            });
+
+        peaks.exit()
+            .transition()
+            .attr('y2', yScale(0))
+            .remove();
     }
 }
