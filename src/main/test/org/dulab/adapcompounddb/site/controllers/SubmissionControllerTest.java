@@ -1,7 +1,8 @@
-package site.controllers;
+package org.dulab.adapcompounddb.site.controllers;
 
 import junit.framework.TestCase;
 import org.dulab.adapcompounddb.config.ServletContextConfiguration;
+import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.site.controllers.AuthenticationController;
 import org.dulab.adapcompounddb.site.controllers.IndexController;
 import org.dulab.adapcompounddb.site.controllers.SubmissionController;
@@ -18,6 +19,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
@@ -30,7 +32,12 @@ public class SubmissionControllerTest extends TestCase {
 
     @Mock
     private SubmissionService submissionService;
+
+    @Mock
     private SpectrumService spectrumService;
+
+    @Mock
+    private UserPrincipal userPrincipal;
 
 
     @Before
@@ -49,9 +56,10 @@ public class SubmissionControllerTest extends TestCase {
     @Test
     public void fileViewTest() throws Exception {
 
-        mockMvc.perform(get("/file/"))
-                .andExpect(status().is3xxRedirection())// checks the status
-                .andExpect(view().name("redirect:/file/upload/"));// checks the view name
+        UserPrincipal.assign(mockHttpSession, userPrincipal);
+        mockMvc.perform(post("/file/").session(mockHttpSession))
+                .andExpect(status().isOk()); // checks the status
+                //.andExpect(view().name("file/view"));// checks the view name
                 //.andExpect(forwardedUrl("/WEB-INF/jsp/view/login.jsp"));  // checks the view filename
 
     }
@@ -59,6 +67,7 @@ public class SubmissionControllerTest extends TestCase {
     @Test
     public void viewSubmissionTest() throws Exception{
 
-
+        //mockMvc.perform(post("/submission/{submissionId:\\d+}").session(mockHttpSession))
+        //        .andExpect(status().isOk());
     }
 }
