@@ -74,10 +74,10 @@ public class SubmissionControllerTest extends TestCase {
     public void fileRawViewTest() throws Exception {
         Submission.assign(mockHttpSession, submission);
 
-        when(submissionService.).thenReturn(null);
-        mockMvc.perform(get("/file/fileview/").session(mockHttpSession))
-                .andExpect(status().isOk())
-                .andExpect(redirectedUrlPattern("/file/upload/*"));
+//        when(submissionService.).thenReturn(null);
+//        mockMvc.perform(get("/file/fileview/").session(mockHttpSession))
+//                .andExpect(status().isOk())
+//                .andExpect(redirectedUrlPattern("/file/upload/*"));
 
 
         when(submission.getFile()).thenReturn(new byte[0]);
@@ -85,13 +85,13 @@ public class SubmissionControllerTest extends TestCase {
         mockMvc.perform(get("/file/fileview/").session(mockHttpSession))
                  .andExpect(status().isOk());
 
-//        when(submissionService.findSubmission(1L)).thenReturn(null);
-//        mockMvc.perform(get("/file/fileview/").session(mockHttpSession))
-//                .andExpect(status().isOk())
-//                .andExpect(redirectedUrl("redirect:/notfound/"));
+        when(submissionService.findSubmission(1L)).thenReturn(null);
+        mockMvc.perform(get("/submission/1/fileview/").session(mockHttpSession))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("/notfound/*"));
 
         when(submissionService.findSubmission(1L)).thenReturn(submission);
-        mockMvc.perform(get("/submission/1/").session(mockHttpSession))
+        mockMvc.perform(get("/submission/1/fileview/").session(mockHttpSession))
                 .andExpect(status().isOk());
 
     }
