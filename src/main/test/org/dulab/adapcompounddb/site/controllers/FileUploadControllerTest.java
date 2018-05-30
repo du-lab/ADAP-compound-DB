@@ -48,8 +48,8 @@ public class FileUploadControllerTest extends TestCase {
     }
 
     @Test
-    public void FileUploadGetTest() throws Exception {
-        System.out.println("jUnit tests");
+    public void fileUploadGetTest() throws Exception {
+
         mockMvc.perform(get("/file/upload/"))
                 .andExpect(status().isOk())  // checks the status
                 .andExpect(view().name("file/upload")) // checks the view name
@@ -58,7 +58,7 @@ public class FileUploadControllerTest extends TestCase {
     }
 
     @Test
-    public void FileUploadRedirectTest() throws Exception{
+    public void fileUploadRedirectTest() throws Exception{
         Submission.assign(mockHttpSession, submission);
 
         mockMvc.perform(get("/file/upload/").session(mockHttpSession))
