@@ -92,7 +92,7 @@ public class SubmissionController {
         if (submission == null)
             return redirectFileUpload();
 
-        rawView(response, Submission.from(session));
+        rawView(response, submission);
         return null;
     }
 
@@ -221,7 +221,7 @@ public class SubmissionController {
 
     private String submissionNotFound(Model model, long submissionId) {
         model.addAttribute("errorMessage", "Cannot find submission ID = " + submissionId);
-        return "/notfound/";
+        return "redirect:/notfound/";
     }
 
 
