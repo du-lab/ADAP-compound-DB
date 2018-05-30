@@ -2,6 +2,7 @@ package org.dulab.adapcompounddb.site.controllers;
 
 import junit.framework.TestCase;
 import org.dulab.adapcompounddb.config.ServletContextConfiguration;
+import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.site.controllers.AuthenticationController;
 import org.dulab.adapcompounddb.site.controllers.IndexController;
@@ -20,15 +21,16 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SubmissionControllerTest extends TestCase {
 
     private MockMvc mockMvc;
     private MockHttpSession mockHttpSession;
+
+    @Mock
+    private Submission submission;
 
     @Mock
     private SubmissionService submissionService;
@@ -55,19 +57,34 @@ public class SubmissionControllerTest extends TestCase {
 
     @Test
     public void fileViewTest() throws Exception {
-
-        UserPrincipal.assign(mockHttpSession, userPrincipal);
-        mockMvc.perform(post("/file/").session(mockHttpSession))
-                .andExpect(status().isOk()); // checks the status
-                //.andExpect(view().name("file/view"));// checks the view name
-                //.andExpect(forwardedUrl("/WEB-INF/jsp/view/login.jsp"));  // checks the view filename
+        Submission.assign(mockHttpSession, submission);
+        mockMvc.perform(get("/file/").session(mockHttpSession))
+                .andExpect(status().isOk())
+                .andExpect(view().name("file/view"))
+                .andExpect(forwardedUrl("/WEB-INF/jsp/view/file/view.jsp"));
 
     }
 
     @Test
-    public void viewSubmissionTest() throws Exception{
+    public void fileRawViewTest() throws Exception {
+        Submission.assign(mockHttpSession, submission);
 
-        //mockMvc.perform(post("/submission/{submissionId:\\d+}").session(mockHttpSession))
-        //        .andExpect(status().isOk());
+        mockMvc.perform(get("/file/fileview/"))
+                .andExpect(status().isFound());
+
+
     }
+
+    @Test
+    public void fileRawDownloadTest() throws Exception {
+        Submission.assign(mockHttpSession, submission);
+
+        mockMvc.perform(get("/file/filedownload/"))
+                .andExpect(status().isFound());
+
+
+    }
+
+
+
 }
