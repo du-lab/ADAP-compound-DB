@@ -14,11 +14,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -58,10 +60,13 @@ public class SubmissionControllerTest extends TestCase {
     @Test
     public void fileViewTest() throws Exception {
         Submission.assign(mockHttpSession, submission);
+
         mockMvc.perform(get("/file/").session(mockHttpSession))
                 .andExpect(status().isOk())
                 .andExpect(view().name("file/view"))
                 .andExpect(forwardedUrl("/WEB-INF/jsp/view/file/view.jsp"));
+
+
 
     }
 
@@ -69,9 +74,25 @@ public class SubmissionControllerTest extends TestCase {
     public void fileRawViewTest() throws Exception {
         Submission.assign(mockHttpSession, submission);
 
-        mockMvc.perform(get("/file/fileview/"))
-                .andExpect(status().isFound());
+        when(submissionService.).thenReturn(null);
+        mockMvc.perform(get("/file/fileview/").session(mockHttpSession))
+                .andExpect(status().isOk())
+                .andExpect(redirectedUrlPattern("/file/upload/*"));
 
+
+        when(submission.getFile()).thenReturn(new byte[0]);
+        when(submission.getFilename()).thenReturn("filename");
+        mockMvc.perform(get("/file/fileview/").session(mockHttpSession))
+                 .andExpect(status().isOk());
+
+//        when(submissionService.findSubmission(1L)).thenReturn(null);
+//        mockMvc.perform(get("/file/fileview/").session(mockHttpSession))
+//                .andExpect(status().isOk())
+//                .andExpect(redirectedUrl("redirect:/notfound/"));
+
+        when(submissionService.findSubmission(1L)).thenReturn(submission);
+        mockMvc.perform(get("/submission/1/").session(mockHttpSession))
+                .andExpect(status().isOk());
 
     }
 
