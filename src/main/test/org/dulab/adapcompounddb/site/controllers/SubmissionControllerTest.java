@@ -72,13 +72,12 @@ public class SubmissionControllerTest extends TestCase {
 
     @Test
     public void fileRawViewTest() throws Exception {
+
+        mockMvc.perform(get("/file/fileview/"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("/file/upload/*"));
+
         Submission.assign(mockHttpSession, submission);
-
-//        when(submissionService.).thenReturn(null);
-//        mockMvc.perform(get("/file/fileview/").session(mockHttpSession))
-//                .andExpect(status().isOk())
-//                .andExpect(redirectedUrlPattern("/file/upload/*"));
-
 
         when(submission.getFile()).thenReturn(new byte[0]);
         when(submission.getFilename()).thenReturn("filename");
