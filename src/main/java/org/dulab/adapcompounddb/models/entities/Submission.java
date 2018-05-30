@@ -132,7 +132,7 @@ public class Submission implements Serializable {
         this.spectra = spectra;
     }
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "UserPrincipalId", referencedColumnName = "Id")
     public UserPrincipal getUser() {
         return user;
