@@ -59,6 +59,11 @@ public class SubmissionControllerTest extends TestCase {
 
     @Test
     public void fileViewTest() throws Exception {
+
+        mockMvc.perform(get("/file/"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("/file/upload/*"));
+
         Submission.assign(mockHttpSession, submission);
 
         mockMvc.perform(get("/file/").session(mockHttpSession))
@@ -97,11 +102,26 @@ public class SubmissionControllerTest extends TestCase {
 
     @Test
     public void fileRawDownloadTest() throws Exception {
-        Submission.assign(mockHttpSession, submission);
 
         mockMvc.perform(get("/file/filedownload/"))
-                .andExpect(status().isFound());
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("/file/upload/*"));
 
+        Submission.assign(mockHttpSession, submission);
+
+        when(submission.getFile()).thenReturn(new byte[0]);
+        when(submission.getFilename()).thenReturn("filename");
+        mockMvc.perform(get("/file/filedownload/").session(mockHttpSession))
+                .andExpect(status().isOk());
+
+        when(submissionService.findSubmission(1L)).thenReturn(null);
+        mockMvc.perform(get("/submission/1/filedownload/").session(mockHttpSession))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("/notfound/*"));
+
+        when(submissionService.findSubmission(1L)).thenReturn(submission);
+        mockMvc.perform(get("/submission/1/filedownload/").session(mockHttpSession))
+                .andExpect(status().isOk());
 
     }
 
