@@ -2,6 +2,7 @@ package org.dulab.adapcompounddb.site.controllers;
 
 import junit.framework.TestCase;
 import org.dulab.adapcompounddb.config.ServletContextConfiguration;
+import org.dulab.adapcompounddb.models.SampleSourceType;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.site.controllers.AuthenticationController;
@@ -43,6 +44,9 @@ public class SubmissionControllerTest extends TestCase {
     @Mock
     private UserPrincipal userPrincipal;
 
+//    @Mock
+//    SampleSourceType sampleSourceType;
+
 
     @Before
     public void setUp() throws Exception {
@@ -66,11 +70,28 @@ public class SubmissionControllerTest extends TestCase {
 
         Submission.assign(mockHttpSession, submission);
 
+        SampleSourceType sampleSourceType;
+        sampleSourceType = SampleSourceType.PLASMA;
+
+        when(submission.getName()).thenReturn("file");
+        when(submission.getDescription()).thenReturn("file Description");
+        when(submission.getSampleSourceType()).thenReturn(sampleSourceType);
+        when(submission.getCategory()).thenReturn(null);
         mockMvc.perform(get("/file/").session(mockHttpSession))
                 .andExpect(status().isOk())
                 .andExpect(view().name("file/view"))
                 .andExpect(forwardedUrl("/WEB-INF/jsp/view/file/view.jsp"));
 
+        when(submissionService.findSubmission(1L)).thenReturn(null);
+        mockMvc.perform(get("/submission/1/").session(mockHttpSession))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("/notfound/*"));
+
+        when(submissionService.findSubmission(1L)).thenReturn(submission);
+        mockMvc.perform(get("/submission/1/").session(mockHttpSession))
+                .andExpect(status().isOk())
+                .andExpect(view().name("file/view"))
+                .andExpect(forwardedUrl("/WEB-INF/jsp/view/file/view.jsp"));
 
 
     }
