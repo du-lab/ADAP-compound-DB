@@ -61,14 +61,17 @@ public class SubmissionControllerTest extends TestCase {
 
     }
 
+
+
+
     @Test
     public void fileViewTest() throws Exception {
 
-        mockMvc.perform(get("/file/"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("/file/upload/*"));
+        mockMvc.perform(get("/file/")) // checking if there is a submission
+                .andExpect(status().is3xxRedirection()) // if not redirect to the same upload page
+                .andExpect(redirectedUrlPattern("/file/upload/*")); // checking the redirection here
 
-        Submission.assign(mockHttpSession, submission);
+        Submission.assign(mockHttpSession, submission); //
 
         SampleSourceType sampleSourceType;
         sampleSourceType = SampleSourceType.PLASMA;
@@ -93,15 +96,19 @@ public class SubmissionControllerTest extends TestCase {
                 .andExpect(view().name("file/view"))
                 .andExpect(forwardedUrl("/WEB-INF/jsp/view/file/view.jsp"));
 
+//        mockMvc.perform(get("/WEB-INF/jsp/view/file/view.jsp").session(mockHttpSession))
+//                .andExpect(status().isOk());  // checks the status
+
+
 
     }
 
     @Test
     public void fileRawViewTest() throws Exception {
 
-        mockMvc.perform(get("/file/fileview/"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("/file/upload/*"));
+        mockMvc.perform(get("/file/fileview/")) // checking if there is a submission
+                .andExpect(status().is3xxRedirection()) // if not redirect to the same upload page
+                .andExpect(redirectedUrlPattern("/file/upload/*")); // if not redirect to the same upload page
 
         Submission.assign(mockHttpSession, submission);
 
@@ -124,9 +131,9 @@ public class SubmissionControllerTest extends TestCase {
     @Test
     public void fileRawDownloadTest() throws Exception {
 
-        mockMvc.perform(get("/file/filedownload/"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("/file/upload/*"));
+        mockMvc.perform(get("/file/filedownload/")) // checking if there is a submission
+                .andExpect(status().is3xxRedirection()) // if not redirect to the same upload page
+                .andExpect(redirectedUrlPattern("/file/upload/*")); // if not redirect to the same upload page
 
         Submission.assign(mockHttpSession, submission);
 
