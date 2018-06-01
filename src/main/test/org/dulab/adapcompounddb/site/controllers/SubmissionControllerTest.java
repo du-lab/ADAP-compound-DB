@@ -16,11 +16,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -44,12 +46,9 @@ public class SubmissionControllerTest extends TestCase {
     @Mock
     private UserPrincipal userPrincipal;
 
-//    @Mock
-//    SampleSourceType sampleSourceType;
-
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mockMvc = MockMvcBuilders
                 .standaloneSetup(new SubmissionController(submissionService, spectrumService), new IndexController())
                 .setViewResolvers(
@@ -115,7 +114,7 @@ public class SubmissionControllerTest extends TestCase {
         when(submission.getFile()).thenReturn(new byte[0]);
         when(submission.getFilename()).thenReturn("filename");
         mockMvc.perform(get("/file/fileview/").session(mockHttpSession))
-                 .andExpect(status().isOk());
+                .andExpect(status().isOk());
 
         when(submissionService.findSubmission(1L)).thenReturn(null);
         mockMvc.perform(get("/submission/1/fileview/").session(mockHttpSession))
@@ -153,6 +152,39 @@ public class SubmissionControllerTest extends TestCase {
 
     }
 
+    // This tests checks the POST-method for '/file/'
+    @Test
+    public void fileViewPostTest() throws Exception {
 
+        when(submission.getId()).thenReturn(1L);
+        Submission.assign(mockHttpSession, submission);
+
+        // When a submission is successfully submitted, the page is redirected to that submission's page
+        mockMvc.perform(
+                post("/file/")
+                        .session(mockHttpSession)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("name", "submission name")
+                        .param("description", "submission description")
+                        .param("sampleSourceType", SampleSourceType.STD.name())
+                        .param("submissionCategoryId", "0"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("/submission/1/*"));
+
+        // When there are validation errors, we stay at the same page and display those errors
+        mockMvc.perform(
+                post("/file/")
+                        .session(mockHttpSession)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("name", "")
+                        .param("description", "")
+                        .param("sampleSourceType", "") // SampleSourceType.STD.name()
+                        .param("submissionCategoryId", "0"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("file/view"))
+                .andExpect(forwardedUrl("/WEB-INF/jsp/view/file/view.jsp"))
+                .andExpect(model().hasErrors())
+                .andExpect(model().errorCount(3));
+    }
 
 }
