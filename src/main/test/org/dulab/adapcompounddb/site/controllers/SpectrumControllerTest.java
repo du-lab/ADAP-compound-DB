@@ -38,7 +38,7 @@ public class SpectrumControllerTest extends TestCase {
     private SpectrumService spectrumService;
 
     @Mock
-    private Spectrum spectrum = new Spectrum();
+    private Spectrum spectrum;
 
     @Mock
     private List<Spectrum> spectrumList;
@@ -84,8 +84,6 @@ public class SpectrumControllerTest extends TestCase {
         mockMvc.perform(get("/submission/1/1/")) // checking if there is a submission and its corresponding spectrum
                 .andExpect(status().isOk()) // OK status - link
                 .andExpect(view().name("file/spectrum")); // checking the view
-
-
     }
 
     /*
@@ -102,7 +100,6 @@ public class SpectrumControllerTest extends TestCase {
         mockMvc.perform(get("/file/1/").session(mockHttpSession)) // checking if there is a submission
                 .andExpect(status().isOk()) // OK status - link
                 .andExpect(view().name("file/spectrum")); // checking the view
-
     }
 
 }
