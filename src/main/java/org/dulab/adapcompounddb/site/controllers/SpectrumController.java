@@ -34,7 +34,7 @@ public class SpectrumController {
         return spectrum(spectrum, model);
     }
 
-    @RequestMapping(value = "/submission/{submissionId:\\d+}/{spectrumListIndex:\\d+}/")
+    @RequestMapping(value = "/submission/{submissionId:\\d+}/{spectrumListIndex:\\d+}/", method = RequestMethod.GET)
     public String spectrum(@PathVariable("submissionId") long submissionId,
                            @PathVariable("spectrumListIndex") int spectrumListIndex,
                            Model model) {
