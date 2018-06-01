@@ -100,8 +100,8 @@ public class SpectrumControllerTest extends TestCase {
         when(submission.getSpectra()).thenReturn(spectrumList); // Returning a dummy Spectrum
         spectrumList.get(0);
         mockMvc.perform(get("/file/1/").session(mockHttpSession)) // checking if there is a submission
-                .andExpect(status().isOk()) // iOK status - link
-                .andExpect(view().name("file/spectrum")); /// checking the view
+                .andExpect(status().isOk()) // OK status - link
+                .andExpect(view().name("file/spectrum")); // checking the view
 
     }
 
