@@ -43,10 +43,6 @@ public class SubmissionControllerTest extends TestCase {
     @Mock
     private SpectrumService spectrumService;
 
-    @Mock
-    private UserPrincipal userPrincipal;
-
-
     @Before
     public void setUp() {
         mockMvc = MockMvcBuilders
