@@ -1,8 +1,9 @@
 function TwoSpectraPlot(divId, topSpectrum) {
 
     var width = 600;
-    var height = 400;
-    var padding = 40;
+    var height = 600;
+    var label_offset = 40;
+    var padding = {'top': 40, 'right': 40, 'bottom': 240, 'left': 40};
 
     var xScale = d3.scaleLinear()
         .domain([
@@ -13,11 +14,11 @@ function TwoSpectraPlot(divId, topSpectrum) {
                 return d.mz
             })
         ])
-        .range([padding, width - padding]);
+        .range([padding['left'], width - padding['right']]);
 
     var yScale = d3.scaleLinear()
         .domain([-100, 100])
-        .range([height - padding, padding]);
+        .range([height - padding['bottom'], padding['top']]);
 
     var svg = d3.select('#' + divId)
         .append('svg')
@@ -46,14 +47,18 @@ function TwoSpectraPlot(divId, topSpectrum) {
             .attr('stroke', top ? 'blue' : 'red')
             .attr('stroke-width', 1)
             .on('mouseover', function () {
-                d3.select(this)
-                    .attr('stroke', 'orange');
+                var peak = d3.select(this);
+                peak.attr('stroke', 'orange');
+                svg.select('#tooltip')
+                    .text(peak.attr('x2') + ' ' + peak.attr('y2'));
             })
             .on('mouseout', function () {
                 d3.select(this)
                     .transition()
                     .duration(250)
                     .attr('stroke', top ? 'blue' : 'red');
+                svg.select('#toolip')
+                    .text('');
             })
             .transition()
             .attr('y2', function (d) {
@@ -66,18 +71,25 @@ function TwoSpectraPlot(divId, topSpectrum) {
             .enter(),
         true);
 
+    svg.append('text')
+        .attr('id', 'tooltip')
+        .attr('x', width - padding['right'])
+        .attr('y', padding['top'])
+        .style('text-anchor', 'middle')
+        .text('');
+
     var xAxis = d3.axisBottom()
         .scale(xScale);
 
     svg.append('g')
         .attr('class', 'axis')
-        .attr('transform', 'translate(0, ' + (height - padding) + ')')
+        .attr('transform', 'translate(0, ' + (height - padding['bottom']) + ')')
         .call(xAxis);
 
     svg.append('text')
         .attr('class', 'label')
-        .attr('x', width / 2)
-        .attr('y', height)
+        .attr('x', (padding['left'] + width - padding['right']) / 2)
+        .attr('y', height - padding['bottom'] + label_offset)
         .style('text-anchor', 'middle')
         .text('m/z');
 
@@ -86,17 +98,46 @@ function TwoSpectraPlot(divId, topSpectrum) {
 
     svg.append('g')
         .attr('class', 'axis')
-        .attr('transform', 'translate(' + padding + ', 0)')
+        .attr('transform', 'translate(' + padding['left'] + ', 0)')
         .call(yAxis);
 
     svg.append('text')
         .attr('class', 'label')
         .attr('transform', 'rotate(-90)')
-        .attr('x', -height / 2)
-        .attr('y', 0)
+        .attr('x', -(padding['top'] + height - padding['bottom']) / 2)
+        .attr('y', padding['left'] - label_offset)
         .attr('dy', '1em')
         .style('text-anchor', 'middle')
         .text('intensity');
+
+    var legendRectSize = 18;
+    var legendSpacing = 6;
+
+    var legend = svg.selectAll('.legend')
+        .data(['topSpectrumName', 'bottomSpectrumName'])
+        .enter()
+        .append('g')
+        .attr('class', 'legend')
+        .attr('transform', function (d, i) {
+            var horz = padding['left'];
+            var vert = height - padding['bottom'] / 2 + i * (legendRectSize + legendSpacing);
+            return 'translate(' + horz + ', ' + vert + ')';
+        });
+
+    legend.append('rect')
+        .attr('width', legendRectSize)
+        .attr('height', legendRectSize)
+        .style('fill', function(d, i) {return i === 0 ? 'blue' : 'red';})
+        .style('stroke', function(d, i) {return i === 0 ? 'blue' : 'red';});
+
+    legend.append('text')
+        .attr('id', function(d) {return d;})
+        .attr('x', legendRectSize + legendSpacing)
+        .attr('y', legendRectSize - legendSpacing)
+        .text('');
+
+    svg.select('#topSpectrumName')
+        .text(topSpectrum.name);
 
     this.update = function (bottomSpectrum) {
 
@@ -121,5 +162,8 @@ function TwoSpectraPlot(divId, topSpectrum) {
             .transition()
             .attr('y2', yScale(0))
             .remove();
+
+        svg.select('#bottomSpectrumName')
+            .text(bottomSpectrum.name);
     }
 }
