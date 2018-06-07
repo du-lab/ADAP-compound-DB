@@ -209,7 +209,7 @@ public class SubmissionController {
         return "redirect:/submission/" + submission.getId() + "/";
     }
 
-    @RequestMapping(value = "/submission/{submissionId:\\d+}/delete/")
+    @RequestMapping(value = "/submission/{submissionId:\\d+}/delete/",method = RequestMethod.GET)
     public String delete(@PathVariable("submissionId") long id) {
         submissionService.delete(id);
         return "redirect:/account/";
