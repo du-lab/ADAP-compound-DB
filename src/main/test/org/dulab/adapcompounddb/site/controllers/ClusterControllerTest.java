@@ -62,7 +62,6 @@ public class ClusterControllerTest extends TestCase {
                 .andExpect(status().isOk()) // OK status - link
                 .andExpect(view().name("cluster/view")); // checking the view
 
-
     }
 
 

@@ -111,6 +111,37 @@ public class AuthenticationControllerTest {
                 .andExpect(model().errorCount(2));
     }
 
+    /*
+       This method tests for signup
+       GET method on "/signup"
+     */
+    @Test
+    public void signupGetTest() throws Exception {
+
+        mockMvc.perform(get("/signup"))
+                .andExpect(status().isOk())  // checks the status
+                .andExpect(view().name("signup"))  // checks the view name
+                .andExpect(forwardedUrl("/WEB-INF/jsp/view/signup.jsp"));  // checks the view filename
+    }
+
+    /*
+       This method tests for the Redirection on Login
+       GET method on "/signup"
+       GET method for redirection on "/"
+     */
+    @Test
+    public void signupRedirectTest() throws Exception {
+
+        UserPrincipal.assign(mockHttpSession, userPrincipal);
+        mockMvc.perform(get("/signup").session(mockHttpSession))
+                .andExpect(status().isSeeOther())  // checks the status
+                .andExpect(redirectedUrl("/"));  // check the redirect url
+
+        // Check that the redirected url is handled
+        mockMvc.perform(get("/"))
+                .andExpect(status().isOk());  // checks the status
+    }
+
     @Test
     public void signupPostTest() throws Exception {
 
@@ -147,43 +178,12 @@ public class AuthenticationControllerTest {
     }
 
     /*
-       This method tests for signup
-       GET method on "/signup"
-     */
-    @Test
-    public void signupGetTest() throws Exception {
-
-        mockMvc.perform(get("/signup"))
-                .andExpect(status().isOk())  // checks the status
-                .andExpect(view().name("signup"))  // checks the view name
-                .andExpect(forwardedUrl("/WEB-INF/jsp/view/signup.jsp"));  // checks the view filename
-    }
-
-    /*
-       This method tests for the Redirection on Login
-       GET method on "/signup"
-       GET method for redirection on "/"
-     */
-    @Test
-    public void signupRedirectTest() throws Exception {
-
-        UserPrincipal.assign(mockHttpSession, userPrincipal);
-        mockMvc.perform(get("/signup").session(mockHttpSession))
-                .andExpect(status().isSeeOther())  // checks the status
-                .andExpect(redirectedUrl("/"));  // check the redirect url
-
-        // Check that the redirected url is handled
-        mockMvc.perform(get("/"))
-                .andExpect(status().isOk());  // checks the status
-    }
-
-    /*
        This method tests for the Redirection on Logot
        GET method on "/logout"
        GET method for redirection on "/"
      */
     @Test
-    public void getLogoutTest() throws Exception {
+    public void logoutGetTest() throws Exception {
         UserPrincipal.assign(mockHttpSession, userPrincipal);
         mockMvc.perform(get("/logout").session(mockHttpSession))
                 .andExpect(status().isSeeOther())  // checks the status
