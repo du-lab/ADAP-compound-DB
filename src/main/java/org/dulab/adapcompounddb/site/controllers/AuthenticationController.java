@@ -128,7 +128,7 @@ public class AuthenticationController {
     ***** Log Out *****
      *****************/
 
-    @RequestMapping(value = "logout", method = RequestMethod.GET)
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
     public ModelAndView logout(HttpSession session) {
         session.invalidate();
         return getHomeRedirect();

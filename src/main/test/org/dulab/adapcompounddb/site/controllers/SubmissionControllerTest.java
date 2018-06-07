@@ -58,7 +58,11 @@ public class SubmissionControllerTest extends TestCase {
 
 
 
-
+    /*
+        This method tests for View File
+        GET method on "/file/"
+        Also checks if there is no submission, it redirects to the file upload feature
+    */
     @Test
     public void fileViewTest() throws Exception {
 
@@ -79,6 +83,17 @@ public class SubmissionControllerTest extends TestCase {
                 .andExpect(status().isOk())
                 .andExpect(view().name("file/view"))
                 .andExpect(forwardedUrl("/WEB-INF/jsp/view/file/view.jsp"));
+    }
+
+    /*
+        This method tests for Submission
+        GET method on ""/submission/{submissionId:\\d+}/""
+        Also checks if there is no submission, it redirects to the submission not found.
+    */
+    @Test
+    public void viewSubmissionTest() throws Exception {
+
+        Submission.assign(mockHttpSession, submission);
 
         when(submissionService.findSubmission(1L)).thenReturn(null);
         mockMvc.perform(get("/submission/1/").session(mockHttpSession))
@@ -91,13 +106,13 @@ public class SubmissionControllerTest extends TestCase {
                 .andExpect(view().name("file/view"))
                 .andExpect(forwardedUrl("/WEB-INF/jsp/view/file/view.jsp"));
 
-//        mockMvc.perform(get("/WEB-INF/jsp/view/file/view.jsp").session(mockHttpSession))
-//                .andExpect(status().isOk());  // checks the status
-
-
-
     }
 
+    /*
+        This method tests for Raw View File
+        GET method on "/file/fileview/"
+        Also checks if there is no submission, it redirects to the file upload feature
+    */
     @Test
     public void fileRawViewTest() throws Exception {
 
@@ -109,8 +124,17 @@ public class SubmissionControllerTest extends TestCase {
 
         when(submission.getFile()).thenReturn(new byte[0]);
         when(submission.getFilename()).thenReturn("filename");
-        mockMvc.perform(get("/file/fileview/").session(mockHttpSession))
-                .andExpect(status().isOk());
+        mockMvc.perform(get("/file/fileview/").session(mockHttpSession)).andExpect(status().isOk());
+    }
+
+    /*
+        This method tests for Raw Submission
+        GET method on "submission/{submissionId:\d+}/fileview/"
+        Also checks if there is no submission, it redirects to the submission not found
+    */
+    @Test
+    public void rawViewTest() throws Exception {
+        Submission.assign(mockHttpSession, submission);
 
         when(submissionService.findSubmission(1L)).thenReturn(null);
         mockMvc.perform(get("/submission/1/fileview/").session(mockHttpSession))
@@ -123,12 +147,17 @@ public class SubmissionControllerTest extends TestCase {
 
     }
 
+    /*
+        This method tests for Raw File download
+        GET method on "/file/filedownload/"
+        Also checks if there is no submission, it redirects to the file upload feature
+    */
     @Test
     public void fileRawDownloadTest() throws Exception {
 
         mockMvc.perform(get("/file/filedownload/")) // checking if there is a submission
                 .andExpect(status().is3xxRedirection()) // if not redirect to the same upload page
-                .andExpect(redirectedUrlPattern("/file/upload/*")); // if not redirect to the same upload page
+                .andExpect(redirectedUrlPattern("/file/upload/*"));// if not redirect to the same upload page
 
         Submission.assign(mockHttpSession, submission);
 
@@ -136,6 +165,15 @@ public class SubmissionControllerTest extends TestCase {
         when(submission.getFilename()).thenReturn("filename");
         mockMvc.perform(get("/file/filedownload/").session(mockHttpSession))
                 .andExpect(status().isOk());
+    }
+
+    /*
+        This method tests for View File
+        GET method on "/submission/{submissionId:\d+}/filedownload/"
+        Also checks if there is no submission, it redirects to the file not found
+    */
+    @Test
+    public void submissionRawDownloadTest() throws Exception {
 
         when(submissionService.findSubmission(1L)).thenReturn(null);
         mockMvc.perform(get("/submission/1/filedownload/").session(mockHttpSession))
@@ -145,6 +183,19 @@ public class SubmissionControllerTest extends TestCase {
         when(submissionService.findSubmission(1L)).thenReturn(submission);
         mockMvc.perform(get("/submission/1/filedownload/").session(mockHttpSession))
                 .andExpect(status().isOk());
+
+    }
+
+    /*
+    This method tests for Delete on a submission
+    GET method on "/submission/{submissionId:\d+}/delete/"
+    */
+    @Test
+    public void deleteGetTest() throws Exception {
+        mockMvc.perform(get("/submission/1/delete/").session(mockHttpSession))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("/account/*"));
+
 
     }
 
@@ -153,7 +204,8 @@ public class SubmissionControllerTest extends TestCase {
     public void fileViewPostTest() throws Exception {
 
         when(submission.getId()).thenReturn(1L);
-        Submission.assign(mockHttpSession, submission);
+
+
 
         // When a submission is successfully submitted, the page is redirected to that submission's page
         mockMvc.perform(
@@ -182,5 +234,9 @@ public class SubmissionControllerTest extends TestCase {
                 .andExpect(model().hasErrors())
                 .andExpect(model().errorCount(3));
     }
+
+    // This tests checks the POST-method for '/file/'
+    //public void submission
+
 
 }
