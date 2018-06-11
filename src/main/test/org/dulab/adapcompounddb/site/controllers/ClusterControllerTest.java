@@ -17,9 +17,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -32,7 +30,7 @@ public class ClusterControllerTest extends TestCase {
     private SpectrumMatchService spectrumMatchService;
 
     @Mock
-    SpectrumCluster cluster;
+    private SpectrumCluster cluster;
 
     @Mock
     private Submission submission;
@@ -60,8 +58,8 @@ public class ClusterControllerTest extends TestCase {
         when(spectrumMatchService.getCluster(1)).thenReturn(cluster);
         mockMvc.perform(get("/cluster/1/")) // checking if there is a cluster
                 .andExpect(status().isOk()) // OK status - link
-                .andExpect(view().name("cluster/view")); // checking the view
-
+                .andExpect(view().name("cluster/view")) // checking the view
+                .andExpect(model().attributeExists("cluster"));  // checks for the attributes
     }
 
 
