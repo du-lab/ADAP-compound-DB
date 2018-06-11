@@ -66,28 +66,30 @@ public class FileUploadControllerTest extends TestCase {
         mockMvc.perform(get("/file/upload/"))
                 .andExpect(status().isOk())  // checks the status
                 .andExpect(view().name("file/upload")) // checks the view name
-                .andExpect(forwardedUrl("/WEB-INF/jsp/view/file/upload.jsp"));
+                .andExpect(forwardedUrl("/WEB-INF/jsp/view/file/upload.jsp"))
+                .andExpect(model().attributeExists("fileUploadForm"));
 
     }
 
     // This tests checks the POST-method for '/login/'
     @Test
     public void loginPostTest() throws Exception {
-/*
+
         // When login form is successfully submitted, and the credentials are verified the page is redirected to that Home page
         when(file.getOriginalFilename()).thenReturn("filename.msp");
         submission.setFileType(FileType.MSP);
         submission.setChromatographyType(ChromatographyType.GAS);
+        submission.setFilename("filename.msp");
 
         mockMvc.perform(
-                post("/file/upload/")
-                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .param("chromatographyType", "Gas Chromatography")
-                        .param("fileType", "MSP: NIST text format of individual spectra")
-                        .param("file","filename.msp"))
+                post("/file/upload/"))
+                        //.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        //.param("chromatographyType", "Gas Chromatography")
+                        //.param("fileType", "MSP: NIST text format of individual spectra"))
+                        //.param("file",))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlPattern("/file/*"));
-*/
+
         // When there are validation errors, we stay at the same page and display those errors
         mockMvc.perform(
                 post("/file/upload/")
