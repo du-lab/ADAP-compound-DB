@@ -63,7 +63,10 @@ public class AuthenticationControllerTest {
         mockMvc.perform(get("/login"))
                 .andExpect(status().isOk())  // checks the status
                 .andExpect(view().name("login"))  // checks the view name
-                .andExpect(forwardedUrl("/WEB-INF/jsp/view/login.jsp"));  // checks the view filename
+                .andExpect(forwardedUrl("/WEB-INF/jsp/view/login.jsp"))  // checks the view filename
+                .andExpect(model().attributeExists("loginFailed","logInForm")) // checking the existing attributes
+                .andExpect(model().attribute("loginFailed",false)); // verifying the attribute value
+
     }
 
     /*
@@ -109,6 +112,7 @@ public class AuthenticationControllerTest {
                 .andExpect(forwardedUrl("/WEB-INF/jsp/view/login.jsp"))
                 .andExpect(model().hasErrors())
                 .andExpect(model().errorCount(2));
+
     }
 
     /*
@@ -121,7 +125,9 @@ public class AuthenticationControllerTest {
         mockMvc.perform(get("/signup"))
                 .andExpect(status().isOk())  // checks the status
                 .andExpect(view().name("signup"))  // checks the view name
-                .andExpect(forwardedUrl("/WEB-INF/jsp/view/signup.jsp"));  // checks the view filename
+                .andExpect(forwardedUrl("/WEB-INF/jsp/view/signup.jsp"))  // checks the view filename
+                .andExpect(model().attributeExists("signupFailed","signUpForm"))
+                .andExpect(model().attribute("signupFailed",false));
     }
 
     /*
