@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.controllers;
 
+import javafx.beans.binding.When;
 import junit.framework.TestCase;
 import org.dulab.adapcompounddb.config.ServletContextConfiguration;
 import org.dulab.adapcompounddb.models.SampleSourceType;
@@ -70,19 +71,22 @@ public class SubmissionControllerTest extends TestCase {
                 .andExpect(status().is3xxRedirection()) // if not redirect to the same upload page
                 .andExpect(redirectedUrlPattern("/file/upload/*")); // checking the redirection here
 
-        Submission.assign(mockHttpSession, submission); //
+        // If all okay, forward to file view
+        Submission.assign(mockHttpSession, submission); //Assigning a submission
 
-        SampleSourceType sampleSourceType;
+        SampleSourceType sampleSourceType;              // dummy SampleSourceType
         sampleSourceType = SampleSourceType.PLASMA;
 
-        when(submission.getName()).thenReturn("file");
+        when(submission.getName()).thenReturn("file"); // Assigning dummy values
         when(submission.getDescription()).thenReturn("file Description");
         when(submission.getSampleSourceType()).thenReturn(sampleSourceType);
         when(submission.getCategory()).thenReturn(null);
         mockMvc.perform(get("/file/").session(mockHttpSession))
-                .andExpect(status().isOk())
-                .andExpect(view().name("file/view"))
-                .andExpect(forwardedUrl("/WEB-INF/jsp/view/file/view.jsp"));
+                .andExpect(status().isOk()) // OK status
+                .andExpect(view().name("file/view")) // view
+                .andExpect(forwardedUrl("/WEB-INF/jsp/view/file/view.jsp")) // forwarded url
+                .andExpect(model().attributeExists("submissionForm")); // attributes added
+
     }
 
     /*
@@ -93,18 +97,21 @@ public class SubmissionControllerTest extends TestCase {
     @Test
     public void viewSubmissionTest() throws Exception {
 
-        Submission.assign(mockHttpSession, submission);
+        Submission.assign(mockHttpSession, submission); //Assigning a submission
 
+        // when no submission found, redirect to not found
         when(submissionService.findSubmission(1L)).thenReturn(null);
         mockMvc.perform(get("/submission/1/").session(mockHttpSession))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("/notfound/*"));
+                .andExpect(status().is3xxRedirection()) // redirection
+                .andExpect(redirectedUrlPattern("/notfound/*")); // redirecting to not found
 
+        // when submission is successfully found, redirect to file view
         when(submissionService.findSubmission(1L)).thenReturn(submission);
         mockMvc.perform(get("/submission/1/").session(mockHttpSession))
                 .andExpect(status().isOk())
-                .andExpect(view().name("file/view"))
-                .andExpect(forwardedUrl("/WEB-INF/jsp/view/file/view.jsp"));
+                .andExpect(view().name("file/view")) // view
+                .andExpect(forwardedUrl("/WEB-INF/jsp/view/file/view.jsp")) // forwarded url
+                .andExpect(model().attributeExists("submissionForm")); // attributes added
 
     }
 
@@ -120,11 +127,12 @@ public class SubmissionControllerTest extends TestCase {
                 .andExpect(status().is3xxRedirection()) // if not redirect to the same upload page
                 .andExpect(redirectedUrlPattern("/file/upload/*")); // if not redirect to the same upload page
 
+        // Sucessfully found the submission
         Submission.assign(mockHttpSession, submission);
 
         when(submission.getFile()).thenReturn(new byte[0]);
         when(submission.getFilename()).thenReturn("filename");
-        mockMvc.perform(get("/file/fileview/").session(mockHttpSession)).andExpect(status().isOk());
+        mockMvc.perform(get("/file/fileview/").session(mockHttpSession)).andExpect(status().isOk()); // ok status for the submission
     }
 
     /*
@@ -136,14 +144,18 @@ public class SubmissionControllerTest extends TestCase {
     public void rawViewTest() throws Exception {
         Submission.assign(mockHttpSession, submission);
 
+        // submission not found
         when(submissionService.findSubmission(1L)).thenReturn(null);
         mockMvc.perform(get("/submission/1/fileview/").session(mockHttpSession))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("/notfound/*"));
+                .andExpect(status().is3xxRedirection()) // redirection
+                .andExpect(redirectedUrlPattern("/notfound/*")); // NOT FOUND
 
+        // Successfully found the submission
         when(submissionService.findSubmission(1L)).thenReturn(submission);
+        when(submission.getFile()).thenReturn(new byte[0]);
+        when(submission.getFilename()).thenReturn("filename");
         mockMvc.perform(get("/submission/1/fileview/").session(mockHttpSession))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk()); // ok status for raw view
 
     }
 
@@ -154,17 +166,18 @@ public class SubmissionControllerTest extends TestCase {
     */
     @Test
     public void fileRawDownloadTest() throws Exception {
-
+        // submission not found
         mockMvc.perform(get("/file/filedownload/")) // checking if there is a submission
                 .andExpect(status().is3xxRedirection()) // if not redirect to the same upload page
                 .andExpect(redirectedUrlPattern("/file/upload/*"));// if not redirect to the same upload page
 
+        // Successfully found the submission
         Submission.assign(mockHttpSession, submission);
 
         when(submission.getFile()).thenReturn(new byte[0]);
         when(submission.getFilename()).thenReturn("filename");
         mockMvc.perform(get("/file/filedownload/").session(mockHttpSession))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk()); // ok status for raw view download
     }
 
     /*
@@ -180,6 +193,9 @@ public class SubmissionControllerTest extends TestCase {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlPattern("/notfound/*"));
 
+        Submission.assign(mockHttpSession, submission);
+        when(submission.getFile()).thenReturn(new byte[0]);
+        when(submission.getFilename()).thenReturn("filename");
         when(submissionService.findSubmission(1L)).thenReturn(submission);
         mockMvc.perform(get("/submission/1/filedownload/").session(mockHttpSession))
                 .andExpect(status().isOk());
@@ -192,6 +208,14 @@ public class SubmissionControllerTest extends TestCase {
     */
     @Test
     public void deleteGetTest() throws Exception {
+        // Submission not found
+        when(submissionService.findSubmission(1)).thenReturn(null);
+        mockMvc.perform(get("/submission/1/delete/").session(mockHttpSession))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("/notfound/*"));
+
+        // submission found successfully
+        when(submissionService.findSubmission(1)).thenReturn(submission);
         mockMvc.perform(get("/submission/1/delete/").session(mockHttpSession))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlPattern("/account/*"));
@@ -203,10 +227,8 @@ public class SubmissionControllerTest extends TestCase {
     @Test
     public void fileViewPostTest() throws Exception {
 
+        Submission.assign(mockHttpSession, submission);
         when(submission.getId()).thenReturn(1L);
-
-
-
         // When a submission is successfully submitted, the page is redirected to that submission's page
         mockMvc.perform(
                 post("/file/")
@@ -226,7 +248,7 @@ public class SubmissionControllerTest extends TestCase {
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .param("name", "")
                         .param("description", "")
-                        .param("sampleSourceType", "") // SampleSourceType.STD.name()
+                        .param("sampleSourceType", "")
                         .param("submissionCategoryId", "0"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("file/view"))
@@ -236,7 +258,25 @@ public class SubmissionControllerTest extends TestCase {
     }
 
     // This tests checks the POST-method for '/file/'
-    //public void submission
+    @Test
+    public void submissionViewPostTest() throws Exception {
 
+        when(submission.getId()).thenReturn(1L);
+        when(submissionService.findSubmission(1L)).thenReturn(submission);
+        // When a submission is successfully submitted, the page is redirected to that submission's page
+        mockMvc.perform(post("/submission/1/")
+                .session(mockHttpSession)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("name", "submission name"  )
+                .param("description", "submission description")
+                .param("sampleSourceType", SampleSourceType.STD.name())
+                .param("submissionCategoryId", "0"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("/submission/1/*"))
+                .andExpect(model().attributeExists("message"));
 
+        // When there are validation errors, we stay at the same page and display those errors
+        mockMvc.perform(post("/file/").session(mockHttpSession).contentType(MediaType.APPLICATION_FORM_URLENCODED).param("name", "").param("description", "").param("sampleSourceType", "") // SampleSourceType.STD.name()
+                .param("submissionCategoryId", "0")).andExpect(status().isOk()).andExpect(view().name("file/view")).andExpect(forwardedUrl("/WEB-INF/jsp/view/file/view.jsp")).andExpect(model().hasErrors());
+    }
 }
