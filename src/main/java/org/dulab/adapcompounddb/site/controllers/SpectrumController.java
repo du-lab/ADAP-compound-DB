@@ -31,6 +31,9 @@ public class SpectrumController {
 
         Spectrum spectrum = spectrumService.find(spectrumId);
 
+        if (spectrum == null)
+            return spectrumNotFound(model,spectrumId);
+
         return spectrum(spectrum, model);
     }
 
@@ -40,6 +43,9 @@ public class SpectrumController {
                            Model model) {
 
         Submission submission = submissionService.findSubmission(submissionId);
+        if (submission == null)
+            return submissionNotFound(model,submissionId);
+
         Spectrum spectrum = submission.getSpectra().get(spectrumListIndex);
 
         return spectrum(spectrum, model);
@@ -50,6 +56,8 @@ public class SpectrumController {
                            HttpSession session, Model model) {
 
         Submission submission = Submission.from(session);
+        if (submission == null)
+           return submissionNotFound(model);
         Spectrum spectrum = submission.getSpectra().get(listIndex);
 
         return spectrum(spectrum, model);
@@ -58,5 +66,20 @@ public class SpectrumController {
     public String spectrum(Spectrum spectrum, Model model) {
         model.addAttribute("spectrum", spectrum);
         return "file/spectrum";
+    }
+
+    private String spectrumNotFound(Model model, long spectrumId) {
+        model.addAttribute("errorMessage", "Cannot find spectrum ID = " + spectrumId);
+        return "redirect:/notfound/";
+    }
+
+    private String submissionNotFound(Model model, long submissionId) {
+        model.addAttribute("errorMessage", "Cannot find submission ID = " + submissionId);
+        return "redirect:/notfound/";
+    }
+
+    private String submissionNotFound(Model model) {
+        model.addAttribute("errorMessage", "Cannot find submission");
+        return "redirect:/notfound/";
     }
 }
