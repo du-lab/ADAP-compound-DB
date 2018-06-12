@@ -3,12 +3,14 @@ package org.dulab.adapcompounddb.site.controllers;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.Hit;
+import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.models.search.ComparisonOperator;
 import org.dulab.adapcompounddb.models.search.CriteriaBlock;
 import org.dulab.adapcompounddb.models.search.Criterion;
 import org.dulab.adapcompounddb.models.search.SetOperator;
+import org.dulab.adapcompounddb.site.services.SpectrumSearchService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.dulab.adapcompounddb.validation.FloatMin;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
@@ -27,6 +29,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -44,14 +47,17 @@ public class SearchController {
     private final UserPrincipalService userPrincipalService;
     private final SubmissionService submissionService;
     private final SpectrumService spectrumService;
+    private final SpectrumSearchService spectrumSearchService;
 
     @Autowired
     public SearchController(UserPrincipalService userPrincipalService,
                             SubmissionService submissionService,
-                            @Qualifier("spectrumServiceImpl") SpectrumService spectrumService) {
+                            @Qualifier("spectrumServiceImpl") SpectrumService spectrumService,
+                            SpectrumSearchService spectrumSearchService) {
         this.userPrincipalService = userPrincipalService;
         this.submissionService = submissionService;
         this.spectrumService = spectrumService;
+        this.spectrumSearchService = spectrumSearchService;
     }
 
     @ModelAttribute
@@ -186,28 +192,34 @@ public class SearchController {
             return new ModelAndView("file/match");
         }
 
-        CriteriaBlock criteria = new CriteriaBlock(SetOperator.AND);
-        if (form.isChromatographyTypeCheck())
-            criteria.add(
-                    new Criterion("ChromatographyType", ComparisonOperator.EQ, form.getChromatographyType()));
-        if (form.isSubmissionCategoryCheck()) {
-            CriteriaBlock categories = new CriteriaBlock(SetOperator.OR);
-            for (long id : form.getSubmissionCategoryIds())
-                categories.add(
-                        new Criterion("SubmissionCategoryId", ComparisonOperator.EQ, id));
-            criteria.add(new Criterion("", ComparisonOperator.BLOCK, categories));
-        }
 
-        try {
-            List<Hit> hits = spectrumService.match(querySpectrum, criteria,
-                    form.getMzTolerance(), form.getNumHits(), form.getFloatScoreThreshold());
-            model.addAttribute("hits", hits);
+//        CriteriaBlock criteria = new CriteriaBlock(SetOperator.AND);
+//        if (form.isChromatographyTypeCheck())
+//            criteria.add(
+//                    new Criterion("ChromatographyType", ComparisonOperator.EQ, form.getChromatographyType()));
+//        if (form.isSubmissionCategoryCheck()) {
+//            CriteriaBlock categories = new CriteriaBlock(SetOperator.OR);
+//            for (long id : form.getSubmissionCategoryIds())
+//                categories.add(
+//                        new Criterion("SubmissionCategoryId", ComparisonOperator.EQ, id));
+//            criteria.add(new Criterion("", ComparisonOperator.BLOCK, categories));
+//        }
 
-//            form.saveParameters(userPrincipalService, user);
+//        try {
+//            List<Hit> hits = spectrumService.match(querySpectrum, criteria,
+//                    form.getMzTolerance(), form.getNumHits(), form.getFloatScoreThreshold());
+//            model.addAttribute("hits", hits);
+//
+////            form.saveParameters(userPrincipalService, user);
+//
+//        } catch (EmptySearchResultException e) {
+//            model.addAttribute("searchResultMessage", e.getMessage());
+//        }
 
-        } catch (EmptySearchResultException e) {
-            model.addAttribute("searchResultMessage", e.getMessage());
-        }
+
+        List<Hit> hits = spectrumSearchService.search(querySpectrum, QueryParameters.getDefault());
+
+        model.addAttribute("hits", hits);
 
         model.addAttribute("querySpectrum", querySpectrum);
         model.addAttribute("form", form);

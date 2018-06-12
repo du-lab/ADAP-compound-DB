@@ -47,11 +47,9 @@
             <c:when test="${hits != null && hits.size() > 0}">
                 <table class="clickable">
                     <tr>
-                        <th>Confidence Level</th>
+                        <th>Score</th>
                         <th>Spectrum</th>
-                        <th>Precursor</th>
-                        <th>Retention Time</th>
-                        <%--<th>Submission</th>--%>
+                        <th>Submission</th>
                         <th>View</th>
                     </tr>
                     <c:forEach items="${hits}" var="hit" varStatus="status">
@@ -66,17 +64,15 @@
                                                         '${dulab:peaksToJson(hit.spectrum.peaks)}', '${hit.spectrum.name}',
                                                         '${score}');">
 
-                            <td>${hit.confidenceLevel.label}</td>
+                            <td>${score}</td>
                             <td>
                                 ${hit.spectrum.name}<br/>
-                                <small>${hit.spectrum.submission.name}</small>
+                                <small>${dulab:abbreviate(hit.spectrum.properties, 80)}</small>
                             </td>
-                            <td>${hit.spectrum.precursor}</td>
-                            <td>${hit.spectrum.retentionTime} min</td>
-                            <%--<td>--%>
-                                <%--${hit.spectrum.submission.name}<br/>--%>
-                                <%--<small>${hit.spectrum.submission.chromatographyType.label}</small>--%>
-                            <%--</td>--%>
+                            <td>
+                                ${hit.spectrum.submission.name}<br/>
+                                <small>${hit.spectrum.submission.chromatographyType.label}</small>
+                            </td>
                             <!--more horiz-->
                             <td><a href="/spectrum/${hit.spectrum.id}/"><i class="material-icons">&#xE5D3;</i></a></td>
                         </tr>

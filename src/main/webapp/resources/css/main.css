@@ -283,3 +283,19 @@ span.highlighted {
 .dark {background-color: #474853;}
 
 .gray-text {color: #f2f2f2;}
+
+.tooltip {
+    background: #ffffff;
+    box-shadow: 0 0 5px #000000;
+    color: #000000;
+    display: none;
+    font-size: 14px;
+    left: 130px;
+    opacity: 0.8;
+    padding: 10px;
+    position: absolute;
+    text-align: center;
+    top: 95px;
+    width: 80px;
+    z-index: 10;
+}
