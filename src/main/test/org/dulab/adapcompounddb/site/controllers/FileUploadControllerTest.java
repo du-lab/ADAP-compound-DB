@@ -2,6 +2,7 @@ package org.dulab.adapcompounddb.site.controllers;
 
 import junit.framework.TestCase;
 
+import org.apache.commons.io.IOUtils;
 import org.dulab.adapcompounddb.config.ServletContextConfiguration;
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.FileType;
@@ -15,17 +16,18 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.multipart.MultipartFile;
-import smile.feature.GAFeatureSelection;
 
-import java.io.Serializable;
+import java.io.File;
+import java.io.FileInputStream;
 
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
 
@@ -51,7 +53,7 @@ public class FileUploadControllerTest extends TestCase {
     public void SetUp() {
         mockMvc = MockMvcBuilders
                 .standaloneSetup(new FileUploadController(),
-                        new SubmissionController(submissionService,spectrumService))
+                        new SubmissionController(submissionService, spectrumService))
                 .setViewResolvers(
                         new ServletContextConfiguration(
                                 new LocalValidatorFactoryBean()).viewResolver())
@@ -75,37 +77,55 @@ public class FileUploadControllerTest extends TestCase {
     @Test
     public void loginPostTest() throws Exception {
 
-        // When login form is successfully submitted, and the credentials are verified the page is redirected to that Home page
-        when(file.getOriginalFilename()).thenReturn("filename.msp");
-        submission.setFileType(FileType.MSP);
-        submission.setChromatographyType(ChromatographyType.GAS);
-        submission.setFilename("filename.msp");
+        byte[] mspBytes = IOUtils.toByteArray(getClass().getResourceAsStream("msp.txt"));
 
+        // Correct file upload with a msp-file
         mockMvc.perform(
-                post("/file/upload/"))
-                        //.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        //.param("chromatographyType", "Gas Chromatography")
-                        //.param("fileType", "MSP: NIST text format of individual spectra"))
-                        //.param("file",))
+                multipart("/file/upload/")
+                        .file(new MockMultipartFile(
+                                "file",
+                                "filename.msp",
+                                "text/plain",
+                                mspBytes))
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .param("chromatographyType", ChromatographyType.GAS.name())
+                        .param("fileType", FileType.MSP.name()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlPattern("/file/*"));
 
+
+        // Incorrect file upload with non-msp file
+        mockMvc.perform(
+                multipart("/file/upload/")
+                        .file(new MockMultipartFile(
+                                "file",
+                                "filename.msp",
+                                "text/plain",
+                                "Non-msp".getBytes()))
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .param("chromatographyType", ChromatographyType.GAS.name())
+                        .param("fileType", FileType.MSP.name()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("file/upload"))
+                .andExpect(forwardedUrl("/WEB-INF/jsp/view/file/upload.jsp"))
+                .andExpect(model().attributeExists("message"));
+
         // When there are validation errors, we stay at the same page and display those errors
         mockMvc.perform(
-                post("/file/upload/")
-                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                multipart("/file/upload/")
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
                         .param("chromatographyType", "")
                         .param("fileType", "")
-                        .param("file",""))
+                        .param("file", ""))
                 .andExpect(status().isOk())
-                .andExpect(view().name("file/upload/"))
-                .andExpect(forwardedUrl("/WEB-INF/jsp/view/login.jsp"))
+                .andExpect(view().name("file/upload"))
+                .andExpect(forwardedUrl("/WEB-INF/jsp/view/file/upload.jsp"))
                 .andExpect(model().hasErrors())
-                .andExpect(model().errorCount(2));
+                .andExpect(model().errorCount(3));
     }
 
     @Test
-    public void fileUploadRedirectTest() throws Exception{
+    public void fileUploadRedirectTest() throws Exception {
         Submission.assign(mockHttpSession, submission);
 
         mockMvc.perform(get("/file/upload/").session(mockHttpSession))
