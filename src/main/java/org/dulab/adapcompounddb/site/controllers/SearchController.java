@@ -63,7 +63,6 @@ public class SearchController {
     @ModelAttribute
     public void addAttributes(Model model) {
         model.addAttribute("chromatographyTypes", ChromatographyType.values());
-        model.addAttribute("submissionCategoryIds", submissionService.getAllSubmissionCategories());
     }
 
 //    @PostConstruct

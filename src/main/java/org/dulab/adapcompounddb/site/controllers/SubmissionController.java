@@ -37,7 +37,6 @@ public class SubmissionController {
 
     @ModelAttribute
     public void addAttributes(Model model) {
-        model.addAttribute("submissionCategories", submissionService.getAllSubmissionCategories());
         model.addAttribute("sampleSourceTypeList", SampleSourceType.values());
     }
 

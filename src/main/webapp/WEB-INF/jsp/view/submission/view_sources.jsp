@@ -1,4 +1,4 @@
-<%--@elvariable id="species" type="java.util.List<org.dulab.adapcompounddb.site.controllers.SubmissionSpecimenController.SpecimenWithSubmissionCount>"--%>
+<%--@elvariable id="sources" type="java.util.List<org.dulab.adapcompounddb.site.controllers.SubmissionSourceController.SourceWithSubmissionCount>"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 <jsp:include page="/WEB-INF/jsp/includes/header.jsp"/>
@@ -7,35 +7,35 @@
 <!-- Start the middle column -->
 
 <section>
-    <h1>Species</h1>
+    <h1>Sources</h1>
     <div align="center">
-        <table id="species_table" class="display" style="width: 100%;">
+        <table id="sources_table" class="display" style="width: 100%;">
             <thead>
             <tr>
                 <th>Id</th>
-                <th>Specimen</th>
+                <th>Source</th>
                 <th>Description</th>
                 <th>Submissions</th>
                 <th>View/Delete</th>
             </tr>
             </thead>
             <tbody>
-            <c:forEach items="${species}" var="row">
+            <c:forEach items="${sources}" var="row">
                 <tr>
-                    <td>${row.specimen.id}</td>
-                    <td>${row.specimen.name}</td>
-                    <td>${dulab:abbreviate(row.specimen.description, 80)}</td>
+                    <td>${row.source.id}</td>
+                    <td>${row.source.name}</td>
+                    <td>${dulab:abbreviate(row.source.description, 80)}</td>
                     <td>${row.count}</td>
                     <!--more horiz-->
                     <td>
-                        <a href="${row.specimen.id}/"><i class="material-icons" title="View">&#xE5D3;</i></a>
-                        <a href="${row.specimen.id}/delete/"><i class="material-icons" title="View">delete</i></a>
+                        <a href="${row.source.id}/"><i class="material-icons" title="View">&#xE5D3;</i></a>
+                        <a href="${row.source.id}/delete/"><i class="material-icons" title="View">delete</i></a>
                     </td>
                 </tr>
             </c:forEach>
             </tbody>
         </table>
-        <a href="add/" class="button">Add new specimen...</a>
+        <a href="add/" class="button">Add new source...</a>
     </div>
 </section>
 
@@ -45,7 +45,7 @@
 <script src="<c:url value="/resources/js/DataTables/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
 <script>
     $(document).ready(function () {
-        $('#species_table').DataTable();
+        $('#sources_table').DataTable();
     });
 </script>
 

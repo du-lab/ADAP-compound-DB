@@ -96,10 +96,20 @@
                 <form:errors path="description" cssClass="errors"/><br/>
 
                 <form:label path="submissionSourceId">Source:</form:label><br/>
-                <form:select path="submissionSourceId">
-                    <form:option value="0" label="Please select..."/>
-                    <form:options items="${submissionForm.sources}" itemLabel="name" itemValue="id"/>
-                </form:select><br/>
+                <span style="vertical-align: bottom;">
+                    <form:select path="submissionSourceId">
+                        <form:option value="0" label="Please select..."/>
+                        <form:options items="${submissionForm.sources}" itemLabel="name" itemValue="id"/>
+                    </form:select><br/>
+                </span>
+                <a href="<c:url value="/sources/"/>">
+                    <!--list-->
+                    <i class="material-icons" title="Manage sources">&#xE896;</i>
+                </a>
+                <a href="<c:url value="/sources/add/"/>">
+                    <!--add circle-->
+                    <i class="material-icons" title="Add new source">&#xE147;</i>
+                </a><br/>
                 <form:errors path="submissionSourceId" cssClass="errors"/><br/>
 
                 <form:label path="submissionSpecimenId">Specimen:</form:label><br/>
@@ -111,11 +121,11 @@
                 </span>
                 <a href="<c:url value="/species/"/>">
                     <!--list-->
-                    <i class="material-icons" title="Manage categories">&#xE896;</i>
+                    <i class="material-icons" title="Manage species">&#xE896;</i>
                 </a>
                 <a href="<c:url value="/species/add/"/>">
                     <!--add circle-->
-                    <i class="material-icons" title="Add new category">&#xE147;</i>
+                    <i class="material-icons" title="Add new specimen">&#xE147;</i>
                 </a><br/>
                 <form:errors path="submissionSpecimenId" cssClass="errors"/><br/>
 

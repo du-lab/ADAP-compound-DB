@@ -65,44 +65,17 @@ public class SubmissionServiceImpl implements SubmissionService {
     }
 
     @Override
-    @Transactional
-    public long getSubmissionCountByCategory(long submissionCategoryId) {
-        return submissionRepository.countBySourceId(submissionCategoryId);
+    public List<SubmissionDisease> getAllDiseases() {
+        return ServiceUtils.toList(submissionDiseaseRepository.findAll());
     }
 
-    @Override
-    @Transactional
-    public void saveSubmissionCategory(SubmissionCategory submissionCategory) {
-        submissionCategoryRespository.save(submissionCategory);
-    }
-
-    @Override
-    @Transactional
-    public SubmissionCategory getSubmissionCategory(long submissionCategoryId) {
-        return submissionCategoryRespository.findById(submissionCategoryId)
-                .orElseThrow(() -> new IllegalStateException(
-                        "Cannot find Submission Category with ID = " + submissionCategoryId));
-    }
-
-    @Override
-    @Transactional
-    public List<SubmissionCategory> getAllSubmissionCategories() {
-        return ServiceUtils.toList(submissionCategoryRespository.findAll());
-    }
-
-    @Override
-    public List<SubmissionSource> getAllSources() {
-        return ServiceUtils.toList(submissionSourceRepository.findAll());
-    }
+    // ****************************************
+    // ***** SubmissionSpecimen functions *****
+    // ****************************************
 
     @Override
     public List<SubmissionSpecimen> getAllSpecies() {
         return ServiceUtils.toList(submissionSpecimenRepository.findAll());
-    }
-
-    @Override
-    public List<SubmissionDisease> getAllDiseases() {
-        return ServiceUtils.toList(submissionDiseaseRepository.findAll());
     }
 
     @Override
@@ -123,5 +96,34 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     public void deleteSubmissionSpecimen(long submissionSpecimenId) {
         submissionSpecimenRepository.deleteById(submissionSpecimenId);
+    }
+
+    // **************************************
+    // ***** SubmissionSource functions *****
+    // **************************************
+
+    @Override
+    public List<SubmissionSource> getAllSources() {
+        return ServiceUtils.toList(submissionSourceRepository.findAll());
+    }
+
+    @Override
+    public long countBySourceId(long submissionSourceId) {
+        return submissionRepository.countBySourceId(submissionSourceId);
+    }
+
+    @Override
+    public void saveSubmissionSource(SubmissionSource source) {
+        submissionSourceRepository.save(source);
+    }
+
+    @Override
+    public Optional<SubmissionSource> findSubmissionSource(long submissionSourceId) {
+        return submissionSourceRepository.findById(submissionSourceId);
+    }
+
+    @Override
+    public void deleteSubmissionSource(long submissionSourceId) {
+        submissionSourceRepository.deleteById(submissionSourceId);
     }
 }
