@@ -39,6 +39,44 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SpectrumCluster` (
 
 
 -- -----------------------------------------------------
+-- Table `adapcompounddb`.`SubmissionDisease`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SubmissionDisease` (
+  `Id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `Name` TEXT NOT NULL,
+  `Description` TEXT NULL DEFAULT NULL,
+  PRIMARY KEY (`Id`))
+  ENGINE = InnoDB
+  DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `adapcompounddb`.`SubmissionSource`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SubmissionSource` (
+  `Id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `Name` TEXT NOT NULL,
+  `Description` TEXT NULL DEFAULT NULL,
+  PRIMARY KEY (`Id`))
+  ENGINE = InnoDB
+  AUTO_INCREMENT = 2
+  DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `adapcompounddb`.`SubmissionSpecimen`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SubmissionSpecimen` (
+  `Id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `Name` TEXT NOT NULL,
+  `Description` TEXT NULL DEFAULT NULL,
+  PRIMARY KEY (`Id`))
+  ENGINE = InnoDB
+  AUTO_INCREMENT = 8
+  DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
 -- Table `adapcompounddb`.`UserPrincipal`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `adapcompounddb`.`UserPrincipal` (
@@ -54,50 +92,37 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`UserPrincipal` (
 
 
 -- -----------------------------------------------------
--- Table `adapcompounddb`.`SubmissionCategory`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SubmissionCategory` (
-  `Id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `Name` VARCHAR(200) NOT NULL,
-  `Description` TEXT NOT NULL,
-  `UserPrincipalId` BIGINT(20) UNSIGNED NOT NULL,
-  PRIMARY KEY (`Id`),
-  INDEX `SubmissionCategory_UserPrincipal_Id_fk` (`UserPrincipalId` ASC),
-  CONSTRAINT `SubmissionCategory_UserPrincipal_Id_fk`
-  FOREIGN KEY (`UserPrincipalId`)
-  REFERENCES `adapcompounddb`.`UserPrincipal` (`Id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE)
-  ENGINE = InnoDB
-  DEFAULT CHARACTER SET = latin1;
-
-
--- -----------------------------------------------------
 -- Table `adapcompounddb`.`Submission`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Submission` (
   `Id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `Name` VARCHAR(60) NOT NULL,
-  `Description` TEXT NOT NULL,
+  `Name` TEXT NOT NULL,
+  `Description` TEXT NULL DEFAULT NULL,
   `DateTime` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `Filename` VARCHAR(100) NOT NULL,
+  `Filename` TEXT NOT NULL,
   `FileType` VARCHAR(30) NOT NULL,
   `File` LONGBLOB NOT NULL,
   `ChromatographyType` VARCHAR(30) NOT NULL,
-  `SampleSourceType` VARCHAR(30) NOT NULL,
-  `SubmissionCategoryId` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
   `UserPrincipalId` BIGINT(20) UNSIGNED NOT NULL,
+  `SourceId` BIGINT(20) UNSIGNED NOT NULL,
+  `SpecimenId` BIGINT(20) UNSIGNED NOT NULL,
+  `DiseaseId` BIGINT(20) UNSIGNED NOT NULL,
   PRIMARY KEY (`Id`),
   INDEX `Submission_DateTime_Id_index` (`DateTime` ASC, `Id` ASC),
   INDEX `Submission_UserPrincipalId_index` (`UserPrincipalId` ASC),
-  INDEX `Submission_SubmissionCategory_Id_fk` (`SubmissionCategoryId` ASC),
   INDEX `Submission_ChromatographyType_index` (`ChromatographyType` ASC),
-  INDEX `Submission_SampleSourceType_index` (`SampleSourceType` ASC),
-  CONSTRAINT `Submission_SubmissionCategory_Id_fk`
-  FOREIGN KEY (`SubmissionCategoryId`)
-  REFERENCES `adapcompounddb`.`SubmissionCategory` (`Id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
+  INDEX `Submission_SubmissionSource_Id_fk_idx` (`SourceId` ASC),
+  INDEX `Submission_SubmissionSpecimen_Id_fk_idx` (`SpecimenId` ASC),
+  INDEX `Submission_SubmissionDesease_Id_fk_idx` (`DiseaseId` ASC),
+  CONSTRAINT `Submission_SubmissionDesease_Id_fk`
+  FOREIGN KEY (`DiseaseId`)
+  REFERENCES `adapcompounddb`.`SubmissionDisease` (`Id`),
+  CONSTRAINT `Submission_SubmissionSource_Id_fk`
+  FOREIGN KEY (`SourceId`)
+  REFERENCES `adapcompounddb`.`SubmissionSource` (`Id`),
+  CONSTRAINT `Submission_SubmissionSpecimen_Id_fk`
+  FOREIGN KEY (`SpecimenId`)
+  REFERENCES `adapcompounddb`.`SubmissionSpecimen` (`Id`),
   CONSTRAINT `Submission_UserPrincipal_Id_fk`
   FOREIGN KEY (`UserPrincipalId`)
   REFERENCES `adapcompounddb`.`UserPrincipal` (`Id`)
@@ -204,6 +229,25 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SpectrumProperty` (
   ENGINE = InnoDB
   AUTO_INCREMENT = 12671
   DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `adapcompounddb`.`SubmissionCategory`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SubmissionCategory` (
+  `Id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `Name` VARCHAR(200) NOT NULL,
+  `Description` TEXT NOT NULL,
+  `UserPrincipalId` BIGINT(20) UNSIGNED NOT NULL,
+  PRIMARY KEY (`Id`),
+  INDEX `SubmissionCategory_UserPrincipal_Id_fk` (`UserPrincipalId` ASC),
+  CONSTRAINT `SubmissionCategory_UserPrincipal_Id_fk`
+  FOREIGN KEY (`UserPrincipalId`)
+  REFERENCES `adapcompounddb`.`UserPrincipal` (`Id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+  ENGINE = InnoDB
+  DEFAULT CHARACTER SET = latin1;
 
 
 -- -----------------------------------------------------
