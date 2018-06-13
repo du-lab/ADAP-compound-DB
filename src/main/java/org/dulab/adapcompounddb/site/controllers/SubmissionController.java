@@ -1,7 +1,6 @@
 package org.dulab.adapcompounddb.site.controllers;
 
-import org.dulab.adapcompounddb.models.entities.Submission;
-import org.dulab.adapcompounddb.models.entities.UserPrincipal;
+import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.dulab.adapcompounddb.validation.NotBlank;
@@ -19,9 +18,9 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 @Controller
-//@ControllerAdvice
 public class SubmissionController {
 
     private final SubmissionService submissionService;
@@ -71,11 +70,13 @@ public class SubmissionController {
 
         model.addAttribute("submission", submission);
 
-        SubmissionForm form = new SubmissionForm();
+        SubmissionForm form = new SubmissionForm(
+                submissionService.getAllSources(),
+                submissionService.getAllSpecies(),
+                submissionService.getAllDiseases());
+
         form.setName(submission.getName());
         form.setDescription(submission.getDescription());
-        form.setSampleSourceType(submission.getSampleSourceType());
-        form.setSubmissionCategoryId(submission.getCategory() == null ? 0 : submission.getCategory().getId());
         model.addAttribute("submissionForm", form);
 
         return "file/view";
@@ -191,10 +192,9 @@ public class SubmissionController {
 
         submission.setName(form.getName());
         submission.setDescription(form.getDescription());
-        submission.setSampleSourceType(form.getSampleSourceType());
         submission.setDateTime(new Date());
-        if (form.getSubmissionCategoryId() != 0)
-            submission.setCategory(submissionService.getSubmissionCategory(form.getSubmissionCategoryId()));
+//        if (form.getSubmissionSourceId() != 0)
+//            submission.setSource(submissionService.getSubmissionSource(form.getSubmissionSourceId()));
 
         try {
             submissionService.saveSubmission(submission);
@@ -233,10 +233,24 @@ public class SubmissionController {
         @NotBlank(message = "The field Description is required.")
         private String description;
 
-        @NotNull(message = "The field Sample Source Type is required.")
-        private SampleSourceType sampleSourceType;
+        private Long submissionSourceId;
 
-        private long submissionCategoryId;
+        private Long submissionSpecimenId;
+
+        private Long submissionDiseaseId;
+
+        private final List<SubmissionSource> sources;
+        private final List<SubmissionSpecimen> species;
+        private final List<SubmissionDisease> diseases;
+
+        public SubmissionForm(List<SubmissionSource> sources,
+                              List<SubmissionSpecimen> species,
+                              List<SubmissionDisease> diseases) {
+
+            this.sources = sources;
+            this.species = species;
+            this.diseases = diseases;
+        }
 
         public String getName() {
             return name;
@@ -254,20 +268,40 @@ public class SubmissionController {
             this.description = description;
         }
 
-        public SampleSourceType getSampleSourceType() {
-            return sampleSourceType;
+        public Long getSubmissionSourceId() {
+            return submissionSourceId;
         }
 
-        public void setSampleSourceType(SampleSourceType sampleSourceType) {
-            this.sampleSourceType = sampleSourceType;
+        public void setSubmissionSourceId(Long submissionSourceId) {
+            this.submissionSourceId = submissionSourceId;
         }
 
-        public long getSubmissionCategoryId() {
-            return submissionCategoryId;
+        public Long getSubmissionSpecimenId() {
+            return submissionSpecimenId;
         }
 
-        public void setSubmissionCategoryId(long submissionCategoryId) {
-            this.submissionCategoryId = submissionCategoryId;
+        public void setSubmissionSpecimenId(Long submissionSpecimenId) {
+            this.submissionSpecimenId = submissionSpecimenId;
+        }
+
+        public Long getSubmissionDiseaseId() {
+            return submissionDiseaseId;
+        }
+
+        public void setSubmissionDiseaseId(Long submissionDiseaseId) {
+            this.submissionDiseaseId = submissionDiseaseId;
+        }
+
+        public List<SubmissionSource> getSources() {
+            return sources;
+        }
+
+        public List<SubmissionSpecimen> getSpecies() {
+            return species;
+        }
+
+        public List<SubmissionDisease> getDiseases() {
+            return diseases;
         }
     }
 }

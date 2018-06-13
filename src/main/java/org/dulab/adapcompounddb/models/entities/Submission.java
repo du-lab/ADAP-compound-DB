@@ -2,7 +2,6 @@ package org.dulab.adapcompounddb.models.entities;
 
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.FileType;
-import org.dulab.adapcompounddb.models.SampleSourceType;
 import org.dulab.adapcompounddb.validation.NotBlank;
 
 import javax.persistence.*;
@@ -29,7 +28,6 @@ public class Submission implements Serializable {
     @NotBlank(message = "The field Name is required.")
     private String name;
 
-    @NotBlank(message = "The field Description is required.")
     private String description;
 
     @NotNull(message = "Date/Time of submission is required.")
@@ -47,16 +45,20 @@ public class Submission implements Serializable {
     @NotNull(message = "Chromatography type is required.")
     private ChromatographyType chromatographyType;
 
-    @NotNull(message = "Sample source type is required.")
-    private SampleSourceType sampleSourceType;
+    @Valid
+    private SubmissionSource source;
 
-    private SubmissionCategory category;
+    @Valid
+    private SubmissionSpecimen specimen;
 
-    @NotNull (message = "Spectrum list is required.")
+    @Valid
+    private SubmissionDisease disease;
+
+    @NotNull(message = "Spectrum list is required.")
     @Valid
     private List<Spectrum> spectra;
 
-    @NotNull (message = "You must log in to submit mass spectra to the library.")
+    @NotNull(message = "You must log in to submit mass spectra to the library.")
     @Valid
     private UserPrincipal user;
 
@@ -99,23 +101,34 @@ public class Submission implements Serializable {
         this.chromatographyType = chromatographyType;
     }
 
-    @Enumerated(EnumType.STRING)
-    public SampleSourceType getSampleSourceType() {
-        return sampleSourceType;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "SourceId", referencedColumnName = "Id")
+    public SubmissionSource getSource() {
+        return source;
     }
 
-    public void setSampleSourceType(SampleSourceType sampleSourceType) {
-        this.sampleSourceType = sampleSourceType;
+    public void setSource(SubmissionSource source) {
+        this.source = source;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "SubmissionCategoryId", referencedColumnName = "Id")
-    public SubmissionCategory getCategory() {
-        return category;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "SpecimenId", referencedColumnName = "Id")
+    public SubmissionSpecimen getSpecimen() {
+        return specimen;
     }
 
-    public void setCategory(SubmissionCategory category) {
-        this.category = category;
+    public void setSpecimen(SubmissionSpecimen specimen) {
+        this.specimen = specimen;
+    }
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "DiseaseId", referencedColumnName = "Id")
+    public SubmissionDisease getDisease() {
+        return disease;
+    }
+
+    public void setDisease(SubmissionDisease disease) {
+        this.disease = disease;
     }
 
     @OneToMany(

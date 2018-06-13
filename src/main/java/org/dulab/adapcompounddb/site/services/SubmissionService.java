@@ -1,12 +1,12 @@
 package org.dulab.adapcompounddb.site.services;
 
-import org.dulab.adapcompounddb.models.entities.Submission;
-import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
+import org.dulab.adapcompounddb.models.entities.*;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Optional;
 
 @Validated
 public interface SubmissionService {
@@ -30,4 +30,18 @@ public interface SubmissionService {
     SubmissionCategory getSubmissionCategory(long submissionCategoryId);
 
     List<SubmissionCategory> getAllSubmissionCategories();
+
+    List<SubmissionSource> getAllSources();
+
+    List<SubmissionSpecimen> getAllSpecies();
+
+    List<SubmissionDisease> getAllDiseases();
+
+    long countBySpecimenId(long submissionSpecimenId);
+
+    Optional<SubmissionSpecimen> findSubmissionSpecimen(long submissionSpecimenId);
+
+    void saveSubmissionSpecimen(SubmissionSpecimen specimen);
+
+    void deleteSubmissionSpecimen(long submissionSpecimenId);
 }

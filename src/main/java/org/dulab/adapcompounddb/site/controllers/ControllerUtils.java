@@ -75,7 +75,7 @@ public class ControllerUtils {
                                         .stream()
                                         .map(Spectrum::getSubmission)
                                         .filter(Objects::nonNull)
-                                        .filter(s -> s.getSampleSourceType() == type)
+//                                        .filter(s -> s.getSource() == type)
                                         .count())
                                 .build()));
 

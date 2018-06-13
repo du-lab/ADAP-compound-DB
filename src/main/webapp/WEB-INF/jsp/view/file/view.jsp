@@ -95,29 +95,36 @@
                 <form:textarea path="description" rows="12" cols="80"/><br/>
                 <form:errors path="description" cssClass="errors"/><br/>
 
-                <form:label path="sampleSourceType">Sample Source Type:</form:label><br/>
-                <form:select path="sampleSourceType">
-                    <form:option value="" label="Please select..."/>
-                    <form:options items="${sampleSourceTypeList}" itemLabel="label"/>
+                <form:label path="submissionSourceId">Source:</form:label><br/>
+                <form:select path="submissionSourceId">
+                    <form:option value="0" label="Please select..."/>
+                    <form:options items="${submissionForm.sources}" itemLabel="name" itemValue="id"/>
                 </form:select><br/>
-                <form:errors path="sampleSourceType" cssClass="errors"/><br/>
+                <form:errors path="submissionSourceId" cssClass="errors"/><br/>
 
-                <form:label path="submissionCategoryId">Submission Category</form:label><br/>
+                <form:label path="submissionSpecimenId">Specimen:</form:label><br/>
                 <span style="vertical-align: bottom;">
-                    <form:select path="submissionCategoryId">
-                        <form:option value="0" label="--- Select ---"/>
-                        <form:options items="${submissionCategories}" itemValue="id"/>
-                    </form:select>
+                    <form:select path="submissionSpecimenId">
+                        <form:option value="0" label="Please select..."/>
+                        <form:options items="${submissionForm.species}" itemLabel="name" itemValue="id"/>
+                    </form:select><br/>
                 </span>
-                <a href="<c:url value="/submissioncategory/"/>">
+                <a href="<c:url value="/species/"/>">
                     <!--list-->
                     <i class="material-icons" title="Manage categories">&#xE896;</i>
                 </a>
-                <a href="<c:url value="/submissioncategory/add/"/>">
+                <a href="<c:url value="/species/add/"/>">
                     <!--add circle-->
                     <i class="material-icons" title="Add new category">&#xE147;</i>
                 </a><br/>
-                <form:errors path="submissionCategoryId" cssClass="errors"/>
+                <form:errors path="submissionSpecimenId" cssClass="errors"/><br/>
+
+                <form:label path="submissionDiseaseId">Source:</form:label><br/>
+                <form:select path="submissionDiseaseId">
+                    <form:option value="0" label="Please select..."/>
+                    <form:options items="${submissionForm.diseases}" itemLabel="name" itemValue="id"/>
+                </form:select><br/>
+                <form:errors path="submissionDiseaseId" cssClass="errors"/><br/>
 
 
 
