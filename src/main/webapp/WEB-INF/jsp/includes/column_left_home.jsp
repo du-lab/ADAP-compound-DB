@@ -15,5 +15,3 @@
         </ul>
     </nav>
 </aside>
-
-<article>

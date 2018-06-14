@@ -6,8 +6,27 @@
 
 <jsp:include page="/WEB-INF/jsp/includes/header.jsp" />
 <jsp:include page="/WEB-INF/jsp/includes/column_left_home.jsp" />
+<jsp:include page="/WEB-INF/jsp/includes/footer.jsp" />
 
 <!-- Start the middle column -->
+<form:form method="post" modelAttribute="logInForm" class="form-signin">
+    <h2 class="form-signin-heading">Please sign in</h2>
+    <h3>You must log in to submit new mass spectra to the library.</h3>
+    <form:label path="username">Username:</form:label>
+    <form:input path="username"/><br/>
+    <form:errors path="username" cssClass="errors"/><br/>
+    <input type="text" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
+    <label for="inputPassword" class="sr-only">Password</label>
+    <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" value="remember-me"> Remember me
+        </label>
+    </div>
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+</form:form>
+
+</div>
 
 <section>
     <h1>Log-in</h1>
