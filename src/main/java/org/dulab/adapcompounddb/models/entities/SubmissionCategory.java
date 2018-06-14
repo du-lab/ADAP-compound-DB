@@ -1,79 +1,13 @@
 package org.dulab.adapcompounddb.models.entities;
 
-import org.dulab.adapcompounddb.validation.NotBlank;
+public interface SubmissionCategory {
 
-import javax.persistence.*;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.io.Serializable;
+    long getId();
+    void setId(long id);
 
-@Entity
-public class SubmissionCategory implements Serializable {
+    String getName();
+    void setName(String name);
 
-    private static final long serialVersionUID = 1L;
-
-    private long id;
-
-    @NotBlank(message = "The field Name is required.")
-    private String name;
-
-    @NotBlank(message = "The field Description is required.")
-    private String description;
-
-    @NotNull(message = "You must log in to create a new category.")
-    @Valid
-    protected UserPrincipal user;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "UserPrincipalId", referencedColumnName = "Id")
-    public UserPrincipal getUser() {
-        return user;
-    }
-
-    public void setUser(UserPrincipal user) {
-        this.user = user;
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        if (!(other instanceof SubmissionCategory)) return false;
-        return id == ((SubmissionCategory) other).id;
-    }
-
-    @Override
-    public int hashCode() {
-        return Long.hashCode(id);
-    }
-
-    @Override
-    public String toString() {
-        return name;
-    }
+    String getDescription();
+    void setDescription(String description);
 }

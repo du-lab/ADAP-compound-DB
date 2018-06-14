@@ -9,7 +9,7 @@ import javax.persistence.Id;
 import java.io.Serializable;
 
 @Entity
-public class SubmissionSource implements Serializable {
+public class SubmissionSource implements Serializable, SubmissionCategory {
 
     private static final long serialVersionUID = 1L;
 
@@ -20,29 +20,47 @@ public class SubmissionSource implements Serializable {
 
     private String description;
 
+    @Override
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public long getId() {
         return id;
     }
 
+    @Override
     public void setId(long id) {
         this.id = id;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (!(other instanceof SubmissionSource)) return false;
+        return id == ((SubmissionSource) other).id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(id);
     }
 }

@@ -4,8 +4,10 @@ import org.dulab.adapcompounddb.models.SampleSourceType;
 import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
+import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
 
 import javax.json.*;
+import javax.validation.constraints.NotBlank;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -95,5 +97,50 @@ public class ControllerUtils {
 
     public static int toIntegerScore(float score) {
         return Math.round(1000 * score);
+    }
+
+
+    public static class CategoryForm {
+
+        @NotBlank(message = "The field Name is required")
+        private String name;
+
+        private String description;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+    }
+
+
+    public static class CategoryWithSubmissionCount {
+
+        private final SubmissionCategory category;
+        private final long count;
+
+        private CategoryWithSubmissionCount(SubmissionCategory category, long count) {
+            this.category = category;
+            this.count = count;
+        }
+
+        public SubmissionCategory getCategory() {
+            return category;
+        }
+
+        public long getCount() {
+            return count;
+        }
     }
 }

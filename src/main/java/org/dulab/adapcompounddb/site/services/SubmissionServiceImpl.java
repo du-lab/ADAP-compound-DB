@@ -14,20 +14,17 @@ import java.util.Optional;
 public class SubmissionServiceImpl implements SubmissionService {
 
     private final SubmissionRepository submissionRepository;
-    private final SubmissionCategoryRespository submissionCategoryRespository;
     private final SubmissionSourceRepository submissionSourceRepository;
     private final SubmissionSpecimenRepository submissionSpecimenRepository;
     private final SubmissionDiseaseRepository submissionDiseaseRepository;
 
     @Autowired
     public SubmissionServiceImpl(SubmissionRepository submissionRepository,
-                                 SubmissionCategoryRespository submissionCategoryRespository,
                                  SubmissionSourceRepository submissionSourceRepository,
                                  SubmissionSpecimenRepository submissionSpecimenRepository,
                                  SubmissionDiseaseRepository submissionDiseaseRepository) {
 
         this.submissionRepository = submissionRepository;
-        this.submissionCategoryRespository = submissionCategoryRespository;
         this.submissionSourceRepository = submissionSourceRepository;
         this.submissionSpecimenRepository = submissionSpecimenRepository;
         this.submissionDiseaseRepository = submissionDiseaseRepository;

@@ -9,7 +9,7 @@ import javax.persistence.Id;
 import java.io.Serializable;
 
 @Entity
-public class SubmissionSpecimen implements Serializable {
+public class SubmissionSpecimen implements Serializable, SubmissionCategory {
 
     private static final long serialVersionUID = 1L;
 
@@ -20,28 +20,34 @@ public class SubmissionSpecimen implements Serializable {
 
     private String description;
 
+    @Override
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public long getId() {
         return id;
     }
 
+    @Override
     public void setId(long id) {
         this.id = id;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public void setDescription(String description) {
         this.description = description;
     }

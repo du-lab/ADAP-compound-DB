@@ -24,8 +24,6 @@ public interface SubmissionService {
     void delete(long submissionId);
 
 
-    List<SubmissionDisease> getAllDiseases();
-
     // ****************************************
     // ***** SubmissionSpecimen functions *****
     // ****************************************
@@ -53,4 +51,18 @@ public interface SubmissionService {
     void saveSubmissionSource(SubmissionSource source);
 
     void deleteSubmissionSource(long submissionSourceId);
+
+    // ***************************************
+    // ***** SubmissionDisease functions *****
+    // ***************************************
+
+    List<SubmissionDisease> getAllDiseases();
+
+    long countByDiseaseId(long submissionDiseaseId);
+
+    Optional<SubmissionDisease> findSubmissionDisease(long submissionDiseaseId);
+
+    void saveSubmissionDisease(SubmissionDisease disease);
+
+    void deleteSubmissionDisease(long submissionDiseaseId);
 }
