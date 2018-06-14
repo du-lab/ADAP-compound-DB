@@ -65,6 +65,7 @@
             <th>Sources</th>
             <th>Species</th>
             <th>Diseases</th>
+            <th>View</th>
         </tr>
         </thead>
         <tbody>
@@ -77,6 +78,7 @@
                 <td>${spectrum.submission.source.name}</td>
                 <td>${spectrum.submission.specimen.name}</td>
                 <td>${spectrum.submission.disease.name}</td>
+                <td><a href="/spectrum/${spectrum.id}/"><i class="material-icons" title="View">&#xE5D3;</i></a></td>
             </tr>
         </c:forEach>
         </tbody>

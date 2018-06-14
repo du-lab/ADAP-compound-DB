@@ -5,14 +5,17 @@ function TwoSpectraPlot(divId, topSpectrum) {
     var label_offset = 40;
     var padding = {'top': 40, 'right': 40, 'bottom': 240, 'left': 40};
 
+    var tooltip = d3.select('#' + divId)
+        .append('div')
+        .attr('class', 'tooltip');
+
+    tooltip.append('div').attr('class', 'mz');
+    tooltip.append('div').attr('class', 'intensity');
+
     var xScale = d3.scaleLinear()
         .domain([
-            d3.min(topSpectrum.peaks, function (d) {
-                return d.mz
-            }),
-            d3.max(topSpectrum.peaks, function (d) {
-                return d.mz
-            })
+            d3.min(topSpectrum.peaks, function (d) {return d.mz}),
+            d3.max(topSpectrum.peaks, function (d) {return d.mz})
         ])
         .range([padding['left'], width - padding['right']]);
 
@@ -25,9 +28,7 @@ function TwoSpectraPlot(divId, topSpectrum) {
         .attr('width', width)
         .attr('height', height);
 
-    var key = function (d) {
-        return Math.round(d.mz);
-    };
+    var key = function (d) {return Math.round(d.mz);};
 
     var addPeaks = function (peaks, top) {
 
@@ -36,12 +37,10 @@ function TwoSpectraPlot(divId, topSpectrum) {
 
         return peaks.append('line')
             .attr('class', top ? 'top' : 'bottom')
-            .attr('x1', function (d) {
-                return xScale(d.mz);
-            })
-            .attr('x2', function (d) {
-                return xScale(d.mz);
-            })
+            .attr('data-mz', function(d) {return Math.round(100 * d.mz) / 100;})
+            .attr('data-intensity', function(d) {return Math.round(100 * d.intensity) / 100;})
+            .attr('x1', function (d) {return xScale(d.mz);})
+            .attr('x2', function (d) {return xScale(d.mz);})
             .attr('y1', yScale(0))
             .attr('y2', yScale(0))
             .attr('stroke', top ? 'blue' : 'red')
@@ -49,16 +48,20 @@ function TwoSpectraPlot(divId, topSpectrum) {
             .on('mouseover', function () {
                 var peak = d3.select(this);
                 peak.attr('stroke', 'orange');
-                svg.select('#tooltip')
-                    .text(peak.attr('x2') + ' ' + peak.attr('y2'));
+                tooltip.select('.mz').html('M/z = ' + peak.attr('data-mz'));
+                tooltip.select('.intensity').html('Int = ' + peak.attr('data-intensity'));
+                tooltip.style('display', 'block');
             })
             .on('mouseout', function () {
                 d3.select(this)
                     .transition()
                     .duration(250)
                     .attr('stroke', top ? 'blue' : 'red');
-                svg.select('#toolip')
-                    .text('');
+                tooltip.style('display', 'none');
+            })
+            .on('mousemove', function() {
+                tooltip.style('top', (d3.event.layerY + 10) + 'px')
+                    .style('left', (d3.event.layerX + 10) + 'px');
             })
             .transition()
             .attr('y2', function (d) {
