@@ -1,5 +1,7 @@
 package org.dulab.adapcompounddb.models.entities;
 
+import org.dulab.adapcompounddb.models.SubmissionCategory;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;

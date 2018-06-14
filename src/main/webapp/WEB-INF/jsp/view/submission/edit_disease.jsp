@@ -8,7 +8,7 @@
 <!-- Start the middle column -->
 
 <section>
-    <h1>Edit Source</h1>
+    <h1>Edit Disease</h1>
     <div align="center">
         <div align="left" class="subsection">
             <c:if test="${validationErrors != null}">

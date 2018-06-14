@@ -33,9 +33,9 @@ public class SubmissionSpecimenController {
     @RequestMapping(value = "/species/", method = RequestMethod.GET)
     public String view(Model model) {
 
-        List<SpecimenWithSubmissionCount> species = submissionService.getAllSpecies()
+        List<ControllerUtils.CategoryWithSubmissionCount> species = submissionService.getAllSpecies()
                 .stream()
-                .map(s -> new SpecimenWithSubmissionCount(
+                .map(s -> new ControllerUtils.CategoryWithSubmissionCount(
                         s,
                         submissionService.countBySpecimenId(s.getId())))
                 .collect(Collectors.toList());
@@ -47,12 +47,12 @@ public class SubmissionSpecimenController {
     @RequestMapping(value = "/species/add/", method = RequestMethod.GET)
     public String add(HttpSession session, Model model, @RequestHeader(value = "referer") String referer) {
         session.setAttribute(SESSION_ATTRIBUTE_REDIRECT_URL, referer);
-        model.addAttribute("form", new Form());
+        model.addAttribute("categoryForm", new ControllerUtils.CategoryForm());
         return "submission/edit_specimen";
     }
 
     @RequestMapping(value = "/species/add", method = RequestMethod.POST)
-    public String add(HttpSession session, Model model, @Valid Form form, Errors errors) {
+    public String add(HttpSession session, Model model, @Valid ControllerUtils.CategoryForm form, Errors errors) {
         if (errors.hasErrors())
             return "submission/edit_specimen";
 
@@ -70,16 +70,18 @@ public class SubmissionSpecimenController {
 
         session.setAttribute(SESSION_ATTRIBUTE_REDIRECT_URL, referer);
 
-        Form form = new Form();
+        ControllerUtils.CategoryForm form = new ControllerUtils.CategoryForm();
         form.setName(specimen.getName());
         form.setDescription(specimen.getDescription());
-        model.addAttribute("form", form);
+        model.addAttribute("categoryForm", form);
 
         return "submission/edit_specimen";
     }
 
     @RequestMapping(value = "/species/{id:\\d+}/", method = RequestMethod.POST)
-    public String edit(@PathVariable("id") long id, HttpSession session, Model model, @Valid Form form, Errors errors) {
+    public String edit(@PathVariable("id") long id, HttpSession session, Model model,
+                       @Valid ControllerUtils.CategoryForm form, Errors errors) {
+
         if (errors.hasErrors())
             return "submission/edit_specimen";
 
@@ -92,7 +94,7 @@ public class SubmissionSpecimenController {
     }
 
 
-    public String save(HttpSession session, Model model, SubmissionSpecimen specimen, Form form) {
+    public String save(HttpSession session, Model model, SubmissionSpecimen specimen, ControllerUtils.CategoryForm form) {
 
         specimen.setName(form.getName());
         specimen.setDescription(form.getDescription());
@@ -116,50 +118,5 @@ public class SubmissionSpecimenController {
     public String delete(@PathVariable("id") long id, @RequestHeader(value = "referer") String referer) {
         submissionService.deleteSubmissionSpecimen(id);
         return "redirect:" + referer;
-    }
-
-
-    public static class Form {
-
-        @NotBlank(message = "The field Name is required")
-        private String name;
-
-        private String description;
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-
-        public void setDescription(String description) {
-            this.description = description;
-        }
-    }
-
-
-    public static class SpecimenWithSubmissionCount {
-
-        private final SubmissionSpecimen specimen;
-        private final long count;
-
-        private SpecimenWithSubmissionCount(SubmissionSpecimen specimen, long count) {
-            this.specimen = specimen;
-            this.count = count;
-        }
-
-        public SubmissionSpecimen getSpecimen() {
-            return specimen;
-        }
-
-        public long getCount() {
-            return count;
-        }
     }
 }

@@ -61,10 +61,6 @@ public class SubmissionServiceImpl implements SubmissionService {
         submissionRepository.deleteById(submissionId);
     }
 
-    @Override
-    public List<SubmissionDisease> getAllDiseases() {
-        return ServiceUtils.toList(submissionDiseaseRepository.findAll());
-    }
 
     // ****************************************
     // ***** SubmissionSpecimen functions *****
@@ -122,5 +118,34 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     public void deleteSubmissionSource(long submissionSourceId) {
         submissionSourceRepository.deleteById(submissionSourceId);
+    }
+
+    // ***************************************
+    // ***** SubmissionDisease functions *****
+    // **************************************(
+
+    @Override
+    public List<SubmissionDisease> getAllDiseases() {
+        return ServiceUtils.toList(submissionDiseaseRepository.findAll());
+    }
+
+    @Override
+    public long countByDiseaseId(long submissionDiseaseId) {
+        return submissionRepository.countByDiseaseId(submissionDiseaseId);
+    }
+
+    @Override
+    public void saveSubmissionDisease(SubmissionDisease disease) {
+        submissionDiseaseRepository.save(disease);
+    }
+
+    @Override
+    public Optional<SubmissionDisease> findSubmissionDisease(long submissionDiseaseId) {
+        return submissionDiseaseRepository.findById(submissionDiseaseId);
+    }
+
+    @Override
+    public void deleteSubmissionDisease(long submissionDiseaseId) {
+        submissionDiseaseRepository.deleteById(submissionDiseaseId);
     }
 }

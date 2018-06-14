@@ -1,4 +1,4 @@
-<%--@elvariable id="species" type="java.util.List<org.dulab.adapcompounddb.site.controllers.SubmissionSpecimenController.SpecimenWithSubmissionCount>"--%>
+<%--@elvariable id="species" type="java.util.List<org.dulab.adapcompounddb.site.controllers.ControllerUtils.CategoryWithSubmissionCount>"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 <jsp:include page="/WEB-INF/jsp/includes/header.jsp"/>
@@ -20,16 +20,16 @@
             </tr>
             </thead>
             <tbody>
-            <c:forEach items="${species}" var="row">
+            <c:forEach items="${species}" var="specimen">
                 <tr>
-                    <td>${row.specimen.id}</td>
-                    <td>${row.specimen.name}</td>
-                    <td>${dulab:abbreviate(row.specimen.description, 80)}</td>
-                    <td>${row.count}</td>
+                    <td>${specimen.category.id}</td>
+                    <td>${specimen.category.name}</td>
+                    <td>${dulab:abbreviate(specimen.category.description, 80)}</td>
+                    <td>${specimen.count}</td>
                     <!--more horiz-->
                     <td>
-                        <a href="${row.specimen.id}/"><i class="material-icons" title="View">&#xE5D3;</i></a>
-                        <a href="${row.specimen.id}/delete/"><i class="material-icons" title="View">delete</i></a>
+                        <a href="${specimen.category.id}/"><i class="material-icons" title="View">&#xE5D3;</i></a>
+                        <a href="${specimen.category.id}/delete/"><i class="material-icons" title="View">delete</i></a>
                     </td>
                 </tr>
             </c:forEach>

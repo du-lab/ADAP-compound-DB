@@ -4,7 +4,7 @@ import org.dulab.adapcompounddb.models.SampleSourceType;
 import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
-import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
+import org.dulab.adapcompounddb.models.SubmissionCategory;
 
 import javax.json.*;
 import javax.validation.constraints.NotBlank;
@@ -130,7 +130,7 @@ public class ControllerUtils {
         private final SubmissionCategory category;
         private final long count;
 
-        private CategoryWithSubmissionCount(SubmissionCategory category, long count) {
+        CategoryWithSubmissionCount(SubmissionCategory category, long count) {
             this.category = category;
             this.count = count;
         }

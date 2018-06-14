@@ -1,4 +1,4 @@
-package org.dulab.adapcompounddb.models.entities;
+package org.dulab.adapcompounddb.models;
 
 public interface SubmissionCategory {
 

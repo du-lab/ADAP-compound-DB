@@ -1,4 +1,4 @@
-<%--@elvariable id="form" type="org.dulab.adapcompounddb.models.entities.SubmissionSpecimen.Form"--%>
+<%--@elvariable id="categoryForm" type="org.dulab.adapcompounddb.site.controllers.ControllerUtils.CategoryForm"--%>
 <%--@elvariable id="validationErrors" type="javax.validation.ConstraintViolation"--%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -21,7 +21,7 @@
                     </ul>
                 </div>
             </c:if>
-            <form:form method="post" modelAttribute="form">
+            <form:form method="post" modelAttribute="categoryForm">
                 <form:errors path="" cssClass="errors"/>
 
                 <form:label path="name">Name:</form:label><br/>

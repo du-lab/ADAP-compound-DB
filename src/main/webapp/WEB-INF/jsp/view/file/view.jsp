@@ -5,8 +5,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
-<jsp:include page="/WEB-INF/jsp/includes/header.jsp" />
-<jsp:include page="/WEB-INF/jsp/includes/column_left_home.jsp" />
+<jsp:include page="/WEB-INF/jsp/includes/header.jsp"/>
+<jsp:include page="/WEB-INF/jsp/includes/column_left_home.jsp"/>
 
 <!-- Start the middle column -->
 
@@ -44,17 +44,20 @@
                     <tr>
                         <td>${loop.index + 1}</td>
                         <td><a href="${loop.index}/">${spectrum}</a><br/>
-                        <small>${dulab:abbreviate(spectrum.properties, 80)}</small></td>
+                            <small>${dulab:abbreviate(spectrum.properties, 80)}</small>
+                        </td>
                         <td>${spectrum.retentionTime}</td>
                         <td>${spectrum.precursor}</td>
-                        <%--<td>${dulab:abbreviate(submission.spectra[i].properties, 80)}</td>--%>
+                            <%--<td>${dulab:abbreviate(submission.spectra[i].properties, 80)}</td>--%>
                         <td>
                             <!-- more horiz -->
                             <a href="${loop.index}/"><i class="material-icons" title="View spectrum">&#xE5D3;</i></a>
                             <!-- search -->
-                            <a href="${loop.index}/search/"><i class="material-icons" title="Search spectrum">&#xE8B6;</i></a>
+                            <a href="${loop.index}/search/"><i class="material-icons"
+                                                               title="Search spectrum">&#xE8B6;</i></a>
                             <!-- delete -->
-                            <a href="${loop.index}/delete/"><i class="material-icons" title="Delete spectrum">&#xE872;</i></a>
+                            <a href="${loop.index}/delete/"><i class="material-icons"
+                                                               title="Delete spectrum">&#xE872;</i></a>
                         </td>
                     </tr>
                 </c:forEach>
@@ -129,13 +132,22 @@
                 </a><br/>
                 <form:errors path="submissionSpecimenId" cssClass="errors"/><br/>
 
-                <form:label path="submissionDiseaseId">Source:</form:label><br/>
+                <form:label path="submissionDiseaseId">Disease:</form:label><br/>
+                <span style="vertical-align: bottom;">
                 <form:select path="submissionDiseaseId">
                     <form:option value="0" label="Please select..."/>
                     <form:options items="${submissionForm.diseases}" itemLabel="name" itemValue="id"/>
                 </form:select><br/>
+                </span>
+                <a href="<c:url value="/diseases/"/>">
+                    <!--list-->
+                    <i class="material-icons" title="Manage diseases">&#xE896;</i>
+                </a>
+                <a href="<c:url value="/diseases/add/"/>">
+                    <!--add circle-->
+                    <i class="material-icons" title="Add new disease">&#xE147;</i>
+                </a><br/>
                 <form:errors path="submissionDiseaseId" cssClass="errors"/><br/>
-
 
 
                 <div align="center">
@@ -151,5 +163,5 @@
 
 <!-- End the middle column -->
 
-<jsp:include page="/WEB-INF/jsp/includes/column_right_news.jsp" />
-<jsp:include page="/WEB-INF/jsp/includes/footer.jsp" />
+<jsp:include page="/WEB-INF/jsp/includes/column_right_news.jsp"/>
+<jsp:include page="/WEB-INF/jsp/includes/footer.jsp"/>

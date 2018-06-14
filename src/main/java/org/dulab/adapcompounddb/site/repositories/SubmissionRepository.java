@@ -12,4 +12,6 @@ public interface SubmissionRepository extends CrudRepository<Submission, Long> {
     long countBySourceId(long submissionSourceId);
 
     long countBySpecimenId(long submissionSpecimenId);
+
+    long countByDiseaseId(long submissionDiseaseId);
 }
