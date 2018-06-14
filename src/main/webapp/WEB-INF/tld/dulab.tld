@@ -43,12 +43,34 @@
 
     <function>
         <description>
-            Returns Json array with the count of spectra in a cluster, based on their SampleSourceType.
+            Returns Json array with the count of spectra in a cluster, based on their SubmissionSource.
         </description>
-        <name>pieChartData</name>
+        <name>clusterSourceToJson</name>
         <function-class>org.dulab.adapcompounddb.site.controllers.ControllerUtils</function-class>
         <function-signature>
-            javax.json.JsonArray getPieChartData(org.dulab.adapcompounddb.models.entities.SpectrumCluster)
+            javax.json.JsonArray clusterSourceToJson(org.dulab.adapcompounddb.models.entities.SpectrumCluster,java.util.List)
+        </function-signature>
+    </function>
+
+    <function>
+        <description>
+            Returns Json array with the count of spectra in a cluster, based on their SubmissionSpecimen.
+        </description>
+        <name>clusterSpecimenToJson</name>
+        <function-class>org.dulab.adapcompounddb.site.controllers.ControllerUtils</function-class>
+        <function-signature>
+            javax.json.JsonArray clusterSpecimenToJson(org.dulab.adapcompounddb.models.entities.SpectrumCluster,java.util.List)
+        </function-signature>
+    </function>
+
+    <function>
+        <description>
+            Returns Json array with the count of spectra in a cluster, based on their SubmissionDisease.
+        </description>
+        <name>clusterDiseaseToJson</name>
+        <function-class>org.dulab.adapcompounddb.site.controllers.ControllerUtils</function-class>
+        <function-signature>
+            javax.json.JsonArray clusterDiseaseToJson(org.dulab.adapcompounddb.models.entities.SpectrumCluster,java.util.List)
         </function-signature>
     </function>
 

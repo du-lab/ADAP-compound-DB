@@ -1,10 +1,9 @@
 package org.dulab.adapcompounddb.site.controllers;
 
 import org.dulab.adapcompounddb.models.SampleSourceType;
-import org.dulab.adapcompounddb.models.entities.Peak;
-import org.dulab.adapcompounddb.models.entities.Spectrum;
-import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
+import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.SubmissionCategory;
+import org.dulab.adapcompounddb.site.services.SubmissionService;
 
 import javax.json.*;
 import javax.validation.constraints.NotBlank;
@@ -65,21 +64,98 @@ public class ControllerUtils {
         return jsonObjectBuilder.build();
     }
 
-    public static JsonArray getPieChartData(SpectrumCluster cluster) {
+    public static JsonArray clusterSourceToJson(SpectrumCluster cluster, List<SubmissionSource> sources) {
 
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
 
-        Arrays.stream(SampleSourceType.values())
-                .forEachOrdered(type -> jsonArrayBuilder.add(
-                        Json.createObjectBuilder()
-                                .add("label", type.getLabel())
-                                .add("count", cluster.getSpectra()
-                                        .stream()
-                                        .map(Spectrum::getSubmission)
-                                        .filter(Objects::nonNull)
-//                                        .filter(s -> s.getSource() == type)
-                                        .count())
-                                .build()));
+        // Count Spectra with the no source
+        jsonArrayBuilder.add(
+                Json.createObjectBuilder()
+                        .add("label", "Undefined")
+                        .add("count", cluster.getSpectra()
+                                .stream()
+                                .map(Spectrum::getSubmission)
+                                .filter(Objects::nonNull)
+                                .filter(s -> s.getSource() == null)
+                                .count()));
+
+        // Count Spectra for each source
+        for (SubmissionSource source : sources)
+            jsonArrayBuilder.add(
+                    Json.createObjectBuilder()
+                            .add("label", source.getName())
+                            .add("count", cluster.getSpectra()
+                                    .stream()
+                                    .map(Spectrum::getSubmission)
+                                    .filter(Objects::nonNull)
+                                    .map(Submission::getSource)
+                                    .filter(Objects::nonNull)
+                                    .filter(s -> s.equals(source))
+                                    .count()));
+
+        return jsonArrayBuilder.build();
+    }
+
+    public static JsonArray clusterSpecimenToJson(SpectrumCluster cluster, List<SubmissionSpecimen> species) {
+
+        JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
+
+        // Count Spectra with the no source
+        jsonArrayBuilder.add(
+                Json.createObjectBuilder()
+                        .add("label", "Undefined")
+                        .add("count", cluster.getSpectra()
+                                .stream()
+                                .map(Spectrum::getSubmission)
+                                .filter(Objects::nonNull)
+                                .filter(s -> s.getSpecimen() == null)
+                                .count()));
+
+        // Count Spectra for each source
+        for (SubmissionSpecimen specimen : species)
+            jsonArrayBuilder.add(
+                    Json.createObjectBuilder()
+                            .add("label", specimen.getName())
+                            .add("count", cluster.getSpectra()
+                                    .stream()
+                                    .map(Spectrum::getSubmission)
+                                    .filter(Objects::nonNull)
+                                    .map(Submission::getSpecimen)
+                                    .filter(Objects::nonNull)
+                                    .filter(s -> s.equals(specimen))
+                                    .count()));
+
+        return jsonArrayBuilder.build();
+    }
+
+    public static JsonArray clusterDiseaseToJson(SpectrumCluster cluster, List<SubmissionDisease> diseases) {
+
+        JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
+
+        // Count Spectra with the no source
+        jsonArrayBuilder.add(
+                Json.createObjectBuilder()
+                        .add("label", "Undefined")
+                        .add("count", cluster.getSpectra()
+                                .stream()
+                                .map(Spectrum::getSubmission)
+                                .filter(Objects::nonNull)
+                                .filter(s -> s.getDisease() == null)
+                                .count()));
+
+        // Count Spectra for each source
+        for (SubmissionDisease disease : diseases)
+            jsonArrayBuilder.add(
+                    Json.createObjectBuilder()
+                            .add("label", disease.getName())
+                            .add("count", cluster.getSpectra()
+                                    .stream()
+                                    .map(Spectrum::getSubmission)
+                                    .filter(Objects::nonNull)
+                                    .map(Submission::getDisease)
+                                    .filter(Objects::nonNull)
+                                    .filter(s -> s.equals(disease))
+                                    .count()));
 
         return jsonArrayBuilder.build();
     }
