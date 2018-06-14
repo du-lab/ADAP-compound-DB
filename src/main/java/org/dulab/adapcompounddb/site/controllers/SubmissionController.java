@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -41,7 +40,7 @@ public class SubmissionController {
     }
 
     /********************************
-    ***** View File / Submission *****
+     ***** View File / Submission *****
      ********************************/
 
     @RequestMapping(value = "/file/", method = RequestMethod.GET)
@@ -76,13 +75,19 @@ public class SubmissionController {
 
         form.setName(submission.getName());
         form.setDescription(submission.getDescription());
+        if (submission.getSource() != null)
+            form.setSubmissionSourceId(submission.getSource().getId());
+        if (submission.getSpecimen() != null)
+            form.setSubmissionSpecimenId(submission.getSpecimen().getId());
+        if (submission.getDisease() != null)
+            form.setSubmissionDiseaseId(submission.getDisease().getId());
         model.addAttribute("submissionForm", form);
 
         return "file/view";
     }
 
     /************************************
-    ***** File / Submission Raw View *****
+     ***** File / Submission Raw View *****
      ************************************/
 
     @RequestMapping(value = "/file/fileview/", method = RequestMethod.GET)
@@ -116,7 +121,7 @@ public class SubmissionController {
     }
 
     /****************************************
-    ***** File / Submission Raw Download *****
+     ***** File / Submission Raw Download *****
      ****************************************/
 
     @RequestMapping(value = "/file/filedownload/", method = RequestMethod.GET)
@@ -150,7 +155,7 @@ public class SubmissionController {
     }
 
     /**********************************
-    ***** File / Submission Submit *****
+     ***** File / Submission Submit *****
      **********************************/
 
     @RequestMapping(value = "/file/", method = RequestMethod.POST)
@@ -192,13 +197,32 @@ public class SubmissionController {
         submission.setName(form.getName());
         submission.setDescription(form.getDescription());
         submission.setDateTime(new Date());
-//        if (form.getSubmissionSourceId() != 0)
-//            submission.setSource(submissionService.getSubmissionSource(form.getSubmissionSourceId()));
+
+        submission.setSource(
+                form.getSubmissionSourceId() == 0 ? null :
+                        submissionService.findSubmissionSource(form.getSubmissionSourceId())
+                                .orElseThrow(() -> new IllegalStateException(String.format(
+                                        "Submission Source with ID = %d cannot be found.",
+                                        form.getSubmissionSourceId()))));
+
+
+        submission.setSpecimen(
+                form.getSubmissionSpecimenId() == 0 ? null :
+                        submissionService.findSubmissionSpecimen(form.getSubmissionSpecimenId())
+                                .orElseThrow(() -> new IllegalStateException(String.format(
+                                        "Submission Specimen with ID = %d cannot be found.",
+                                        form.getSubmissionSpecimenId()))));
+
+        submission.setDisease(
+                form.getSubmissionDiseaseId() == 0 ? null :
+                        submissionService.findSubmissionDisease(form.getSubmissionDiseaseId())
+                                .orElseThrow(() -> new IllegalStateException(String.format(
+                                        "Submission Disease with ID = %d cannot be found.",
+                                        form.getSubmissionDiseaseId()))));
 
         try {
             submissionService.saveSubmission(submission);
-        }
-        catch (ConstraintViolationException e) {
+        } catch (ConstraintViolationException e) {
             model.addAttribute("validationErrors", e.getConstraintViolations());
             model.addAttribute("form", form);
             return "file/view";
