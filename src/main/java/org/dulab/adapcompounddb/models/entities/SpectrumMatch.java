@@ -6,13 +6,25 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
+//@SqlResultSetMapping(
+//        name = "SpectrumMatchMapping",
+//        entities = @EntityResult(
+//                entityClass = SpectrumMatch.class,
+//                fields = {
+//                        @FieldResult(name = "id", column = "id"),
+//                        @FieldResult(name = "querySpectrumId", column = "querySpectrumId"),
+//                        @FieldResult(name = "matchSpectrumId", column = "matchSpectrumId"),
+//                        @FieldResult(name = "score", column = "score")
+//                }
+//        )
+//)
 public class SpectrumMatch implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private long id;
 
-    @NotNull(message = "Query spectrum is required.")
+    //    @NotNull(message = "Query spectrum is required.")
     private Spectrum querySpectrum;
 
     @NotNull(message = "Match Spectrum is required.")

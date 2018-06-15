@@ -1,5 +1,5 @@
 <%--@elvariable id="querySpectrum" type="org.dulab.adapcompounddb.models.entities.Spectrum"--%>
-<%--@elvariable id="hits" type="java.util.List<org.dulab.adapcompounddb.models.Hit>"--%>
+<%--@elvariable id="matches" type="java.util.List<org.dulab.adapcompounddb.models.entities.SpectrumMatch>"--%>
 <%--@elvariable id="searchForm" type="org.dulab.adapcompounddb.site.controllers.SearchController.SearchForm"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -32,7 +32,7 @@
     </div>
 </section>
 
-<c:if test="${hits != null && hits.size() > 0}">
+<c:if test="${matches != null && matches.size() > 0}">
     <section id="chartSection">
         <h1>Comparison</h1>
         <div id="chartDiv" align="center"></div>
@@ -44,41 +44,41 @@
 
     <div align="center">
         <c:choose>
-            <c:when test="${hits != null && hits.size() > 0}">
+            <c:when test="${matches != null && matches.size() > 0}">
                 <table class="clickable">
                     <tr>
-                        <th>Confidence Level</th>
+                        <%--<th>Confidence Level</th>--%>
                         <th>Spectrum</th>
                         <th>Precursor</th>
                         <th>Retention Time</th>
                         <%--<th>Submission</th>--%>
                         <th>View</th>
                     </tr>
-                    <c:forEach items="${hits}" var="hit" varStatus="status">
+                    <c:forEach items="${matches}" var="match" varStatus="status">
                         <fmt:formatNumber type="number"
                                           maxFractionDigits="0"
                                           groupingUsed="false"
-                                          value="${hit.score * 1000}"
+                                          value="${match.score * 1000}"
                                           var="score"/>
 
                         <tr ${status.first ? 'id="firstRow"' : ''} onclick="select(this);
                                     addPlot('chartDiv', '${dulab:peaksToJson(querySpectrum.peaks)}', '${querySpectrum.name}',
-                                                        '${dulab:peaksToJson(hit.spectrum.peaks)}', '${hit.spectrum.name}',
+                                                        '${dulab:peaksToJson(hit.spectrum.peaks)}', '${match.matchSpectrum.name}',
                                                         '${score}');">
 
-                            <td>${hit.confidenceLevel.label}</td>
+                            <%--<td>${hit.confidenceLevel.label}</td>--%>
                             <td>
-                                ${hit.spectrum.name}<br/>
-                                <small>${hit.spectrum.submission.name}</small>
+                                ${match.matchSpectrum.name}<br/>
+                                <small>${match.matchSpectrum.submission.name}</small>
                             </td>
-                            <td>${hit.spectrum.precursor}</td>
-                            <td>${hit.spectrum.retentionTime} min</td>
+                            <td>${match.matchSpectrum.precursor}</td>
+                            <td>${match.matchSpectrum.retentionTime} min</td>
                             <%--<td>--%>
                                 <%--${hit.spectrum.submission.name}<br/>--%>
                                 <%--<small>${hit.spectrum.submission.chromatographyType.label}</small>--%>
                             <%--</td>--%>
                             <!--more horiz-->
-                            <td><a href="/spectrum/${hit.spectrum.id}/"><i class="material-icons">&#xE5D3;</i></a></td>
+                            <td><a href="/spectrum/${match.matchSpectrum.id}/"><i class="material-icons">&#xE5D3;</i></a></td>
                         </tr>
                     </c:forEach>
                 </table>

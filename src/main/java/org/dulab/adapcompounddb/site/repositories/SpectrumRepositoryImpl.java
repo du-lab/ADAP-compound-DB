@@ -2,6 +2,7 @@ package org.dulab.adapcompounddb.site.repositories;
 
 import org.dulab.adapcompounddb.models.ConfidenceLevel;
 import org.dulab.adapcompounddb.models.QueryParameters;
+import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 import org.dulab.adapcompounddb.models.search.CriteriaBlock;
 import org.dulab.adapcompounddb.models.Hit;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
@@ -65,15 +66,80 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
         return hitList;
     }
+//
+//    @Override
+//    public List<Hit> retTimePrecursorMsMsSearch(Spectrum spectrum, QueryParameters params) {
+//
+//        String sqlQuery = new SpectrumQueryBuilder(
+//                spectrum.getSubmission().getChromatographyType(),false, params.getExcludeSpectra())
+//                .setRetentionTimeRange(spectrum.getRetentionTime(), params.getRetTimeTolerance())
+//                .setPrecursorRange(spectrum.getPrecursor(), params.getPrecursorTolerance())
+//                .setSpectrum(spectrum, params.getMzTolerance(), params.getScoreThreshold())
+//                .build();
+//
+//        @SuppressWarnings("unchecked")
+//        List<Object[]> resultList = entityManager
+//                .createNativeQuery(sqlQuery, "SpectrumScoreMapping")
+//                .getResultList();
+//
+//        return toHits(resultList, ConfidenceLevel.LEVEL_1A);
+//    }
+//
+//    @Override
+//    public List<Hit> retTimePrecursorSearch(Spectrum spectrum, QueryParameters params) {
+//
+//        String sqlQuery = new SpectrumQueryBuilder(
+//                spectrum.getSubmission().getChromatographyType(), false, params.getExcludeSpectra())
+//                .setRetentionTimeRange(spectrum.getRetentionTime(), params.getRetTimeTolerance())
+//                .setPrecursorRange(spectrum.getPrecursor(), params.getPrecursorTolerance())
+//                .build();
+//
+//        @SuppressWarnings("unchecked")
+//        List<Object[]> resultList = entityManager
+//                .createNativeQuery(sqlQuery, "SpectrumScoreMapping")
+//                .getResultList();
+//
+//        return toHits(resultList, ConfidenceLevel.LEVEL_1B);
+//    }
+//
+//    @Override
+//    public List<Hit> precursorMsMsSearch(Spectrum spectrum, QueryParameters params) {
+//
+//        String sqlQuery = new SpectrumQueryBuilder(
+//                spectrum.getSubmission().getChromatographyType(), false, params.getExcludeSpectra())
+//                .setPrecursorRange(spectrum.getPrecursor(), params.getPrecursorTolerance())
+//                .setSpectrum(spectrum, params.getMzTolerance(), params.getScoreThreshold())
+//                .build();
+//
+//        @SuppressWarnings("unchecked")
+//        List<Object[]> resultList = entityManager
+//                .createNativeQuery(sqlQuery, "SpectrumScoreMapping")
+//                .getResultList();
+//
+//        return toHits(resultList, ConfidenceLevel.LEVEL_2);
+//    }
+//
+//    @Override
+//    public List<Hit> precursorSearch(Spectrum spectrum, QueryParameters params) {
+//
+//        String sqlQuery = new SpectrumQueryBuilder(
+//                spectrum.getSubmission().getChromatographyType(), false, params.getExcludeSpectra())
+//                .setPrecursorRange(spectrum.getPrecursor(), params.getPrecursorTolerance())
+//                .build();
+//
+//        @SuppressWarnings("unchecked")
+//        List<Object[]> resultList = entityManager
+//                .createNativeQuery(sqlQuery, "SpectrumScoreMapping")
+//                .getResultList();
+//
+//        return toHits(resultList, ConfidenceLevel.LEVEL_5);
+//    }
 
     @Override
-    public List<Hit> retTimePrecursorMsMsSearch(Spectrum spectrum, QueryParameters params) {
-
+    public List<SpectrumMatch> spectrumSearch(Spectrum querySpectrum, QueryParameters params) {
         String sqlQuery = new SpectrumQueryBuilder(
-                spectrum.getSubmission().getChromatographyType(),false, params.getExcludeSpectra())
-                .setRetentionTimeRange(spectrum.getRetentionTime(), params.getRetTimeTolerance())
-                .setPrecursorRange(spectrum.getPrecursor(), params.getPrecursorTolerance())
-                .setSpectrum(spectrum, params.getMzTolerance(), params.getScoreThreshold())
+                querySpectrum.getSubmission().getChromatographyType(), params.getExcludeSpectra())
+                .setSpectrum(querySpectrum, params.getMzTolerance(), params.getScoreThreshold())
                 .build();
 
         @SuppressWarnings("unchecked")
@@ -81,57 +147,23 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                 .createNativeQuery(sqlQuery, "SpectrumScoreMapping")
                 .getResultList();
 
-        return toHits(resultList, ConfidenceLevel.LEVEL_1A);
-    }
+        List<SpectrumMatch> matches = new ArrayList<>();
+        for (Object[] objects : resultList) {
+            long matchSpectrumId = (long) objects[0];
+            double score = (double) objects[1];
 
-    @Override
-    public List<Hit> retTimePrecursorSearch(Spectrum spectrum, QueryParameters params) {
+            SpectrumMatch match = new SpectrumMatch();
+            match.setMatchSpectrum(entityManager.find(Spectrum.class, matchSpectrumId));
+            match.setScore(score);
+            matches.add(match);
+        }
 
-        String sqlQuery = new SpectrumQueryBuilder(
-                spectrum.getSubmission().getChromatographyType(), false, params.getExcludeSpectra())
-                .setRetentionTimeRange(spectrum.getRetentionTime(), params.getRetTimeTolerance())
-                .setPrecursorRange(spectrum.getPrecursor(), params.getPrecursorTolerance())
-                .build();
+//        @SuppressWarnings("unchecked")
+//        List<SpectrumMatch> matches = entityManager
+//                .createNativeQuery(sqlQuery, SpectrumMatch.class)
+//                .getResultList();
 
-        @SuppressWarnings("unchecked")
-        List<Object[]> resultList = entityManager
-                .createNativeQuery(sqlQuery, "SpectrumScoreMapping")
-                .getResultList();
-
-        return toHits(resultList, ConfidenceLevel.LEVEL_1B);
-    }
-
-    @Override
-    public List<Hit> precursorMsMsSearch(Spectrum spectrum, QueryParameters params) {
-
-        String sqlQuery = new SpectrumQueryBuilder(
-                spectrum.getSubmission().getChromatographyType(), false, params.getExcludeSpectra())
-                .setPrecursorRange(spectrum.getPrecursor(), params.getPrecursorTolerance())
-                .setSpectrum(spectrum, params.getMzTolerance(), params.getScoreThreshold())
-                .build();
-
-        @SuppressWarnings("unchecked")
-        List<Object[]> resultList = entityManager
-                .createNativeQuery(sqlQuery, "SpectrumScoreMapping")
-                .getResultList();
-
-        return toHits(resultList, ConfidenceLevel.LEVEL_2);
-    }
-
-    @Override
-    public List<Hit> precursorSearch(Spectrum spectrum, QueryParameters params) {
-
-        String sqlQuery = new SpectrumQueryBuilder(
-                spectrum.getSubmission().getChromatographyType(), false, params.getExcludeSpectra())
-                .setPrecursorRange(spectrum.getPrecursor(), params.getPrecursorTolerance())
-                .build();
-
-        @SuppressWarnings("unchecked")
-        List<Object[]> resultList = entityManager
-                .createNativeQuery(sqlQuery, "SpectrumScoreMapping")
-                .getResultList();
-
-        return toHits(resultList, ConfidenceLevel.LEVEL_5);
+        return matches;
     }
 
     @Override
@@ -189,19 +221,19 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
         return hitList;
     }
-
-    private List<Hit> toHits(List<Object[]> resultList, ConfidenceLevel level) {
-        List<Hit> hits = new ArrayList<>(resultList.size());
-        for (Object[] columns : resultList) {
-            long spectrumId = (long) columns[0];
-            double score = (double) columns[1];
-
-            Hit hit = new Hit();
-            hit.setSpectrum(entityManager.find(Spectrum.class, spectrumId));
-            hit.setScore(score);
-            hit.setConfidenceLevel(level);
-            hits.add(hit);
-        }
-        return hits;
-    }
+//
+//    private List<Hit> toHits(List<Object[]> resultList, ConfidenceLevel level) {
+//        List<Hit> hits = new ArrayList<>(resultList.size());
+//        for (Object[] columns : resultList) {
+//            long spectrumId = (long) columns[0];
+//            double score = (double) columns[1];
+//
+//            Hit hit = new Hit();
+//            hit.setSpectrum(entityManager.find(Spectrum.class, spectrumId));
+//            hit.setScore(score);
+//            hit.setConfidenceLevel(level);
+//            hits.add(hit);
+//        }
+//        return hits;
+//    }
 }

@@ -4,6 +4,7 @@ import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.Hit;
 import org.dulab.adapcompounddb.models.QueryParameters;
+import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.models.search.ComparisonOperator;
@@ -30,7 +31,9 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @ControllerAdvice
@@ -47,17 +50,21 @@ public class SearchController {
     private final UserPrincipalService userPrincipalService;
     private final SubmissionService submissionService;
     private final SpectrumService spectrumService;
-    private final SpectrumSearchService spectrumSearchService;
+
+    private final Map<ChromatographyType, SpectrumSearchService> spectrumSearchServiceMap;
 
     @Autowired
     public SearchController(UserPrincipalService userPrincipalService,
                             SubmissionService submissionService,
                             @Qualifier("spectrumServiceImpl") SpectrumService spectrumService,
-                            SpectrumSearchService spectrumSearchService) {
+                            @Qualifier("GCSpectrumSearchServiceImpl") SpectrumSearchService gcSpectrumSearchService) {
+
         this.userPrincipalService = userPrincipalService;
         this.submissionService = submissionService;
         this.spectrumService = spectrumService;
-        this.spectrumSearchService = spectrumSearchService;
+
+        this.spectrumSearchServiceMap = new HashMap<>();
+        this.spectrumSearchServiceMap.put(ChromatographyType.GAS, gcSpectrumSearchService);
     }
 
     @ModelAttribute
@@ -184,12 +191,17 @@ public class SearchController {
     }
 
     private ModelAndView searchPost(Spectrum querySpectrum, UserPrincipal user,
-                                    SearchForm form, Model model, Errors errors) {
+                                    SearchForm form, @Valid Model model, Errors errors) {
 
         if (errors.hasErrors()) {
             model.addAttribute("querySpectrum", querySpectrum);
             return new ModelAndView("file/match");
         }
+
+        SpectrumSearchService service =
+                spectrumSearchServiceMap.get(querySpectrum.getSubmission().getChromatographyType());
+
+
 
 
 //        CriteriaBlock criteria = new CriteriaBlock(SetOperator.AND);
@@ -216,9 +228,9 @@ public class SearchController {
 //        }
 
 
-        List<Hit> hits = spectrumSearchService.search(querySpectrum, QueryParameters.getDefault());
+        List<SpectrumMatch> matches = service.search(querySpectrum, QueryParameters.getDefault());
 
-        model.addAttribute("hits", hits);
+        model.addAttribute("matches", matches);
 
         model.addAttribute("querySpectrum", querySpectrum);
         model.addAttribute("form", form);

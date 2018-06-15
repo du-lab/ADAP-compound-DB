@@ -10,8 +10,6 @@ public class SpectrumQueryBuilder {
 
     private final ChromatographyType type;
 
-    private final boolean isConsensus;
-
     private final Set<Spectrum> excludeSpectra;
 
     private Range precursorRange = null;
@@ -25,9 +23,8 @@ public class SpectrumQueryBuilder {
     private double scoreThreshold;
 
 
-    public SpectrumQueryBuilder(ChromatographyType type, boolean isConsensus, Set<Spectrum> excludeSpectra) {
+    public SpectrumQueryBuilder(ChromatographyType type, Set<Spectrum> excludeSpectra) {
         this.type = type;
-        this.isConsensus = isConsensus;
         this.excludeSpectra = excludeSpectra;
     }
 
@@ -56,10 +53,8 @@ public class SpectrumQueryBuilder {
         // -----------------------
 
         String query = String.format("WITH PeakCTE AS (\n" +
-                        "\tSELECT * FROM PeakView\n" +
-                        "\tWHERE ChromatographyType = \"%s\"\n" +
-                        "\tAND Consensus is %b\n",
-                type, isConsensus);
+                "\tSELECT * FROM SearchableSpectrumPeakView\n" +
+                "\tWHERE ChromatographyType = \"%s\"\n", type);
 
         if (precursorRange != null)
             query += String.format("\tAND Precursor > %f AND Precursor < %f\n",
@@ -90,14 +85,17 @@ public class SpectrumQueryBuilder {
 
         if (spectrum == null)
             query += "SELECT DISTINCT SpectrumId, 0 AS Score FROM PeakCTE\n";
+
         else {
-            query += "SELECT SpectrumId, POWER(SUM(Product), 2) AS Score FROM (\n";
+            query += "SELECT SpectrumId, POWER(SUM(Product), 2) AS Score FROM (\n";  // 0 AS Id, NULL AS QuerySpectrumId, SpectrumId AS MatchSpectrumId
+
             query += spectrum.getPeaks()
                     .stream()
                     .map(p -> String.format("\tSELECT SpectrumId, MAX(SQRT(Intensity * %f)) AS Product FROM PeakCTE " +
                                     "WHERE Mz > %f AND Mz < %f GROUP BY SpectrumId\n",
                             p.getIntensity(), p.getMz() - mzTolerance, p.getMz() + mzTolerance))
                     .collect(Collectors.joining("\tUNION ALL\n"));
+
             query += ") AS Result\n";
             query += String.format("GROUP BY SpectrumId HAVING Score > %f ORDER BY Score DESC\n", scoreThreshold);
         }

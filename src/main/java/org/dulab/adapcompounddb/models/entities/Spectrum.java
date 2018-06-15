@@ -44,6 +44,8 @@ public class Spectrum implements Serializable {
 
     private boolean consensus;
 
+    private boolean searchable;
+
     private Double precursor;
 
     private Double retentionTime;
@@ -173,6 +175,14 @@ public class Spectrum implements Serializable {
 
     public void setConsensus(boolean consensus) {
         this.consensus = consensus;
+    }
+
+    public boolean isSearchable() {
+        return searchable;
+    }
+
+    public void setSearchable(boolean searchable) {
+        this.searchable = searchable;
     }
 
     public Double getPrecursor() {
