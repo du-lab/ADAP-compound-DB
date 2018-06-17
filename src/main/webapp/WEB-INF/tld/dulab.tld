@@ -75,6 +75,13 @@
     </function>
 
     <function>
+        <description>Converts Json Array into a string of values and counts.</description>
+        <name>jsonToHtml</name>
+        <function-class>org.dulab.adapcompounddb.site.controllers.ControllerUtils</function-class>
+        <function-signature>java.lang.String jsonToHtml(javax.json.JsonArray)</function-signature>
+    </function>
+
+    <function>
         <description>Returns the index of an item in a list.</description>
         <name>getListIndex</name>
         <function-class>org.dulab.adapcompounddb.site.controllers.ControllerUtils</function-class>

@@ -70,6 +70,9 @@ public class SearchController {
     @ModelAttribute
     public void addAttributes(Model model) {
         model.addAttribute("chromatographyTypes", ChromatographyType.values());
+        model.addAttribute("submissionSources", submissionService.getAllSources());
+        model.addAttribute("submissionSpecies", submissionService.getAllSpecies());
+        model.addAttribute("submissionDiseases", submissionService.getAllDiseases());
     }
 
 //    @PostConstruct
@@ -227,8 +230,10 @@ public class SearchController {
 //            model.addAttribute("searchResultMessage", e.getMessage());
 //        }
 
-
-        List<SpectrumMatch> matches = service.search(querySpectrum, QueryParameters.getDefault());
+        QueryParameters parameters = new QueryParameters();
+        parameters.setMzTolerance(form.getMzTolerance());
+        parameters.setScoreThreshold(form.getFloatScoreThreshold());
+        List<SpectrumMatch> matches = service.search(querySpectrum, parameters);
 
         model.addAttribute("matches", matches);
 
@@ -252,19 +257,19 @@ public class SearchController {
         @FloatMin(value = Float.MIN_VALUE, message = "M/z tolerance must be positive.")
         private float mzTolerance = 0.01F;
 
-        @Min(value = 1, message = "Maximum number of hits must be greater than or equal to one.")
-        private int numHits = 10;
+//        @Min(value = 1, message = "Maximum number of hits must be greater than or equal to one.")
+//        private int numHits = 10;
 
         @Range(min = 0, max = 1000, message = "Matching score threshold must be between 0 and 1000.")
         private int scoreThreshold = 750;
 
-        private boolean chromatographyTypeCheck;
-
-        private ChromatographyType chromatographyType;
-
-        private boolean submissionCategoryCheck;
-
-        private List<Long> submissionCategoryIds;
+//        private boolean chromatographyTypeCheck;
+//
+//        private ChromatographyType chromatographyType;
+//
+//        private boolean submissionCategoryCheck;
+//
+//        private List<Long> submissionCategoryIds;
 
         public float getMzTolerance() {
             return mzTolerance;
@@ -274,13 +279,13 @@ public class SearchController {
             this.mzTolerance = mzTolerance;
         }
 
-        public int getNumHits() {
-            return numHits;
-        }
-
-        public void setNumHits(int numHits) {
-            this.numHits = numHits;
-        }
+//        public int getNumHits() {
+//            return numHits;
+//        }
+//
+//        public void setNumHits(int numHits) {
+//            this.numHits = numHits;
+//        }
 
         public int getScoreThreshold() {
             return scoreThreshold;
@@ -298,36 +303,36 @@ public class SearchController {
             this.scoreThreshold = Math.round(scoreThreshold * THRESHOLD_FACTOR);
         }
 
-        public boolean isChromatographyTypeCheck() {
-            return chromatographyTypeCheck;
-        }
-
-        public void setChromatographyTypeCheck(boolean chromatographyTypeCheck) {
-            this.chromatographyTypeCheck = chromatographyTypeCheck;
-        }
-
-        public ChromatographyType getChromatographyType() {
-            return chromatographyType;
-        }
-
-        public void setChromatographyType(ChromatographyType chromatographyType) {
-            this.chromatographyType = chromatographyType;
-        }
-
-        public boolean isSubmissionCategoryCheck() {
-            return submissionCategoryCheck;
-        }
-
-        public void setSubmissionCategoryCheck(boolean submissionCategoryCheck) {
-            this.submissionCategoryCheck = submissionCategoryCheck;
-        }
-
-        public List<Long> getSubmissionCategoryIds() {
-            return submissionCategoryIds;
-        }
-
-        public void setSubmissionCategoryIds(List<Long> submissionCategoryIds) {
-            this.submissionCategoryIds = submissionCategoryIds;
-        }
+//        public boolean isChromatographyTypeCheck() {
+//            return chromatographyTypeCheck;
+//        }
+//
+//        public void setChromatographyTypeCheck(boolean chromatographyTypeCheck) {
+//            this.chromatographyTypeCheck = chromatographyTypeCheck;
+//        }
+//
+//        public ChromatographyType getChromatographyType() {
+//            return chromatographyType;
+//        }
+//
+//        public void setChromatographyType(ChromatographyType chromatographyType) {
+//            this.chromatographyType = chromatographyType;
+//        }
+//
+//        public boolean isSubmissionCategoryCheck() {
+//            return submissionCategoryCheck;
+//        }
+//
+//        public void setSubmissionCategoryCheck(boolean submissionCategoryCheck) {
+//            this.submissionCategoryCheck = submissionCategoryCheck;
+//        }
+//
+//        public List<Long> getSubmissionCategoryIds() {
+//            return submissionCategoryIds;
+//        }
+//
+//        public void setSubmissionCategoryIds(List<Long> submissionCategoryIds) {
+//            this.submissionCategoryIds = submissionCategoryIds;
+//        }
     }
 }

@@ -1,18 +1,25 @@
 package org.dulab.adapcompounddb.site.controllers;
 
-import org.dulab.adapcompounddb.models.SampleSourceType;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.SubmissionCategory;
-import org.dulab.adapcompounddb.site.services.SubmissionService;
 
 import javax.json.*;
 import javax.validation.constraints.NotBlank;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
 public class ControllerUtils {
+
+    private static String getColor(int n) {
+        final int colorStringLength = 6;
+        final String colors = "1f77b4ff7f0e2ca02cd627289467bd8c564be377c27f7f7fbcbd2217becf";
+
+        int index = n * colorStringLength % colors.length();
+        String color = colors.substring(index, index + colorStringLength);
+
+        return String.format("#%s;", color);
+    }
 
     public static JsonArray peaksToJson(List<Peak> peaks) {
 
@@ -158,6 +165,29 @@ public class ControllerUtils {
                                     .count()));
 
         return jsonArrayBuilder.build();
+    }
+
+    public static String jsonToHtml(JsonArray jsonArray) {
+
+        int totalCount = 0;
+        for (JsonObject jsonObject : jsonArray.getValuesAs(JsonObject.class))
+            totalCount += jsonObject.getInt("count");
+
+        StringBuilder builder = new StringBuilder();
+        int count = 0;
+        for (JsonObject jsonObject : jsonArray.getValuesAs(JsonObject.class)) {
+            if (jsonObject.getInt("count") > 0) {
+                int percent = 100 * jsonObject.getInt("count") / totalCount;
+                builder.append(
+                        String.format("%s: %d&percnt;<br/><div style=\"width: %d&percnt;; height: 2px; background-color: %s;\"></div>\n",
+                                jsonObject.getString("label"),
+                                percent,
+                                percent,
+                                getColor(count)));
+            }
+            ++count;
+        }
+        return builder.toString();
     }
 
     public static int getEntryIndex(List list, Object entry) {
