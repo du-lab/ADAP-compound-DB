@@ -68,10 +68,7 @@
 
                         <tr data-spectrum='${dulab:spectrumToJson(match.matchSpectrum)}'>
                             <td>${score}</td>
-                            <td>
-                                    ${match.matchSpectrum.name}<br/>
-                                <small>${match.matchSpectrum.submission.name}</small>
-                            </td>
+                            <td><a href="/cluster/${match.matchSpectrum.cluster.id}/">${match.matchSpectrum.name}</a></td>
                             <td>${match.matchSpectrum.cluster.size}</td>
                             <td>${dulab:jsonToHtml(dulab:clusterSourceToJson(match.matchSpectrum.cluster, submissionSources))}</td>
                             <td>${dulab:jsonToHtml(dulab:clusterSpecimenToJson(match.matchSpectrum.cluster, submissionSpecies))}</td>
