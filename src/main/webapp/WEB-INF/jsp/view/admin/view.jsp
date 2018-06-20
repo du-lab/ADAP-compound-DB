@@ -3,8 +3,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
-<jsp:include page="/WEB-INF/jsp/includes/header.jsp" />
-<jsp:include page="/WEB-INF/jsp/includes/column_left_home.jsp" />
+<jsp:include page="/WEB-INF/jsp/includes/header.jsp"/>
+<jsp:include page="/WEB-INF/jsp/includes/column_left_home.jsp"/>
 
 <!-- Start the middle column -->
 
@@ -48,8 +48,9 @@
 
 <section>
     <h1>Clusters</h1>
-    <div align="center" style="overflow: auto; max-height: 400px;">
-        <table>
+    <div align="center">
+        <table id="cluster_table" class="display" style="width: 100%;">
+            <thead>
             <tr>
                 <th>Name</th>
                 <th>Num Spectra</th>
@@ -57,6 +58,8 @@
                 <th>Chromatography</th>
                 <th>View</th>
             </tr>
+            </thead>
+            <tbody>
             <c:forEach items="${clusters}" var="cluster">
                 <tr>
                     <td>${cluster}</td>
@@ -69,11 +72,20 @@
                     </td>
                 </tr>
             </c:forEach>
+            </tbody>
         </table>
     </div>
 </section>
 
 <!-- End the middle column -->
 
-<jsp:include page="/WEB-INF/jsp/includes/column_right_news.jsp" />
-<jsp:include page="/WEB-INF/jsp/includes/footer.jsp" />
+<script src="<c:url value="/resources/js/DataTables/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
+<script src="<c:url value="/resources/js/DataTables/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
+<script>
+    $(document).ready(function () {
+        $('#cluster_table').DataTable();
+    });
+</script>
+
+<jsp:include page="/WEB-INF/jsp/includes/column_right_news.jsp"/>
+<jsp:include page="/WEB-INF/jsp/includes/footer.jsp"/>

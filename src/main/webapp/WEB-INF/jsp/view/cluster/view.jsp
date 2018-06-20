@@ -26,7 +26,7 @@
                 <tbody>
                 <c:forEach items="${cluster.spectra}" var="spectrum" varStatus="status">
 
-                    <tr data-spectrum='${dulab:spectrumToJson(spectrum)}'>
+                    <tr data-spectrum="<c:out value="${dulab:spectrumToJson(spectrum)}"/>">
                         <td>${spectrum.name}<br/>
                             <small>${spectrum.submission.name}</small>
                         </td>

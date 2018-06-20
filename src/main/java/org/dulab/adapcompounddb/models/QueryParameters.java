@@ -65,7 +65,7 @@ public class QueryParameters {
         QueryParameters params = new QueryParameters();
         params.setRetTimeTolerance(0.5);
         params.setPrecursorTolerance(0.01);
-        params.setScoreThreshold(0.3);
+        params.setScoreThreshold(0.75);
         params.setMzTolerance(0.01);
         params.setExcludeSpectra(null);
         return params;

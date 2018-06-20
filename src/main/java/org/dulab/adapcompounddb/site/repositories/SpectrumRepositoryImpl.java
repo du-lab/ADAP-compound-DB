@@ -153,6 +153,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
             double score = (double) objects[1];
 
             SpectrumMatch match = new SpectrumMatch();
+            match.setQuerySpectrum(querySpectrum);
             match.setMatchSpectrum(entityManager.find(Spectrum.class, matchSpectrumId));
             match.setScore(score);
             matches.add(match);
