@@ -41,7 +41,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">ADAP Compound Library</a>
+            <a class="navbar-brand" href="<c:url value="/" />">ADAP Compound Library</a>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
@@ -68,11 +68,11 @@
     </div>
 </nav>
 
-<%--<header>--%>
+<header>
 
-    <%--<c:if test="${userPrincipal != null}">--%>
-        <%--<div class="user">User: ${userPrincipal} (<a href="<c:url value="/logout"/>">Log out</a>)</div>--%>
-    <%--</c:if>--%>
-<%--</header>--%>
+    <c:if test="${userPrincipal != null}">
+        <div class="user">User: ${userPrincipal} (<a href="<c:url value="/logout"/>">Log out</a>)</div>
+    </c:if>
+</header>
 
 
