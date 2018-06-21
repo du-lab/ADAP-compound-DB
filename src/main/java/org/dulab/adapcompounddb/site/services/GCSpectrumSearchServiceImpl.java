@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.site.services;
 
 import org.dulab.adapcompounddb.models.QueryParameters;
+import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
@@ -21,6 +22,6 @@ public class GCSpectrumSearchServiceImpl implements SpectrumSearchService {
 
     @Override
     public List<SpectrumMatch> search(Spectrum querySpectrum, QueryParameters parameters) {
-        return spectrumRepository.spectrumSearch(querySpectrum, parameters);
+        return spectrumRepository.spectrumSearch(SearchType.SIMILARITY_SEARCH, querySpectrum, parameters);
     }
 }

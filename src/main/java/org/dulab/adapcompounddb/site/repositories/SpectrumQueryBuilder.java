@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.site.repositories;
 
 import org.dulab.adapcompounddb.models.ChromatographyType;
+import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 
 import java.util.Set;
@@ -8,7 +9,9 @@ import java.util.stream.Collectors;
 
 public class SpectrumQueryBuilder {
 
-    private final ChromatographyType type;
+    private final String peakView;
+
+    private final ChromatographyType chromatographyType;
 
     private final Set<Spectrum> excludeSpectra;
 
@@ -23,8 +26,20 @@ public class SpectrumQueryBuilder {
     private double scoreThreshold;
 
 
-    public SpectrumQueryBuilder(ChromatographyType type, Set<Spectrum> excludeSpectra) {
-        this.type = type;
+    public SpectrumQueryBuilder(SearchType searchType, ChromatographyType chromatographyType, Set<Spectrum> excludeSpectra) {
+
+        switch (searchType) {
+            case SIMILARITY_SEARCH:
+                this.peakView = "SearchSpectrumPeakView";
+                break;
+            case CLUSTERING:
+                this.peakView = "ClusterSpectrumPeakView";
+                break;
+            default:
+                this.peakView = "SearchSpectrumPeakView";
+        }
+
+        this.chromatographyType = chromatographyType;
         this.excludeSpectra = excludeSpectra;
     }
 
@@ -53,8 +68,8 @@ public class SpectrumQueryBuilder {
         // -----------------------
 
         String query = String.format("WITH PeakCTE AS (\n" +
-                "\tSELECT * FROM SearchableSpectrumPeakView\n" +
-                "\tWHERE ChromatographyType = \"%s\"\n", type);
+                "\tSELECT * FROM %s\n" +
+                "\tWHERE ChromatographyType = \"%s\"\n", peakView, chromatographyType);
 
         if (precursorRange != null)
             query += String.format("\tAND Precursor > %f AND Precursor < %f\n",

@@ -26,7 +26,7 @@
                 </td>
                 <td>
                     ${querySpectrum.submission.name}<br/>
-                    <small>${querySpectrum.submission.chromatographyType.label}</small>
+                    <small>${querySpectrum.chromatographyType.label}</small>
                 </td>
             </tr>
         </table>

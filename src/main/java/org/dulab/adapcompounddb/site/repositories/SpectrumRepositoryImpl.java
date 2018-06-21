@@ -2,6 +2,7 @@ package org.dulab.adapcompounddb.site.repositories;
 
 import org.dulab.adapcompounddb.models.ConfidenceLevel;
 import org.dulab.adapcompounddb.models.QueryParameters;
+import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 import org.dulab.adapcompounddb.models.search.CriteriaBlock;
 import org.dulab.adapcompounddb.models.Hit;
@@ -136,9 +137,9 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 //    }
 
     @Override
-    public List<SpectrumMatch> spectrumSearch(Spectrum querySpectrum, QueryParameters params) {
+    public List<SpectrumMatch> spectrumSearch(SearchType searchType, Spectrum querySpectrum, QueryParameters params) {
         String sqlQuery = new SpectrumQueryBuilder(
-                querySpectrum.getChromatographyType(), params.getExcludeSpectra())
+                searchType, querySpectrum.getChromatographyType(), params.getExcludeSpectra())
                 .setSpectrum(querySpectrum, params.getMzTolerance(), params.getScoreThreshold())
                 .build();
 

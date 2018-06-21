@@ -25,7 +25,6 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SpectrumCluster` (
   `ConsensusSpectrumId` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
   `Diameter` DOUBLE NOT NULL,
   `Size` INT(11) NOT NULL,
-  `ChromatographyType` VARCHAR(30) NOT NULL,
   PRIMARY KEY (`Id`),
   UNIQUE INDEX `SpectrumCluster_ConsensusSpectrumId_uindex` (`ConsensusSpectrumId` ASC),
   CONSTRAINT `SpectrumCluster_Spectrum_Id_fk`
@@ -34,7 +33,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SpectrumCluster` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB
-  AUTO_INCREMENT = 32
+  AUTO_INCREMENT = 64
   DEFAULT CHARACTER SET = latin1;
 
 
@@ -128,7 +127,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Submission` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB
-  AUTO_INCREMENT = 14
+  AUTO_INCREMENT = 15
   DEFAULT CHARACTER SET = utf8;
 
 
@@ -160,7 +159,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Spectrum` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB
-  AUTO_INCREMENT = 3227
+  AUTO_INCREMENT = 3406
   DEFAULT CHARACTER SET = utf8;
 
 
@@ -181,7 +180,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Peak` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB
-  AUTO_INCREMENT = 273188
+  AUTO_INCREMENT = 300587
   DEFAULT CHARACTER SET = utf8;
 
 
@@ -207,7 +206,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SpectrumMatch` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB
-  AUTO_INCREMENT = 3990
+  AUTO_INCREMENT = 4420
   DEFAULT CHARACTER SET = latin1;
 
 
@@ -228,7 +227,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SpectrumProperty` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB
-  AUTO_INCREMENT = 15005
+  AUTO_INCREMENT = 15478
   DEFAULT CHARACTER SET = utf8;
 
 
@@ -255,6 +254,11 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`UserParameter` (
 USE `adapcompounddb` ;
 
 -- -----------------------------------------------------
+-- Placeholder table for view `adapcompounddb`.`clusterspectrumpeakview`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `adapcompounddb`.`clusterspectrumpeakview` (`Id` INT, `Mz` INT, `Intensity` INT, `SpectrumId` INT, `SubmissionId` INT, `Precursor` INT, `RetentionTime` INT, `ChromatographyType` INT);
+
+-- -----------------------------------------------------
 -- Placeholder table for view `adapcompounddb`.`peakview`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `adapcompounddb`.`peakview` (`Id` INT, `Mz` INT, `Intensity` INT, `SpectrumId` INT, `SubmissionId` INT, `Consensus` INT, `Searchable` INT, `Precursor` INT, `RetentionTime` INT, `ChromatographyType` INT);
@@ -263,6 +267,18 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`peakview` (`Id` INT, `Mz` INT, `Int
 -- Placeholder table for view `adapcompounddb`.`searchablespectrumpeakview`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `adapcompounddb`.`searchablespectrumpeakview` (`Id` INT, `Mz` INT, `Intensity` INT, `SpectrumId` INT, `SubmissionId` INT, `Consensus` INT, `Precursor` INT, `RetentionTime` INT, `ChromatographyType` INT);
+
+-- -----------------------------------------------------
+-- Placeholder table for view `adapcompounddb`.`searchspectrumpeakview`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `adapcompounddb`.`searchspectrumpeakview` (`Id` INT, `Mz` INT, `Intensity` INT, `SpectrumId` INT, `SubmissionId` INT, `Precursor` INT, `RetentionTime` INT, `ChromatographyType` INT);
+
+-- -----------------------------------------------------
+-- View `adapcompounddb`.`clusterspectrumpeakview`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `adapcompounddb`.`clusterspectrumpeakview`;
+USE `adapcompounddb`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `adapcompounddb`.`clusterspectrumpeakview` AS select `adapcompounddb`.`peak`.`Id` AS `Id`,`adapcompounddb`.`peak`.`Mz` AS `Mz`,`adapcompounddb`.`peak`.`Intensity` AS `Intensity`,`adapcompounddb`.`peak`.`SpectrumId` AS `SpectrumId`,`adapcompounddb`.`spectrum`.`SubmissionId` AS `SubmissionId`,`adapcompounddb`.`spectrum`.`Precursor` AS `Precursor`,`adapcompounddb`.`spectrum`.`RetentionTime` AS `RetentionTime`,`adapcompounddb`.`spectrum`.`ChromatographyType` AS `ChromatographyType` from (`adapcompounddb`.`peak` join `adapcompounddb`.`spectrum`) where ((`adapcompounddb`.`peak`.`SpectrumId` = `adapcompounddb`.`spectrum`.`Id`) and (`adapcompounddb`.`spectrum`.`Consensus` is false) and (`adapcompounddb`.`spectrum`.`Reference` is false));
 
 -- -----------------------------------------------------
 -- View `adapcompounddb`.`peakview`
@@ -277,6 +293,13 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY D
 DROP TABLE IF EXISTS `adapcompounddb`.`searchablespectrumpeakview`;
 USE `adapcompounddb`;
 CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `adapcompounddb`.`searchablespectrumpeakview` AS select `adapcompounddb`.`peak`.`Id` AS `Id`,`adapcompounddb`.`peak`.`Mz` AS `Mz`,`adapcompounddb`.`peak`.`Intensity` AS `Intensity`,`adapcompounddb`.`peak`.`SpectrumId` AS `SpectrumId`,`adapcompounddb`.`spectrum`.`SubmissionId` AS `SubmissionId`,`adapcompounddb`.`spectrum`.`Consensus` AS `Consensus`,`adapcompounddb`.`spectrum`.`Precursor` AS `Precursor`,`adapcompounddb`.`spectrum`.`RetentionTime` AS `RetentionTime`,`adapcompounddb`.`spectrumcluster`.`ChromatographyType` AS `ChromatographyType` from ((`adapcompounddb`.`peak` join `adapcompounddb`.`spectrum`) join `adapcompounddb`.`spectrumcluster`) where ((`adapcompounddb`.`peak`.`SpectrumId` = `adapcompounddb`.`spectrum`.`Id`) and (`adapcompounddb`.`spectrum`.`ClusterId` = `adapcompounddb`.`spectrumcluster`.`Id`) and (`adapcompounddb`.`spectrum`.`Searchable` is true));
+
+-- -----------------------------------------------------
+-- View `adapcompounddb`.`searchspectrumpeakview`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `adapcompounddb`.`searchspectrumpeakview`;
+USE `adapcompounddb`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `adapcompounddb`.`searchspectrumpeakview` AS select `adapcompounddb`.`peak`.`Id` AS `Id`,`adapcompounddb`.`peak`.`Mz` AS `Mz`,`adapcompounddb`.`peak`.`Intensity` AS `Intensity`,`adapcompounddb`.`peak`.`SpectrumId` AS `SpectrumId`,`adapcompounddb`.`spectrum`.`SubmissionId` AS `SubmissionId`,`adapcompounddb`.`spectrum`.`Precursor` AS `Precursor`,`adapcompounddb`.`spectrum`.`RetentionTime` AS `RetentionTime`,`adapcompounddb`.`spectrum`.`ChromatographyType` AS `ChromatographyType` from (`adapcompounddb`.`peak` join `adapcompounddb`.`spectrum`) where ((`adapcompounddb`.`peak`.`SpectrumId` = `adapcompounddb`.`spectrum`.`Id`) and ((`adapcompounddb`.`spectrum`.`Consensus` is true) or (`adapcompounddb`.`spectrum`.`Reference` is true)));
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

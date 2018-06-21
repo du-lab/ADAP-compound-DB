@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.site.repositories;
 
 import org.dulab.adapcompounddb.models.QueryParameters;
+import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 import org.dulab.adapcompounddb.models.search.CriteriaBlock;
 import org.dulab.adapcompounddb.models.Hit;
@@ -23,5 +24,5 @@ public interface SpectrumRepositoryCustom {
 //
 //    List<Hit> precursorSearch(Spectrum querySpectrum, QueryParameters params);
 
-    List<SpectrumMatch> spectrumSearch(Spectrum querySpectrum, QueryParameters params);
+    List<SpectrumMatch> spectrumSearch(SearchType searchType, Spectrum querySpectrum, QueryParameters params);
 }

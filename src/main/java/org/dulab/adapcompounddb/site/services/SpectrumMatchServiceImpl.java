@@ -4,6 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.Hit;
+import org.dulab.adapcompounddb.models.QueryParameters;
+import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
@@ -43,6 +45,9 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     public void fillSpectrumMatchTable(float mzTolerance, float scoreThreshold) {
 
         List<SpectrumMatch> spectrumMatches = new ArrayList<>();
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setScoreThreshold(0.75);
+        queryParameters.setMzTolerance(0.01);
 
         for (ChromatographyType chromatographyType : ChromatographyType.values()) {
 
@@ -50,20 +55,22 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
             Iterable<Spectrum> unmatchedSpectra =
                     spectrumRepository.findUnmatchedByChromatographyType(chromatographyType);
-            long count = 0;
 
+            long count = 0;
             for (Spectrum querySpectrum : unmatchedSpectra) {
 
-                Iterable<Hit> hits = spectrumRepository.findSimilarSpectra(querySpectrum, mzTolerance, scoreThreshold);
+//                Iterable<Hit> hits = spectrumRepository.findSimilarSpectra(querySpectrum, mzTolerance, scoreThreshold);
 
-                for (Hit hit : hits) {
-                    SpectrumMatch match = new SpectrumMatch();
-                    match.setQuerySpectrum(querySpectrum);
-                    match.setMatchSpectrum(hit.getSpectrum());
-                    match.setScore(hit.getScore());
-                    spectrumMatches.add(match);
-                }
+                List<SpectrumMatch> matches = spectrumRepository.spectrumSearch(SearchType.CLUSTERING, querySpectrum, queryParameters);
+                spectrumMatches.addAll(matches);
 
+//                for (Hit hit : hits) {
+//                    SpectrumMatch match = new SpectrumMatch();
+//                    match.setQuerySpectrum(querySpectrum);
+//                    match.setMatchSpectrum(hit.getSpectrum());
+//                    match.setScore(hit.getScore());
+//                    spectrumMatches.add(match);
+//                }
                 ++count;
             }
 
@@ -134,7 +141,6 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
                 if (indices.length < minNumSpectra) continue;
 
                 SpectrumCluster cluster = new SpectrumCluster();
-                cluster.setChromatographyType(type);
                 cluster.setSize(indices.length);
 
                 cluster.setDiameter(distanceToSimilarity(Arrays
@@ -155,7 +161,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
                 cluster.getSpectra()
                         .forEach(s -> s.setCluster(cluster));
 
-                addConsensusSpectrum(cluster, mzTolerance);
+                addConsensusSpectrum(type, cluster, mzTolerance);
 
                 clusters.add(cluster);
             }
@@ -175,7 +181,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
                 .orElseThrow(() -> new EmptySearchResultException(id));
     }
 
-    private void addConsensusSpectrum(SpectrumCluster cluster, float mzTolerance) {
+    private void addConsensusSpectrum(ChromatographyType type, SpectrumCluster cluster, float mzTolerance) {
 
         Peak[] peaks = cluster.getSpectra()
                 .stream()
@@ -225,8 +231,9 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         nameProperty.setValue("Consensus Spectrum");
         nameProperty.setSpectrum(consensusSpectrum);
 
+        consensusSpectrum.setChromatographyType(type);
         consensusSpectrum.setConsensus(true);
-        consensusSpectrum.setReference(true);
+        consensusSpectrum.setReference(false);
         consensusSpectrum.setCluster(cluster);
         consensusSpectrum.setPeaks(consensusPeaks);
         consensusSpectrum.setProperties(Collections.singletonList(nameProperty));

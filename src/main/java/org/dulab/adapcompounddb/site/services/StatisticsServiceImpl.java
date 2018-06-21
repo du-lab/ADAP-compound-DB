@@ -26,7 +26,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         statistics.setNumSubmittedSpectra(
                 spectrumRepository.countByChromatographyTypeAndConsensusFalse(type));
         statistics.setNumConsensusSpectra(
-                spectrumRepository.countByClusterChromatographyTypeAndConsensusTrue(type));
+                spectrumRepository.countByChromatographyTypeAndConsensusTrue(type));
         statistics.setNumUnmatchedSpectra(
                 spectrumRepository.countUnmatchedBySubmissionChromatographyType(type));
         statistics.setNumSpectrumMatches(
