@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SubmissionDisease` (
   `Description` TEXT NULL DEFAULT NULL,
   PRIMARY KEY (`Id`))
   ENGINE = InnoDB
-  AUTO_INCREMENT = 3
+  AUTO_INCREMENT = 6
   DEFAULT CHARACTER SET = latin1;
 
 
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SubmissionSource` (
   `Description` TEXT NULL DEFAULT NULL,
   PRIMARY KEY (`Id`))
   ENGINE = InnoDB
-  AUTO_INCREMENT = 4
+  AUTO_INCREMENT = 6
   DEFAULT CHARACTER SET = latin1;
 
 
@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SubmissionSpecimen` (
   `Description` TEXT NULL DEFAULT NULL,
   PRIMARY KEY (`Id`))
   ENGINE = InnoDB
-  AUTO_INCREMENT = 8
+  AUTO_INCREMENT = 9
   DEFAULT CHARACTER SET = latin1;
 
 
@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`UserPrincipal` (
   PRIMARY KEY (`Id`),
   UNIQUE INDEX `UserPrincipal_Username_uindex` (`Username` ASC))
   ENGINE = InnoDB
-  AUTO_INCREMENT = 7
+  AUTO_INCREMENT = 8
   DEFAULT CHARACTER SET = utf8;
 
 
@@ -103,7 +103,6 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Submission` (
   `Filename` TEXT NOT NULL,
   `FileType` VARCHAR(30) NOT NULL,
   `File` LONGBLOB NOT NULL,
-  `ChromatographyType` VARCHAR(30) NOT NULL,
   `UserPrincipalId` BIGINT(20) UNSIGNED NOT NULL,
   `SourceId` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
   `SpecimenId` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
@@ -111,7 +110,6 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Submission` (
   PRIMARY KEY (`Id`),
   INDEX `Submission_DateTime_Id_index` (`DateTime` ASC, `Id` ASC),
   INDEX `Submission_UserPrincipalId_index` (`UserPrincipalId` ASC),
-  INDEX `Submission_ChromatographyType_index` (`ChromatographyType` ASC),
   INDEX `Submission_SubmissionSource_Id_fk_idx` (`SourceId` ASC),
   INDEX `Submission_SubmissionSpecimen_Id_fk_idx` (`SpecimenId` ASC),
   INDEX `Submission_SubmissionDesease_Id_fk_idx` (`DiseaseId` ASC),
@@ -130,7 +128,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Submission` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB
-  AUTO_INCREMENT = 11
+  AUTO_INCREMENT = 14
   DEFAULT CHARACTER SET = utf8;
 
 
@@ -140,12 +138,13 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Submission` (
 CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Spectrum` (
   `Id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `Name` TEXT NULL DEFAULT NULL,
+  `Precursor` DOUBLE NULL DEFAULT NULL,
+  `RetentionTime` DOUBLE NULL DEFAULT NULL,
   `SubmissionId` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
   `ClusterId` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
   `Consensus` TINYINT(1) NOT NULL DEFAULT '0',
-  `Precursor` DOUBLE NULL DEFAULT NULL,
-  `RetentionTime` DOUBLE NULL DEFAULT NULL,
-  `Searchable` TINYINT(1) NOT NULL DEFAULT '0',
+  `Reference` TINYINT(1) NOT NULL DEFAULT '0',
+  `ChromatographyType` VARCHAR(30) NOT NULL,
   PRIMARY KEY (`Id`),
   INDEX `Spectrum_SubmissionId_index` (`SubmissionId` ASC),
   INDEX `Spectrum_ClusterId_index` (`ClusterId` ASC),
@@ -161,7 +160,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Spectrum` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB
-  AUTO_INCREMENT = 2786
+  AUTO_INCREMENT = 3227
   DEFAULT CHARACTER SET = utf8;
 
 
@@ -182,7 +181,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Peak` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB
-  AUTO_INCREMENT = 210203
+  AUTO_INCREMENT = 273188
   DEFAULT CHARACTER SET = utf8;
 
 
@@ -229,7 +228,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SpectrumProperty` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB
-  AUTO_INCREMENT = 13682
+  AUTO_INCREMENT = 15005
   DEFAULT CHARACTER SET = utf8;
 
 

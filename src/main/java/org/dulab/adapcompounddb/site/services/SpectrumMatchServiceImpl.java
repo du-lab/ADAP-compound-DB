@@ -91,7 +91,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
             int count = 0;
 
             for (Spectrum spectrum : spectrumRepository
-                    .findAllByConsensusFalseAndSubmissionChromatographyType(type)) {
+                    .findAllByConsensusFalseAndChromatographyType(type)) {
                 spectrumIdToIndexMap.put(spectrum.getId(), count++);
                 spectrumIds.add(spectrum.getId());
             }
@@ -103,7 +103,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
                     .forEach(a -> Arrays.fill(a, 1.0));
 
             for (SpectrumMatch spectrumMatch : spectrumMatchRepository
-                    .findAllByQuerySpectrumSubmissionChromatographyType(type)) {
+                    .findAllByQuerySpectrumChromatographyType(type)) {
 
                 int queryIndex = spectrumIdToIndexMap.get(
                         spectrumMatch.getQuerySpectrum().getId());
@@ -226,7 +226,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         nameProperty.setSpectrum(consensusSpectrum);
 
         consensusSpectrum.setConsensus(true);
-        consensusSpectrum.setSearchable(true);
+        consensusSpectrum.setReference(true);
         consensusSpectrum.setCluster(cluster);
         consensusSpectrum.setPeaks(consensusPeaks);
         consensusSpectrum.setProperties(Collections.singletonList(nameProperty));

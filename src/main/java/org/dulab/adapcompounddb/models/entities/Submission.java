@@ -1,6 +1,5 @@
 package org.dulab.adapcompounddb.models.entities;
 
-import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.FileType;
 import org.dulab.adapcompounddb.validation.NotBlank;
 
@@ -41,9 +40,6 @@ public class Submission implements Serializable {
 
     @NotNull(message = "Raw file is required.")
     private byte[] file;
-
-    @NotNull(message = "Chromatography type is required.")
-    private ChromatographyType chromatographyType;
 
     @Valid
     private SubmissionSource source;
@@ -90,15 +86,6 @@ public class Submission implements Serializable {
 
     public void setDescription(String desription) {
         this.description = desription;
-    }
-
-    @Enumerated(EnumType.STRING)
-    public ChromatographyType getChromatographyType() {
-        return chromatographyType;
-    }
-
-    public void setChromatographyType(ChromatographyType chromatographyType) {
-        this.chromatographyType = chromatographyType;
     }
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -172,6 +159,7 @@ public class Submission implements Serializable {
         this.filename = filename;
     }
 
+    @Enumerated(EnumType.STRING)
     public FileType getFileType() {
         return fileType;
     }

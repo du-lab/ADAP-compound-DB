@@ -202,7 +202,7 @@ public class SearchController {
         }
 
         SpectrumSearchService service =
-                spectrumSearchServiceMap.get(querySpectrum.getSubmission().getChromatographyType());
+                spectrumSearchServiceMap.get(querySpectrum.getChromatographyType());
 
 
 

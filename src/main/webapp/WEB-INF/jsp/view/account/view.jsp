@@ -34,7 +34,7 @@
                         <small>${dulab:abbreviate(submission.description, 80)}</small>
                     </td>
                     <td>
-                        <small>${submission.chromatographyType.label}</small>
+                        <%--<small>${submission.chromatographyType.label}</small>--%>
                     </td>
                     <td>
                         <!-- more horiz -->

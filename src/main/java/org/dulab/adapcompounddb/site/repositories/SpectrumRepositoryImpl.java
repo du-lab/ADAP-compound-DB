@@ -138,7 +138,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     @Override
     public List<SpectrumMatch> spectrumSearch(Spectrum querySpectrum, QueryParameters params) {
         String sqlQuery = new SpectrumQueryBuilder(
-                querySpectrum.getSubmission().getChromatographyType(), params.getExcludeSpectra())
+                querySpectrum.getChromatographyType(), params.getExcludeSpectra())
                 .setSpectrum(querySpectrum, params.getMzTolerance(), params.getScoreThreshold())
                 .build();
 
@@ -202,7 +202,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                                 querySpectrum.getPrecursor() - mzTolerance,
                                 querySpectrum.getPrecursor() + mzTolerance))
                 .replace(":queryChromatographyType",
-                        querySpectrum.getSubmission().getChromatographyType().name());
+                        querySpectrum.getChromatographyType().name());
 
         @SuppressWarnings("unchecked")
         List<Object[]> resultList = entityManager

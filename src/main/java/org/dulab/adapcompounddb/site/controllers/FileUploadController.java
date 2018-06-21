@@ -67,7 +67,7 @@ public class FileUploadController {
         submission.setName(file.getOriginalFilename());
         submission.setFilename(file.getOriginalFilename());
         submission.setFileType(form.getFileType());
-        submission.setChromatographyType(form.getChromatographyType());
+//        submission.setChromatographyType(form.getChromatographyType());
 
         FileReaderService service = fileReaderServiceMap.get(form.fileType);
         if (service == null) {
@@ -78,7 +78,7 @@ public class FileUploadController {
 
         try {
             submission.setFile(file.getBytes());
-            submission.setSpectra(service.read(file.getInputStream()));
+            submission.setSpectra(service.read(file.getInputStream(), form.getChromatographyType()));
             for (Spectrum s : submission.getSpectra())
                 s.setSubmission(submission);
         }

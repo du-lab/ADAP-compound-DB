@@ -11,18 +11,18 @@ public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, Spec
     Iterable<Spectrum> findAllByMatchesIsEmpty();
 
     @Query("SELECT s FROM Spectrum s WHERE s.matches IS EMPTY " +
-            "AND s.consensus=FALSE AND s.submission.chromatographyType = ?1")
+            "AND s.consensus=FALSE AND s.chromatographyType = ?1")
     Iterable<Spectrum> findUnmatchedByChromatographyType(ChromatographyType chromatographyType);
 
-    Iterable<Spectrum> findAllByConsensusFalseAndSubmissionChromatographyType(ChromatographyType chromatographyType);
+    Iterable<Spectrum> findAllByConsensusFalseAndChromatographyType(ChromatographyType chromatographyType);
 
     long countByConsensusIsFalse();
 
-    long countBySubmissionChromatographyTypeAndConsensusFalse(ChromatographyType chromatographyType);
+    long countByChromatographyTypeAndConsensusFalse(ChromatographyType chromatographyType);
 
     long countByClusterChromatographyTypeAndConsensusTrue(ChromatographyType chromatographyType);
 
     @Query("SELECT COUNT(s) FROM Spectrum s WHERE s.matches IS EMPTY " +
-            "AND s.consensus=FALSE AND s.submission.chromatographyType = ?1")
+            "AND s.consensus=FALSE AND s.chromatographyType = ?1")
     long countUnmatchedBySubmissionChromatographyType(ChromatographyType chromatographyType);
 }

@@ -20,7 +20,6 @@
     </div>
     <p>Filename: <span class="highlighted">${submission.filename}</span></p>
     <p>File Type: <span class="highlighted">${submission.fileType.label}</span></p>
-    <p>Chromatography Type: <span class="highlighted">${submission.chromatographyType.label}</span></p>
     <p>Number of spectra: <span class="highlighted">${fn:length(submission.spectra)}</span></p>
 </section>
 
