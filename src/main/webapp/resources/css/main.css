@@ -242,6 +242,10 @@ section form textarea {
     border-radius: 3px;
 }
 
+section form input[type=text, disabled] {
+    color: #f2f2f2;
+}
+
 section form input[type=file] {
     cursor: pointer;
     border-radius: 3px;

@@ -115,19 +115,39 @@
             <form:form method="post" modelAttribute="searchForm">
                 <form:errors path="" cssClass="errors"/>
 
-                <div class="subsection">
-                    <form:label path="mzTolerance">M/z tolerance:</form:label><br/>
-                    <form:input path="mzTolerance"/><br/>
-                    <form:errors path="mzTolerance" cssClass="errors"/><br/>
+                <label>
+                    <form:checkbox path="scoreThresholdCheck" onchange="document.getElementById('scoreThreshold').disabled = !this.checked;"/>
+                    Spectral Similarity
+                </label><br/>
+                <form:label path="scoreThreshold">Matching Score Threshold</form:label><br/>
+                <form:input path="scoreThreshold"/><br/>
+                <form:errors path="scoreThreshold" cssClass="errors"/><br/>
 
-                    <%--<form:label path="numHits">Maximum number of hits:</form:label><br/>--%>
-                    <%--<form:input path="numHits"/><br/>--%>
-                    <%--<form:errors path="numHits" cssClass="errors"/><br/>--%>
+                <form:label path="mzTolerance">M/z tolerance</form:label><br/>
+                <form:input path="mzTolerance"/><br/>
+                <form:errors path="mzTolerance" cssClass="errors"/><br/>
 
-                    <form:label path="scoreThreshold">Matching score threshold:</form:label><br/>
-                    <form:input path="scoreThreshold"/><br/>
-                    <form:errors path="scoreThreshold" cssClass="errors"/><br/>
-                </div>
+                <label><form:checkbox path="massToleranceCheck"/>Mass Tolerance</label><br/>
+                <form:input path="massTolerance"/><br/>
+                <form:errors path="massTolerance" cssClass="errors"/><br/>
+
+                <label><form:checkbox path="retTimeToleranceCheck"/>Retention Time Tolerance</label><br/>
+                <form:input path="retTimeTolerance"/><br/>
+                <form:errors path="retTimeTolerance" cssClass="errors"/><br/>
+
+                <%--<div class="subsection">--%>
+                    <%--<form:label path="mzTolerance">M/z tolerance:</form:label><br/>--%>
+                    <%--<form:input path="mzTolerance"/><br/>--%>
+                    <%--<form:errors path="mzTolerance" cssClass="errors"/><br/>--%>
+
+                    <%--&lt;%&ndash;<form:label path="numHits">Maximum number of hits:</form:label><br/>&ndash;%&gt;--%>
+                    <%--&lt;%&ndash;<form:input path="numHits"/><br/>&ndash;%&gt;--%>
+                    <%--&lt;%&ndash;<form:errors path="numHits" cssClass="errors"/><br/>&ndash;%&gt;--%>
+
+                    <%--<form:label path="scoreThreshold">Matching score threshold:</form:label><br/>--%>
+                    <%--<form:input path="scoreThreshold"/><br/>--%>
+                    <%--<form:errors path="scoreThreshold" cssClass="errors"/><br/>--%>
+                <%--</div>--%>
 
                 <%--<div class="subsection">--%>
                     <%--<label>--%>

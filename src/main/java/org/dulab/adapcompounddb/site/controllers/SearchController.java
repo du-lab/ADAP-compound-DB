@@ -29,6 +29,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -255,24 +256,23 @@ public class SearchController {
 
     public static class SearchForm {
 
-        static final float THRESHOLD_FACTOR = 1000F;
+        private boolean scoreThresholdCheck = true;
 
-        @FloatMin(value = Float.MIN_VALUE, message = "M/z tolerance must be positive.")
+        @Min(value = 0, message = "M/z tolerance must be positive.")
         private float mzTolerance = 0.01F;
 
-//        @Min(value = 1, message = "Maximum number of hits must be greater than or equal to one.")
-//        private int numHits = 10;
+        @Min(value = 0, message = "Matching score threshold must be between 0 and 1000.")
+        @Max(value = 1000, message = "Matching score threshold must be between 0 and 1000.")
+        private int scoreThreshold;
 
-        @Range(min = 0, max = 1000, message = "Matching score threshold must be between 0 and 1000.")
-        private int scoreThreshold = 750;
+        private boolean massToleranceCheck = true;
 
-//        private boolean chromatographyTypeCheck;
-//
-//        private ChromatographyType chromatographyType;
-//
-//        private boolean submissionCategoryCheck;
-//
-//        private List<Long> submissionCategoryIds;
+        @Min(value = 0, message = "M/z tolerance must be positive.")
+        private float massTolerance = 0.01F;
+
+        private boolean retTimeToleranceCheck = false;
+
+        private float retTimeTolerance = 0.5F;
 
         public float getMzTolerance() {
             return mzTolerance;
@@ -282,13 +282,13 @@ public class SearchController {
             this.mzTolerance = mzTolerance;
         }
 
-//        public int getNumHits() {
-//            return numHits;
-//        }
-//
-//        public void setNumHits(int numHits) {
-//            this.numHits = numHits;
-//        }
+        public boolean isScoreThresholdCheck() {
+            return scoreThresholdCheck;
+        }
+
+        public void setScoreThresholdCheck(boolean scoreThresholdCheck) {
+            this.scoreThresholdCheck = scoreThresholdCheck;
+        }
 
         public int getScoreThreshold() {
             return scoreThreshold;
@@ -299,43 +299,39 @@ public class SearchController {
         }
 
         public float getFloatScoreThreshold() {
-            return scoreThreshold / THRESHOLD_FACTOR;
+            return scoreThreshold / 1000.0F;
         }
 
-        public void setFloatScoreThreshold(float scoreThreshold) {
-            this.scoreThreshold = Math.round(scoreThreshold * THRESHOLD_FACTOR);
+        public boolean isMassToleranceCheck() {
+            return massToleranceCheck;
         }
 
-//        public boolean isChromatographyTypeCheck() {
-//            return chromatographyTypeCheck;
-//        }
-//
-//        public void setChromatographyTypeCheck(boolean chromatographyTypeCheck) {
-//            this.chromatographyTypeCheck = chromatographyTypeCheck;
-//        }
-//
-//        public ChromatographyType getChromatographyType() {
-//            return chromatographyType;
-//        }
-//
-//        public void setChromatographyType(ChromatographyType chromatographyType) {
-//            this.chromatographyType = chromatographyType;
-//        }
-//
-//        public boolean isSubmissionCategoryCheck() {
-//            return submissionCategoryCheck;
-//        }
-//
-//        public void setSubmissionCategoryCheck(boolean submissionCategoryCheck) {
-//            this.submissionCategoryCheck = submissionCategoryCheck;
-//        }
-//
-//        public List<Long> getSubmissionCategoryIds() {
-//            return submissionCategoryIds;
-//        }
-//
-//        public void setSubmissionCategoryIds(List<Long> submissionCategoryIds) {
-//            this.submissionCategoryIds = submissionCategoryIds;
-//        }
+        public void setMassToleranceCheck(boolean massToleranceCheck) {
+            this.massToleranceCheck = massToleranceCheck;
+        }
+
+        public float getMassTolerance() {
+            return massTolerance;
+        }
+
+        public void setMassTolerance(float massTolerance) {
+            this.massTolerance = massTolerance;
+        }
+
+        public boolean isRetTimeToleranceCheck() {
+            return retTimeToleranceCheck;
+        }
+
+        public void setRetTimeToleranceCheck(boolean retTimeToleranceCheck) {
+            this.retTimeToleranceCheck = retTimeToleranceCheck;
+        }
+
+        public float getRetTimeTolerance() {
+            return retTimeTolerance;
+        }
+
+        public void setRetTimeTolerance(float retTimeTolerance) {
+            this.retTimeTolerance = retTimeTolerance;
+        }
     }
 }
