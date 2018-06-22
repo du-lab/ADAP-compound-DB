@@ -253,7 +253,6 @@ public class SubmissionController {
         @NotBlank(message = "The field Name is required.")
         private String name;
 
-        @NotBlank(message = "The field Description is required.")
         private String description;
 
         private Long submissionSourceId;

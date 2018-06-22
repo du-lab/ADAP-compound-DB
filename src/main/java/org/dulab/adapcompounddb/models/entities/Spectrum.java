@@ -22,6 +22,7 @@ public class Spectrum implements Serializable {
     private static final String NAME_PROPERTY_NAME = "Name";
     private static final String PRECURSOR_MASS_PROPERTY_NAME = "PrecursorMZ";
     private static final String RETENTION_TIME_PROPERTY_NAME = "RT";
+    private static final String REFERENCE_PROPERTY_NAME = "IS_REFERENCE";
 
     // *************************
     // ***** Entity fields *****
@@ -135,6 +136,9 @@ public class Spectrum implements Serializable {
 
             else if (property.getName().equalsIgnoreCase(RETENTION_TIME_PROPERTY_NAME))
                 this.setRetentionTime(Double.valueOf(property.getValue()));
+
+            else if (property.getName().equalsIgnoreCase(REFERENCE_PROPERTY_NAME))
+                this.setReference(true);
         }
     }
 

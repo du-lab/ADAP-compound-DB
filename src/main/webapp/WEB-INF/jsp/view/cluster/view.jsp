@@ -119,9 +119,9 @@
     var plot = new TwoSpectraPlot('plot', ${dulab:spectrumToJson(cluster.consensusSpectrum)});
 
     // Add pie chart
-    addPieChart('sourcePieChart', ${dulab:clusterSourceToJson(cluster, submissionSources)});
-    addPieChart('specimenPieChart', ${dulab:clusterSpecimenToJson(cluster, submissionSpecies)});
-    addPieChart('diseasePieChart', ${dulab:clusterDiseaseToJson(cluster, submissionDiseases)});
+    addPieChart('sourcePieChart', ${dulab:clusterSourceToJson(cluster.spectra, submissionSources)});
+    addPieChart('specimenPieChart', ${dulab:clusterSpecimenToJson(cluster.spectra, submissionSpecies)});
+    addPieChart('diseasePieChart', ${dulab:clusterDiseaseToJson(cluster.spectra, submissionDiseases)});
 </script>
 
 <jsp:include page="/WEB-INF/jsp/includes/column_right_news.jsp"/>

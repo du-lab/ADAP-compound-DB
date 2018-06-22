@@ -57,7 +57,8 @@ public class SearchController {
     public SearchController(UserPrincipalService userPrincipalService,
                             SubmissionService submissionService,
                             @Qualifier("spectrumServiceImpl") SpectrumService spectrumService,
-                            @Qualifier("GCSpectrumSearchServiceImpl") SpectrumSearchService gcSpectrumSearchService) {
+                            @Qualifier("GCSpectrumSearchServiceImpl") SpectrumSearchService gcSpectrumSearchService,
+                            @Qualifier("LCSpectrumSearchServiceImpl") SpectrumSearchService lcSpectrumSearchService) {
 
         this.userPrincipalService = userPrincipalService;
         this.submissionService = submissionService;
@@ -65,6 +66,8 @@ public class SearchController {
 
         this.spectrumSearchServiceMap = new HashMap<>();
         this.spectrumSearchServiceMap.put(ChromatographyType.GAS, gcSpectrumSearchService);
+        this.spectrumSearchServiceMap.put(ChromatographyType.LIQUID_POSITIVE, lcSpectrumSearchService);
+        this.spectrumSearchServiceMap.put(ChromatographyType.LIQUID_NEGATIVE, lcSpectrumSearchService);
     }
 
     @ModelAttribute

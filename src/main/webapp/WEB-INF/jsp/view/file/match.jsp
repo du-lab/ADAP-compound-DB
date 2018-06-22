@@ -68,14 +68,24 @@
 
                         <tr data-spectrum='${dulab:spectrumToJson(match.matchSpectrum)}'>
                             <td>${score}</td>
-                            <td><a href="/cluster/${match.matchSpectrum.cluster.id}/">${match.matchSpectrum.name}</a></td>
-                            <td>${match.matchSpectrum.cluster.size}</td>
-                            <td>${dulab:jsonToHtml(dulab:clusterSourceToJson(match.matchSpectrum.cluster, submissionSources))}</td>
-                            <td>${dulab:jsonToHtml(dulab:clusterSpecimenToJson(match.matchSpectrum.cluster, submissionSpecies))}</td>
-                            <td>${dulab:jsonToHtml(dulab:clusterDiseaseToJson(match.matchSpectrum.cluster, submissionDiseases))}</td>
-                            <!--more horiz-->
-                            <td><a href="/cluster/${match.matchSpectrum.cluster.id}/"><i
-                                    class="material-icons">&#xE5D3;</i></a></td>
+                            <c:if test="${match.matchSpectrum.consensus}">
+                                <td><a href="/cluster/${match.matchSpectrum.cluster.id}/">${match.matchSpectrum.name}</a></td>
+                                <td>${match.matchSpectrum.cluster.size}</td>
+                                <td>${dulab:jsonToHtml(dulab:clusterSourceToJson(match.matchSpectrum.cluster.spectra, submissionSources))}</td>
+                                <td>${dulab:jsonToHtml(dulab:clusterSpecimenToJson(match.matchSpectrum.cluster.spectra, submissionSpecies))}</td>
+                                <td>${dulab:jsonToHtml(dulab:clusterDiseaseToJson(match.matchSpectrum.cluster.spectra, submissionDiseases))}</td>
+                                <!--more horiz-->
+                                <td><a href="/cluster/${match.matchSpectrum.cluster.id}/"><i class="material-icons">&#xE5D3;</i></a></td>
+                            </c:if>
+                            <c:if test="${match.matchSpectrum.reference}">
+                                <td><a href="/spectrum/${match.matchSpectrum.id}/">${match.matchSpectrum.name}</a></td>
+                                <td></td>
+                                <td>${dulab:jsonToHtml(dulab:clusterSourceToJson([match.matchSpectrum], submissionSources))}</td>
+                                <td>${dulab:jsonToHtml(dulab:clusterSpecimenToJson([match.matchSpectrum], submissionSpecies))}</td>
+                                <td>${dulab:jsonToHtml(dulab:clusterDiseaseToJson([match.matchSpectrum], submissionDiseases))}</td>
+                                <!--more horiz-->
+                                <td><a href="/spectrum/${match.matchSpectrum.id}/"><i class="material-icons">&#xE5D3;</i></a></td>
+                            </c:if>
                         </tr>
                     </c:forEach>
                     </tbody>

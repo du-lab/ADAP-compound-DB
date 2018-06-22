@@ -48,7 +48,7 @@
         <name>clusterSourceToJson</name>
         <function-class>org.dulab.adapcompounddb.site.controllers.ControllerUtils</function-class>
         <function-signature>
-            javax.json.JsonArray clusterSourceToJson(org.dulab.adapcompounddb.models.entities.SpectrumCluster,java.util.List)
+            javax.json.JsonArray clusterSourceToJson(java.util.List,java.util.List)
         </function-signature>
     </function>
 
@@ -59,7 +59,7 @@
         <name>clusterSpecimenToJson</name>
         <function-class>org.dulab.adapcompounddb.site.controllers.ControllerUtils</function-class>
         <function-signature>
-            javax.json.JsonArray clusterSpecimenToJson(org.dulab.adapcompounddb.models.entities.SpectrumCluster,java.util.List)
+            javax.json.JsonArray clusterSpecimenToJson(java.util.List,java.util.List)
         </function-signature>
     </function>
 
@@ -70,7 +70,7 @@
         <name>clusterDiseaseToJson</name>
         <function-class>org.dulab.adapcompounddb.site.controllers.ControllerUtils</function-class>
         <function-signature>
-            javax.json.JsonArray clusterDiseaseToJson(org.dulab.adapcompounddb.models.entities.SpectrumCluster,java.util.List)
+            javax.json.JsonArray clusterDiseaseToJson(java.util.List,java.util.List)
         </function-signature>
     </function>
 

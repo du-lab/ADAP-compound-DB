@@ -71,7 +71,7 @@ public class ControllerUtils {
         return jsonObjectBuilder.build();
     }
 
-    public static JsonArray clusterSourceToJson(SpectrumCluster cluster, List<SubmissionSource> sources) {
+    public static JsonArray clusterSourceToJson(List<Spectrum> spectra, List<SubmissionSource> sources) {
 
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
 
@@ -79,7 +79,7 @@ public class ControllerUtils {
         jsonArrayBuilder.add(
                 Json.createObjectBuilder()
                         .add("label", "Undefined")
-                        .add("count", cluster.getSpectra()
+                        .add("count", spectra
                                 .stream()
                                 .map(Spectrum::getSubmission)
                                 .filter(Objects::nonNull)
@@ -91,7 +91,7 @@ public class ControllerUtils {
             jsonArrayBuilder.add(
                     Json.createObjectBuilder()
                             .add("label", source.getName())
-                            .add("count", cluster.getSpectra()
+                            .add("count", spectra
                                     .stream()
                                     .map(Spectrum::getSubmission)
                                     .filter(Objects::nonNull)
@@ -103,7 +103,7 @@ public class ControllerUtils {
         return jsonArrayBuilder.build();
     }
 
-    public static JsonArray clusterSpecimenToJson(SpectrumCluster cluster, List<SubmissionSpecimen> species) {
+    public static JsonArray clusterSpecimenToJson(List<Spectrum> spectra, List<SubmissionSpecimen> species) {
 
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
 
@@ -111,7 +111,7 @@ public class ControllerUtils {
         jsonArrayBuilder.add(
                 Json.createObjectBuilder()
                         .add("label", "Undefined")
-                        .add("count", cluster.getSpectra()
+                        .add("count", spectra
                                 .stream()
                                 .map(Spectrum::getSubmission)
                                 .filter(Objects::nonNull)
@@ -123,7 +123,7 @@ public class ControllerUtils {
             jsonArrayBuilder.add(
                     Json.createObjectBuilder()
                             .add("label", specimen.getName())
-                            .add("count", cluster.getSpectra()
+                            .add("count", spectra
                                     .stream()
                                     .map(Spectrum::getSubmission)
                                     .filter(Objects::nonNull)
@@ -135,7 +135,7 @@ public class ControllerUtils {
         return jsonArrayBuilder.build();
     }
 
-    public static JsonArray clusterDiseaseToJson(SpectrumCluster cluster, List<SubmissionDisease> diseases) {
+    public static JsonArray clusterDiseaseToJson(List<Spectrum> spectra, List<SubmissionDisease> diseases) {
 
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
 
@@ -143,7 +143,7 @@ public class ControllerUtils {
         jsonArrayBuilder.add(
                 Json.createObjectBuilder()
                         .add("label", "Undefined")
-                        .add("count", cluster.getSpectra()
+                        .add("count", spectra
                                 .stream()
                                 .map(Spectrum::getSubmission)
                                 .filter(Objects::nonNull)
@@ -155,7 +155,7 @@ public class ControllerUtils {
             jsonArrayBuilder.add(
                     Json.createObjectBuilder()
                             .add("label", disease.getName())
-                            .add("count", cluster.getSpectra()
+                            .add("count", spectra
                                     .stream()
                                     .map(Spectrum::getSubmission)
                                     .filter(Objects::nonNull)
