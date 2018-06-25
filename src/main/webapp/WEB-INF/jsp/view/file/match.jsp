@@ -144,19 +144,21 @@
                 <form:input path="mzTolerance"/><br/>
                 <form:errors path="mzTolerance" cssClass="errors"/><br/>
 
-                <label><form:checkbox path="massToleranceCheck"
-                                      onchange="$('#massTolerance').prop('disabled', !this.checked);"/>
-                    Mass Tolerance
-                </label><br/>
-                <form:input path="massTolerance"/><br/>
-                <form:errors path="massTolerance" cssClass="errors"/><br/>
+                <c:if test="${querySpectrum.chromatographyType != 'GAS'}">
+                    <label><form:checkbox path="massToleranceCheck"
+                                          onchange="$('#massTolerance').prop('disabled', !this.checked);"/>
+                        Mass Tolerance
+                    </label><br/>
+                    <form:input path="massTolerance"/><br/>
+                    <form:errors path="massTolerance" cssClass="errors"/><br/>
 
-                <label><form:checkbox path="retTimeToleranceCheck"
-                                      onchange="$('#retTimeTolerance').prop('disabled', !this.checked);"/>
-                    Retention Time Tolerance
-                </label><br/>
-                <form:input path="retTimeTolerance"/><br/>
-                <form:errors path="retTimeTolerance" cssClass="errors"/><br/>
+                    <label><form:checkbox path="retTimeToleranceCheck"
+                                          onchange="$('#retTimeTolerance').prop('disabled', !this.checked);"/>
+                        Retention Time Tolerance
+                    </label><br/>
+                    <form:input path="retTimeTolerance"/><br/>
+                    <form:errors path="retTimeTolerance" cssClass="errors"/><br/>
+                </c:if>
 
                 <div align="center">
                     <input type="submit" value="Search"/>
