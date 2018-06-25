@@ -15,34 +15,34 @@ public class QueryParameters {
     private Set<Spectrum> excludeSpectra = null;
 
     public Double getRetTimeTolerance() {
-        return Objects.requireNonNull(retTimeTolerance, "Parameter RetTimeTolerance is not defined.");
+        return retTimeTolerance;
     }
 
-    public void setRetTimeTolerance(double retTimeTolerance) {
+    public void setRetTimeTolerance(Double retTimeTolerance) {
         this.retTimeTolerance = retTimeTolerance;
     }
 
-    public double getPrecursorTolerance() {
-        return Objects.requireNonNull(precursorTolerance, "Parameter PrecursorTolerance is not defined.");
+    public Double getPrecursorTolerance() {
+        return precursorTolerance;
     }
 
-    public void setPrecursorTolerance(double precursorTolerance) {
+    public void setPrecursorTolerance(Double precursorTolerance) {
         this.precursorTolerance = precursorTolerance;
     }
 
-    public double getMzTolerance() {
-        return Objects.requireNonNull(mzTolerance, "Parameter MzTolerance is not defined.");
+    public Double getMzTolerance() {
+        return mzTolerance;
     }
 
-    public void setMzTolerance(double mzTolerance) {
+    public void setMzTolerance(Double mzTolerance) {
         this.mzTolerance = mzTolerance;
     }
 
-    public double getScoreThreshold() {
-        return Objects.requireNonNull(scoreThreshold, "Parameter ScoreThreshold is not defined.");
+    public Double getScoreThreshold() {
+        return scoreThreshold;
     }
 
-    public void setScoreThreshold(double scoreThreshold) {
+    public void setScoreThreshold(Double scoreThreshold) {
         this.scoreThreshold = scoreThreshold;
     }
 

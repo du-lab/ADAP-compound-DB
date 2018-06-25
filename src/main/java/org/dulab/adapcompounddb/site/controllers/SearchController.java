@@ -208,35 +208,12 @@ public class SearchController {
         SpectrumSearchService service =
                 spectrumSearchServiceMap.get(querySpectrum.getChromatographyType());
 
-
-
-
-//        CriteriaBlock criteria = new CriteriaBlock(SetOperator.AND);
-//        if (form.isChromatographyTypeCheck())
-//            criteria.add(
-//                    new Criterion("ChromatographyType", ComparisonOperator.EQ, form.getChromatographyType()));
-//        if (form.isSubmissionCategoryCheck()) {
-//            CriteriaBlock categories = new CriteriaBlock(SetOperator.OR);
-//            for (long id : form.getSubmissionCategoryIds())
-//                categories.add(
-//                        new Criterion("SubmissionCategoryId", ComparisonOperator.EQ, id));
-//            criteria.add(new Criterion("", ComparisonOperator.BLOCK, categories));
-//        }
-
-//        try {
-//            List<Hit> hits = spectrumService.match(querySpectrum, criteria,
-//                    form.getMzTolerance(), form.getNumHits(), form.getFloatScoreThreshold());
-//            model.addAttribute("hits", hits);
-//
-////            form.saveParameters(userPrincipalService, user);
-//
-//        } catch (EmptySearchResultException e) {
-//            model.addAttribute("searchResultMessage", e.getMessage());
-//        }
-
         QueryParameters parameters = new QueryParameters();
-        parameters.setMzTolerance(form.getMzTolerance());
-        parameters.setScoreThreshold(form.getFloatScoreThreshold());
+        parameters.setScoreThreshold(form.isScoreThresholdCheck() ? form.getFloatScoreThreshold() : null);
+        parameters.setMzTolerance(form.isScoreThresholdCheck() ? form.getMzTolerance() : null);
+        parameters.setPrecursorTolerance(form.isMassToleranceCheck() ? form.getMassTolerance() : null);
+        parameters.setRetTimeTolerance(form.isRetTimeToleranceCheck() ? form.getRetTimeTolerance() : null);
+
         List<SpectrumMatch> matches = service.search(querySpectrum, parameters);
 
         model.addAttribute("matches", matches);
@@ -259,26 +236,26 @@ public class SearchController {
         private boolean scoreThresholdCheck = true;
 
         @Min(value = 0, message = "M/z tolerance must be positive.")
-        private float mzTolerance = 0.01F;
+        private double mzTolerance = 0.01;
 
         @Min(value = 0, message = "Matching score threshold must be between 0 and 1000.")
         @Max(value = 1000, message = "Matching score threshold must be between 0 and 1000.")
-        private int scoreThreshold;
+        private int scoreThreshold = 750;
 
         private boolean massToleranceCheck = true;
 
         @Min(value = 0, message = "M/z tolerance must be positive.")
-        private float massTolerance = 0.01F;
+        private double massTolerance = 0.01;
 
         private boolean retTimeToleranceCheck = false;
 
-        private float retTimeTolerance = 0.5F;
+        private double retTimeTolerance = 0.5;
 
-        public float getMzTolerance() {
+        public double getMzTolerance() {
             return mzTolerance;
         }
 
-        public void setMzTolerance(float mzTolerance) {
+        public void setMzTolerance(double mzTolerance) {
             this.mzTolerance = mzTolerance;
         }
 
@@ -298,8 +275,8 @@ public class SearchController {
             this.scoreThreshold = scoreThreshold;
         }
 
-        public float getFloatScoreThreshold() {
-            return scoreThreshold / 1000.0F;
+        public double getFloatScoreThreshold() {
+            return scoreThreshold / 1000.0;
         }
 
         public boolean isMassToleranceCheck() {
@@ -310,11 +287,11 @@ public class SearchController {
             this.massToleranceCheck = massToleranceCheck;
         }
 
-        public float getMassTolerance() {
+        public double getMassTolerance() {
             return massTolerance;
         }
 
-        public void setMassTolerance(float massTolerance) {
+        public void setMassTolerance(double massTolerance) {
             this.massTolerance = massTolerance;
         }
 
@@ -326,11 +303,11 @@ public class SearchController {
             this.retTimeToleranceCheck = retTimeToleranceCheck;
         }
 
-        public float getRetTimeTolerance() {
+        public double getRetTimeTolerance() {
             return retTimeTolerance;
         }
 
-        public void setRetTimeTolerance(float retTimeTolerance) {
+        public void setRetTimeTolerance(double retTimeTolerance) {
             this.retTimeTolerance = retTimeTolerance;
         }
     }

@@ -138,10 +138,21 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
     @Override
     public List<SpectrumMatch> spectrumSearch(SearchType searchType, Spectrum querySpectrum, QueryParameters params) {
-        String sqlQuery = new SpectrumQueryBuilder(
-                searchType, querySpectrum.getChromatographyType(), params.getExcludeSpectra())
-                .setSpectrum(querySpectrum, params.getMzTolerance(), params.getScoreThreshold())
-                .build();
+//        String sqlQuery = new SpectrumQueryBuilder(
+//                searchType, querySpectrum.getChromatographyType(), params.getExcludeSpectra())
+//                .setSpectrum(querySpectrum, params.getMzTolerance(), params.getScoreThreshold())
+//                .build();
+
+        SpectrumQueryBuilder queryBuilder = new SpectrumQueryBuilder(
+                searchType, querySpectrum.getChromatographyType(), params.getExcludeSpectra());
+        if (params.getScoreThreshold() != null && params.getMzTolerance() != null)
+            queryBuilder.setSpectrum(querySpectrum, params.getMzTolerance(), params.getScoreThreshold());
+        if (params.getPrecursorTolerance() != null)
+            queryBuilder.setPrecursorRange(querySpectrum.getPrecursor(), params.getPrecursorTolerance());
+        if (params.getRetTimeTolerance() != null)
+            queryBuilder.setRetentionTimeRange(querySpectrum.getRetentionTime(), params.getRetTimeTolerance());
+
+        String sqlQuery = queryBuilder.build();
 
         @SuppressWarnings("unchecked")
         List<Object[]> resultList = entityManager

@@ -69,22 +69,36 @@
                         <tr data-spectrum='${dulab:spectrumToJson(match.matchSpectrum)}'>
                             <td>${score}</td>
                             <c:if test="${match.matchSpectrum.consensus}">
-                                <td><a href="/cluster/${match.matchSpectrum.cluster.id}/">${match.matchSpectrum.name}</a></td>
+                                <td>
+                                    <a href="/cluster/${match.matchSpectrum.cluster.id}/">${match.matchSpectrum.name}</a><br/>
+                                    <small>
+                                        <c:if test="${match.matchSpectrum.precursor != null}">Precursor: ${match.matchSpectrum.precursor};</c:if>
+                                        <c:if test="${match.matchSpectrum.retentionTime != null}">Ret Time: ${match.matchSpectrum.retentionTime};</c:if>
+                                    </small>
+                                </td>
                                 <td>${match.matchSpectrum.cluster.size}</td>
                                 <td>${dulab:jsonToHtml(dulab:clusterSourceToJson(match.matchSpectrum.cluster.spectra, submissionSources))}</td>
                                 <td>${dulab:jsonToHtml(dulab:clusterSpecimenToJson(match.matchSpectrum.cluster.spectra, submissionSpecies))}</td>
                                 <td>${dulab:jsonToHtml(dulab:clusterDiseaseToJson(match.matchSpectrum.cluster.spectra, submissionDiseases))}</td>
                                 <!--more horiz-->
-                                <td><a href="/cluster/${match.matchSpectrum.cluster.id}/"><i class="material-icons">&#xE5D3;</i></a></td>
+                                <td><a href="/cluster/${match.matchSpectrum.cluster.id}/"><i class="material-icons">&#xE5D3;</i></a>
+                                </td>
                             </c:if>
                             <c:if test="${match.matchSpectrum.reference}">
-                                <td><a href="/spectrum/${match.matchSpectrum.id}/">${match.matchSpectrum.name}</a></td>
+                                <td>
+                                    <a href="/spectrum/${match.matchSpectrum.id}/">${match.matchSpectrum.name}</a><br/>
+                                    <small>
+                                        <c:if test="${match.matchSpectrum.precursor != null}">Precursor: ${match.matchSpectrum.precursor};</c:if>
+                                        <c:if test="${match.matchSpectrum.retentionTime != null}">Ret Time: ${match.matchSpectrum.retentionTime};</c:if>
+                                    </small>
+                                </td>
                                 <td></td>
                                 <td>${dulab:jsonToHtml(dulab:clusterSourceToJson([match.matchSpectrum], submissionSources))}</td>
                                 <td>${dulab:jsonToHtml(dulab:clusterSpecimenToJson([match.matchSpectrum], submissionSpecies))}</td>
                                 <td>${dulab:jsonToHtml(dulab:clusterDiseaseToJson([match.matchSpectrum], submissionDiseases))}</td>
                                 <!--more horiz-->
-                                <td><a href="/spectrum/${match.matchSpectrum.id}/"><i class="material-icons">&#xE5D3;</i></a></td>
+                                <td><a href="/spectrum/${match.matchSpectrum.id}/"><i
+                                        class="material-icons">&#xE5D3;</i></a></td>
                             </c:if>
                         </tr>
                     </c:forEach>
@@ -116,7 +130,10 @@
                 <form:errors path="" cssClass="errors"/>
 
                 <label>
-                    <form:checkbox path="scoreThresholdCheck" onchange="document.getElementById('scoreThreshold').disabled = !this.checked;"/>
+                    <form:checkbox path="scoreThresholdCheck" onchange="
+                        $('#scoreThreshold').prop('disabled', !this.checked);
+                        $('#mzTolerance').prop('disabled', !this.checked);
+                    "/>
                     Spectral Similarity
                 </label><br/>
                 <form:label path="scoreThreshold">Matching Score Threshold</form:label><br/>
@@ -127,55 +144,19 @@
                 <form:input path="mzTolerance"/><br/>
                 <form:errors path="mzTolerance" cssClass="errors"/><br/>
 
-                <label><form:checkbox path="massToleranceCheck"/>Mass Tolerance</label><br/>
+                <label><form:checkbox path="massToleranceCheck"
+                                      onchange="$('#massTolerance').prop('disabled', !this.checked);"/>
+                    Mass Tolerance
+                </label><br/>
                 <form:input path="massTolerance"/><br/>
                 <form:errors path="massTolerance" cssClass="errors"/><br/>
 
-                <label><form:checkbox path="retTimeToleranceCheck"/>Retention Time Tolerance</label><br/>
+                <label><form:checkbox path="retTimeToleranceCheck"
+                                      onchange="$('#retTimeTolerance').prop('disabled', !this.checked);"/>
+                    Retention Time Tolerance
+                </label><br/>
                 <form:input path="retTimeTolerance"/><br/>
                 <form:errors path="retTimeTolerance" cssClass="errors"/><br/>
-
-                <%--<div class="subsection">--%>
-                    <%--<form:label path="mzTolerance">M/z tolerance:</form:label><br/>--%>
-                    <%--<form:input path="mzTolerance"/><br/>--%>
-                    <%--<form:errors path="mzTolerance" cssClass="errors"/><br/>--%>
-
-                    <%--&lt;%&ndash;<form:label path="numHits">Maximum number of hits:</form:label><br/>&ndash;%&gt;--%>
-                    <%--&lt;%&ndash;<form:input path="numHits"/><br/>&ndash;%&gt;--%>
-                    <%--&lt;%&ndash;<form:errors path="numHits" cssClass="errors"/><br/>&ndash;%&gt;--%>
-
-                    <%--<form:label path="scoreThreshold">Matching score threshold:</form:label><br/>--%>
-                    <%--<form:input path="scoreThreshold"/><br/>--%>
-                    <%--<form:errors path="scoreThreshold" cssClass="errors"/><br/>--%>
-                <%--</div>--%>
-
-                <%--<div class="subsection">--%>
-                    <%--<label>--%>
-                        <%--<form:checkbox path="chromatographyTypeCheck"--%>
-                                       <%--onchange="document.getElementById('chromatographyTypeSelect').disabled = !this.checked"/>--%>
-                        <%--Chromatography Type--%>
-                    <%--</label><br/>--%>
-                    <%--<form:select id="chromatographyTypeSelect"--%>
-                                 <%--path="chromatographyType"--%>
-                                 <%--items="${chromatographyTypes}"--%>
-                                 <%--itemLabel="label"--%>
-                                 <%--disabled="true"/><br/>--%>
-                    <%--<form:errors path="chromatographyType" cssClass="errors"/><br/>--%>
-
-                    <%--<label>--%>
-                        <%--<form:checkbox path="submissionCategoryCheck"--%>
-                                       <%--onchange="document.getElementById('submissionCategorySelect').disabled = !this.checked"/>--%>
-                        <%--Submission Categories--%>
-                    <%--</label><br/>--%>
-                    <%--<form:select id="submissionCategorySelect"--%>
-                                 <%--path="submissionCategoryIds"--%>
-                                 <%--items="${submissionCategories}"--%>
-                                 <%--itemValue="Id"--%>
-                                 <%--disabled="true"--%>
-                                 <%--size="${fn:length(submissionCategories)}"--%>
-                                 <%--cssStyle="max-height: 200px;"/><br/>--%>
-                    <%--<form:errors path="submissionCategoryIds" cssClass="errors"/><br/>--%>
-                <%--</div>--%>
 
                 <div align="center">
                     <input type="submit" value="Search"/>
@@ -204,6 +185,11 @@
         });
 
         table.rows(':eq(0)').select();
+
+        $('#scoreThreshold').prop('disabled', !$('#scoreThresholdCheck1').prop('checked'));
+        $('#mzTolerance').prop('disabled', !$('#scoreThresholdCheck1').prop('checked'));
+        $('#massTolerance').prop('disabled', !$('#massToleranceCheck1').prop('checked'));
+        $('#retTimeTolerance').prop('disabled', !$('#retTimeToleranceCheck1').prop('checked'));
     });
 </script>
 
