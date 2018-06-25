@@ -86,6 +86,16 @@ public class SubmissionController {
         return "file/view";
     }
 
+    /**********************
+     ***** File Clear *****
+     **********************/
+
+    @RequestMapping(value = "/file/clear/", method = RequestMethod.GET)
+    public String clear(HttpSession session) {
+        Submission.clear(session);
+        return "redirect:/file/upload/";
+    }
+
     /************************************
      ***** File / Submission Raw View *****
      ************************************/

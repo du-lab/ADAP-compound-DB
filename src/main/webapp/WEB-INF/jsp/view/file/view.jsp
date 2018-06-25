@@ -154,10 +154,15 @@
 
 
                 <div align="center">
-                    <input type="submit" value="<c:choose>
-                        <c:when test="${submission.id > 0}">Save</c:when>
-                        <c:otherwise>Submit</c:otherwise>
-                    </c:choose>"/>
+                    <c:choose>
+                        <c:when test="${submission.id > 0}">
+                            <input type="submit" value="Save"/>
+                        </c:when>
+                        <c:otherwise>
+                            <input type="submit" value="Submit"/>
+                            <a href="clear/" class="button">Clear</a>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
             </form:form>
         </div>
