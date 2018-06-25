@@ -5,6 +5,9 @@ function TwoSpectraPlot(divId, topSpectrum) {
     var label_offset = 40;
     var padding = {'top': 40, 'right': 40, 'bottom': 240, 'left': 40};
 
+    var plotWidth = width - padding['left'] - padding['right'];
+    var plotHeight = height - padding['top'] - padding['bottom'];
+
     var tooltip = d3.select('#' + divId)
         .append('div')
         .attr('class', 'tooltip');
@@ -81,6 +84,10 @@ function TwoSpectraPlot(divId, topSpectrum) {
         .style('text-anchor', 'middle')
         .text('');
 
+    // ---------------------
+    // ----- Plot axes -----
+    // ---------------------
+
     var xAxis = d3.axisBottom()
         .scale(xScale);
 
@@ -88,6 +95,14 @@ function TwoSpectraPlot(divId, topSpectrum) {
         .attr('class', 'axis')
         .attr('transform', 'translate(0, ' + (height - padding['bottom']) + ')')
         .call(xAxis);
+
+    svg.append('g')
+        .attr('class', 'grid')
+        .attr('transform', 'translate(0, ' + (height - padding['bottom']) + ')')
+        .call(d3.axisBottom(xScale)
+            .ticks(5)
+            .tickSize(-plotHeight)
+            .tickFormat(''));
 
     svg.append('text')
         .attr('class', 'label')
@@ -104,6 +119,14 @@ function TwoSpectraPlot(divId, topSpectrum) {
         .attr('transform', 'translate(' + padding['left'] + ', 0)')
         .call(yAxis);
 
+    svg.append('g')
+        .attr('class', 'grid')
+        .attr('transform', 'translate(' + padding['left'] + ', 0)')
+        .call(d3.axisLeft(yScale)
+            .ticks(5)
+            .tickSize(-plotWidth)
+            .tickFormat(''));
+
     svg.append('text')
         .attr('class', 'label')
         .attr('transform', 'rotate(-90)')
@@ -112,6 +135,10 @@ function TwoSpectraPlot(divId, topSpectrum) {
         .attr('dy', '1em')
         .style('text-anchor', 'middle')
         .text('intensity');
+
+    // -----------------------
+    // ----- Plot legend -----
+    // -----------------------
 
     var legendRectSize = 18;
     var legendSpacing = 6;
@@ -141,6 +168,10 @@ function TwoSpectraPlot(divId, topSpectrum) {
 
     svg.select('#topSpectrumName')
         .text(topSpectrum.name);
+
+    // -------------------------
+    // ----- Update method -----
+    // -------------------------
 
     this.update = function (bottomSpectrum) {
 

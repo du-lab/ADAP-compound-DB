@@ -1,0 +1,6 @@
+.grid line {
+    opacity: 0.7;
+    stroke: lightgrey;
+}
+
+.grid path {stroke-width: 0;}
