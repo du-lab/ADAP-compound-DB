@@ -34,7 +34,7 @@
         <form:errors path="fileType" cssClass="errors"/><br/>
 
         <form:label path="file">File:</form:label><br/>
-        <input type="file" name="file"/><br/>
+        <input type="file" name="file" accept=".msp"/><br/>
         <form:errors path="file" cssClass="errors"/>
         <div align="center">
             <input type="submit" value="Upload"/>

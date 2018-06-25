@@ -19,6 +19,7 @@ import smile.clustering.linkage.CompleteLinkage;
 import smile.clustering.linkage.Linkage;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -31,13 +32,31 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     private final SpectrumMatchRepository spectrumMatchRepository;
     private final SpectrumClusterRepository spectrumClusterRepository;
 
+    private final Map<ChromatographyType, QueryParameters> queryParametersMap;
+
     @Autowired
     public SpectrumMatchServiceImpl(SpectrumRepository spectrumRepository,
                                     SpectrumMatchRepository spectrumMatchRepository,
                                     SpectrumClusterRepository spectrumClusterRepository) {
+
         this.spectrumRepository = spectrumRepository;
         this.spectrumMatchRepository = spectrumMatchRepository;
         this.spectrumClusterRepository = spectrumClusterRepository;
+
+        QueryParameters gcQueryParameters = new QueryParameters()
+                .setScoreThreshold(0.75)
+                .setMzTolerance(0.01);
+
+        QueryParameters lcQueryParameters = new QueryParameters()
+                .setScoreThreshold(0.75)
+                .setMzTolerance(0.01)
+                .setPrecursorTolerance(0.01)
+                .setRetTimeTolerance(0.5);
+
+        this.queryParametersMap = new HashMap<>();
+        this.queryParametersMap.put(ChromatographyType.GAS, gcQueryParameters);
+        this.queryParametersMap.put(ChromatographyType.LIQUID_POSITIVE, lcQueryParameters);
+        this.queryParametersMap.put(ChromatographyType.LIQUID_NEGATIVE, lcQueryParameters);
     }
 
     @Transactional
@@ -45,11 +64,12 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     public void fillSpectrumMatchTable(float mzTolerance, float scoreThreshold) {
 
         List<SpectrumMatch> spectrumMatches = new ArrayList<>();
-        QueryParameters queryParameters = new QueryParameters();
-        queryParameters.setScoreThreshold(0.75);
-        queryParameters.setMzTolerance(0.01);
 
         for (ChromatographyType chromatographyType : ChromatographyType.values()) {
+
+            QueryParameters params = queryParametersMap.get(chromatographyType);
+            if (params == null)
+                throw new IllegalStateException("Clustering query parameters are not specified.");
 
             long startingTime = System.currentTimeMillis();
 
@@ -58,19 +78,9 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
             long count = 0;
             for (Spectrum querySpectrum : unmatchedSpectra) {
-
-//                Iterable<Hit> hits = spectrumRepository.findSimilarSpectra(querySpectrum, mzTolerance, scoreThreshold);
-
-                List<SpectrumMatch> matches = spectrumRepository.spectrumSearch(SearchType.CLUSTERING, querySpectrum, queryParameters);
-                spectrumMatches.addAll(matches);
-
-//                for (Hit hit : hits) {
-//                    SpectrumMatch match = new SpectrumMatch();
-//                    match.setQuerySpectrum(querySpectrum);
-//                    match.setMatchSpectrum(hit.getSpectrum());
-//                    match.setScore(hit.getScore());
-//                    spectrumMatches.add(match);
-//                }
+                spectrumMatches.addAll(
+                        spectrumRepository.spectrumSearch(
+                                SearchType.CLUSTERING, querySpectrum, params));
                 ++count;
             }
 
@@ -98,7 +108,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
             int count = 0;
 
             for (Spectrum spectrum : spectrumRepository
-                    .findAllByConsensusFalseAndChromatographyType(type)) {
+                    .findAllByConsensusFalseAndReferenceFalseAndChromatographyType(type)) {
                 spectrumIdToIndexMap.put(spectrum.getId(), count++);
                 spectrumIds.add(spectrum.getId());
             }
@@ -190,7 +200,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
         double[][] mzDistance = new double[peaks.length][peaks.length];
         for (int i = 0; i < peaks.length; ++i)
-            for (int j = i + 1; j <peaks.length; ++j) {
+            for (int j = i + 1; j < peaks.length; ++j) {
                 double distance = Math.abs(peaks[i].getMz() - peaks[j].getMz());
                 mzDistance[i][j] = distance;
                 mzDistance[j][i] = distance;

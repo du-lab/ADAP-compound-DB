@@ -14,7 +14,8 @@ public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, Spec
             "AND s.consensus=FALSE AND s.reference=FALSE AND s.chromatographyType = ?1")
     Iterable<Spectrum> findUnmatchedByChromatographyType(ChromatographyType chromatographyType);
 
-    Iterable<Spectrum> findAllByConsensusFalseAndChromatographyType(ChromatographyType chromatographyType);
+    Iterable<Spectrum> findAllByConsensusFalseAndReferenceFalseAndChromatographyType(
+            ChromatographyType chromatographyType);
 
     long countByConsensusIsFalse();
 

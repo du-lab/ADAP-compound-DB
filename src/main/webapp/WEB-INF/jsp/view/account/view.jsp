@@ -1,4 +1,5 @@
 <%--@elvariable id="submissionList" type="java.util.List<org.dulab.adapcompounddb.models.entities.Submission>"--%>
+<%--@elvariable id="user" type="org.dulab.adapcompounddb.models.entities.UserPrincipal"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
@@ -16,7 +17,8 @@
 <section>
     <h1>Submissions</h1>
     <div align="center">
-        <table>
+        <table id="submission_table" class="display" style="width: 100%;">
+            <thead>
             <tr>
                 <th>ID</th>
                 <th>Date / Time</th>
@@ -24,6 +26,8 @@
                 <th>Properties</th>
                 <th>View / Delete</th>
             </tr>
+            </thead>
+            <tbody>
             <c:forEach items="${submissionList}" var="submission">
                 <tr>
                     <td>${submission.id}</td>
@@ -45,9 +49,18 @@
                     </td>
                 </tr>
             </c:forEach>
+            </tbody>
         </table>
     </div>
 </section>
+
+<script src="<c:url value="/resources/js/DataTables/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
+<script src="<c:url value="/resources/js/DataTables/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
+<script>
+    $(document).ready(function() {
+        $('#submission_table').DataTable();
+    })
+</script>
 
 <!-- End the middle column -->
 

@@ -33,43 +33,6 @@ public class SpectrumServiceOtherImpl implements SpectrumService {
                 .orElseThrow(EmptySearchResultException::new);
     }
 
-    @Override
-    @Transactional
-    public List<Hit> match(Spectrum querySpectrum, CriteriaBlock criteria,
-                           float mzTolerance, int numHits, float scoreThreshold) {
-
-        Queue<Hit> topNumHits = new PriorityQueue<>(numHits, Comparator.comparingDouble(Hit::getScore));
-
-        long startTime = System.currentTimeMillis();
-        for (Spectrum spectrum : spectrumRepository.findAll()) {
-
-            if (querySpectrum.equals(spectrum)) continue;
-
-            float score = compare(querySpectrum, spectrum, mzTolerance);
-
-            if (score < scoreThreshold) continue;
-
-            Hit hit = new Hit();
-            hit.setScore(score);
-            hit.setSpectrum(spectrum);
-
-            if (topNumHits.size() < numHits)
-                topNumHits.add(hit);
-            else if (topNumHits.peek().getScore() < score) {
-                topNumHits.remove();
-                topNumHits.add(hit);
-            }
-        }
-        long estimatedTime = System.currentTimeMillis() - startTime;
-
-        LOGGER.info("Search of similar spectra in " + estimatedTime + " milliseconds.");
-
-        List<Hit> hits = new ArrayList<>(topNumHits);
-        hits.sort(Comparator.comparingDouble(h -> -h.getScore()));
-
-        return hits;
-    }
-
     private static float compare(Spectrum spectrum1, Spectrum spectrum2, float mzTolerance) {
 
         float sum = 0F;
@@ -79,11 +42,5 @@ public class SpectrumServiceOtherImpl implements SpectrumService {
                     sum += Math.sqrt(peak1.getIntensity() * peak2.getIntensity());
 
         return sum * sum;
-    }
-
-    @Override
-    @Transactional
-    public long getNumberOfSubmittedSpectra() {
-        return spectrumRepository.countByConsensusIsFalse();
     }
 }

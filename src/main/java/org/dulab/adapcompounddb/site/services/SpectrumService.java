@@ -13,10 +13,4 @@ import java.util.List;
 public interface SpectrumService {
 
     Spectrum find(long id);
-
-    List<Hit> match(@NotNull(message = "Query spectrum is required.") @Valid Spectrum querySpectrum,
-                    @NotNull(message = "List of search criteria is required") CriteriaBlock criteria,
-                    float mzTolerance, int numHits, float scoreTolerance);
-
-    long getNumberOfSubmittedSpectra();
 }

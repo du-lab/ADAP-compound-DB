@@ -28,8 +28,9 @@
     <p>
         Click on name to view the mass spectrum
     </p>
-    <div align="center" style="overflow: auto; max-height: 400px">
-        <table>
+    <div align="center">
+        <table id="spectrum_table" class="display" style="width: 100%;">
+            <thead>
             <tr>
                 <th>No</th>
                 <th>Name</th>
@@ -38,6 +39,8 @@
                 <%--<th>Properties</th>--%>
                 <th>View / Search / Delete</th>
             </tr>
+            </thead>
+            <tbody>
             <c:if test="${submission.spectra.size() > 0}">
                 <c:forEach items="${submission.spectra}" var="spectrum" varStatus="loop">
                     <tr>
@@ -61,6 +64,7 @@
                     </tr>
                 </c:forEach>
             </c:if>
+            </tbody>
         </table>
     </div>
 </section>
@@ -159,6 +163,14 @@
         </div>
     </div>
 </section>
+
+<script src="<c:url value="/resources/js/DataTables/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
+<script src="<c:url value="/resources/js/DataTables/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
+<script>
+    $(document).ready(function() {
+        $('#spectrum_table').DataTable();
+    })
+</script>
 
 <!-- End the middle column -->
 

@@ -18,47 +18,53 @@ public class QueryParameters {
         return retTimeTolerance;
     }
 
-    public void setRetTimeTolerance(Double retTimeTolerance) {
+    public QueryParameters setRetTimeTolerance(Double retTimeTolerance) {
         this.retTimeTolerance = retTimeTolerance;
+        return this;
     }
 
     public Double getPrecursorTolerance() {
         return precursorTolerance;
     }
 
-    public void setPrecursorTolerance(Double precursorTolerance) {
+    public QueryParameters setPrecursorTolerance(Double precursorTolerance) {
         this.precursorTolerance = precursorTolerance;
+        return this;
     }
 
     public Double getMzTolerance() {
         return mzTolerance;
     }
 
-    public void setMzTolerance(Double mzTolerance) {
+    public QueryParameters setMzTolerance(Double mzTolerance) {
         this.mzTolerance = mzTolerance;
+        return this;
     }
 
     public Double getScoreThreshold() {
         return scoreThreshold;
     }
 
-    public void setScoreThreshold(Double scoreThreshold) {
+    public QueryParameters setScoreThreshold(Double scoreThreshold) {
         this.scoreThreshold = scoreThreshold;
+        return this;
     }
 
     public Set<Spectrum> getExcludeSpectra() {
         return excludeSpectra;
     }
 
-    public void setExcludeSpectra(Set<Spectrum> excludeSpectra) {
+    public QueryParameters setExcludeSpectra(Set<Spectrum> excludeSpectra) {
         this.excludeSpectra = excludeSpectra;
+        return this;
     }
 
-    public void addExludeSpectra(Set<Spectrum> excludeSpectra) {
+    public QueryParameters addExludeSpectra(Set<Spectrum> excludeSpectra) {
         if (this.excludeSpectra == null)
             this.excludeSpectra = excludeSpectra;
         else
             this.excludeSpectra.addAll(excludeSpectra);
+        return this;
     }
 
     public static QueryParameters getDefault() {
