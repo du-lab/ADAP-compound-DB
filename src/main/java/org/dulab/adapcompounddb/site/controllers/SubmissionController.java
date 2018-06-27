@@ -100,68 +100,74 @@ public class SubmissionController {
      ***** File / Submission Raw View *****
      ************************************/
 
-    @RequestMapping(value = "/file/fileview/", method = RequestMethod.GET)
-    public String fileRawView(HttpSession session, HttpServletResponse response) throws IOException {
+    @RequestMapping(value = "/file/{fileIndex:\\d+}/view/", method = RequestMethod.GET)
+    public String fileRawView(@PathVariable("fileIndex") int fileIndex,
+                              HttpSession session, HttpServletResponse response) throws IOException {
+
         Submission submission = Submission.from(session);
 
         if (submission == null)
             return redirectFileUpload();
 
-        rawView(response, Submission.from(session));
+        rawView(response, submission.getFiles().get(fileIndex));
         return null;
     }
 
-    @RequestMapping(value = "/submission/{submissionId:\\d+}/fileview/", method = RequestMethod.GET)
-    public String rawView(@PathVariable("submissionId") long id, HttpServletResponse response, Model model)
-            throws IOException {
+    @RequestMapping(value = "/submission/{submissionId:\\d+}/{fileIndex:\\d+}/view/", method = RequestMethod.GET)
+    public String rawView(@PathVariable("submissionId") long id,
+                          @PathVariable("fileIndex") int fileIndex,
+                          HttpServletResponse response, Model model) throws IOException {
 
         Submission submission = submissionService.findSubmission(id);
 
         if (submission == null)
             return submissionNotFound(model, id);
 
-        rawView(response, submission);
+        rawView(response, submission.getFiles().get(fileIndex));
         return null;
     }
 
-    private void rawView(HttpServletResponse response, Submission submission) throws IOException {
+    private void rawView(HttpServletResponse response, File file) throws IOException {
         response.setContentType("text/plain");
-        response.setHeader("Content-Disposition", "inline; filename=\"" + submission.getFilename() + "\"");
-        response.getOutputStream().write(submission.getFile());
+        response.setHeader("Content-Disposition", "inline; filename=\"" + file.getName() + "\"");
+        response.getOutputStream().write(file.getContent());
     }
 
     /****************************************
      ***** File / Submission Raw Download *****
      ****************************************/
 
-    @RequestMapping(value = "/file/filedownload/", method = RequestMethod.GET)
-    public String fileRawDownload(HttpSession session, HttpServletResponse response, Model model)
-            throws IOException {
+    @RequestMapping(value = "/file/{fileIndex:\\d+}/download/", method = RequestMethod.GET)
+    public String fileRawDownload(@PathVariable("fileIndex") int fileIndex,
+                                  HttpSession session,
+                                  HttpServletResponse response) throws IOException {
 
         Submission submission = Submission.from(session);
         if (submission == null)
             return redirectFileUpload();
 
-        rawDownload(response, submission);
+        rawDownload(response, submission.getFiles().get(fileIndex));
         return null;
     }
 
-    @RequestMapping(value = "/submission/{submissionId:\\d+}/filedownload/", method = RequestMethod.GET)
-    public String submissionRawDownload(@PathVariable("submissionId") long id, HttpServletResponse response, Model model)
+    @RequestMapping(value = "/submission/{submissionId:\\d+}/{fileIndex:\\d+}/download/", method = RequestMethod.GET)
+    public String submissionRawDownload(@PathVariable("submissionId") long id,
+                                        @PathVariable("fileIndex") int fileIndex,
+                                        HttpServletResponse response, Model model)
             throws IOException {
 
         Submission submission = submissionService.findSubmission(id);
         if (submission == null)
             return submissionNotFound(model, id);
 
-        rawDownload(response, submission);
+        rawDownload(response, submission.getFiles().get(fileIndex));
         return null;
     }
 
-    private void rawDownload(HttpServletResponse response, Submission submission) throws IOException {
+    private void rawDownload(HttpServletResponse response, File file) throws IOException {
         response.setContentType("text/plain");
-        response.setHeader("Content-Disposition", "attachment; filename=\"" + submission.getFilename() + "\"");
-        response.getOutputStream().write(submission.getFile());
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
+        response.getOutputStream().write(file.getContent());
     }
 
     /**********************************

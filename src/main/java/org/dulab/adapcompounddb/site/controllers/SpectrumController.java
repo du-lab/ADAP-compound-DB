@@ -34,23 +34,33 @@ public class SpectrumController {
         return spectrum(spectrum, model);
     }
 
-    @RequestMapping(value = "/submission/{submissionId:\\d+}/{spectrumListIndex:\\d+}/")
+    @RequestMapping(value = "/submission/{submissionId:\\d+}/{fileIndex:\\d+}/{spectrumIndex:\\d+}/")
     public String spectrum(@PathVariable("submissionId") long submissionId,
-                           @PathVariable("spectrumListIndex") int spectrumListIndex,
+                           @PathVariable("fileIndex") int fileIndex,
+                           @PathVariable("spectrumIndex") int spectrumIndex,
                            Model model) {
 
         Submission submission = submissionService.findSubmission(submissionId);
-        Spectrum spectrum = submission.getSpectra().get(spectrumListIndex);
+        Spectrum spectrum = submission
+                .getFiles()
+                .get(fileIndex)
+                .getSpectra()
+                .get(spectrumIndex);
 
         return spectrum(spectrum, model);
     }
 
-    @RequestMapping(value = "/file/{spectrumListIndex:\\d+}/", method = RequestMethod.GET)
-    public String spectrum(@PathVariable("spectrumListIndex") int listIndex,
+    @RequestMapping(value = "/file/{fileIndex:\\d+}/{spectrumIndex:\\d+}/", method = RequestMethod.GET)
+    public String spectrum(@PathVariable("fileIndex") int fileIndex,
+                           @PathVariable("spectrumIndex") int spectrumIndex,
                            HttpSession session, Model model) {
 
         Submission submission = Submission.from(session);
-        Spectrum spectrum = submission.getSpectra().get(listIndex);
+        Spectrum spectrum = submission
+                .getFiles()
+                .get(fileIndex)
+                .getSpectra()
+                .get(spectrumIndex);
 
         return spectrum(spectrum, model);
     }

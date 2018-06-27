@@ -32,7 +32,7 @@ public class Spectrum implements Serializable {
 
     private long id;
 
-    private Submission submission;
+    private File file;
 
     @NotNull(message = "Peak list is required.")
     private List<Peak> peaks;
@@ -78,13 +78,13 @@ public class Spectrum implements Serializable {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "SubmissionId", referencedColumnName = "Id")
-    public Submission getSubmission() {
-        return submission;
+    @JoinColumn(name = "FileId", referencedColumnName = "Id")
+    public File getFile() {
+        return file;
     }
 
-    public void setSubmission(Submission submission) {
-        this.submission = submission;
+    public void setFile(File file) {
+        this.file = file;
     }
 
     @OneToMany(

@@ -25,7 +25,7 @@
                     <small>${dulab:abbreviate(querySpectrum.properties, 80)}</small>
                 </td>
                 <td>
-                    ${querySpectrum.submission.name}<br/>
+                    ${querySpectrum.file.submission.name}<br/>
                     <small>${querySpectrum.chromatographyType.label}</small>
                 </td>
             </tr>

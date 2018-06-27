@@ -33,9 +33,9 @@
         <form:radiobuttons path="fileType" items="${fileTypeList}" itemLabel="label"/><br/>
         <form:errors path="fileType" cssClass="errors"/><br/>
 
-        <form:label path="file">File:</form:label><br/>
-        <input type="file" name="file" accept=".msp"/><br/>
-        <form:errors path="file" cssClass="errors"/>
+        <form:label path="files">File:</form:label><br/>
+        <input type="file" name="files" accept=".msp" multiple/><br/>
+        <form:errors path="files" cssClass="errors"/>
         <div align="center">
             <input type="submit" value="Upload"/>
         </div>

@@ -81,7 +81,9 @@ public class ControllerUtils {
                         .add("label", "Undefined")
                         .add("count", spectra
                                 .stream()
-                                .map(Spectrum::getSubmission)
+                                .map(Spectrum::getFile)
+                                .filter(Objects::nonNull)
+                                .map(File::getSubmission)
                                 .filter(Objects::nonNull)
                                 .filter(s -> s.getSource() == null)
                                 .count()));
@@ -93,7 +95,9 @@ public class ControllerUtils {
                             .add("label", source.getName())
                             .add("count", spectra
                                     .stream()
-                                    .map(Spectrum::getSubmission)
+                                    .map(Spectrum::getFile)
+                                    .filter(Objects::nonNull)
+                                    .map(File::getSubmission)
                                     .filter(Objects::nonNull)
                                     .map(Submission::getSource)
                                     .filter(Objects::nonNull)
@@ -113,7 +117,9 @@ public class ControllerUtils {
                         .add("label", "Undefined")
                         .add("count", spectra
                                 .stream()
-                                .map(Spectrum::getSubmission)
+                                .map(Spectrum::getFile)
+                                .filter(Objects::nonNull)
+                                .map(File::getSubmission)
                                 .filter(Objects::nonNull)
                                 .filter(s -> s.getSpecimen() == null)
                                 .count()));
@@ -125,7 +131,9 @@ public class ControllerUtils {
                             .add("label", specimen.getName())
                             .add("count", spectra
                                     .stream()
-                                    .map(Spectrum::getSubmission)
+                                    .map(Spectrum::getFile)
+                                    .filter(Objects::nonNull)
+                                    .map(File::getSubmission)
                                     .filter(Objects::nonNull)
                                     .map(Submission::getSpecimen)
                                     .filter(Objects::nonNull)
@@ -145,7 +153,9 @@ public class ControllerUtils {
                         .add("label", "Undefined")
                         .add("count", spectra
                                 .stream()
-                                .map(Spectrum::getSubmission)
+                                .map(Spectrum::getFile)
+                                .filter(Objects::nonNull)
+                                .map(File::getSubmission)
                                 .filter(Objects::nonNull)
                                 .filter(s -> s.getDisease() == null)
                                 .count()));
@@ -157,7 +167,9 @@ public class ControllerUtils {
                             .add("label", disease.getName())
                             .add("count", spectra
                                     .stream()
-                                    .map(Spectrum::getSubmission)
+                                    .map(Spectrum::getFile)
+                                    .filter(Objects::nonNull)
+                                    .map(File::getSubmission)
                                     .filter(Objects::nonNull)
                                     .map(Submission::getDisease)
                                     .filter(Objects::nonNull)

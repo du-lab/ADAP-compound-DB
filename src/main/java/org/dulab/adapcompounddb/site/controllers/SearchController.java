@@ -2,22 +2,15 @@ package org.dulab.adapcompounddb.site.controllers;
 
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.ChromatographyType;
-import org.dulab.adapcompounddb.models.Hit;
 import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
-import org.dulab.adapcompounddb.models.search.ComparisonOperator;
-import org.dulab.adapcompounddb.models.search.CriteriaBlock;
-import org.dulab.adapcompounddb.models.search.Criterion;
-import org.dulab.adapcompounddb.models.search.SetOperator;
 import org.dulab.adapcompounddb.site.services.SpectrumSearchService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
-import org.dulab.adapcompounddb.validation.FloatMin;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.dulab.adapcompounddb.site.services.UserPrincipalService;
-import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -31,7 +24,6 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,15 +83,16 @@ public class SearchController {
 //    }
 
     @RequestMapping(
-            value = "/submission/{submissionId:\\d+}/{spectrumListIndex:\\d+}/search/",
+            value = "/submission/{submissionId:\\d+}/{fileIndex:\\d+}/{spectrumIndex:\\d+}/search/",
             method = RequestMethod.GET)
     public String search(@PathVariable("submissionId") long submissionId,
-                         @PathVariable("spectrumListIndex") int spectrumListIndex,
+                         @PathVariable("fileIndex") int fileIndex,
+                         @PathVariable("spectrumIndex") int spectrumIndex,
                          HttpSession session, Model model) {
 
         Spectrum spectrum;
         try {
-            spectrum = getQuerySpectrum(submissionId, spectrumListIndex);
+            spectrum = getQuerySpectrum(submissionId, fileIndex, spectrumIndex);
 
         } catch (EmptySearchResultException e) {
             model.addAttribute("errorMessage", e.getMessage());
@@ -109,15 +102,20 @@ public class SearchController {
         return searchGet(spectrum, UserPrincipal.from(session), model);
     }
 
-    @RequestMapping(value = "/file/{spectrumListIndex:\\d+}/search/", method = RequestMethod.GET)
-    public String search(@PathVariable("spectrumListIndex") int spectrumListIndex,
+    @RequestMapping(value = "/file/{fileIndex:\\d+}/{spectrumIndex:\\d+}/search/", method = RequestMethod.GET)
+    public String search(@PathVariable("fileIndex") int fileIndex,
+                         @PathVariable("spectrumIndex") int spectrumIndex,
                          HttpSession session, Model model) {
 
         Submission submission = Submission.from(session);
         if (submission == null)
             return "redirect:/file/upload/";
 
-        Spectrum spectrum = submission.getSpectra().get(spectrumListIndex);
+        Spectrum spectrum = submission
+                .getFiles()
+                .get(fileIndex)
+                .getSpectra()
+                .get(spectrumIndex);
 
         return searchGet(spectrum, UserPrincipal.from(session), model);
     }
@@ -148,15 +146,16 @@ public class SearchController {
     }
 
     @RequestMapping(
-            value = "/submission/{submissionId:\\d+}/{spectrumListIndex:\\d+}/search/",
+            value = "/submission/{submissionId:\\d+}/{fileIndex:\\d+}/{spectrumIndex:\\d+}/search/",
             method = RequestMethod.POST)
     public ModelAndView search(@PathVariable("submissionId") long submissionId,
-                               @PathVariable("spectrumListIndex") int spectrumListIndex,
+                               @PathVariable("fileIndex") int fileIndex,
+                               @PathVariable("spectrumIndex") int spectrumIndex,
                                HttpSession session, Model model, @Valid SearchForm searchForm, Errors errors) {
 
         Spectrum spectrum;
         try {
-            spectrum = getQuerySpectrum(submissionId, spectrumListIndex);
+            spectrum = getQuerySpectrum(submissionId, fileIndex, spectrumIndex);
 
         } catch (EmptySearchResultException e) {
             model.addAttribute("errorMessage", e.getMessage());
@@ -166,15 +165,20 @@ public class SearchController {
         return searchPost(spectrum, UserPrincipal.from(session), searchForm, model, errors);
     }
 
-    @RequestMapping(value = "/file/{spectrumListIndex:\\d+}/search/", method = RequestMethod.POST)
-    public ModelAndView search(@PathVariable("spectrumListIndex") int spectrumListIndex,
-                         HttpSession session, Model model, @Valid SearchForm form, Errors errors) {
+    @RequestMapping(value = "/file/{fileIndex:\\d+}/{spectrumIndex:\\d+}/search/", method = RequestMethod.POST)
+    public ModelAndView search(@PathVariable("fileIndex") int fileIndex,
+                               @PathVariable("spectrumIndex") int spectrumIndex,
+                               HttpSession session, Model model, @Valid SearchForm form, Errors errors) {
 
         Submission submission = Submission.from(session);
         if (submission == null)
             return new ModelAndView(new RedirectView("/file/upload/"));
 
-        Spectrum spectrum = submission.getSpectra().get(spectrumListIndex);
+        Spectrum spectrum = submission
+                .getFiles()
+                .get(fileIndex)
+                .getSpectra()
+                .get(spectrumIndex);
 
         return searchPost(spectrum, UserPrincipal.from(session), form, model, errors);
     }
@@ -225,10 +229,12 @@ public class SearchController {
     }
 
 
-    private Spectrum getQuerySpectrum(long submissionId, int spectrumListIndex) {
+    private Spectrum getQuerySpectrum(long submissionId, int fileIndex, int spectrumIndex) {
         return submissionService.findSubmission(submissionId)
+                .getFiles()
+                .get(fileIndex)
                 .getSpectra()
-                .get(spectrumListIndex);
+                .get(spectrumIndex);
     }
 
     public static class SearchForm {

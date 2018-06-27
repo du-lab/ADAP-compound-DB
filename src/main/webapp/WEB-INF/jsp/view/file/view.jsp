@@ -11,57 +11,79 @@
 <!-- Start the middle column -->
 
 <section>
-    <h1>File content</h1>
-    <div align="right" style="float: right">
-        <p><a href="filedownload/" class="button" target="_blank">
-            Download file</a></p>
-        <p><a href="fileview/" class="button" target="_blank">
-            View file</a></p>
-    </div>
-    <p>Filename: <span class="highlighted">${submission.filename}</span></p>
-    <p>File Type: <span class="highlighted">${submission.fileType.label}</span></p>
-    <p>Number of spectra: <span class="highlighted">${fn:length(submission.spectra)}</span></p>
+    <h1>Files</h1>
+    <table id="file_table" class="display" style="width: 100%; clear:none;">
+        <%--<thead>--%>
+        <%--<tr>--%>
+            <%--<th>File</th>--%>
+            <%--<th>Type</th>--%>
+            <%--<th>Size</th>--%>
+            <%--<th></th>--%>
+        <%--</tr>--%>
+        <%--</thead>--%>
+        <tbody>
+        <c:forEach items="${submission.files}" var="file" varStatus="loop">
+            <tr>
+                <td><a href="${loop.index}/view/" target="_blank">${file.name}</a></td>
+                <td>${file.fileType.label}</td>
+                <td>${file.spectra.size()} spectra</td>
+                <td>
+                    <a href="${loop.index}/view/" target="_blank">
+                        <i class="material-icons" title="View">attach_file</i>
+                    </a>
+                    <a href="${loop.index}/download/" target="_blank">
+                        <i class="material-icons" title="Download">save_alt</i>
+                    </a>
+                </td>
+            </tr>
+        </c:forEach>
+        </tbody>
+    </table>
 </section>
 
 <section>
     <h1>Mass spectra</h1>
-    <p>
-        Click on name to view the mass spectrum
-    </p>
     <div align="center">
         <table id="spectrum_table" class="display" style="width: 100%;">
             <thead>
             <tr>
-                <th>No</th>
+                <th></th>
                 <th>Name</th>
                 <th>Ret Time (min)</th>
                 <th>Precursor mass</th>
-                <%--<th>Properties</th>--%>
+                <th>File</th>
                 <th>View / Search / Delete</th>
             </tr>
             </thead>
             <tbody>
-            <c:if test="${submission.spectra.size() > 0}">
-                <c:forEach items="${submission.spectra}" var="spectrum" varStatus="loop">
-                    <tr>
-                        <td>${loop.index + 1}</td>
-                        <td><a href="${loop.index}/">${spectrum}</a><br/>
-                            <small>${dulab:abbreviate(spectrum.properties, 80)}</small>
-                        </td>
-                        <td>${spectrum.retentionTime}</td>
-                        <td>${spectrum.precursor}</td>
-                            <%--<td>${dulab:abbreviate(submission.spectra[i].properties, 80)}</td>--%>
-                        <td>
-                            <!-- more horiz -->
-                            <a href="${loop.index}/"><i class="material-icons" title="View spectrum">&#xE5D3;</i></a>
-                            <!-- search -->
-                            <a href="${loop.index}/search/"><i class="material-icons"
-                                                               title="Search spectrum">&#xE8B6;</i></a>
-                            <!-- delete -->
-                            <a href="${loop.index}/delete/"><i class="material-icons"
-                                                               title="Delete spectrum">&#xE872;</i></a>
-                        </td>
-                    </tr>
+            <c:if test="${submission.files.size() > 0}">
+                <c:forEach items="${submission.files}" var="file" varStatus="fileLoop">
+                    <c:forEach items="${file.spectra}" var="spectrum" varStatus="spectrumLoop">
+                        <tr>
+                            <td></td>
+                                <%--<td>${loop.index + 1}</td>--%>
+                            <td><a href="${fileLoop.index}/${spectrumLoop.index}/">${spectrum}</a><br/>
+                                    <%--<small>${dulab:abbreviate(spectrum.properties, 80)}</small>--%>
+                            </td>
+                            <td>${spectrum.retentionTime}</td>
+                            <td>${spectrum.precursor}</td>
+                            <td>${file.name}</td>
+                            <td>
+                                <!-- more horiz -->
+                                <a href="${fileLoop.index}/${spectrumLoop.index}/">
+                                    <i class="material-icons" title="View spectrum">&#xE5D3;</i>
+                                </a>
+                                <!-- search -->
+                                <a href="${fileLoop.index}/${spectrumLoop.index}/search/">
+                                    <i class="material-icons" title="Search spectrum">&#xE8B6;</i>
+                                </a>
+                                <!-- delete -->
+                                <a href="${fileLoop.index}/${spectrumLoop.index}/delete/">
+                                    <i class="material-icons" title="Delete spectrum">&#xE872;</i>
+                                </a>
+                            </td>
+                        </tr>
+                    </c:forEach>
                 </c:forEach>
             </c:if>
             </tbody>
@@ -172,8 +194,30 @@
 <script src="<c:url value="/resources/js/DataTables/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
 <script src="<c:url value="/resources/js/DataTables/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
 <script>
-    $(document).ready(function() {
-        $('#spectrum_table').DataTable();
+    $(document).ready(function () {
+
+        var table = $('#spectrum_table').DataTable({
+            'columnDefs': [{
+                'searchable': false,
+                'orderable': false,
+                'targets': 0
+            }]
+        });
+
+        table.on('order.dt search.dt', function () {
+            table.column(0, {search: 'applied', order: 'applied'})
+                .nodes()
+                .each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                })
+        }).draw();
+
+        $('#file_table').DataTable({
+            bLengthChange: false,
+            ordering: false,
+            paging: false,
+            searching: false
+        });
     })
 </script>
 

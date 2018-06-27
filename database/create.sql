@@ -18,26 +18,6 @@ CREATE SCHEMA IF NOT EXISTS `adapcompounddb` DEFAULT CHARACTER SET latin1 ;
 USE `adapcompounddb` ;
 
 -- -----------------------------------------------------
--- Table `adapcompounddb`.`SpectrumCluster`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SpectrumCluster` (
-  `Id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `ConsensusSpectrumId` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
-  `Diameter` DOUBLE NOT NULL,
-  `Size` INT(11) NOT NULL,
-  PRIMARY KEY (`Id`),
-  UNIQUE INDEX `SpectrumCluster_ConsensusSpectrumId_uindex` (`ConsensusSpectrumId` ASC),
-  CONSTRAINT `SpectrumCluster_Spectrum_Id_fk`
-  FOREIGN KEY (`ConsensusSpectrumId`)
-  REFERENCES `adapcompounddb`.`Spectrum` (`Id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE)
-  ENGINE = InnoDB
-  AUTO_INCREMENT = 64
-  DEFAULT CHARACTER SET = latin1;
-
-
--- -----------------------------------------------------
 -- Table `adapcompounddb`.`SubmissionDisease`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SubmissionDisease` (
@@ -46,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SubmissionDisease` (
   `Description` TEXT NULL DEFAULT NULL,
   PRIMARY KEY (`Id`))
   ENGINE = InnoDB
-  AUTO_INCREMENT = 6
+  AUTO_INCREMENT = 9
   DEFAULT CHARACTER SET = latin1;
 
 
@@ -59,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SubmissionSource` (
   `Description` TEXT NULL DEFAULT NULL,
   PRIMARY KEY (`Id`))
   ENGINE = InnoDB
-  AUTO_INCREMENT = 6
+  AUTO_INCREMENT = 8
   DEFAULT CHARACTER SET = latin1;
 
 
@@ -72,7 +52,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SubmissionSpecimen` (
   `Description` TEXT NULL DEFAULT NULL,
   PRIMARY KEY (`Id`))
   ENGINE = InnoDB
-  AUTO_INCREMENT = 9
+  AUTO_INCREMENT = 10
   DEFAULT CHARACTER SET = latin1;
 
 
@@ -87,7 +67,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`UserPrincipal` (
   PRIMARY KEY (`Id`),
   UNIQUE INDEX `UserPrincipal_Username_uindex` (`Username` ASC))
   ENGINE = InnoDB
-  AUTO_INCREMENT = 8
+  AUTO_INCREMENT = 9
   DEFAULT CHARACTER SET = utf8;
 
 
@@ -99,9 +79,6 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Submission` (
   `Name` TEXT NOT NULL,
   `Description` TEXT NULL DEFAULT NULL,
   `DateTime` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `Filename` TEXT NOT NULL,
-  `FileType` VARCHAR(30) NOT NULL,
-  `File` LONGBLOB NOT NULL,
   `UserPrincipalId` BIGINT(20) UNSIGNED NOT NULL,
   `SourceId` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
   `SpecimenId` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
@@ -127,8 +104,49 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Submission` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB
-  AUTO_INCREMENT = 15
+  AUTO_INCREMENT = 40
   DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `adapcompounddb`.`File`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `adapcompounddb`.`File` (
+  `Id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `Name` TEXT NOT NULL,
+  `FileType` VARCHAR(30) NOT NULL,
+  `Content` LONGBLOB NOT NULL,
+  `SubmissionId` BIGINT(20) UNSIGNED NOT NULL,
+  PRIMARY KEY (`Id`),
+  INDEX `File_Submission_Id_fk_idx` (`SubmissionId` ASC),
+  CONSTRAINT `File_Submission_Id_fk`
+  FOREIGN KEY (`SubmissionId`)
+  REFERENCES `adapcompounddb`.`Submission` (`Id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+  ENGINE = InnoDB
+  AUTO_INCREMENT = 18
+  DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `adapcompounddb`.`SpectrumCluster`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SpectrumCluster` (
+  `Id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `ConsensusSpectrumId` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
+  `Diameter` DOUBLE NOT NULL,
+  `Size` INT(11) NOT NULL,
+  PRIMARY KEY (`Id`),
+  UNIQUE INDEX `SpectrumCluster_ConsensusSpectrumId_uindex` (`ConsensusSpectrumId` ASC),
+  CONSTRAINT `SpectrumCluster_Spectrum_Id_fk`
+  FOREIGN KEY (`ConsensusSpectrumId`)
+  REFERENCES `adapcompounddb`.`Spectrum` (`Id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+  ENGINE = InnoDB
+  AUTO_INCREMENT = 660
+  DEFAULT CHARACTER SET = latin1;
 
 
 -- -----------------------------------------------------
@@ -139,27 +157,27 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Spectrum` (
   `Name` TEXT NULL DEFAULT NULL,
   `Precursor` DOUBLE NULL DEFAULT NULL,
   `RetentionTime` DOUBLE NULL DEFAULT NULL,
-  `SubmissionId` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
   `ClusterId` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
   `Consensus` TINYINT(1) NOT NULL DEFAULT '0',
   `Reference` TINYINT(1) NOT NULL DEFAULT '0',
   `ChromatographyType` VARCHAR(30) NOT NULL,
+  `FileId` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
   PRIMARY KEY (`Id`),
-  INDEX `Spectrum_SubmissionId_index` (`SubmissionId` ASC),
   INDEX `Spectrum_ClusterId_index` (`ClusterId` ASC),
   INDEX `Spectrum_Consensus_index` (`Consensus` ASC),
+  INDEX `Spectrum_File_Id_fk_idx` (`FileId` ASC),
+  CONSTRAINT `Spectrum_File_Id_fk`
+  FOREIGN KEY (`FileId`)
+  REFERENCES `adapcompounddb`.`File` (`Id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
   CONSTRAINT `Spectrum_SpectrumCluster_Id_fk`
   FOREIGN KEY (`ClusterId`)
   REFERENCES `adapcompounddb`.`SpectrumCluster` (`Id`)
     ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  CONSTRAINT `Spectrum_Submission_Id_fk`
-  FOREIGN KEY (`SubmissionId`)
-  REFERENCES `adapcompounddb`.`Submission` (`Id`)
-    ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB
-  AUTO_INCREMENT = 3406
+  AUTO_INCREMENT = 10510
   DEFAULT CHARACTER SET = utf8;
 
 
@@ -180,7 +198,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Peak` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB
-  AUTO_INCREMENT = 300587
+  AUTO_INCREMENT = 955944
   DEFAULT CHARACTER SET = utf8;
 
 
@@ -206,7 +224,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SpectrumMatch` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB
-  AUTO_INCREMENT = 4420
+  AUTO_INCREMENT = 221606
   DEFAULT CHARACTER SET = latin1;
 
 
@@ -227,7 +245,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SpectrumProperty` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB
-  AUTO_INCREMENT = 15478
+  AUTO_INCREMENT = 64176
   DEFAULT CHARACTER SET = utf8;
 
 
@@ -256,50 +274,26 @@ USE `adapcompounddb` ;
 -- -----------------------------------------------------
 -- Placeholder table for view `adapcompounddb`.`clusterspectrumpeakview`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `adapcompounddb`.`clusterspectrumpeakview` (`Id` INT, `Mz` INT, `Intensity` INT, `SpectrumId` INT, `SubmissionId` INT, `Precursor` INT, `RetentionTime` INT, `ChromatographyType` INT);
-
--- -----------------------------------------------------
--- Placeholder table for view `adapcompounddb`.`peakview`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `adapcompounddb`.`peakview` (`Id` INT, `Mz` INT, `Intensity` INT, `SpectrumId` INT, `SubmissionId` INT, `Consensus` INT, `Searchable` INT, `Precursor` INT, `RetentionTime` INT, `ChromatographyType` INT);
-
--- -----------------------------------------------------
--- Placeholder table for view `adapcompounddb`.`searchablespectrumpeakview`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `adapcompounddb`.`searchablespectrumpeakview` (`Id` INT, `Mz` INT, `Intensity` INT, `SpectrumId` INT, `SubmissionId` INT, `Consensus` INT, `Precursor` INT, `RetentionTime` INT, `ChromatographyType` INT);
+CREATE TABLE IF NOT EXISTS `adapcompounddb`.`clusterspectrumpeakview` (`Id` INT, `Mz` INT, `Intensity` INT, `SpectrumId` INT, `Precursor` INT, `RetentionTime` INT, `ChromatographyType` INT);
 
 -- -----------------------------------------------------
 -- Placeholder table for view `adapcompounddb`.`searchspectrumpeakview`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `adapcompounddb`.`searchspectrumpeakview` (`Id` INT, `Mz` INT, `Intensity` INT, `SpectrumId` INT, `SubmissionId` INT, `Precursor` INT, `RetentionTime` INT, `ChromatographyType` INT);
+CREATE TABLE IF NOT EXISTS `adapcompounddb`.`searchspectrumpeakview` (`Id` INT, `Mz` INT, `Intensity` INT, `SpectrumId` INT, `Precursor` INT, `RetentionTime` INT, `ChromatographyType` INT);
 
 -- -----------------------------------------------------
 -- View `adapcompounddb`.`clusterspectrumpeakview`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `adapcompounddb`.`clusterspectrumpeakview`;
 USE `adapcompounddb`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `adapcompounddb`.`clusterspectrumpeakview` AS select `adapcompounddb`.`peak`.`Id` AS `Id`,`adapcompounddb`.`peak`.`Mz` AS `Mz`,`adapcompounddb`.`peak`.`Intensity` AS `Intensity`,`adapcompounddb`.`peak`.`SpectrumId` AS `SpectrumId`,`adapcompounddb`.`spectrum`.`SubmissionId` AS `SubmissionId`,`adapcompounddb`.`spectrum`.`Precursor` AS `Precursor`,`adapcompounddb`.`spectrum`.`RetentionTime` AS `RetentionTime`,`adapcompounddb`.`spectrum`.`ChromatographyType` AS `ChromatographyType` from (`adapcompounddb`.`peak` join `adapcompounddb`.`spectrum`) where ((`adapcompounddb`.`peak`.`SpectrumId` = `adapcompounddb`.`spectrum`.`Id`) and (`adapcompounddb`.`spectrum`.`Consensus` is false) and (`adapcompounddb`.`spectrum`.`Reference` is false));
-
--- -----------------------------------------------------
--- View `adapcompounddb`.`peakview`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `adapcompounddb`.`peakview`;
-USE `adapcompounddb`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `adapcompounddb`.`peakview` AS select `adapcompounddb`.`peak`.`Id` AS `Id`,`adapcompounddb`.`peak`.`Mz` AS `Mz`,`adapcompounddb`.`peak`.`Intensity` AS `Intensity`,`adapcompounddb`.`peak`.`SpectrumId` AS `SpectrumId`,`adapcompounddb`.`spectrum`.`SubmissionId` AS `SubmissionId`,`adapcompounddb`.`spectrum`.`Consensus` AS `Consensus`,`adapcompounddb`.`spectrum`.`Searchable` AS `Searchable`,`adapcompounddb`.`spectrum`.`Precursor` AS `Precursor`,`adapcompounddb`.`spectrum`.`RetentionTime` AS `RetentionTime`,`adapcompounddb`.`submission`.`ChromatographyType` AS `ChromatographyType` from ((`adapcompounddb`.`peak` join `adapcompounddb`.`spectrum`) join `adapcompounddb`.`submission`) where ((`adapcompounddb`.`peak`.`SpectrumId` = `adapcompounddb`.`spectrum`.`Id`) and (`adapcompounddb`.`spectrum`.`SubmissionId` = `adapcompounddb`.`submission`.`Id`));
-
--- -----------------------------------------------------
--- View `adapcompounddb`.`searchablespectrumpeakview`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `adapcompounddb`.`searchablespectrumpeakview`;
-USE `adapcompounddb`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `adapcompounddb`.`searchablespectrumpeakview` AS select `adapcompounddb`.`peak`.`Id` AS `Id`,`adapcompounddb`.`peak`.`Mz` AS `Mz`,`adapcompounddb`.`peak`.`Intensity` AS `Intensity`,`adapcompounddb`.`peak`.`SpectrumId` AS `SpectrumId`,`adapcompounddb`.`spectrum`.`SubmissionId` AS `SubmissionId`,`adapcompounddb`.`spectrum`.`Consensus` AS `Consensus`,`adapcompounddb`.`spectrum`.`Precursor` AS `Precursor`,`adapcompounddb`.`spectrum`.`RetentionTime` AS `RetentionTime`,`adapcompounddb`.`spectrumcluster`.`ChromatographyType` AS `ChromatographyType` from ((`adapcompounddb`.`peak` join `adapcompounddb`.`spectrum`) join `adapcompounddb`.`spectrumcluster`) where ((`adapcompounddb`.`peak`.`SpectrumId` = `adapcompounddb`.`spectrum`.`Id`) and (`adapcompounddb`.`spectrum`.`ClusterId` = `adapcompounddb`.`spectrumcluster`.`Id`) and (`adapcompounddb`.`spectrum`.`Searchable` is true));
+CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `adapcompounddb`.`clusterspectrumpeakview` AS select `adapcompounddb`.`peak`.`Id` AS `Id`,`adapcompounddb`.`peak`.`Mz` AS `Mz`,`adapcompounddb`.`peak`.`Intensity` AS `Intensity`,`adapcompounddb`.`peak`.`SpectrumId` AS `SpectrumId`,`adapcompounddb`.`spectrum`.`Precursor` AS `Precursor`,`adapcompounddb`.`spectrum`.`RetentionTime` AS `RetentionTime`,`adapcompounddb`.`spectrum`.`ChromatographyType` AS `ChromatographyType` from (`adapcompounddb`.`peak` join `adapcompounddb`.`spectrum`) where ((`adapcompounddb`.`peak`.`SpectrumId` = `adapcompounddb`.`spectrum`.`Id`) and (`adapcompounddb`.`spectrum`.`Consensus` is false) and (`adapcompounddb`.`spectrum`.`Reference` is false));
 
 -- -----------------------------------------------------
 -- View `adapcompounddb`.`searchspectrumpeakview`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `adapcompounddb`.`searchspectrumpeakview`;
 USE `adapcompounddb`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `adapcompounddb`.`searchspectrumpeakview` AS select `adapcompounddb`.`peak`.`Id` AS `Id`,`adapcompounddb`.`peak`.`Mz` AS `Mz`,`adapcompounddb`.`peak`.`Intensity` AS `Intensity`,`adapcompounddb`.`peak`.`SpectrumId` AS `SpectrumId`,`adapcompounddb`.`spectrum`.`SubmissionId` AS `SubmissionId`,`adapcompounddb`.`spectrum`.`Precursor` AS `Precursor`,`adapcompounddb`.`spectrum`.`RetentionTime` AS `RetentionTime`,`adapcompounddb`.`spectrum`.`ChromatographyType` AS `ChromatographyType` from (`adapcompounddb`.`peak` join `adapcompounddb`.`spectrum`) where ((`adapcompounddb`.`peak`.`SpectrumId` = `adapcompounddb`.`spectrum`.`Id`) and ((`adapcompounddb`.`spectrum`.`Consensus` is true) or (`adapcompounddb`.`spectrum`.`Reference` is true)));
+CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `adapcompounddb`.`searchspectrumpeakview` AS select `adapcompounddb`.`peak`.`Id` AS `Id`,`adapcompounddb`.`peak`.`Mz` AS `Mz`,`adapcompounddb`.`peak`.`Intensity` AS `Intensity`,`adapcompounddb`.`peak`.`SpectrumId` AS `SpectrumId`,`adapcompounddb`.`spectrum`.`Precursor` AS `Precursor`,`adapcompounddb`.`spectrum`.`RetentionTime` AS `RetentionTime`,`adapcompounddb`.`spectrum`.`ChromatographyType` AS `ChromatographyType` from (`adapcompounddb`.`peak` join `adapcompounddb`.`spectrum`) where ((`adapcompounddb`.`peak`.`SpectrumId` = `adapcompounddb`.`spectrum`.`Id`) and ((`adapcompounddb`.`spectrum`.`Consensus` is true) or (`adapcompounddb`.`spectrum`.`Reference` is true)));
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

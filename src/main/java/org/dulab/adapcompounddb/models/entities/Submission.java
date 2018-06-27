@@ -32,14 +32,14 @@ public class Submission implements Serializable {
     @NotNull(message = "Date/Time of submission is required.")
     private Date dateTime;
 
-    @NotBlank(message = "Filename of the raw file is required.")
-    private String filename;
-
-    @NotNull(message = "Type of the raw file is required.")
-    private FileType fileType;
-
-    @NotNull(message = "Raw file is required.")
-    private byte[] file;
+//    @NotBlank(message = "Filename of the raw file is required.")
+//    private String filename;
+//
+//    @NotNull(message = "Type of the raw file is required.")
+//    private FileType fileType;
+//
+//    @NotNull(message = "Raw file is required.")
+//    private byte[] file;
 
     @Valid
     private SubmissionSource source;
@@ -50,9 +50,9 @@ public class Submission implements Serializable {
     @Valid
     private SubmissionDisease disease;
 
-    @NotNull(message = "Spectrum list is required.")
+    @NotNull(message = "Submission: File list is required.")
     @Valid
-    private List<Spectrum> spectra;
+    private List<File> files;
 
     @NotNull(message = "You must log in to submit mass spectra to the library.")
     @Valid
@@ -124,12 +124,12 @@ public class Submission implements Serializable {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    public List<Spectrum> getSpectra() {
-        return spectra;
+    public List<File> getFiles() {
+        return files;
     }
 
-    public void setSpectra(List<Spectrum> spectra) {
-        this.spectra = spectra;
+    public void setFiles(List<File> files) {
+        this.files = files;
     }
 
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
@@ -151,30 +151,30 @@ public class Submission implements Serializable {
         this.dateTime = dateTime;
     }
 
-    public String getFilename() {
-        return filename;
-    }
-
-    public void setFilename(String filename) {
-        this.filename = filename;
-    }
-
-    @Enumerated(EnumType.STRING)
-    public FileType getFileType() {
-        return fileType;
-    }
-
-    public void setFileType(FileType fileType) {
-        this.fileType = fileType;
-    }
-
-    public byte[] getFile() {
-        return file;
-    }
-
-    public void setFile(byte[] file) {
-        this.file = file;
-    }
+//    public String getFilename() {
+//        return filename;
+//    }
+//
+//    public void setFilename(String filename) {
+//        this.filename = filename;
+//    }
+//
+//    @Enumerated(EnumType.STRING)
+//    public FileType getFileType() {
+//        return fileType;
+//    }
+//
+//    public void setFileType(FileType fileType) {
+//        this.fileType = fileType;
+//    }
+//
+//    public byte[] getFile() {
+//        return file;
+//    }
+//
+//    public void setFile(byte[] file) {
+//        this.file = file;
+//    }
 
     @Override
     public boolean equals(Object other) {

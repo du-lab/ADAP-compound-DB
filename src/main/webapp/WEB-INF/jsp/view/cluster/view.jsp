@@ -28,7 +28,7 @@
 
                     <tr data-spectrum="<c:out value="${dulab:spectrumToJson(spectrum)}"/>">
                         <td>${spectrum.name}<br/>
-                            <small>${spectrum.submission.name}</small>
+                            <small>${spectrum.file.submission.name}</small>
                         </td>
                     </tr>
                 </c:forEach>
@@ -73,11 +73,11 @@
             <tr>
                 <td>${spectrum.id}</td>
                 <td><a href="/spectrum/${spectrum.id}/">${spectrum.name}</a><br/>
-                    <small><a href="/submission/${spectrum.submission.id}/">${spectrum.submission.name}</a></small>
+                    <small><a href="/submission/${spectrum.file.submission.id}/">${spectrum.file.submission.name}</a></small>
                 </td>
-                <td>${spectrum.submission.source.name}</td>
-                <td>${spectrum.submission.specimen.name}</td>
-                <td>${spectrum.submission.disease.name}</td>
+                <td>${spectrum.file.submission.source.name}</td>
+                <td>${spectrum.file.submission.specimen.name}</td>
+                <td>${spectrum.file.submission.disease.name}</td>
                 <td><a href="/spectrum/${spectrum.id}/"><i class="material-icons" title="View">&#xE5D3;</i></a></td>
             </tr>
         </c:forEach>
