@@ -42,7 +42,7 @@
 
             <div class="container" align="center">
                 <form:form method="POST" modelAttribute="logInForm" cssClass="form-signin" >
-                    <h2 class="form-signin">Please sign in</h2></br>
+                    <h2 class="form-signin">Please Log in</h2></br>
                     <h4>You must log in to submit new mass spectra to the library</h4></br>
                     <form:label cssClass="sr-only" path="username">Username:</form:label>
                     <form:input path="username" cssClass="form-control" placeholder="Username"/>
@@ -51,7 +51,7 @@
                     <form:password path="password" cssClass="form-control" placeholder="Password"/>
                     <form:errors path="password" cssClass="errors"/>
                     <div>
-                        <button class="btn btn-lg btn-primary btn-primary" type="submit">Sign in</button>
+                        <button class="btn btn-lg btn-primary btn-primary" type="submit">Log in</button>
                     </div>
                 </form:form>
 
