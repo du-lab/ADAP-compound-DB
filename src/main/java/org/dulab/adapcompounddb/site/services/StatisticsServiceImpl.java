@@ -24,13 +24,13 @@ public class StatisticsServiceImpl implements StatisticsService {
     public Statistics getStatistics(ChromatographyType type) {
         Statistics statistics = new Statistics();
         statistics.setNumSubmittedSpectra(
-                spectrumRepository.countBySubmissionChromatographyTypeAndConsensusFalse(type));
+                spectrumRepository.countByChromatographyTypeAndConsensusFalse(type));
         statistics.setNumConsensusSpectra(
-                spectrumRepository.countByClusterChromatographyTypeAndConsensusTrue(type));
+                spectrumRepository.countByChromatographyTypeAndConsensusTrue(type));
         statistics.setNumUnmatchedSpectra(
                 spectrumRepository.countUnmatchedBySubmissionChromatographyType(type));
         statistics.setNumSpectrumMatches(
-                spectrumMatchRepository.countByQuerySpectrumSubmissionChromatographyType(type));
+                spectrumMatchRepository.countByQuerySpectrumChromatographyType(type));
         return statistics;
     }
 }

@@ -2,21 +2,15 @@ package org.dulab.adapcompounddb.site.controllers;
 
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.ChromatographyType;
-import org.dulab.adapcompounddb.models.Hit;
 import org.dulab.adapcompounddb.models.QueryParameters;
+import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
-import org.dulab.adapcompounddb.models.search.ComparisonOperator;
-import org.dulab.adapcompounddb.models.search.CriteriaBlock;
-import org.dulab.adapcompounddb.models.search.Criterion;
-import org.dulab.adapcompounddb.models.search.SetOperator;
 import org.dulab.adapcompounddb.site.services.SpectrumSearchService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
-import org.dulab.adapcompounddb.validation.FloatMin;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.dulab.adapcompounddb.site.services.UserPrincipalService;
-import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -28,9 +22,11 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @ControllerAdvice
@@ -47,23 +43,32 @@ public class SearchController {
     private final UserPrincipalService userPrincipalService;
     private final SubmissionService submissionService;
     private final SpectrumService spectrumService;
-    private final SpectrumSearchService spectrumSearchService;
+
+    private final Map<ChromatographyType, SpectrumSearchService> spectrumSearchServiceMap;
 
     @Autowired
     public SearchController(UserPrincipalService userPrincipalService,
                             SubmissionService submissionService,
                             @Qualifier("spectrumServiceImpl") SpectrumService spectrumService,
-                            SpectrumSearchService spectrumSearchService) {
+                            @Qualifier("GCSpectrumSearchServiceImpl") SpectrumSearchService gcSpectrumSearchService,
+                            @Qualifier("LCSpectrumSearchServiceImpl") SpectrumSearchService lcSpectrumSearchService) {
+
         this.userPrincipalService = userPrincipalService;
         this.submissionService = submissionService;
         this.spectrumService = spectrumService;
-        this.spectrumSearchService = spectrumSearchService;
+
+        this.spectrumSearchServiceMap = new HashMap<>();
+        this.spectrumSearchServiceMap.put(ChromatographyType.GAS, gcSpectrumSearchService);
+        this.spectrumSearchServiceMap.put(ChromatographyType.LIQUID_POSITIVE, lcSpectrumSearchService);
+        this.spectrumSearchServiceMap.put(ChromatographyType.LIQUID_NEGATIVE, lcSpectrumSearchService);
     }
 
     @ModelAttribute
     public void addAttributes(Model model) {
         model.addAttribute("chromatographyTypes", ChromatographyType.values());
-        model.addAttribute("submissionCategoryIds", submissionService.getAllSubmissionCategories());
+        model.addAttribute("submissionSources", submissionService.getAllSources());
+        model.addAttribute("submissionSpecies", submissionService.getAllSpecies());
+        model.addAttribute("submissionDiseases", submissionService.getAllDiseases());
     }
 
 //    @PostConstruct
@@ -78,15 +83,16 @@ public class SearchController {
 //    }
 
     @RequestMapping(
-            value = "/submission/{submissionId:\\d+}/{spectrumListIndex:\\d+}/search/",
+            value = "/submission/{submissionId:\\d+}/{fileIndex:\\d+}/{spectrumIndex:\\d+}/search/",
             method = RequestMethod.GET)
     public String search(@PathVariable("submissionId") long submissionId,
-                         @PathVariable("spectrumListIndex") int spectrumListIndex,
+                         @PathVariable("fileIndex") int fileIndex,
+                         @PathVariable("spectrumIndex") int spectrumIndex,
                          HttpSession session, Model model) {
 
         Spectrum spectrum;
         try {
-            spectrum = getQuerySpectrum(submissionId, spectrumListIndex);
+            spectrum = getQuerySpectrum(submissionId, fileIndex, spectrumIndex);
 
         } catch (EmptySearchResultException e) {
             model.addAttribute("errorMessage", e.getMessage());
@@ -96,15 +102,20 @@ public class SearchController {
         return searchGet(spectrum, UserPrincipal.from(session), model);
     }
 
-    @RequestMapping(value = "/file/{spectrumListIndex:\\d+}/search/", method = RequestMethod.GET)
-    public String search(@PathVariable("spectrumListIndex") int spectrumListIndex,
+    @RequestMapping(value = "/file/{fileIndex:\\d+}/{spectrumIndex:\\d+}/search/", method = RequestMethod.GET)
+    public String search(@PathVariable("fileIndex") int fileIndex,
+                         @PathVariable("spectrumIndex") int spectrumIndex,
                          HttpSession session, Model model) {
 
         Submission submission = Submission.from(session);
         if (submission == null)
             return "redirect:/file/upload/";
 
-        Spectrum spectrum = submission.getSpectra().get(spectrumListIndex);
+        Spectrum spectrum = submission
+                .getFiles()
+                .get(fileIndex)
+                .getSpectra()
+                .get(spectrumIndex);
 
         return searchGet(spectrum, UserPrincipal.from(session), model);
     }
@@ -135,15 +146,16 @@ public class SearchController {
     }
 
     @RequestMapping(
-            value = "/submission/{submissionId:\\d+}/{spectrumListIndex:\\d+}/search/",
+            value = "/submission/{submissionId:\\d+}/{fileIndex:\\d+}/{spectrumIndex:\\d+}/search/",
             method = RequestMethod.POST)
     public ModelAndView search(@PathVariable("submissionId") long submissionId,
-                               @PathVariable("spectrumListIndex") int spectrumListIndex,
+                               @PathVariable("fileIndex") int fileIndex,
+                               @PathVariable("spectrumIndex") int spectrumIndex,
                                HttpSession session, Model model, @Valid SearchForm searchForm, Errors errors) {
 
         Spectrum spectrum;
         try {
-            spectrum = getQuerySpectrum(submissionId, spectrumListIndex);
+            spectrum = getQuerySpectrum(submissionId, fileIndex, spectrumIndex);
 
         } catch (EmptySearchResultException e) {
             model.addAttribute("errorMessage", e.getMessage());
@@ -153,15 +165,20 @@ public class SearchController {
         return searchPost(spectrum, UserPrincipal.from(session), searchForm, model, errors);
     }
 
-    @RequestMapping(value = "/file/{spectrumListIndex:\\d+}/search/", method = RequestMethod.POST)
-    public ModelAndView search(@PathVariable("spectrumListIndex") int spectrumListIndex,
-                         HttpSession session, Model model, @Valid SearchForm form, Errors errors) {
+    @RequestMapping(value = "/file/{fileIndex:\\d+}/{spectrumIndex:\\d+}/search/", method = RequestMethod.POST)
+    public ModelAndView search(@PathVariable("fileIndex") int fileIndex,
+                               @PathVariable("spectrumIndex") int spectrumIndex,
+                               HttpSession session, Model model, @Valid SearchForm form, Errors errors) {
 
         Submission submission = Submission.from(session);
         if (submission == null)
             return new ModelAndView(new RedirectView("/file/upload/"));
 
-        Spectrum spectrum = submission.getSpectra().get(spectrumListIndex);
+        Spectrum spectrum = submission
+                .getFiles()
+                .get(fileIndex)
+                .getSpectra()
+                .get(spectrumIndex);
 
         return searchPost(spectrum, UserPrincipal.from(session), form, model, errors);
     }
@@ -185,41 +202,25 @@ public class SearchController {
     }
 
     private ModelAndView searchPost(Spectrum querySpectrum, UserPrincipal user,
-                                    SearchForm form, Model model, Errors errors) {
+                                    SearchForm form, @Valid Model model, Errors errors) {
 
         if (errors.hasErrors()) {
             model.addAttribute("querySpectrum", querySpectrum);
             return new ModelAndView("file/match");
         }
 
+        SpectrumSearchService service =
+                spectrumSearchServiceMap.get(querySpectrum.getChromatographyType());
 
-//        CriteriaBlock criteria = new CriteriaBlock(SetOperator.AND);
-//        if (form.isChromatographyTypeCheck())
-//            criteria.add(
-//                    new Criterion("ChromatographyType", ComparisonOperator.EQ, form.getChromatographyType()));
-//        if (form.isSubmissionCategoryCheck()) {
-//            CriteriaBlock categories = new CriteriaBlock(SetOperator.OR);
-//            for (long id : form.getSubmissionCategoryIds())
-//                categories.add(
-//                        new Criterion("SubmissionCategoryId", ComparisonOperator.EQ, id));
-//            criteria.add(new Criterion("", ComparisonOperator.BLOCK, categories));
-//        }
+        QueryParameters parameters = new QueryParameters();
+        parameters.setScoreThreshold(form.isScoreThresholdCheck() ? form.getFloatScoreThreshold() : null);
+        parameters.setMzTolerance(form.isScoreThresholdCheck() ? form.getMzTolerance() : null);
+        parameters.setPrecursorTolerance(form.isMassToleranceCheck() ? form.getMassTolerance() : null);
+        parameters.setRetTimeTolerance(form.isRetTimeToleranceCheck() ? form.getRetTimeTolerance() : null);
 
-//        try {
-//            List<Hit> hits = spectrumService.match(querySpectrum, criteria,
-//                    form.getMzTolerance(), form.getNumHits(), form.getFloatScoreThreshold());
-//            model.addAttribute("hits", hits);
-//
-////            form.saveParameters(userPrincipalService, user);
-//
-//        } catch (EmptySearchResultException e) {
-//            model.addAttribute("searchResultMessage", e.getMessage());
-//        }
+        List<SpectrumMatch> matches = service.search(querySpectrum, parameters);
 
-
-        List<Hit> hits = spectrumSearchService.search(querySpectrum, QueryParameters.getDefault());
-
-        model.addAttribute("hits", hits);
+        model.addAttribute("matches", matches);
 
         model.addAttribute("querySpectrum", querySpectrum);
         model.addAttribute("form", form);
@@ -228,47 +229,48 @@ public class SearchController {
     }
 
 
-    private Spectrum getQuerySpectrum(long submissionId, int spectrumListIndex) {
+    private Spectrum getQuerySpectrum(long submissionId, int fileIndex, int spectrumIndex) {
         return submissionService.findSubmission(submissionId)
+                .getFiles()
+                .get(fileIndex)
                 .getSpectra()
-                .get(spectrumListIndex);
+                .get(spectrumIndex);
     }
 
     public static class SearchForm {
 
-        static final float THRESHOLD_FACTOR = 1000F;
+        private boolean scoreThresholdCheck = true;
 
-        @FloatMin(value = Float.MIN_VALUE, message = "M/z tolerance must be positive.")
-        private float mzTolerance = 0.01F;
+        @Min(value = 0, message = "M/z tolerance must be positive.")
+        private double mzTolerance = 0.01;
 
-        @Min(value = 1, message = "Maximum number of hits must be greater than or equal to one.")
-        private int numHits = 10;
-
-        @Range(min = 0, max = 1000, message = "Matching score threshold must be between 0 and 1000.")
+        @Min(value = 0, message = "Matching score threshold must be between 0 and 1000.")
+        @Max(value = 1000, message = "Matching score threshold must be between 0 and 1000.")
         private int scoreThreshold = 750;
 
-        private boolean chromatographyTypeCheck;
+        private boolean massToleranceCheck = true;
 
-        private ChromatographyType chromatographyType;
+        @Min(value = 0, message = "M/z tolerance must be positive.")
+        private double massTolerance = 0.01;
 
-        private boolean submissionCategoryCheck;
+        private boolean retTimeToleranceCheck = false;
 
-        private List<Long> submissionCategoryIds;
+        private double retTimeTolerance = 0.5;
 
-        public float getMzTolerance() {
+        public double getMzTolerance() {
             return mzTolerance;
         }
 
-        public void setMzTolerance(float mzTolerance) {
+        public void setMzTolerance(double mzTolerance) {
             this.mzTolerance = mzTolerance;
         }
 
-        public int getNumHits() {
-            return numHits;
+        public boolean isScoreThresholdCheck() {
+            return scoreThresholdCheck;
         }
 
-        public void setNumHits(int numHits) {
-            this.numHits = numHits;
+        public void setScoreThresholdCheck(boolean scoreThresholdCheck) {
+            this.scoreThresholdCheck = scoreThresholdCheck;
         }
 
         public int getScoreThreshold() {
@@ -279,44 +281,40 @@ public class SearchController {
             this.scoreThreshold = scoreThreshold;
         }
 
-        public float getFloatScoreThreshold() {
-            return scoreThreshold / THRESHOLD_FACTOR;
+        public double getFloatScoreThreshold() {
+            return scoreThreshold / 1000.0;
         }
 
-        public void setFloatScoreThreshold(float scoreThreshold) {
-            this.scoreThreshold = Math.round(scoreThreshold * THRESHOLD_FACTOR);
+        public boolean isMassToleranceCheck() {
+            return massToleranceCheck;
         }
 
-        public boolean isChromatographyTypeCheck() {
-            return chromatographyTypeCheck;
+        public void setMassToleranceCheck(boolean massToleranceCheck) {
+            this.massToleranceCheck = massToleranceCheck;
         }
 
-        public void setChromatographyTypeCheck(boolean chromatographyTypeCheck) {
-            this.chromatographyTypeCheck = chromatographyTypeCheck;
+        public double getMassTolerance() {
+            return massTolerance;
         }
 
-        public ChromatographyType getChromatographyType() {
-            return chromatographyType;
+        public void setMassTolerance(double massTolerance) {
+            this.massTolerance = massTolerance;
         }
 
-        public void setChromatographyType(ChromatographyType chromatographyType) {
-            this.chromatographyType = chromatographyType;
+        public boolean isRetTimeToleranceCheck() {
+            return retTimeToleranceCheck;
         }
 
-        public boolean isSubmissionCategoryCheck() {
-            return submissionCategoryCheck;
+        public void setRetTimeToleranceCheck(boolean retTimeToleranceCheck) {
+            this.retTimeToleranceCheck = retTimeToleranceCheck;
         }
 
-        public void setSubmissionCategoryCheck(boolean submissionCategoryCheck) {
-            this.submissionCategoryCheck = submissionCategoryCheck;
+        public double getRetTimeTolerance() {
+            return retTimeTolerance;
         }
 
-        public List<Long> getSubmissionCategoryIds() {
-            return submissionCategoryIds;
-        }
-
-        public void setSubmissionCategoryIds(List<Long> submissionCategoryIds) {
-            this.submissionCategoryIds = submissionCategoryIds;
+        public void setRetTimeTolerance(double retTimeTolerance) {
+            this.retTimeTolerance = retTimeTolerance;
         }
     }
 }

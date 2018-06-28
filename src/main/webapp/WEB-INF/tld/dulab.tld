@@ -43,13 +43,42 @@
 
     <function>
         <description>
-            Returns Json array with the count of spectra in a cluster, based on their SampleSourceType.
+            Returns Json array with the count of spectra in a cluster, based on their SubmissionSource.
         </description>
-        <name>pieChartData</name>
+        <name>clusterSourceToJson</name>
         <function-class>org.dulab.adapcompounddb.site.controllers.ControllerUtils</function-class>
         <function-signature>
-            javax.json.JsonArray getPieChartData(org.dulab.adapcompounddb.models.entities.SpectrumCluster)
+            javax.json.JsonArray clusterSourceToJson(java.util.List,java.util.List)
         </function-signature>
+    </function>
+
+    <function>
+        <description>
+            Returns Json array with the count of spectra in a cluster, based on their SubmissionSpecimen.
+        </description>
+        <name>clusterSpecimenToJson</name>
+        <function-class>org.dulab.adapcompounddb.site.controllers.ControllerUtils</function-class>
+        <function-signature>
+            javax.json.JsonArray clusterSpecimenToJson(java.util.List,java.util.List)
+        </function-signature>
+    </function>
+
+    <function>
+        <description>
+            Returns Json array with the count of spectra in a cluster, based on their SubmissionDisease.
+        </description>
+        <name>clusterDiseaseToJson</name>
+        <function-class>org.dulab.adapcompounddb.site.controllers.ControllerUtils</function-class>
+        <function-signature>
+            javax.json.JsonArray clusterDiseaseToJson(java.util.List,java.util.List)
+        </function-signature>
+    </function>
+
+    <function>
+        <description>Converts Json Array into a string of values and counts.</description>
+        <name>jsonToHtml</name>
+        <function-class>org.dulab.adapcompounddb.site.controllers.ControllerUtils</function-class>
+        <function-signature>java.lang.String jsonToHtml(javax.json.JsonArray)</function-signature>
     </function>
 
     <function>

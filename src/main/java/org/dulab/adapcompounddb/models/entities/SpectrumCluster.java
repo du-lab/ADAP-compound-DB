@@ -6,6 +6,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 public class SpectrumCluster implements Serializable {
@@ -27,9 +28,6 @@ public class SpectrumCluster implements Serializable {
 
     @NotNull(message = "Size of cluster is required.")
     private Integer size;
-
-    @NotNull(message = "Chromatography type is required.")
-    private ChromatographyType chromatographyType;
 
     private List<Spectrum> spectra;
 
@@ -71,15 +69,6 @@ public class SpectrumCluster implements Serializable {
 
     public void setSize(Integer size) {
         this.size = size;
-    }
-
-    @Enumerated(value = EnumType.STRING)
-    public ChromatographyType getChromatographyType() {
-        return chromatographyType;
-    }
-
-    public void setChromatographyType(ChromatographyType chromatographyType) {
-        this.chromatographyType = chromatographyType;
     }
 
     @OneToMany(

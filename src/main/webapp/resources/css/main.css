@@ -128,30 +128,30 @@ section h2 {
     text-align: center;
 }
 
-section table {
-    display: inline-block;
-    border-collapse: collapse;
-}
+/*section table {*/
+    /*display: inline-block;*/
+    /*border-collapse: collapse;*/
+/*}*/
 
-section th {color: #844d36}
+/*section th {color: #844d36}*/
 
-section td, th {
-    text-align: left;
-    padding: 8px;
-}
+/*section td, th {*/
+    /*text-align: left;*/
+    /*padding: 8px;*/
+/*}*/
 
-section tr:nth-child(even) {
-    background-color: #f2f2f2;
-}
+/*section tr:nth-child(even) {*/
+    /*background-color: #f2f2f2;*/
+/*}*/
 
-section table.clickable tr:hover td {
-    cursor: pointer;
-    background-color: #e4e4e4;
-}
+/*section table.clickable tr:hover td {*/
+    /*cursor: pointer;*/
+    /*background-color: #e4e4e4;*/
+/*}*/
 
-section table.clickable tr.selected {
-    border: 2px solid #86b3d1;
-}
+/*section table.clickable tr.selected {*/
+    /*border: 2px solid #86b3d1;*/
+/*}*/
 
 section a {
     text-decoration: none;
@@ -242,6 +242,10 @@ section form textarea {
     border-radius: 3px;
 }
 
+section form input[type=text]:disabled {
+    background-color: #f2f2f2;
+}
+
 section form input[type=file] {
     cursor: pointer;
     border-radius: 3px;
@@ -298,4 +302,15 @@ span.highlighted {
     top: 95px;
     width: 80px;
     z-index: 10;
+}
+
+.progress_bar {
+    background-color: #86b3d1;
+    /*opacity: 1;*/
+    width: 0;
+    height: 2px;
+}
+
+.progress_bar[hidden] {
+    display: none;
 }

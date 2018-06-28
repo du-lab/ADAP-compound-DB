@@ -1,3 +1,6 @@
+<%--@elvariable id="submissionSources" type="java.util.List<org.dulab.adapcompounddb.models.entities.SubmissionSource>"--%>
+<%--@elvariable id="submissionSpecies" type="java.util.List<org.dulab.adapcompounddb.models.entities.SubmissionSpecimen>"--%>
+<%--@elvariable id="submissionDiseases" type="java.util.List<org.dulab.adapcompounddb.models.entities.SubmissionDisease>"--%>
 <%--@elvariable id="cluster" type="org.dulab.adapcompounddb.models.entities.SpectrumCluster"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -8,39 +11,78 @@
 <!-- Start the middle column -->
 
 <section>
-    <h1>Spectrum List</h1>
+    <h1>Spectrum Plot</h1>
 
-    <div id="plot" style="display: inline-block; vertical-align: top;"></div>
+    <div align="center">
+        <div id="plot" style="display: inline-block; vertical-align: top;"></div>
 
-    <div align="center" style="display: inline-block; vertical-align: top; width: 400px;">
-        <table id="spectrum_table" class="display nowrap" style="width: 100%;">
-            <thead>
-            <tr>
-                <th>Spectrum</th>
-                <th>Sample Source</th>
-                <th>View</th>
-            </tr>
-            </thead>
-            <tbody>
-            <c:forEach items="${cluster.spectra}" var="spectrum" varStatus="status">
-
-                <tr data-spectrum='${dulab:spectrumToJson(spectrum)}'>
-                    <td>${spectrum.name}<br/>
-                        <small>${spectrum.submission.name}</small>
-                    </td>
-                    <td>${spectrum.submission.sampleSourceType.label}</td>
-                    <!--more horiz-->
-                    <td><a href="/spectrum/${spectrum.id}/"><i class="material-icons">&#xE5D3;</i></a></td>
+        <div align="center" style="display: inline-block; vertical-align: top; width: 400px;">
+            <table id="spectrum_table" class="display nowrap" style="width: 100%;">
+                <thead>
+                <tr>
+                    <th>Spectrum</th>
                 </tr>
-            </c:forEach>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                <c:forEach items="${cluster.spectra}" var="spectrum" varStatus="status">
+
+                    <tr data-spectrum="<c:out value="${dulab:spectrumToJson(spectrum)}"/>">
+                        <td>${spectrum.name}<br/>
+                            <small>${spectrum.file.submission.name}</small>
+                        </td>
+                    </tr>
+                </c:forEach>
+                </tbody>
+            </table>
+        </div>
     </div>
 </section>
 
 <section id="pieChartSection">
-    <h1>Sample Source Distribution</h1>
-    <div id="pieChart" align="center"></div>
+    <div align="center">
+        <div align="center" style="display: inline-block; margin: 10px;">
+            <h1>Sources Distribution</h1>
+            <div id="sourcePieChart" align="center"></div>
+        </div>
+        <div align="center" style="display: inline-block; margin: 10px;">
+            <h1>Species Distribution</h1>
+            <div id="specimenPieChart" align="center"></div>
+        </div>
+        <div align="center" style="display: inline-block; margin: 10px;">
+            <h1>Diseases Distribution</h1>
+            <div id="diseasePieChart" align="center"></div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h1>Spectrum List</h1>
+    <table id="big_spectrum_table" class="display nowrap" style="width: 100%;">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Spectrum</th>
+            <th>Sources</th>
+            <th>Species</th>
+            <th>Diseases</th>
+            <th>View</th>
+        </tr>
+        </thead>
+        <tbody>
+        <c:forEach items="${cluster.spectra}" var="spectrum">
+            <tr>
+                <td>${spectrum.id}</td>
+                <td><a href="/spectrum/${spectrum.id}/">${spectrum.name}</a><br/>
+                    <small><a href="/submission/${spectrum.file.submission.id}/">${spectrum.file.submission.name}</a></small>
+                </td>
+                <td>${spectrum.file.submission.source.name}</td>
+                <td>${spectrum.file.submission.specimen.name}</td>
+                <td>${spectrum.file.submission.disease.name}</td>
+                <td><a href="/spectrum/${spectrum.id}/"><i class="material-icons" title="View">&#xE5D3;</i></a></td>
+            </tr>
+        </c:forEach>
+        </tbody>
+    </table>
 </section>
 
 <!-- End the middle column -->
@@ -64,6 +106,8 @@
         });
 
         table.rows(':eq(0)').select();
+
+        $('#big_spectrum_table').DataTable();
     });
 </script>
 
@@ -75,7 +119,9 @@
     var plot = new TwoSpectraPlot('plot', ${dulab:spectrumToJson(cluster.consensusSpectrum)});
 
     // Add pie chart
-    addPieChart('pieChart', ${dulab:pieChartData(cluster)});
+    addPieChart('sourcePieChart', ${dulab:clusterSourceToJson(cluster.spectra, submissionSources)});
+    addPieChart('specimenPieChart', ${dulab:clusterSpecimenToJson(cluster.spectra, submissionSpecies)});
+    addPieChart('diseasePieChart', ${dulab:clusterDiseaseToJson(cluster.spectra, submissionDiseases)});
 </script>
 
 <jsp:include page="/WEB-INF/jsp/includes/column_right_news.jsp"/>

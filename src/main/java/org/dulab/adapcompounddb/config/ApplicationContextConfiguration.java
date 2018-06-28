@@ -56,21 +56,21 @@ public class ApplicationContextConfiguration {
     }
 
     @Bean
-    @Profile("!test")
+//    @Profile("!test")
     public DataSource adapCompoundDbDataSource() {
         JndiDataSourceLookup lookup = new JndiDataSourceLookup();
         return lookup.getDataSource("jdbc/AdapCompoundDbDataSource");
     }
 
-    @Bean
-    @Profile("test")
-    public DataSource adapCompoundDbDataSourceTest() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setUrl("jdbc:mysql://localhost:3306/adapcompounddb");
-        dataSource.setUsername("root");
-        dataSource.setPassword("sesame");
-        return dataSource;
-    }
+//    @Bean
+//    @Profile("test")
+//    public DataSource adapCompoundDbDataSourceTest() {
+//        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+//        dataSource.setUrl("jdbc:mysql://localhost:3306/adapcompounddb");
+//        dataSource.setUsername("root");
+//        dataSource.setPassword("sesame");
+//        return dataSource;
+//    }
 
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean() {

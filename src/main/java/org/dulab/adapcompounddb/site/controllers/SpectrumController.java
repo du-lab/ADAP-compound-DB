@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpSession;
-import javax.xml.ws.http.HTTPException;
 
 @Controller
 public class SpectrumController {
@@ -33,34 +32,38 @@ public class SpectrumController {
         Spectrum spectrum = spectrumService.find(spectrumId);
 
         if (spectrum == null)
-            //return spectrumNotFound(model,spectrumId);
-            throw new HTTPException(404);
+            return spectrumNotFound(model,spectrumId);
+
         return spectrum(spectrum, model);
     }
 
-    @RequestMapping(value = "/submission/{submissionId:\\d+}/{spectrumListIndex:\\d+}/", method = RequestMethod.GET)
+    @RequestMapping(value = "/submission/{submissionId:\\d+}/{fileIndex:\\d+}/{spectrumIndex:\\d+}/")
     public String spectrum(@PathVariable("submissionId") long submissionId,
-                           @PathVariable("spectrumListIndex") int spectrumListIndex,
+                           @PathVariable("fileIndex") int fileIndex,
+                           @PathVariable("spectrumIndex") int spectrumIndex,
                            Model model) {
 
         Submission submission = submissionService.findSubmission(submissionId);
-        if (submission == null)
-            return submissionNotFound(model,submissionId);
-
-        Spectrum spectrum = submission.getSpectra().get(spectrumListIndex);
+        Spectrum spectrum = submission
+                .getFiles()
+                .get(fileIndex)
+                .getSpectra()
+                .get(spectrumIndex);
 
         return spectrum(spectrum, model);
     }
 
-    @RequestMapping(value = "/file/{spectrumListIndex:\\d+}/", method = RequestMethod.GET)
-    public String spectrum(@PathVariable("spectrumListIndex") int listIndex,
+    @RequestMapping(value = "/file/{fileIndex:\\d+}/{spectrumIndex:\\d+}/", method = RequestMethod.GET)
+    public String spectrum(@PathVariable("fileIndex") int fileIndex,
+                           @PathVariable("spectrumIndex") int spectrumIndex,
                            HttpSession session, Model model) {
 
         Submission submission = Submission.from(session);
-        if (submission == null)
-           //return submissionNotFound(model);
-            throw new HTTPException(404);
-        Spectrum spectrum = submission.getSpectra().get(listIndex);
+        Spectrum spectrum = submission
+                .getFiles()
+                .get(fileIndex)
+                .getSpectra()
+                .get(spectrumIndex);
 
         return spectrum(spectrum, model);
     }
@@ -68,19 +71,16 @@ public class SpectrumController {
     public String spectrum(Spectrum spectrum, Model model) {
         model.addAttribute("spectrum", spectrum);
         return "file/spectrum";
-
     }
 
     private String spectrumNotFound(Model model, long spectrumId) {
         model.addAttribute("errorMessage", "Cannot find spectrum ID = " + spectrumId);
-        //return "redirect:/notfound/";
-        return "error/notFound";
+        return "redirect:/notfound/";
     }
 
     private String submissionNotFound(Model model, long submissionId) {
         model.addAttribute("errorMessage", "Cannot find submission ID = " + submissionId);
         return "redirect:/notfound/";
-
     }
 
     private String submissionNotFound(Model model) {

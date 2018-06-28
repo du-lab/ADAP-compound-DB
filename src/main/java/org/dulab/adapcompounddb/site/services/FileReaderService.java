@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.services;
 
+import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.springframework.validation.annotation.Validated;
 
@@ -12,5 +13,5 @@ import java.util.List;
 public interface FileReaderService {
 
     @NotNull(message = "FileReader is required to return a list of mass spectra.")
-    List<Spectrum> read(InputStream inputStream) throws IOException;
+    List<Spectrum> read(InputStream inputStream, ChromatographyType type) throws IOException;
 }

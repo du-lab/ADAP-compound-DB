@@ -9,5 +9,9 @@ public interface SubmissionRepository extends CrudRepository<Submission, Long> {
 
     void deleteById(long id);
 
-    long countByCategoryId(long submissionCategoryId);
+    long countBySourceId(long submissionSourceId);
+
+    long countBySpecimenId(long submissionSpecimenId);
+
+    long countByDiseaseId(long submissionDiseaseId);
 }

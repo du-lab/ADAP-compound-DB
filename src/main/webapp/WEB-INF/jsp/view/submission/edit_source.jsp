@@ -1,4 +1,5 @@
-<%--@elvariable id="form" type="org.dulab.adapcompounddb.models.entities.SubmissionCategory.Form"--%>
+<%--@elvariable id="categoryForm" type="org.dulab.adapcompounddb.site.controllers.ControllerUtils.CategoryForm"--%>
+<%--@elvariable id="validationErrors" type="javax.validation.ConstraintViolation"--%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <jsp:include page="/WEB-INF/jsp/includes/header.jsp" />
@@ -7,7 +8,7 @@
 <!-- Start the middle column -->
 
 <section>
-    <h1>New submission category</h1>
+    <h1>Edit Source</h1>
     <div align="center">
         <div align="left" class="subsection">
             <c:if test="${validationErrors != null}">
@@ -20,7 +21,7 @@
                     </ul>
                 </div>
             </c:if>
-            <form:form method="post" modelAttribute="form">
+            <form:form method="post" modelAttribute="categoryForm">
                 <form:errors path="" cssClass="errors"/>
 
                 <form:label path="name">Name:</form:label><br/>
@@ -32,7 +33,7 @@
                 <form:errors path="description" cssClass="errors"/>
 
                 <div align="center">
-                    <input type="submit" value="Add"/>
+                    <input type="submit" value="Save"/>
                 </div>
             </form:form>
         </div>

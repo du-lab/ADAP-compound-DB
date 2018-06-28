@@ -40,7 +40,7 @@
                 <td>Submission</td>
                 <td>
                     <a href="/submission/${spectrum.submission.id}/">
-                        ${spectrum.submission.name} (${spectrum.submission.chromatographyType.label})<br>
+                        ${spectrum.submission.name} (${spectrum.chromatographyType.label})<br>
                         <small>${spectrum.submission.description}</small>
                     </a>
                 </td>
