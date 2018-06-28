@@ -5,7 +5,6 @@
 <%@ taglib prefix="spring" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <jsp:include page="/WEB-INF/jsp/includes/header.jsp"/>
-<jsp:include page="/WEB-INF/jsp/includes/column_left_home.jsp"/>
 <head>
     <link href="/resources/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <script src="/resources/js/bootstrap.min.js"></script>
@@ -92,5 +91,4 @@
 
 <!-- End the middle column -->
 
-<jsp:include page="/WEB-INF/jsp/includes/column_right_news.jsp"/>
 <jsp:include page="/WEB-INF/jsp/includes/footer.jsp"/>

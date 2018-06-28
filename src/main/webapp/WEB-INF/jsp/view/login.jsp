@@ -5,7 +5,6 @@
 <%@ taglib prefix="spring" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <jsp:include page="/WEB-INF/jsp/includes/header.jsp" />
-<jsp:include page="/WEB-INF/jsp/includes/column_left_home.jsp" />
 <jsp:include page="/WEB-INF/jsp/includes/footer.jsp" />
 
 <!-- Start the middle column -->
@@ -64,5 +63,4 @@
 
 <!-- End the middle column -->
 
-<jsp:include page="/WEB-INF/jsp/includes/column_right_news.jsp" />
 <jsp:include page="/WEB-INF/jsp/includes/footer.jsp" />
