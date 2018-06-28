@@ -59,40 +59,40 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         this.queryParametersMap.put(ChromatographyType.LIQUID_NEGATIVE, lcQueryParameters);
     }
 
-    @Transactional
-    @Override
-    public void fillSpectrumMatchTable(float mzTolerance, float scoreThreshold) {
-
-        List<SpectrumMatch> spectrumMatches = new ArrayList<>();
-
-        for (ChromatographyType chromatographyType : ChromatographyType.values()) {
-
-            QueryParameters params = queryParametersMap.get(chromatographyType);
-            if (params == null)
-                throw new IllegalStateException("Clustering query parameters are not specified.");
-
-            long startingTime = System.currentTimeMillis();
-
-            Iterable<Spectrum> unmatchedSpectra =
-                    spectrumRepository.findUnmatchedByChromatographyType(chromatographyType);
-
-            long count = 0;
-            for (Spectrum querySpectrum : unmatchedSpectra) {
-                spectrumMatches.addAll(
-                        spectrumRepository.spectrumSearch(
-                                SearchType.CLUSTERING, querySpectrum, params));
-                ++count;
-            }
-
-            long elapsedTime = System.currentTimeMillis() - startingTime;
-            LOGGER.info(String.format("%d query spectra searched with average time %d milliseconds.",
-                    count, count > 0 ? elapsedTime / count : 0));
-        }
-
-        spectrumMatchRepository.saveAll(spectrumMatches);
-
-        LOGGER.info(String.format("Save %d matches to the database.", spectrumMatches.size()));
-    }
+//    @Transactional
+//    @Override
+//    public void fillSpectrumMatchTable(float mzTolerance, float scoreThreshold) {
+//
+//        List<SpectrumMatch> spectrumMatches = new ArrayList<>();
+//
+//        for (ChromatographyType chromatographyType : ChromatographyType.values()) {
+//
+//            QueryParameters params = queryParametersMap.get(chromatographyType);
+//            if (params == null)
+//                throw new IllegalStateException("Clustering query parameters are not specified.");
+//
+//            long startingTime = System.currentTimeMillis();
+//
+//            Iterable<Spectrum> unmatchedSpectra =
+//                    spectrumRepository.findUnmatchedByChromatographyType(chromatographyType);
+//
+//            long count = 0;
+//            for (Spectrum querySpectrum : unmatchedSpectra) {
+//                spectrumMatches.addAll(
+//                        spectrumRepository.spectrumSearch(
+//                                SearchType.CLUSTERING, querySpectrum, params));
+//                ++count;
+//            }
+//
+//            long elapsedTime = System.currentTimeMillis() - startingTime;
+//            LOGGER.info(String.format("%d query spectra searched with average time %d milliseconds.",
+//                    count, count > 0 ? elapsedTime / count : 0));
+//        }
+//
+//        spectrumMatchRepository.saveAll(spectrumMatches);
+//
+//        LOGGER.info(String.format("Save %d matches to the database.", spectrumMatches.size()));
+//    }
 
     @Transactional
     @Override

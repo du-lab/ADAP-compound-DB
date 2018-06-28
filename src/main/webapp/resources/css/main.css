@@ -303,3 +303,14 @@ span.highlighted {
     width: 80px;
     z-index: 10;
 }
+
+.progress_bar {
+    background-color: #86b3d1;
+    /*opacity: 1;*/
+    width: 0;
+    height: 2px;
+}
+
+.progress_bar[hidden] {
+    display: none;
+}

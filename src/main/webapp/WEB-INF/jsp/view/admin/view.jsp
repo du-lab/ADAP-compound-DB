@@ -9,6 +9,10 @@
 <!-- Start the middle column -->
 
 <section>
+    <div id="progressBarDiv" class="progress_bar"></div>
+</section>
+
+<section>
     <h1>Number of Spectra in Library</h1>
     <div align="center">
         <table>
@@ -36,7 +40,9 @@
     <h1>Admin Tools</h1>
     <table>
         <tr>
-            <td><a href="calculatescores/" class="button">Calculate Matching Scores...</a></td>
+            <td><a href="calculatescores/"
+                   class="button"
+                   onclick="progressBar.start('calculatescores/progress')">Calculate Matching Scores...</a></td>
             <td>Calculates matching scores for all spectra in the library</td>
         </tr>
         <tr>
@@ -65,7 +71,7 @@
                     <td>${cluster}</td>
                     <td>${cluster.size}</td>
                     <td>${dulab:toIntegerScore(cluster.diameter)}</td>
-                    <%--<td>${cluster.chromatographyType.label}</td>--%>
+                        <%--<td>${cluster.chromatographyType.label}</td>--%>
                     <td>
                         <!--more horiz-->
                         <a href="/cluster/${cluster.id}/"><i class="material-icons" title="View">&#xE5D3;</i></a>
@@ -81,7 +87,10 @@
 
 <script src="<c:url value="/resources/js/DataTables/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
 <script src="<c:url value="/resources/js/DataTables/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
+<script src="<c:url value="/resources/js/progressBar.js"/>"></script>
 <script>
+    var progressBar = new ProgressBar('progressBarDiv');
+
     $(document).ready(function () {
         $('#cluster_table').DataTable();
     });
