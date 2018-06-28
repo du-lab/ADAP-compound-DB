@@ -30,11 +30,11 @@
                 <h2>
                     404 Not Found</h2>
                 <div class="error-details">
-                    Sorry, an error has occured, Requested page not found!
+                    Sorry, an error has occured, <c:out value = "${errorMsg}"/> Requested page not found!
                 </div>
                 <div class="error-actions">
-                    <a href="http://www.jquery2dotnet.com" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-home"></span>
-                        Take Me Home </a><a href="http://www.jquery2dotnet.com" class="btn btn-default btn-lg"><span class="glyphicon glyphicon-envelope"></span> Contact Support </a>
+                    <a href="<c:url value="/" />" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-home"></span>
+                        Take Me Home </a><a href="#" class="btn btn-default btn-lg"><span class="glyphicon glyphicon-envelope"></span> Contact Support </a>
                 </div>
             </div>
         </div>
@@ -42,3 +42,8 @@
 </div>
 </body>
 </html>
+<div>
+    <section>
+
+    </section>>
+</div>
