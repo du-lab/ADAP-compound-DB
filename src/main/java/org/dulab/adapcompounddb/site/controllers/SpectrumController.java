@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpSession;
+import javax.xml.ws.http.HTTPException;
 
 @Controller
 public class SpectrumController {
@@ -32,8 +33,8 @@ public class SpectrumController {
         Spectrum spectrum = spectrumService.find(spectrumId);
 
         if (spectrum == null)
-            return spectrumNotFound(model,spectrumId);
-
+            //return spectrumNotFound(model,spectrumId);
+            throw new HTTPException(404);
         return spectrum(spectrum, model);
     }
 
@@ -57,7 +58,8 @@ public class SpectrumController {
 
         Submission submission = Submission.from(session);
         if (submission == null)
-           return submissionNotFound(model);
+           //return submissionNotFound(model);
+            throw new HTTPException(404);
         Spectrum spectrum = submission.getSpectra().get(listIndex);
 
         return spectrum(spectrum, model);
@@ -66,16 +68,19 @@ public class SpectrumController {
     public String spectrum(Spectrum spectrum, Model model) {
         model.addAttribute("spectrum", spectrum);
         return "file/spectrum";
+
     }
 
     private String spectrumNotFound(Model model, long spectrumId) {
         model.addAttribute("errorMessage", "Cannot find spectrum ID = " + spectrumId);
-        return "redirect:/notfound/";
+        //return "redirect:/notfound/";
+        return "error/notFound";
     }
 
     private String submissionNotFound(Model model, long submissionId) {
         model.addAttribute("errorMessage", "Cannot find submission ID = " + submissionId);
         return "redirect:/notfound/";
+
     }
 
     private String submissionNotFound(Model model) {
