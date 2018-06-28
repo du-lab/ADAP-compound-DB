@@ -26,12 +26,6 @@
     <%--<link href="/resources/css/login.css" rel="stylesheet">--%>
 </head>
 <body>
-<section>
-    <div align="center">
-
-    </div>
-</section>
-
     <section>
     <div align="center">
         <div align="left" class="subsection">
