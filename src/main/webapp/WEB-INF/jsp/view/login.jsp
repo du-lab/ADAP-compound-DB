@@ -9,30 +9,32 @@
 <jsp:include page="/WEB-INF/jsp/includes/footer.jsp" />
 
 <!-- Start the middle column -->
-<form:form method="post" modelAttribute="logInForm" class="form-signin">
-    <h2 class="form-signin-heading">Please sign in</h2>
-    <h3>You must log in to submit new mass spectra to the library.</h3>
-    <form:label path="username">Username:</form:label>
-    <form:input path="username"/><br/>
-    <form:errors path="username" cssClass="errors"/><br/>
-    <input type="text" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
-    <label for="inputPassword" class="sr-only">Password</label>
-    <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
-    <div class="checkbox">
-        <label>
-            <input type="checkbox" value="remember-me"> Remember me
-        </label>
-    </div>
-    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-</form:form>
 
-</div>
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- Bootstrap core CSS -->
+    <link href="/resources/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/resources/css/bootstrap-theme.css" rel="stylesheet">
 
+    <!-- Custom styles for this template -->
+    <link href="/resources/css/signin.css" rel="stylesheet">
+    <%--<link href="/resources/css/login.css" rel="stylesheet">--%>
+</head>
+<body>
 <section>
-    <h1>Log-in</h1>
+    <div align="center">
+
+    </div>
+</section>
+
+    <section>
     <div align="center">
         <div align="left" class="subsection">
-            <p>You must log in to submit new mass spectra to the library.</p>
             <c:if test="${loginFailed}">
                 <b class="errors">The username and password you entered are not correct. Please try again.</b><br/>
             </c:if><c:if test="${validationErrors != null}"><div class="errors">
@@ -43,28 +45,28 @@
                 </ul>
             </div></c:if>
 
-            <form:form method="POST" modelAttribute="logInForm">
-                <form:label path="username">Username:</form:label><br/>
-                <form:input path="username"/><br/>
-                <form:errors path="username" cssClass="errors"/><br/>
-                <form:label path="password">Password:</form:label><br/>
-                <form:password path="password"/><br/>
-                <form:errors path="password" cssClass="errors"/><br/>
-                <div align="center">
-                    <input type="submit" value="Log in"/>
-                </div>
-            </form:form>
-        </div>
-    </div>
-</section>
 
-<section>
-    <h1>Sign-Up</h1>
-    <p>If you are not registered yet, please do it now:</p>
-    <div align="center">
-        <a href="<c:url value="/signup"/>" class="button">Register</a>
-    </div>
-</section>
+            <div class="container" align="center">
+                <form:form method="POST" modelAttribute="logInForm" cssClass="form-signin" >
+                    <h2 class="form-signin">Please sign in</h2></br>
+                    <h4>You must log in to submit new mass spectra to the library</h4></br>
+                    <form:label cssClass="sr-only" path="username">Username:</form:label>
+                    <form:input path="username" cssClass="form-control" placeholder="Username"/>
+                    <form:errors path="username" cssClass="errors"/>
+                    <form:label cssClass="sr-only" path="password">Password:</form:label>
+                    <form:password path="password" cssClass="form-control" placeholder="Password"/>
+                    <form:errors path="password" cssClass="errors"/>
+                    <div>
+                        <button class="btn btn-lg btn-primary btn-primary" type="submit">Sign in</button>
+                    </div>
+                </form:form>
+
+                <h5 class="form-signin"> If you are not registered yet, please do it now:</h5>
+                <a href="<c:url value="/signup"/>" class="btn btn-lg btn-primary">Register</a>
+            </div>
+
+    </section>
+</body>
 
 <!-- End the middle column -->
 
