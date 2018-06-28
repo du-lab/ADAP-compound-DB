@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.FileType;
+import org.dulab.adapcompounddb.models.entities.File;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.site.services.FileReaderService;
@@ -21,7 +22,9 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -62,36 +65,48 @@ public class FileUploadController {
         if (errors.hasErrors())
             return "file/upload";
 
-        MultipartFile file = form.getFile();
-        Submission submission = new Submission();
-        submission.setName(file.getOriginalFilename());
-        submission.setFilename(file.getOriginalFilename());
-        submission.setFileType(form.getFileType());
-        submission.setChromatographyType(form.getChromatographyType());
+//        MultipartFile file = form.getFile();
+
+//        submission.setName(file.getOriginalFilename());
+//        submission.setFilename(file.getOriginalFilename());
+//        submission.setFileType(form.getFileType());
+//        submission.setChromatographyType(form.getChromatographyType());
 
         FileReaderService service = fileReaderServiceMap.get(form.fileType);
         if (service == null) {
             LOG.warn("Cannot find an implementation of FileReaderService for a file of type {}", form.getFileType());
-            model.addAttribute("message", "Cannot read this type.");
+            model.addAttribute("message", "Cannot read this file type.");
             return "file/upload";
         }
 
-        try {
-            submission.setFile(file.getBytes());
-            submission.setSpectra(service.read(file.getInputStream()));
-            for (Spectrum s : submission.getSpectra())
-                s.setSubmission(submission);
-        }
-        catch (IOException e) {
-            LOG.warn(e);
-            model.addAttribute("message", "Cannot read this file: " + e.getMessage());
-            return "file/upload";
+        Submission submission = new Submission();
+
+        List<File> files = new ArrayList<>(form.getFiles().size());
+        for (MultipartFile multipartFile : form.getFiles()) {
+            File file = new File();
+            file.setName(multipartFile.getOriginalFilename());
+            file.setFileType(form.getFileType());
+            file.setSubmission(submission);
+            try {
+                file.setContent(multipartFile.getBytes());
+                file.setSpectra(
+                        service.read(multipartFile.getInputStream(), form.getChromatographyType()));
+                file.getSpectra().forEach(s -> s.setFile(file));
+                files.add(file);
+
+            } catch (IOException e) {
+                LOG.warn(e);
+                model.addAttribute("message", "Cannot read this file: " + e.getMessage());
+                return "file/upload";
+            }
         }
 
-        if (submission.getSpectra() == null || submission.getSpectra().isEmpty()) {
+        if (files.isEmpty()) {
             model.addAttribute("message", "Cannot read this file");
             return "file/upload";
         }
+
+        submission.setFiles(files);
 
         Submission.assign(session, submission);
         return "redirect:/file/";
@@ -107,7 +122,7 @@ public class FileUploadController {
         private FileType fileType;
 
         @ContainsFiles
-        private MultipartFile file;
+        private List<MultipartFile> files;
 
         public ChromatographyType getChromatographyType() {
             return chromatographyType;
@@ -125,12 +140,12 @@ public class FileUploadController {
             this.fileType = fileType;
         }
 
-        public MultipartFile getFile() {
-            return file;
+        public List<MultipartFile> getFiles() {
+            return files;
         }
 
-        public void setFile(MultipartFile file) {
-            this.file = file;
+        public void setFiles(List<MultipartFile> files) {
+            this.files = files;
         }
     }
 }

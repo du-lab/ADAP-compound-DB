@@ -3,10 +3,14 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
-<jsp:include page="/WEB-INF/jsp/includes/header.jsp" />
-<jsp:include page="/WEB-INF/jsp/includes/column_left_home.jsp" />
+<jsp:include page="/WEB-INF/jsp/includes/header.jsp"/>
+<jsp:include page="/WEB-INF/jsp/includes/column_left_home.jsp"/>
 
 <!-- Start the middle column -->
+
+<section>
+    <div id="progressBarDiv" class="progress_bar"></div>
+</section>
 
 <section>
     <h1>Number of Spectra in Library</h1>
@@ -36,7 +40,9 @@
     <h1>Admin Tools</h1>
     <table>
         <tr>
-            <td><a href="calculatescores/" class="button">Calculate Matching Scores...</a></td>
+            <td><a href="calculatescores/"
+                   class="button"
+                   onclick="progressBar.start('calculatescores/progress')">Calculate Matching Scores...</a></td>
             <td>Calculates matching scores for all spectra in the library</td>
         </tr>
         <tr>
@@ -48,32 +54,47 @@
 
 <section>
     <h1>Clusters</h1>
-    <div align="center" style="overflow: auto; max-height: 400px;">
-        <table>
+    <div align="center">
+        <table id="cluster_table" class="display" style="width: 100%;">
+            <thead>
             <tr>
                 <th>Name</th>
                 <th>Num Spectra</th>
                 <th>Matching Score</th>
-                <th>Chromatography</th>
+                <%--<th>Chromatography</th>--%>
                 <th>View</th>
             </tr>
+            </thead>
+            <tbody>
             <c:forEach items="${clusters}" var="cluster">
                 <tr>
                     <td>${cluster}</td>
                     <td>${cluster.size}</td>
                     <td>${dulab:toIntegerScore(cluster.diameter)}</td>
-                    <td>${cluster.chromatographyType.label}</td>
+                        <%--<td>${cluster.chromatographyType.label}</td>--%>
                     <td>
                         <!--more horiz-->
                         <a href="/cluster/${cluster.id}/"><i class="material-icons" title="View">&#xE5D3;</i></a>
                     </td>
                 </tr>
             </c:forEach>
+            </tbody>
         </table>
     </div>
 </section>
 
 <!-- End the middle column -->
 
-<jsp:include page="/WEB-INF/jsp/includes/column_right_news.jsp" />
-<jsp:include page="/WEB-INF/jsp/includes/footer.jsp" />
+<script src="<c:url value="/resources/js/DataTables/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
+<script src="<c:url value="/resources/js/DataTables/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
+<script src="<c:url value="/resources/js/progressBar.js"/>"></script>
+<script>
+    var progressBar = new ProgressBar('progressBarDiv');
+
+    $(document).ready(function () {
+        $('#cluster_table').DataTable();
+    });
+</script>
+
+<jsp:include page="/WEB-INF/jsp/includes/column_right_news.jsp"/>
+<jsp:include page="/WEB-INF/jsp/includes/footer.jsp"/>

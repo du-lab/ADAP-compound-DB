@@ -2,6 +2,7 @@ package org.dulab.adapcompounddb.site.services;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumProperty;
@@ -19,7 +20,7 @@ public class MspFileReaderService implements FileReaderService {
     private static final Logger LOG = LogManager.getLogger();
 
     @Override
-    public List<Spectrum> read(InputStream inputStream)
+    public List<Spectrum> read(InputStream inputStream, ChromatographyType type)
             throws IOException {
 
         BufferedReader reader = new BufferedReader(
@@ -37,6 +38,7 @@ public class MspFileReaderService implements FileReaderService {
 
                 if (!peaks.isEmpty()) {
                     spectrum.setProperties(properties);
+                    spectrum.setChromatographyType(type);
                     spectrum.setPeaks(peaks);
                     spectra.add(spectrum);
                 }

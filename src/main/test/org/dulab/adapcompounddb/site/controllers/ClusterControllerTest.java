@@ -5,6 +5,7 @@ import org.dulab.adapcompounddb.config.ServletContextConfiguration;
 import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.site.services.SpectrumMatchService;
+import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +31,9 @@ public class ClusterControllerTest extends TestCase {
     private SpectrumMatchService spectrumMatchService;
 
     @Mock
+    private SubmissionService submissionService;
+
+    @Mock
     private SpectrumCluster cluster;
 
     @Mock
@@ -38,7 +42,7 @@ public class ClusterControllerTest extends TestCase {
     @Before
     public void setUp() {
         mockMvc = MockMvcBuilders
-                .standaloneSetup(new ClusterController(spectrumMatchService), new IndexController())
+                .standaloneSetup(new ClusterController(spectrumMatchService, submissionService), new IndexController())
                 .setViewResolvers(
                         new ServletContextConfiguration(
                                 new LocalValidatorFactoryBean()).viewResolver())

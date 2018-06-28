@@ -1,27 +1,33 @@
 package org.dulab.adapcompounddb.site.services;
 
-import org.dulab.adapcompounddb.models.entities.Submission;
-import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
-import org.dulab.adapcompounddb.site.repositories.SubmissionCategoryRespository;
-import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
+import org.dulab.adapcompounddb.models.entities.*;
+import org.dulab.adapcompounddb.site.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.EmptyStackException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SubmissionServiceImpl implements SubmissionService {
 
     private final SubmissionRepository submissionRepository;
-    private final SubmissionCategoryRespository submissionCategoryRespository;
+    private final SubmissionSourceRepository submissionSourceRepository;
+    private final SubmissionSpecimenRepository submissionSpecimenRepository;
+    private final SubmissionDiseaseRepository submissionDiseaseRepository;
 
     @Autowired
     public SubmissionServiceImpl(SubmissionRepository submissionRepository,
-                                 SubmissionCategoryRespository submissionCategoryRespository) {
+                                 SubmissionSourceRepository submissionSourceRepository,
+                                 SubmissionSpecimenRepository submissionSpecimenRepository,
+                                 SubmissionDiseaseRepository submissionDiseaseRepository) {
+
         this.submissionRepository = submissionRepository;
-        this.submissionCategoryRespository = submissionCategoryRespository;
+        this.submissionSourceRepository = submissionSourceRepository;
+        this.submissionSpecimenRepository = submissionSpecimenRepository;
+        this.submissionDiseaseRepository = submissionDiseaseRepository;
     }
 
     @Override
@@ -55,29 +61,91 @@ public class SubmissionServiceImpl implements SubmissionService {
         submissionRepository.deleteById(submissionId);
     }
 
+
+    // ****************************************
+    // ***** SubmissionSpecimen functions *****
+    // ****************************************
+
     @Override
-    @Transactional
-    public long getSubmissionCountByCategory(long submissionCategoryId) {
-        return submissionRepository.countByCategoryId(submissionCategoryId);
+    public List<SubmissionSpecimen> getAllSpecies() {
+        return ServiceUtils.toList(submissionSpecimenRepository.findAll());
     }
 
     @Override
-    @Transactional
-    public void saveSubmissionCategory(SubmissionCategory submissionCategory) {
-        submissionCategoryRespository.save(submissionCategory);
+    public long countBySpecimenId(long submissionSpecimenId) {
+        return submissionRepository.countBySpecimenId(submissionSpecimenId);
     }
 
     @Override
-    @Transactional
-    public SubmissionCategory getSubmissionCategory(long submissionCategoryId) {
-        return submissionCategoryRespository.findById(submissionCategoryId)
-                .orElseThrow(() -> new IllegalStateException(
-                        "Cannot find Submission Category with ID = " + submissionCategoryId));
+    public void saveSubmissionSpecimen(SubmissionSpecimen specimen) {
+        submissionSpecimenRepository.save(specimen);
     }
 
     @Override
-    @Transactional
-    public List<SubmissionCategory> getAllSubmissionCategories() {
-        return ServiceUtils.toList(submissionCategoryRespository.findAll());
+    public Optional<SubmissionSpecimen> findSubmissionSpecimen(long submissionSpecimenId) {
+        return submissionSpecimenRepository.findById(submissionSpecimenId);
+    }
+
+    @Override
+    public void deleteSubmissionSpecimen(long submissionSpecimenId) {
+        submissionSpecimenRepository.deleteById(submissionSpecimenId);
+    }
+
+    // **************************************
+    // ***** SubmissionSource functions *****
+    // **************************************
+
+    @Override
+    public List<SubmissionSource> getAllSources() {
+        return ServiceUtils.toList(submissionSourceRepository.findAll());
+    }
+
+    @Override
+    public long countBySourceId(long submissionSourceId) {
+        return submissionRepository.countBySourceId(submissionSourceId);
+    }
+
+    @Override
+    public void saveSubmissionSource(SubmissionSource source) {
+        submissionSourceRepository.save(source);
+    }
+
+    @Override
+    public Optional<SubmissionSource> findSubmissionSource(long submissionSourceId) {
+        return submissionSourceRepository.findById(submissionSourceId);
+    }
+
+    @Override
+    public void deleteSubmissionSource(long submissionSourceId) {
+        submissionSourceRepository.deleteById(submissionSourceId);
+    }
+
+    // ***************************************
+    // ***** SubmissionDisease functions *****
+    // **************************************(
+
+    @Override
+    public List<SubmissionDisease> getAllDiseases() {
+        return ServiceUtils.toList(submissionDiseaseRepository.findAll());
+    }
+
+    @Override
+    public long countByDiseaseId(long submissionDiseaseId) {
+        return submissionRepository.countByDiseaseId(submissionDiseaseId);
+    }
+
+    @Override
+    public void saveSubmissionDisease(SubmissionDisease disease) {
+        submissionDiseaseRepository.save(disease);
+    }
+
+    @Override
+    public Optional<SubmissionDisease> findSubmissionDisease(long submissionDiseaseId) {
+        return submissionDiseaseRepository.findById(submissionDiseaseId);
+    }
+
+    @Override
+    public void deleteSubmissionDisease(long submissionDiseaseId) {
+        submissionDiseaseRepository.deleteById(submissionDiseaseId);
     }
 }

@@ -1,5 +1,7 @@
 package org.dulab.adapcompounddb.models.entities;
 
+import org.dulab.adapcompounddb.models.ChromatographyType;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -20,6 +22,7 @@ public class Spectrum implements Serializable {
     private static final String NAME_PROPERTY_NAME = "Name";
     private static final String PRECURSOR_MASS_PROPERTY_NAME = "PrecursorMZ";
     private static final String RETENTION_TIME_PROPERTY_NAME = "RT";
+    private static final String REFERENCE_PROPERTY_NAME = "IS_REFERENCE";
 
     // *************************
     // ***** Entity fields *****
@@ -29,7 +32,7 @@ public class Spectrum implements Serializable {
 
     private long id;
 
-    private Submission submission;
+    private File file;
 
     @NotNull(message = "Peak list is required.")
     private List<Peak> peaks;
@@ -44,9 +47,13 @@ public class Spectrum implements Serializable {
 
     private boolean consensus;
 
+    private boolean reference;
+
     private Double precursor;
 
     private Double retentionTime;
+
+    private ChromatographyType chromatographyType;
 
     // *******************************
     // ***** Getters and setters *****
@@ -71,13 +78,13 @@ public class Spectrum implements Serializable {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "SubmissionId", referencedColumnName = "Id")
-    public Submission getSubmission() {
-        return submission;
+    @JoinColumn(name = "FileId", referencedColumnName = "Id")
+    public File getFile() {
+        return file;
     }
 
-    public void setSubmission(Submission submission) {
-        this.submission = submission;
+    public void setFile(File file) {
+        this.file = file;
     }
 
     @OneToMany(
@@ -129,6 +136,9 @@ public class Spectrum implements Serializable {
 
             else if (property.getName().equalsIgnoreCase(RETENTION_TIME_PROPERTY_NAME))
                 this.setRetentionTime(Double.valueOf(property.getValue()));
+
+            else if (property.getName().equalsIgnoreCase(REFERENCE_PROPERTY_NAME))
+                this.setReference(true);
         }
     }
 
@@ -175,6 +185,14 @@ public class Spectrum implements Serializable {
         this.consensus = consensus;
     }
 
+    public boolean isReference() {
+        return reference;
+    }
+
+    public void setReference(boolean reference) {
+        this.reference = reference;
+    }
+
     public Double getPrecursor() {
         return precursor;
     }
@@ -189,6 +207,15 @@ public class Spectrum implements Serializable {
 
     public void setRetentionTime(Double retentionTime) {
         this.retentionTime = retentionTime;
+    }
+
+    @Enumerated(EnumType.STRING)
+    public ChromatographyType getChromatographyType() {
+        return chromatographyType;
+    }
+
+    public void setChromatographyType(ChromatographyType chromatographyType) {
+        this.chromatographyType = chromatographyType;
     }
 
     // ****************************

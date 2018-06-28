@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface SpectrumMatchService {
 
-    void fillSpectrumMatchTable(float mzTolerance, float scoreThreshold);
+//    void fillSpectrumMatchTable(float mzTolerance, float scoreThreshold);
 
     void cluster(float mzTolerance, int minNumSpectra, float scoreThreshold) throws EmptySearchResultException;
 

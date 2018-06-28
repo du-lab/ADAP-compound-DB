@@ -15,57 +15,63 @@ public class QueryParameters {
     private Set<Spectrum> excludeSpectra = null;
 
     public Double getRetTimeTolerance() {
-        return Objects.requireNonNull(retTimeTolerance, "Parameter RetTimeTolerance is not defined.");
+        return retTimeTolerance;
     }
 
-    public void setRetTimeTolerance(double retTimeTolerance) {
+    public QueryParameters setRetTimeTolerance(Double retTimeTolerance) {
         this.retTimeTolerance = retTimeTolerance;
+        return this;
     }
 
-    public double getPrecursorTolerance() {
-        return Objects.requireNonNull(precursorTolerance, "Parameter PrecursorTolerance is not defined.");
+    public Double getPrecursorTolerance() {
+        return precursorTolerance;
     }
 
-    public void setPrecursorTolerance(double precursorTolerance) {
+    public QueryParameters setPrecursorTolerance(Double precursorTolerance) {
         this.precursorTolerance = precursorTolerance;
+        return this;
     }
 
-    public double getMzTolerance() {
-        return Objects.requireNonNull(mzTolerance, "Parameter MzTolerance is not defined.");
+    public Double getMzTolerance() {
+        return mzTolerance;
     }
 
-    public void setMzTolerance(double mzTolerance) {
+    public QueryParameters setMzTolerance(Double mzTolerance) {
         this.mzTolerance = mzTolerance;
+        return this;
     }
 
-    public double getScoreThreshold() {
-        return Objects.requireNonNull(scoreThreshold, "Parameter ScoreThreshold is not defined.");
+    public Double getScoreThreshold() {
+        return scoreThreshold;
     }
 
-    public void setScoreThreshold(double scoreThreshold) {
+    public QueryParameters setScoreThreshold(Double scoreThreshold) {
         this.scoreThreshold = scoreThreshold;
+        return this;
     }
 
     public Set<Spectrum> getExcludeSpectra() {
         return excludeSpectra;
     }
 
-    public void setExcludeSpectra(Set<Spectrum> excludeSpectra) {
+    public QueryParameters setExcludeSpectra(Set<Spectrum> excludeSpectra) {
         this.excludeSpectra = excludeSpectra;
+        return this;
     }
 
-    public void addExludeSpectra(Set<Spectrum> excludeSpectra) {
+    public QueryParameters addExludeSpectra(Set<Spectrum> excludeSpectra) {
         if (this.excludeSpectra == null)
             this.excludeSpectra = excludeSpectra;
         else
             this.excludeSpectra.addAll(excludeSpectra);
+        return this;
     }
 
     public static QueryParameters getDefault() {
         QueryParameters params = new QueryParameters();
         params.setRetTimeTolerance(0.5);
         params.setPrecursorTolerance(0.01);
-        params.setScoreThreshold(0.3);
+        params.setScoreThreshold(0.75);
         params.setMzTolerance(0.01);
         params.setExcludeSpectra(null);
         return params;

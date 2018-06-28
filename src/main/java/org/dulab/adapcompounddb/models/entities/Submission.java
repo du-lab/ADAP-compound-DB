@@ -1,8 +1,6 @@
 package org.dulab.adapcompounddb.models.entities;
 
-import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.FileType;
-import org.dulab.adapcompounddb.models.SampleSourceType;
 import org.dulab.adapcompounddb.validation.NotBlank;
 
 import javax.persistence.*;
@@ -29,34 +27,34 @@ public class Submission implements Serializable {
     @NotBlank(message = "The field Name is required.")
     private String name;
 
-    @NotBlank(message = "The field Description is required.")
     private String description;
 
     @NotNull(message = "Date/Time of submission is required.")
     private Date dateTime;
 
-    @NotBlank(message = "Filename of the raw file is required.")
-    private String filename;
+//    @NotBlank(message = "Filename of the raw file is required.")
+//    private String filename;
+//
+//    @NotNull(message = "Type of the raw file is required.")
+//    private FileType fileType;
+//
+//    @NotNull(message = "Raw file is required.")
+//    private byte[] file;
 
-    @NotNull(message = "Type of the raw file is required.")
-    private FileType fileType;
-
-    @NotNull(message = "Raw file is required.")
-    private byte[] file;
-
-    @NotNull(message = "Chromatography type is required.")
-    private ChromatographyType chromatographyType;
-
-    @NotNull(message = "Sample source type is required.")
-    private SampleSourceType sampleSourceType;
-
-    private SubmissionCategory category;
-
-    @NotNull (message = "Spectrum list is required.")
     @Valid
-    private List<Spectrum> spectra;
+    private SubmissionSource source;
 
-    @NotNull (message = "You must log in to submit mass spectra to the library.")
+    @Valid
+    private SubmissionSpecimen specimen;
+
+    @Valid
+    private SubmissionDisease disease;
+
+    @NotNull(message = "Submission: File list is required.")
+    @Valid
+    private List<File> files;
+
+    @NotNull(message = "You must log in to submit mass spectra to the library.")
     @Valid
     private UserPrincipal user;
 
@@ -90,32 +88,34 @@ public class Submission implements Serializable {
         this.description = desription;
     }
 
-    @Enumerated(EnumType.STRING)
-    public ChromatographyType getChromatographyType() {
-        return chromatographyType;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "SourceId", referencedColumnName = "Id")
+    public SubmissionSource getSource() {
+        return source;
     }
 
-    public void setChromatographyType(ChromatographyType chromatographyType) {
-        this.chromatographyType = chromatographyType;
+    public void setSource(SubmissionSource source) {
+        this.source = source;
     }
 
-    @Enumerated(EnumType.STRING)
-    public SampleSourceType getSampleSourceType() {
-        return sampleSourceType;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "SpecimenId", referencedColumnName = "Id")
+    public SubmissionSpecimen getSpecimen() {
+        return specimen;
     }
 
-    public void setSampleSourceType(SampleSourceType sampleSourceType) {
-        this.sampleSourceType = sampleSourceType;
+    public void setSpecimen(SubmissionSpecimen specimen) {
+        this.specimen = specimen;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "SubmissionCategoryId", referencedColumnName = "Id")
-    public SubmissionCategory getCategory() {
-        return category;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "DiseaseId", referencedColumnName = "Id")
+    public SubmissionDisease getDisease() {
+        return disease;
     }
 
-    public void setCategory(SubmissionCategory category) {
-        this.category = category;
+    public void setDisease(SubmissionDisease disease) {
+        this.disease = disease;
     }
 
     @OneToMany(
@@ -124,12 +124,12 @@ public class Submission implements Serializable {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    public List<Spectrum> getSpectra() {
-        return spectra;
+    public List<File> getFiles() {
+        return files;
     }
 
-    public void setSpectra(List<Spectrum> spectra) {
-        this.spectra = spectra;
+    public void setFiles(List<File> files) {
+        this.files = files;
     }
 
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
@@ -151,29 +151,30 @@ public class Submission implements Serializable {
         this.dateTime = dateTime;
     }
 
-    public String getFilename() {
-        return filename;
-    }
-
-    public void setFilename(String filename) {
-        this.filename = filename;
-    }
-
-    public FileType getFileType() {
-        return fileType;
-    }
-
-    public void setFileType(FileType fileType) {
-        this.fileType = fileType;
-    }
-
-    public byte[] getFile() {
-        return file;
-    }
-
-    public void setFile(byte[] file) {
-        this.file = file;
-    }
+//    public String getFilename() {
+//        return filename;
+//    }
+//
+//    public void setFilename(String filename) {
+//        this.filename = filename;
+//    }
+//
+//    @Enumerated(EnumType.STRING)
+//    public FileType getFileType() {
+//        return fileType;
+//    }
+//
+//    public void setFileType(FileType fileType) {
+//        this.fileType = fileType;
+//    }
+//
+//    public byte[] getFile() {
+//        return file;
+//    }
+//
+//    public void setFile(byte[] file) {
+//        this.file = file;
+//    }
 
     @Override
     public boolean equals(Object other) {

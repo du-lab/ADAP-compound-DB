@@ -3,6 +3,7 @@ package org.dulab.adapcompounddb.site.services;
 import org.dulab.adapcompounddb.models.Hit;
 import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
+import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,33 +24,33 @@ public class SpectrumSearchServiceImpl implements SpectrumSearchService {
     }
 
     @Override
-    public List<Hit> search(Spectrum spectrum, QueryParameters parameters) {
+    public List<SpectrumMatch> search(Spectrum spectrum, QueryParameters parameters) {
 
-        List<Hit> allHits = new ArrayList<>();
+        List<SpectrumMatch> allHits = new ArrayList<>();
 
-        if (spectrum.getRetentionTime() != null && spectrum.getPrecursor() != null) {
-            List<Hit> hits = spectrumRepository.retTimePrecursorMsMsSearch(spectrum, parameters);
-            allHits.addAll(hits);
-            parameters.addExludeSpectra(hitsToSpectra(hits));
-        }
-
-        if (spectrum.getRetentionTime() != null && spectrum.getPrecursor() != null) {
-            List<Hit> hits = spectrumRepository.retTimePrecursorSearch(spectrum, parameters);
-            allHits.addAll(hits);
-            parameters.addExludeSpectra(hitsToSpectra(hits));
-        }
-
-        if (spectrum.getPrecursor() != null) {
-            List<Hit> hits = spectrumRepository.precursorMsMsSearch(spectrum, parameters);
-            allHits.addAll(hits);
-            parameters.addExludeSpectra(hitsToSpectra(hits));
-        }
-
-        if (spectrum.getPrecursor() != null) {
-            List<Hit> hits = spectrumRepository.precursorSearch(spectrum, parameters);
-            allHits.addAll(hits);
-            parameters.addExludeSpectra(hitsToSpectra(hits));
-        }
+//        if (spectrum.getRetentionTime() != null && spectrum.getPrecursor() != null) {
+//            List<Hit> hits = spectrumRepository.retTimePrecursorMsMsSearch(spectrum, parameters);
+//            allHits.addAll(hits);
+//            parameters.addExludeSpectra(hitsToSpectra(hits));
+//        }
+//
+//        if (spectrum.getRetentionTime() != null && spectrum.getPrecursor() != null) {
+//            List<Hit> hits = spectrumRepository.retTimePrecursorSearch(spectrum, parameters);
+//            allHits.addAll(hits);
+//            parameters.addExludeSpectra(hitsToSpectra(hits));
+//        }
+//
+//        if (spectrum.getPrecursor() != null) {
+//            List<Hit> hits = spectrumRepository.precursorMsMsSearch(spectrum, parameters);
+//            allHits.addAll(hits);
+//            parameters.addExludeSpectra(hitsToSpectra(hits));
+//        }
+//
+//        if (spectrum.getPrecursor() != null) {
+//            List<Hit> hits = spectrumRepository.precursorSearch(spectrum, parameters);
+//            allHits.addAll(hits);
+//            parameters.addExludeSpectra(hitsToSpectra(hits));
+//        }
 
         return allHits;
     }

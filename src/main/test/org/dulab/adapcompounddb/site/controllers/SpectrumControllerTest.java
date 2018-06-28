@@ -85,13 +85,13 @@ public class SpectrumControllerTest extends TestCase {
     public void spectrumTest2() throws Exception{
 
         when(submissionService.findSubmission(1)).thenReturn(null); // Returning an empty spectrum
-        mockMvc.perform(get("/submission/1/1/")) // checking if there is a submission and its corresponding spectrum
+        mockMvc.perform(get("/submission/1/1/1/")) // checking if there is a submission and its corresponding spectrum
                 .andExpect(status().is3xxRedirection()) // REDIRECTION - link
                 .andExpect(redirectedUrlPattern("/notfound/*")) //404 NOT FOUND
                 .andExpect(model().attributeExists("errorMessage"));
 
         when(submissionService.findSubmission(1)).thenReturn(submission); // Returning a dummy spectrum
-        when(submission.getSpectra()).thenReturn(spectrumList); // Returning a dummy spectrum List
+        when(submission.getFiles().get(1).getSpectra()).thenReturn(spectrumList); // Returning a dummy spectrum List
 
         spectrumList.get(0); //Getting the Spectrum List index
 
@@ -107,14 +107,14 @@ public class SpectrumControllerTest extends TestCase {
      */
     @Test
     public void spectrumTest3() throws Exception{
-        mockMvc.perform(get("/file/1/").session(mockHttpSession)) // checking without the session
+        mockMvc.perform(get("/file/1/1/").session(mockHttpSession)) // checking without the session
                 .andExpect(status().is3xxRedirection()) // redirection - link
                 .andExpect(redirectedUrlPattern("/notfound/*")) //404 NOT FOUND
                 .andExpect(model().attributeExists("errorMessage"));
 
         Submission.assign(mockHttpSession, submission);
 
-        when(submission.getSpectra()).thenReturn(spectrumList); // Returning a dummy Spectrum
+        when(submission.getFiles().get(1).getSpectra()).thenReturn(spectrumList); // Returning a dummy Spectrum
         spectrumList.get(0);
         mockMvc.perform(get("/file/1/").session(mockHttpSession)) // checking if there is a submission
                 .andExpect(status().isOk()) // OK status - link

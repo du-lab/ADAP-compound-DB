@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.site.repositories;
 
 import org.dulab.adapcompounddb.models.ChromatographyType;
+import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 
 import java.util.Set;
@@ -8,9 +9,9 @@ import java.util.stream.Collectors;
 
 public class SpectrumQueryBuilder {
 
-    private final ChromatographyType type;
+    private final String peakView;
 
-    private final boolean isConsensus;
+    private final ChromatographyType chromatographyType;
 
     private final Set<Spectrum> excludeSpectra;
 
@@ -25,9 +26,20 @@ public class SpectrumQueryBuilder {
     private double scoreThreshold;
 
 
-    public SpectrumQueryBuilder(ChromatographyType type, boolean isConsensus, Set<Spectrum> excludeSpectra) {
-        this.type = type;
-        this.isConsensus = isConsensus;
+    public SpectrumQueryBuilder(SearchType searchType, ChromatographyType chromatographyType, Set<Spectrum> excludeSpectra) {
+
+        switch (searchType) {
+            case SIMILARITY_SEARCH:
+                this.peakView = "SearchSpectrumPeakView";
+                break;
+            case CLUSTERING:
+                this.peakView = "ClusterSpectrumPeakView";
+                break;
+            default:
+                this.peakView = "SearchSpectrumPeakView";
+        }
+
+        this.chromatographyType = chromatographyType;
         this.excludeSpectra = excludeSpectra;
     }
 
@@ -56,10 +68,8 @@ public class SpectrumQueryBuilder {
         // -----------------------
 
         String query = String.format("WITH PeakCTE AS (\n" +
-                        "\tSELECT * FROM PeakView\n" +
-                        "\tWHERE ChromatographyType = \"%s\"\n" +
-                        "\tAND Consensus is %b\n",
-                type, isConsensus);
+                "\tSELECT * FROM %s\n" +
+                "\tWHERE ChromatographyType = \"%s\"\n", peakView, chromatographyType);
 
         if (precursorRange != null)
             query += String.format("\tAND Precursor > %f AND Precursor < %f\n",
@@ -90,14 +100,17 @@ public class SpectrumQueryBuilder {
 
         if (spectrum == null)
             query += "SELECT DISTINCT SpectrumId, 0 AS Score FROM PeakCTE\n";
+
         else {
-            query += "SELECT SpectrumId, POWER(SUM(Product), 2) AS Score FROM (\n";
+            query += "SELECT SpectrumId, POWER(SUM(Product), 2) AS Score FROM (\n";  // 0 AS Id, NULL AS QuerySpectrumId, SpectrumId AS MatchSpectrumId
+
             query += spectrum.getPeaks()
                     .stream()
                     .map(p -> String.format("\tSELECT SpectrumId, MAX(SQRT(Intensity * %f)) AS Product FROM PeakCTE " +
                                     "WHERE Mz > %f AND Mz < %f GROUP BY SpectrumId\n",
                             p.getIntensity(), p.getMz() - mzTolerance, p.getMz() + mzTolerance))
                     .collect(Collectors.joining("\tUNION ALL\n"));
+
             query += ") AS Result\n";
             query += String.format("GROUP BY SpectrumId HAVING Score > %f ORDER BY Score DESC\n", scoreThreshold);
         }

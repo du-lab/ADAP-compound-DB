@@ -1,12 +1,12 @@
 package org.dulab.adapcompounddb.site.services;
 
-import org.dulab.adapcompounddb.models.entities.Submission;
-import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
+import org.dulab.adapcompounddb.models.entities.*;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Optional;
 
 @Validated
 public interface SubmissionService {
@@ -23,11 +23,46 @@ public interface SubmissionService {
 
     void delete(long submissionId);
 
-    void saveSubmissionCategory(SubmissionCategory submissionCategory);
 
-    long getSubmissionCountByCategory(long submissionCategoryId);
+    // ****************************************
+    // ***** SubmissionSpecimen functions *****
+    // ****************************************
 
-    SubmissionCategory getSubmissionCategory(long submissionCategoryId);
+    List<SubmissionSpecimen> getAllSpecies();
 
-    List<SubmissionCategory> getAllSubmissionCategories();
+    long countBySpecimenId(long submissionSpecimenId);
+
+    Optional<SubmissionSpecimen> findSubmissionSpecimen(long submissionSpecimenId);
+
+    void saveSubmissionSpecimen(SubmissionSpecimen specimen);
+
+    void deleteSubmissionSpecimen(long submissionSpecimenId);
+
+    // **************************************
+    // ***** SubmissionSource functions *****
+    // **************************************
+
+    List<SubmissionSource> getAllSources();
+
+    long countBySourceId(long submissionSourceId);
+
+    Optional<SubmissionSource> findSubmissionSource(long submissionSourceId);
+
+    void saveSubmissionSource(SubmissionSource source);
+
+    void deleteSubmissionSource(long submissionSourceId);
+
+    // ***************************************
+    // ***** SubmissionDisease functions *****
+    // ***************************************
+
+    List<SubmissionDisease> getAllDiseases();
+
+    long countByDiseaseId(long submissionDiseaseId);
+
+    Optional<SubmissionDisease> findSubmissionDisease(long submissionDiseaseId);
+
+    void saveSubmissionDisease(SubmissionDisease disease);
+
+    void deleteSubmissionDisease(long submissionDiseaseId);
 }

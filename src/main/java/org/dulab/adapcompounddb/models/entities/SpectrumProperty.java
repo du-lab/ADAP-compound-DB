@@ -4,9 +4,12 @@ import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 @Entity
-public class SpectrumProperty {
+public class SpectrumProperty implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private long id;
 

@@ -1,79 +1,68 @@
 package org.dulab.adapcompounddb.models.entities;
 
+import org.dulab.adapcompounddb.models.SubmissionCategory;
 import org.dulab.adapcompounddb.validation.NotBlank;
 
-import javax.persistence.*;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.io.Serializable;
 
 @Entity
-public class SubmissionCategory implements Serializable {
+public class SubmissionSpecimen implements Serializable, SubmissionCategory {
 
     private static final long serialVersionUID = 1L;
 
     private long id;
 
-    @NotBlank(message = "The field Name is required.")
+    @NotBlank(message = "SubmissionSpecimen: The field Name is required.")
     private String name;
 
-    @NotBlank(message = "The field Description is required.")
     private String description;
 
-    @NotNull(message = "You must log in to create a new category.")
-    @Valid
-    protected UserPrincipal user;
-
+    @Override
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public long getId() {
         return id;
     }
 
+    @Override
     public void setId(long id) {
         this.id = id;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public void setDescription(String description) {
         this.description = description;
     }
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "UserPrincipalId", referencedColumnName = "Id")
-    public UserPrincipal getUser() {
-        return user;
-    }
-
-    public void setUser(UserPrincipal user) {
-        this.user = user;
-    }
 
     @Override
     public boolean equals(Object other) {
         if (this == other) return true;
-        if (!(other instanceof SubmissionCategory)) return false;
-        return id == ((SubmissionCategory) other).id;
+        if (!(other instanceof SubmissionSpecimen)) return false;
+        return id == ((SubmissionSpecimen) other).id;
     }
 
     @Override
     public int hashCode() {
         return Long.hashCode(id);
-    }
-
-    @Override
-    public String toString() {
-        return name;
     }
 }

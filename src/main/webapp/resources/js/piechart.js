@@ -1,13 +1,13 @@
 function addPieChart(idName, dataset) {
 
-    // var dataset = ${dulab:pieChartData(cluster)};
-
     var width = 360;
     var height = 360;
     var radius = Math.min(width, height) / 2;
     var donutWidth = 75;
     var legendRectSize = 18;
     var legendSpacing = 4;
+
+    var total = d3.sum(dataset.map(function (d) {return d.count;}));
 
     var tooltip = d3.select('#' + idName)
         .append('div')
@@ -31,26 +31,28 @@ function addPieChart(idName, dataset) {
         .outerRadius(radius);
 
     var pie = d3.pie()
-        .value(function (d) {
-            return d.count
-        })
+        .value(function (d) {return d.count})
         .sort(null);
 
-    var path = svg.selectAll('path')
+    var g = svg.selectAll('arc')
         .data(pie(dataset))
         .enter()
-        .append('path')
+        .append('g')
+        .attr('class', 'arc');
+
+    var path = g.append('path')
         .attr('d', arc)
-        .attr('fill', function (d, i) {
-            return color(d.data.label);
-        });
+        .attr('fill', function (d) {return color(d.data.label);});
+
+    g.filter(function(d) {return d.data.count > 0;})
+        .append('text')
+        .attr('transform', function(d) {return 'translate(' + arc.centroid(d) + ')';})
+        .attr('dy', '0.5em')
+        .text(function(d) {return (Math.round(1000 * d.data.count / total) / 10) + '%';})
+        .style('fill', '#fff')
+        .style('text-anchor', 'middle');
 
     path.on('mouseover', function (d) {
-
-        var total = d3.sum(dataset.map(function (d) {
-            return d.count;
-        }))
-
         var percent = Math.round(1000 * d.data.count / total) / 10;
         tooltip.select('.label').html(d.data.label);
         tooltip.select('.count').html(d.data.count);
@@ -89,7 +91,5 @@ function addPieChart(idName, dataset) {
     legend.append('text')
         .attr('x', legendRectSize + legendSpacing)
         .attr('y', legendRectSize - legendSpacing)
-        .text(function (d) {
-            return d;
-        });
+        .text(function (d) {return d;});
 }

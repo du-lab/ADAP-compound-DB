@@ -79,8 +79,8 @@ public class SubmissionControllerTest extends TestCase {
 
         when(submission.getName()).thenReturn("file"); // Assigning dummy values
         when(submission.getDescription()).thenReturn("file Description");
-        when(submission.getSampleSourceType()).thenReturn(sampleSourceType);
-        when(submission.getCategory()).thenReturn(null);
+//        when(submission.getSampleSourceType()).thenReturn(sampleSourceType);
+//        when(submission.getCategory()).thenReturn(null);
         mockMvc.perform(get("/file/").session(mockHttpSession))
                 .andExpect(status().isOk()) // OK status
                 .andExpect(view().name("file/view")) // view
@@ -123,15 +123,15 @@ public class SubmissionControllerTest extends TestCase {
     @Test
     public void fileRawViewTest() throws Exception {
 
-        mockMvc.perform(get("/file/fileview/")) // checking if there is a submission
+        mockMvc.perform(get("/file/1/view/")) // checking if there is a submission
                 .andExpect(status().is3xxRedirection()) // if not redirect to the same upload page
                 .andExpect(redirectedUrlPattern("/file/upload/*")); // if not redirect to the same upload page
 
         // Sucessfully found the submission
         Submission.assign(mockHttpSession, submission);
 
-        when(submission.getFile()).thenReturn(new byte[0]);
-        when(submission.getFilename()).thenReturn("filename");
+        when(submission.getFiles().get(1).getContent()).thenReturn(new byte[0]);
+        when(submission.getFiles().get(1).getName()).thenReturn("filename");
         mockMvc.perform(get("/file/fileview/").session(mockHttpSession)).andExpect(status().isOk()); // ok status for the submission
     }
 
@@ -146,15 +146,15 @@ public class SubmissionControllerTest extends TestCase {
 
         // submission not found
         when(submissionService.findSubmission(1L)).thenReturn(null);
-        mockMvc.perform(get("/submission/1/fileview/").session(mockHttpSession))
+        mockMvc.perform(get("/submission/1/1/view/").session(mockHttpSession))
                 .andExpect(status().is3xxRedirection()) // redirection
                 .andExpect(redirectedUrlPattern("/notfound/*")); // NOT FOUND
 
         // Successfully found the submission
         when(submissionService.findSubmission(1L)).thenReturn(submission);
-        when(submission.getFile()).thenReturn(new byte[0]);
-        when(submission.getFilename()).thenReturn("filename");
-        mockMvc.perform(get("/submission/1/fileview/").session(mockHttpSession))
+        when(submission.getFiles().get(1).getContent()).thenReturn(new byte[0]);
+        when(submission.getFiles().get(1).getName()).thenReturn("filename");
+        mockMvc.perform(get("/submission/1/1/view/").session(mockHttpSession))
                 .andExpect(status().isOk()); // ok status for raw view
 
     }
@@ -174,8 +174,8 @@ public class SubmissionControllerTest extends TestCase {
         // Successfully found the submission
         Submission.assign(mockHttpSession, submission);
 
-        when(submission.getFile()).thenReturn(new byte[0]);
-        when(submission.getFilename()).thenReturn("filename");
+        when(submission.getFiles().get(1).getContent()).thenReturn(new byte[0]);
+        when(submission.getFiles().get(1).getName()).thenReturn("filename");
         mockMvc.perform(get("/file/filedownload/").session(mockHttpSession))
                 .andExpect(status().isOk()); // ok status for raw view download
     }
@@ -194,8 +194,8 @@ public class SubmissionControllerTest extends TestCase {
                 .andExpect(redirectedUrlPattern("/notfound/*"));
 
         Submission.assign(mockHttpSession, submission);
-        when(submission.getFile()).thenReturn(new byte[0]);
-        when(submission.getFilename()).thenReturn("filename");
+        when(submission.getFiles().get(1).getContent()).thenReturn(new byte[0]);
+        when(submission.getFiles().get(1).getName()).thenReturn("filename");
         when(submissionService.findSubmission(1L)).thenReturn(submission);
         mockMvc.perform(get("/submission/1/filedownload/").session(mockHttpSession))
                 .andExpect(status().isOk());
