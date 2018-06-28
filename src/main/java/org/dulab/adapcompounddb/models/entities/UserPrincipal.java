@@ -1,7 +1,9 @@
 package org.dulab.adapcompounddb.models.entities;
 
+import org.dulab.adapcompounddb.models.RoleType;
 import org.dulab.adapcompounddb.validation.Email;
 import org.dulab.adapcompounddb.validation.NotBlank;
+import org.springframework.context.annotation.Role;
 
 import javax.persistence.*;
 import javax.servlet.http.HttpSession;
@@ -21,6 +23,22 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
 
     @NotBlank(message = "The field Username is required.")
     private String username;
+
+
+    @MapKeyEnumerated
+    private RoleType role;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    public RoleType getRole() {
+        return role;
+    }
+
+    public void setRole(RoleType role) {
+        this.role = role;
+    }
+
+
 
     @NotBlank(message = "The field Email is required.")
     @Email
