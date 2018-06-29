@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`UserPrincipal` (
   `Username` VARCHAR(30) NOT NULL,
   `Email` VARCHAR(30) NOT NULL,
   `HashedPassword` BINARY(60) NOT NULL,
-  `role` VARCHAR(30) NULL DEFAULT 'Normal',
+  `role` VARCHAR(30) NOT NULL,
   PRIMARY KEY (`Id`),
   UNIQUE INDEX `UserPrincipal_Username_uindex` (`Username` ASC))
   ENGINE = InnoDB
