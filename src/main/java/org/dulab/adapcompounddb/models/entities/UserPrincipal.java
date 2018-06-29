@@ -3,6 +3,7 @@ package org.dulab.adapcompounddb.models.entities;
 import org.dulab.adapcompounddb.models.RoleType;
 import org.dulab.adapcompounddb.validation.Email;
 import org.dulab.adapcompounddb.validation.NotBlank;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.context.annotation.Role;
 
 import javax.persistence.*;
@@ -26,7 +27,7 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
 
 
     @MapKeyEnumerated
-    private RoleType role;
+    private RoleType role = RoleType.Normal; //Default value set as Normal
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
