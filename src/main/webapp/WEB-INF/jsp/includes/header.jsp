@@ -79,9 +79,9 @@
 
 <header>
 
-    <c:if test="${userPrincipal != null}">
-        <div class="user">User: ${userPrincipal} (<a href="<c:url value="/logout"/>">Log out</a>)</div>
-    </c:if>
+    <%--<c:if test="${userPrincipal != null}">--%>
+        <%--<div class="user">User: ${userPrincipal} (<a href="<c:url value="/logout"/>">Log out</a>)</div>--%>
+    <%--</c:if>--%>
 </header>
-
-
+<div align="center">
+<article>
