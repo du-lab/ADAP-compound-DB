@@ -37,10 +37,10 @@
     </filter-mapping>
 
 
-    <!--<error-page>-->
+    <error-page>
 
-        <!--<location>/WEB-INF/jsp/view/error/notFound.jsp</location>-->
-    <!--</error-page>-->
+        <location>/WEB-INF/jsp/view/error/notFound.jsp</location>
+    </error-page>
 
 </web-app>
 
