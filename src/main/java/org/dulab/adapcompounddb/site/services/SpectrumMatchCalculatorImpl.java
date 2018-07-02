@@ -12,10 +12,7 @@ import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
@@ -63,7 +60,7 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
         List<SpectrumMatch> spectrumMatches = new ArrayList<>();
 
         progress = 0F;
-        float progressStep = 1F / ChromatographyType.values().length;
+        float progressStep = 1F / spectrumRepository.countUnmatched();
 
         for (ChromatographyType chromatographyType : ChromatographyType.values()) {
 
@@ -76,17 +73,17 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
             List<Spectrum> unmatchedSpectra = ServiceUtils.toList(
                     spectrumRepository.findUnmatchedByChromatographyType(chromatographyType));
 
-            float progressInnerStep = 0F;
-            if (unmatchedSpectra.isEmpty())
-                progress += progressStep;
-            else
-                progressInnerStep = progressStep / unmatchedSpectra.size();
+//            float progressInnerStep = 0F;
+//            if (unmatchedSpectra.isEmpty())
+//                progress += progressStep;
+//            else
+//                progressInnerStep = progressStep / unmatchedSpectra.size();
 
             for (Spectrum querySpectrum : unmatchedSpectra) {
                 spectrumMatches.addAll(
                         spectrumRepository.spectrumSearch(
                                 SearchType.CLUSTERING, querySpectrum, params));
-                progress += progressInnerStep;
+                progress += progressStep;
             }
 
             long elapsedTime = System.currentTimeMillis() - startingTime;
