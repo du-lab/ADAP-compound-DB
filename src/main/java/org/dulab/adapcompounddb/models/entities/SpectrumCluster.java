@@ -13,8 +13,6 @@ public class SpectrumCluster implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private String name = "Cluster";
-
     // *************************
     // ***** Entity fields *****
     // *************************
@@ -101,6 +99,6 @@ public class SpectrumCluster implements Serializable {
 
     @Override
     public String toString() {
-        return name;
+        return "Cluster ID = " + getId();
     }
 }

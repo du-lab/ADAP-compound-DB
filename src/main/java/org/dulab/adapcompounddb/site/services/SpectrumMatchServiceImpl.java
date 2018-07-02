@@ -238,7 +238,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
         SpectrumProperty nameProperty = new SpectrumProperty();
         nameProperty.setName("Name");
-        nameProperty.setValue("Consensus Spectrum");
+        nameProperty.setValue("CS: " + getName(cluster));
         nameProperty.setSpectrum(consensusSpectrum);
 
         consensusSpectrum.setChromatographyType(type);
@@ -251,11 +251,11 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         cluster.setConsensusSpectrum(consensusSpectrum);
     }
 
-    double similarityToDistance(double similarity) {
+    private double similarityToDistance(double similarity) {
         return Math.min(1.0, Math.exp(-similarity));
     }
 
-    double distanceToSimilarity(double distance) {
+    private double distanceToSimilarity(double distance) {
         return -Math.log(distance);
     }
 
@@ -276,5 +276,29 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     @Override
     public long getTotalNumberOfClusters() {
         return spectrumClusterRepository.count();
+    }
+
+
+    /**
+     * Selects the most frequent name in the cluster
+     * @param cluster instance of SpectrumCluster
+     * @return the most frequent name
+     */
+    private String getName(SpectrumCluster cluster) {
+
+        String maxName = "";
+        int maxCount = 0;
+        Map<String, Integer> nameCountMap = new HashMap<>();
+        for (Spectrum spectrum : cluster.getSpectra()) {
+            String name = spectrum.getName();
+            int count = nameCountMap.getOrDefault(name, 0) + 1;
+            nameCountMap.put(name, count);
+            if (count > maxCount) {
+                maxCount = count;
+                maxName = name;
+            }
+        }
+
+        return maxName;
     }
 }
