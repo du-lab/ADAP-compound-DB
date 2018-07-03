@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.controllers;
 
+import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
@@ -16,10 +17,11 @@ import javax.servlet.http.HttpSession;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
+@SessionAttributes("submissionCategoryTypes")
 public class SubmissionController {
 
     private final SubmissionService submissionService;
@@ -37,6 +39,7 @@ public class SubmissionController {
     @ModelAttribute
     public void addAttributes(Model model) {
         model.addAttribute("sampleSourceTypeList", SampleSourceType.values());
+        model.addAttribute("submissionCategoryTypes", SubmissionCategoryType.values());
     }
 
     /********************************
@@ -68,19 +71,17 @@ public class SubmissionController {
 
         model.addAttribute("submission", submission);
 
-        SubmissionForm form = new SubmissionForm(
-                submissionService.getAllSources(),
-                submissionService.getAllSpecies(),
-                submissionService.getAllDiseases());
-
+        SubmissionForm form = new SubmissionForm();
+        form.setCategoryMap(submissionService.findAllCategories());
         form.setName(submission.getName());
         form.setDescription(submission.getDescription());
-        if (submission.getSource() != null)
-            form.setSubmissionSourceId(submission.getSource().getId());
-        if (submission.getSpecimen() != null)
-            form.setSubmissionSpecimenId(submission.getSpecimen().getId());
-        if (submission.getDisease() != null)
-            form.setSubmissionDiseaseId(submission.getDisease().getId());
+        form.setSubmissionCategoryIds(submission
+                .getCategories()
+                .stream()
+                .filter(Objects::nonNull)
+                .map(SubmissionCategory::getId)
+                .collect(Collectors.toList()));
+
         model.addAttribute("submissionForm", form);
 
         return "file/view";
@@ -210,37 +211,26 @@ public class SubmissionController {
 
     private String submit(Submission submission, Model model, SubmissionForm form) {
 
+        form.setCategoryMap(submissionService.findAllCategories());
+
         submission.setName(form.getName());
         submission.setDescription(form.getDescription());
         submission.setDateTime(new Date());
 
-        submission.setSource(
-                form.getSubmissionSourceId() == 0 ? null :
-                        submissionService.findSubmissionSource(form.getSubmissionSourceId())
-                                .orElseThrow(() -> new IllegalStateException(String.format(
-                                        "Submission Source with ID = %d cannot be found.",
-                                        form.getSubmissionSourceId()))));
-
-
-        submission.setSpecimen(
-                form.getSubmissionSpecimenId() == 0 ? null :
-                        submissionService.findSubmissionSpecimen(form.getSubmissionSpecimenId())
-                                .orElseThrow(() -> new IllegalStateException(String.format(
-                                        "Submission Specimen with ID = %d cannot be found.",
-                                        form.getSubmissionSpecimenId()))));
-
-        submission.setDisease(
-                form.getSubmissionDiseaseId() == 0 ? null :
-                        submissionService.findSubmissionDisease(form.getSubmissionDiseaseId())
-                                .orElseThrow(() -> new IllegalStateException(String.format(
-                                        "Submission Disease with ID = %d cannot be found.",
-                                        form.getSubmissionDiseaseId()))));
+        List<SubmissionCategory> categories = new ArrayList<>();
+        for (long id : form.getSubmissionCategoryIds())
+            if (id > 0)
+                categories.add(submissionService
+                        .findSubmissionCategory(id)
+                        .orElseThrow(() -> new IllegalStateException(
+                                String.format("Submission Category with ID = %d cannot be found.", id))));
+        submission.setCategories(categories);
 
         try {
             submissionService.saveSubmission(submission);
         } catch (ConstraintViolationException e) {
             model.addAttribute("validationErrors", e.getConstraintViolations());
-            model.addAttribute("form", form);
+            model.addAttribute("submissionForm", form);
             return "file/view";
         }
 
@@ -271,23 +261,33 @@ public class SubmissionController {
 
         private String description;
 
-        private Long submissionSourceId;
+        private List<Long> submissionCategoryIds;
 
-        private Long submissionSpecimenId;
+        private Map<SubmissionCategoryType, List<SubmissionCategory>> categoryMap;
 
-        private Long submissionDiseaseId;
+//        public SubmissionForm(List<SubmissionCategory> categories) {
+//
+//            this.categoryMap = Arrays.stream(SubmissionCategoryType.values())
+//                    .collect(Collectors
+//                            .toMap(t -> t, t -> new ArrayList<>()));
+//
+//            categories.forEach(
+//                    category -> this.categoryMap
+//                            .get(category.getCategoryType())
+//                            .add(category));
+//        }
 
-        private final List<SubmissionSource> sources;
-        private final List<SubmissionSpecimen> species;
-        private final List<SubmissionDisease> diseases;
 
-        public SubmissionForm(List<SubmissionSource> sources,
-                              List<SubmissionSpecimen> species,
-                              List<SubmissionDisease> diseases) {
+        public void setCategoryMap(List<SubmissionCategory> categories) {
 
-            this.sources = sources;
-            this.species = species;
-            this.diseases = diseases;
+            this.categoryMap = Arrays.stream(SubmissionCategoryType.values())
+                    .collect(Collectors
+                            .toMap(t -> t, t -> new ArrayList<>()));
+
+            categories.forEach(
+                    category -> this.categoryMap
+                            .get(category.getCategoryType())
+                            .add(category));
         }
 
         public String getName() {
@@ -306,40 +306,24 @@ public class SubmissionController {
             this.description = description;
         }
 
-        public Long getSubmissionSourceId() {
-            return submissionSourceId;
+        public List<Long> getSubmissionCategoryIds() {
+            return submissionCategoryIds;
         }
 
-        public void setSubmissionSourceId(Long submissionSourceId) {
-            this.submissionSourceId = submissionSourceId;
+        public void setSubmissionCategoryIds(List<Long> submissionCategoryIds) {
+            this.submissionCategoryIds = submissionCategoryIds;
         }
 
-        public Long getSubmissionSpecimenId() {
-            return submissionSpecimenId;
+//        public SortedMap<SubmissionCategoryType, List<SubmissionCategory>> getCategoryMap() {
+//            return categoryMap;
+//        }
+
+        public SubmissionCategoryType[] getSubmissionCategoryTypes() {
+            return SubmissionCategoryType.values();
         }
 
-        public void setSubmissionSpecimenId(Long submissionSpecimenId) {
-            this.submissionSpecimenId = submissionSpecimenId;
-        }
-
-        public Long getSubmissionDiseaseId() {
-            return submissionDiseaseId;
-        }
-
-        public void setSubmissionDiseaseId(Long submissionDiseaseId) {
-            this.submissionDiseaseId = submissionDiseaseId;
-        }
-
-        public List<SubmissionSource> getSources() {
-            return sources;
-        }
-
-        public List<SubmissionSpecimen> getSpecies() {
-            return species;
-        }
-
-        public List<SubmissionDisease> getDiseases() {
-            return diseases;
+        public List<SubmissionCategory> getSubmissionCategories(SubmissionCategoryType type) {
+            return categoryMap.get(type);
         }
     }
 }

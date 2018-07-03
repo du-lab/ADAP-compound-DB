@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SubmissionSource` (
   `Description` TEXT NULL DEFAULT NULL,
   PRIMARY KEY (`Id`))
   ENGINE = InnoDB
-  AUTO_INCREMENT = 8
+  AUTO_INCREMENT = 9
   DEFAULT CHARACTER SET = latin1;
 
 
@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Submission` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB
-  AUTO_INCREMENT = 40
+  AUTO_INCREMENT = 49
   DEFAULT CHARACTER SET = utf8;
 
 
@@ -125,7 +125,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`File` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB
-  AUTO_INCREMENT = 18
+  AUTO_INCREMENT = 27
   DEFAULT CHARACTER SET = latin1;
 
 
@@ -145,7 +145,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SpectrumCluster` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB
-  AUTO_INCREMENT = 660
+  AUTO_INCREMENT = 1478
   DEFAULT CHARACTER SET = latin1;
 
 
@@ -177,7 +177,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Spectrum` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB
-  AUTO_INCREMENT = 10510
+  AUTO_INCREMENT = 13202
   DEFAULT CHARACTER SET = utf8;
 
 
@@ -198,7 +198,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Peak` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB
-  AUTO_INCREMENT = 955944
+  AUTO_INCREMENT = 1268633
   DEFAULT CHARACTER SET = utf8;
 
 
@@ -224,7 +224,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SpectrumMatch` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB
-  AUTO_INCREMENT = 221606
+  AUTO_INCREMENT = 113921
   DEFAULT CHARACTER SET = latin1;
 
 
@@ -245,8 +245,47 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SpectrumProperty` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB
-  AUTO_INCREMENT = 64176
+  AUTO_INCREMENT = 74438
   DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `adapcompounddb`.`SubmissionCategory`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SubmissionCategory` (
+  `Id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `Name` TEXT NOT NULL,
+  `Description` TEXT NULL DEFAULT NULL,
+  `CategoryType` VARCHAR(30) NOT NULL,
+  PRIMARY KEY (`Id`))
+  ENGINE = InnoDB
+  AUTO_INCREMENT = 4
+  DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `adapcompounddb`.`Submission2SubmissionCategory`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Submission2SubmissionCategory` (
+  `Id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `SubmissionId` BIGINT(20) UNSIGNED NOT NULL,
+  `SubmissionCategoryId` BIGINT(20) UNSIGNED NOT NULL,
+  PRIMARY KEY (`Id`),
+  INDEX `Submission2SubmissionCategory_Submission_Id_fk_idx` (`SubmissionId` ASC),
+  INDEX `Submission2SubmissionCategory_SubmissionCategory_Id_fk_idx` (`SubmissionCategoryId` ASC),
+  CONSTRAINT `Submission2SubmissionCategory_SubmissionCategory_Id_fk`
+  FOREIGN KEY (`SubmissionCategoryId`)
+  REFERENCES `adapcompounddb`.`SubmissionCategory` (`Id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `Submission2SubmissionCategory_Submission_Id_fk`
+  FOREIGN KEY (`SubmissionId`)
+  REFERENCES `adapcompounddb`.`Submission` (`Id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+  ENGINE = InnoDB
+  AUTO_INCREMENT = 4
+  DEFAULT CHARACTER SET = latin1;
 
 
 -- -----------------------------------------------------

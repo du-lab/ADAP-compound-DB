@@ -15,10 +15,10 @@
     <table id="file_table" class="display" style="width: 100%; clear:none;">
         <%--<thead>--%>
         <%--<tr>--%>
-            <%--<th>File</th>--%>
-            <%--<th>Type</th>--%>
-            <%--<th>Size</th>--%>
-            <%--<th></th>--%>
+        <%--<th>File</th>--%>
+        <%--<th>Type</th>--%>
+        <%--<th>Size</th>--%>
+        <%--<th></th>--%>
         <%--</tr>--%>
         <%--</thead>--%>
         <tbody>
@@ -123,57 +123,23 @@
                 <form:textarea path="description" rows="12" cols="80"/><br/>
                 <form:errors path="description" cssClass="errors"/><br/>
 
-                <form:label path="submissionSourceId">Source:</form:label><br/>
-                <span style="vertical-align: bottom;">
-                    <form:select path="submissionSourceId">
-                        <form:option value="0" label="Please select..."/>
-                        <form:options items="${submissionForm.sources}" itemLabel="name" itemValue="id"/>
-                    </form:select><br/>
-                </span>
-                <a href="<c:url value="/sources/"/>">
-                    <!--list-->
-                    <i class="material-icons" title="Manage sources">&#xE896;</i>
-                </a>
-                <a href="<c:url value="/sources/add/"/>">
-                    <!--add circle-->
-                    <i class="material-icons" title="Add new source">&#xE147;</i>
-                </a><br/>
-                <form:errors path="submissionSourceId" cssClass="errors"/><br/>
-
-                <form:label path="submissionSpecimenId">Specimen:</form:label><br/>
-                <span style="vertical-align: bottom;">
-                    <form:select path="submissionSpecimenId">
-                        <form:option value="0" label="Please select..."/>
-                        <form:options items="${submissionForm.species}" itemLabel="name" itemValue="id"/>
-                    </form:select><br/>
-                </span>
-                <a href="<c:url value="/species/"/>">
-                    <!--list-->
-                    <i class="material-icons" title="Manage species">&#xE896;</i>
-                </a>
-                <a href="<c:url value="/species/add/"/>">
-                    <!--add circle-->
-                    <i class="material-icons" title="Add new specimen">&#xE147;</i>
-                </a><br/>
-                <form:errors path="submissionSpecimenId" cssClass="errors"/><br/>
-
-                <form:label path="submissionDiseaseId">Disease:</form:label><br/>
-                <span style="vertical-align: bottom;">
-                <form:select path="submissionDiseaseId">
-                    <form:option value="0" label="Please select..."/>
-                    <form:options items="${submissionForm.diseases}" itemLabel="name" itemValue="id"/>
-                </form:select><br/>
-                </span>
-                <a href="<c:url value="/diseases/"/>">
-                    <!--list-->
-                    <i class="material-icons" title="Manage diseases">&#xE896;</i>
-                </a>
-                <a href="<c:url value="/diseases/add/"/>">
-                    <!--add circle-->
-                    <i class="material-icons" title="Add new disease">&#xE147;</i>
-                </a><br/>
-                <form:errors path="submissionDiseaseId" cssClass="errors"/><br/>
-
+                <c:forEach items="${submissionForm.submissionCategoryTypes}" var="type">
+                    <label>${type.label}:</label><br/>
+                    <span style="vertical-align: bottom;">
+                        <form:select path="submissionCategoryIds" multiple="false">
+                            <form:option value="0" label="Please select..."/>
+                            <form:options items="${submissionForm.getSubmissionCategories(type)}" itemLabel="name"
+                                          itemValue="id"/>
+                        </form:select><br/>
+                    </span>
+                    <a href="<c:url value="/categories/${type}/"/>">
+                        <i class="material-icons" title="View categories for ${type.label}">&#xE896;</i>
+                    </a>
+                    <a href="<c:url value="/categories/${type}/add/"/>">
+                        <i class="material-icons" title="Add category for ${type.label}">&#xE147;</i>
+                    </a><br/>
+                </c:forEach>
+                <form:errors path="submissionCategoryIds" cssClass="errors"/><br/>
 
                 <div align="center">
                     <c:choose>

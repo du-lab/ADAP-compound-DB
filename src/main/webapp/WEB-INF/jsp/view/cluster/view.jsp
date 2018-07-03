@@ -75,9 +75,9 @@
                 <td><a href="/spectrum/${spectrum.id}/">${spectrum.name}</a><br/>
                     <small><a href="/submission/${spectrum.file.submission.id}/">${spectrum.file.submission.name}</a></small>
                 </td>
-                <td>${spectrum.file.submission.source.name}</td>
-                <td>${spectrum.file.submission.specimen.name}</td>
-                <td>${spectrum.file.submission.disease.name}</td>
+                <%--<td>${spectrum.file.submission.source.name}</td>--%>
+                <%--<td>${spectrum.file.submission.specimen.name}</td>--%>
+                <%--<td>${spectrum.file.submission.disease.name}</td>--%>
                 <td><a href="/spectrum/${spectrum.id}/"><i class="material-icons" title="View">&#xE5D3;</i></a></td>
             </tr>
         </c:forEach>
@@ -119,9 +119,9 @@
     var plot = new TwoSpectraPlot('plot', ${dulab:spectrumToJson(cluster.consensusSpectrum)});
 
     // Add pie chart
-    addPieChart('sourcePieChart', ${dulab:clusterSourceToJson(cluster.spectra, submissionSources)});
-    addPieChart('specimenPieChart', ${dulab:clusterSpecimenToJson(cluster.spectra, submissionSpecies)});
-    addPieChart('diseasePieChart', ${dulab:clusterDiseaseToJson(cluster.spectra, submissionDiseases)});
+    <%--addPieChart('sourcePieChart', ${dulab:clusterSourceToJson(cluster.spectra, submissionSources)});--%>
+    <%--addPieChart('specimenPieChart', ${dulab:clusterSpecimenToJson(cluster.spectra, submissionSpecies)});--%>
+    <%--addPieChart('diseasePieChart', ${dulab:clusterDiseaseToJson(cluster.spectra, submissionDiseases)});--%>
 </script>
 
 <jsp:include page="/WEB-INF/jsp/includes/column_right_news.jsp"/>

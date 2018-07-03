@@ -32,23 +32,17 @@ public class Submission implements Serializable {
     @NotNull(message = "Date/Time of submission is required.")
     private Date dateTime;
 
-//    @NotBlank(message = "Filename of the raw file is required.")
-//    private String filename;
+    @Valid
+    private List<SubmissionCategory> categories;
+
+//    @Valid
+//    private SubmissionSource source;
 //
-//    @NotNull(message = "Type of the raw file is required.")
-//    private FileType fileType;
+//    @Valid
+//    private SubmissionSpecimen specimen;
 //
-//    @NotNull(message = "Raw file is required.")
-//    private byte[] file;
-
-    @Valid
-    private SubmissionSource source;
-
-    @Valid
-    private SubmissionSpecimen specimen;
-
-    @Valid
-    private SubmissionDisease disease;
+//    @Valid
+//    private SubmissionDisease disease;
 
     @NotNull(message = "Submission: File list is required.")
     @Valid
@@ -88,35 +82,48 @@ public class Submission implements Serializable {
         this.description = desription;
     }
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "SourceId", referencedColumnName = "Id")
-    public SubmissionSource getSource() {
-        return source;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "Submission2SubmissionCategory",
+            joinColumns = {@JoinColumn(name = "SubmissionId")},
+            inverseJoinColumns = {@JoinColumn(name = "SubmissionCategoryId")})
+    public List<SubmissionCategory> getCategories() {
+        return categories;
     }
 
-    public void setSource(SubmissionSource source) {
-        this.source = source;
+    public void setCategories(List<SubmissionCategory> categories) {
+        this.categories = categories;
     }
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "SpecimenId", referencedColumnName = "Id")
-    public SubmissionSpecimen getSpecimen() {
-        return specimen;
-    }
-
-    public void setSpecimen(SubmissionSpecimen specimen) {
-        this.specimen = specimen;
-    }
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "DiseaseId", referencedColumnName = "Id")
-    public SubmissionDisease getDisease() {
-        return disease;
-    }
-
-    public void setDisease(SubmissionDisease disease) {
-        this.disease = disease;
-    }
+    //    @ManyToOne(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "SourceId", referencedColumnName = "Id")
+//    public SubmissionSource getSource() {
+//        return source;
+//    }
+//
+//    public void setSource(SubmissionSource source) {
+//        this.source = source;
+//    }
+//
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "SpecimenId", referencedColumnName = "Id")
+//    public SubmissionSpecimen getSpecimen() {
+//        return specimen;
+//    }
+//
+//    public void setSpecimen(SubmissionSpecimen specimen) {
+//        this.specimen = specimen;
+//    }
+//
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "DiseaseId", referencedColumnName = "Id")
+//    public SubmissionDisease getDisease() {
+//        return disease;
+//    }
+//
+//    public void setDisease(SubmissionDisease disease) {
+//        this.disease = disease;
+//    }
 
     @OneToMany(
             mappedBy = "submission",

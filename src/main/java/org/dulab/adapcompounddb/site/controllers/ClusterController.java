@@ -25,9 +25,7 @@ public class ClusterController {
 
     @ModelAttribute
     public void addAttributes(Model model) {
-        model.addAttribute("submissionSources", submissionService.getAllSources());
-        model.addAttribute("submissionSpecies", submissionService.getAllSpecies());
-        model.addAttribute("submissionDiseases", submissionService.getAllDiseases());
+        model.addAttribute("submissionCategories", submissionService.findAllCategories());
     }
 
     @RequestMapping(value = "/cluster/{id:\\d+}/", method = RequestMethod.GET)

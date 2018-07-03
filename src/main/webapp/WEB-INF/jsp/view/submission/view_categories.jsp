@@ -1,4 +1,4 @@
-<%--@elvariable id="sources" type="java.util.List<org.dulab.adapcompounddb.site.controllers.ControllerUtils.CategoryWithSubmissionCount>"--%>
+<%--@elvariable id="categories" type="java.util.List<org.dulab.adapcompounddb.site.controllers.ControllerUtils.CategoryWithSubmissionCount>"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 <jsp:include page="/WEB-INF/jsp/includes/header.jsp"/>
@@ -7,9 +7,9 @@
 <!-- Start the middle column -->
 
 <section>
-    <h1>Sources</h1>
+    <h1>Categories</h1>
     <div align="center">
-        <table id="sources_table" class="display" style="width: 100%;">
+        <table id="categories_table" class="display" style="width: 100%; clear: none;">
             <thead>
             <tr>
                 <th>Id</th>
@@ -20,7 +20,7 @@
             </tr>
             </thead>
             <tbody>
-            <c:forEach items="${sources}" var="category">
+            <c:forEach items="${categories}" var="category">
                 <tr>
                     <td>${category.category.id}</td>
                     <td>${category.category.name}</td>
@@ -29,7 +29,7 @@
                     <!--more horiz-->
                     <td>
                         <a href="${category.category.id}/"><i class="material-icons" title="View">&#xE5D3;</i></a>
-                        <a href="${category.category.id}/delete/"><i class="material-icons" title="View">delete</i></a>
+                        <a href="${category.category.id}/delete/"><i class="material-icons" title="Delete">delete</i></a>
                     </td>
                 </tr>
             </c:forEach>
@@ -45,7 +45,7 @@
 <script src="<c:url value="/resources/js/DataTables/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
 <script>
     $(document).ready(function () {
-        $('#sources_table').DataTable();
+        $('#categories_table').DataTable();
     });
 </script>
 
