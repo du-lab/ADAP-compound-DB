@@ -8,7 +8,7 @@
                      fileName="../logs/application.log"
                      filePattern="../logs/application-%d{MM-dd-yyyy}-%i.log">
             <PatternLayout>
-                <pattern>%d{HH:mm:ss.SSS} [%t] %X{id} %X{username} %-5level %c{36}: %msg%n</pattern>
+                <pattern>%d{HH:mm:ss.SSS} [%t] %X{id} %X{username} %-5level %c{36}: %msg%n%throwable</pattern>
             </PatternLayout>
             <Policies>
                 <SizeBasedTriggeringPolicy size="10 MB"/>
