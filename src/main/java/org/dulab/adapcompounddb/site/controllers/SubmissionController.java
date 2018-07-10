@@ -75,12 +75,13 @@ public class SubmissionController {
         form.setCategoryMap(submissionService.findAllCategories());
         form.setName(submission.getName());
         form.setDescription(submission.getDescription());
-        form.setSubmissionCategoryIds(submission
-                .getCategories()
-                .stream()
-                .filter(Objects::nonNull)
-                .map(SubmissionCategory::getId)
-                .collect(Collectors.toList()));
+        if (submission.getCategories() != null)
+            form.setSubmissionCategoryIds(submission
+                    .getCategories()
+                    .stream()
+                    .filter(Objects::nonNull)
+                    .map(SubmissionCategory::getId)
+                    .collect(Collectors.toList()));
 
         model.addAttribute("submissionForm", form);
 

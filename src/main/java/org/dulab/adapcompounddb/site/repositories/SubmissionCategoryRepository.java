@@ -10,6 +10,6 @@ public interface SubmissionCategoryRepository extends CrudRepository<SubmissionC
 
     Iterable<SubmissionCategory> findAllByCategoryType(SubmissionCategoryType categoryType);
 
-    @Query("SELECT c.submissions.size FROM SubmissionCategory c WHERE c.id = :id")
+    @Query("SELECT size(c.submissions) FROM SubmissionCategory c WHERE c.id = :id")
     long countSubmissionsBySubmissionCategoryId(@Param("id") long id);
 }
