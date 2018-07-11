@@ -43,36 +43,36 @@
 
     <function>
         <description>
-            Returns Json array with the count of spectra in a cluster, based on their SubmissionSource.
+            Returns Json array with the count of spectra in a cluster, based on their SubmissionCategory.
         </description>
-        <name>clusterSourceToJson</name>
+        <name>clusterDistributionToJson</name>
         <function-class>org.dulab.adapcompounddb.site.controllers.ControllerUtils</function-class>
         <function-signature>
-            javax.json.JsonArray clusterSourceToJson(java.util.List,java.util.List)
+            javax.json.JsonArray clusterDistributionToJson(java.util.List,java.util.List)
         </function-signature>
     </function>
 
-    <function>
-        <description>
-            Returns Json array with the count of spectra in a cluster, based on their SubmissionSpecimen.
-        </description>
-        <name>clusterSpecimenToJson</name>
-        <function-class>org.dulab.adapcompounddb.site.controllers.ControllerUtils</function-class>
-        <function-signature>
-            javax.json.JsonArray clusterSpecimenToJson(java.util.List,java.util.List)
-        </function-signature>
-    </function>
+    <!--<function>-->
+        <!--<description>-->
+            <!--Returns Json array with the count of spectra in a cluster, based on their SubmissionSpecimen.-->
+        <!--</description>-->
+        <!--<name>clusterSpecimenToJson</name>-->
+        <!--<function-class>org.dulab.adapcompounddb.site.controllers.ControllerUtils</function-class>-->
+        <!--<function-signature>-->
+            <!--javax.json.JsonArray clusterSpecimenToJson(java.util.List,java.util.List)-->
+        <!--</function-signature>-->
+    <!--</function>-->
 
-    <function>
-        <description>
-            Returns Json array with the count of spectra in a cluster, based on their SubmissionDisease.
-        </description>
-        <name>clusterDiseaseToJson</name>
-        <function-class>org.dulab.adapcompounddb.site.controllers.ControllerUtils</function-class>
-        <function-signature>
-            javax.json.JsonArray clusterDiseaseToJson(java.util.List,java.util.List)
-        </function-signature>
-    </function>
+    <!--<function>-->
+        <!--<description>-->
+            <!--Returns Json array with the count of spectra in a cluster, based on their SubmissionDisease.-->
+        <!--</description>-->
+        <!--<name>clusterDiseaseToJson</name>-->
+        <!--<function-class>org.dulab.adapcompounddb.site.controllers.ControllerUtils</function-class>-->
+        <!--<function-signature>-->
+            <!--javax.json.JsonArray clusterDiseaseToJson(java.util.List,java.util.List)-->
+        <!--</function-signature>-->
+    <!--</function>-->
 
     <function>
         <description>Converts Json Array into a string of values and counts.</description>

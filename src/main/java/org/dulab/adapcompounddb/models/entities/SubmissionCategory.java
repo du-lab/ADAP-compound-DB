@@ -81,4 +81,9 @@ public class SubmissionCategory implements Serializable {
     public int hashCode() {
         return Long.hashCode(id);
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

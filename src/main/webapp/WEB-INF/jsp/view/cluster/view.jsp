@@ -1,6 +1,5 @@
-<%--@elvariable id="submissionSources" type="java.util.List<org.dulab.adapcompounddb.models.entities.SubmissionSource>"--%>
-<%--@elvariable id="submissionSpecies" type="java.util.List<org.dulab.adapcompounddb.models.entities.SubmissionSpecimen>"--%>
-<%--@elvariable id="submissionDiseases" type="java.util.List<org.dulab.adapcompounddb.models.entities.SubmissionDisease>"--%>
+<%--@elvariable id="submissionCategoryTypes" type="org.dulab.adapcompounddb.models.SubmissionCategoryType[]"--%>
+<%--@elvariable id="submissionCategoryMap" type="java.util.Map<org.dulab.adapcompounddb.models.SubmissionCategoryType, org.dulab.adapcompounddb.models.entities.SubmissionCategory>"--%>
 <%--@elvariable id="cluster" type="org.dulab.adapcompounddb.models.entities.SpectrumCluster"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -40,18 +39,21 @@
 
 <section id="pieChartSection">
     <div align="center">
-        <div align="center" style="display: inline-block; margin: 10px;">
-            <h1>Sources Distribution</h1>
-            <div id="sourcePieChart" align="center"></div>
-        </div>
-        <div align="center" style="display: inline-block; margin: 10px;">
-            <h1>Species Distribution</h1>
-            <div id="specimenPieChart" align="center"></div>
-        </div>
-        <div align="center" style="display: inline-block; margin: 10px;">
-            <h1>Diseases Distribution</h1>
-            <div id="diseasePieChart" align="center"></div>
-        </div>
+        <c:forEach items="${submissionCategoryTypes}" var="type">
+            <div align="center" style="display: inline-block; margin: 10px;">
+                <h1>${type.label} Distribution</h1>
+                <div id="${type.name()}PieChart" align="center"></div>
+            </div>
+        </c:forEach>
+
+        <%--<div align="center" style="display: inline-block; margin: 10px;">--%>
+        <%--<h1>Species Distribution</h1>--%>
+        <%--<div id="specimenPieChart" align="center"></div>--%>
+        <%--</div>--%>
+        <%--<div align="center" style="display: inline-block; margin: 10px;">--%>
+        <%--<h1>Diseases Distribution</h1>--%>
+        <%--<div id="diseasePieChart" align="center"></div>--%>
+        <%--</div>--%>
     </div>
 </section>
 
@@ -62,9 +64,9 @@
         <tr>
             <th>Id</th>
             <th>Spectrum</th>
-            <th>Sources</th>
-            <th>Species</th>
-            <th>Diseases</th>
+            <c:forEach items="${submissionCategoryTypes}" var="type">
+                <th>${type.label}</th>
+            </c:forEach>
             <th>View</th>
         </tr>
         </thead>
@@ -73,11 +75,12 @@
             <tr>
                 <td>${spectrum.id}</td>
                 <td><a href="/spectrum/${spectrum.id}/">${spectrum.name}</a><br/>
-                    <small><a href="/submission/${spectrum.file.submission.id}/">${spectrum.file.submission.name}</a></small>
+                    <small><a href="/submission/${spectrum.file.submission.id}/">${spectrum.file.submission.name}</a>
+                    </small>
                 </td>
-                <%--<td>${spectrum.file.submission.source.name}</td>--%>
-                <%--<td>${spectrum.file.submission.specimen.name}</td>--%>
-                <%--<td>${spectrum.file.submission.disease.name}</td>--%>
+                <c:forEach items="${submissionCategoryTypes}" var="type">
+                    <td>${spectrum.file.submission.getCategory(type)}</td>
+                </c:forEach>
                 <td><a href="/spectrum/${spectrum.id}/"><i class="material-icons" title="View">&#xE5D3;</i></a></td>
             </tr>
         </c:forEach>
@@ -119,9 +122,9 @@
     var plot = new TwoSpectraPlot('plot', ${dulab:spectrumToJson(cluster.consensusSpectrum)});
 
     // Add pie chart
-    <%--addPieChart('sourcePieChart', ${dulab:clusterSourceToJson(cluster.spectra, submissionSources)});--%>
-    <%--addPieChart('specimenPieChart', ${dulab:clusterSpecimenToJson(cluster.spectra, submissionSpecies)});--%>
-    <%--addPieChart('diseasePieChart', ${dulab:clusterDiseaseToJson(cluster.spectra, submissionDiseases)});--%>
+    <c:forEach items="${submissionCategoryTypes}" var="type">
+    addPieChart('${type.name()}PieChart', ${dulab:clusterDistributionToJson(cluster.spectra, submissionCategoryMap.get(type))});
+    </c:forEach>
 </script>
 
 <jsp:include page="/WEB-INF/jsp/includes/column_right_news.jsp"/>

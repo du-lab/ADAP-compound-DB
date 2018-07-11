@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.controllers;
 
+import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.entities.*;
 
 import javax.json.*;
@@ -7,6 +8,7 @@ import javax.validation.constraints.NotBlank;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class ControllerUtils {
 
@@ -70,133 +72,64 @@ public class ControllerUtils {
         return jsonObjectBuilder.build();
     }
 
-//    public static JsonArray clusterSourceToJson(List<Spectrum> spectra, List<SubmissionSource> sources) {
-//
-//        JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
-//
-//        // Count Spectra with the no source
-//        jsonArrayBuilder.add(
-//                Json.createObjectBuilder()
-//                        .add("label", "Undefined")
-//                        .add("count", spectra
-//                                .stream()
-//                                .map(Spectrum::getFile)
-//                                .filter(Objects::nonNull)
-//                                .map(File::getSubmission)
-//                                .filter(Objects::nonNull)
-//                                .filter(s -> s.getSource() == null)
-//                                .count()));
-//
-//        // Count Spectra for each source
-//        for (SubmissionSource source : sources)
-//            jsonArrayBuilder.add(
-//                    Json.createObjectBuilder()
-//                            .add("label", source.getName())
-//                            .add("count", spectra
-//                                    .stream()
-//                                    .map(Spectrum::getFile)
-//                                    .filter(Objects::nonNull)
-//                                    .map(File::getSubmission)
-//                                    .filter(Objects::nonNull)
-//                                    .map(Submission::getSource)
-//                                    .filter(Objects::nonNull)
-//                                    .filter(s -> s.equals(source))
-//                                    .count()));
-//
-//        return jsonArrayBuilder.build();
-//    }
-//
-//    public static JsonArray clusterSpecimenToJson(List<Spectrum> spectra, List<SubmissionSpecimen> species) {
-//
-//        JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
-//
-//        // Count Spectra with the no source
-//        jsonArrayBuilder.add(
-//                Json.createObjectBuilder()
-//                        .add("label", "Undefined")
-//                        .add("count", spectra
-//                                .stream()
-//                                .map(Spectrum::getFile)
-//                                .filter(Objects::nonNull)
-//                                .map(File::getSubmission)
-//                                .filter(Objects::nonNull)
-//                                .filter(s -> s.getSpecimen() == null)
-//                                .count()));
-//
-//        // Count Spectra for each source
-//        for (SubmissionSpecimen specimen : species)
-//            jsonArrayBuilder.add(
-//                    Json.createObjectBuilder()
-//                            .add("label", specimen.getName())
-//                            .add("count", spectra
-//                                    .stream()
-//                                    .map(Spectrum::getFile)
-//                                    .filter(Objects::nonNull)
-//                                    .map(File::getSubmission)
-//                                    .filter(Objects::nonNull)
-//                                    .map(Submission::getSpecimen)
-//                                    .filter(Objects::nonNull)
-//                                    .filter(s -> s.equals(specimen))
-//                                    .count()));
-//
-//        return jsonArrayBuilder.build();
-//    }
-//
-//    public static JsonArray clusterDiseaseToJson(List<Spectrum> spectra, List<SubmissionDisease> diseases) {
-//
-//        JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
-//
-//        // Count Spectra with the no source
-//        jsonArrayBuilder.add(
-//                Json.createObjectBuilder()
-//                        .add("label", "Undefined")
-//                        .add("count", spectra
-//                                .stream()
-//                                .map(Spectrum::getFile)
-//                                .filter(Objects::nonNull)
-//                                .map(File::getSubmission)
-//                                .filter(Objects::nonNull)
-//                                .filter(s -> s.getDisease() == null)
-//                                .count()));
-//
-//        // Count Spectra for each source
-//        for (SubmissionDisease disease : diseases)
-//            jsonArrayBuilder.add(
-//                    Json.createObjectBuilder()
-//                            .add("label", disease.getName())
-//                            .add("count", spectra
-//                                    .stream()
-//                                    .map(Spectrum::getFile)
-//                                    .filter(Objects::nonNull)
-//                                    .map(File::getSubmission)
-//                                    .filter(Objects::nonNull)
-//                                    .map(Submission::getDisease)
-//                                    .filter(Objects::nonNull)
-//                                    .filter(s -> s.equals(disease))
-//                                    .count()));
-//
-//        return jsonArrayBuilder.build();
-//    }
+    public static JsonArray clusterDistributionToJson(List<Spectrum> spectra,
+                                                      List<SubmissionCategory> categories) {
+
+        JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
+
+        if (categories == null)
+            return jsonArrayBuilder.build();
+
+        for (SubmissionCategory category : categories) {
+
+            long numSpectraInCluster = spectra.stream()
+                    .map(Spectrum::getFile)
+                    .filter(Objects::nonNull)
+                    .map(File::getSubmission)
+                    .filter(Objects::nonNull)
+                    .map(s -> s.getCategory(category.getCategoryType()))
+                    .filter(Objects::nonNull)
+                    .filter(category::equals)
+                    .count();
+
+            long numSpectraInTotal = category.getSubmissions()
+                    .stream()
+                    .mapToLong(s -> s.getFiles().size())
+                    .sum();
+
+            jsonArrayBuilder.add(
+                    Json.createObjectBuilder()
+                            .add("label", category.getName())
+                            .add("count", (double) numSpectraInCluster / numSpectraInTotal)
+                            .build());
+        }
+
+        return jsonArrayBuilder.build();
+    }
 
     public static String jsonToHtml(JsonArray jsonArray) {
 
-        int totalCount = 0;
+        double totalCount = 0;
         for (JsonObject jsonObject : jsonArray.getValuesAs(JsonObject.class))
-            totalCount += jsonObject.getInt("count");
+            totalCount += jsonObject.getJsonNumber("count").doubleValue();
 
         StringBuilder builder = new StringBuilder();
-        int count = 0;
+        int color = 0;
         for (JsonObject jsonObject : jsonArray.getValuesAs(JsonObject.class)) {
-            if (jsonObject.getInt("count") > 0) {
-                int percent = 100 * jsonObject.getInt("count") / totalCount;
+
+            double count = jsonObject.getJsonNumber("count").doubleValue();
+
+            if (count > 0.0) {
+                long percent = Math.round(100 * count / totalCount);
                 builder.append(
                         String.format("%s: %d&percnt;<br/><div style=\"width: %d&percnt;; height: 2px; background-color: %s;\"></div>\n",
                                 jsonObject.getString("label"),
                                 percent,
                                 percent,
-                                getColor(count)));
+                                getColor(color)));
             }
-            ++count;
+
+            ++color;
         }
         return builder.toString();
     }

@@ -1,8 +1,7 @@
 <%--@elvariable id="querySpectrum" type="org.dulab.adapcompounddb.models.entities.Spectrum"--%>
 <%--@elvariable id="matches" type="java.util.List<org.dulab.adapcompounddb.models.entities.SpectrumMatch>"--%>
-<%--@elvariable id="submissionSources" type="java.util.List<org.dulab.adapcompounddb.models.entities.SubmissionSource"--%>
-<%--@elvariable id="submissionSpecies" type="java.util.List<org.dulab.adapcompounddb.models.entities.SubmissionSpecimen"--%>
-<%--@elvariable id="submissionDiseases" type="java.util.List<org.dulab.adapcompounddb.models.entities.SubmissionDisease"--%>
+<%--@elvariable id="submissionCategoryTypes" type="org.dulab.adapcompounddb.models.SubmissionCategoryType[]"--%>
+<%--@elvariable id="submissionCategoryMap" type="java.util.Map<org.dulab.adapcompounddb.models.SubmissionCategoryType, org.dulab.adapcompounddb.models.entities.SubmissionCategory>"--%>
 <%--@elvariable id="searchForm" type="org.dulab.adapcompounddb.site.controllers.SearchController.SearchForm"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -77,9 +76,9 @@
                                     </small>
                                 </td>
                                 <td>${match.matchSpectrum.cluster.size}</td>
-                                <td>${dulab:jsonToHtml(dulab:clusterSourceToJson(match.matchSpectrum.cluster.spectra, submissionSources))}</td>
-                                <td>${dulab:jsonToHtml(dulab:clusterSpecimenToJson(match.matchSpectrum.cluster.spectra, submissionSpecies))}</td>
-                                <td>${dulab:jsonToHtml(dulab:clusterDiseaseToJson(match.matchSpectrum.cluster.spectra, submissionDiseases))}</td>
+                                <c:forEach items="${submissionCategoryTypes}" var="type">
+                                    <td>${dulab:jsonToHtml(dulab:clusterDistributionToJson(match.matchSpectrum.cluster.spectra, submissionCategoryMap.get(type)))}</td>
+                                </c:forEach>
                                 <!--more horiz-->
                                 <td><a href="/cluster/${match.matchSpectrum.cluster.id}/"><i class="material-icons">&#xE5D3;</i></a>
                                 </td>
@@ -93,9 +92,9 @@
                                     </small>
                                 </td>
                                 <td></td>
-                                <td>${dulab:jsonToHtml(dulab:clusterSourceToJson([match.matchSpectrum], submissionSources))}</td>
-                                <td>${dulab:jsonToHtml(dulab:clusterSpecimenToJson([match.matchSpectrum], submissionSpecies))}</td>
-                                <td>${dulab:jsonToHtml(dulab:clusterDiseaseToJson([match.matchSpectrum], submissionDiseases))}</td>
+                                <c:forEach items="${submissionCategoryTypes}" var="type">
+                                    <td>${dulab:jsonToHtml(dulab:clusterDistributionToJson([match.matchSpectrum], submissionCategoryMap.get(type)))}</td>
+                                </c:forEach>
                                 <!--more horiz-->
                                 <td><a href="/spectrum/${match.matchSpectrum.id}/"><i
                                         class="material-icons">&#xE5D3;</i></a></td>

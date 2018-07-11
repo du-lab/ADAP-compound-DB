@@ -3,12 +3,10 @@ package org.dulab.adapcompounddb.site.controllers;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.QueryParameters;
-import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
-import org.dulab.adapcompounddb.models.entities.Submission;
-import org.dulab.adapcompounddb.models.entities.UserPrincipal;
+import org.dulab.adapcompounddb.models.SubmissionCategoryType;
+import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.services.SpectrumSearchService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
-import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.dulab.adapcompounddb.site.services.UserPrincipalService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +22,7 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +66,16 @@ public class SearchController {
     public void addAttributes(Model model) {
         model.addAttribute("chromatographyTypes", ChromatographyType.values());
         model.addAttribute("submissionCategories", submissionService.findAllCategories());
+
+        model.addAttribute("submissionCategoryTypes", SubmissionCategoryType.values());
+
+        Map<SubmissionCategoryType, List<SubmissionCategory>> submissionCategoryMap = new HashMap<>();
+        for (SubmissionCategory category : submissionService.findAllCategories())
+            submissionCategoryMap
+                    .computeIfAbsent(category.getCategoryType(), c -> new ArrayList<>())
+                    .add(category);
+
+        model.addAttribute("submissionCategoryMap", submissionCategoryMap);
     }
 
 //    @PostConstruct
@@ -183,7 +192,7 @@ public class SearchController {
 
     @RequestMapping(value = "/spectrum/{spectrumId:\\d+}/search/", method = RequestMethod.POST)
     public ModelAndView search(@PathVariable("spectrumId") long spectrumId,
-                         HttpSession session, Model model, @Valid SearchForm form, Errors errors) {
+                               HttpSession session, Model model, @Valid SearchForm form, Errors errors) {
 
         if (errors.hasErrors()) return new ModelAndView("file/match");
 

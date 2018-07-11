@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.models.entities;
 
 import org.dulab.adapcompounddb.models.FileType;
+import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.validation.NotBlank;
 
 import javax.persistence.*;
@@ -93,6 +94,13 @@ public class Submission implements Serializable {
 
     public void setCategories(List<SubmissionCategory> categories) {
         this.categories = categories;
+    }
+
+    public SubmissionCategory getCategory(SubmissionCategoryType type) {
+        return getCategories().stream()
+                .filter(c -> c.getCategoryType() == type)
+                .findFirst()
+                .orElse(null);
     }
 
     //    @ManyToOne(fetch = FetchType.EAGER)
