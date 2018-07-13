@@ -118,13 +118,26 @@ If you were able to successfully access Tomcat, now is a good time to enable the
 $ sudo systemctl enable tomcat
 ```
 
-## Step 3. Add Tomcat User and Data Source
-We will create a Tomcat user that has access to `manager-script`. Its `username` and `password` will be used by Maven to deploy our web application.
+## Step 3. Add Tomcat Users and a Data Source
+We will create two Tomcat user that have access to `manager-script` and `manager-gui`. The user `admin` will be used by Maven to deploy our web application. The user `tomcat` can be used by you to manually deploy/undeploy web applications. Note that the Manager is only accessible from a browser running on the same machine as Tomcat, so we don't need to worry about secure passwords.
 
 Add the following lines to the file `/etc/tomcat-users.xml`
 ```xml
+<role rolename="manager-gui"/>
 <role rolename="manager-script"/>
 <user username="admin" password="admin" roles="manager-script"/>
+<user username="tomcat" password="tomcat" roles="manager-gui"/>
+```
+
+Restart the Tomcat service to apply the changes.
+```shell
+$ sudo systemctl restart tomcat
+```
+
+If you want to manually manage deployed applications, you can install a console web browser and go to the corresponding web page
+```shell
+$ sudo apt-get install elinks
+$ elinks http://localhost:8080/manager
 ```
 
 Next, we will create a data source that can access our Amazon RDS database. Open the Tomcat configuration file `/opt/tomcat/conf/context.xml` and add the following lines
@@ -147,7 +160,7 @@ $ sudo cp mysql-connector-java-8.0.11/mysql-connector-java-8.0.11.jar /opt/tomca
 $ sudo chown root:tomcat /opt/tomcat/lib/mysql-connector-java-8.0.11.jar
 ```
 
-Restart the Tomcat service
+Restart the Tomcat service to apply the changes.
 ```shell
 $ sudo systemctl restart tomcat
 ```
