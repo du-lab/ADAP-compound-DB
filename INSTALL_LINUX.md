@@ -164,3 +164,7 @@ Then, deploy ADAP Spectral Library by running the command
 $ cd ~/ADAP-compound-DB
 $ mvn tomcat7:deploy
 ```
+
+## References
+- [How To Install Apache Tomcat 8 on Ubuntu 16.04](https://www.digitalocean.com/community/tutorials/how-to-install-apache-tomcat-8-on-ubuntu-16-04)
+- [How to Deploy a WAR File to Tomcat](http://www.baeldung.com/tomcat-deploy-war)
