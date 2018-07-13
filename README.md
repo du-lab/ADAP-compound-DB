@@ -17,6 +17,9 @@ git clone https://github.com/du-lab/ADAP-compound-DB.git
 
 4. Install IntelliJ IDEA (or other IDE of your choice) and configure it to deploy our project on Tomcat 
 
+### Setup for Amazon Web Services EC2 machine
+See [link](INSTALL_LINUX.md)
+
 ### Package structure
 * `org.dulab.adapcompounddb.config` configure the web application
 * `org.dulab.adapcompounddb.models.entities` represent entities of tables in the MySQL database
