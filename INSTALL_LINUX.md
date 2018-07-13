@@ -144,7 +144,7 @@ exec "$PRGDIR"/"@EXECUTABLE" start "$@"
 ```
 to this
 ```shell
-exec authbind --deep "$PRGDIR"/"@EXECUTABLE" start "$@"
+exec authbind --deep "$PRGDIR"/"$EXECUTABLE" start "$@"
 ```
 and restart Tomcat
 ```shell
