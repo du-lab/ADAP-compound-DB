@@ -118,7 +118,40 @@ If you were able to successfully access Tomcat, now is a good time to enable the
 $ sudo systemctl enable tomcat
 ```
 
-## Step 3. Add Tomcat Users and a Data Source
+## Step 3. Configure Tomcat to listen to port 80
+When testing Tomcat, we had to add the port number 8080 at the end of the public DNS/IP to reach Tomcat server. That's because Tomcat is listening to the port 8080. However, the default port number used by all browsers is 80. Here, we will configure Tomcat to listen to port 80.
+
+First, edit the file `/opt/tomcat/conf/server.xml` and replace line
+```xml
+<Connector port="8080" protocol="HTTP/1.1"
+```
+with the line
+```xml
+<Connector port="80" protocol="HTTP/1.1"
+```
+
+Then, install and configure `authbind` to use port 80.
+```shell
+$ sudo apt-get install authbind
+$ sudo touch /etc/authbind/byport/80
+$ sudo chmod 500 /etc/authbind/byport/80
+$ sudo chown tomcat /etc/authbind/byport/80
+```
+
+Finally, configure Tomcat to use `authbind` when it starts up. To do that, we will edit the file `/opt/tomcat/bin/startup.sh`. At the bottom of the file we need to change this
+```shell
+exec "$PRGDIR"/"@EXECUTABLE" start "$@"
+```
+to this
+```shell
+exec authbind --deep "$PRGDIR"/"@EXECUTABLE" start "$@"
+```
+and restart Tomcat
+```shell
+$ sudo systemctl restart tomcat
+```
+
+## Step 4. Add Tomcat Users and a Data Source
 We will create two Tomcat user that have access to `manager-script` and `manager-gui`. The user `admin` will be used by Maven to deploy our web application. The user `tomcat` can be used by you to manually deploy/undeploy web applications. Note that the Manager is only accessible from a browser running on the same machine as Tomcat, so we don't need to worry about secure passwords.
 
 Add the following lines to the file `/etc/tomcat-users.xml`
@@ -165,7 +198,7 @@ Restart the Tomcat service to apply the changes.
 $ sudo systemctl restart tomcat
 ```
 
-## Step 4. Download and Deploy ADAP Spectral Library
+## Step 5. Download and Deploy ADAP Spectral Library
 
 First, download the source code of ADAP Spectral Library
 ```shell
