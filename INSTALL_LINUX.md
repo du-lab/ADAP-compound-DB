@@ -170,7 +170,7 @@ $ sudo systemctl restart tomcat
 If you want to manually manage deployed applications, you can install a console web browser and go to the corresponding web page
 ```shell
 $ sudo apt-get install elinks
-$ elinks http://localhost:8080/manager
+$ elinks http://localhost/manager
 ```
 
 Next, we will create a data source that can access our Amazon RDS database. Open the Tomcat configuration file `/opt/tomcat/conf/context.xml` and add the following lines
@@ -184,7 +184,7 @@ Next, we will create a data source that can access our Amazon RDS database. Open
 ```
 Substitute `USERNAME` and `RDS_URL` with the correct values that you can find on _RDS - AWS Console_ in the __Details__ pane of your RDS-instance (field Username and Endpoint respectively). Substitute `PASSWORD` with the master password you set up when you created the RDS instance.
 
-Finally, we will download MySQL JDBC Driver and add it to `/usr/share/tomcat8/lib/`:
+Finally, we will download MySQL JDBC Driver and add it to `/opt/tomcat/lib/`:
 ```shell
 $ cd /tmp
 $ wget -i https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-8.0.11.tar.gz
