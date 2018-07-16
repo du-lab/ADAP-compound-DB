@@ -7,6 +7,7 @@ import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ public class GCSpectrumSearchServiceImpl implements SpectrumSearchService {
     }
 
     @Override
+    @Transactional
     public List<SpectrumMatch> search(Spectrum querySpectrum, QueryParameters parameters) {
         return spectrumRepository.spectrumSearch(SearchType.SIMILARITY_SEARCH, querySpectrum, parameters);
     }

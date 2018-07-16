@@ -27,12 +27,16 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         if (querySpectrum.getRetentionTime() != null && params.getRetTimeTolerance() != null)
             queryBuilder.setRetentionTimeRange(querySpectrum.getRetentionTime(), params.getRetTimeTolerance());
 
-        String sqlQuery = queryBuilder.build();
+        String[] sqlQueries = queryBuilder.build();
+        entityManager.createNativeQuery(sqlQueries[0]).executeUpdate();
+//        String sqlQuery = queryBuilder.build();
 
         @SuppressWarnings("unchecked")
         List<Object[]> resultList = entityManager
-                .createNativeQuery(sqlQuery, "SpectrumScoreMapping")
+                .createNativeQuery(sqlQueries[1], "SpectrumScoreMapping")
                 .getResultList();
+
+        entityManager.createNativeQuery(sqlQueries[2]).executeUpdate();
 
         List<SpectrumMatch> matches = new ArrayList<>();
         for (Object[] objects : resultList) {

@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.repositories;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
@@ -61,26 +62,29 @@ public class SpectrumQueryBuilder {
     }
 
 
-    public String build() {
+    public String[] build() {
+
+        final String commonTableName = "PeakCTE" + RandomStringUtils.randomAlphanumeric(12);
 
         // -----------------------
         // Start of WITH statement
         // -----------------------
 
-        String query = String.format("WITH PeakCTE AS (\n" +
+//        String query = String.format("WITH PeakCTE AS (\n" +
+        String initQuery = String.format("CREATE TABLE %s ENGINE=MEMORY AS (\n" +
                 "\tSELECT * FROM %s\n" +
-                "\tWHERE ChromatographyType = \"%s\"\n", peakView, chromatographyType);
+                "\tWHERE ChromatographyType = \"%s\"\n", commonTableName, peakView, chromatographyType);
 
         if (precursorRange != null)
-            query += String.format("\tAND Precursor > %f AND Precursor < %f\n",
+            initQuery += String.format("\tAND Precursor > %f AND Precursor < %f\n",
                     precursorRange.getStart(), precursorRange.getEnd());
 
         if (retentionTimeRange != null)
-            query += String.format("\tAND RetentionTime > %f AND RetentionTime < %f\n",
+            initQuery += String.format("\tAND RetentionTime > %f AND RetentionTime < %f\n",
                     retentionTimeRange.getStart(), retentionTimeRange.getEnd());
 
         if (excludeSpectra != null)
-            query += String.format(
+            initQuery += String.format(
                     "\tAND SpectrumId NOT IN (%s)\n",
                     excludeSpectra.stream()
                             .map(s -> Long.toString(s.getId()))
@@ -88,7 +92,7 @@ public class SpectrumQueryBuilder {
                             .collect(Collectors.joining(", ")));
 
 
-        query += ")\n";
+        initQuery += ");\n";
 
         // ---------------------
         // End of WITH statement
@@ -98,29 +102,34 @@ public class SpectrumQueryBuilder {
         // Start of spectrum match
         // -----------------------
 
+
+        String selectQuery;
         if (spectrum == null)
-            query += "SELECT DISTINCT SpectrumId, 0 AS Score FROM PeakCTE\n";
+            selectQuery = String.format("SELECT DISTINCT SpectrumId, 0 AS Score FROM %s\n", commonTableName);
 
         else {
-            query += "SELECT SpectrumId, POWER(SUM(Product), 2) AS Score FROM (\n";  // 0 AS Id, NULL AS QuerySpectrumId, SpectrumId AS MatchSpectrumId
+            selectQuery = "SELECT SpectrumId, POWER(SUM(Product), 2) AS Score FROM (\n";  // 0 AS Id, NULL AS QuerySpectrumId, SpectrumId AS MatchSpectrumId
 
-            query += spectrum.getPeaks()
+            selectQuery += spectrum.getPeaks()
                     .stream()
-                    .map(p -> String.format("\tSELECT SpectrumId, MAX(SQRT(Intensity * %f)) AS Product FROM PeakCTE " +
+                    .map(p -> String.format("\tSELECT SpectrumId, MAX(SQRT(Intensity * %f)) AS Product FROM %s " +
                                     "WHERE Mz > %f AND Mz < %f GROUP BY SpectrumId\n",
-                            p.getIntensity(), p.getMz() - mzTolerance, p.getMz() + mzTolerance))
+                            p.getIntensity(), commonTableName, p.getMz() - mzTolerance, p.getMz() + mzTolerance))
                     .collect(Collectors.joining("\tUNION ALL\n"));
 
-            query += ") AS Result\n";
-            query += String.format("GROUP BY SpectrumId HAVING Score > %f ORDER BY Score DESC\n", scoreThreshold);
+            selectQuery += ") AS Result\n";
+            selectQuery += String.format("GROUP BY SpectrumId HAVING Score > %f ORDER BY Score DESC\n", scoreThreshold);
         }
 
         // ---------------------
         // End of spectrum match
         // ---------------------
 
-        return query;
+        String dropQuery = String.format("DROP TABLE %s;", commonTableName);
+
+        return new String[] {initQuery, selectQuery, dropQuery};
     }
+
 
     public static class Range {
 
