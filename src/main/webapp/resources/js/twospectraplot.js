@@ -15,11 +15,12 @@ function TwoSpectraPlot(divId, topSpectrum) {
     tooltip.append('div').attr('class', 'mz');
     tooltip.append('div').attr('class', 'intensity');
 
+    var minMz = d3.min(topSpectrum.peaks, function (d) {return d.mz});
+    var maxMz = d3.max(topSpectrum.peaks, function (d) {return d.mz});
+    var mzRange = maxMz - minMz;
+
     var xScale = d3.scaleLinear()
-        .domain([
-            d3.min(topSpectrum.peaks, function (d) {return d.mz}),
-            d3.max(topSpectrum.peaks, function (d) {return d.mz})
-        ])
+        .domain([minMz - 0.05 * mzRange, maxMz + 0.05 * mzRange])
         .range([padding['left'], width - padding['right']]);
 
     var yScale = d3.scaleLinear()
