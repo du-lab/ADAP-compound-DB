@@ -24,7 +24,7 @@
                 </ul>
             </div></c:if>
 
-            <form:form method="POST" modelAttribute="logInForm">
+            <form:form method="POST" action="${pageContext.request.contextPath}/j_spring_security_check" modelAttribute="logInForm">
                 <form:label path="username">Username:</form:label><br/>
                 <form:input path="username"/><br/>
                 <form:errors path="username" cssClass="errors"/><br/>
@@ -32,7 +32,7 @@
                 <form:password path="password"/><br/>
                 <form:errors path="password" cssClass="errors"/><br/>
                 <div align="center">
-                    <input type="submit" value="Log in"/>
+                    <input name="submit" type="submit" value="Log in"/>
                 </div>
             </form:form>
         </div>

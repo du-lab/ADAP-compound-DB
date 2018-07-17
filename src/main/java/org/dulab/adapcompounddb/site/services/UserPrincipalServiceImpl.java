@@ -1,5 +1,7 @@
 package org.dulab.adapcompounddb.site.services;
 
+import java.util.Optional;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
@@ -96,4 +98,15 @@ public class UserPrincipalServiceImpl implements UserPrincipalService {
 
         userParameterRepository.save(userParameter);
     }
+
+    @Override
+    public UserPrincipal getUerByUsername(String username) {
+    	UserPrincipal userPrincipal = null;
+    	Optional<UserPrincipal> userPrincipalFound = userPrincipalRepository.findUserPrincipalByUsername(username);
+    	if(userPrincipalFound.isPresent()) {
+    		userPrincipal = userPrincipalFound.get();
+    	}
+		return userPrincipal;
+    }
+
 }

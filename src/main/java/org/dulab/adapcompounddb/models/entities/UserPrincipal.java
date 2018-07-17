@@ -27,7 +27,7 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
     private String email;
 
 //    @NotNull(message = "Hashed password is required.")
-    private byte[] hashedPassword;
+    private String hashedPassword;
 
 //    private List<Submission> submissions;
 
@@ -61,11 +61,11 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
 
 //    @Basic(optional = false)
     @Basic(fetch = FetchType.EAGER)
-    public byte[] getHashedPassword() {
+    public String getHashedPassword() {
         return hashedPassword;
     }
 
-    public void setHashedPassword(byte[] password) {
+    public void setHashedPassword(String password) {
         this.hashedPassword = password;
     }
 

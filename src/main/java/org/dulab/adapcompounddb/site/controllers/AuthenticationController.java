@@ -36,8 +36,9 @@ public class AuthenticationController {
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public ModelAndView login(Model model, HttpSession session) {
-        if (UserPrincipal.from(session) != null)
+        if (UserPrincipal.from(session) != null) {
             return getHomeRedirect();
+        }
 
         model.addAttribute("loginFailed", false);
         model.addAttribute("logInForm", new LogInForm());

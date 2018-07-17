@@ -1,12 +1,9 @@
 package org.dulab.adapcompounddb.models.entities;
 
-import org.dulab.adapcompounddb.models.ChromatographyType;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 public class SpectrumCluster implements Serializable {

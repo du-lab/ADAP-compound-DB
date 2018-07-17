@@ -12,8 +12,9 @@ public class ErrorHandlingController {
     public String error(@RequestParam(name = "errorMsg", required = false) String message,
                         Model model) {
 
-        if (message != null)
+        if (message != null) {
             model.addAttribute("errorMsg", message);
+        }
 
         return "error";
     }
