@@ -19,7 +19,7 @@
                 <li>at least one digit: 0-9</li>
                 <li>at least one lower case letter: a-z</li>
                 <li>at least one upper case letter: A-Z</li>
-                <li>at least one spectral character: @, #, $, %, ^, &, +, =</li>
+                <li>at least one special character: @, #, $, %, ^, &, +, =</li>
                 <li>no whitespaces</li>
                 <li>at least eight characters long</li>
             </ul>

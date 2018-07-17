@@ -11,6 +11,7 @@ import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -55,6 +56,7 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
     }
 
     @Override
+    @Transactional
     public void run() {
 
         List<SpectrumMatch> spectrumMatches = new ArrayList<>();
