@@ -71,7 +71,7 @@ public class SpectrumQueryBuilder {
         // -----------------------
 
 //        String query = String.format("WITH PeakCTE AS (\n" +
-        String initQuery = String.format("CREATE TABLE %s ENGINE=MEMORY AS (\n" +
+        String initQuery = String.format("CREATE TABLE %s AS (\n" +  // ENGINE=MEMORY
                 "\tSELECT * FROM %s\n" +
                 "\tWHERE ChromatographyType = \"%s\"\n", commonTableName, peakView, chromatographyType);
 
