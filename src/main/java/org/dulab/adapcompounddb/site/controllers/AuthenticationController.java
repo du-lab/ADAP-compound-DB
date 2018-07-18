@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -35,12 +36,12 @@ public class AuthenticationController {
      ****************/
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public ModelAndView login(Model model, HttpSession session) {
+    public ModelAndView login(Model model, HttpSession session, @RequestParam(name="loginFailed", required=false, defaultValue="false") Boolean loginFailed) {
         if (UserPrincipal.from(session) != null) {
             return getHomeRedirect();
         }
 
-        model.addAttribute("loginFailed", false);
+        model.addAttribute("loginFailed", loginFailed);
         model.addAttribute("logInForm", new LogInForm());
 
         return new ModelAndView("login");
@@ -48,7 +49,7 @@ public class AuthenticationController {
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ModelAndView login(Model model, HttpSession session, HttpServletRequest request,
-                              @Valid LogInForm form, Errors errors) {
+                              @Valid LogInForm form, Errors errors, @RequestParam("loginFailed") Boolean loginFailed) {
 
         if (UserPrincipal.from(session) != null)
             return getHomeRedirect();
@@ -68,6 +69,7 @@ public class AuthenticationController {
             return new ModelAndView("login");
         }
 
+        model.addAttribute("loginFailed", loginFailed);
         if (principal == null) {
             form.setPassword(null);
             model.addAttribute("loginFailed", true);

@@ -19,6 +19,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -68,6 +69,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         // For ADMIN only.
         http.authorizeRequests().antMatchers("/admin/").access("hasRole('ROLE_ADMIN')");
+        http.authorizeRequests().antMatchers("/account/").access("isAuthenticated()");
  
         // When the user has logged in as XX.
         // But access a page that requires role YY,
@@ -79,21 +81,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // Submit URL of login page.
                 .loginProcessingUrl("/j_spring_security_check") // Submit URL
                 .loginPage("/login/")//
-                .successForwardUrl("/admin/")
-                .defaultSuccessUrl("/")
-//                .successHandler(new AuthenticationSuccessHandler() {
-//					
-//					@Override
-//					public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-//							Authentication authentication) throws IOException, ServletException {
-//						if(authentication.isAuthenticated()) {
-//					        request.getSession().setAttribute(SESSION_ATTRIBUTE_KEY, request.getParameter("username"));
-//					        request.getRequestDispatcher("/admin/").forward(request, response);
-//						} else {
-//					        request.getRequestDispatcher("/login?loginFailed=true").forward(request, response);
-//						}
-//					}
-//				})
+                .successHandler(new AuthenticationSuccessHandler() {
+					
+					@Override
+					public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+							Authentication authentication) throws IOException, ServletException {
+						if(authentication.isAuthenticated()) {
+					        request.getSession().setAttribute(SESSION_ATTRIBUTE_KEY, authentication.getPrincipal());
+					        response.sendRedirect(request.getServletContext().getContextPath() + "/");
+						} else {
+					        request.getRequestDispatcher("/login?loginFailed=true").forward(request, response);
+						}
+					}
+				})
                 .failureUrl("/login?loginFailed=true")//
                 .usernameParameter("username")//
                 .passwordParameter("password")

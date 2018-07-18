@@ -14,7 +14,7 @@
     <div align="center">
         <div align="left" class="subsection">
             <p>You must log in to submit new mass spectra to the library.</p>
-            <c:if test="${loginFailed}">
+            <c:if test="${param['loginFailed']}">
                 <b class="errors">The username and password you entered are not correct. Please try again.</b><br/>
             </c:if><c:if test="${validationErrors != null}"><div class="errors">
                 <ul>

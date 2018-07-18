@@ -43,5 +43,4 @@ public class SpringUserDetailsServiceImpl implements UserDetailsService {
 	    return builder.build();
 	}
 
-	
 }
