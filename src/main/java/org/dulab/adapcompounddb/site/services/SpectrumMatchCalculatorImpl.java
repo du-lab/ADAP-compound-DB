@@ -61,8 +61,10 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
 
         List<SpectrumMatch> spectrumMatches = new ArrayList<>();
 
+        final long countUnmatched = spectrumRepository.countUnmatched();
+
         progress = 0F;
-        float progressStep = 1F / spectrumRepository.countUnmatched();
+        float progressStep = 1F / countUnmatched;
 
         for (ChromatographyType chromatographyType : ChromatographyType.values()) {
 
@@ -72,8 +74,8 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
 
             long startingTime = System.currentTimeMillis();
 
-            List<Spectrum> unmatchedSpectra = ServiceUtils.toList(
-                    spectrumRepository.findUnmatchedByChromatographyType(chromatographyType));
+//            List<Spectrum> unmatchedSpectra = ServiceUtils.toList(
+//                    spectrumRepository.findUnmatchedByChromatographyType(chromatographyType));
 
 //            float progressInnerStep = 0F;
 //            if (unmatchedSpectra.isEmpty())
@@ -81,7 +83,7 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
 //            else
 //                progressInnerStep = progressStep / unmatchedSpectra.size();
 
-            for (Spectrum querySpectrum : unmatchedSpectra) {
+            for (Spectrum querySpectrum : spectrumRepository.findUnmatchedByChromatographyType(chromatographyType)) {
                 spectrumMatches.addAll(
                         spectrumRepository.spectrumSearch(
                                 SearchType.CLUSTERING, querySpectrum, params));
@@ -90,7 +92,7 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
 
             long elapsedTime = System.currentTimeMillis() - startingTime;
             LOGGER.info(String.format("%d query spectra searched with average time %d milliseconds.",
-                    unmatchedSpectra.size(), unmatchedSpectra.size() > 0 ? elapsedTime / unmatchedSpectra.size() : 0));
+                    countUnmatched, countUnmatched > 0 ? elapsedTime / countUnmatched : 0));
         }
 
         spectrumMatchRepository.saveAll(spectrumMatches);
