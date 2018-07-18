@@ -62,10 +62,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 
 		http.csrf().disable();
-		 
+
         // The pages does not require login
-        http.authorizeRequests().antMatchers("/", "/welcome", "/login", "/logout").permitAll();
- 
+        http.authorizeRequests().antMatchers("/", "/login", "/logout").permitAll();
+
         // For ADMIN only.
         http.authorizeRequests().antMatchers("/admin/").access("hasRole('ROLE_ADMIN')");
  
@@ -73,7 +73,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // But access a page that requires role YY,
         // AccessDeniedException will throw.
         http.authorizeRequests().and().exceptionHandling().accessDeniedPage("/error?errorMsg=" + ACCESS_DENIED_MESSAGE);
- 
+
         // Config for Login Form
         http.authorizeRequests().and().formLogin()//
                 // Submit URL of login page.

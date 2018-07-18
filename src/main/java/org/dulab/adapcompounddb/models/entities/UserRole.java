@@ -37,7 +37,7 @@ public class UserRole implements Serializable {
 		this.userRoleId = userRoleId;
 	}
 
-	@JoinColumn(name="user_principal_id")
+	@JoinColumn(name="user_principal_id_fk")
 	@ManyToOne
 	public UserPrincipal getUserPrincipal() {
 		return userPrincipal;
@@ -47,7 +47,7 @@ public class UserRole implements Serializable {
 		this.userPrincipal = userPrincipal;
 	}
 
-	@JoinColumn(name="role_id")
+	@JoinColumn(name="role_id_fk")
 	@ManyToOne
 	public Role getRole() {
 		return role;
