@@ -51,6 +51,7 @@
                 <th>Name</th>
                 <th>Ret Time (min)</th>
                 <th>Precursor mass</th>
+                <th>Chromatography</th>
                 <th>File</th>
                 <th>View / Search / Delete</th>
             </tr>
@@ -67,6 +68,7 @@
                             </td>
                             <td>${spectrum.retentionTime}</td>
                             <td>${spectrum.precursor}</td>
+                            <td>${spectrum.chromatographyType.label}</td>
                             <td>${file.name}</td>
                             <td>
                                 <!-- more horiz -->

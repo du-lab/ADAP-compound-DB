@@ -8,9 +8,9 @@
 <!-- Start the middle column -->
 
 <%--<section class="transparent">--%>
-    <%--<div align="right">--%>
-        <%--<a href="<c:url value="${header.referer}"/>" class="button">Back to file</a>--%>
-    <%--</div>--%>
+<%--<div align="right">--%>
+<%--<a href="<c:url value="${header.referer}"/>" class="button">Back to file</a>--%>
+<%--</div>--%>
 <%--</section>--%>
 
 <section>
@@ -36,6 +36,10 @@
                     <td>${e.value}</td>
                 </tr>
             </c:forEach>
+            <tr>
+                <td>Chromatography Type</td>
+                <td>${spectrum.chromatographyType.label}</td>
+            </tr>
             <tr>
                 <td>Submission</td>
                 <td>
@@ -75,9 +79,9 @@
 </section>
 
 <%--<section class="transparent">--%>
-    <%--<div align="right">--%>
-        <%--<a href="<c:url value="${header.referer}"/>" class="button">Back to file</a>--%>
-    <%--</div>--%>
+<%--<div align="right">--%>
+<%--<a href="<c:url value="${header.referer}"/>" class="button">Back to file</a>--%>
+<%--</div>--%>
 <%--</section>--%>
 
 <script src="<c:url value="/resources/js/zingchart/zingchart.min.js"/>"></script>
