@@ -55,6 +55,7 @@ public class MspFileReaderService implements FileReaderService {
 
         if (!peaks.isEmpty()) {
             spectrum.setProperties(properties);
+            spectrum.setChromatographyType(type);
             spectrum.setPeaks(peaks);
             spectra.add(spectrum);
         }
