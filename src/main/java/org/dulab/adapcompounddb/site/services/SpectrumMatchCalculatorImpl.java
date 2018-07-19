@@ -72,18 +72,14 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
             if (params == null)
                 throw new IllegalStateException("Clustering query parameters are not specified.");
 
+            LOGGER.info(String.format("Retrieving unmatched spectra of %s...", chromatographyType));
+            Iterable<Spectrum> unmatchedSpectra =
+                    spectrumRepository.findUnmatchedByChromatographyType(chromatographyType);
+
             long startingTime = System.currentTimeMillis();
 
-//            List<Spectrum> unmatchedSpectra = ServiceUtils.toList(
-//                    spectrumRepository.findUnmatchedByChromatographyType(chromatographyType));
-
-//            float progressInnerStep = 0F;
-//            if (unmatchedSpectra.isEmpty())
-//                progress += progressStep;
-//            else
-//                progressInnerStep = progressStep / unmatchedSpectra.size();
-
-            for (Spectrum querySpectrum : spectrumRepository.findUnmatchedByChromatographyType(chromatographyType)) {
+            LOGGER.info(String.format("Matching unmatched spectra of %s...", chromatographyType));
+            for (Spectrum querySpectrum : unmatchedSpectra) {
                 spectrumMatches.addAll(
                         spectrumRepository.spectrumSearch(
                                 SearchType.CLUSTERING, querySpectrum, params));
@@ -91,13 +87,14 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
             }
 
             long elapsedTime = System.currentTimeMillis() - startingTime;
-            LOGGER.info(String.format("%d query spectra searched with average time %d milliseconds.",
-                    countUnmatched, countUnmatched > 0 ? elapsedTime / countUnmatched : 0));
+            LOGGER.info(String.format("Unmatched spectra of %s are matched with average time %d milliseconds.",
+                    chromatographyType.getLabel(), countUnmatched > 0 ? elapsedTime / countUnmatched : 0));
         }
 
+        LOGGER.info("Saving matches to the database...");
         spectrumMatchRepository.saveAll(spectrumMatches);
         progress = 0F;
 
-        LOGGER.info(String.format("Save %d matches to the database.", spectrumMatches.size()));
+        LOGGER.info(String.format("Total %d matches are saved to the database.", spectrumMatches.size()));
     }
 }
