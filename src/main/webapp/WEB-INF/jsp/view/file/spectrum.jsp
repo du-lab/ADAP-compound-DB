@@ -17,7 +17,7 @@
     <h1>Spectrum ${spectrum.name}</h1>
 
     <div align="left" style="float: left">
-        <p><a href="/submission/${spectrum.submission.id}/" class="button">Submission</a></p>
+        <p><a href="/submission/${spectrum.file.submission.id}/" class="button">Submission</a></p>
     </div>
 
     <div align="right" style="float: right">
@@ -39,9 +39,9 @@
             <tr>
                 <td>Submission</td>
                 <td>
-                    <a href="/submission/${spectrum.submission.id}/">
-                        ${spectrum.submission.name} (${spectrum.chromatographyType.label})<br>
-                        <small>${spectrum.submission.description}</small>
+                    <a href="/submission/${spectrum.file.submission.id}/">
+                        ${spectrum.file.submission.name} (${spectrum.chromatographyType.label})<br>
+                        <small>${spectrum.file.submission.description}</small>
                     </a>
                 </td>
             </tr>
