@@ -73,7 +73,11 @@ public class Spectrum implements Serializable {
     }
 
     public String getName() {
-        return name;
+        String fullName = name;
+        if (fullName == null) fullName = "UNKNOWN";
+        if (reference) fullName = "[RS] " + fullName;
+        if (consensus) fullName = "[CS] " + fullName;
+        return fullName;
     }
 
     public void setName(String name) {
@@ -239,6 +243,6 @@ public class Spectrum implements Serializable {
 
     @Override
     public String toString() {
-        return name != null ? name : "UNKNOWN";
+        return getName();
     }
 }

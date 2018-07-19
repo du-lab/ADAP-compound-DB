@@ -243,7 +243,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
         SpectrumProperty nameProperty = new SpectrumProperty();
         nameProperty.setName("Name");
-        nameProperty.setValue("CS: " + getName(cluster));
+        nameProperty.setValue(getName(cluster));
         nameProperty.setSpectrum(consensusSpectrum);
 
         consensusSpectrum.setChromatographyType(type);
