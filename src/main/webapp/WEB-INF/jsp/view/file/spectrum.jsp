@@ -8,16 +8,16 @@
 <!-- Start the middle column -->
 
 <%--<section class="transparent">--%>
-    <%--<div align="right">--%>
-        <%--<a href="<c:url value="${header.referer}"/>" class="button">Back to file</a>--%>
-    <%--</div>--%>
+<%--<div align="right">--%>
+<%--<a href="<c:url value="${header.referer}"/>" class="button">Back to file</a>--%>
+<%--</div>--%>
 <%--</section>--%>
 
 <section>
     <h1>Spectrum ${spectrum.name}</h1>
 
     <div align="left" style="float: left">
-        <p><a href="/submission/${spectrum.submission.id}/" class="button">Submission</a></p>
+        <p><a href="/submission/${spectrum.file.submission.id}/" class="button">Submission</a></p>
     </div>
 
     <div align="right" style="float: right">
@@ -37,11 +37,15 @@
                 </tr>
             </c:forEach>
             <tr>
+                <td>Chromatography Type</td>
+                <td>${spectrum.chromatographyType.label}</td>
+            </tr>
+            <tr>
                 <td>Submission</td>
                 <td>
-                    <a href="/submission/${spectrum.submission.id}/">
-                        ${spectrum.submission.name} (${spectrum.chromatographyType.label})<br>
-                        <small>${spectrum.submission.description}</small>
+                    <a href="/submission/${spectrum.file.submission.id}/">
+                        ${spectrum.file.submission.name} (${spectrum.chromatographyType.label})<br>
+                        <small>${spectrum.file.submission.description}</small>
                     </a>
                 </td>
             </tr>
@@ -75,9 +79,9 @@
 </section>
 
 <%--<section class="transparent">--%>
-    <%--<div align="right">--%>
-        <%--<a href="<c:url value="${header.referer}"/>" class="button">Back to file</a>--%>
-    <%--</div>--%>
+<%--<div align="right">--%>
+<%--<a href="<c:url value="${header.referer}"/>" class="button">Back to file</a>--%>
+<%--</div>--%>
 <%--</section>--%>
 
 <script src="<c:url value="/resources/js/zingchart/zingchart.min.js"/>"></script>

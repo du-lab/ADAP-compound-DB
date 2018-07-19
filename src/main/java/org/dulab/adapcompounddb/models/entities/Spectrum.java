@@ -3,6 +3,7 @@ package org.dulab.adapcompounddb.models.entities;
 import org.dulab.adapcompounddb.models.ChromatographyType;
 
 import javax.persistence.*;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
@@ -34,7 +35,8 @@ public class Spectrum implements Serializable {
 
     private File file;
 
-    @NotNull(message = "Peak list is required.")
+    @NotNull(message = "Spectrum: peak list is required.")
+    @Valid
     private List<Peak> peaks;
 
     private List<SpectrumProperty> properties;
@@ -53,6 +55,7 @@ public class Spectrum implements Serializable {
 
     private Double retentionTime;
 
+    @NotNull(message = "Spectrum: the field Chromatography Type is required.")
     private ChromatographyType chromatographyType;
 
     // *******************************
@@ -70,7 +73,11 @@ public class Spectrum implements Serializable {
     }
 
     public String getName() {
-        return name;
+        String fullName = name;
+        if (fullName == null) fullName = "UNKNOWN";
+        if (reference) fullName = "[RS] " + fullName;
+        if (consensus) fullName = "[CS] " + fullName;
+        return fullName;
     }
 
     public void setName(String name) {
@@ -236,6 +243,6 @@ public class Spectrum implements Serializable {
 
     @Override
     public String toString() {
-        return name != null ? name : "UNKNOWN";
+        return getName();
     }
 }

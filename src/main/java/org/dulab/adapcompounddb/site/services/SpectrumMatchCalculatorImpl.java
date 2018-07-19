@@ -11,6 +11,7 @@ import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -55,12 +56,15 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
     }
 
     @Override
+    @Transactional
     public void run() {
 
         List<SpectrumMatch> spectrumMatches = new ArrayList<>();
 
+        final long countUnmatched = spectrumRepository.countUnmatched();
+
         progress = 0F;
-        float progressStep = 1F / spectrumRepository.countUnmatched();
+        float progressStep = 1F / countUnmatched;
 
         for (ChromatographyType chromatographyType : ChromatographyType.values()) {
 
@@ -68,17 +72,13 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
             if (params == null)
                 throw new IllegalStateException("Clustering query parameters are not specified.");
 
+            LOGGER.info(String.format("Retrieving unmatched spectra of %s...", chromatographyType));
+            Iterable<Spectrum> unmatchedSpectra =
+                    spectrumRepository.findUnmatchedByChromatographyType(chromatographyType);
+
             long startingTime = System.currentTimeMillis();
 
-            List<Spectrum> unmatchedSpectra = ServiceUtils.toList(
-                    spectrumRepository.findUnmatchedByChromatographyType(chromatographyType));
-
-//            float progressInnerStep = 0F;
-//            if (unmatchedSpectra.isEmpty())
-//                progress += progressStep;
-//            else
-//                progressInnerStep = progressStep / unmatchedSpectra.size();
-
+            LOGGER.info(String.format("Matching unmatched spectra of %s...", chromatographyType));
             for (Spectrum querySpectrum : unmatchedSpectra) {
                 spectrumMatches.addAll(
                         spectrumRepository.spectrumSearch(
@@ -87,13 +87,14 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
             }
 
             long elapsedTime = System.currentTimeMillis() - startingTime;
-            LOGGER.info(String.format("%d query spectra searched with average time %d milliseconds.",
-                    unmatchedSpectra.size(), unmatchedSpectra.size() > 0 ? elapsedTime / unmatchedSpectra.size() : 0));
+            LOGGER.info(String.format("Unmatched spectra of %s are matched with average time %d milliseconds.",
+                    chromatographyType.getLabel(), countUnmatched > 0 ? elapsedTime / countUnmatched : 0));
         }
 
+        LOGGER.info("Saving matches to the database...");
         spectrumMatchRepository.saveAll(spectrumMatches);
         progress = 0F;
 
-        LOGGER.info(String.format("Save %d matches to the database.", spectrumMatches.size()));
+        LOGGER.info(String.format("Total %d matches are saved to the database.", spectrumMatches.size()));
     }
 }

@@ -62,72 +62,69 @@ public class SpectrumQueryBuilder {
     }
 
 
-    public String[] build() {
+    public String build() {
 
-        final String commonTableName = "PeakCTE" + RandomStringUtils.randomAlphanumeric(12);
+        // -------------------------
+        // Library spectra selection
+        // -------------------------
 
-        // -----------------------
-        // Start of WITH statement
-        // -----------------------
+        StringBuilder librarySelectionBuilder = new StringBuilder();
 
-//        String query = String.format("WITH PeakCTE AS (\n" +
-        String initQuery = String.format("CREATE TABLE %s ENGINE=MEMORY AS (\n" +
-                "\tSELECT * FROM %s\n" +
-                "\tWHERE ChromatographyType = \"%s\"\n", commonTableName, peakView, chromatographyType);
+        librarySelectionBuilder.append(
+                String.format("ChromatographyType = \"%s\"", chromatographyType));
 
         if (precursorRange != null)
-            initQuery += String.format("\tAND Precursor > %f AND Precursor < %f\n",
-                    precursorRange.getStart(), precursorRange.getEnd());
+            librarySelectionBuilder.append(
+                    String.format(" AND Precursor > %f AND Precursor < %f",
+                            precursorRange.getStart(), precursorRange.getEnd()));
 
         if (retentionTimeRange != null)
-            initQuery += String.format("\tAND RetentionTime > %f AND RetentionTime < %f\n",
-                    retentionTimeRange.getStart(), retentionTimeRange.getEnd());
+            librarySelectionBuilder.append(
+                    String.format(" AND RetentionTime > %f AND RetentionTime < %f",
+                            retentionTimeRange.getStart(), retentionTimeRange.getEnd()));
 
         if (excludeSpectra != null)
-            initQuery += String.format(
-                    "\tAND SpectrumId NOT IN (%s)\n",
-                    excludeSpectra.stream()
-                            .map(s -> Long.toString(s.getId()))
-                            .distinct()
-                            .collect(Collectors.joining(", ")));
+            librarySelectionBuilder.append(
+                    String.format(" AND SpectrumId NOT IN (%s)",
+                            excludeSpectra.stream()
+                                    .map(s -> Long.toString(s.getId()))
+                                    .distinct()
+                                    .collect(Collectors.joining(","))));
 
-
-        initQuery += ");\n";
-
-        // ---------------------
-        // End of WITH statement
-        // ---------------------
+        // --------------------------------
+        // End of library spectra selection
+        // --------------------------------
 
         // -----------------------
         // Start of spectrum match
         // -----------------------
 
-
-        String selectQuery;
+        String query;
         if (spectrum == null)
-            selectQuery = String.format("SELECT DISTINCT SpectrumId, 0 AS Score FROM %s\n", commonTableName);
+            query = String.format("SELECT DISTINCT SpectrumId, 0 AS Score FROM %s\n", peakView);
 
         else {
-            selectQuery = "SELECT SpectrumId, POWER(SUM(Product), 2) AS Score FROM (\n";  // 0 AS Id, NULL AS QuerySpectrumId, SpectrumId AS MatchSpectrumId
+            query = "SELECT SpectrumId, POWER(SUM(Product), 2) AS Score FROM (\n";  // 0 AS Id, NULL AS QuerySpectrumId, SpectrumId AS MatchSpectrumId
 
-            selectQuery += spectrum.getPeaks()
+            query += spectrum.getPeaks()
                     .stream()
                     .map(p -> String.format("\tSELECT SpectrumId, MAX(SQRT(Intensity * %f)) AS Product FROM %s " +
-                                    "WHERE Mz > %f AND Mz < %f GROUP BY SpectrumId\n",
-                            p.getIntensity(), commonTableName, p.getMz() - mzTolerance, p.getMz() + mzTolerance))
+                                    "WHERE Mz > %f AND Mz < %f AND %s GROUP BY SpectrumId\n",
+                            p.getIntensity(), peakView,
+                            p.getMz() - mzTolerance,
+                            p.getMz() + mzTolerance,
+                            librarySelectionBuilder.toString()))
                     .collect(Collectors.joining("\tUNION ALL\n"));
 
-            selectQuery += ") AS Result\n";
-            selectQuery += String.format("GROUP BY SpectrumId HAVING Score > %f ORDER BY Score DESC\n", scoreThreshold);
+            query += ") AS Result\n";
+            query += String.format("GROUP BY SpectrumId HAVING Score > %f ORDER BY Score DESC\n", scoreThreshold);
         }
 
         // ---------------------
         // End of spectrum match
         // ---------------------
 
-        String dropQuery = String.format("DROP TABLE %s;", commonTableName);
-
-        return new String[] {initQuery, selectQuery, dropQuery};
+        return query;
     }
 
 

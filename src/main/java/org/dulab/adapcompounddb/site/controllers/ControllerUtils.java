@@ -92,6 +92,8 @@ public class ControllerUtils {
                     .filter(category::equals)
                     .count();
 
+            if (numSpectraInCluster == 0) continue;
+
             long numSpectraInTotal = category.getSubmissions()
                     .stream()
                     .mapToLong(s -> s.getFiles().size())

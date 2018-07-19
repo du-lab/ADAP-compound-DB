@@ -3,6 +3,7 @@ package org.dulab.adapcompounddb.models.entities;
 import org.dulab.adapcompounddb.models.FileType;
 
 import javax.persistence.*;
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -32,6 +33,7 @@ public class File implements Serializable {
     private Submission submission;
 
     @NotNull(message = "File: Spectrum list is required.")
+    @Valid
     private List<Spectrum> spectra;
 
     // *******************************

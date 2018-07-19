@@ -119,6 +119,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
             Arrays.stream(distanceMatrix)
                     .forEach(a -> Arrays.fill(a, 1.0));
 
+            LOGGER.info(String.format("Retrieving matches of %s...", type));
             for (SpectrumMatch spectrumMatch : spectrumMatchRepository
                     .findAllByQuerySpectrumChromatographyType(type)) {
 
@@ -134,6 +135,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
             }
 
             // Complete Hierarchical Clustering
+            LOGGER.info("Clustering of non-consensus and non-reference spectra...");
             Linkage linkage = new CompleteLinkage(distanceMatrix);
             HierarchicalClustering clustering = new HierarchicalClustering(linkage);
             int[] labels = clustering.partition(similarityToDistance(scoreThreshold));
@@ -176,14 +178,17 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
                 clusters.add(cluster);
             }
 
+            LOGGER.info("Saving clusters to the database...");
             spectrumClusterRepository.saveAll(clusters);
 
             for (SpectrumCluster cluster : clusters)
                 clusterIds.add(cluster.getId());
         }
 
-
+        LOGGER.info("Deleting old clusters...");
         spectrumClusterRepository.deleteByIdNotIn(clusterIds);
+
+        LOGGER.info("Clustering is completed.");
     }
 
     private Spectrum getSpectrum(long id) throws EmptySearchResultException {
@@ -238,7 +243,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
         SpectrumProperty nameProperty = new SpectrumProperty();
         nameProperty.setName("Name");
-        nameProperty.setValue("CS: " + getName(cluster));
+        nameProperty.setValue(getName(cluster));
         nameProperty.setSpectrum(consensusSpectrum);
 
         consensusSpectrum.setChromatographyType(type);
