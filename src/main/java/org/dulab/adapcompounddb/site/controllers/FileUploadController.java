@@ -1,11 +1,20 @@
 package org.dulab.adapcompounddb.site.controllers;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.FileType;
 import org.dulab.adapcompounddb.models.entities.File;
-import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.site.services.FileReaderService;
 import org.dulab.adapcompounddb.site.services.MspFileReaderService;
@@ -17,15 +26,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Controller
 public class FileUploadController {
@@ -48,7 +48,7 @@ public class FileUploadController {
     @RequestMapping(value = "/file/upload/", method = RequestMethod.GET)
     public String upload(Model model, HttpSession session) {
         if (Submission.from(session) != null)
-            return "redirect:/file/";
+            return "redirect:/file/get/";
 
         FileUploadForm form = new FileUploadForm();
         form.setFileType(FileType.MSP);
@@ -60,7 +60,7 @@ public class FileUploadController {
     public String upload(Model model, HttpSession session, @Valid FileUploadForm form, Errors errors) {
 
         if (Submission.from(session) != null)
-            return "redirect:/file/";
+            return "redirect:/file/get/";
 
         if (errors.hasErrors())
             return "file/upload";
@@ -109,7 +109,7 @@ public class FileUploadController {
         submission.setFiles(files);
 
         Submission.assign(session, submission);
-        return "redirect:/file/";
+        return "redirect:/file/get/";
     }
 
 

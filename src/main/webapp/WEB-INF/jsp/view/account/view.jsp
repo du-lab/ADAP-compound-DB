@@ -34,7 +34,7 @@
                     <td><fmt:formatDate value="${submission.dateTime}" type="DATE" dateStyle="FULL"/><br/>
                         <small><fmt:formatDate value="${submission.dateTime}" type="TIME"/></small></td>
                     <td>
-                        <a href="/submission/${submission.id}/">${submission.name}</a><br/>
+                        <a href="${pageContext.request.contextPath}/submission/${submission.id}/">${submission.name}</a><br/>
                         <small>${dulab:abbreviate(submission.description, 80)}</small>
                     </td>
                     <td>
@@ -42,10 +42,10 @@
                     </td>
                     <td>
                         <!-- more horiz -->
-                        <a href="/submission/${submission.id}/"><i class="material-icons" title="View">&#xE5D3;</i></a>
+                        <a href="${pageContext.request.contextPath}/submission/${submission.id}/"><i class="material-icons" title="View">&#xE5D3;</i></a>
 
                         <!-- delete -->
-                        <a href="/submission/${submission.id}/delete/"><i class="material-icons" title="Delete">&#xE872;</i></a>
+                        <a href="${pageContext.request.contextPath}/submission/${submission.id}/delete/"><i class="material-icons" title="Delete">&#xE872;</i></a>
                     </td>
                 </tr>
             </c:forEach>

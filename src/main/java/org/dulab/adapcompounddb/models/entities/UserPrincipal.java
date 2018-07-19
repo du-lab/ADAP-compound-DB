@@ -1,11 +1,20 @@
 package org.dulab.adapcompounddb.models.entities;
 
+import java.io.Serializable;
+
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
+import javax.servlet.http.HttpSession;
+
 import org.dulab.adapcompounddb.validation.Email;
 import org.dulab.adapcompounddb.validation.NotBlank;
-
-import javax.persistence.*;
-import javax.servlet.http.HttpSession;
-import java.io.Serializable;
 
 @Entity
 @Table(uniqueConstraints = {
@@ -115,7 +124,6 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
     }
 
     @Override
-    @SuppressWarnings("CloneDoesntDeclareCloneNotSupportedException")
     protected UserPrincipal clone() {
         try {
             return (UserPrincipal) super.clone();

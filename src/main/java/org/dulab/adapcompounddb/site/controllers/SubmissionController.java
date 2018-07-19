@@ -1,28 +1,40 @@
 package org.dulab.adapcompounddb.site.controllers;
 
-import org.dulab.adapcompounddb.models.SubmissionCategoryType;
-import org.dulab.adapcompounddb.models.entities.*;
-import org.dulab.adapcompounddb.site.services.SpectrumService;
-import org.dulab.adapcompounddb.site.services.SubmissionService;
-import org.dulab.adapcompounddb.validation.NotBlank;
-import org.dulab.adapcompounddb.models.SampleSourceType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
-import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
+
+import org.dulab.adapcompounddb.models.SampleSourceType;
+import org.dulab.adapcompounddb.models.SubmissionCategoryType;
+import org.dulab.adapcompounddb.models.entities.File;
+import org.dulab.adapcompounddb.models.entities.Submission;
+import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
+import org.dulab.adapcompounddb.site.services.SpectrumService;
+import org.dulab.adapcompounddb.site.services.SubmissionService;
+import org.dulab.adapcompounddb.validation.NotBlank;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.SessionAttributes;
 
 @Controller
 @SessionAttributes("submissionCategoryTypes")
-public class SubmissionController {
+public class SubmissionController extends BaseController {
 
     private final SubmissionService submissionService;
 
@@ -46,7 +58,7 @@ public class SubmissionController {
      ***** View File / Submission *****
      ********************************/
 
-    @RequestMapping(value = "/file/", method = RequestMethod.GET)
+    @RequestMapping(value = "/file/get/", method = RequestMethod.GET)
     public String fileView(HttpSession session, Model model) {
 
         Submission submission = Submission.from(session);
@@ -84,6 +96,7 @@ public class SubmissionController {
                     .collect(Collectors.toList()));
 
         model.addAttribute("submissionForm", form);
+        model.addAttribute("authenticated", isAuthenticated());
 
         return "file/view";
     }
@@ -175,8 +188,7 @@ public class SubmissionController {
     /**********************************
      ***** File / Submission Submit *****
      **********************************/
-
-    @RequestMapping(value = "/file/", method = RequestMethod.POST)
+    @RequestMapping(value = "/file/submit/", method = RequestMethod.POST)
     public String fileView(HttpSession session, Model model, @Valid SubmissionForm form, Errors errors) {
 
         if (errors.hasErrors()) {
@@ -187,14 +199,14 @@ public class SubmissionController {
         if (submission == null)
             return redirectFileUpload();
 
-        submission.setUser(UserPrincipal.from(session));
+        submission.setUser(getCurrentUserPrincipal());
 
         String response = submit(submission, model, form);
         Submission.clear(session);
         return response;
     }
 
-    @RequestMapping(value = "/submission/{submissionId:\\d+}/", method = RequestMethod.POST)
+	@RequestMapping(value = "/submission/{submissionId:\\d+}/", method = RequestMethod.POST)
     public String submissionView(@PathVariable("submissionId") long submissionId, Model model, HttpSession session,
                                  @Valid SubmissionForm form, Errors errors) {
 
