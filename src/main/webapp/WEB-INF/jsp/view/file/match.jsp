@@ -69,7 +69,7 @@
                             <td>${score}</td>
                             <c:if test="${match.matchSpectrum.consensus}">
                                 <td>
-                                    <a href="/cluster/${match.matchSpectrum.cluster.id}/">${match.matchSpectrum.name}</a><br/>
+                                    <a href="/cluster/${match.matchSpectrum.cluster.id}/">${dulab:abbreviate(match.matchSpectrum.name, 80)}</a><br/>
                                     <small>
                                         <c:if test="${match.matchSpectrum.precursor != null}">Precursor: ${match.matchSpectrum.precursor};</c:if>
                                         <c:if test="${match.matchSpectrum.retentionTime != null}">Ret Time: ${match.matchSpectrum.retentionTime};</c:if>
@@ -85,7 +85,7 @@
                             </c:if>
                             <c:if test="${match.matchSpectrum.reference}">
                                 <td>
-                                    <a href="/spectrum/${match.matchSpectrum.id}/">${match.matchSpectrum.name}</a><br/>
+                                    <a href="/spectrum/${match.matchSpectrum.id}/">${dulab:abbreviate(match.matchSpectrum.name, 80)}</a><br/>
                                     <small>
                                         <c:if test="${match.matchSpectrum.precursor != null}">Precursor: ${match.matchSpectrum.precursor};</c:if>
                                         <c:if test="${match.matchSpectrum.retentionTime != null}">Ret Time: ${match.matchSpectrum.retentionTime};</c:if>
