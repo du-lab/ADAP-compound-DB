@@ -9,10 +9,7 @@ import javax.sql.DataSource;
 
 import org.hibernate.validator.HibernateValidator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.AdviceMode;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.*;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -39,6 +36,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
         basePackages = "org.dulab.adapcompounddb.site",
         excludeFilters = @ComponentScan.Filter({Controller.class, ControllerAdvice.class})
 )
+@Import({WebSecurityConfiguration.class})
 public class ApplicationContextConfiguration {
 
     @Autowired

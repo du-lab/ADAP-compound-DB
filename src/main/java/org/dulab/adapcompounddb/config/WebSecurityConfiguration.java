@@ -18,6 +18,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.servlet.configuration.EnableWebMvcSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,12 +28,12 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 
 @Configuration
 @EnableWebSecurity
-@ComponentScan(
-        basePackages = "org.dulab.adapcompounddb.site",
-        useDefaultFilters = false,
-        includeFilters = @ComponentScan.Filter({Controller.class, ControllerAdvice.class}))
-@Transactional
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+//@ComponentScan(
+//        basePackages = "org.dulab.adapcompounddb.site",
+//        useDefaultFilters = false,
+//        includeFilters = @ComponentScan.Filter({Controller.class, ControllerAdvice.class}))
+//@Transactional
+public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	private static final String ACCESS_DENIED_MESSAGE = "Sorry you do not have access to this page";
     private static final String SESSION_ATTRIBUTE_KEY = "currentUsername";
