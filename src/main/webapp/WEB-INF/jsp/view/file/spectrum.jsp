@@ -7,62 +7,64 @@
 
 <!-- Start the middle column -->
 
-<%--<section class="transparent">--%>
-<%--<div align="right">--%>
-<%--<a href="<c:url value="${header.referer}"/>" class="button">Back to file</a>--%>
-<%--</div>--%>
-<%--</section>--%>
+<c:choose>
+    <c:when test="${spectrum.file.submission.id > 0}">
+        <c:set var="submissionUrl">/submission/${spectrum.file.submission.id}/</c:set>
+    </c:when>
+    <c:otherwise>
+        <c:set var="submissionUrl">/file/</c:set>
+    </c:otherwise>
+</c:choose>
 
 <section>
-    <h1>Spectrum ${spectrum.name}</h1>
-
-    <div align="left" style="float: left">
-        <p><a href="/submission/${spectrum.file.submission.id}/" class="button">Submission</a></p>
-    </div>
-
-    <div align="right" style="float: right">
-        <p><a href="search/" class="button">Library Search</a></p>
-    </div>
-
-    <div align="center">
-        <table>
+    <h1>Spectrum ${spectrum}</h1>
+    <table id="property_table" class="display">
+        <thead>
+        <tr>
+            <th>Property</th>
+            <th>Value</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td><strong>Full Name:</strong></td>
+            <td>${spectrum.name}</td>
+        </tr>
+        <tr>
+            <td><strong>Chromatography:</strong></td>
+            <td>${spectrum.chromatographyType.label}</td>
+        </tr>
+        <tr>
+            <td><strong>File:</strong></td>
+            <td>${spectrum.file.name}</td>
+        </tr>
+        <tr>
+            <td><strong>Submission:</strong></td>
+            <td><a href="${submissionUrl}">${spectrum.file.submission.name}</a></td>
+        </tr>
+        <c:forEach items="${spectrum.properties}" var="property">
             <tr>
-                <th>Property</th>
-                <th>Value</th>
+                <td><strong>${property.name}:</strong></td>
+                <td>${property.value}</td>
             </tr>
-            <c:forEach var="e" items="${spectrum.properties}">
-                <tr>
-                    <td>${e.name}</td>
-                    <td>${e.value}</td>
-                </tr>
-            </c:forEach>
-            <tr>
-                <td>Chromatography Type</td>
-                <td>${spectrum.chromatographyType.label}</td>
-            </tr>
-            <tr>
-                <td>Submission</td>
-                <td>
-                    <a href="/submission/${spectrum.file.submission.id}/">
-                        ${spectrum.file.submission.name} (${spectrum.chromatographyType.label})<br>
-                        <small>${spectrum.file.submission.description}</small>
-                    </a>
-                </td>
-            </tr>
-        </table>
-    </div>
+        </c:forEach>
+        </tbody>
+    </table>
 </section>
 
 <section>
     <h1>Peaks</h1>
     <div align="center">
-        <div id="chartDiv" style="display: inline-block;"></div>
-        <div style="display: inline-block; max-width: 400px; max-height: 400px; overflow-y: scroll;">
-            <table>
+        <div id="plot" style="display: inline-block; vertical-align: top; margin: 20px;"></div>
+        <div style="display: inline-block; max-width: 500px; vertical-align: top;">
+            <table id="peak_table" class="display" style="width: 100%;">
+                <thead>
                 <tr>
                     <th>M/z</th>
                     <th>Intensity</th>
                 </tr>
+                </thead>
+                <tbody>
                 <c:forEach items="${dulab:peaksToJson(spectrum.peaks)}" var="peak">
                     <tr>
                         <td>
@@ -73,22 +75,43 @@
                         </td>
                     </tr>
                 </c:forEach>
+                </tbody>
             </table>
         </div>
     </div>
 </section>
 
-<%--<section class="transparent">--%>
-<%--<div align="right">--%>
-<%--<a href="<c:url value="${header.referer}"/>" class="button">Back to file</a>--%>
-<%--</div>--%>
-<%--</section>--%>
+<section>
+    <div align="center">
+        <a href="search/" class="button">Search</a>
+    </div>
+</section>
 
-<script src="<c:url value="/resources/js/zingchart/zingchart.min.js"/>"></script>
-<script type="text/javascript" src="<c:url value="/resources/js/spectrum.js"/>"></script>
+<script src="<c:url value="/resources/js/DataTables/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
+<script src="<c:url value="/resources/js/DataTables/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
+<script src="<c:url value="/resources/js/d3/d3.min.js"/>"></script>
+<script src="<c:url value="/resources/js/spectrum_plot.js"/>"></script>
 <script>
-    addPlot("chartDiv", '${dulab:peaksToJson(spectrum.peaks)}');
+    $(document).ready(function () {
+        $('#property_table').DataTable({
+            info: false,
+            ordering: false,
+            paging: false,
+            searching: false
+        });
+
+        $('#peak_table').DataTable();
+
+        SpectrumPlot('plot', ${dulab:spectrumToJson(spectrum)});
+    })
 </script>
+
+
+<%--<script src="<c:url value="/resources/js/zingchart/zingchart.min.js"/>"></script>--%>
+<%--<script type="text/javascript" src="<c:url value="/resources/js/spectrum.js"/>"></script>--%>
+<%--<script>--%>
+<%--addPlot("chartDiv", '${dulab:peaksToJson(spectrum.peaks)}');--%>
+<%--</script>--%>
 
 <!-- End the middle column -->
 
