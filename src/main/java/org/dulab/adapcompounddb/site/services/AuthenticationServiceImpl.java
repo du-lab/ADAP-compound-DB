@@ -67,7 +67,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 //            principal.setHashedPassword(password.getBytes());
             principal.setHashedPassword(BCrypt.hashpw(password, salt));
         }
-
+        principal.assignDefaultRole();
         userPrincipalRepository.save(principal);
     }
 

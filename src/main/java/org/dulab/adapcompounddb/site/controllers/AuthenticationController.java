@@ -1,11 +1,16 @@
 package org.dulab.adapcompounddb.site.controllers;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Valid;
+
+import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.site.services.AuthenticationService;
 import org.dulab.adapcompounddb.validation.Email;
 import org.dulab.adapcompounddb.validation.FieldMatch;
 import org.dulab.adapcompounddb.validation.NotBlank;
 import org.dulab.adapcompounddb.validation.Password;
-import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,11 +20,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Valid;
 
 @Controller
 public class AuthenticationController {
@@ -49,7 +49,7 @@ public class AuthenticationController {
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ModelAndView login(Model model, HttpSession session, HttpServletRequest request,
-                              @Valid LogInForm form, Errors errors, @RequestParam("loginFailed") Boolean loginFailed) {
+                              @Valid LogInForm form, Errors errors, @RequestParam(name="loginFailed", defaultValue="false") Boolean loginFailed) {
 
         if (UserPrincipal.from(session) != null)
             return getHomeRedirect();
@@ -114,17 +114,19 @@ public class AuthenticationController {
         principal.setEmail(form.getEmail());
         try {
             authenticationService.saveUser(principal, form.getPassword());
+//            request.login(principal.getUsername(), principal.getHashedPassword());
         }
         catch (ConstraintViolationException e) {
             form.setPassword(null);
             form.setConfirmedPassword(null);
             model.addAttribute("validationErrors", e.getConstraintViolations());
+			e.printStackTrace();
             return new ModelAndView("signup");
         }
 
-        UserPrincipal.assign(session, principal);
-        request.changeSessionId();
-        return getHomeRedirect();
+        /*UserPrincipal.assign(session, principal);
+        request.changeSessionId();*/
+        return new ModelAndView("redirect:/login/");
     }
 
     /*****************

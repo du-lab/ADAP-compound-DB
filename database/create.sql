@@ -337,3 +337,16 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY D
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+-- -----------------------------------------------------
+-- `UserRole` table
+-- -----------------------------------------------------
+USE `adapcompounddb`;
+CREATE TABLE `UserRole` (
+  `userPrincipalId` bigint(20) unsigned NOT NULL,
+  `roleName` varchar(15) NOT NULL,
+  UNIQUE KEY `user_role_user_unique_idx` (`userPrincipalId`,`roleName`),
+  KEY `user_role_user_principal_idx` (`userPrincipalId`),
+  CONSTRAINT `user_role_principal_fk` FOREIGN KEY (`userPrincipalId`) REFERENCES `userprincipal` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+

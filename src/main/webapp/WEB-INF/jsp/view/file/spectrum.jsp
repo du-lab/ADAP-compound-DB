@@ -17,7 +17,7 @@
     <h1>Spectrum ${spectrum.name}</h1>
 
     <div align="left" style="float: left">
-        <p><a href="/submission/${spectrum.file.submission.id}/" class="button">Submission</a></p>
+        <p><a href="${pageContext.request.contextPath}/submission/${spectrum.file.submission.id}/" class="button">Submission</a></p>
     </div>
 
     <div align="right" style="float: right">

@@ -1,18 +1,27 @@
 package org.dulab.adapcompounddb.models.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Basic;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.servlet.http.HttpSession;
 
+import org.dulab.adapcompounddb.models.UserRoles;
 import org.dulab.adapcompounddb.validation.Email;
 import org.dulab.adapcompounddb.validation.NotBlank;
 
@@ -39,6 +48,8 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
     private String hashedPassword;
 
 //    private List<Submission> submissions;
+
+    private List<UserRoles> roles;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -78,6 +89,18 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
         this.hashedPassword = password;
     }
 
+    @ElementCollection(targetClass=UserRoles.class, fetch=FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name="UserRole", joinColumns= {@JoinColumn(name="userPrincipalId")})
+    @Column(name="roleName")
+    public List<UserRoles> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(List<UserRoles> roles) {
+		this.roles = roles;
+	}
+
 //    @OneToMany(
 //            targetEntity = Submission.class,
 //            mappedBy = "user",
@@ -106,7 +129,15 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
 //        submission.setUser(null);
 //    }
 
-//    @Override
+	//    @Override
+
+	public void assignDefaultRole() {
+		if(roles == null || roles.isEmpty()) {
+			roles = new ArrayList<>();
+			roles.add(UserRoles.USER);
+		}
+	}
+
     @Transient
     public String getName() {
         return username;
