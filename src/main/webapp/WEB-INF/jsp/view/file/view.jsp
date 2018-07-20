@@ -63,7 +63,7 @@
                         <tr>
                             <td></td>
                                 <%--<td>${loop.index + 1}</td>--%>
-                            <td><a href="${pageContext.request.contextPath}/file/${fileLoop.index}/${spectrumLoop.index}/">${spectrum}</a><br/>
+                            <td><a href="${fileLoop.index}/${spectrumLoop.index}/">${spectrum}</a><br/>
                                     <%--<small>${dulab:abbreviate(spectrum.properties, 80)}</small>--%>
                             </td>
                             <td>${spectrum.retentionTime}</td>
@@ -72,15 +72,15 @@
                             <td>${file.name}</td>
                             <td>
                                 <!-- more horiz -->
-                                <a href="${pageContext.request.contextPath}/file/${fileLoop.index}/${spectrumLoop.index}/">
+                                <a href="${fileLoop.index}/${spectrumLoop.index}/">
                                     <i class="material-icons" title="View spectrum">&#xE5D3;</i>
                                 </a>
                                 <!-- search -->
-                                <a href="${pageContext.request.contextPath}/file/${fileLoop.index}/${spectrumLoop.index}/search/">
+                                <a href="${fileLoop.index}/${spectrumLoop.index}/search/">
                                     <i class="material-icons" title="Search spectrum">&#xE8B6;</i>
                                 </a>
                                 <!-- delete -->
-                                <a href="${pageContext.request.contextPath}/file/${fileLoop.index}/${spectrumLoop.index}/delete/">
+                                <a href="${fileLoop.index}/${spectrumLoop.index}/delete/">
                                     <i class="material-icons" title="Delete spectrum">&#xE872;</i>
                                 </a>
                             </td>
