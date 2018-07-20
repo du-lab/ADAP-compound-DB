@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.controllers;
 
+import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
@@ -40,12 +41,12 @@ public class SpectrumController {
                            @PathVariable("spectrumIndex") int spectrumIndex,
                            Model model) {
 
-        Submission submission = submissionService.findSubmission(submissionId);
-        Spectrum spectrum = submission
+        SubmissionDTO submission = submissionService.findSubmission(submissionId);
+        Spectrum spectrum = null /*submission
                 .getFiles()
                 .get(fileIndex)
                 .getSpectra()
-                .get(spectrumIndex);
+                .get(spectrumIndex)*/;
 
         return spectrum(spectrum, model);
     }
@@ -55,12 +56,12 @@ public class SpectrumController {
                            @PathVariable("spectrumIndex") int spectrumIndex,
                            HttpSession session, Model model) {
 
-        Submission submission = Submission.from(session);
-        Spectrum spectrum = submission
+        SubmissionDTO submission = Submission.from(session);
+        Spectrum spectrum = null /*submission
                 .getFiles()
                 .get(fileIndex)
                 .getSpectra()
-                .get(spectrumIndex);
+                .get(spectrumIndex)*/;
 
         return spectrum(spectrum, model);
     }

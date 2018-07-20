@@ -27,6 +27,7 @@ public class SpectrumDB {
         }
         catch (SQLException e) {
             LOG.error(e);
+        	e.printStackTrace();
         }
         finally {
             pool.freeConnection(connection);

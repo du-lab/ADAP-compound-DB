@@ -16,6 +16,8 @@ import javax.validation.Valid;
 
 import org.dulab.adapcompounddb.models.SampleSourceType;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
+import org.dulab.adapcompounddb.models.dto.FileDTO;
+import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
 import org.dulab.adapcompounddb.models.entities.File;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
@@ -32,6 +34,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @Controller
 @SessionAttributes("submissionCategoryTypes")
 public class SubmissionController extends BaseController {
@@ -39,6 +43,9 @@ public class SubmissionController extends BaseController {
     private final SubmissionService submissionService;
 
     private final SpectrumService spectrumService;
+
+    @Autowired
+	private ObjectMapper objectMapper;
 
     @Autowired
     public SubmissionController(SubmissionService submissionService,
@@ -61,17 +68,17 @@ public class SubmissionController extends BaseController {
     @RequestMapping(value = "/file/get/", method = RequestMethod.GET)
     public String fileView(HttpSession session, Model model) {
 
-        Submission submission = Submission.from(session);
+        SubmissionDTO submission = Submission.from(session);
         if (submission == null)
             return redirectFileUpload();
 
-        return view(Submission.from(session), model);
+        return view(objectMapper.convertValue(submission, SubmissionDTO.class), model);
     }
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/", method = RequestMethod.GET)
     public String viewSubmission(@PathVariable("submissionId") long submissionId, Model model) {
 
-        Submission submission = submissionService.findSubmission(submissionId);
+        SubmissionDTO submission = submissionService.findSubmission(submissionId);
 
         if (submission == null)
             return submissionNotFound(model, submissionId);
@@ -79,7 +86,7 @@ public class SubmissionController extends BaseController {
         return view(submission, model);
     }
 
-    private String view(Submission submission, Model model) {
+    private String view(SubmissionDTO submission, Model model) {
 
         model.addAttribute("submission", submission);
 
@@ -88,12 +95,12 @@ public class SubmissionController extends BaseController {
         form.setName(submission.getName());
         form.setDescription(submission.getDescription());
         if (submission.getCategories() != null)
-            form.setSubmissionCategoryIds(submission
-                    .getCategories()
-                    .stream()
-                    .filter(Objects::nonNull)
-                    .map(SubmissionCategory::getId)
-                    .collect(Collectors.toList()));
+//            form.setSubmissionCategoryIds(submission
+//                    .getCategories()
+//                    .stream()
+//                    .filter(Objects::nonNull)
+//                    .map(SubmissionCategory::getId)
+//                    .collect(Collectors.toList()));
 
         model.addAttribute("submissionForm", form);
         model.addAttribute("authenticated", isAuthenticated());
@@ -119,7 +126,7 @@ public class SubmissionController extends BaseController {
     public String fileRawView(@PathVariable("fileIndex") int fileIndex,
                               HttpSession session, HttpServletResponse response) throws IOException {
 
-        Submission submission = Submission.from(session);
+        SubmissionDTO submission = Submission.from(session);
 
         if (submission == null)
             return redirectFileUpload();
@@ -133,7 +140,7 @@ public class SubmissionController extends BaseController {
                           @PathVariable("fileIndex") int fileIndex,
                           HttpServletResponse response, Model model) throws IOException {
 
-        Submission submission = submissionService.findSubmission(id);
+        SubmissionDTO submission = submissionService.findSubmission(id);
 
         if (submission == null)
             return submissionNotFound(model, id);
@@ -142,7 +149,7 @@ public class SubmissionController extends BaseController {
         return null;
     }
 
-    private void rawView(HttpServletResponse response, File file) throws IOException {
+    private void rawView(HttpServletResponse response, FileDTO file) throws IOException {
         response.setContentType("text/plain");
         response.setHeader("Content-Disposition", "inline; filename=\"" + file.getName() + "\"");
         response.getOutputStream().write(file.getContent());
@@ -157,7 +164,7 @@ public class SubmissionController extends BaseController {
                                   HttpSession session,
                                   HttpServletResponse response) throws IOException {
 
-        Submission submission = Submission.from(session);
+        SubmissionDTO submission = null;
         if (submission == null)
             return redirectFileUpload();
 
@@ -171,7 +178,7 @@ public class SubmissionController extends BaseController {
                                         HttpServletResponse response, Model model)
             throws IOException {
 
-        Submission submission = submissionService.findSubmission(id);
+        SubmissionDTO submission = submissionService.findSubmission(id);
         if (submission == null)
             return submissionNotFound(model, id);
 
@@ -179,7 +186,7 @@ public class SubmissionController extends BaseController {
         return null;
     }
 
-    private void rawDownload(HttpServletResponse response, File file) throws IOException {
+    private void rawDownload(HttpServletResponse response, FileDTO file) throws IOException {
         response.setContentType("text/plain");
         response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
         response.getOutputStream().write(file.getContent());
@@ -195,7 +202,7 @@ public class SubmissionController extends BaseController {
             return "file/view";
         }
 
-        Submission submission = Submission.from(session);
+        SubmissionDTO submission = Submission.from(session);
         if (submission == null)
             return redirectFileUpload();
 
@@ -215,14 +222,14 @@ public class SubmissionController extends BaseController {
             return "file/view";
         }
 
-        Submission submission = submissionService.findSubmission(submissionId);
+        SubmissionDTO submission = submissionService.findSubmission(submissionId);
         if (submission == null)
             return submissionNotFound(model, submissionId);
 
         return submit(submission, model, form);
     }
 
-    private String submit(Submission submission, Model model, SubmissionForm form) {
+    private String submit(SubmissionDTO submission, Model model, SubmissionForm form) {
 
         form.setCategoryMap(submissionService.findAllCategories());
 
@@ -237,13 +244,14 @@ public class SubmissionController extends BaseController {
                         .findSubmissionCategory(id)
                         .orElseThrow(() -> new IllegalStateException(
                                 String.format("Submission Category with ID = %d cannot be found.", id))));
-        submission.setCategories(categories);
+//        submission.setCategories(categories);
 
         try {
             submissionService.saveSubmission(submission);
         } catch (ConstraintViolationException e) {
             model.addAttribute("validationErrors", e.getConstraintViolations());
             model.addAttribute("submissionForm", form);
+        	e.printStackTrace();
             return "file/view";
         }
 

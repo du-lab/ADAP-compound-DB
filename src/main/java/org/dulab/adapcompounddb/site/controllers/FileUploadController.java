@@ -14,6 +14,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.FileType;
+import org.dulab.adapcompounddb.models.dto.FileDTO;
+import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
 import org.dulab.adapcompounddb.models.entities.File;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.site.services.FileReaderService;
@@ -79,23 +81,24 @@ public class FileUploadController {
             return "file/upload";
         }
 
-        Submission submission = new Submission();
+        SubmissionDTO submission = new SubmissionDTO();
 
-        List<File> files = new ArrayList<>(form.getFiles().size());
+        List<FileDTO> files = new ArrayList<>(form.getFiles().size());
         for (MultipartFile multipartFile : form.getFiles()) {
-            File file = new File();
+            FileDTO file = new FileDTO();
             file.setName(multipartFile.getOriginalFilename());
             file.setFileType(form.getFileType());
             file.setSubmission(submission);
             try {
                 file.setContent(multipartFile.getBytes());
-                file.setSpectra(
-                        service.read(multipartFile.getInputStream(), form.getChromatographyType()));
-                file.getSpectra().forEach(s -> s.setFile(file));
+//                file.setSpectra(
+//                        service.read(multipartFile.getInputStream(), form.getChromatographyType()));
+//                file.getSpectra().forEach(s -> s.setFile(file));
                 files.add(file);
 
             } catch (IOException e) {
                 LOG.warn(e);
+            	e.printStackTrace();
                 model.addAttribute("message", "Cannot read this file: " + e.getMessage());
                 return "file/upload";
             }

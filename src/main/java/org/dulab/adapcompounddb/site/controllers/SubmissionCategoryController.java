@@ -110,6 +110,7 @@ public class SubmissionCategoryController {
             submissionService.saveSubmissionCategory(category);
         } catch (ConstraintViolationException e) {
             model.addAttribute("violationErrors", e.getConstraintViolations());
+        	e.printStackTrace();
             return "submission/edit_category";
         }
 

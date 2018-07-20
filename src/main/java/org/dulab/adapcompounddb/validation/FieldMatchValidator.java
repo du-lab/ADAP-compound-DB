@@ -32,6 +32,7 @@ public class FieldMatchValidator implements ConstraintValidator<FieldMatch, Obje
         }
         catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             LOG.warn(e);
+        	e.printStackTrace();
             return false;
         }
     }

@@ -1,11 +1,15 @@
 package org.dulab.adapcompounddb.site.services;
 
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
+import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
+import org.dulab.adapcompounddb.models.dto.UserPrincipalDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.*;
 
@@ -14,6 +18,8 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     private final SubmissionRepository submissionRepository;
     private final SubmissionCategoryRepository submissionCategoryRepository;
+	@Autowired
+	protected ObjectMapper jacksonObjectMapper;
 
     @Autowired
     public SubmissionServiceImpl(SubmissionRepository submissionRepository,
@@ -25,9 +31,12 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     @Override
     @Transactional
-    public Submission findSubmission(long submissionId) {
-        return submissionRepository.findById(submissionId)
+    public SubmissionDTO findSubmission(long submissionId) {
+        Submission submission = submissionRepository.findById(submissionId)
                 .orElseThrow(EmptyStackException::new);
+        ObjectMapper objectMapper = new ObjectMapper();
+        SubmissionDTO submissionDTO = objectMapper.convertValue(submission, SubmissionDTO.class);
+		return submissionDTO;
     }
 
     @Override
@@ -38,7 +47,8 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     @Override
     @Transactional
-    public void saveSubmission(Submission submission) {
+    public void saveSubmission(SubmissionDTO submissionDTO) {
+    	Submission submission = jacksonObjectMapper.convertValue(submissionDTO, Submission.class);
         submissionRepository.save(submission);
     }
 

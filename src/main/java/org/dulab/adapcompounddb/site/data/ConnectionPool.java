@@ -28,6 +28,7 @@ public class ConnectionPool {
             dataSource = (DataSource) ic.lookup("java:/comp/env/jdbc/adapcompounddb");
         }
         catch (NamingException e) {
+        	e.printStackTrace();
             LOG.error(e);
         }
     }
@@ -38,6 +39,7 @@ public class ConnectionPool {
         }
         catch (SQLException e) {
             LOG.error(e);
+        	e.printStackTrace();
             return null;
         }
     }
@@ -47,6 +49,7 @@ public class ConnectionPool {
             c.close();
         }
         catch (SQLException e) {
+        	e.printStackTrace();
             LOG.error(e);
         }
     }

@@ -2,7 +2,7 @@ package org.dulab.adapcompounddb.site.controllers;
 
 import javax.servlet.http.HttpSession;
 
-import org.dulab.adapcompounddb.models.entities.UserPrincipal;
+import org.dulab.adapcompounddb.models.dto.UserPrincipalDTO;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,7 +18,7 @@ public class AccountController extends BaseController {
 
     @RequestMapping(value = "account/", method = RequestMethod.GET)
     public String view(HttpSession session, Model model) {
-        UserPrincipal user = getCurrentUserPrincipal();
+        UserPrincipalDTO user = getCurrentUserPrincipal();
 //
 //        if (user == null)
 //            return "redirect:/login/";

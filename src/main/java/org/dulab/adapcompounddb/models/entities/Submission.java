@@ -22,6 +22,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
+import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
 import org.dulab.adapcompounddb.validation.NotBlank;
 
 @Entity
@@ -215,11 +216,11 @@ public class Submission implements Serializable {
         return Long.hashCode(id);
     }
 
-    public static Submission from(HttpSession session) {
-        return session == null ? null : (Submission) session.getAttribute(SESSION_ATTRIBUTE_KEY);
+    public static SubmissionDTO from(HttpSession session) {
+        return session == null ? null : (SubmissionDTO) session.getAttribute(SESSION_ATTRIBUTE_KEY);
     }
 
-    public static void assign(HttpSession session, Submission submission) {
+    public static void assign(HttpSession session, SubmissionDTO submission) {
         session.setAttribute(SESSION_ATTRIBUTE_KEY, submission);
     }
 

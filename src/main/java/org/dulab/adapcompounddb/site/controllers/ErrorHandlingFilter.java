@@ -23,6 +23,7 @@ public class ErrorHandlingFilter implements Filter {
             chain.doFilter(request, response);
         }
         catch (Exception e) {
+        	e.printStackTrace();
             if (response instanceof HttpServletResponse)
                 ((HttpServletResponse) response).sendRedirect(String.format("/error?errorMsg=\"%s\"", e.getMessage()));
             LOG.error(e.getMessage(), e.getCause());

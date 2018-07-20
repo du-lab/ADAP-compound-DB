@@ -64,6 +64,7 @@ public class AuthenticationController {
             principal = authenticationService.authenticate(form.getUsername(), form.getPassword());
         }
         catch (ConstraintViolationException e) {
+        	e.printStackTrace();
             form.setPassword(null);
             model.addAttribute("validationErrors", e.getConstraintViolations());
             return new ModelAndView("login");
@@ -119,6 +120,7 @@ public class AuthenticationController {
             form.setPassword(null);
             form.setConfirmedPassword(null);
             model.addAttribute("validationErrors", e.getConstraintViolations());
+        	e.printStackTrace();
             return new ModelAndView("signup");
         }
 

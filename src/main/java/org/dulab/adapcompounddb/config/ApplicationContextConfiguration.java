@@ -25,6 +25,9 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @Configuration
 @EnableTransactionManagement(
         mode = AdviceMode.PROXY,
@@ -99,4 +102,11 @@ public class ApplicationContextConfiguration {
     public PlatformTransactionManager jpaTransactionManager() {
         return new JpaTransactionManager(entityManagerFactoryBean().getObject());
     }
+
+    @Bean
+    public ObjectMapper mapper() {
+    	ObjectMapper objectMapper = new ObjectMapper();
+    	objectMapper.setSerializationInclusion(Include.NON_EMPTY);
+		return objectMapper;
+	}
 }

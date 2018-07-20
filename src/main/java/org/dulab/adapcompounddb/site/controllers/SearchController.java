@@ -4,6 +4,7 @@ import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
+import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.services.SpectrumSearchService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
@@ -103,6 +104,7 @@ public class SearchController {
 
         } catch (EmptySearchResultException e) {
             model.addAttribute("errorMessage", e.getMessage());
+        	e.printStackTrace();
             return "redirect:/notfound/";
         }
 
@@ -114,15 +116,15 @@ public class SearchController {
                          @PathVariable("spectrumIndex") int spectrumIndex,
                          HttpSession session, Model model) {
 
-        Submission submission = Submission.from(session);
+        SubmissionDTO submission = Submission.from(session);
         if (submission == null)
             return "redirect:/file/upload/";
 
-        Spectrum spectrum = submission
+        Spectrum spectrum = null /*submission
                 .getFiles()
                 .get(fileIndex)
                 .getSpectra()
-                .get(spectrumIndex);
+                .get(spectrumIndex)*/;
 
         return searchGet(spectrum, UserPrincipal.from(session), model);
     }
@@ -135,6 +137,7 @@ public class SearchController {
             spectrum = spectrumService.find(spectrumId);
         } catch (EmptySearchResultException e) {
             model.addAttribute("errorMessage", e.getMessage());
+        	e.printStackTrace();
             return "redirect:/notfound/";
         }
 
@@ -166,6 +169,7 @@ public class SearchController {
 
         } catch (EmptySearchResultException e) {
             model.addAttribute("errorMessage", e.getMessage());
+        	e.printStackTrace();
             return new ModelAndView(new RedirectView("/notfound/"));
         }
 
@@ -177,15 +181,15 @@ public class SearchController {
                                @PathVariable("spectrumIndex") int spectrumIndex,
                                HttpSession session, Model model, @Valid SearchForm form, Errors errors) {
 
-        Submission submission = Submission.from(session);
+        SubmissionDTO submission = Submission.from(session);
         if (submission == null)
             return new ModelAndView(new RedirectView("/file/upload/"));
 
-        Spectrum spectrum = submission
+        Spectrum spectrum = null /*submission
                 .getFiles()
                 .get(fileIndex)
                 .getSpectra()
-                .get(spectrumIndex);
+                .get(spectrumIndex)*/;
 
         return searchPost(spectrum, UserPrincipal.from(session), form, model, errors);
     }
@@ -202,6 +206,7 @@ public class SearchController {
 
         } catch (EmptySearchResultException e) {
             model.addAttribute("errorMessage", e.getMessage());
+        	e.printStackTrace();
             return new ModelAndView(new RedirectView("/notfound/"));
         }
 
@@ -237,11 +242,12 @@ public class SearchController {
 
 
     private Spectrum getQuerySpectrum(long submissionId, int fileIndex, int spectrumIndex) {
-        return submissionService.findSubmission(submissionId)
-                .getFiles()
-                .get(fileIndex)
-                .getSpectra()
-                .get(spectrumIndex);
+//        return submissionService.findSubmission(submissionId)
+//                .getFiles()
+//                .get(fileIndex)
+//                .getSpectra()
+//                .get(spectrumIndex);
+    	return null;
     }
 
     public static class SearchForm {

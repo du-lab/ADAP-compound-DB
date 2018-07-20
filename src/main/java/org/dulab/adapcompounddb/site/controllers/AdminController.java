@@ -75,6 +75,7 @@ public class AdminController {
         try {
             spectrumMatchService.cluster(0.1F, 2, 0.75F);
         } catch (EmptySearchResultException e) {
+        	e.printStackTrace();
             System.out.println(e.getMessage());
         }
         return "redirect:/admin/";

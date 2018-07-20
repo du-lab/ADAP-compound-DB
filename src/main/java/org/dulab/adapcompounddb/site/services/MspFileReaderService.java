@@ -93,6 +93,7 @@ public class MspFileReaderService implements FileReaderService {
                 }
                 catch (NumberFormatException e) {
                     LOG.warn("Wrong format of mz-intensity pair: " + mzIntensityPair[0] + ", " + mzIntensityPair[1]);
+                	e.printStackTrace();
                 }
             }
         }
