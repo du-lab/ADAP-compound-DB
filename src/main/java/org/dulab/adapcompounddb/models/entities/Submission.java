@@ -80,7 +80,7 @@ public class Submission implements Serializable {
     }
 
     public String getName() {
-        return name;
+        return name != null ? name : "New Submission";
     }
 
     public void setName(String name) {
