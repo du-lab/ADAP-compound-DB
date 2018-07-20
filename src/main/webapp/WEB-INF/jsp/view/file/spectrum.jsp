@@ -9,7 +9,7 @@
 
 <c:choose>
     <c:when test="${spectrum.file.submission.id > 0}">
-        <c:set var="submissionUrl">/submission/${spectrum.file.submission.id}/</c:set>
+        <c:set var="submissionUrl">${pageContext.request.contextPath}/submission/${spectrum.file.submission.id}/</c:set>
     </c:when>
     <c:otherwise>
         <c:set var="submissionUrl">/file/</c:set>
