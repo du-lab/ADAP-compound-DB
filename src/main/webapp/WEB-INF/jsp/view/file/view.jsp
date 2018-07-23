@@ -172,6 +172,18 @@
 			    </form>
 			</div>
 		</section>
+		<section>
+			<table class="display dataTable" style="width: 100%; clear:none;">
+				<tr>
+					<td>Name:</td>
+					<td>${submissionForm.name}</td>
+				</tr>
+				<tr>
+					<td>Description:</td>
+					<td>${submissionForm.description}
+				</tr>
+			</table>
+		</section>
 	</c:when>
 	<c:when test="submission.id eq 0">
 		<section>
