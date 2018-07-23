@@ -314,3 +314,9 @@ span.highlighted {
 .progress_bar[hidden] {
     display: none;
 }
+
+
+/* Hack for DataTables.js that puts tables to a correct position */
+.dataTables_wrapper {
+    clear: none;
+}
