@@ -9,6 +9,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 
 public abstract class BaseController {
+	
+	protected static final String ACCESS_DENIED_MESSAGE = "Sorry you do not have access to this page";
 
 	@Autowired
 	UserPrincipalService userPrincipalService;

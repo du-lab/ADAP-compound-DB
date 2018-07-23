@@ -21,6 +21,7 @@ import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.dulab.adapcompounddb.models.UserRoles;
 import org.dulab.adapcompounddb.validation.Email;
 import org.dulab.adapcompounddb.validation.NotBlank;
@@ -130,6 +131,15 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
 //    }
 
 	//    @Override
+
+    @Transient
+	public boolean isAdmin() {
+		boolean isAdmin = false;
+		if(roles != null && roles.contains(UserRoles.ADMIN)) {
+			isAdmin = true;
+		}
+		return isAdmin;
+	}
 
 	public void assignDefaultRole() {
 		if(roles == null || roles.isEmpty()) {

@@ -21,6 +21,7 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.StringUtils;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.validation.NotBlank;
 
@@ -202,6 +203,17 @@ public class Submission implements Serializable {
 //    public void setFile(byte[] file) {
 //        this.file = file;
 //    }
+
+    public boolean isAuthorized(UserPrincipal user) {
+		boolean authorized = false;
+		if(user != null && user.isAdmin()) {
+			authorized = true;
+		} else if(id != 0) {
+    		authorized = StringUtils.equals(user.getUsername(), this.getUser().getUsername());
+    	}
+
+    	return authorized;
+	}
 
     @Override
     public boolean equals(Object other) {

@@ -38,14 +38,11 @@ public class SubmissionController extends BaseController {
 
     private final SubmissionService submissionService;
 
-    private final SpectrumService spectrumService;
-
     @Autowired
     public SubmissionController(SubmissionService submissionService,
                                 SpectrumService spectrumService) {
 
         this.submissionService = submissionService;
-        this.spectrumService = spectrumService;
     }
 
     @ModelAttribute
@@ -65,7 +62,19 @@ public class SubmissionController extends BaseController {
         if (submission == null)
             return redirectFileUpload();
 
-        return view(Submission.from(session), model);
+        return view(Submission.from(session), model, false);
+    }
+
+    @RequestMapping(value = "/submission/{submissionId:\\d+}/edit", method = RequestMethod.GET)
+    public String editSubmission(@PathVariable("submissionId") long submissionId, Model model) {
+
+        Submission submission = submissionService.findSubmission(submissionId);
+
+        if (submission == null) {
+            return submissionNotFound(model, submissionId);
+        }
+
+        return view(submission, model, true);
     }
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/", method = RequestMethod.GET)
@@ -73,14 +82,20 @@ public class SubmissionController extends BaseController {
 
         Submission submission = submissionService.findSubmission(submissionId);
 
-        if (submission == null)
+        if (submission == null) {
             return submissionNotFound(model, submissionId);
+        }
 
-        return view(submission, model);
+        return view(submission, model, false);
     }
 
-    private String view(Submission submission, Model model) {
+    private String view(Submission submission, Model model, boolean edit) {
 
+        boolean authorized = submission.isAuthorized(getCurrentUserPrincipal());
+        if(!authorized && edit) {
+        	return "redirect:/error?errorMsg=" + ACCESS_DENIED_MESSAGE;
+        }
+        
         model.addAttribute("submission", submission);
 
         SubmissionForm form = new SubmissionForm();
@@ -96,7 +111,9 @@ public class SubmissionController extends BaseController {
                     .collect(Collectors.toList()));
 
         model.addAttribute("submissionForm", form);
-        model.addAttribute("authenticated", isAuthenticated());
+        model.addAttribute("edit", edit);
+		model.addAttribute("authorized", authorized);
+		model.addAttribute("authenticated", isAuthenticated());
 
         return "file/view";
     }
@@ -114,15 +131,15 @@ public class SubmissionController extends BaseController {
     /************************************
      ***** File / Submission Raw View *****
      ************************************/
-
     @RequestMapping(value = "/file/{fileIndex:\\d+}/view/", method = RequestMethod.GET)
     public String fileRawView(@PathVariable("fileIndex") int fileIndex,
                               HttpSession session, HttpServletResponse response) throws IOException {
 
         Submission submission = Submission.from(session);
 
-        if (submission == null)
+        if (submission == null) {
             return redirectFileUpload();
+        }
 
         rawView(response, submission.getFiles().get(fileIndex));
         return null;
@@ -135,8 +152,9 @@ public class SubmissionController extends BaseController {
 
         Submission submission = submissionService.findSubmission(id);
 
-        if (submission == null)
+        if (submission == null) {
             return submissionNotFound(model, id);
+        }
 
         rawView(response, submission.getFiles().get(fileIndex));
         return null;
@@ -206,7 +224,7 @@ public class SubmissionController extends BaseController {
         return response;
     }
 
-	@RequestMapping(value = "/submission/{submissionId:\\d+}/", method = RequestMethod.POST)
+	@RequestMapping(value = "/submission/{submissionId:\\d+}/edit", method = RequestMethod.POST)
     public String submissionView(@PathVariable("submissionId") long submissionId, Model model, HttpSession session,
                                  @Valid SubmissionForm form, Errors errors) {
 
@@ -242,6 +260,7 @@ public class SubmissionController extends BaseController {
         try {
             submissionService.saveSubmission(submission);
         } catch (ConstraintViolationException e) {
+            e.printStackTrace();
             model.addAttribute("validationErrors", e.getConstraintViolations());
             model.addAttribute("submissionForm", form);
             return "file/view";
