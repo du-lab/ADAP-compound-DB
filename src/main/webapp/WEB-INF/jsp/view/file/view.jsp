@@ -55,6 +55,7 @@
                 <th>File</th>
                 <th>View / Search / Delete</th>
             </tr>
+            
             </thead>
             <tbody>
             <c:if test="${submission.files.size() > 0}">
