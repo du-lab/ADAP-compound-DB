@@ -13,13 +13,16 @@ import java.util.*;
 public class SubmissionServiceImpl implements SubmissionService {
 
     private final SubmissionRepository submissionRepository;
+    private final SubmissionTagRepository submissionTagRepository;
     private final SubmissionCategoryRepository submissionCategoryRepository;
 
     @Autowired
     public SubmissionServiceImpl(SubmissionRepository submissionRepository,
+                                 SubmissionTagRepository submissionTagRepository,
                                  SubmissionCategoryRepository submissionCategoryRepository) {
 
         this.submissionRepository = submissionRepository;
+        this.submissionTagRepository = submissionTagRepository;
         this.submissionCategoryRepository = submissionCategoryRepository;
     }
 
@@ -55,106 +58,13 @@ public class SubmissionServiceImpl implements SubmissionService {
     }
 
 
-//    // ****************************************
-//    // ***** SubmissionSpecimen functions *****
-//    // ****************************************
-//
-//    @Override
-//    public List<SubmissionSpecimen> getAllSpecies() {
-//        return ServiceUtils.toList(submissionSpecimenRepository.findAll());
-//    }
-//
-//    @Override
-//    public long countBySpecimenId(long submissionSpecimenId) {
-//        return submissionRepository.countBySpecimenId(submissionSpecimenId);
-//    }
-//
-//    @Override
-//    public void saveSubmissionSpecimen(SubmissionSpecimen specimen) {
-//        submissionSpecimenRepository.save(specimen);
-//    }
-//
-//    @Override
-//    public Optional<SubmissionSpecimen> findSubmissionSpecimen(long submissionSpecimenId) {
-//        return submissionSpecimenRepository.findById(submissionSpecimenId);
-//    }
-//
-//    @Override
-//    public void deleteSubmissionSpecimen(long submissionSpecimenId) {
-//        submissionSpecimenRepository.deleteById(submissionSpecimenId);
-//    }
-//
-//    // **************************************
-//    // ***** SubmissionSource functions *****
-//    // **************************************
-//
-//    @Override
-//    public List<SubmissionSource> getAllSources() {
-//        return ServiceUtils.toList(submissionSourceRepository.findAll());
-//    }
-//
-//    @Override
-//    public long countBySourceId(long submissionSourceId) {
-//        return submissionRepository.countBySourceId(submissionSourceId);
-//    }
-//
-//    @Override
-//    public void saveSubmissionSource(SubmissionSource source) {
-//        submissionSourceRepository.save(source);
-//    }
-//
-//    @Override
-//    public Optional<SubmissionSource> findSubmissionSource(long submissionSourceId) {
-//        return submissionSourceRepository.findById(submissionSourceId);
-//    }
-//
-//    @Override
-//    public void deleteSubmissionSource(long submissionSourceId) {
-//        submissionSourceRepository.deleteById(submissionSourceId);
-//    }
-//
-//    // ***************************************
-//    // ***** SubmissionDisease functions *****
-//    // **************************************(
-//
-//    @Override
-//    public List<SubmissionDisease> getAllDiseases() {
-//        return ServiceUtils.toList(submissionDiseaseRepository.findAll());
-//    }
-//
-//    @Override
-//    public long countByDiseaseId(long submissionDiseaseId) {
-//        return submissionRepository.countByDiseaseId(submissionDiseaseId);
-//    }
-//
-//    @Override
-//    public void saveSubmissionDisease(SubmissionDisease disease) {
-//        submissionDiseaseRepository.save(disease);
-//    }
-//
-//    @Override
-//    public Optional<SubmissionDisease> findSubmissionDisease(long submissionDiseaseId) {
-//        return submissionDiseaseRepository.findById(submissionDiseaseId);
-//    }
-//
-//    @Override
-//    public void deleteSubmissionDisease(long submissionDiseaseId) {
-//        submissionDiseaseRepository.deleteById(submissionDiseaseId);
-//    }
+    @Override
+    public List<String> findAllTags() {
+        return ServiceUtils.toList(submissionTagRepository.findUniqueSubmissionTagNames());
+    }
 
     @Override
     public List<SubmissionCategory> findAllCategories() {
-
-//        SortedMap<SubmissionCategoryType, List<SubmissionCategory>> categoryMap = new TreeMap<>();
-//        for (SubmissionCategoryType categoryType : SubmissionCategoryType.values())
-//            categoryMap.put(categoryType, new ArrayList<>());
-//
-//        submissionCategoryRepository.findAll()
-//                .forEach(
-//                        category -> categoryMap
-//                                .get(category.getCategoryType())
-//                                .add(category));
-
         return ServiceUtils.toList(submissionCategoryRepository.findAll());
     }
 
