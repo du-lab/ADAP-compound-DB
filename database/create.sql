@@ -26,7 +26,6 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SubmissionDisease` (
   `Description` TEXT NULL DEFAULT NULL,
   PRIMARY KEY (`Id`))
   ENGINE = InnoDB
-  AUTO_INCREMENT = 9
   DEFAULT CHARACTER SET = latin1;
 
 
@@ -39,7 +38,6 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SubmissionSource` (
   `Description` TEXT NULL DEFAULT NULL,
   PRIMARY KEY (`Id`))
   ENGINE = InnoDB
-  AUTO_INCREMENT = 9
   DEFAULT CHARACTER SET = latin1;
 
 
@@ -52,7 +50,6 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SubmissionSpecimen` (
   `Description` TEXT NULL DEFAULT NULL,
   PRIMARY KEY (`Id`))
   ENGINE = InnoDB
-  AUTO_INCREMENT = 10
   DEFAULT CHARACTER SET = latin1;
 
 
@@ -67,7 +64,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`UserPrincipal` (
   PRIMARY KEY (`Id`),
   UNIQUE INDEX `UserPrincipal_Username_uindex` (`Username` ASC))
   ENGINE = InnoDB
-  AUTO_INCREMENT = 9
+  AUTO_INCREMENT = 12
   DEFAULT CHARACTER SET = utf8;
 
 
@@ -104,7 +101,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Submission` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB
-  AUTO_INCREMENT = 49
+  AUTO_INCREMENT = 71
   DEFAULT CHARACTER SET = utf8;
 
 
@@ -125,7 +122,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`File` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB
-  AUTO_INCREMENT = 27
+  AUTO_INCREMENT = 49
   DEFAULT CHARACTER SET = latin1;
 
 
@@ -145,7 +142,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SpectrumCluster` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB
-  AUTO_INCREMENT = 1478
+  AUTO_INCREMENT = 126
   DEFAULT CHARACTER SET = latin1;
 
 
@@ -177,7 +174,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Spectrum` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB
-  AUTO_INCREMENT = 13202
+  AUTO_INCREMENT = 16736
   DEFAULT CHARACTER SET = utf8;
 
 
@@ -198,7 +195,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Peak` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB
-  AUTO_INCREMENT = 1268633
+  AUTO_INCREMENT = 1705899
   DEFAULT CHARACTER SET = utf8;
 
 
@@ -224,7 +221,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SpectrumMatch` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB
-  AUTO_INCREMENT = 113921
+  AUTO_INCREMENT = 4772
   DEFAULT CHARACTER SET = latin1;
 
 
@@ -245,7 +242,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SpectrumProperty` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB
-  AUTO_INCREMENT = 74438
+  AUTO_INCREMENT = 88600
   DEFAULT CHARACTER SET = utf8;
 
 
@@ -259,7 +256,6 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SubmissionCategory` (
   `CategoryType` VARCHAR(30) NOT NULL,
   PRIMARY KEY (`Id`))
   ENGINE = InnoDB
-  AUTO_INCREMENT = 4
   DEFAULT CHARACTER SET = latin1;
 
 
@@ -284,7 +280,23 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Submission2SubmissionCategory` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB
-  AUTO_INCREMENT = 4
+  DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `adapcompounddb`.`SubmissionTag`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SubmissionTag` (
+  `SubmissionId` BIGINT(20) UNSIGNED NOT NULL,
+  `Name` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`SubmissionId`, `Name`),
+  INDEX `SubmissionTag_Submission_Id_fk_idx` (`SubmissionId` ASC),
+  CONSTRAINT `SubmissionTag_Submission_Id_fk`
+  FOREIGN KEY (`SubmissionId`)
+  REFERENCES `adapcompounddb`.`Submission` (`Id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+  ENGINE = InnoDB
   DEFAULT CHARACTER SET = latin1;
 
 
@@ -305,7 +317,21 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`UserParameter` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
   ENGINE = InnoDB
-  AUTO_INCREMENT = 23
+  DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `adapcompounddb`.`UserRole`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `adapcompounddb`.`UserRole` (
+  `userPrincipalId` BIGINT(20) UNSIGNED NOT NULL,
+  `roleName` VARCHAR(15) NOT NULL,
+  UNIQUE INDEX `user_role_user_unique_idx` (`userPrincipalId` ASC, `roleName` ASC),
+  INDEX `user_role_user_principal_idx` (`userPrincipalId` ASC),
+  CONSTRAINT `user_role_principal_fk`
+  FOREIGN KEY (`userPrincipalId`)
+  REFERENCES `adapcompounddb`.`UserPrincipal` (`Id`))
+  ENGINE = InnoDB
   DEFAULT CHARACTER SET = latin1;
 
 USE `adapcompounddb` ;
@@ -337,16 +363,3 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY D
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
-
--- -----------------------------------------------------
--- `UserRole` table
--- -----------------------------------------------------
-USE `adapcompounddb`;
-CREATE TABLE `UserRole` (
-  `userPrincipalId` bigint(20) unsigned NOT NULL,
-  `roleName` varchar(15) NOT NULL,
-  UNIQUE KEY `user_role_user_unique_idx` (`userPrincipalId`,`roleName`),
-  KEY `user_role_user_principal_idx` (`userPrincipalId`),
-  CONSTRAINT `user_role_principal_fk` FOREIGN KEY (`userPrincipalId`) REFERENCES `userprincipal` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
