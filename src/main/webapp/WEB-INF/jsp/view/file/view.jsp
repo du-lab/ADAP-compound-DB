@@ -97,7 +97,7 @@
 </section>
 
 <c:choose>
-	<c:when test="${(authorized && edit) || (authenticated && submission.id eq 0)}">
+	<c:when test="${(edit && authorized) || (submission.id eq 0 && authenticated)}">
 		<section>
 		    <h1>Submit</h1>
 		    <div align="center">
@@ -163,14 +163,25 @@
 		    </div>
 		</section>
 	</c:when>
-	<c:when test="${authorized}">
+	<c:when test="${submission.id eq 0}">
 		<section>
 			<div align="center">
 				<form>
-					<a href="edit" class="button">Edit</a>
-			    </form>
+					<a href="clear/" class="button">Clear</a>
+				</form>
 			</div>
 		</section>
+	</c:when>
+	<c:otherwise>
+		<c:if test="${authorized}">
+			<section>
+				<div align="center">
+					<form>
+						<a href="edit" class="button">Edit</a>
+				    </form>
+				</div>
+			</section>
+		</c:if>
 		<section>
 			<table class="display dataTable" style="width: 100%; clear:none;">
 				<tr>
@@ -182,16 +193,16 @@
 				</tr>
 				<c:forEach items="${submissionForm.submissionCategoryTypes}" var="type">
 					<tr>
-			            <td>${type.label}:</td>
-			            <td>
-		            		<c:forEach items="${submissionForm.submissionCategoryIds}" var="id">
-			            		<c:forEach items="${submissionForm.getSubmissionCategories(type)}" var="categoryValue">
-			            			<c:if test="${id eq categoryValue.id}">
-			            				<input type="text" disabled="disabled" value="${categoryValue}" />
-			            			</c:if>
-			            		</c:forEach>
-			            	</c:forEach>
-			            </td>
+						<td>${type.label}:</td>
+						<td>
+							<c:forEach items="${submissionForm.submissionCategoryIds}" var="id">
+								<c:forEach items="${submissionForm.getSubmissionCategories(type)}" var="categoryValue">
+									<c:if test="${id eq categoryValue.id}">
+										<input type="text" disabled="disabled" value="${categoryValue}" />
+									</c:if>
+								</c:forEach>
+							</c:forEach>
+						</td>
 					</tr>
 				</c:forEach>
 				<%-- <tr>
@@ -202,16 +213,7 @@
 				</tr> --%>
 			</table>
 		</section>
-	</c:when>
-	<c:when test="submission.id eq 0">
-		<section>
-			<div align="center">
-				<form>
-				    <a href="clear/" class="button">Clear</a>
-			    </form>
-			</div>
-		</section>
-	</c:when>
+	</c:otherwise>
 </c:choose>
 
 <script src="<c:url value="/resources/js/DataTables/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
