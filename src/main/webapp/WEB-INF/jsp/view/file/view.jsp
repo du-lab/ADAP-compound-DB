@@ -203,7 +203,9 @@
 
         // Selector with autocomplete
         $('#tags').tagit({
-            availableTags: ${dulab:stringsToJson(submissionForm.availableTags)}
+            autocomplete: {
+                source: ${dulab:stringsToJson(submissionForm.availableTags)}
+            }
         });
     })
 </script>
