@@ -1,12 +1,7 @@
 package org.dulab.adapcompounddb.site.controllers;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
@@ -16,9 +11,7 @@ import javax.validation.Valid;
 
 import org.dulab.adapcompounddb.models.SampleSourceType;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
-import org.dulab.adapcompounddb.models.entities.File;
-import org.dulab.adapcompounddb.models.entities.Submission;
-import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
+import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.dulab.adapcompounddb.validation.NotBlank;
@@ -99,9 +92,20 @@ public class SubmissionController extends BaseController {
         model.addAttribute("submission", submission);
 
         SubmissionForm form = new SubmissionForm();
+        form.setAvailableTags(submissionService.findAllTags());
         form.setCategoryMap(submissionService.findAllCategories());
+
         form.setName(submission.getName());
         form.setDescription(submission.getDescription());
+
+        if (submission.getTags() != null)
+            form.setTags(submission
+                    .getTags()
+                    .stream()
+                    .map(SubmissionTag::getId)
+                    .map(SubmissionTagId::getName)
+                    .collect(Collectors.joining(",")));
+
         if (submission.getCategories() != null)
             form.setSubmissionCategoryIds(submission
                     .getCategories()
@@ -206,6 +210,7 @@ public class SubmissionController extends BaseController {
     /**********************************
      ***** File / Submission Submit *****
      **********************************/
+
     @RequestMapping(value = "/file/submit/", method = RequestMethod.POST)
     public String fileView(HttpSession session, Model model, @Valid SubmissionForm form, Errors errors) {
 
@@ -225,6 +230,7 @@ public class SubmissionController extends BaseController {
     }
 
 	@RequestMapping(value = "/submission/{submissionId:\\d+}/edit", method = RequestMethod.POST)
+//    @RequestMapping(value = "/submission/{submissionId:\\d+}/", method = RequestMethod.POST)
     public String submissionView(@PathVariable("submissionId") long submissionId, Model model, HttpSession session,
                                  @Valid SubmissionForm form, Errors errors) {
 
@@ -247,6 +253,14 @@ public class SubmissionController extends BaseController {
         submission.setName(form.getName());
         submission.setDescription(form.getDescription());
         submission.setDateTime(new Date());
+
+        List<SubmissionTag> tags = new ArrayList<>();
+        for (String name : form.getTags().split(",")) {
+            SubmissionTag submissionTag = new SubmissionTag();
+            submissionTag.setId(new SubmissionTagId(submission, name.toLowerCase()));
+            tags.add(submissionTag);
+        }
+        submission.setTags(tags);
 
         List<SubmissionCategory> categories = new ArrayList<>();
         for (long id : form.getSubmissionCategoryIds())
@@ -293,22 +307,13 @@ public class SubmissionController extends BaseController {
 
         private String description;
 
+        private String tags;
+
         private List<Long> submissionCategoryIds;
 
         private Map<SubmissionCategoryType, List<SubmissionCategory>> categoryMap;
 
-//        public SubmissionForm(List<SubmissionCategory> categories) {
-//
-//            this.categoryMap = Arrays.stream(SubmissionCategoryType.values())
-//                    .collect(Collectors
-//                            .toMap(t -> t, t -> new ArrayList<>()));
-//
-//            categories.forEach(
-//                    category -> this.categoryMap
-//                            .get(category.getCategoryType())
-//                            .add(category));
-//        }
-
+        private List<String> availableTags;
 
         public void setCategoryMap(List<SubmissionCategory> categories) {
 
@@ -320,6 +325,10 @@ public class SubmissionController extends BaseController {
                     category -> this.categoryMap
                             .get(category.getCategoryType())
                             .add(category));
+        }
+
+        public void setAvailableTags(List<String> availableTags) {
+            this.availableTags = availableTags;
         }
 
         public String getName() {
@@ -338,6 +347,14 @@ public class SubmissionController extends BaseController {
             this.description = description;
         }
 
+        public String getTags() {
+            return tags;
+        }
+
+        public void setTags(String tags) {
+            this.tags = tags;
+        }
+
         public List<Long> getSubmissionCategoryIds() {
             return submissionCategoryIds;
         }
@@ -346,16 +363,16 @@ public class SubmissionController extends BaseController {
             this.submissionCategoryIds = submissionCategoryIds;
         }
 
-//        public SortedMap<SubmissionCategoryType, List<SubmissionCategory>> getCategoryMap() {
-//            return categoryMap;
-//        }
-
         public SubmissionCategoryType[] getSubmissionCategoryTypes() {
             return SubmissionCategoryType.values();
         }
 
         public List<SubmissionCategory> getSubmissionCategories(SubmissionCategoryType type) {
             return categoryMap.get(type);
+        }
+
+        public List<String> getAvailableTags() {
+            return availableTags;
         }
     }
 }

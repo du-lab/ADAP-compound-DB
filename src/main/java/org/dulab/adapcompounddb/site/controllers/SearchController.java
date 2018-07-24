@@ -144,7 +144,7 @@ public class SearchController {
     private String searchGet(Spectrum querySpectrum, UserPrincipal user, Model model) {
 
         SearchForm form = new SearchForm();
-//        form.initialize(userPrincipalService, user);
+        form.setAvailableTags(submissionService.findAllTags());
 
         model.addAttribute("querySpectrum", querySpectrum);
         model.addAttribute("searchForm", form);
@@ -264,6 +264,14 @@ public class SearchController {
 
         private double retTimeTolerance = 0.5;
 
+        private String tags;
+
+        private List<String> availableTags;
+
+        // *******************************
+        // ***** Getters and Setters *****
+        // *******************************
+
         public double getMzTolerance() {
             return mzTolerance;
         }
@@ -322,6 +330,22 @@ public class SearchController {
 
         public void setRetTimeTolerance(double retTimeTolerance) {
             this.retTimeTolerance = retTimeTolerance;
+        }
+
+        public String getTags() {
+            return tags;
+        }
+
+        public void setTags(String tags) {
+            this.tags = tags;
+        }
+
+        public List<String> getAvailableTags() {
+            return availableTags;
+        }
+
+        public void setAvailableTags(List<String> availableTags) {
+            this.availableTags = availableTags;
         }
     }
 }

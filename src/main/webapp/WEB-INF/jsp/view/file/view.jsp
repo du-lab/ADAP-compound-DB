@@ -13,14 +13,14 @@
 <section>
     <h1>Files</h1>
     <table id="file_table" class="display" style="width: 100%; clear:none;">
-        <%--<thead>--%>
-        <%--<tr>--%>
-        <%--<th>File</th>--%>
-        <%--<th>Type</th>--%>
-        <%--<th>Size</th>--%>
-        <%--<th></th>--%>
-        <%--</tr>--%>
-        <%--</thead>--%>
+        <thead>
+        <tr>
+            <th>File</th>
+            <th>Type</th>
+            <th>Size</th>
+            <th></th>
+        </tr>
+        </thead>
         <tbody>
         <c:forEach items="${submission.files}" var="file" varStatus="loop">
             <tr>
@@ -44,7 +44,7 @@
 <section>
     <h1>Mass spectra</h1>
     <div align="center">
-        <table id="spectrum_table" class="display" style="width: 100%;">
+        <table id="spectrum_table" class="display" style="width: 100%; clear:none;">
             <thead>
             <tr>
                 <th></th>
@@ -146,7 +146,11 @@
 		                    </a><br/>
 		                </c:forEach>
 		                <form:errors path="submissionCategoryIds" cssClass="errors"/><br/>
-		
+
+                        <form:label path="tags">Equipment:</form:label><br/>
+                        <form:input path="tags"/><br/>
+                        <form:errors path="tags" cssClass="errors"/><br/>
+
 		                <div align="center">
 		                    <c:choose>
 		                        <c:when test="${submission.id > 0}">
@@ -187,10 +191,14 @@
 				<tr>
 					<td>Name:</td><td><input type="text" disabled="disabled" value="${submissionForm.name}"></td>
 					<td>Description:</td>
-					<td rowspan="${fn:length(submissionForm.submissionCategoryTypes) + 1}">
-						<textarea  disabled="disabled" rows="${(fn:length(submissionForm.submissionCategoryTypes) + 1) * 4}" style="width: 100%; resize: none;">${submissionForm.description}</textarea>
+					<td rowspan="${fn:length(submissionForm.submissionCategoryTypes) + 2}">
+						<textarea  disabled="disabled" rows="${(fn:length(submissionForm.submissionCategoryTypes) + 2) * 4}" style="width: 100%; resize: none;">${submissionForm.description}</textarea>
 					</td>
 				</tr>
+                <tr>
+                    <td>Equipment:</td>
+                    <td><input type="text" disabled="disabled" value="${dulab:abbreviate(submissionForm.tags, 80)}"></td>
+                </tr>
 				<c:forEach items="${submissionForm.submissionCategoryTypes}" var="type">
 					<tr>
 						<td>${type.label}:</td>
@@ -205,22 +213,19 @@
 						</td>
 					</tr>
 				</c:forEach>
-				<%-- <tr>
-					<td>Description:</td>
-					<td colspan="${colspaceVal}">
-						<textarea rows="4" disabled="disabled"  style="width: 100%; resize: none;">${submissionForm.description}</textarea>
-					</td>
-				</tr> --%>
 			</table>
 		</section>
 	</c:otherwise>
 </c:choose>
 
-<script src="<c:url value="/resources/js/DataTables/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
-<script src="<c:url value="/resources/js/DataTables/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
+<script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
+<script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
+<script src="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.js"/>"></script>
+<script src="<c:url value="/resources/tag-it-6ccd2de/js/tag-it.min.js"/>"></script>
 <script>
     $(document).ready(function () {
 
+        // Table with a list of spectra
         var table = $('#spectrum_table').DataTable({
             'columnDefs': [{
                 'searchable': false,
@@ -237,11 +242,20 @@
                 })
         }).draw();
 
+        // Table with a list of files
         $('#file_table').DataTable({
             bLengthChange: false,
+            info: false,
             ordering: false,
             paging: false,
             searching: false
+        });
+
+        // Selector with autocomplete
+        $('#tags').tagit({
+            autocomplete: {
+                source: ${dulab:stringsToJson(submissionForm.availableTags)}
+            }
         });
     })
 </script>

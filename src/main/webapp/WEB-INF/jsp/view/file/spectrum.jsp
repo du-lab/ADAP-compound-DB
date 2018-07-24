@@ -18,7 +18,7 @@
 
 <section>
     <h1>Spectrum ${spectrum}</h1>
-    <table id="property_table" class="display">
+    <table id="property_table" class="display" style="clear: none;">
         <thead>
         <tr>
             <th>Property</th>
@@ -87,10 +87,10 @@
     </div>
 </section>
 
-<script src="<c:url value="/resources/js/DataTables/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
-<script src="<c:url value="/resources/js/DataTables/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
-<script src="<c:url value="/resources/js/d3/d3.min.js"/>"></script>
-<script src="<c:url value="/resources/js/spectrum_plot.js"/>"></script>
+<script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
+<script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
+<script src="<c:url value="/resources/d3/d3.min.js"/>"></script>
+<script src="<c:url value="/resources/AdapCompoundDb/js/spectrum_plot.js"/>"></script>
 <script>
     $(document).ready(function () {
         $('#property_table').DataTable({

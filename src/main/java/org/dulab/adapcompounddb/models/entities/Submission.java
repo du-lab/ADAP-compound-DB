@@ -49,14 +49,8 @@ public class Submission implements Serializable {
     @Valid
     private List<SubmissionCategory> categories;
 
-//    @Valid
-//    private SubmissionSource source;
-//
-//    @Valid
-//    private SubmissionSpecimen specimen;
-//
-//    @Valid
-//    private SubmissionDisease disease;
+    @Valid
+    private List<SubmissionTag> tags;
 
     @NotNull(message = "Submission: File list is required.")
     @Valid
@@ -116,35 +110,19 @@ public class Submission implements Serializable {
                 .orElse(null);
     }
 
-    //    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "SourceId", referencedColumnName = "Id")
-//    public SubmissionSource getSource() {
-//        return source;
-//    }
-//
-//    public void setSource(SubmissionSource source) {
-//        this.source = source;
-//    }
-//
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "SpecimenId", referencedColumnName = "Id")
-//    public SubmissionSpecimen getSpecimen() {
-//        return specimen;
-//    }
-//
-//    public void setSpecimen(SubmissionSpecimen specimen) {
-//        this.specimen = specimen;
-//    }
-//
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "DiseaseId", referencedColumnName = "Id")
-//    public SubmissionDisease getDisease() {
-//        return disease;
-//    }
-//
-//    public void setDisease(SubmissionDisease disease) {
-//        this.disease = disease;
-//    }
+    @OneToMany(
+            mappedBy = "id.submission",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    public List<SubmissionTag> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<SubmissionTag> tags) {
+        this.tags = tags;
+    }
 
     @OneToMany(
             mappedBy = "submission",
@@ -178,31 +156,6 @@ public class Submission implements Serializable {
     public void setDateTime(Date dateTime) {
         this.dateTime = dateTime;
     }
-
-//    public String getFilename() {
-//        return filename;
-//    }
-//
-//    public void setFilename(String filename) {
-//        this.filename = filename;
-//    }
-//
-//    @Enumerated(EnumType.STRING)
-//    public FileType getFileType() {
-//        return fileType;
-//    }
-//
-//    public void setFileType(FileType fileType) {
-//        this.fileType = fileType;
-//    }
-//
-//    public byte[] getFile() {
-//        return file;
-//    }
-//
-//    public void setFile(byte[] file) {
-//        this.file = file;
-//    }
 
     public boolean isAuthorized(UserPrincipal user) {
 		boolean authorized = false;
