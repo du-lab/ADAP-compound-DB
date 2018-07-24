@@ -22,6 +22,18 @@ public class ControllerUtils {
         return String.format("#%s;", color);
     }
 
+    public static JsonArray stringsToJson(List<String> strings) {
+
+        JsonArrayBuilder builder = Json.createArrayBuilder();
+
+        if (strings == null) return builder.build();
+
+        for (String s : strings)
+            builder.add(s);
+
+        return builder.build();
+    }
+
     public static JsonArray peaksToJson(List<Peak> peaks) {
 
         JsonArrayBuilder builder = Json.createArrayBuilder();

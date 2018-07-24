@@ -27,47 +27,7 @@ public interface SubmissionService {
     void delete(long submissionId);
 
 
-//    // ****************************************
-//    // ***** SubmissionSpecimen functions *****
-//    // ****************************************
-//
-//    List<SubmissionSpecimen> getAllSpecies();
-//
-//    long countBySpecimenId(long submissionSpecimenId);
-//
-//    Optional<SubmissionSpecimen> findSubmissionSpecimen(long submissionSpecimenId);
-//
-//    void saveSubmissionSpecimen(SubmissionSpecimen specimen);
-//
-//    void deleteSubmissionSpecimen(long submissionSpecimenId);
-//
-//    // **************************************
-//    // ***** SubmissionSource functions *****
-//    // **************************************
-//
-//    List<SubmissionSource> getAllSources();
-//
-//    long countBySourceId(long submissionSourceId);
-//
-//    Optional<SubmissionSource> findSubmissionSource(long submissionSourceId);
-//
-//    void saveSubmissionSource(SubmissionSource source);
-//
-//    void deleteSubmissionSource(long submissionSourceId);
-//
-//    // ***************************************
-//    // ***** SubmissionDisease functions *****
-//    // ***************************************
-//
-//    List<SubmissionDisease> getAllDiseases();
-//
-//    long countByDiseaseId(long submissionDiseaseId);
-//
-//    Optional<SubmissionDisease> findSubmissionDisease(long submissionDiseaseId);
-//
-//    void saveSubmissionDisease(SubmissionDisease disease);
-//
-//    void deleteSubmissionDisease(long submissionDiseaseId);
+    List<String> findAllTags();
 
     List<SubmissionCategory> findAllCategories();
 
