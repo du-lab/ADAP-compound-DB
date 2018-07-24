@@ -135,8 +135,7 @@
 		                    <span style="vertical-align: bottom;">
 		                        <form:select path="submissionCategoryIds" multiple="false">
 		                            <form:option value="0" label="Please select..."/>
-		                            <form:options items="${submissionForm.getSubmissionCategories(type)}" itemLabel="name"
-		                                          itemValue="id"/>
+		                            <form:options items="${submissionForm.getSubmissionCategories(type)}" itemLabel="name" itemValue="id"/>
 		                        </form:select><br/>
 		                    </span>
 		                    <a href="<c:url value="/categories/${type}/"/>">
@@ -175,13 +174,32 @@
 		<section>
 			<table class="display dataTable" style="width: 100%; clear:none;">
 				<tr>
-					<td>Name:</td>
-					<td>${submissionForm.name}</td>
-				</tr>
-				<tr>
+					<td>Name:</td><td><input type="text" disabled="disabled" value="${submissionForm.name}"></td>
 					<td>Description:</td>
-					<td>${submissionForm.description}
+					<td rowspan="${fn:length(submissionForm.submissionCategoryTypes) + 1}">
+						<textarea  disabled="disabled" rows="${(fn:length(submissionForm.submissionCategoryTypes) + 1) * 4}" style="width: 100%; resize: none;">${submissionForm.description}</textarea>
+					</td>
 				</tr>
+				<c:forEach items="${submissionForm.submissionCategoryTypes}" var="type">
+					<tr>
+			            <td>${type.label}:</td>
+			            <td>
+		            		<c:forEach items="${submissionForm.submissionCategoryIds}" var="id">
+			            		<c:forEach items="${submissionForm.getSubmissionCategories(type)}" var="categoryValue">
+			            			<c:if test="${id eq categoryValue.id}">
+			            				<input type="text" disabled="disabled" value="${categoryValue}" />
+			            			</c:if>
+			            		</c:forEach>
+			            	</c:forEach>
+			            </td>
+					</tr>
+				</c:forEach>
+				<%-- <tr>
+					<td>Description:</td>
+					<td colspan="${colspaceVal}">
+						<textarea rows="4" disabled="disabled"  style="width: 100%; resize: none;">${submissionForm.description}</textarea>
+					</td>
+				</tr> --%>
 			</table>
 		</section>
 	</c:when>
