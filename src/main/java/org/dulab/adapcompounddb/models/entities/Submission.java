@@ -8,13 +8,12 @@ import java.util.stream.Collectors;
 import javax.persistence.*;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
-import org.dulab.adapcompounddb.validation.NotBlank;
 import org.hibernate.validator.constraints.URL;
-import org.springframework.data.annotation.Persistent;
 
 @Entity
 public class Submission implements Serializable {

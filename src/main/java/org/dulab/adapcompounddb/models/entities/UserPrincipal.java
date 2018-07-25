@@ -20,11 +20,10 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.servlet.http.HttpSession;
+import javax.validation.constraints.NotBlank;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.dulab.adapcompounddb.models.UserRoles;
 import org.dulab.adapcompounddb.validation.Email;
-import org.dulab.adapcompounddb.validation.NotBlank;
 
 @Entity
 @Table(uniqueConstraints = {
