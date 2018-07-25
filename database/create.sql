@@ -16,7 +16,7 @@ DROP SCHEMA IF EXISTS `adapcompounddb`;
 -- Schema adapcompounddb
 -- -----------------------------------------------------
 CREATE SCHEMA IF NOT EXISTS `adapcompounddb`
-  DEFAULT CHARACTER SET latin1;
+  DEFAULT CHARACTER SET utf8;
 USE `adapcompounddb`;
 
 -- -----------------------------------------------------
@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`File` (
 )
   ENGINE = InnoDB
   AUTO_INCREMENT = 50
-  DEFAULT CHARACTER SET = latin1;
+  DEFAULT CHARACTER SET = utf8;
 
 -- -----------------------------------------------------
 -- Table `adapcompounddb`.`SpectrumCluster`
@@ -97,7 +97,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SpectrumCluster` (
 )
   ENGINE = InnoDB
   AUTO_INCREMENT = 126
-  DEFAULT CHARACTER SET = latin1;
+  DEFAULT CHARACTER SET = utf8;
 
 -- -----------------------------------------------------
 -- Table `adapcompounddb`.`Spectrum`
@@ -176,7 +176,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SpectrumMatch` (
 )
   ENGINE = InnoDB
   AUTO_INCREMENT = 4772
-  DEFAULT CHARACTER SET = latin1;
+  DEFAULT CHARACTER SET = utf8;
 
 -- -----------------------------------------------------
 -- Table `adapcompounddb`.`SpectrumProperty`
@@ -210,7 +210,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SubmissionCategory` (
   PRIMARY KEY (`Id`)
 )
   ENGINE = InnoDB
-  DEFAULT CHARACTER SET = latin1;
+  DEFAULT CHARACTER SET = utf8;
 
 -- -----------------------------------------------------
 -- Table `adapcompounddb`.`Submission2SubmissionCategory`
@@ -234,7 +234,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Submission2SubmissionCategory` (
     ON UPDATE CASCADE
 )
   ENGINE = InnoDB
-  DEFAULT CHARACTER SET = latin1;
+  DEFAULT CHARACTER SET = utf8;
 
 -- -----------------------------------------------------
 -- Table `adapcompounddb`.`SubmissionTag`
@@ -251,7 +251,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SubmissionTag` (
     ON UPDATE CASCADE
 )
   ENGINE = InnoDB
-  DEFAULT CHARACTER SET = latin1;
+  DEFAULT CHARACTER SET = utf8;
 
 -- -----------------------------------------------------
 -- Table `adapcompounddb`.`UserParameter`
@@ -271,7 +271,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`UserParameter` (
     ON UPDATE CASCADE
 )
   ENGINE = InnoDB
-  DEFAULT CHARACTER SET = latin1;
+  DEFAULT CHARACTER SET = utf8;
 
 -- -----------------------------------------------------
 -- Table `adapcompounddb`.`UserRole`
@@ -286,7 +286,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`UserRole` (
   REFERENCES `adapcompounddb`.`UserPrincipal` (`Id`)
 )
   ENGINE = InnoDB
-  DEFAULT CHARACTER SET = latin1;
+  DEFAULT CHARACTER SET = utf8;
 
 USE `adapcompounddb`;
 
