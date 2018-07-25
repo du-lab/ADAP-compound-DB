@@ -12,12 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-public class LCSpectrumSearchServiceImpl implements SpectrumSearchService {
+public class SpectrumSearchServiceGCImpl implements SpectrumSearchService {
 
     private final SpectrumRepository spectrumRepository;
 
     @Autowired
-    public LCSpectrumSearchServiceImpl(SpectrumRepository spectrumRepository) {
+    public SpectrumSearchServiceGCImpl(SpectrumRepository spectrumRepository) {
         this.spectrumRepository = spectrumRepository;
     }
 

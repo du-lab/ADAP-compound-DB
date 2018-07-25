@@ -113,8 +113,7 @@ public class Submission implements Serializable {
     @OneToMany(
             mappedBy = "id.submission",
             fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
+            cascade = CascadeType.ALL
     )
     public List<SubmissionTag> getTags() {
         return tags;
