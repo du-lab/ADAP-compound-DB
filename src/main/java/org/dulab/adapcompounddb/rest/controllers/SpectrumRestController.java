@@ -1,0 +1,36 @@
+package org.dulab.adapcompounddb.rest.controllers;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.dulab.adapcompounddb.site.services.SpectrumService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
+@RestController
+@RequestMapping("/spectrum")
+public class SpectrumRestController {
+
+	@Autowired
+	private SpectrumService spectrumService;
+
+	@RequestMapping(value="/findSpectrumBySubmissionId", produces="application/json")
+	public String findSpectrumBySubmissionId(@RequestParam("submissionId") Long submissionId,
+								@RequestParam("start") Integer start,
+								@RequestParam("length") Integer length,
+								@RequestParam("column") String column,
+ @RequestParam("sortDirection") String sortDirection,
+								HttpServletRequest request) throws JsonProcessingException {
+	
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+		String jsonString = objectMapper.writeValueAsString(spectrumService.findSpectrumBySubmissionId(submissionId, start, length, column, sortDirection));
+		jsonString = "{\"data\":" + jsonString + "}";
+		return jsonString;
+	}	
+}

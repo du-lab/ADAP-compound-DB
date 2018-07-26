@@ -23,11 +23,6 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 
 @Configuration
 @EnableWebSecurity
-//@ComponentScan(
-//        basePackages = "org.dulab.adapcompounddb.site",
-//        useDefaultFilters = false,
-//        includeFilters = @ComponentScan.Filter({Controller.class, ControllerAdvice.class}))
-//@Transactional
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	private static final String ACCESS_DENIED_MESSAGE = "Sorry you do not have access to this page";

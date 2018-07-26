@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
         transactionManagerRef = "jpaTransactionManager"
 )
 @ComponentScan(
-        basePackages = "org.dulab.adapcompounddb.site",
+        basePackages = {"org.dulab.adapcompounddb.site", "org.dulab.adapcompounddb.rest"},
         excludeFilters = @ComponentScan.Filter({Controller.class, ControllerAdvice.class})
 )
 @Import({WebSecurityConfiguration.class})

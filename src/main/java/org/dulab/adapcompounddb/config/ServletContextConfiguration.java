@@ -18,7 +18,7 @@ import org.springframework.web.servlet.view.JstlView;
 @Configuration
 @EnableWebMvc
 @ComponentScan(
-        basePackages = "org.dulab.adapcompounddb.site",
+        basePackages = {"org.dulab.adapcompounddb.site", "org.dulab.adapcompounddb.rest"},
         useDefaultFilters = false,
         includeFilters = @ComponentScan.Filter({Controller.class, ControllerAdvice.class})
 )

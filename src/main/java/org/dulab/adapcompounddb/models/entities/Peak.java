@@ -3,6 +3,9 @@ package org.dulab.adapcompounddb.models.entities;
 import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.Serializable;
 
 @Entity
@@ -31,6 +34,7 @@ public class Peak implements Serializable {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "SpectrumId", referencedColumnName = "Id")
+	@JsonIgnore
     public Spectrum getSpectrum() {
         return spectrum;
     }

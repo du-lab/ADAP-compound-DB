@@ -2,6 +2,9 @@ package org.dulab.adapcompounddb.models.entities;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -42,6 +45,7 @@ public class SpectrumCluster implements Serializable {
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "ConsensusSpectrumId", referencedColumnName = "Id")
+	@JsonIgnore
     public Spectrum getConsensusSpectrum() {
         return consensusSpectrum;
     }
@@ -70,6 +74,7 @@ public class SpectrumCluster implements Serializable {
             mappedBy = "cluster",
             fetch = FetchType.LAZY,
             cascade = CascadeType.DETACH)
+	@JsonIgnore
     public List<Spectrum> getSpectra() {
         return spectra;
     }

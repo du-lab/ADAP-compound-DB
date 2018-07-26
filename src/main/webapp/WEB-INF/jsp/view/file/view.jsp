@@ -47,7 +47,6 @@
         <table id="spectrum_table" class="display" style="width: 100%; clear:none;">
             <thead>
             <tr>
-                <th></th>
                 <th>Name</th>
                 <th>Ret Time (min)</th>
                 <th>Precursor mass</th>
@@ -58,39 +57,39 @@
             
             </thead>
             <tbody>
-            <c:if test="${submission.files.size() > 0}">
-                <c:forEach items="${submission.files}" var="file" varStatus="fileLoop">
-                    <c:forEach items="${file.spectra}" var="spectrum" varStatus="spectrumLoop">
-                        <tr>
-                            <td></td>
-                                <%--<td>${loop.index + 1}</td>--%>
-                            <td><a href="${fileLoop.index}/${spectrumLoop.index}/">${spectrum}</a><br/>
-                                    <%--<small>${dulab:abbreviate(spectrum.properties, 80)}</small>--%>
-                            </td>
-                            <td>${spectrum.retentionTime}</td>
-                            <td>${spectrum.precursor}</td>
-                            <td>${spectrum.chromatographyType.label}</td>
-                            <td>${file.name}</td>
-                            <td>
-                                <!-- more horiz -->
-                                <a href="${fileLoop.index}/${spectrumLoop.index}/">
-                                    <i class="material-icons" title="View spectrum">&#xE5D3;</i>
-                                </a>
-                                <!-- search -->
-                                <a href="${fileLoop.index}/${spectrumLoop.index}/search/">
-                                    <i class="material-icons" title="Search spectrum">&#xE8B6;</i>
-                                </a>
-                                <!-- delete -->
-								<c:if test="${authorized && edit}">
-	                                <a href="${fileLoop.index}/${spectrumLoop.index}/delete/">
-	                                    <i class="material-icons" title="Delete spectrum">&#xE872;</i>
+	            <%-- <c:if test="${submission.files.size() > 0}">
+	                <c:forEach items="${submission.files}" var="file" varStatus="fileLoop">
+	                    <c:forEach items="${file.spectra}" var="spectrum" varStatus="spectrumLoop">
+	                        <tr>
+	                            <td></td>
+	                                <td>${loop.index + 1}</td>
+	                            <td><a href="${fileLoop.index}/${spectrumLoop.index}/">${spectrum}</a><br/>
+	                                    <small>${dulab:abbreviate(spectrum.properties, 80)}</small>
+	                            </td>
+	                            <td>${spectrum.retentionTime}</td>
+		                            <td>${spectrum.precursor}</td>
+		                            <td>${spectrum.chromatographyType.label}</td>
+	                            <td>${file.name}</td>
+	                            <td>
+	                                <!-- more horiz -->
+	                                <a href="${fileLoop.index}/${spectrumLoop.index}/">
+	                                    <i class="material-icons" title="View spectrum">&#xE5D3;</i>
 	                                </a>
-	                            </c:if>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                </c:forEach>
-            </c:if>
+	                           ``     <!-- search -->
+	                                <a href="${fileLoop.index}/${spectrumLoop.index}/search/">
+	                                    <i class="material-icons" title="Search spectrum">&#xE8B6;</i>
+	                                </a>
+	                                <!-- delete -->
+									<c:if test="${authorized && edit}">
+		                                <a href="${fileLoop.index}/${spectrumLoop.index}/delete/">
+		                                    <i class="material-icons" title="Delete spectrum">&#xE872;</i>
+		                                </a>
+		                            </c:if>
+	                            </td>
+	                        </tr>
+	                    </c:forEach>
+	                </c:forEach>
+	            </c:if> --%>
             </tbody>
         </table>
     </div>
@@ -190,7 +189,7 @@
 			<table class="display dataTable" style="width: 100%; clear:none;">
 				<tr>
 					<td>Name:</td><td><input type="text" disabled="disabled" value="${submissionForm.name}"></td>
-					<td>Description:</td>
+					<td align="left">Description:</td>
 					<td rowspan="${fn:length(submissionForm.submissionCategoryTypes) + 2}">
 						<textarea  disabled="disabled" rows="${(fn:length(submissionForm.submissionCategoryTypes) + 2) * 4}" style="width: 100%; resize: none;">${submissionForm.description}</textarea>
 					</td>
@@ -227,11 +226,23 @@
 
         // Table with a list of spectra
         var table = $('#spectrum_table').DataTable({
-            'columnDefs': [{
-                'searchable': false,
-                'orderable': false,
-                'targets': 0
-            }]
+            serverSide: true,
+            ajax: {
+            	url: "${pageContext.request.contextPath}/spectrum/findSpectrumBySubmissionId.json?submissionId=${submission.id}",	
+
+            	data: function(data) {
+					data.column = data.order[0].column;
+					data.sortDirection = data.order[0].dir;
+            	}
+            },
+            "columns": [
+                { "data": "name" },
+                { "data": "retentionTime" },
+                { "data": "precursor" },
+                { "data": "chromatographyType" },
+                { "data": "fileName" },
+                { "data": "icons" }
+            ]
         });
 
         table.on('order.dt search.dt', function () {
