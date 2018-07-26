@@ -13,4 +13,8 @@ import java.util.List;
 public interface SpectrumService {
 
     Spectrum find(long id);
+
+    long countConsensusSpectra();
+
+    long countReferenceSpectra();
 }

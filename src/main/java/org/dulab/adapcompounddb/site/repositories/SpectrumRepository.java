@@ -29,4 +29,8 @@ public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, Spec
     @Query("SELECT COUNT(s) FROM Spectrum s WHERE s.matches IS EMPTY " +
             "AND s.consensus=FALSE AND s.chromatographyType = ?1")
     long countUnmatchedBySubmissionChromatographyType(ChromatographyType chromatographyType);
+
+    long countByConsensusTrue();
+
+    long countByReferenceTrue();
 }

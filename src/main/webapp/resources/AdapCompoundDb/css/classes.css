@@ -1,0 +1,29 @@
+
+/***** Class "text" for long blocks of text *****/
+
+.text {
+    font-family: "Chrimson Text", serif;
+    font-weight: normal;
+    line-height: 1.5em;
+}
+
+.text li {
+    margin: 1em 0;
+}
+
+.text ul li {
+    list-style-type: square;
+}
+
+/***** Class "large-subsection" for large block *****/
+
+.large-subsection {
+    max-width: 800px;
+}
+
+/***** Class "grey-background" *****/
+
+.no-background {
+    background-color: transparent; /*#e4e4e4;*/
+    box-shadow: none;
+}

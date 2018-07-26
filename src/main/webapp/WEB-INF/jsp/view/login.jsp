@@ -41,8 +41,8 @@
 
 <section>
     <h1>Sign-Up</h1>
-    <p>If you are not registered yet, please do it now:</p>
     <div align="center">
+        <p>If you are not registered yet, please do it now:</p>
         <a href="<c:url value="/signup"/>" class="button">Register</a>
     </div>
 </section>

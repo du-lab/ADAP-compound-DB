@@ -9,7 +9,13 @@ Green: #8e8268
 Blue:  #86b3d1
 ********************/
 
-html {background: #f2f2f2;}
+html {
+    background: #f2f2f2;
+    /*background-image: url("/resources/AdapCompoundDb/img/black-carbon-fiber-pattern.jpg");*/
+    /*background: white;*/
+    font-family: "Lato", sans-serif; /*"Times New Roman"*/
+    font-weight: lighter;
+}
 
 body, header, aside, section, article, h1, h2 {
     display: block;
@@ -21,6 +27,7 @@ body, header, aside, section, article, h1, h2 {
 
 header {
     display: block;
+    font-family: "Chrimson Text", serif;
     position: fixed;
     z-index: 10;
     top: 0;
@@ -34,9 +41,10 @@ header {
 
 header h1 {
     display: inline-block;
+    font-family: "Proza Libre", sans-serif;
     margin: 0 120px 0 120px;
-    letter-spacing: 0.05em;
-    text-shadow: 0 1px 1px #f2f2f2;
+    /*letter-spacing: 0.05em;*/
+    /*text-shadow: 0 1px 1px #f2f2f2;*/
 }
 
 header h2 {
@@ -63,9 +71,9 @@ header a:hover {
 
 aside {
     float: left;
+    font-family: "Proza Libre", Helvetica, sans-serif; /*Arial*/
     margin: 20px 10px;
     width: 180px;
-    font-family: Arial, Helvetica, sans-serif;
 }
 
 aside ul {
@@ -84,23 +92,32 @@ aside li a {
     padding: 10px;
 }
 
+aside li i.material-icons {
+    line-height: 0;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
 aside li a:hover {
-    background: #e4e4e4;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #e4e4e4;
 }
 
 /***** Article *****/
 
 article {
     margin: 80px 0 20px 200px;
+    min-width: 1000px;
 }
 
 article section {
-    margin: 20px 40px;
-    padding: 10px;
-    min-width: 320px;
     background: #ffffff;
     border-radius: 10px;
-    font-family: "Times New Roman", Times, serif;
+    box-shadow: 0 0 10px #e4e4e4;
+    margin: 20px 40px;
+    min-width: 320px;
+    padding: 10px;
 }
 
 article section.transparent {background: none;}
@@ -109,10 +126,11 @@ article section.transparent {background: none;}
 
 section h1 {
     display: block;
+    font-family: "Chrimson Text", Times, serif;
     margin: 10px;
     color: #844d36;
     text-align: center;
-    /*font-size: 1em;*/
+    font-size: 1.5em;
 }
 
 section h1:after {
@@ -123,7 +141,9 @@ section h1:after {
 
 section h2 {
     display: block;
-    color: #86b3d1;
+    /*color: #86b3d1;*/
+    font-size: 1.2em;
+    font-weight: normal;
     margin: 10px;
     text-align: center;
 }
@@ -154,8 +174,9 @@ section h2 {
 /*}*/
 
 section a {
-    text-decoration: none;
     color: #844d36;
+    font-weight: normal;
+    text-decoration: none;
 }
 
 section a:hover {
@@ -169,16 +190,19 @@ section a > i.material-icons:hover {
     color: #844d36;
 }
 
-section a.button {
-    display: inline-block;
-    border: none;
-    padding: 8px 15px 8px 15px;
-    text-decoration: none;
-    background: #8e8268;
-    color: #ffffff;
-    box-shadow: 1px 1px 4px #474853;
-    border-radius: 3px;
-}
+/*section a.button {*/
+    /*display: inline-block;*/
+    /*border: none;*/
+    /*font-family: "Lato", sans-serif;*/
+    /*font-size: 0.75em;*/
+    /*font-weight: lighter;*/
+    /*padding: 8px 15px 8px 15px;*/
+    /*text-decoration: none;*/
+    /*background: #8e8268;*/
+    /*color: #ffffff;*/
+    /*box-shadow: 1px 1px 4px #474853;*/
+    /*border-radius: 3px;*/
+/*}*/
 
 section a.button:hover {background: #844d36;}
 
@@ -189,16 +213,21 @@ section div.heading {
 
 section form {padding: 0 20px;}
 
-section form input[type=submit], input[type=button] {
+section a.button, form input[type=submit], input[type=button] {
+    background: #8e8268;
     border: none;
+    border-radius: 3px;
+    box-shadow: 1px 1px 4px #474853;
+    color: #ffffff;
     cursor: pointer;
+    display: inline-block;
+    font-family: "Lato", sans-serif;
+    font-size: 0.8em;
+    font-weight: lighter;
     margin-top: 1em;
     margin-right: 10px;
     padding: 8px 15px 8px 15px;
-    background: #8e8268;
-    color: #ffffff;
-    box-shadow: 1px 1px 4px #474853;
-    border-radius: 3px;
+    text-decoration: none;
 }
 
 /*section form input[type=file] {*/
@@ -220,13 +249,13 @@ section form select:not([multiple]), input[type=text], input[type=password], inp
     margin: 5px 0;
     padding: 0 10px;
     height: 2em;
-    font-family: Verdana, Georgia, sans-serif;
+    /*font-family: Verdana, Georgia, sans-serif;*/
 }
 
 section form select[multiple] {
     margin: 5px 0;
     padding: 0 10px;
-    font-family: Verdana, Georgia, sans-serif;
+    /*font-family: Verdana, Georgia, sans-serif;*/
 }
 
 section form input[type=text], input[type=password] {
@@ -254,7 +283,8 @@ section form input[type=file] {
 section form > label {
     margin: 5px 0;
     clear: both;
-    font-family: "Courier New", Courier, monospace;
+    font-family: "Proza Libre", sans-serif;
+    /*font-family: "Courier New", Courier, monospace;*/
     color: #8e8268;
 }
 

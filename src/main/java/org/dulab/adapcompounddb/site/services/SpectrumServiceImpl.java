@@ -32,4 +32,14 @@ public class SpectrumServiceImpl implements SpectrumService {
         return spectrumRepository.findById(id)
                 .orElseThrow(EmptySearchResultException::new);
     }
+
+    @Override
+    public long countConsensusSpectra() {
+        return spectrumRepository.countByConsensusTrue();
+    }
+
+    @Override
+    public long countReferenceSpectra() {
+        return spectrumRepository.countByReferenceTrue();
+    }
 }
