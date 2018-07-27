@@ -79,9 +79,14 @@
         <description>Transforms float score (0..1) to integer score (0..1000)</description>
         <name>toIntegerScore</name>
         <function-class>org.dulab.adapcompounddb.site.controllers.ControllerUtils</function-class>
-        <function-signature>
-            int toIntegerScore(float)
-        </function-signature>
+        <function-signature>int toIntegerScore(float)</function-signature>
+    </function>
+
+    <function>
+        <description>Determines if user is an admin</description>
+        <name>isAdmin</name>
+        <function-class>org.dulab.adapcompounddb.site.controllers.ControllerUtils</function-class>
+        <function-signature>boolean isAdmin(org.springframework.security.core.userdetails.User)</function-signature>
     </function>
 
 </taglib>

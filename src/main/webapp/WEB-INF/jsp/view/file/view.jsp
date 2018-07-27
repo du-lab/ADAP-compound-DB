@@ -185,7 +185,7 @@
 	</c:when>
 	<c:otherwise>
 		<c:if test="${authorized}">
-			<section>
+			<section class="no-background">
 				<div align="center">
 					<form>
 						<a href="edit" class="button">Edit</a>
@@ -194,6 +194,7 @@
 			</section>
 		</c:if>
 		<section>
+            <h1>Submission</h1>
 			<table class="display dataTable" style="width: 100%; clear:none;">
 				<tr>
 					<td>Name:</td><td><input type="text" disabled="disabled" value="${submission.name}"></td>

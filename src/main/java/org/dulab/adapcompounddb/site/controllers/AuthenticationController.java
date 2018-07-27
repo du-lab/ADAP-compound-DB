@@ -6,12 +6,15 @@ import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.site.services.AuthenticationService;
 import org.dulab.adapcompounddb.validation.Email;
 import org.dulab.adapcompounddb.validation.FieldMatch;
 import org.dulab.adapcompounddb.validation.Password;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -24,6 +27,8 @@ import org.springframework.web.servlet.view.RedirectView;
 @Controller
 public class AuthenticationController {
 
+    private static final Logger LOG = LogManager.getLogger();
+
     private final AuthenticationService authenticationService;
 
     @Autowired
@@ -32,11 +37,11 @@ public class AuthenticationController {
     }
 
     /****************
-    ***** Log In *****
+     ***** Log In *****
      ****************/
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public ModelAndView login(Model model, HttpSession session, @RequestParam(name="loginFailed", required=false, defaultValue="false") Boolean loginFailed) {
+    public ModelAndView login(Model model, HttpSession session, @RequestParam(name = "loginFailed", required = false, defaultValue = "false") Boolean loginFailed) {
         if (UserPrincipal.from(session) != null) {
             return getHomeRedirect();
         }
@@ -49,7 +54,7 @@ public class AuthenticationController {
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ModelAndView login(Model model, HttpSession session, HttpServletRequest request,
-                              @Valid LogInForm form, Errors errors, @RequestParam(name="loginFailed", defaultValue="false") Boolean loginFailed) {
+                              @Valid LogInForm form, Errors errors, @RequestParam(name = "loginFailed", defaultValue = "false") Boolean loginFailed) {
 
         if (UserPrincipal.from(session) != null)
             return getHomeRedirect();
@@ -62,8 +67,7 @@ public class AuthenticationController {
         UserPrincipal principal;
         try {
             principal = authenticationService.authenticate(form.getUsername(), form.getPassword());
-        }
-        catch (ConstraintViolationException e) {
+        } catch (ConstraintViolationException e) {
             form.setPassword(null);
             model.addAttribute("validationErrors", e.getConstraintViolations());
             return new ModelAndView("login");
@@ -83,7 +87,7 @@ public class AuthenticationController {
     }
 
     /*****************
-    ***** Sign Up *****
+     ***** Sign Up *****
      *****************/
 
     @RequestMapping(value = "/signup", method = RequestMethod.GET)
@@ -114,13 +118,25 @@ public class AuthenticationController {
         principal.setEmail(form.getEmail());
         try {
             authenticationService.saveUser(principal, form.getPassword());
-//            request.login(principal.getUsername(), principal.getHashedPassword());
         }
-        catch (ConstraintViolationException e) {
+        catch (Throwable t) {
+
+            LOG.warn("Error during authentication", t);
+
+            if (t instanceof ConstraintViolationException) {
+                model.addAttribute("validationErrors",
+                        ((ConstraintViolationException) t).getConstraintViolations());
+
+            } else if (t instanceof DataIntegrityViolationException) {
+                while (t.getCause() != null) t = t.getCause();
+                model.addAttribute("errorMsg",
+                        t.getMessage().contains("Duplicate")
+                                ? "Username is already used."
+                                : t.getMessage());
+            }
+
             form.setPassword(null);
             form.setConfirmedPassword(null);
-            model.addAttribute("validationErrors", e.getConstraintViolations());
-			e.printStackTrace();
             return new ModelAndView("signup");
         }
 
@@ -130,7 +146,7 @@ public class AuthenticationController {
     }
 
     /*****************
-    ***** Log Out *****
+     ***** Log Out *****
      *****************/
 
     @RequestMapping(value = "logout", method = RequestMethod.GET)
@@ -145,7 +161,7 @@ public class AuthenticationController {
     }
 
     /**********************
-    ***** SubmissionForm classes *****
+     ***** SubmissionForm classes *****
      **********************/
 
     public static class LogInForm {

@@ -2,47 +2,59 @@
 <%--@elvariable id="fileUploadForm" type="org.dulab.adapcompounddb.site.controllers.FileUploadController.FileUploadForm"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<jsp:include page="/WEB-INF/jsp/includes/header.jsp" />
-<jsp:include page="/WEB-INF/jsp/includes/column_left_home.jsp" />
+<jsp:include page="/WEB-INF/jsp/includes/header.jsp"/>
+<jsp:include page="/WEB-INF/jsp/includes/column_left_home.jsp"/>
 
 <!-- Start the middle column -->
 
 <section>
     <h1>Upload file</h1>
 
-    <p class="errors">${message}</p>
-    <c:if test="${validationErrors != null}"><div class="errors">
-        <ul>
-            <c:forEach items="${validationErrors}" var="error">
-                <li><c:out value="${error.message}"/></li>
-            </c:forEach>
-        </ul>
-    </div></c:if>
+    <div align="center">
+        <div align="left" style="display: inline-block;">
+            <p class="errors">${message}</p>
+            <c:if test="${validationErrors != null}">
+                <div class="errors">
+                    <ul>
+                        <c:forEach items="${validationErrors}" var="error">
+                            <li><c:out value="${error.message}"/></li>
+                        </c:forEach>
+                    </ul>
+                </div>
+            </c:if>
 
-    <form:form method="POST" modelAttribute="fileUploadForm" enctype="multipart/form-data">
-        <form:errors path="" cssClass="errors"/><br/>
+            <form:form method="POST" modelAttribute="fileUploadForm" enctype="multipart/form-data">
+                <p>
+                    <form:errors path="" cssClass="errors"/><br/>
+                </p>
+                <p>
+                    <form:label path="chromatographyType">Chromatography type:</form:label>&nbsp;
+                    <form:errors path="chromatographyType" cssClass="errors"/><br/>
+                    <form:select path="chromatographyType">
+                        <form:option value="" label="Please select..."/>
+                        <form:options items="${chromatographyTypeList}" itemLabel="label"/>
+                    </form:select><br/>
+                </p>
+                <p>
+                    <form:label path="fileType">File type:</form:label>&nbsp;
+                    <form:errors path="fileType" cssClass="errors"/><br/>
+                    <form:radiobuttons path="fileType" items="${fileTypeList}" itemLabel="label"/><br/>
+                </p>
+                <p>
+                    <form:label path="files">File:</form:label>&nbsp;
+                    <form:errors path="files" cssClass="errors"/><br/>
+                    <input type="file" name="files" accept=".msp" multiple/><br/>
+                </p>
 
-        <form:label path="chromatographyType">Chromatography type:</form:label><br/>
-        <form:select path="chromatographyType">
-            <form:option value="" label="Please select..."/>
-            <form:options items="${chromatographyTypeList}" itemLabel="label"/>
-        </form:select><br/>
-        <form:errors path="chromatographyType" cssClass="errors"/><br/>
-
-        <form:label path="fileType">File type:</form:label><br/>
-        <form:radiobuttons path="fileType" items="${fileTypeList}" itemLabel="label"/><br/>
-        <form:errors path="fileType" cssClass="errors"/><br/>
-
-        <form:label path="files">File:</form:label><br/>
-        <input type="file" name="files" accept=".msp" multiple/><br/>
-        <form:errors path="files" cssClass="errors"/>
-        <div align="center">
-            <input type="submit" value="Upload"/>
+                <div align="center">
+                    <input type="submit" value="Upload"/>
+                </div>
+            </form:form>
         </div>
-    </form:form>
+    </div>
 </section>
 
 <!-- End the middle column -->
 
-<jsp:include page="/WEB-INF/jsp/includes/column_right_news.jsp" />
-<jsp:include page="/WEB-INF/jsp/includes/footer.jsp" />
+<jsp:include page="/WEB-INF/jsp/includes/column_right_news.jsp"/>
+<jsp:include page="/WEB-INF/jsp/includes/footer.jsp"/>

@@ -1,8 +1,8 @@
 package org.dulab.adapcompounddb.models.entities;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
@@ -22,7 +22,7 @@ import javax.persistence.UniqueConstraint;
 import javax.servlet.http.HttpSession;
 import javax.validation.constraints.NotBlank;
 
-import org.dulab.adapcompounddb.models.UserRoles;
+import org.dulab.adapcompounddb.models.UserRole;
 import org.dulab.adapcompounddb.validation.Email;
 
 @Entity
@@ -49,7 +49,7 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
 
 //    private List<Submission> submissions;
 
-    private List<UserRoles> roles;
+    private Set<UserRole> roles;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -89,15 +89,15 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
         this.hashedPassword = password;
     }
 
-    @ElementCollection(targetClass=UserRoles.class, fetch=FetchType.EAGER)
+    @ElementCollection(targetClass= UserRole.class, fetch=FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     @CollectionTable(name="UserRole", joinColumns= {@JoinColumn(name="userPrincipalId")})
     @Column(name="roleName")
-    public List<UserRoles> getRoles() {
+    public Set<UserRole> getRoles() {
 		return roles;
 	}
 
-	public void setRoles(List<UserRoles> roles) {
+	public void setRoles(Set<UserRole> roles) {
 		this.roles = roles;
 	}
 
@@ -134,7 +134,7 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
     @Transient
 	public boolean isAdmin() {
 		boolean isAdmin = false;
-		if(roles != null && roles.contains(UserRoles.ADMIN)) {
+		if(roles != null && roles.contains(UserRole.ADMIN)) {
 			isAdmin = true;
 		}
 		return isAdmin;
@@ -142,8 +142,8 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
 
 	public void assignDefaultRole() {
 		if(roles == null || roles.isEmpty()) {
-			roles = new ArrayList<>();
-			roles.add(UserRoles.USER);
+			roles = new HashSet<>();
+			roles.add(UserRole.USER);
 		}
 	}
 

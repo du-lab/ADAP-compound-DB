@@ -10,8 +10,17 @@
 
 <section>
     <h1>Account</h1>
-    <p>Username: <span class="highlighted">${user.username}</span></p>
-    <p>E-mail: <span class="highlighted">${user.email}</span></p>
+    <div align="center">
+        <div style="display: inline-block">
+            <i class="material-icons color-primary-light" style="font-size:4.5em; margin: 20px;">person</i>
+        </div>
+        <div align="left" style="display: inline-block;">
+            <p><strong>Username:&nbsp;</strong>${user.username}</p>
+            <p><strong>E-mail:&nbsp;</strong><a href="mailto:${user.email}">${user.email}</a></p>
+            <p><strong>Role(s):&nbsp;</strong><c:forEach items="${user.roles}"
+                                                         var="role">${role.label}&nbsp;</c:forEach></p>
+        </div>
+    </div>
 </section>
 
 <section>

@@ -328,7 +328,7 @@ CREATE OR REPLACE VIEW `adapcompounddb`.`SearchSpectrumPeakView` AS
 -- View `adapcompounddb`.`searchspectrumpeakviewv2`
 -- -----------------------------------------------------
 USE `adapcompounddb`;
-CREATE OR REPLACE VIEW `adapcompounddb`.`SearchSpectrumPeakViewv2` AS
+CREATE OR REPLACE VIEW `adapcompounddb`.`SearchSpectrumPeakViewV2` AS
   select `adapcompounddb`.`Peak`.`Id`                     AS `Id`,
          `adapcompounddb`.`Peak`.`Mz`                     AS `Mz`,
          `adapcompounddb`.`Peak`.`Intensity`              AS `Intensity`,
@@ -337,7 +337,7 @@ CREATE OR REPLACE VIEW `adapcompounddb`.`SearchSpectrumPeakViewv2` AS
          `adapcompounddb`.`Spectrum`.`RetentionTime`      AS `RetentionTime`,
          `adapcompounddb`.`Spectrum`.`ChromatographyType` AS `ChromatographyType`,
          `adapcompounddb`.`Submission`.`Id`               AS `SubmissionId`,
-         `adapcompounddb`.`Submissiontag`.`Name`          AS `SubmissionTagName`
+         `adapcompounddb`.`SubmissionTag`.`Name`          AS `SubmissionTagName`
   from ((((`adapcompounddb`.`Peak`
       join `adapcompounddb`.`Spectrum` on ((`adapcompounddb`.`Peak`.`SpectrumId` =
                                             `adapcompounddb`.`Spectrum`.`Id`))) left join `adapcompounddb`.`File` on ((

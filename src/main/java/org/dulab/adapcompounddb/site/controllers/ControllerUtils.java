@@ -1,16 +1,19 @@
 package org.dulab.adapcompounddb.site.controllers;
 
-import org.dulab.adapcompounddb.models.SubmissionCategoryType;
+import org.dulab.adapcompounddb.models.UserRole;
 import org.dulab.adapcompounddb.models.entities.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 
 import javax.json.*;
 import javax.validation.constraints.NotBlank;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class ControllerUtils {
+
+    private static final String ROLE_ADMIN = "ROLE_" + UserRole.ADMIN.name();
 
     private static String getColor(int n) {
         final int colorStringLength = 6;
@@ -161,6 +164,14 @@ public class ControllerUtils {
 
     public static int toIntegerScore(float score) {
         return Math.round(1000 * score);
+    }
+
+
+    public static boolean isAdmin(User user) {
+        return user.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(role -> role.equalsIgnoreCase(ROLE_ADMIN));
     }
 
 

@@ -27,3 +27,19 @@
     background-color: transparent; /*#e4e4e4;*/
     box-shadow: none;
 }
+
+/***** Colors *****/
+
+.color-primary {color: #844d36;}
+.color-primary-light {color: #b67960;}
+.color-primary-dark {color: #542410;}
+.color-secondary {color: #7c4dff;}
+.color-secondary-light {color: #b47cff;}
+.color-secondary-dark {color: #3f1dcb;}
+
+/***** Errors *****/
+
+.errors {
+    color: #ff0000;
+    font-weight: normal;
+}
