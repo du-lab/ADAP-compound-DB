@@ -171,7 +171,7 @@
 
 
                 <div align="center">
-                    <input type="submit" value="Search" formaction="${pageContext.request.contextPath}/submission/${querySpectrum.file.submission.id}/spectrum/${querySpectrum.id}/search"/>
+                    <input type="submit" value="Search" />
                 </div>
             </form:form>
         </div>

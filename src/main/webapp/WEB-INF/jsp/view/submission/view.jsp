@@ -235,7 +235,6 @@
             	data: function(data) {
 					data.column = data.order[0].column;
 					data.sortDirection = data.order[0].dir;
-					debugger;
 					data.search = data.search["value"];
             	}
             },
