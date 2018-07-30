@@ -2,6 +2,7 @@ package org.dulab.adapcompounddb.rest.controllers;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.dulab.adapcompounddb.models.dto.SpectrumTableResponse;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,14 +24,15 @@ public class SpectrumRestController {
 	public String findSpectrumBySubmissionId(@RequestParam("submissionId") Long submissionId,
 								@RequestParam("start") Integer start,
 								@RequestParam("length") Integer length,
-								@RequestParam("column") String column,
- @RequestParam("sortDirection") String sortDirection,
+								@RequestParam("column") Integer column,
+								@RequestParam("sortDirection") String sortDirection,
 								HttpServletRequest request) throws JsonProcessingException {
 	
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-		String jsonString = objectMapper.writeValueAsString(spectrumService.findSpectrumBySubmissionId(submissionId, start, length, column, sortDirection));
-		jsonString = "{\"data\":" + jsonString + "}";
+		SpectrumTableResponse response = spectrumService.findSpectrumBySubmissionId(submissionId, start, length, column, sortDirection);
+
+		String jsonString = objectMapper.writeValueAsString(response);
 		return jsonString;
 	}	
 }

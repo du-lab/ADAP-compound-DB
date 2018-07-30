@@ -15,7 +15,6 @@
     <link rel="stylesheet" href="<c:url value="/resources/AdapCompoundDb/css/main.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/AdapCompoundDb/css/plots.css"/>">
     <link rel="stylesheet" href="<c:url value="https://fonts.googleapis.com/icon?family=Material+Icons"/>">
-
 </head>
 <body>
 <header>

@@ -47,6 +47,7 @@
         <table id="spectrum_table" class="display" style="width: 100%; clear:none;">
             <thead>
             <tr>
+                <th></th>
                 <th>Name</th>
                 <th>Ret Time (min)</th>
                 <th>Precursor mass</th>
@@ -227,6 +228,7 @@
         // Table with a list of spectra
         var table = $('#spectrum_table').DataTable({
             serverSide: true,
+            processing: true,
             ajax: {
             	url: "${pageContext.request.contextPath}/spectrum/findSpectrumBySubmissionId.json?submissionId=${submission.id}",	
 
@@ -235,13 +237,30 @@
 					data.sortDirection = data.order[0].dir;
             	}
             },
-            "columns": [
-                { "data": "name" },
-                { "data": "retentionTime" },
-                { "data": "precursor" },
-                { "data": "chromatographyType" },
-                { "data": "fileName" },
-                { "data": "icons" }
+            "columnDefs": [
+                { "defaultContent": "", "targets": 0, "orderable": false},
+                { "data": "name", "targets": 1},
+                { "data": "retentionTime", "targets": 2},
+                { "data": "precursor", "targets": 3},
+                { "data": "chromatographyType", "targets": 4},
+                { "data": "fileName", "targets": 5},
+                { "data": "icons", "orderable": false,
+                	"targets": 6,
+                	"render": function(data, type, row, meta) {
+                		content = '<a href="spectrum/' + row.id + '">' +
+                        '<i class="material-icons" title="View spectrum">&#xE5D3;</i>' +
+	                    '</a>' +
+	                    '<a href="spectrum/' + row.id + '/search">' +
+	                        '<i class="material-icons" title="Search spectrum">&#xE8B6;</i>' +
+	                    '</a>';
+	                    if(JSON.parse("${authorized && edit}")) {
+	                        content += '<a href="spectrum/' + row.id + '/delete">' +
+	                            '<i class="material-icons" title="Delete spectrum">&#xE872;</i>' +
+	                        '</a>';
+	                    }
+                        return content;
+                	}
+                }
             ]
         });
 

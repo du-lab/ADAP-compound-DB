@@ -8,16 +8,12 @@ import javax.validation.constraints.NotNull;
 
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.dto.serializers.FileNameExtracter;
-import org.dulab.adapcompounddb.models.entities.File;
 import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 import org.dulab.adapcompounddb.models.entities.SpectrumProperty;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
@@ -55,6 +51,10 @@ public class SpectrumDTO implements Serializable {
 	@JsonDeserialize(using=FileNameExtracter.class)
 	@JsonSetter("file")
 	private String fileName;
+
+	private Integer fileIndex;
+
+	private Integer spectrumIndex;
 
 	// ****************************
 	// ***** Standard methods *****
@@ -162,6 +162,22 @@ public class SpectrumDTO implements Serializable {
 
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
+	}
+
+	public Integer getFileIndex() {
+		return fileIndex;
+	}
+
+	public void setFileIndex(Integer fileIndex) {
+		this.fileIndex = fileIndex;
+	}
+
+	public Integer getSpectrumIndex() {
+		return spectrumIndex;
+	}
+
+	public void setSpectrumIndex(Integer spectrumIndex) {
+		this.spectrumIndex = spectrumIndex;
 	}
 
 	@Override

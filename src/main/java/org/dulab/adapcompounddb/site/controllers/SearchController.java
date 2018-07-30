@@ -90,16 +90,15 @@ public class SearchController {
 //    }
 
     @RequestMapping(
-            value = "/submission/{submissionId:\\d+}/{fileIndex:\\d+}/{spectrumIndex:\\d+}/search/",
+            value = "/submission/{submissionId:\\d+}/spectrum/{spectrumId:\\d+}/search",
             method = RequestMethod.GET)
     public String search(@PathVariable("submissionId") long submissionId,
-                         @PathVariable("fileIndex") int fileIndex,
-                         @PathVariable("spectrumIndex") int spectrumIndex,
+                         @PathVariable("spectrumId") int spectrumId,
                          HttpSession session, Model model) {
 
         Spectrum spectrum;
         try {
-            spectrum = getQuerySpectrum(submissionId, fileIndex, spectrumIndex);
+            spectrum = spectrumService.find(spectrumId);
 
         } catch (EmptySearchResultException e) {
             model.addAttribute("errorMessage", e.getMessage());
@@ -153,16 +152,15 @@ public class SearchController {
     }
 
     @RequestMapping(
-            value = "/submission/{submissionId:\\d+}/{fileIndex:\\d+}/{spectrumIndex:\\d+}/search/",
+            value = "/submission/{submissionId:\\d+}/spectrum/{spectrumId:\\d+}/search",
             method = RequestMethod.POST)
     public ModelAndView search(@PathVariable("submissionId") long submissionId,
-                               @PathVariable("fileIndex") int fileIndex,
-                               @PathVariable("spectrumIndex") int spectrumIndex,
+            @PathVariable("spectrumId") int spectrumId,
                                HttpSession session, Model model, @Valid SearchForm searchForm, Errors errors) {
 
         Spectrum spectrum;
         try {
-            spectrum = getQuerySpectrum(submissionId, fileIndex, spectrumIndex);
+            spectrum = spectrumService.find(spectrumId);
 
         } catch (EmptySearchResultException e) {
             model.addAttribute("errorMessage", e.getMessage());

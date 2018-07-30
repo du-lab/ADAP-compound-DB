@@ -1,9 +1,8 @@
 package org.dulab.adapcompounddb.site.repositories;
 
-import java.util.List;
-
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -34,5 +33,5 @@ public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, Spec
 	long countUnmatchedBySubmissionChromatographyType(ChromatographyType chromatographyType);
 
 	@Query(value="select s from Spectrum s where s.file.submission.id = ?1")
-	List<Spectrum> findSpectrumBySubmissionId(Long submissionId, Pageable pageable);
+	Page<Spectrum> findSpectrumBySubmissionId(Long submissionId, Pageable pageable);
 }

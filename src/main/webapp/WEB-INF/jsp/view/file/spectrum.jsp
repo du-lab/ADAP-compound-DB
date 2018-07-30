@@ -83,7 +83,7 @@
 
 <section>
     <div align="center">
-        <a href="search/" class="button">Search</a>
+        <a href="${pageContext.request.contextPath}/submission/${spectrum.file.submission.id}/spectrum/${spectrum.id}/search" class="button">Search</a>
     </div>
 </section>
 

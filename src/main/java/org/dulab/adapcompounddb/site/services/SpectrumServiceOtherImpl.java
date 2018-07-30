@@ -6,13 +6,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.dto.SpectrumDTO;
+import org.dulab.adapcompounddb.models.dto.SpectrumTableResponse;
 import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
+import org.dulab.adapcompounddb.site.services.SpectrumServiceImpl.ColumnInformation;
 import org.dulab.adapcompounddb.utils.ObjectMapperUtils;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,12 +52,25 @@ public class SpectrumServiceOtherImpl implements SpectrumService {
 
     @Override
     @Transactional
-    public List<SpectrumDTO> findSpectrumBySubmissionId(Long submissionId, int start, int length, String column, String orderDirection) {
+    public SpectrumTableResponse findSpectrumBySubmissionId(Long submissionId, Integer start, Integer length, Integer column, String orderDirection) {
 		ObjectMapperUtils objectMapper = new ObjectMapperUtils();
+		Pageable pageable = null;
 
-//		Sort sport = new Sort(Sort.Direction.fromString(order), )
-		Pageable pageable = new PageRequest(1 + start/length, length);
-		
-    	return objectMapper.map(spectrumRepository.findSpectrumBySubmissionId(submissionId, pageable), SpectrumDTO.class);
+		String sortColumn = ColumnInformation.getColumnNameFromPosition(column);
+		if(sortColumn != null) {
+			Sort sort = new Sort(Sort.Direction.fromString(orderDirection), sortColumn);
+			pageable = PageRequest.of(start/length, length, sort);
+		} else {
+			pageable = PageRequest.of(start/length, length);
+		}
+
+    	Page<Spectrum> spectrumPage = spectrumRepository.findSpectrumBySubmissionId(submissionId, pageable);
+
+		List<SpectrumDTO> spectrumList = objectMapper.map(spectrumPage.getContent(), SpectrumDTO.class);
+		SpectrumTableResponse response = new SpectrumTableResponse(spectrumList);
+		response.setRecordsTotal(spectrumPage.getTotalElements());
+		response.setRecordsFiltered(spectrumPage.getTotalElements());
+
+		return response;
 	}
 }
