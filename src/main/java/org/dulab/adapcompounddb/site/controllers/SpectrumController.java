@@ -25,7 +25,7 @@ public class SpectrumController {
         this.submissionService = submissionService;
     }
 
-    @RequestMapping(value = "/spectrum/{spectrumId:\\d+}/", method = RequestMethod.GET)
+    @RequestMapping(value = "/spectrum/{spectrumId:\\d+}", method = RequestMethod.GET)
     public String spectrum(@PathVariable("spectrumId") long spectrumId,
                            Model model) {
 
@@ -34,15 +34,14 @@ public class SpectrumController {
         return spectrum(spectrum, model);
     }
 
-    @RequestMapping(value = "/submission/{submissionId:\\d+}/spectrum/{spectrumId:\\d+}")
-    public String spectrum(@PathVariable("submissionId") long submissionId,
-                           @PathVariable("spectrumId") int spectrumId,
-                           Model model) {
-
-        Spectrum spectrum = spectrumService.find(spectrumId);
-
-        return spectrum(spectrum, model);
-    }
+//    @RequestMapping(value = "/submission/{submissionId:\\d+}/spectrum/{spectrumId:\\d+}")
+//    public String spectrum(@PathVariable("spectrumId") int spectrumId,
+//                           Model model) {
+//
+//        Spectrum spectrum = spectrumService.find(spectrumId);
+//
+//        return spectrum(spectrum, model);
+//    }
 
     @RequestMapping(value = "/file/{fileIndex:\\d+}/{spectrumIndex:\\d+}/", method = RequestMethod.GET)
     public String spectrum(@PathVariable("fileIndex") int fileIndex,

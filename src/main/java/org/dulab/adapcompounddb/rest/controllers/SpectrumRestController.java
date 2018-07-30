@@ -26,11 +26,12 @@ public class SpectrumRestController {
 								@RequestParam("length") Integer length,
 								@RequestParam("column") Integer column,
 								@RequestParam("sortDirection") String sortDirection,
+								@RequestParam("search") String searchStr,
 								HttpServletRequest request) throws JsonProcessingException {
-	
+
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-		SpectrumTableResponse response = spectrumService.findSpectrumBySubmissionId(submissionId, start, length, column, sortDirection);
+		SpectrumTableResponse response = spectrumService.findSpectrumBySubmissionId(submissionId, searchStr, start, length, column, sortDirection);
 
 		String jsonString = objectMapper.writeValueAsString(response);
 		return jsonString;

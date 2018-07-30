@@ -46,7 +46,7 @@ public class SpectrumDTO implements Serializable {
 
 	private Double retentionTime;
 	
-	private ChromatographyType chromatographyType;
+	private String chromatographyType;
 
 	@JsonDeserialize(using=FileNameExtracter.class)
 	@JsonSetter("file")
@@ -148,11 +148,11 @@ public class SpectrumDTO implements Serializable {
 		this.retentionTime = retentionTime;
 	}
 
-	public ChromatographyType getChromatographyType() {
+	public String getChromatographyType() {
 		return chromatographyType;
 	}
 
-	public void setChromatographyType(ChromatographyType chromatographyType) {
+	public void setChromatographyType(String chromatographyType) {
 		this.chromatographyType = chromatographyType;
 	}
 

@@ -82,12 +82,19 @@ public class SpectrumServiceImpl implements SpectrumService {
 
     @Override
     @Transactional
-    public SpectrumTableResponse findSpectrumBySubmissionId(Long submissionId, Integer start, Integer length, Integer column, String orderDirection) {
+    public SpectrumTableResponse findSpectrumBySubmissionId(Long submissionId, String searchStr, Integer start, Integer length, Integer column, String orderDirection) {
 		ObjectMapperUtils objectMapper = new ObjectMapperUtils();
+		Pageable pageable = null;
 
-		Sort sort = new Sort(Sort.Direction.fromString(orderDirection), ColumnInformation.getColumnNameFromPosition(column));
-		Pageable pageable = PageRequest.of(1 + start/length, length, sort);
-    	Page<Spectrum> spectrumPage = spectrumRepository.findSpectrumBySubmissionId(submissionId, pageable);
+		String sortColumn = ColumnInformation.getColumnNameFromPosition(column);
+		if(sortColumn != null) {
+			Sort sort = new Sort(Sort.Direction.fromString(orderDirection), sortColumn);
+			pageable = PageRequest.of(start/length, length, sort);
+		} else {
+			pageable = PageRequest.of(start/length, length);
+		}
+
+    	Page<Spectrum> spectrumPage = spectrumRepository.findSpectrumBySubmissionId(submissionId, searchStr, pageable);
 
 		List<SpectrumDTO> spectrumList = objectMapper.map(spectrumPage.getContent(), SpectrumDTO.class);
 		SpectrumTableResponse response = new SpectrumTableResponse(spectrumList);

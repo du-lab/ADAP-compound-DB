@@ -119,7 +119,11 @@ public class SubmissionController extends BaseController {
 		model.addAttribute("authorized", authorized);
 		model.addAttribute("authenticated", isAuthenticated());
 
-        return "file/view";
+		if(submission.getId() == 0) {
+			return "file/view";
+		} else {
+			return "submission/view";
+		}
     }
 
     /**********************
@@ -278,7 +282,10 @@ public class SubmissionController extends BaseController {
             model.addAttribute("validationErrors", e.getConstraintViolations());
             model.addAttribute("submissionForm", form);
             return "file/view";
-        }
+        } catch (Exception e) {
+			// TODO: handle exception
+        	throw e;
+		}
 
         model.addAttribute("message", "Mass spectra are submitted successfully.");
         return "redirect:/submission/" + submission.getId() + "/";

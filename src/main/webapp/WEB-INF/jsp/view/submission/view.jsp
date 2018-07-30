@@ -58,39 +58,39 @@
             
             </thead>
             <tbody>
-            <c:if test="${submission.files.size() > 0}">
-                <c:forEach items="${submission.files}" var="file" varStatus="fileLoop">
-                    <c:forEach items="${file.spectra}" var="spectrum" varStatus="spectrumLoop">
-                        <tr>
-                            <td></td>
-                                <%--<td>${loop.index + 1}</td>--%>
-                            <td><a href="${fileLoop.index}/${spectrumLoop.index}/">${spectrum}</a><br/>
-                                    <%--<small>${dulab:abbreviate(spectrum.properties, 80)}</small>--%>
-                            </td>
-                            <td>${spectrum.retentionTime}</td>
-                            <td>${spectrum.precursor}</td>
-                            <td>${spectrum.chromatographyType.label}</td>
-                            <td>${file.name}</td>
-                            <td>
-                                <!-- more horiz -->
-                                <a href="${fileLoop.index}/${spectrumLoop.index}/">
-                                    <i class="material-icons" title="View spectrum">&#xE5D3;</i>
-                                </a>
-                                <!-- search -->
-                                <a href="${fileLoop.index}/${spectrumLoop.index}/search/">
-                                    <i class="material-icons" title="Search spectrum">&#xE8B6;</i>
-                                </a>
-                                <!-- delete -->
-								<c:if test="${authorized && edit}">
-	                                <a href="${fileLoop.index}/${spectrumLoop.index}/delete/">
-	                                    <i class="material-icons" title="Delete spectrum">&#xE872;</i>
+	            <%-- <c:if test="${submission.files.size() > 0}">
+	                <c:forEach items="${submission.files}" var="file" varStatus="fileLoop">
+	                    <c:forEach items="${file.spectra}" var="spectrum" varStatus="spectrumLoop">
+	                        <tr>
+	                            <td></td>
+	                                <td>${loop.index + 1}</td>
+	                            <td><a href="${fileLoop.index}/${spectrumLoop.index}/">${spectrum}</a><br/>
+	                                    <small>${dulab:abbreviate(spectrum.properties, 80)}</small>
+	                            </td>
+	                            <td>${spectrum.retentionTime}</td>
+		                            <td>${spectrum.precursor}</td>
+		                            <td>${spectrum.chromatographyType.label}</td>
+	                            <td>${file.name}</td>
+	                            <td>
+	                                <!-- more horiz -->
+	                                <a href="${fileLoop.index}/${spectrumLoop.index}/">
+	                                    <i class="material-icons" title="View spectrum">&#xE5D3;</i>
 	                                </a>
-	                            </c:if>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                </c:forEach>
-            </c:if>
+	                           ``     <!-- search -->
+	                                <a href="${fileLoop.index}/${spectrumLoop.index}/search/">
+	                                    <i class="material-icons" title="Search spectrum">&#xE8B6;</i>
+	                                </a>
+	                                <!-- delete -->
+									<c:if test="${authorized && edit}">
+		                                <a href="${fileLoop.index}/${spectrumLoop.index}/delete/">
+		                                    <i class="material-icons" title="Delete spectrum">&#xE872;</i>
+		                                </a>
+		                            </c:if>
+	                            </td>
+	                        </tr>
+	                    </c:forEach>
+	                </c:forEach>
+	            </c:if> --%>
             </tbody>
         </table>
     </div>
@@ -190,7 +190,7 @@
 			<table class="display dataTable" style="width: 100%; clear:none;">
 				<tr>
 					<td>Name:</td><td><input type="text" disabled="disabled" value="${submissionForm.name}"></td>
-					<td>Description:</td>
+					<td align="left">Description:</td>
 					<td rowspan="${fn:length(submissionForm.submissionCategoryTypes) + 2}">
 						<textarea  disabled="disabled" rows="${(fn:length(submissionForm.submissionCategoryTypes) + 2) * 4}" style="width: 100%; resize: none;">${submissionForm.description}</textarea>
 					</td>
@@ -227,12 +227,43 @@
 
         // Table with a list of spectra
         var table = $('#spectrum_table').DataTable({
+            serverSide: true,
             processing: true,
-            'columnDefs': [{
-                'searchable': false,
-                'orderable': false,
-                'targets': 0
-            }]
+            ajax: {
+            	url: "${pageContext.request.contextPath}/spectrum/findSpectrumBySubmissionId.json?submissionId=${submission.id}",	
+
+            	data: function(data) {
+					data.column = data.order[0].column;
+					data.sortDirection = data.order[0].dir;
+					debugger;
+					data.search = data.search["value"];
+            	}
+            },
+            "columnDefs": [
+                { "defaultContent": "", "targets": 0, "orderable": false},
+                { "data": "name", "targets": 1},
+                { "data": "retentionTime", "targets": 2},
+                { "data": "precursor", "targets": 3},
+                { "data": "chromatographyType", "targets": 4},
+                { "data": "fileName", "targets": 5},
+                { "data": "icons", "orderable": false,
+                	"targets": 6,
+                	"render": function(data, type, row, meta) {
+                		content = '<a href="spectrum/' + row.id + '">' +
+                        '<i class="material-icons" title="View spectrum">&#xE5D3;</i>' +
+	                    '</a>' +
+	                    '<a href="spectrum/' + row.id + '/search">' +
+	                        '<i class="material-icons" title="Search spectrum">&#xE8B6;</i>' +
+	                    '</a>';
+	                    if(JSON.parse("${authorized && edit}")) {
+	                        content += '<a href="spectrum/' + row.id + '/delete">' +
+	                            '<i class="material-icons" title="Delete spectrum">&#xE872;</i>' +
+	                        '</a>';
+	                    }
+                        return content;
+                	}
+                }
+            ]
         });
 
         table.on('order.dt search.dt', function () {

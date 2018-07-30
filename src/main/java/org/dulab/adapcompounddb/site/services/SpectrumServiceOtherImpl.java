@@ -52,7 +52,7 @@ public class SpectrumServiceOtherImpl implements SpectrumService {
 
     @Override
     @Transactional
-    public SpectrumTableResponse findSpectrumBySubmissionId(Long submissionId, Integer start, Integer length, Integer column, String orderDirection) {
+    public SpectrumTableResponse findSpectrumBySubmissionId(Long submissionId, String searchStr, Integer start, Integer length, Integer column, String orderDirection) {
 		ObjectMapperUtils objectMapper = new ObjectMapperUtils();
 		Pageable pageable = null;
 
@@ -64,7 +64,7 @@ public class SpectrumServiceOtherImpl implements SpectrumService {
 			pageable = PageRequest.of(start/length, length);
 		}
 
-    	Page<Spectrum> spectrumPage = spectrumRepository.findSpectrumBySubmissionId(submissionId, pageable);
+    	Page<Spectrum> spectrumPage = spectrumRepository.findSpectrumBySubmissionId(submissionId, searchStr, pageable);
 
 		List<SpectrumDTO> spectrumList = objectMapper.map(spectrumPage.getContent(), SpectrumDTO.class);
 		SpectrumTableResponse response = new SpectrumTableResponse(spectrumList);

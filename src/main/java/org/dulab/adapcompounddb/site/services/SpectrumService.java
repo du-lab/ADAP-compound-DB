@@ -9,5 +9,5 @@ public interface SpectrumService {
 
     Spectrum find(long id);
 
-    SpectrumTableResponse findSpectrumBySubmissionId(Long submissionId, Integer start, Integer length, Integer column, String orderDirection);
+    SpectrumTableResponse findSpectrumBySubmissionId(Long submissionId, String searchStr, Integer start, Integer length, Integer column, String orderDirection);
 }
