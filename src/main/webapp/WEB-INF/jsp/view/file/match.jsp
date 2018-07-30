@@ -141,14 +141,14 @@
                         <form:input path="scoreThreshold"/><br/>
                         <form:errors path="scoreThreshold" cssClass="errors"/><br/>
 
-                        <form:label path="mzTolerance">M/z tolerance</form:label><br/>
+                        <form:label path="mzTolerance">Product Ion M/z tolerance</form:label><br/>
                         <form:input path="mzTolerance"/><br/>
                         <form:errors path="mzTolerance" cssClass="errors"/><br/>
 
                         <c:if test="${querySpectrum.chromatographyType != 'GAS'}">
                             <label><form:checkbox path="massToleranceCheck"
                                                   onchange="$('#massTolerance').prop('disabled', !this.checked);"/>
-                                Mass Tolerance
+                                Precursor Ion M/z Tolerance
                             </label><br/>
                             <form:input path="massTolerance"/><br/>
                             <form:errors path="massTolerance" cssClass="errors"/><br/>

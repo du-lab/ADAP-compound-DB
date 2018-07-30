@@ -52,39 +52,39 @@ public class AuthenticationController {
         return new ModelAndView("login");
     }
 
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public ModelAndView login(Model model, HttpSession session, HttpServletRequest request,
-                              @Valid LogInForm form, Errors errors, @RequestParam(name = "loginFailed", defaultValue = "false") Boolean loginFailed) {
-
-        if (UserPrincipal.from(session) != null)
-            return getHomeRedirect();
-
-        if (errors.hasErrors()) {
-            form.setPassword(null);
-            return new ModelAndView("login");
-        }
-
-        UserPrincipal principal;
-        try {
-            principal = authenticationService.authenticate(form.getUsername(), form.getPassword());
-        } catch (ConstraintViolationException e) {
-            form.setPassword(null);
-            model.addAttribute("validationErrors", e.getConstraintViolations());
-            return new ModelAndView("login");
-        }
-
-        model.addAttribute("loginFailed", loginFailed);
-        if (principal == null) {
-            form.setPassword(null);
-            model.addAttribute("loginFailed", true);
-            model.addAttribute("logInForm", form);
-            return new ModelAndView("login");
-        }
-
-        UserPrincipal.assign(session, principal);
-        request.changeSessionId();
-        return getHomeRedirect();
-    }
+//    @RequestMapping(value = "/login", method = RequestMethod.POST)
+//    public ModelAndView login(Model model, HttpSession session, HttpServletRequest request,
+//                              @Valid LogInForm form, Errors errors, @RequestParam(name = "loginFailed", defaultValue = "false") Boolean loginFailed) {
+//
+//        if (UserPrincipal.from(session) != null)
+//            return getHomeRedirect();
+//
+//        if (errors.hasErrors()) {
+//            form.setPassword(null);
+//            return new ModelAndView("login");
+//        }
+//
+//        UserPrincipal principal;
+//        try {
+//            principal = authenticationService.authenticate(form.getUsername(), form.getPassword());
+//        } catch (ConstraintViolationException e) {
+//            form.setPassword(null);
+//            model.addAttribute("validationErrors", e.getConstraintViolations());
+//            return new ModelAndView("login");
+//        }
+//
+//        model.addAttribute("loginFailed", loginFailed);
+//        if (principal == null) {
+//            form.setPassword(null);
+//            model.addAttribute("loginFailed", true);
+//            model.addAttribute("logInForm", form);
+//            return new ModelAndView("login");
+//        }
+//
+//        UserPrincipal.assign(session, principal);
+//        request.changeSessionId();
+//        return getHomeRedirect();
+//    }
 
     /*****************
      ***** Sign Up *****
