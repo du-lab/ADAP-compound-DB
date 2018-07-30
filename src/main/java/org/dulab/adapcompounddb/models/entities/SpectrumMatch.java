@@ -42,7 +42,7 @@ public class SpectrumMatch implements Serializable {
         this.id = id;
     }
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "QuerySpectrumId", referencedColumnName = "Id")
     public Spectrum getQuerySpectrum() {
         return querySpectrum;
@@ -52,7 +52,7 @@ public class SpectrumMatch implements Serializable {
         this.querySpectrum = querySpectrum;
     }
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "MatchSpectrumId", referencedColumnName = "Id")
     public Spectrum getMatchSpectrum() {
         return matchSpectrum;

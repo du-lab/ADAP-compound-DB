@@ -130,7 +130,7 @@ public class Submission implements Serializable {
         this.files = files;
     }
 
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "UserPrincipalId", referencedColumnName = "Id")
     public UserPrincipal getUser() {
         return user;

@@ -29,7 +29,7 @@ public class Peak implements Serializable {
         this.id = id;
     }
 
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "SpectrumId", referencedColumnName = "Id")
     public Spectrum getSpectrum() {
         return spectrum;
