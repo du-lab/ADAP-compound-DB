@@ -8,5 +8,8 @@ public interface SubmissionRepository extends CrudRepository<Submission, Long> {
 
     Iterable<Submission> findByUserId(long userPrincipalId);
 
+    @Query("SELECT s FROM Submission s JOIN FETCH s.tags WHERE s.user.id = ?1")
+    Iterable<Submission> findWithTagsByUserId(long userPrincipalId);
+
     void deleteById(long id);
 }

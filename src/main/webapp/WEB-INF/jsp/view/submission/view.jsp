@@ -1,4 +1,6 @@
-<%--@elvariable id="sampleSourceTypeList" type="org.dulab.adapcompounddb.models.SampleSourceType[]"--%>
+<%--@elvariable id="submissionCategoryTypes" type="org.dulab.adapcompounddb.models.SubmissionCategoryType[]"--%>
+<%--@elvariable id="availableCategories" type="java.util.Map<org.dulab.adapcompounddb.models.SubmissionCategoryType, java.util.List<org.dulab.adapcompounddb.models.entities.SubmissionCategories>>"--%>
+<%--@elvariable id="availableTags" type="java.util.List<org.dulab.adapcompounddb.models.entities.SubmissionTag>"--%>
 <%--@elvariable id="submission" type="org.dulab.adapcompounddb.models.entities.Submission"--%>
 <%--@elvariable id="submissionForm" type="org.dulab.adapcompounddb.site.controllers.SubmissionController.SubmissionForm"--%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -130,7 +132,7 @@
 		                <form:textarea path="description" rows="12" cols="80"/><br/>
 		                <form:errors path="description" cssClass="errors"/><br/>
 		
-		                <c:forEach items="${submissionForm.submissionCategoryTypes}" var="type">
+		                <c:forEach items="${submissionCategoryTypes}" var="type">
 		                    <label>${type.label}:</label><br/>
 		                    <span style="vertical-align: bottom;">
 		                        <form:select path="submissionCategoryIds" multiple="false">
@@ -191,15 +193,15 @@
 				<tr>
 					<td>Name:</td><td><input type="text" disabled="disabled" value="${submissionForm.name}"></td>
 					<td align="left">Description:</td>
-					<td rowspan="${fn:length(submissionForm.submissionCategoryTypes) + 2}">
-						<textarea  disabled="disabled" rows="${(fn:length(submissionForm.submissionCategoryTypes) + 2) * 4}" style="width: 100%; resize: none;">${submissionForm.description}</textarea>
+					<td rowspan="${fn:length(submissionCategoryTypes) + 2}">
+						<textarea  disabled="disabled" rows="${(fn:length(submissionCategoryTypes) + 2) * 4}" style="width: 100%; resize: none;">${submissionForm.description}</textarea>
 					</td>
 				</tr>
                 <tr>
                     <td>Equipment:</td>
                     <td><input type="text" disabled="disabled" value="${dulab:abbreviate(submissionForm.tags, 80)}"></td>
                 </tr>
-				<c:forEach items="${submissionForm.submissionCategoryTypes}" var="type">
+				<c:forEach items="${submissionCategoryTypes}" var="type">
 					<tr>
 						<td>${type.label}:</td>
 						<td>
@@ -285,7 +287,7 @@
         // Selector with autocomplete
         $('#tags').tagit({
             autocomplete: {
-                source: ${dulab:stringsToJson(submissionForm.availableTags)}
+                source: ${dulab:stringsToJson(availableTags)}
             }
         });
     })

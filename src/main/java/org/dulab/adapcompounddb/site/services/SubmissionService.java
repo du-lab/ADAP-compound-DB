@@ -16,7 +16,9 @@ public interface SubmissionService {
 
     Submission findSubmission(long submissionId);
 
-    List<Submission> getSubmissionsByUserId(long userId);
+    List<Submission> findSubmissionsByUserId(long userId);
+
+    List<Submission> findSubmissionsWithTagsByUserId(long userId);
 
     void saveSubmission(
             @NotNull(message = "The submission is required.")

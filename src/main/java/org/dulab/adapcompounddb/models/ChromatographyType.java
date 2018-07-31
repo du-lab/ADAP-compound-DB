@@ -16,8 +16,8 @@ public enum ChromatographyType implements LabeledEnum {
         return label;
     }
 
-    @Override
-    public String toString() {
-    	return label;
-    }
+//    @Override
+//    public String toString() {
+//    	return label;
+//    }
 }

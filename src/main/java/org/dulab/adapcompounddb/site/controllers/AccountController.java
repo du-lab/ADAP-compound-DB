@@ -24,7 +24,7 @@ public class AccountController extends BaseController {
 //            return "redirect:/login/";
 
         model.addAttribute("user", user);
-        model.addAttribute("submissionList", submissionService.getSubmissionsByUserId(user.getId()));
+        model.addAttribute("submissionList", submissionService.findSubmissionsWithTagsByUserId(user.getId()));
 
         return "account/view";
     }

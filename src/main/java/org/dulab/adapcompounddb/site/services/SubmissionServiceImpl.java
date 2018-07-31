@@ -35,8 +35,14 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     @Override
     @Transactional
-    public List<Submission> getSubmissionsByUserId(long userId) {
+    public List<Submission> findSubmissionsByUserId(long userId) {
         return ServiceUtils.toList(submissionRepository.findByUserId(userId));
+    }
+
+    @Override
+    @Transactional
+    public List<Submission> findSubmissionsWithTagsByUserId(long userId) {
+        return ServiceUtils.toList(submissionRepository.findWithTagsByUserId(userId));
     }
 
     @Override
