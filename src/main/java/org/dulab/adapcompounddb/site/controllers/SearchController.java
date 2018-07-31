@@ -25,7 +25,6 @@ import javax.validation.constraints.Min;
 import java.util.*;
 
 @Controller
-@ControllerAdvice
 public class SearchController {
 
     private final UserPrincipalService userPrincipalService;

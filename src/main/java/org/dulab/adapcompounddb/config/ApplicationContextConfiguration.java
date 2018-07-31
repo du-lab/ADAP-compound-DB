@@ -88,6 +88,9 @@ public class ApplicationContextConfiguration {
 
         Map<String, Object> jpaPropertyMap = new HashMap<>();
         jpaPropertyMap.put("javax.persistence.schema-generation.database.action", "none");
+//        jpaPropertyMap.put("hibernate.format_sql", true);
+//        jpaPropertyMap.put("hibernate.use_sql_comments", true);
+//        jpaPropertyMap.put("hibernate.generate_statistics", true);
         factory.setJpaPropertyMap(jpaPropertyMap);
 
         return factory;
