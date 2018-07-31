@@ -1,7 +1,5 @@
 package org.dulab.adapcompounddb.site.controllers;
 
-import javax.servlet.http.HttpSession;
-
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,15 +11,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 public class AccountController extends BaseController {
 
-	@Autowired
-    private SubmissionService submissionService;
+	private final SubmissionService submissionService;
+
+    @Autowired
+    public AccountController(SubmissionService submissionService) {
+        this.submissionService = submissionService;
+    }
 
     @RequestMapping(value = "account/", method = RequestMethod.GET)
-    public String view(HttpSession session, Model model) {
+    public String view(Model model) {
+
         UserPrincipal user = getCurrentUserPrincipal();
-//
-//        if (user == null)
-//            return "redirect:/login/";
 
         model.addAttribute("user", user);
         model.addAttribute("submissionList", submissionService.findSubmissionsWithTagsByUserId(user.getId()));

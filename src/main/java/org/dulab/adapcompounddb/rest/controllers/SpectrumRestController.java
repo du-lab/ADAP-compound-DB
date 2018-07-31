@@ -17,8 +17,12 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 @RequestMapping("/spectrum")
 public class SpectrumRestController {
 
+	private final SpectrumService spectrumService;
+
 	@Autowired
-	private SpectrumService spectrumService;
+	public SpectrumRestController(SpectrumService spectrumService) {
+		this.spectrumService = spectrumService;
+	}
 
 	@RequestMapping(value="/findSpectrumBySubmissionId", produces="application/json")
 	public String findSpectrumBySubmissionId(@RequestParam("submissionId") Long submissionId,

@@ -23,5 +23,5 @@ public interface UserPrincipalService {
 
     void saveDefaultParameter(String parameter, UserParameterType type, Object value);
 
-	UserPrincipal getUerByUsername(String username);
+	UserPrincipal findUserByUsername(String username);
 }
