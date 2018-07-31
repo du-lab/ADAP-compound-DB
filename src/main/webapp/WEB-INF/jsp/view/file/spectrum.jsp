@@ -34,14 +34,24 @@
             <td><strong>Chromatography:</strong></td>
             <td>${spectrum.chromatographyType.label}</td>
         </tr>
-        <tr>
-            <td><strong>File:</strong></td>
-            <td>${spectrum.file.name}</td>
-        </tr>
-        <tr>
-            <td><strong>Submission:</strong></td>
-            <td><a href="${submissionUrl}">${spectrum.file.submission.name}</a></td>
-        </tr>
+        <c:if test="${spectrum.file != null}">
+            <tr>
+                <td><strong>File:</strong></td>
+                <td>${spectrum.file.name}</td>
+            </tr>
+        </c:if>
+        <c:if test="${spectrum.file!= null && spectrum.file.submission != null}">
+            <tr>
+                <td><strong>Submission:</strong></td>
+                <td><a href="${submissionUrl}">${spectrum.file.submission.name}</a></td>
+            </tr>
+        </c:if>
+        <c:if test="${spectrum.cluster != null}">
+            <tr>
+                <td><strong>Cluster:</strong></td>
+                <td><a href="/cluster/${spectrum.cluster.id}/">${spectrum.cluster}</a></td>
+            </tr>
+        </c:if>
         <c:forEach items="${spectrum.properties}" var="property">
             <tr>
                 <td><strong>${property.name}:</strong></td>

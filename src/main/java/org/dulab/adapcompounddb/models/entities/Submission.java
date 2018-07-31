@@ -3,27 +3,17 @@ package org.dulab.adapcompounddb.models.entities;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
-import org.dulab.adapcompounddb.validation.NotBlank;
+import org.hibernate.validator.constraints.URL;
 
 @Entity
 public class Submission implements Serializable {
@@ -59,6 +49,9 @@ public class Submission implements Serializable {
     @NotNull(message = "You must log in to submit mass spectra to the library.")
     @Valid
     private UserPrincipal user;
+
+    @URL(message = "Submission: The field Reference must be a valid URL.")
+    private String reference;
 
     // *******************************
     // ***** Getters and Setters *****
@@ -113,8 +106,7 @@ public class Submission implements Serializable {
     @OneToMany(
             mappedBy = "id.submission",
             fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
+            cascade = CascadeType.ALL
     )
     public List<SubmissionTag> getTags() {
         return tags;
@@ -138,7 +130,7 @@ public class Submission implements Serializable {
         this.files = files;
     }
 
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "UserPrincipalId", referencedColumnName = "Id")
     public UserPrincipal getUser() {
         return user;
@@ -157,16 +149,37 @@ public class Submission implements Serializable {
         this.dateTime = dateTime;
     }
 
-    public boolean isAuthorized(UserPrincipal user) {
-		boolean authorized = false;
-		if(user != null && user.isAdmin()) {
-			authorized = true;
-		} else if(id != 0) {
-    		authorized = StringUtils.equals(user.getUsername(), this.getUser().getUsername());
-    	}
+    public String getReference() {
+        return reference;
+    }
 
-    	return authorized;
-	}
+    public void setReference(String reference) {
+        this.reference = reference;
+    }
+
+    // *************************
+    // ***** Other methods *****
+    // *************************
+
+    public boolean isAuthorized(UserPrincipal user) {
+        boolean authorized = false;
+        if (user != null && user.isAdmin()) {
+            authorized = true;
+        } else if (id != 0) {
+            authorized = StringUtils.equals(user.getUsername(), this.getUser().getUsername());
+        }
+
+        return authorized;
+    }
+
+    @Transient
+    public String getTagsAsString() {
+        return getTags()
+                .stream()
+                .map(SubmissionTag::getId)
+                .map(SubmissionTagId::getName)
+                .collect(Collectors.joining(", "));
+    }
 
     @Override
     public boolean equals(Object other) {

@@ -102,4 +102,14 @@ public class SpectrumServiceImpl implements SpectrumService {
 
 		return response;
 	}
+
+	@Override
+    public long countConsensusSpectra() {
+        return spectrumRepository.countByConsensusTrue();
+    }
+
+    @Override
+    public long countReferenceSpectra() {
+        return spectrumRepository.countByReferenceTrue();
+    }
 }

@@ -1,6 +1,9 @@
-<%--@elvariable id="sampleSourceTypeList" type="org.dulab.adapcompounddb.models.SampleSourceType[]"--%>
+<%--@elvariable id="submissionCategoryTypes" type="org.dulab.adapcompounddb.models.SubmissionCategoryType[]"--%>
+<%--@elvariable id="availableCategories" type="java.util.Map<org.dulab.adapcompounddb.models.SubmissionCategoryType, java.util.List<org.dulab.adapcompounddb.models.entities.SubmissionCategories>>"--%>
+<%--@elvariable id="availableTags" type="java.util.List<org.dulab.adapcompounddb.models.entities.SubmissionTag>"--%>
 <%--@elvariable id="submission" type="org.dulab.adapcompounddb.models.entities.Submission"--%>
 <%--@elvariable id="submissionForm" type="org.dulab.adapcompounddb.site.controllers.SubmissionController.SubmissionForm"--%>
+
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
@@ -53,7 +56,7 @@
                 <th>Precursor mass</th>
                 <th>Chromatography</th>
                 <th>File</th>
-                <th>View / Search / Delete</th>
+                <th></th>
             </tr>
             
             </thead>
@@ -129,13 +132,17 @@
 		                <form:label path="description">Description:</form:label><br/>
 		                <form:textarea path="description" rows="12" cols="80"/><br/>
 		                <form:errors path="description" cssClass="errors"/><br/>
-		
-		                <c:forEach items="${submissionForm.submissionCategoryTypes}" var="type">
+
+						<form:label path="reference">Reference:</form:label><br/>
+						<form:input path="reference"/><br/>
+						<form:errors path="reference" cssClass="errors"/><br/>
+
+		                <c:forEach items="${submissionCategoryTypes}" var="type">
 		                    <label>${type.label}:</label><br/>
 		                    <span style="vertical-align: bottom;">
 		                        <form:select path="submissionCategoryIds" multiple="false">
 		                            <form:option value="0" label="Please select..."/>
-		                            <form:options items="${submissionForm.getSubmissionCategories(type)}" itemLabel="name" itemValue="id"/>
+		                            <form:options items="${availableCategories[type]}" itemLabel="name" itemValue="id"/>
 		                        </form:select><br/>
 		                    </span>
 		                    <a href="<c:url value="/categories/${type}/"/>">
@@ -157,7 +164,7 @@
 		                            <input type="submit" value="Save"/>
 		                        </c:when>
 		                        <c:otherwise>
-		                            <input type="submit" value="Submit" formaction="submit/"/>
+		                            <input type="submit" value="Submit" formaction="submit"/>
 		                            <a href="clear/" class="button">Clear</a>
 		                        </c:otherwise>
 		                    </c:choose>
@@ -178,7 +185,7 @@
 	</c:when>
 	<c:otherwise>
 		<c:if test="${authorized}">
-			<section>
+			<section class="no-background">
 				<div align="center">
 					<form>
 						<a href="edit" class="button">Edit</a>
@@ -187,30 +194,27 @@
 			</section>
 		</c:if>
 		<section>
+            <h1>Submission</h1>
 			<table class="display dataTable" style="width: 100%; clear:none;">
 				<tr>
-					<td>Name:</td><td><input type="text" disabled="disabled" value="${submissionForm.name}"></td>
+					<td>Name:</td><td><input type="text" disabled="disabled" value="${submission.name}"></td>
 					<td>Description:</td>
-					<td rowspan="${fn:length(submissionForm.submissionCategoryTypes) + 2}">
-						<textarea  disabled="disabled" rows="${(fn:length(submissionForm.submissionCategoryTypes) + 2) * 4}" style="width: 100%; resize: none;">${submissionForm.description}</textarea>
+					<td rowspan="${fn:length(submissionCategoryTypes) + 3}">
+						<textarea  disabled="disabled" rows="${(fn:length(submissionCategoryTypes) + 3) * 4}" style="width: 100%; resize: none;">${submission.description}</textarea>
 					</td>
 				</tr>
                 <tr>
                     <td>Equipment:</td>
-                    <td><input type="text" disabled="disabled" value="${dulab:abbreviate(submissionForm.tags, 80)}"></td>
+                    <td><input type="text" disabled="disabled" value="${dulab:abbreviate(submission.tagsAsString, 80)}"></td>
                 </tr>
-				<c:forEach items="${submissionForm.submissionCategoryTypes}" var="type">
+                <tr>
+                    <td>Reference:</td>
+                    <td><a href="${submission.reference}">${submission.reference}</a></td>
+                </tr>
+				<c:forEach items="${submissionCategoryTypes}" var="type">
 					<tr>
 						<td>${type.label}:</td>
-						<td>
-							<c:forEach items="${submissionForm.submissionCategoryIds}" var="id">
-								<c:forEach items="${submissionForm.getSubmissionCategories(type)}" var="categoryValue">
-									<c:if test="${id eq categoryValue.id}">
-										<input type="text" disabled="disabled" value="${categoryValue}" />
-									</c:if>
-								</c:forEach>
-							</c:forEach>
-						</td>
+						<td><input type="text" disabled="disabled" value="${submission.getCategory(type)}"/></td>
 					</tr>
 				</c:forEach>
 			</table>
@@ -255,7 +259,7 @@
         // Selector with autocomplete
         $('#tags').tagit({
             autocomplete: {
-                source: ${dulab:stringsToJson(submissionForm.availableTags)}
+                source: ${dulab:stringsToJson(availableTags)}
             }
         });
     })

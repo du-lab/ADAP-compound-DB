@@ -1,9 +1,9 @@
 package org.dulab.adapcompounddb.models.entities;
 
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
-import org.dulab.adapcompounddb.validation.NotBlank;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.List;
 

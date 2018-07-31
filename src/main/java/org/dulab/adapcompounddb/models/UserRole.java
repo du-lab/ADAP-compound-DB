@@ -1,14 +1,13 @@
 package org.dulab.adapcompounddb.models;
 
-public enum SampleSourceType implements LabeledEnum {
+public enum UserRole implements LabeledEnum {
 
-    STD("Standards"),
-    URINE("Human urine"),
-    PLASMA("Human blood plasma");
+	ADMIN("Administrator"),
+    USER("Registered User");
 
     private final String label;
 
-    SampleSourceType(String label) {
+    UserRole(String label) {
         this.label = label;
     }
 

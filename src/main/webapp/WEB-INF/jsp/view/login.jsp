@@ -15,7 +15,7 @@
         <div align="left" class="subsection">
             <p>You must log in to submit new mass spectra to the library.</p>
             <c:if test="${param['loginFailed']}">
-                <b class="errors">The username and password you entered are not correct. Please try again.</b><br/>
+                <p class="errors">The username and password you entered are not correct. Please try again.</p><br/>
             </c:if><c:if test="${validationErrors != null}"><div class="errors">
                 <ul>
                     <c:forEach items="${validationErrors}" var="error">
@@ -41,8 +41,8 @@
 
 <section>
     <h1>Sign-Up</h1>
-    <p>If you are not registered yet, please do it now:</p>
     <div align="center">
+        <p>If you are not registered yet, please do it now:</p>
         <a href="<c:url value="/signup"/>" class="button">Register</a>
     </div>
 </section>

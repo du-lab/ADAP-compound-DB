@@ -12,14 +12,17 @@
     <link rel="stylesheet" href="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.theme.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.structure.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/tag-it-6ccd2de/css/jquery.tagit.css"/>">
-    <link rel="stylesheet" href="<c:url value="/resources/AdapCompoundDb/css/main.css"/>">
-    <link rel="stylesheet" href="<c:url value="/resources/AdapCompoundDb/css/plots.css"/>">
     <link rel="stylesheet" href="<c:url value="https://fonts.googleapis.com/icon?family=Material+Icons"/>">
+    <link rel="stylesheet" href="<c:url value="/resources/AdapCompoundDb/css/main.css"/>">
+    <link rel="stylesheet" href="<c:url value="/resources/AdapCompoundDb/css/tables.css"/>">
+    <link rel="stylesheet" href="<c:url value="/resources/AdapCompoundDb/css/classes.css"/>">
+    <link rel="stylesheet" href="<c:url value="/resources/AdapCompoundDb/css/plots.css"/>">
+    <link rel="stylesheet" href="<c:url value="https://fonts.googleapis.com/css?family=Crimson+Text|Proza+Libre|Lato:300,400"/>">
 </head>
 <body>
 <header>
-    <h1>ADAP Compound Library</h1>
-    <h2>Some information</h2>
+    <h1>ADAP Spectral Library</h1>
+    <%--<h2>Some information</h2>--%>
 
     <c:if test="${currentUser != null}">
         <div class="user">User: ${currentUser.username} (<a href="<c:url value="/logout"/>">Log out</a>)</div>

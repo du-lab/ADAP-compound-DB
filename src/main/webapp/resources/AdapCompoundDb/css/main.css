@@ -9,7 +9,26 @@ Green: #8e8268
 Blue:  #86b3d1
 ********************/
 
-html {background: #f2f2f2;}
+/***** New Colors *****
+White: #ffffff
+Black: #000000
+Primary: #844d36
+Primary Light: #b67960
+Primary Dark: #542410
+Secondary: #7c4dff
+Secondary Light: #b47cff
+Secondary Dark: #3f1dcb
+Grey: #f2f2f2
+Grey Dark: #bfbfbf
+***********************/
+
+html {
+    background: #f2f2f2;
+    /*background-image: url("/resources/AdapCompoundDb/img/black-carbon-fiber-pattern.jpg");*/
+    /*background: white;*/
+    font-family: "Lato", sans-serif; /*"Times New Roman"*/
+    font-weight: lighter;
+}
 
 body, header, aside, section, article, h1, h2 {
     display: block;
@@ -20,23 +39,25 @@ body, header, aside, section, article, h1, h2 {
 /***** Header *****/
 
 header {
+    background: #844d36;
     display: block;
+    font-family: "Chrimson Text", serif;
     position: fixed;
     z-index: 10;
     top: 0;
     height: 40px;
     width: 100%;
     padding: 10px;
-    background: #844d36;
-    box-shadow: 0 4px 4px #844d36;
+    box-shadow: 0 4px 4px #542410;
     color: #ffffff;
 }
 
 header h1 {
     display: inline-block;
+    font-family: "Proza Libre", sans-serif;
     margin: 0 120px 0 120px;
-    letter-spacing: 0.05em;
-    text-shadow: 0 1px 1px #f2f2f2;
+    /*letter-spacing: 0.05em;*/
+    /*text-shadow: 0 1px 1px #f2f2f2;*/
 }
 
 header h2 {
@@ -63,9 +84,9 @@ header a:hover {
 
 aside {
     float: left;
+    font-family: "Proza Libre", Helvetica, sans-serif; /*Arial*/
     margin: 20px 10px;
     width: 180px;
-    font-family: Arial, Helvetica, sans-serif;
 }
 
 aside ul {
@@ -77,30 +98,39 @@ aside ul {
 aside li a {
     display: block;
     text-decoration: none;
-    color: #844d36;
+    color: #542410; /*#844d36*/
     width: 100%;
     height: 20px;
     margin: 0;
     padding: 10px;
 }
 
+aside li i.material-icons {
+    line-height: 0;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
 aside li a:hover {
-    background: #e4e4e4;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #bfbfbf; /*#e4e4e4*/
 }
 
 /***** Article *****/
 
 article {
     margin: 80px 0 20px 200px;
+    min-width: 1000px;
 }
 
 article section {
-    margin: 20px 40px;
-    padding: 10px;
-    min-width: 320px;
     background: #ffffff;
     border-radius: 10px;
-    font-family: "Times New Roman", Times, serif;
+    box-shadow: 0 0 10px #bfbfbf; /*#e4e4e4*/
+    margin: 20px 40px;
+    min-width: 320px;
+    padding: 0 0 10px 0;
 }
 
 article section.transparent {background: none;}
@@ -108,24 +138,35 @@ article section.transparent {background: none;}
 /***** Section *****/
 
 section h1 {
+    background: #b67960;
+    border-radius: 10px 10px 0 0;
+    color: #ffffff; /*#844d36*/
     display: block;
-    margin: 10px;
-    color: #844d36;
+    font-family: "Proza Libre", Times, serif;
+    font-size: 1.5em;
+    margin: 0 0 10px 0;
+    padding: 10px 0 5px;
     text-align: center;
-    /*font-size: 1em;*/
+    text-shadow: 0 0 5px #542410;
 }
 
-section h1:after {
-    content: ' ';
-    display: block;
-    border: 1px solid #844d36;
-}
+/*section h1:after {*/
+    /*content: ' ';*/
+    /*display: block;*/
+    /*border: 1px solid #b67960; !*#844d36*!*/
+/*}*/
 
 section h2 {
     display: block;
-    color: #86b3d1;
+    /*color: #86b3d1;*/
+    font-size: 1.2em;
+    font-weight: normal;
     margin: 10px;
     text-align: center;
+}
+
+section > div {
+    margin: 10px;
 }
 
 /*section table {*/
@@ -154,33 +195,37 @@ section h2 {
 /*}*/
 
 section a {
+    color: #542410;
+    font-weight: normal;
     text-decoration: none;
-    color: #844d36;
 }
 
 section a:hover {
+    color: #3f1dcb;
     text-decoration: underline;
 }
 
-section a > i.material-icons {color: #8e8268;}
+section a > i.material-icons {color: #b47cff;}
 
 section a > i.material-icons:hover {
     cursor: pointer;
-    color: #844d36;
+    color: #7c4dff;
+    text-shadow: 0 0 5px #bfbfbf;
 }
 
-section a.button {
-    display: inline-block;
-    border: none;
-    padding: 8px 15px 8px 15px;
-    text-decoration: none;
-    background: #8e8268;
-    color: #ffffff;
-    box-shadow: 1px 1px 4px #474853;
-    border-radius: 3px;
-}
-
-section a.button:hover {background: #844d36;}
+/*section a.button {*/
+    /*display: inline-block;*/
+    /*border: none;*/
+    /*font-family: "Lato", sans-serif;*/
+    /*font-size: 0.75em;*/
+    /*font-weight: lighter;*/
+    /*padding: 8px 15px 8px 15px;*/
+    /*text-decoration: none;*/
+    /*background: #8e8268;*/
+    /*color: #ffffff;*/
+    /*box-shadow: 1px 1px 4px #474853;*/
+    /*border-radius: 3px;*/
+/*}*/
 
 section div.heading {
     border-bottom: 1px solid #844d36;
@@ -189,16 +234,20 @@ section div.heading {
 
 section form {padding: 0 20px;}
 
-section form input[type=submit], input[type=button] {
+section a.button, form input[type=submit], input[type=button] {
+    background: #b47cff; /*#474853, #8e8268*/
     border: none;
+    border-radius: 5px;
+    color: #ffffff;
     cursor: pointer;
+    display: inline-block;
+    font-family: "Lato", sans-serif;
+    font-size: 0.8em;
+    font-weight: lighter;
     margin-top: 1em;
     margin-right: 10px;
     padding: 8px 15px 8px 15px;
-    background: #8e8268;
-    color: #ffffff;
-    box-shadow: 1px 1px 4px #474853;
-    border-radius: 3px;
+    text-decoration: none;
 }
 
 /*section form input[type=file] {*/
@@ -208,7 +257,10 @@ section form input[type=submit], input[type=button] {
     /*border-radius: 3px;*/
 /*}*/
 
-section form input[type=submit]:hover, input[type=button]:hover{background: #844d36;}
+section a.button:hover, form input[type=submit]:hover, input[type=button]:hover {
+    background: #7c4dff;
+    box-shadow: 0 0 5px #bfbfbf;
+}
 
 section form input[type=radio] + label {
     margin: 5px 0;
@@ -217,22 +269,27 @@ section form input[type=radio] + label {
 
 /* Default values for many form elements */
 section form select:not([multiple]), input[type=text], input[type=password], input[type=file] {
+    font-size: 0.8em;
     margin: 5px 0;
-    padding: 0 10px;
-    height: 2em;
-    font-family: Verdana, Georgia, sans-serif;
+    padding: 10px;
+    /*font-family: Verdana, Georgia, sans-serif;*/
 }
 
 section form select[multiple] {
     margin: 5px 0;
     padding: 0 10px;
-    font-family: Verdana, Georgia, sans-serif;
+    /*font-family: Verdana, Georgia, sans-serif;*/
 }
 
-section form input[type=text], input[type=password] {
-    width: 200px;
-    box-shadow: 1px 1px 1px #f2f2f2;
-    border-radius: 3px;
+section form input[type=text], input[type=password], select:not([multiple]) {
+    border: none;
+    border-bottom: 1px solid #542410;
+    /*width: 300px;*/
+}
+
+section form input[type=text]:hover, input[type=password]:hover, select:not([multiple]):hover {
+    background: #f2f2f2;
+    box-shadow: 0 0 5px #bfbfbf;
 }
 
 section form textarea {
@@ -251,11 +308,11 @@ section form input[type=file] {
     border-radius: 3px;
 }
 
-section form > label {
+section form label {
     margin: 5px 0;
     clear: both;
-    font-family: "Courier New", Courier, monospace;
-    color: #8e8268;
+    font-family: "Proza Libre", sans-serif;
+    color: #542410; /*#8e8268*/
 }
 
 section form span {
@@ -276,13 +333,7 @@ section div.subsection div.submit {
 
 /***** Misc ******/
 
-.errors {
-    color: #ff0000
-}
 
-span.highlighted {
-    color: #86b3d1;
-}
 
 .dark {background-color: #474853;}
 

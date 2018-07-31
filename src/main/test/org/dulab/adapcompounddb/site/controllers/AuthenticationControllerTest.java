@@ -3,6 +3,7 @@ package org.dulab.adapcompounddb.site.controllers;
 import org.dulab.adapcompounddb.config.ServletContextConfiguration;
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.site.services.AuthenticationService;
+import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,13 +28,18 @@ public class AuthenticationControllerTest {
     private AuthenticationService authenticationServiceMock;
 
     @Mock
+    private SpectrumService spectrumServiceMock;
+
+    @Mock
     private UserPrincipal userPrincipal;
 
     @Before
     public void setUp() {
 
         mockMvc = MockMvcBuilders
-                .standaloneSetup(new AuthenticationController(authenticationServiceMock), new IndexController())
+                .standaloneSetup(
+                        new AuthenticationController(authenticationServiceMock),
+                        new IndexController(spectrumServiceMock))
                 .setViewResolvers(
                         new ServletContextConfiguration(
                                 new LocalValidatorFactoryBean()).viewResolver())

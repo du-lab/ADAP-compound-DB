@@ -21,6 +21,8 @@ public class SpectrumQueryBuilder {
 
     private Spectrum spectrum = null;
 
+    private Set<String> tags = null;
+
     private double mzTolerance;
 
     private double scoreThreshold;
@@ -30,18 +32,22 @@ public class SpectrumQueryBuilder {
 
         switch (searchType) {
             case SIMILARITY_SEARCH:
-                this.peakView = "SearchSpectrumPeakView";
+                this.peakView = "SearchSpectrumPeakViewV2";
                 break;
             case CLUSTERING:
                 this.peakView = "ClusterSpectrumPeakView";
                 break;
             default:
-                this.peakView = "SearchSpectrumPeakView";
+                this.peakView = "SearchSpectrumPeakViewV2";
         }
 
         this.chromatographyType = chromatographyType;
         this.excludeSpectra = excludeSpectra;
     }
+
+    // *******************
+    // ***** Setters *****
+    // *******************
 
     public SpectrumQueryBuilder setPrecursorRange(double precursor, double tolerance) {
         this.precursorRange = new Range(precursor - tolerance, precursor + tolerance);
@@ -60,6 +66,10 @@ public class SpectrumQueryBuilder {
         return this;
     }
 
+    public SpectrumQueryBuilder setTags(Set<String> tags) {
+        this.tags = tags;
+        return this;
+    }
 
     public String build() {
 
@@ -89,6 +99,13 @@ public class SpectrumQueryBuilder {
                                     .map(s -> Long.toString(s.getId()))
                                     .distinct()
                                     .collect(Collectors.joining(","))));
+
+        if (tags != null)
+            librarySelectionBuilder.append(
+                    String.format(" AND (%s)",
+                            tags.stream()
+                                    .map(t -> String.format("SubmissionTagName = \"%s\"", t))
+                                    .collect(Collectors.joining(" OR "))));
 
         // --------------------------------
         // End of library spectra selection

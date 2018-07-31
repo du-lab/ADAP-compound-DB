@@ -32,7 +32,7 @@ public class SubmissionTagId implements Serializable {
         this.name = name;
     }
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "SubmissionId", referencedColumnName = "Id")
     public Submission getSubmission() {
         return submission;

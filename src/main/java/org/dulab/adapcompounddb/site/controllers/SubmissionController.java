@@ -8,13 +8,13 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 
-import org.dulab.adapcompounddb.models.SampleSourceType;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
-import org.dulab.adapcompounddb.validation.NotBlank;
+import org.hibernate.validator.constraints.URL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 @Controller
-@SessionAttributes("submissionCategoryTypes")
+@SessionAttributes({"submissionCategoryTypes", "availableTags", "availableCategories"})
 public class SubmissionController extends BaseController {
 
     private final SubmissionService submissionService;
@@ -40,8 +40,19 @@ public class SubmissionController extends BaseController {
 
     @ModelAttribute
     public void addAttributes(Model model) {
-        model.addAttribute("sampleSourceTypeList", SampleSourceType.values());
         model.addAttribute("submissionCategoryTypes", SubmissionCategoryType.values());
+        model.addAttribute("availableTags", submissionService.findAllTags());
+
+        Map<SubmissionCategoryType, List<SubmissionCategory>> availableCategories = Arrays.stream(SubmissionCategoryType.values())
+                .collect(Collectors
+                        .toMap(t -> t, t -> new ArrayList<>()));
+
+        submissionService.findAllCategories()
+                .forEach(category -> availableCategories
+                        .get(category.getCategoryType())
+                        .add(category));
+
+        model.addAttribute("availableCategories", availableCategories);
     }
 
     /********************************
@@ -85,18 +96,18 @@ public class SubmissionController extends BaseController {
     private String view(Submission submission, Model model, boolean edit) {
 
         boolean authorized = submission.isAuthorized(getCurrentUserPrincipal());
-        if(!authorized && edit) {
-        	return "redirect:/error?errorMsg=" + ACCESS_DENIED_MESSAGE;
+        if (!authorized && edit) {
+            return "redirect:/error?errorMsg=" + ACCESS_DENIED_MESSAGE;
         }
-        
+
         model.addAttribute("submission", submission);
 
         SubmissionForm form = new SubmissionForm();
-        form.setAvailableTags(submissionService.findAllTags());
         form.setCategoryMap(submissionService.findAllCategories());
 
         form.setName(submission.getName());
         form.setDescription(submission.getDescription());
+        form.setReference(submission.getReference());
 
         if (submission.getTags() != null)
             form.setTags(submission
@@ -115,9 +126,9 @@ public class SubmissionController extends BaseController {
                     .collect(Collectors.toList()));
 
         model.addAttribute("submissionForm", form);
-        model.addAttribute("edit", edit);
-		model.addAttribute("authorized", authorized);
-		model.addAttribute("authenticated", isAuthenticated());
+        model.addAttribute("edit", edit);   // Edit mode
+        model.addAttribute("authorized", authorized);  // User is authorized to edit the submission
+        model.addAttribute("authenticated", isAuthenticated());  // User is logged in
 
 		if(submission.getId() == 0) {
 			return "file/view";
@@ -215,10 +226,13 @@ public class SubmissionController extends BaseController {
      ***** File / Submission Submit *****
      **********************************/
 
-    @RequestMapping(value = "/file/submit/", method = RequestMethod.POST)
+    @RequestMapping(value = "/file/submit", method = RequestMethod.POST)
     public String fileView(HttpSession session, Model model, @Valid SubmissionForm form, Errors errors) {
 
         if (errors.hasErrors()) {
+            model.addAttribute("edit", true);
+            model.addAttribute("authorized", true);
+            model.addAttribute("submissionForm", form);
             return "file/view";
         }
 
@@ -233,13 +247,14 @@ public class SubmissionController extends BaseController {
         return response;
     }
 
-	@RequestMapping(value = "/submission/{submissionId:\\d+}/edit", method = RequestMethod.POST)
-//    @RequestMapping(value = "/submission/{submissionId:\\d+}/", method = RequestMethod.POST)
+    @RequestMapping(value = "/submission/{submissionId:\\d+}/edit", method = RequestMethod.POST)
     public String submissionView(@PathVariable("submissionId") long submissionId, Model model, HttpSession session,
                                  @Valid SubmissionForm form, Errors errors) {
 
         if (errors.hasErrors()) {
-            model.addAttribute("form", form);
+//            model.addAttribute("submissionForm", form);
+            model.addAttribute("edit", true);
+            model.addAttribute("authorized", true);
             return "file/view";
         }
 
@@ -256,6 +271,7 @@ public class SubmissionController extends BaseController {
 
         submission.setName(form.getName());
         submission.setDescription(form.getDescription());
+        submission.setReference(form.getReference());
         submission.setDateTime(new Date());
 
         List<SubmissionTag> tags = new ArrayList<>();
@@ -314,13 +330,14 @@ public class SubmissionController extends BaseController {
 
         private String description;
 
+        @URL(message = "The field Reference must be a valid URL.")
+        private String reference;
+
         private String tags;
 
         private List<Long> submissionCategoryIds;
 
         private Map<SubmissionCategoryType, List<SubmissionCategory>> categoryMap;
-
-        private List<String> availableTags;
 
         public void setCategoryMap(List<SubmissionCategory> categories) {
 
@@ -332,10 +349,6 @@ public class SubmissionController extends BaseController {
                     category -> this.categoryMap
                             .get(category.getCategoryType())
                             .add(category));
-        }
-
-        public void setAvailableTags(List<String> availableTags) {
-            this.availableTags = availableTags;
         }
 
         public String getName() {
@@ -354,6 +367,14 @@ public class SubmissionController extends BaseController {
             this.description = description;
         }
 
+        public String getReference() {
+            return reference;
+        }
+
+        public void setReference(String reference) {
+            this.reference = reference;
+        }
+
         public String getTags() {
             return tags;
         }
@@ -370,16 +391,8 @@ public class SubmissionController extends BaseController {
             this.submissionCategoryIds = submissionCategoryIds;
         }
 
-        public SubmissionCategoryType[] getSubmissionCategoryTypes() {
-            return SubmissionCategoryType.values();
-        }
-
         public List<SubmissionCategory> getSubmissionCategories(SubmissionCategoryType type) {
             return categoryMap.get(type);
-        }
-
-        public List<String> getAvailableTags() {
-            return availableTags;
         }
     }
 }
