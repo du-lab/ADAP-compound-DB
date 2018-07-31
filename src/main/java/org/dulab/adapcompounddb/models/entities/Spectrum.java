@@ -3,19 +3,7 @@ package org.dulab.adapcompounddb.models.entities;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.ColumnResult;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.SqlResultSetMapping;
+import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -39,20 +27,30 @@ public class Spectrum implements Serializable {
 
 	private String name = null;
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "FileId", referencedColumnName = "Id")
 	private File file;
 
 	@NotNull(message = "Spectrum: peak list is required.")
 	@Valid
+	@OneToMany(targetEntity = Peak.class, mappedBy = "spectrum", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<Peak> peaks;
 
+	@OneToMany(targetEntity = SpectrumProperty.class, mappedBy = "spectrum", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<SpectrumProperty> properties;
 
+	@OneToMany(targetEntity = SpectrumMatch.class, mappedBy = "querySpectrum", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<SpectrumMatch> matches;
 
+	@OneToMany(mappedBy = "matchSpectrum", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<SpectrumMatch> matches2;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "ClusterId", referencedColumnName = "Id")
 	private SpectrumCluster cluster;
 
 	private boolean consensus;
@@ -64,14 +62,13 @@ public class Spectrum implements Serializable {
 	private Double retentionTime;
 
 	@NotNull(message = "Spectrum: the field Chromatography Type is required.")
+	@Enumerated(EnumType.STRING)
 	private ChromatographyType chromatographyType;
 
 	// *******************************
 	// ***** Getters and setters *****
 	// *******************************
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public long getId() {
 		return id;
 	}
@@ -95,8 +92,6 @@ public class Spectrum implements Serializable {
 		this.name = name;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "FileId", referencedColumnName = "Id")
 	public File getFile() {
 		return file;
 	}
@@ -105,7 +100,6 @@ public class Spectrum implements Serializable {
 		this.file = file;
 	}
 
-	@OneToMany(targetEntity = Peak.class, mappedBy = "spectrum", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	public List<Peak> getPeaks() {
 		return peaks;
 	}
@@ -126,7 +120,6 @@ public class Spectrum implements Serializable {
 		this.peaks = peaks;
 	}
 
-	@OneToMany(targetEntity = SpectrumProperty.class, mappedBy = "spectrum", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	public List<SpectrumProperty> getProperties() {
 		return properties;
 	}
@@ -153,7 +146,6 @@ public class Spectrum implements Serializable {
 		}
 	}
 
-	@OneToMany(targetEntity = SpectrumMatch.class, mappedBy = "querySpectrum", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	public List<SpectrumMatch> getMatches() {
 		return matches;
 	}
@@ -162,7 +154,6 @@ public class Spectrum implements Serializable {
 		this.matches = matches;
 	}
 
-	@OneToMany(mappedBy = "matchSpectrum", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	public List<SpectrumMatch> getMatches2() {
 		return matches2;
 	}
@@ -171,8 +162,6 @@ public class Spectrum implements Serializable {
 		this.matches2 = matches2;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "ClusterId", referencedColumnName = "Id")
 	public SpectrumCluster getCluster() {
 		return cluster;
 	}
@@ -213,7 +202,6 @@ public class Spectrum implements Serializable {
 		this.retentionTime = retentionTime;
 	}
 
-	@Enumerated(EnumType.STRING)
 	public ChromatographyType getChromatographyType() {
 		return chromatographyType;
 	}

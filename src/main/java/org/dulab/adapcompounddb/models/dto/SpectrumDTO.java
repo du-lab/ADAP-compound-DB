@@ -25,19 +25,6 @@ public class SpectrumDTO implements Serializable {
 
 	private long id;
 
-	@NotNull(message = "Spectrum: peak list is required.")
-	@Valid
-	@JsonIgnore
-	private List<Peak> peaks;
-
-	private List<SpectrumProperty> properties;
-
-	private List<SpectrumMatch> matches;
-
-	private List<SpectrumMatch> matches2;
-
-	private SpectrumCluster cluster;
-
 	private boolean consensus;
 
 	private boolean reference;
@@ -46,10 +33,8 @@ public class SpectrumDTO implements Serializable {
 
 	private Double retentionTime;
 	
-	private String chromatographyType;
+	private String chromatographyTypeLabel;
 
-	@JsonDeserialize(using=FileNameExtracter.class)
-	@JsonSetter("file")
 	private String fileName;
 
 	private Integer fileIndex;
@@ -74,46 +59,6 @@ public class SpectrumDTO implements Serializable {
 
 	public void setId(long id) {
 		this.id = id;
-	}
-
-	public List<Peak> getPeaks() {
-		return peaks;
-	}
-
-	public void setPeaks(List<Peak> peaks) {
-		this.peaks = peaks;
-	}
-
-	public List<SpectrumProperty> getProperties() {
-		return properties;
-	}
-
-	public void setProperties(List<SpectrumProperty> properties) {
-		this.properties = properties;
-	}
-
-	public List<SpectrumMatch> getMatches() {
-		return matches;
-	}
-
-	public void setMatches(List<SpectrumMatch> matches) {
-		this.matches = matches;
-	}
-
-	public List<SpectrumMatch> getMatches2() {
-		return matches2;
-	}
-
-	public void setMatches2(List<SpectrumMatch> matches2) {
-		this.matches2 = matches2;
-	}
-
-	public SpectrumCluster getCluster() {
-		return cluster;
-	}
-
-	public void setCluster(SpectrumCluster cluster) {
-		this.cluster = cluster;
 	}
 
 	public boolean isConsensus() {
@@ -148,12 +93,12 @@ public class SpectrumDTO implements Serializable {
 		this.retentionTime = retentionTime;
 	}
 
-	public String getChromatographyType() {
-		return chromatographyType;
+	public String getChromatographyTypeLabel() {
+		return chromatographyTypeLabel;
 	}
 
-	public void setChromatographyType(String chromatographyType) {
-		this.chromatographyType = chromatographyType;
+	public void setChromatographyTypeLabel(String chromatographyTypeLabel) {
+		this.chromatographyTypeLabel = chromatographyTypeLabel;
 	}
 
 	public String getFileName() {

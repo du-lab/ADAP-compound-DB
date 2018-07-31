@@ -245,7 +245,7 @@
                 { "data": "name", "targets": 1},
                 { "data": "retentionTime", "targets": 2},
                 { "data": "precursor", "targets": 3},
-                { "data": "chromatographyType", "targets": 4},
+                { "data": "chromatographyTypeLabel", "targets": 4},
                 { "data": "fileName", "targets": 5},
                 { "data": "icons", "orderable": false,
                 	"targets": 6,

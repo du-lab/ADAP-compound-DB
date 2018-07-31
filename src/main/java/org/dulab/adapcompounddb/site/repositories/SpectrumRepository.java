@@ -2,8 +2,10 @@ package org.dulab.adapcompounddb.site.repositories;
 
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
+import org.eclipse.persistence.jpa.rs.annotations.RestPageableQuery;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
@@ -28,9 +30,11 @@ public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, Spec
 
 	long countByChromatographyTypeAndConsensusTrue(ChromatographyType chromatographyType);
 
-	@Query(value="select s from Spectrum s "
-			+ "where s.file.submission.id = ?1 "
-			+ "and (s.name like %?2% or s.file.name like %?2%)")
+	@Query(value="select s from Spectrum s " +
+			"inner join s.file f " +
+			"inner join f.submission sub "
+			+ "where sub.id = ?1 "
+			+ "and (sub.name like %?2% or f.name like %?2%)")
 	Page<Spectrum> findSpectrumBySubmissionId(Long submissionId, String searchStr, Pageable pageable);
 
     @Query("SELECT COUNT(s) FROM Spectrum s WHERE s.matches IS EMPTY " +
