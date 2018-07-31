@@ -90,7 +90,7 @@ public class SearchController {
 //    }
 
     @RequestMapping(
-            value = "/submission/{submissionId:\\d+}/spectrum/{spectrumId:\\d+}/search",
+            value = "/submission/{submissionId:\\d+}/spectrum/{spectrumId:\\d+}/search/",
             method = RequestMethod.GET)
     public String search(@PathVariable("submissionId") long submissionId,
                          @PathVariable("spectrumId") int spectrumId,

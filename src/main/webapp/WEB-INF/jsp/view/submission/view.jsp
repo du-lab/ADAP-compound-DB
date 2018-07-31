@@ -248,10 +248,10 @@
                 { "data": "icons", "orderable": false,
                 	"targets": 6,
                 	"render": function(data, type, row, meta) {
-                		content = '<a href="spectrum/' + row.id + '">' +
+                		content = '<a href="spectrum/' + row.id + '/">' +
                         '<i class="material-icons" title="View spectrum">&#xE5D3;</i>' +
 	                    '</a>' +
-	                    '<a href="spectrum/' + row.id + '/search">' +
+	                    '<a href="spectrum/' + row.id + '/search/">' +
 	                        '<i class="material-icons" title="Search spectrum">&#xE8B6;</i>' +
 	                    '</a>';
 	                    if(JSON.parse("${authorized && edit}")) {
