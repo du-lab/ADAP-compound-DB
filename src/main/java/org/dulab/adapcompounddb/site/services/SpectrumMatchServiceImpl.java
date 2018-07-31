@@ -1,27 +1,34 @@
 package org.dulab.adapcompounddb.site.services;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
-import org.dulab.adapcompounddb.models.Hit;
-import org.dulab.adapcompounddb.models.QueryParameters;
-import org.dulab.adapcompounddb.models.SearchType;
-import org.dulab.adapcompounddb.models.entities.*;
-import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
-import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.models.ChromatographyType;
+import org.dulab.adapcompounddb.models.QueryParameters;
+import org.dulab.adapcompounddb.models.entities.Peak;
+import org.dulab.adapcompounddb.models.entities.Spectrum;
+import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
+import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
+import org.dulab.adapcompounddb.models.entities.SpectrumProperty;
+import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
+import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import smile.clustering.HierarchicalClustering;
 import smile.clustering.linkage.CompleteLinkage;
 import smile.clustering.linkage.Linkage;
-
-import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Service
 public class SpectrumMatchServiceImpl implements SpectrumMatchService {

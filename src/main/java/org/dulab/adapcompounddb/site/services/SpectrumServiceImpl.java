@@ -9,7 +9,6 @@ import org.dulab.adapcompounddb.models.dto.SpectrumDTO;
 import org.dulab.adapcompounddb.models.dto.SpectrumTableResponse;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
-import org.dulab.adapcompounddb.site.services.SpectrumServiceImpl.ColumnInformation;
 import org.dulab.adapcompounddb.utils.ObjectMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

@@ -1,12 +1,11 @@
 package org.dulab.adapcompounddb.site.repositories;
 
-import org.apache.commons.lang3.RandomStringUtils;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
-
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class SpectrumQueryBuilder {
 
