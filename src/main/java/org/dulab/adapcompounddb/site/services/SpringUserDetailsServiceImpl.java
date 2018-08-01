@@ -15,12 +15,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class SpringUserDetailsServiceImpl implements UserDetailsService {
 
+	private final UserPrincipalService userPrincipalService;
+
 	@Autowired
-	UserPrincipalService userPrincipalService;
+	public SpringUserDetailsServiceImpl(UserPrincipalService userPrincipalService) {
+		this.userPrincipalService = userPrincipalService;
+	}
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		UserPrincipal user = userPrincipalService.getUerByUsername(username);
+		UserPrincipal user = userPrincipalService.findUserByUsername(username);
 
 	    UserBuilder builder = null;
 	    if (user != null) {

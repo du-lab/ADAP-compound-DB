@@ -20,7 +20,7 @@ public abstract class BaseController {
 	}
 
     public UserPrincipal getCurrentUserPrincipal() {
-		return userPrincipalService.getUerByUsername(getCurrentUsername());
+		return userPrincipalService.findUserByUsername(getCurrentUsername());
 	}
 
 	public Authentication getAuthentication() {
