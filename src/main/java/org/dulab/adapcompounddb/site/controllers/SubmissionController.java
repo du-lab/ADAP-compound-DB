@@ -66,7 +66,7 @@ public class SubmissionController extends BaseController {
         if (submission == null)
             return redirectFileUpload();
 
-        return view(Submission.from(session), model, false);
+        return edit(Submission.from(session), model, false);
     }
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/edit", method = RequestMethod.GET)
@@ -78,7 +78,7 @@ public class SubmissionController extends BaseController {
             return submissionNotFound(model, submissionId);
         }
 
-        return view(submission, model, true);
+        return edit(submission, model, true);
     }
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/", method = RequestMethod.GET)
@@ -90,10 +90,21 @@ public class SubmissionController extends BaseController {
             return submissionNotFound(model, submissionId);
         }
 
-        return view(submission, model, false);
+        return view(submission, model);
     }
 
-    private String view(Submission submission, Model model, boolean edit) {
+    private String view(Submission submission, Model model) {
+
+        // User is authorized to edit the submission
+        boolean authorized = submission.isAuthorized(getCurrentUserPrincipal());
+
+        model.addAttribute("submission", submission);
+        model.addAttribute("authorized", authorized);
+
+        return "submission/view";
+    }
+
+    private String edit(Submission submission, Model model, boolean edit) {
 
         boolean authorized = submission.isAuthorized(getCurrentUserPrincipal());
         if (!authorized && edit) {
@@ -130,11 +141,12 @@ public class SubmissionController extends BaseController {
         model.addAttribute("authorized", authorized);  // User is authorized to edit the submission
         model.addAttribute("authenticated", isAuthenticated());  // User is logged in
 
-		if(submission.getId() == 0) {
-			return "file/view";
-		} else {
-			return "submission/view";
-		}
+        return "file/view";
+//        if(submission.getId() == 0) {
+//            return "file/view";
+//        } else {
+//            return "submission/view";
+//        }
     }
 
     /**********************

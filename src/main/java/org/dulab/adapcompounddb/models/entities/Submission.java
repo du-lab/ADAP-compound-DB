@@ -130,7 +130,7 @@ public class Submission implements Serializable {
         this.files = files;
     }
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "UserPrincipalId", referencedColumnName = "Id")
     public UserPrincipal getUser() {
         return user;
@@ -163,7 +163,9 @@ public class Submission implements Serializable {
 
     public boolean isAuthorized(UserPrincipal user) {
         boolean authorized = false;
-        if (user != null && user.isAdmin()) {
+        if (user == null) {
+            authorized = false;
+        } else if (user.isAdmin()) {
             authorized = true;
         } else if (id != 0) {
             authorized = StringUtils.equals(user.getUsername(), this.getUser().getUsername());
@@ -174,11 +176,12 @@ public class Submission implements Serializable {
 
     @Transient
     public String getTagsAsString() {
-        return getTags()
+        return tags == null ? "" : getTags()
                 .stream()
                 .map(SubmissionTag::getId)
                 .map(SubmissionTagId::getName)
-                .collect(Collectors.joining(", "));
+                .collect(Collectors.joining(", "))
+                .trim();
     }
 
     @Override
