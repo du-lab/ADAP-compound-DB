@@ -242,12 +242,20 @@
             },
             "columnDefs": [
                 { "defaultContent": "", "targets": 0, "orderable": false},
-                { "data": "name", "targets": 1},
+                { "data": "name", "orderable": false,
+                    "targets": 1,
+                    "render": function(data, type, row, meta) {
+                        content = '<a href="spectrum/' + row.id + '/">' +
+                            row.name +
+                            '</a>';
+                        return content;
+                    }
+                },
                 { "data": "retentionTime", "targets": 2},
                 { "data": "precursor", "targets": 3},
                 { "data": "chromatographyTypeLabel", "targets": 4},
                 { "data": "fileName", "targets": 5},
-                { "data": "icons", "orderable": false,
+                { "orderable": false,
                 	"targets": 6,
                 	"render": function(data, type, row, meta) {
                 		content = '<a href="spectrum/' + row.id + '/">' +
