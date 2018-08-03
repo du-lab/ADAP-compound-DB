@@ -61,13 +61,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     @Transactional
     public void saveUser(UserPrincipal principal, String password) {
+        LOG.info("Registering a new user...");
         if (password != null && password.length() > 0) {
+            LOG.info("Generating a salt...");
             String salt = BCrypt.gensalt(HASHING_ROUNDS, RANDOM);
 //            principal.setHashedPassword(password.getBytes());
+            LOG.info("Hashing the password with the generated salt...");
             principal.setHashedPassword(BCrypt.hashpw(password, salt));
         }
+        LOG.info("Assigning default role...");
         principal.assignDefaultRole();
+        LOG.info("Saving the user...");
         userPrincipalRepository.save(principal);
+        LOG.info("Registering is completed.");
     }
 
     @Override
