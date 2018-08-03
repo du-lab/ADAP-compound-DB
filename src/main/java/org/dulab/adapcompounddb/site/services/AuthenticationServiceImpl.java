@@ -1,7 +1,5 @@
 package org.dulab.adapcompounddb.site.services;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
@@ -18,17 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthenticationServiceImpl implements AuthenticationService {
 
     private static final Logger LOG = LogManager.getLogger();
-    private static final SecureRandom RANDOM;
-    private static final int HASHING_ROUNDS = 10;
 
-    static {
-        try {
-            RANDOM = SecureRandom.getInstanceStrong();
-        }
-        catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException(e);
-        }
-    }
+    private static final int HASHING_LOG_ROUNDS = 10;
 
     private final UserPrincipalRepository userPrincipalRepository;
 
@@ -64,8 +53,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         LOG.info("Registering a new user...");
         if (password != null && password.length() > 0) {
             LOG.info("Generating a salt...");
-            String salt = BCrypt.gensalt(HASHING_ROUNDS, RANDOM);
-//            principal.setHashedPassword(password.getBytes());
+            String salt = BCrypt.gensalt(HASHING_LOG_ROUNDS);
             LOG.info("Hashing the password with the generated salt...");
             principal.setHashedPassword(BCrypt.hashpw(password, salt));
         }
@@ -80,6 +68,5 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Transactional
     public Optional<UserPrincipal> findUser(long id) {
         return userPrincipalRepository.findById(id);
-//        return Optional.ofNullable(userPrincipalRepository.findOne(id));
     }
 }
