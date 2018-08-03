@@ -68,7 +68,7 @@ public class MspFileReaderService implements FileReaderService {
     private void addProperty(Spectrum spectrum, List<SpectrumProperty> properties, String line) {
 
         for (String s : line.split(";")) {
-            String[] nameValuePair = s.split(":");
+            String[] nameValuePair = s.split(":", 2);
             if (nameValuePair.length == 2) {
                 SpectrumProperty property = new SpectrumProperty();
                 property.setName(nameValuePair[0].trim());
