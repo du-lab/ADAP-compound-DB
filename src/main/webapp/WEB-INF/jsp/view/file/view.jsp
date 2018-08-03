@@ -8,6 +8,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <jsp:include page="/WEB-INF/jsp/includes/header.jsp"/>
 <jsp:include page="/WEB-INF/jsp/includes/column_left_home.jsp"/>
 
@@ -70,7 +71,7 @@
                             <td><a href="${fileLoop.index}/${spectrumLoop.index}/">${spectrum}</a><br/>
                                     <%--<small>${dulab:abbreviate(spectrum.properties, 80)}</small>--%>
                             </td>
-                            <td>${spectrum.retentionTime}</td>
+                            <td><fmt:formatNumber type="number" maxFractionDigits="3" value="${spectrum.retentionTime}"/></td>
                             <td>${spectrum.precursor}</td>
                             <td>${spectrum.chromatographyType.label}</td>
                             <td>${file.name}</td>
