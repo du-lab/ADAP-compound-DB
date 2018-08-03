@@ -18,14 +18,61 @@ function SpectrumPlot(divId, spectrum) {
     var minMz = d3.min(spectrum.peaks, function (d) {return d.mz});
     var maxMz = d3.max(spectrum.peaks, function (d) {return d.mz});
     var mzRange = maxMz - minMz;
+    var intensityMax = d3.max(spectrum.peaks, function (d) {return d.intensity});
 
     var xScale = d3.scaleLinear()
         .domain([minMz - 0.05 * mzRange, maxMz + 0.05 * mzRange])
         .range([padding['left'], width - padding['right']]);
 
     var yScale = d3.scaleLinear()
-        .domain([0, 100])
+        .domain([0, intensityMax * 2])
         .range([height - padding['bottom'], padding['top']]);
+    yScale.clamp(true);
+    // // -----------------------
+    // // ----- Zoom -----
+    // // -----------------------
+
+    var currentTransform = null;
+
+    var zoomGraph = function(xZ, yZ) {
+        //var xZ = arguments[0], yZ = arguments[1];
+        if(d3.event == null) {
+            return;
+        }
+        // if(currentTransform == null) {
+            currentTransform = d3.event.transform;
+        // }
+        var spectra = d3.select("svg").selectAll("line.spectrum");
+
+        if(xZ) {
+            var newXscale = currentTransform.rescaleX(xScale);
+            gx.call(xAxis.scale(newXscale));
+            spectra
+                .attr('x1', function (d) {
+                    return Math.max(padding['left'], newXscale(d.mz));
+                })
+                .attr('x2', function (d) {
+                    return Math.max(padding['left'], newXscale(d.mz));
+                });
+        }
+
+        if(yZ) {
+            var newYscale = currentTransform.rescaleY(yScale);
+            gy.call(yAxis.scale(newYscale));
+
+            spectra
+                .attr('y2', function (d) {
+                    return Math.min($(this).attr("y1"), newYscale(d.intensity));
+                });
+        }
+    }
+
+    var zoom = d3.zoom()
+        .on("zoom", zoomGraph.bind(this, true, true));
+    var zoomX = d3.zoom()
+        .on("zoom", zoomGraph.bind(this, true, false));
+    var zoomY = d3.zoom()
+        .on("zoom", zoomGraph.bind(this, false, true));
 
     var svg = d3.select('#' + divId)
         .append('svg')
@@ -43,7 +90,6 @@ function SpectrumPlot(divId, spectrum) {
             .attr('x1', function (d) {return xScale(d.mz);})
             .attr('x2', function (d) {return xScale(d.mz);})
             .attr('y1', yScale(0))
-            .attr('y2', yScale(0))
             .attr('stroke', 'blue')
             .attr('stroke-width', 1)
             .on('mouseover', function () {
@@ -89,18 +135,18 @@ function SpectrumPlot(divId, spectrum) {
     var xAxis = d3.axisBottom()
         .scale(xScale);
 
-    svg.append('g')
+    var gx = svg.append('g')
         .attr('class', 'axis')
         .attr('transform', 'translate(0, ' + (height - padding['bottom']) + ')')
         .call(xAxis);
 
-    svg.append('g')
+    var graph1 = svg.append('g')
         .attr('class', 'grid')
-        .attr('transform', 'translate(0, ' + (height - padding['bottom']) + ')')
-        .call(d3.axisBottom(xScale)
+        .attr('transform', 'translate(0, ' + (height - padding['bottom']) + ')');
+    graph1.call(d3.axisBottom(xScale)
             .ticks(5)
             .tickSize(-plotHeight)
-            .tickFormat(''));
+            .tickFormat(''))
 
     svg.append('text')
         .attr('class', 'label')
@@ -112,15 +158,15 @@ function SpectrumPlot(divId, spectrum) {
     var yAxis = d3.axisLeft()
         .scale(yScale);
 
-    svg.append('g')
+    var gy = svg.append('g')
         .attr('class', 'axis')
         .attr('transform', 'translate(' + padding['left'] + ', 0)')
         .call(yAxis);
 
-    svg.append('g')
+    var graph2 = svg.append('g')
         .attr('class', 'grid')
-        .attr('transform', 'translate(' + padding['left'] + ', 0)')
-        .call(d3.axisLeft(yScale)
+        .attr('transform', 'translate(' + padding['left'] + ', 0)');
+    graph2.call(d3.axisLeft(yScale)
             .ticks(5)
             .tickSize(-plotWidth)
             .tickFormat(''));
@@ -134,6 +180,82 @@ function SpectrumPlot(divId, spectrum) {
         .style('text-anchor', 'middle')
         .text('intensity');
 
+
+    svg.append('svg:rect')
+        .attr('class', 'zoom x box')
+        .attr("width", width - padding.left)
+        .attr("height", padding.bottom)
+        .attr('transform', 'translate(' + padding['left'] + ', ' + (height - padding['bottom']) + ')')
+        .style("visibility", "hidden")
+        .attr("pointer-events", "all")
+        .call(zoomX);
+    svg.append('svg:rect')
+        .attr('class', 'zoom y box')
+        .attr("width", padding.left)
+        .attr("height", height - padding.bottom)
+        .attr('transform', 'translate(0, 0)')
+        .style("visibility", "hidden")
+        .attr("pointer-events", "all")
+        .call(zoomY);
+    var gridArea = svg.append('svg:rect')
+        .attr('class', 'zoom xy box')
+        .attr("width", width - padding.left)
+        .attr("height", height - padding.bottom)
+        .attr('transform', 'translate(' + padding.left + ', 0)')
+        .style("visibility", "hidden")
+        .attr("pointer-events", "all");
+
+    gridArea
+        .on( "mousedown", function() {
+            var p = d3.mouse( this);
+
+            gridArea.append( "rect")
+                .attr({
+                    rx      : 6,
+                    ry      : 6,
+                    class   : "spectrum",
+                    x       : p[0],
+                    y       : p[1],
+                    width   : 0,
+                    height  : 0
+                })
+        })
+        .on( "mousemove", function() {
+            var s = svg.select( "rect.spectrum");
+
+            if( !s.empty()) {
+                var p = d3.mouse( this),
+
+                    d = {
+                        x       : parseInt( s.attr( "x"), 10),
+                        y       : parseInt( s.attr( "y"), 10),
+                        width   : parseInt( s.attr( "width"), 10),
+                        height  : parseInt( s.attr( "height"), 10)
+                    },
+                    move = {
+                        x : p[0] - d.x,
+                        y : p[1] - d.y
+                    }
+                ;
+
+                if( move.x < 1 || (move.x*2<d.width)) {
+                    d.x = p[0];
+                    d.width -= move.x;
+                } else {
+                    d.width = move.x;
+                }
+
+                if( move.y < 1 || (move.y*2<d.height)) {
+                    d.y = p[1];
+                    d.height -= move.y;
+                } else {
+                    d.height = move.y;
+                }
+
+                s.attr( d);
+                //console.log( d);
+            }
+        });
     // // -----------------------
     // // ----- Plot legend -----
     // // -----------------------
