@@ -1,6 +1,6 @@
 package org.dulab.adapcompounddb.models;
 
-public enum SubmissionCategoryType implements LabeledEnum {
+public enum SubmissionCategoryType implements EnumWithLabels {
 
     SOURCE("Source"),
     SPECIMEN("Specimen"),

@@ -1,6 +1,6 @@
 package org.dulab.adapcompounddb.models;
 
-public interface LabeledEnum {
+public interface EnumWithLabels {
 
     String getLabel();
 }

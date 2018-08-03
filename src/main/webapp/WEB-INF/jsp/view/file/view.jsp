@@ -55,7 +55,7 @@
                 <th>Name</th>
                 <th>Ret Time (min)</th>
                 <th>Precursor mass</th>
-                <th>Chromatography</th>
+                <th>Type</th>
                 <th>File</th>
                 <th></th>
             </tr>
@@ -73,7 +73,7 @@
                             </td>
                             <td><fmt:formatNumber type="number" maxFractionDigits="3" value="${spectrum.retentionTime}"/></td>
                             <td>${spectrum.precursor}</td>
-                            <td>${spectrum.chromatographyType.label}</td>
+                            <td><img src="${spectrum.chromatographyType.iconPath}" alt="${spectrum.chromatographyType.label}" title="${spectrum.chromatographyType.label}"/></td>
                             <td>${file.name}</td>
                             <td>
                                 <!-- more horiz -->

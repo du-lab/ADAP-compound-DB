@@ -90,9 +90,9 @@
                 <th>Name</th>
                 <th>Ret Time (min)</th>
                 <th>Precursor mass</th>
-                <th>Chromatography</th>
+                <th>Type</th>
                 <th>File</th>
-                <th>View / Search / Delete</th>
+                <th></th>
             </tr>
             </thead>
             <tbody></tbody>
