@@ -26,6 +26,8 @@ public class Submission implements Serializable {
     // ***** Entity Fields *****
     // *************************
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @NotBlank(message = "The field Name is required.")
@@ -34,20 +36,39 @@ public class Submission implements Serializable {
     private String description;
 
     @NotNull(message = "Date/Time of submission is required.")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateTime;
 
     @Valid
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "Submission2SubmissionCategory",
+            joinColumns = {@JoinColumn(name = "SubmissionId")},
+            inverseJoinColumns = {@JoinColumn(name = "SubmissionCategoryId")})
     private List<SubmissionCategory> categories;
 
     @Valid
+    @OneToMany(
+            mappedBy = "id.submission",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL
+    )
     private List<SubmissionTag> tags;
 
     @NotNull(message = "Submission: File list is required.")
     @Valid
+    @OneToMany(
+            mappedBy = "submission",
+            fetch = FetchType.LAZY,
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            orphanRemoval = true
+    )
     private List<File> files;
 
     @NotNull(message = "You must log in to submit mass spectra to the library.")
     @Valid
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @JoinColumn(name = "UserPrincipalId", referencedColumnName = "Id")
     private UserPrincipal user;
 
     @URL(message = "Submission: The field Reference must be a valid URL.")
@@ -57,8 +78,6 @@ public class Submission implements Serializable {
     // ***** Getters and Setters *****
     // *******************************
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public long getId() {
         return id;
     }
@@ -83,11 +102,6 @@ public class Submission implements Serializable {
         this.description = desription;
     }
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "Submission2SubmissionCategory",
-            joinColumns = {@JoinColumn(name = "SubmissionId")},
-            inverseJoinColumns = {@JoinColumn(name = "SubmissionCategoryId")})
     public List<SubmissionCategory> getCategories() {
         return categories;
     }
@@ -103,11 +117,7 @@ public class Submission implements Serializable {
                 .orElse(null);
     }
 
-    @OneToMany(
-            mappedBy = "id.submission",
-            fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL
-    )
+
     public List<SubmissionTag> getTags() {
         return tags;
     }
@@ -116,12 +126,6 @@ public class Submission implements Serializable {
         this.tags = tags;
     }
 
-    @OneToMany(
-            mappedBy = "submission",
-            fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
     public List<File> getFiles() {
         return files;
     }
@@ -130,8 +134,6 @@ public class Submission implements Serializable {
         this.files = files;
     }
 
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
-    @JoinColumn(name = "UserPrincipalId", referencedColumnName = "Id")
     public UserPrincipal getUser() {
         return user;
     }
@@ -140,7 +142,6 @@ public class Submission implements Serializable {
         this.user = user;
     }
 
-    @Temporal(TemporalType.TIMESTAMP)
     public Date getDateTime() {
         return dateTime;
     }
