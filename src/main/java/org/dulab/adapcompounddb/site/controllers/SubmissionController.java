@@ -114,7 +114,7 @@ public class SubmissionController extends BaseController {
         model.addAttribute("submission", submission);
 
         SubmissionForm form = new SubmissionForm();
-        form.setCategoryMap(submissionService.findAllCategories());
+//        form.setCategoryMap(submissionService.findAllCategories());
 
         form.setName(submission.getName());
         form.setDescription(submission.getDescription());
@@ -279,7 +279,7 @@ public class SubmissionController extends BaseController {
 
     private String submit(Submission submission, Model model, SubmissionForm form) {
 
-        form.setCategoryMap(submissionService.findAllCategories());
+//        form.setCategoryMap(submissionService.findAllCategories());
 
         submission.setName(form.getName());
         submission.setDescription(form.getDescription());
@@ -349,20 +349,6 @@ public class SubmissionController extends BaseController {
 
         private List<Long> submissionCategoryIds;
 
-        private Map<SubmissionCategoryType, List<SubmissionCategory>> categoryMap;
-
-        public void setCategoryMap(List<SubmissionCategory> categories) {
-
-            this.categoryMap = Arrays.stream(SubmissionCategoryType.values())
-                    .collect(Collectors
-                            .toMap(t -> t, t -> new ArrayList<>()));
-
-            categories.forEach(
-                    category -> this.categoryMap
-                            .get(category.getCategoryType())
-                            .add(category));
-        }
-
         public String getName() {
             return name;
         }
@@ -401,10 +387,6 @@ public class SubmissionController extends BaseController {
 
         public void setSubmissionCategoryIds(List<Long> submissionCategoryIds) {
             this.submissionCategoryIds = submissionCategoryIds;
-        }
-
-        public List<SubmissionCategory> getSubmissionCategories(SubmissionCategoryType type) {
-            return categoryMap.get(type);
         }
     }
 }
