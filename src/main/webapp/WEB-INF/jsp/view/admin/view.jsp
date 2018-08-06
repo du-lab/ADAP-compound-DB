@@ -9,7 +9,9 @@
 <!-- Start the middle column -->
 
 <section>
-    <div id="progressBarDiv" class="progress_bar"></div>
+    <div>
+        <div id="progressBarDiv" class="progress_bar"></div>
+    </div>
 </section>
 
 <section>
@@ -38,18 +40,20 @@
 
 <section>
     <h1>Admin Tools</h1>
-    <table>
-        <tr>
-            <td><a href="calculatescores/"
-                   class="button"
-                   onclick="progressBar.start('calculatescores/progress')">Calculate Matching Scores...</a></td>
-            <td>Calculates matching scores for all spectra in the library</td>
-        </tr>
-        <tr>
-            <td><a href="cluster/" class="button">Cluster spectra...</a></td>
-            <td>Cluster spectra into clusters</td>
-        </tr>
-    </table>
+    <div>
+        <table>
+            <tr>
+                <td><a href="calculatescores/"
+                       class="button"
+                       onclick="progressBar.start('calculatescores/progress')">Calculate Matching Scores...</a></td>
+                <td>Calculates matching scores for all spectra in the library</td>
+            </tr>
+            <tr>
+                <td><a href="cluster/" class="button">Cluster spectra...</a></td>
+                <td>Cluster spectra into clusters</td>
+            </tr>
+        </table>
+    </div>
 </section>
 
 <section>
