@@ -115,7 +115,16 @@
         SpectrumPlot('plot', ${dulab:spectrumToJson(spectrum)});
     })
 </script>
-
+<style>
+    .selection {
+        fill: #ADD8E6;
+        stroke: #ADD8E6;
+        fill-opacity: 0.3;
+        stroke-opacity: 0.7;
+        stroke-width: 2;
+        stroke-dasharray: 5, 5;
+    }
+</style>
 
 <%--<script src="<c:url value="/resources/js/zingchart/zingchart.min.js"/>"></script>--%>
 <%--<script type="text/javascript" src="<c:url value="/resources/js/spectrum.js"/>"></script>--%>

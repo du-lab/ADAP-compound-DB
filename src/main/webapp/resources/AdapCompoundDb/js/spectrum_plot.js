@@ -74,6 +74,15 @@ function SpectrumPlot(divId, spectrum) {
     var zoomY = d3.zoom()
         .on("zoom", zoomGraph.bind(this, false, true));
 
+    var zoomSelect = d3.zoom()
+        .on("zoom", zoomed);
+    function zoomed() {
+        var currentTransform = d3.event.transform;
+        var newXscale = currentTransform.rescaleX(xScale);
+        gx.call(xAxis.scale(newXscale));
+        var newYscale = currentTransform.rescaleY(yScale);
+        gy.call(yAxis.scale(newYscale));
+    }
     var svg = d3.select('#' + divId)
         .append('svg')
         .attr('width', width)
@@ -205,20 +214,124 @@ function SpectrumPlot(divId, spectrum) {
         .style("visibility", "hidden")
         .attr("pointer-events", "all");
 
-    gridArea
+    var rect = function(x, y, w, h) {
+        return "M"+[x,y]+",l"+[w,0]+",l"+[0,h]+",l"+[-w,0]+"z";
+    };
+    var selection = svg.append("path")
+        .attr("class", "selection")
+        .attr("visibility", "hidden");
+
+    var startSelection = function(start) {
+        selection.attr("d", rect(start[0], start[0], 0, 0))
+            .attr("visibility", "visible");
+    };
+
+    var moveSelection = function(start, moved) {
+        selection.attr("d", rect(start[0], start[1], moved[0]-start[0], moved[1]-start[1]));
+    };
+
+    var endSelection = function(start, end) {
+        selection.attr("visibility", "hidden");
+    };
+    var zoomselection = function() {
+        var value = selection.attr("d");
+        var segments = value.replace(/[A-Z]|[a-z]/g,'').split(","); // M291.046875,136 l146,0 l0,149 l-146,0z;
+        var x = segments[0] - padding['left'];
+        var y = segments[1];
+        var w = segments[2];
+        var h = segments[5];
+
+        interpolateZoom(x, y, w, h);
+    };
+    var interpolateZoom = function(x, y, w, h) {
+        var domainX = xAxis.scale().domain();
+        var domainY = yAxis.scale().domain();
+
+        var newScaleX = d3.scaleLinear()
+            .domain([parseInt(x)*(domainX[1])/(width - padding['right']), (parseInt(x)+parseInt(w))*(domainX[1]-domainX[0])/(width - padding['right'])])
+            .range([padding['left'], width - padding['right']]);
+        var newScaleY = d3.scaleLinear()
+            .domain([parseInt(y)*(domainY[1]-domainY[0])/(height - padding['bottom']), (parseInt(y)+parseInt(h))*(domainY[1]-domainY[0])/(height - padding['bottom'])])
+            .range([height - padding['bottom'], padding['top']]);
+        xScale = newScaleX;
+        yScale = newScaleY;
+        gx.call(xAxis.scale(newScaleX));
+        gy.call(yAxis.scale(newScaleY));
+
+;
+
+        /*var currentTransform = d3.zoomTransform(selection);
+        currentTransform.k = scaleX;
+        // currentTransform.x = (x+w)/2;
+        // currentTransform.y = (y+h)/2;
+        var newScaleX = currentTransform.rescaleX(xScale);
+        gx.call(xAxis.scale(newScaleX));
+        currentTransform.k = scaleY;
+        var newScaleY = currentTransform.rescaleY(yScale);
+        gy.call(yAxis.scale(newScaleY));*/
+        var spectra = d3.select("svg").selectAll("line.spectrum");
+        spectra
+            .attr('x1', function (d) {
+                return Math.max(padding['left'], newScaleX(d.mz));
+            })
+            .attr('x2', function (d) {
+                return Math.max(padding['left'], newScaleX(d.mz));
+            });
+        spectra
+            .attr('y2', function (d) {
+                return Math.min($(this).attr("y1"), newScaleY(d.intensity));
+            });
+        /*svg.transition()
+            .duration(750)
+            // .call(zoom.translate(translate).scale(scale).event); // not in d3 v4
+            .call( zoomSelect.transform, d3.zoomIdentity.translate(translate[0],translate[1]).scale(scale) );*/
+    };
+    gridArea.on("mousedown", function() {
+        var subject = d3.select(window);
+        var parent = this.parentNode;
+        var start = d3.mouse(parent);
+        startSelection(start);
+        subject
+            .on("mousemove.selection", function() {
+                moveSelection(start, d3.mouse(parent));
+            }).on("mouseup.selection", function() {
+                endSelection(start, d3.mouse(parent));
+                zoomselection();
+                subject.on("mousemove.selection", null).on("mouseup.selection", null);
+        });
+    });
+
+    gridArea.on("touchstart", function() {
+        var subject = d3.select(this);
+        var parent = this.parentNode;
+        var id = d3.event.changedTouches[0].identifier;
+        var start = d3.touch(parent, id);
+        var pos;
+        startSelection(start);
+        subject
+            .on("touchmove." + id, function() {
+                if (pos = d3.touch(parent, id)) {
+                    moveSelection(start, pos);
+                }
+            }).on("touchend." + id, function() {
+            if (pos = d3.touch(parent, id)) {
+                endSelection(start, pos);
+                subject.on("touchmove." + id, null).on("touchend." + id, null);
+            }
+        });
+    });
+    /*gridArea
         .on( "mousedown", function() {
             var p = d3.mouse( this);
-
-            gridArea.append( "rect")
-                .attr({
-                    rx      : 6,
-                    ry      : 6,
-                    class   : "spectrum",
-                    x       : p[0],
-                    y       : p[1],
-                    width   : 0,
-                    height  : 0
-                })
+            console.log("down");
+            graph2.append( "rect")
+                .attr("rx", 6)
+                .attr("ry", 6)
+                .attr("class", "spectrum")
+                .attr("x", p[0])
+                .attr("y", p[1])
+                .attr("width", 10)
+                .attr("height", 10);
         })
         .on( "mousemove", function() {
             var s = svg.select( "rect.spectrum");
@@ -255,7 +368,7 @@ function SpectrumPlot(divId, spectrum) {
                 s.attr( d);
                 //console.log( d);
             }
-        });
+        });*/
     // // -----------------------
     // // ----- Plot legend -----
     // // -----------------------
