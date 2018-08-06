@@ -14,7 +14,7 @@ public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, Spec
 	@Query("SELECT s FROM Spectrum s WHERE s.matches IS EMPTY")
 	Iterable<Spectrum> findAllByMatchesIsEmpty();
 
-    @Query("SELECT s FROM Spectrum s JOIN FETCH s.peaks WHERE s.matches IS EMPTY " +
+    @Query("SELECT s FROM Spectrum s WHERE s.matches IS EMPTY " +
             "AND s.consensus=FALSE AND s.reference=FALSE AND s.chromatographyType = ?1")
     Iterable<Spectrum> findUnmatchedByChromatographyType(ChromatographyType chromatographyType);
 
