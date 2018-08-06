@@ -2,9 +2,9 @@ package org.dulab.adapcompounddb.models;
 
 public enum ChromatographyType implements EnumWithLabelsAndIcons {
 
-    GAS("Gas Chromatography", "/resources/AdapCompoundDb/img/chromatography/icon_gc_64.png"),
-    LIQUID_POSITIVE("Liquid Chromatography (Positive)", "/resources/AdapCompoundDb/img/chromatography/icon_lc+_64.png"),
-    LIQUID_NEGATIVE("Liquid Chromatography (Negative)", "/resources/AdapCompoundDb/img/chromatography/icon_lc-_64.png");
+    GAS("Gas Chromatography", "/resources/AdapCompoundDb/img/chromatography/icon_gc.svg"),
+    LIQUID_POSITIVE("Liquid Chromatography (Positive)", "/resources/AdapCompoundDb/img/chromatography/icon_lc+.svg"),
+    LIQUID_NEGATIVE("Liquid Chromatography (Negative)", "/resources/AdapCompoundDb/img/chromatography/icon_lc-.svg");
 
     private final String label;
     private final String iconPath;

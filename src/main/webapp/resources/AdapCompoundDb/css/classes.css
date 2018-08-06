@@ -43,3 +43,8 @@
     color: #ff0000;
     font-weight: normal;
 }
+
+/***** Icon *****/
+.icon {
+    height: 1.5em;
+}
