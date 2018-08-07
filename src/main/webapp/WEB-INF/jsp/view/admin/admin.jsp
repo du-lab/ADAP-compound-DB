@@ -62,20 +62,25 @@
         <table id="cluster_table" class="display" style="width: 100%;">
             <thead>
             <tr>
-                <th>Name</th>
-                <th>Num Spectra</th>
-                <th>Matching Score</th>
-                <%--<th>Chromatography</th>--%>
-                <th>View</th>
+                <th>ID</th>
+                <th title="Consensus spectrum">Consensus</th>
+                <th title="Number of spectra in a cluster">Count</th>
+                <th title="Minimum matching score between all spectra in a cluster">Score</th>
+                <th title="Chromatography type">Type</th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
             <c:forEach items="${clusters}" var="cluster">
                 <tr>
-                    <td>${cluster}</td>
+                    <td>${cluster.id}</td>
+                    <td><a href="/cluster/${cluster.id}/">${cluster.consensusSpectrum.name}</a></td>
                     <td>${cluster.size}</td>
                     <td>${dulab:toIntegerScore(cluster.diameter)}</td>
-                        <%--<td>${cluster.chromatographyType.label}</td>--%>
+                    <td><img src="${cluster.consensusSpectrum.chromatographyType.iconPath}"
+                             alt="${cluster.consensusSpectrum.chromatographyType.name()}"
+                             title="${cluster.consensusSpectrum.chromatographyType.label}"
+                             class="icon"/></td>
                     <td>
                         <!--more horiz-->
                         <a href="/cluster/${cluster.id}/"><i class="material-icons" title="View">&#xE5D3;</i></a>
