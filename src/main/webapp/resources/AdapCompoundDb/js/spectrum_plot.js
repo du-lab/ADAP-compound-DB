@@ -15,19 +15,27 @@ function SpectrumPlot(divId, spectrum) {
     tooltip.append('div').attr('class', 'mz');
     tooltip.append('div').attr('class', 'intensity');
 
+    var resetButton = d3.select('#' + divId)
+        .append('button')
+        .attr('class', 'button');
+
     var minMz = d3.min(spectrum.peaks, function (d) {return d.mz});
     var maxMz = d3.max(spectrum.peaks, function (d) {return d.mz});
     var mzRange = maxMz - minMz;
     var intensityMax = d3.max(spectrum.peaks, function (d) {return d.intensity});
 
-    var xScale = d3.scaleLinear()
+    var resetXScale = d3.scaleLinear()
         .domain([minMz - 0.05 * mzRange, maxMz + 0.05 * mzRange])
         .range([padding['left'], width - padding['right']]);
 
-    var yScale = d3.scaleLinear()
-        .domain([0, intensityMax * 2])
+    var resetYScale = d3.scaleLinear()
+        .domain([0, intensityMax])
         .range([height - padding['bottom'], padding['top']]);
-    yScale.clamp(true);
+    resetYScale.clamp(true);
+
+    var xScale = resetXScale;
+    var yScale = resetYScale;
+
     // // -----------------------
     // // ----- Zoom -----
     // // -----------------------
@@ -45,7 +53,9 @@ function SpectrumPlot(divId, spectrum) {
         var spectra = d3.select("svg").selectAll("line.spectrum");
 
         if(xZ) {
+            console.log(xScale.domain());
             var newXscale = currentTransform.rescaleX(xScale);
+            console.log(newXscale.domain())
             gx.call(xAxis.scale(newXscale));
             spectra
                 .attr('x1', function (d) {
@@ -57,41 +67,41 @@ function SpectrumPlot(divId, spectrum) {
         }
 
         if(yZ) {
-            var newYscale = currentTransform.rescaleY(yScale);
+            /*var newYscale = currentTransform.rescaleY(yScale);
             gy.call(yAxis.scale(newYscale));
 
             spectra
                 .attr('y2', function (d) {
                     return Math.min($(this).attr("y1"), newYscale(d.intensity));
-                });
+                });*/
         }
     }
 
+    var dims = {
+        svg_dx: 100,
+        svg_dy: 100
+    };
     var zoom = d3.zoom()
         .on("zoom", zoomGraph.bind(this, true, true));
+
     var zoomX = d3.zoom()
+        /*.extent([[dims.svg_dx, dims.svg_dy], [width-(dims.svg_dx*2), height-dims.svg_dy]])
+        .scaleExtent([1, Infinity])
+        .translateExtent([[dims.svg_dx, dims.svg_dy], [width-(dims.svg_dx*2), height-dims.svg_dy]])*/
         .on("zoom", zoomGraph.bind(this, true, false));
+
     var zoomY = d3.zoom()
         .on("zoom", zoomGraph.bind(this, false, true));
 
-    var zoomSelect = d3.zoom()
-        .on("zoom", zoomed);
-    function zoomed() {
-        var currentTransform = d3.event.transform;
-        var newXscale = currentTransform.rescaleX(xScale);
-        gx.call(xAxis.scale(newXscale));
-        var newYscale = currentTransform.rescaleY(yScale);
-        gy.call(yAxis.scale(newYscale));
-    }
     var svg = d3.select('#' + divId)
         .append('svg')
         .attr('width', width)
         .attr('height', height);
 
+
     var key = function (d) {return Math.round(d.mz);};
 
     var addPeaks = function (peaks) {
-
         return peaks.append('line')
             .attr('class', 'spectrum')
             .attr('data-mz', function(d) {return Math.round(100 * d.mz) / 100;})
@@ -241,34 +251,17 @@ function SpectrumPlot(divId, spectrum) {
         var w = segments[2];
         var h = segments[5];
 
-        interpolateZoom(x, y, w, h);
+        if(w > 5 || h > 5) {
+            interpolateZoom(x, y, w, h);
+        }
     };
-    var interpolateZoom = function(x, y, w, h) {
-        var domainX = xAxis.scale().domain();
-        var domainY = yAxis.scale().domain();
 
-        var newScaleX = d3.scaleLinear()
-            .domain([parseInt(x)*(domainX[1])/(width - padding['right']), (parseInt(x)+parseInt(w))*(domainX[1]-domainX[0])/(width - padding['right'])])
-            .range([padding['left'], width - padding['right']]);
-        var newScaleY = d3.scaleLinear()
-            .domain([parseInt(y)*(domainY[1]-domainY[0])/(height - padding['bottom']), (parseInt(y)+parseInt(h))*(domainY[1]-domainY[0])/(height - padding['bottom'])])
-            .range([height - padding['bottom'], padding['top']]);
-        xScale = newScaleX;
-        yScale = newScaleY;
+    var scaleGraph = function(newScaleX, newScaleY) {
+        xAxis = d3.axisBottom()
+            .scale(newScaleX);
         gx.call(xAxis.scale(newScaleX));
         gy.call(yAxis.scale(newScaleY));
 
-;
-
-        /*var currentTransform = d3.zoomTransform(selection);
-        currentTransform.k = scaleX;
-        // currentTransform.x = (x+w)/2;
-        // currentTransform.y = (y+h)/2;
-        var newScaleX = currentTransform.rescaleX(xScale);
-        gx.call(xAxis.scale(newScaleX));
-        currentTransform.k = scaleY;
-        var newScaleY = currentTransform.rescaleY(yScale);
-        gy.call(yAxis.scale(newScaleY));*/
         var spectra = d3.select("svg").selectAll("line.spectrum");
         spectra
             .attr('x1', function (d) {
@@ -281,6 +274,36 @@ function SpectrumPlot(divId, spectrum) {
             .attr('y2', function (d) {
                 return Math.min($(this).attr("y1"), newScaleY(d.intensity));
             });
+    };
+    var resetGraph = function() {
+        svg
+            .call(zoomX.transform, d3.zoomIdentity);
+    };
+    resetButton.on("click", resetGraph);
+
+    var interpolateZoom = function(x, y, w, h) {
+        var domainX = xAxis.scale().domain();
+        var domainY = yAxis.scale().domain();
+
+        var newXDomainStart = domainX[0] + (domainX[1] - domainX[0] + 1) * x / (width - padding['left'] - padding['right']);
+        var newXDomainEnd = domainX[0] + (domainX[1] - domainX[0] + 1) * (parseInt(x) + parseInt(w)) / (width - padding['left'] - padding['right']);
+
+        var newYDomainStart = domainY[1] - (domainY[1] - domainY[0] + 1) * (parseInt(y) - padding['bottom']) / (height - padding['bottom'] - padding['bottom']);
+        var newYDomainEnd = domainY[1] - (domainY[1] - domainY[0] + 1) * (parseInt(y) + parseInt(h) - padding['bottom']) / (height - padding['bottom'] - padding['bottom']);
+
+        var newScaleX = d3.scaleLinear()
+            .domain([newXDomainStart, newXDomainEnd])
+            .range([padding['left'], width - padding['right']]);
+        var newScaleY = d3.scaleLinear()
+            .domain([newYDomainEnd, newYDomainStart])
+            .range([height - padding['bottom'], padding['top']]);
+        newScaleY.clamp(true);
+
+        // xScale = newScaleX;
+        // yScale = newScaleY;
+
+
+        scaleGraph(newScaleX, newScaleY);
         /*svg.transition()
             .duration(750)
             // .call(zoom.translate(translate).scale(scale).event); // not in d3 v4
@@ -320,6 +343,8 @@ function SpectrumPlot(divId, spectrum) {
             }
         });
     });
+
+
     /*gridArea
         .on( "mousedown", function() {
             var p = d3.mouse( this);
