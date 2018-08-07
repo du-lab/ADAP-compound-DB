@@ -49,7 +49,6 @@
                     </td>
                     <td>
                         <c:forEach items="${submission.tags}" var="tag">${tag.id.name}&nbsp;</c:forEach>
-                            <%--<small>${submission.chromatographyType.label}</small>--%>
                     </td>
                     <td>
                         <!-- more horiz -->
@@ -57,8 +56,14 @@
                                 class="material-icons" title="View">&#xE5D3;</i></a>
 
                         <!-- delete -->
-                        <a href="${pageContext.request.contextPath}/submission/${submission.id}/delete/"><i
-                                class="material-icons" title="Delete">&#xE872;</i></a>
+                        <a onclick="
+                                var dialog = $('#dialog-confirm');
+                                dialog.find('p').text('Delete submission ${submission.name}');
+                                dialog.attr('href', '/submission/${submission.id}/delete/');
+                                dialog.dialog('open');">
+                            <i class="material-icons" title="Delete">&#xE872;</i>
+                        </a>
+                            <%--${pageContext.request.contextPath}/submission/${submission.id}/delete/"--%>
                     </td>
                 </tr>
             </c:forEach>
@@ -69,14 +74,16 @@
 
 <section class="no-background">
     <div align="center">
-        <a href="/file/upload/" class="button">New Submission</a>
+        <a href="${pageContext.request.contextPath}/file/upload/" class="button">New Submission</a>
     </div>
 </section>
 
 <script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
 <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
+<script src="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.js"/>"></script>
 <script>
     $(document).ready(function () {
+
         $('#submission_table').DataTable({
             order: [[1, 'DESC']],
             columnDefs: [{
@@ -84,8 +91,28 @@
                 sortable: false
             }]
         });
-    })
+
+        $('#dialog-confirm').dialog({
+            autoOpen: false,
+            resizable: false,
+            height: 'auto',
+            width: 400,
+            modal: true,
+            buttons: {
+                'Delete': function () {
+                    window.location.replace($(this).attr('href'));
+                },
+                'Cancel': function () {
+                    $(this).dialog('close');
+                }
+            }
+        });
+    });
 </script>
+
+<div id="dialog-confirm" title="Confirm">
+    <p></p>
+</div>
 
 <!-- End the middle column -->
 
