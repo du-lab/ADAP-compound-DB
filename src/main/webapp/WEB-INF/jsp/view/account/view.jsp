@@ -67,6 +67,12 @@
     </div>
 </section>
 
+<section class="no-background">
+    <div align="center">
+        <a href="/file/upload/" class="button">New Submission</a>
+    </div>
+</section>
+
 <script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
 <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
 <script>

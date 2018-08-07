@@ -64,12 +64,6 @@ public class AdminController {
         return "redirect:/admin/";
     }
 
-    @RequestMapping(value = "/admin/calculatescores/progress", method = RequestMethod.GET)
-    @ResponseBody
-    public int calculateScoresProgress() {
-        return Math.round(100 * spectrumMatchCalculator.getProgress());
-    }
-
     @RequestMapping(value = "/admin/cluster/", method = RequestMethod.GET)
     public String cluster() {
         try {

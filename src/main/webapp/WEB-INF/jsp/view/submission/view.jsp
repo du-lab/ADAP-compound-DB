@@ -30,6 +30,12 @@
                 <td><strong>Description:</strong></td>
                 <td><pre style="white-space: pre-wrap;">${submission.description}</pre></td>
             </tr>
+            <c:if test="${submission.reference != null}">
+                <tr>
+                    <td><strong>URL:</strong></td>
+                    <td><a href="${submission.reference}" title="${submission.reference}" target="_blank">${dulab:abbreviate(submission.reference, 80)}</a></td>
+                </tr>
+            </c:if>
             <c:if test="${submission.tagsAsString.length() > 0}">
                 <tr>
                     <td><strong>Equipment:</strong></td>
