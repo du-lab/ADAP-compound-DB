@@ -1,3 +1,4 @@
+<%--@elvariable id="submissionCategoryTypes" type="org.dulab.adapcompounddv.models.SubmissionCategoryType[]"--%>
 <%--@elvariable id="statistics" type="java.util.Map<org.dulab.adapcompounddb.models.ChromatographyType, org.dulab.adapcompounddb.models.Statistics>"--%>
 <%--@elvariable id="clusters" type="java.util.List<org.dulab.adapcompounddb.models.entities.SpectrumCluster>"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -66,6 +67,9 @@
                 <th title="Consensus spectrum">Consensus</th>
                 <th title="Number of spectra in a cluster">Count</th>
                 <th title="Minimum matching score between all spectra in a cluster">Score</th>
+                <c:forEach items="${submissionCategoryTypes}" var="type">
+                    <th>${type.label} Diversity</th>
+                </c:forEach>
                 <th title="Chromatography type">Type</th>
                 <th></th>
             </tr>
@@ -77,6 +81,14 @@
                     <td><a href="/cluster/${cluster.id}/">${cluster.consensusSpectrum.name}</a></td>
                     <td>${cluster.size}</td>
                     <td>${dulab:toIntegerScore(cluster.diameter)}</td>
+                    <c:forEach items="${submissionCategoryTypes}" var="type">
+                        <c:forEach items="${cluster.diversityIndices}" var="diversityIndex">
+                            <c:if test="${diversityIndex.id.categoryType == type}">
+                                <td>${diversityIndex.diversity}</td>
+                            </c:if>
+                        </c:forEach>
+                    </c:forEach>
+
                     <td><img src="${cluster.consensusSpectrum.chromatographyType.iconPath}"
                              alt="${cluster.consensusSpectrum.chromatographyType.name()}"
                              title="${cluster.consensusSpectrum.chromatographyType.label}"

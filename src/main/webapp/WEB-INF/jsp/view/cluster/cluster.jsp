@@ -42,6 +42,13 @@
         <c:forEach items="${submissionCategoryTypes}" var="type">
             <div align="center" style="display: inline-block; margin: 10px;">
                 <h2>${type.label} Distribution</h2>
+                <c:forEach items="${cluster.diversityIndices}" var="diversityIndex">
+                    <c:if test="${diversityIndex.id.categoryType == type}">
+                        <div align="center">
+                            <strong>Diversity:&nbsp;</strong>${diversityIndex.diversity}
+                        </div>
+                    </c:if>
+                </c:forEach>
                 <div id="${type.name()}PieChart" align="center"></div>
             </div>
         </c:forEach>

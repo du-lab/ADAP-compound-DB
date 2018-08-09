@@ -7,6 +7,7 @@ import java.util.TreeMap;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.Statistics;
+import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.site.services.SpectrumMatchCalculator;
 import org.dulab.adapcompounddb.site.services.SpectrumMatchService;
 import org.dulab.adapcompounddb.site.services.StatisticsService;
@@ -51,7 +52,8 @@ public class AdminController {
     }
 
     @RequestMapping(value = "/admin/", method = RequestMethod.GET)
-    public String admin() {
+    public String admin(Model model) {
+        model.addAttribute("submissionCategoryTypes", SubmissionCategoryType.values());
         return "admin/admin";
     }
 
