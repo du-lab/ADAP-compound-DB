@@ -182,7 +182,13 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
                 Set<DiversityIndex> diversityIndices = new HashSet<>();
                 for (SubmissionCategoryType categoryType : SubmissionCategoryType.values()) {
 
-                    double diversity = mathService.diversityIndex(cluster.getSpectra(), categoryType);
+                    double diversity = mathService.diversityIndex(
+                            cluster.getSpectra()
+                                    .stream()
+                                    .map(Spectrum::getFile).filter(Objects::nonNull)
+                                    .map(File::getSubmission).filter(Objects::nonNull)
+                                    .map(s -> s.getCategory(categoryType))
+                                    .collect(Collectors.toList()));
 
                     if (diversity > 0.0) {
                         DiversityIndex diversityIndex = new DiversityIndex();

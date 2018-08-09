@@ -1,51 +1,32 @@
 package org.dulab.adapcompounddb.site.services;
 
-import org.dulab.adapcompounddb.models.SubmissionCategoryType;
-import org.dulab.adapcompounddb.models.entities.File;
-import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.counting;
+import static java.util.stream.Collectors.groupingBy;
 
 @Service
 public class MathServiceImpl implements MathService {
 
     @Override
-    public double diversityIndex(List<Spectrum> spectra, SubmissionCategoryType type) {
+    public double diversityIndex(List<SubmissionCategory> categories) {
 
-        // Map the collection of spectra to a collection of distinct files
-        List<File> files = spectra.stream()
-                .map(Spectrum::getFile)
-                .filter(Objects::nonNull)
-                .distinct()
-                .collect(Collectors.toList());
-
-        if (files.isEmpty()) return 0.0;
-
-        // Fill out categoryCountMap
-        Map<SubmissionCategory, AtomicInteger> categoryCountMap = new HashMap<>();
-
-        files.stream()
-                .map(File::getSubmission)
-                .filter(Objects::nonNull)
-                .map(submission -> submission.getCategory(type))
-                .forEach(category -> categoryCountMap
-                        .computeIfAbsent(category, x -> new AtomicInteger())
-                        .incrementAndGet());
+        // Count the number of entries of each category
+        Map<SubmissionCategory, Long> categoryCountMap = categories
+                .stream()
+                .collect(groupingBy(x -> x, counting()));
 
         // Calculate entropy
         final double entropy = categoryCountMap.values().stream()
-                .mapToDouble(count -> count.doubleValue() / files.size())
+                .mapToDouble(count -> count.doubleValue() / categories.size())
                 .map(p -> -p * Math.log(p))
                 .sum();
 
-        // Calculate Diversity index
+        // Calculate the diversity index
         return Math.exp(entropy);
     }
 }
