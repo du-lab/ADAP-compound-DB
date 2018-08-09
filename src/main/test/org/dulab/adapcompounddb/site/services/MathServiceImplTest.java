@@ -39,5 +39,8 @@ public class MathServiceImplTest {
 
         // Diversity of an empty list
         assertEquals(1.0, mathService.diversityIndex(new ArrayList<>(0)),1e-12);
+
+        // Diversity of a list with the null entry
+        assertEquals(2.0, mathService.diversityIndex(Arrays.asList(null, category1)),1e-12);
     }
 }

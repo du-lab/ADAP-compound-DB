@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
@@ -16,9 +17,9 @@ public class MathServiceImpl implements MathService {
     public double diversityIndex(List<SubmissionCategory> categories) {
 
         // Count the number of entries of each category
-        Map<SubmissionCategory, Long> categoryCountMap = categories
+        Map<Optional<SubmissionCategory>, Long> categoryCountMap = categories
                 .stream()
-                .collect(groupingBy(x -> x, counting()));
+                .collect(groupingBy(Optional::ofNullable, counting()));
 
         // Calculate entropy
         final double entropy = categoryCountMap.values().stream()
