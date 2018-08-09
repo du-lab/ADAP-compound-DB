@@ -17,7 +17,8 @@ function SpectrumPlot(divId, spectrum) {
 
     var resetButton = d3.select('#' + divId)
         .append('button')
-        .attr('class', 'button');
+        .attr('class', 'button')
+        .attr("value", "#");
 
     var minMz = d3.min(spectrum.peaks, function (d) {return d.mz});
     var maxMz = d3.max(spectrum.peaks, function (d) {return d.mz});
@@ -53,7 +54,7 @@ function SpectrumPlot(divId, spectrum) {
         var spectra = d3.select("svg").selectAll("line.spectrum");
 
         if(xZ) {
-            console.log(xScale.domain());
+            /*console.log(xScale.domain());
             var newXscale = currentTransform.rescaleX(xScale);
             console.log(newXscale.domain())
             gx.call(xAxis.scale(newXscale));
@@ -63,7 +64,7 @@ function SpectrumPlot(divId, spectrum) {
                 })
                 .attr('x2', function (d) {
                     return Math.max(padding['left'], newXscale(d.mz));
-                });
+                });*/
         }
 
         if(yZ) {
@@ -77,10 +78,6 @@ function SpectrumPlot(divId, spectrum) {
         }
     }
 
-    var dims = {
-        svg_dx: 100,
-        svg_dy: 100
-    };
     var zoom = d3.zoom()
         .on("zoom", zoomGraph.bind(this, true, true));
 
@@ -200,22 +197,21 @@ function SpectrumPlot(divId, spectrum) {
         .text('intensity');
 
 
-    svg.append('svg:rect')
+    var xRect = svg.append('svg:rect')
         .attr('class', 'zoom x box')
         .attr("width", width - padding.left)
         .attr("height", padding.bottom)
         .attr('transform', 'translate(' + padding['left'] + ', ' + (height - padding['bottom']) + ')')
         .style("visibility", "hidden")
-        .attr("pointer-events", "all")
-        .call(zoomX);
+        .attr("pointer-events", "all");
+    xRect.call(zoomX);
     svg.append('svg:rect')
         .attr('class', 'zoom y box')
         .attr("width", padding.left)
         .attr("height", height - padding.bottom)
         .attr('transform', 'translate(0, 0)')
         .style("visibility", "hidden")
-        .attr("pointer-events", "all")
-        .call(zoomY);
+        .attr("pointer-events", "all");
     var gridArea = svg.append('svg:rect')
         .attr('class', 'zoom xy box')
         .attr("width", width - padding.left)
@@ -276,8 +272,7 @@ function SpectrumPlot(divId, spectrum) {
             });
     };
     var resetGraph = function() {
-        svg
-            .call(zoomX.transform, d3.zoomIdentity);
+        scaleGraph(xScale, yScale);
     };
     resetButton.on("click", resetGraph);
 
@@ -301,10 +296,10 @@ function SpectrumPlot(divId, spectrum) {
 
         // xScale = newScaleX;
         // yScale = newScaleY;
-        var t = d3.zoomIdentity.translate(xScale(x) + xScale(w), yScale(y)).scale((width - padding['left'] - padding['right'])/w);
-        xRect.call(zoomX.transform, t);
+        // var t = d3.zoomIdentity.translate(xScale(x) + xScale(w), yScale(y)).scale((width - padding['left'] - padding['right'])/w);
+        // xRect.call(zoomX.transform, t);
 
-        //scaleGraph(newScaleX, newScaleY);
+        scaleGraph(newScaleX, newScaleY);
         /*svg.transition()
             .duration(750)
             // .call(zoom.translate(translate).scale(scale).event); // not in d3 v4
