@@ -44,7 +44,7 @@
                 <h2>${type.label} Distribution</h2>
                 <c:forEach items="${cluster.diversityIndices}" var="diversityIndex">
                     <c:if test="${diversityIndex.id.categoryType == type}">
-                        <div align="center">
+                        <div align="center" style="margin-bottom: 20px;">
                             <strong>Diversity:&nbsp;</strong>${diversityIndex.diversity}
                         </div>
                     </c:if>

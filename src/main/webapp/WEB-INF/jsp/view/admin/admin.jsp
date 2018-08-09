@@ -4,6 +4,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <jsp:include page="/WEB-INF/jsp/includes/header.jsp"/>
 <jsp:include page="/WEB-INF/jsp/includes/column_left_home.jsp"/>
 
@@ -81,13 +82,15 @@
                     <td><a href="/cluster/${cluster.id}/">${cluster.consensusSpectrum.name}</a></td>
                     <td>${cluster.size}</td>
                     <td>${dulab:toIntegerScore(cluster.diameter)}</td>
-                    <c:forEach items="${submissionCategoryTypes}" var="type">
-                        <c:forEach items="${cluster.diversityIndices}" var="diversityIndex">
-                            <c:if test="${diversityIndex.id.categoryType == type}">
-                                <td>${diversityIndex.diversity}</td>
-                            </c:if>
+                    <td>
+                        <c:forEach items="${submissionCategoryTypes}" var="type">
+                            <c:forEach items="${cluster.diversityIndices}" var="diversityIndex">
+                                <c:if test="${diversityIndex.id.categoryType == type}">
+                                    <fmt:formatNumber type="number" maxFractionDigits="3" value="${diversityIndex.diversity}"/>
+                                </c:if>
+                            </c:forEach>
                         </c:forEach>
-                    </c:forEach>
+                    </td>
 
                     <td><img src="${cluster.consensusSpectrum.chromatographyType.iconPath}"
                              alt="${cluster.consensusSpectrum.chromatographyType.name()}"
