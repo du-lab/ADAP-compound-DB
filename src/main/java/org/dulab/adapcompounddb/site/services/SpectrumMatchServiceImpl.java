@@ -1,11 +1,6 @@
 package org.dulab.adapcompounddb.site.services;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -14,11 +9,8 @@ import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.QueryParameters;
-import org.dulab.adapcompounddb.models.entities.Peak;
-import org.dulab.adapcompounddb.models.entities.Spectrum;
-import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
-import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
-import org.dulab.adapcompounddb.models.entities.SpectrumProperty;
+import org.dulab.adapcompounddb.models.SubmissionCategoryType;
+import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
@@ -39,16 +31,20 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     private final SpectrumMatchRepository spectrumMatchRepository;
     private final SpectrumClusterRepository spectrumClusterRepository;
 
+    private final MathService mathService;
+
     private final Map<ChromatographyType, QueryParameters> queryParametersMap;
 
     @Autowired
     public SpectrumMatchServiceImpl(SpectrumRepository spectrumRepository,
                                     SpectrumMatchRepository spectrumMatchRepository,
-                                    SpectrumClusterRepository spectrumClusterRepository) {
+                                    SpectrumClusterRepository spectrumClusterRepository,
+                                    MathService mathService) {
 
         this.spectrumRepository = spectrumRepository;
         this.spectrumMatchRepository = spectrumMatchRepository;
         this.spectrumClusterRepository = spectrumClusterRepository;
+        this.mathService = mathService;
 
         QueryParameters gcQueryParameters = new QueryParameters()
                 .setScoreThreshold(0.75)
@@ -181,6 +177,22 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
                         .forEach(s -> s.setCluster(cluster));
 
                 addConsensusSpectrum(type, cluster, mzTolerance);
+
+
+                Set<DiversityIndex> diversityIndices = new HashSet<>();
+                for (SubmissionCategoryType categoryType : SubmissionCategoryType.values()) {
+
+                    double diversity = mathService.diversityIndex(cluster.getSpectra(), categoryType);
+
+                    if (diversity > 0.0) {
+                        DiversityIndex diversityIndex = new DiversityIndex();
+                        diversityIndex.setId(new DiversityIndexId(cluster, categoryType));
+                        diversityIndex.setDiversity(diversity);
+                        diversityIndices.add(diversityIndex);
+                    }
+                }
+                cluster.setDiversityIndices(diversityIndices);
+
 
                 clusters.add(cluster);
             }
