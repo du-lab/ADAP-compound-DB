@@ -52,7 +52,7 @@ public class AdminController {
 
     @RequestMapping(value = "/admin/", method = RequestMethod.GET)
     public String admin() {
-        return "admin/view";
+        return "admin/admin";
     }
 
     @RequestMapping(value = "/admin/calculatescores/", method = RequestMethod.GET)

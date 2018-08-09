@@ -41,19 +41,10 @@
     <div align="center">
         <c:forEach items="${submissionCategoryTypes}" var="type">
             <div align="center" style="display: inline-block; margin: 10px;">
-                <h1>${type.label} Distribution</h1>
+                <h2>${type.label} Distribution</h2>
                 <div id="${type.name()}PieChart" align="center"></div>
             </div>
         </c:forEach>
-
-        <%--<div align="center" style="display: inline-block; margin: 10px;">--%>
-        <%--<h1>Species Distribution</h1>--%>
-        <%--<div id="specimenPieChart" align="center"></div>--%>
-        <%--</div>--%>
-        <%--<div align="center" style="display: inline-block; margin: 10px;">--%>
-        <%--<h1>Diseases Distribution</h1>--%>
-        <%--<div id="diseasePieChart" align="center"></div>--%>
-        <%--</div>--%>
     </div>
 </section>
 
