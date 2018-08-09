@@ -288,6 +288,14 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`UserRole` (
   ENGINE = InnoDB
   DEFAULT CHARACTER SET = utf8;
 
+CREATE TABLE `DiversityIndex` (
+  `ClusterId` bigint(20) unsigned NOT NULL,
+  `CategoryType` varchar(30) NOT NULL,
+  `Diversity` double NOT NULL,
+  PRIMARY KEY (`ClusterId`,`CategoryType`),
+  CONSTRAINT `DiversityIndex_SpectrumCluster_Id_fk` FOREIGN KEY (`ClusterId`) REFERENCES `SpectrumCluster` (`Id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8;
+
 USE `adapcompounddb`;
 
 -- -----------------------------------------------------
