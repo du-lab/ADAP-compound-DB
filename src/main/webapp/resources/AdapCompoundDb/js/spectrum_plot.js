@@ -165,7 +165,7 @@ function SpectrumPlot(divId, spectrum) {
     graph1.call(d3.axisBottom(xScale)
             .ticks(5)
             .tickSize(-plotHeight)
-            .tickFormat(''))
+            .tickFormat(''));
 
     svg.append('text')
         .attr('class', 'label')
@@ -301,9 +301,10 @@ function SpectrumPlot(divId, spectrum) {
 
         // xScale = newScaleX;
         // yScale = newScaleY;
+        var t = d3.zoomIdentity.translate(xScale(x) + xScale(w), yScale(y)).scale((width - padding['left'] - padding['right'])/w);
+        xRect.call(zoomX.transform, t);
 
-
-        scaleGraph(newScaleX, newScaleY);
+        //scaleGraph(newScaleX, newScaleY);
         /*svg.transition()
             .duration(750)
             // .call(zoom.translate(translate).scale(scale).event); // not in d3 v4
