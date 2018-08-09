@@ -82,15 +82,17 @@
                     <td><a href="/cluster/${cluster.id}/">${cluster.consensusSpectrum.name}</a></td>
                     <td>${cluster.size}</td>
                     <td>${dulab:toIntegerScore(cluster.diameter)}</td>
-                    <td>
-                        <c:forEach items="${submissionCategoryTypes}" var="type">
+
+                    <c:forEach items="${submissionCategoryTypes}" var="type">
+                        <td>
                             <c:forEach items="${cluster.diversityIndices}" var="diversityIndex">
                                 <c:if test="${diversityIndex.id.categoryType == type}">
-                                    <fmt:formatNumber type="number" maxFractionDigits="3" value="${diversityIndex.diversity}"/>
+                                    <fmt:formatNumber type="number" maxFractionDigits="3"
+                                                      value="${diversityIndex.diversity}"/>
                                 </c:if>
                             </c:forEach>
-                        </c:forEach>
-                    </td>
+                        </td>
+                    </c:forEach>
 
                     <td><img src="${cluster.consensusSpectrum.chromatographyType.iconPath}"
                              alt="${cluster.consensusSpectrum.chromatographyType.name()}"
