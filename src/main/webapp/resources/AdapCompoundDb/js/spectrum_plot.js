@@ -15,10 +15,11 @@ function SpectrumPlot(divId, spectrum) {
     tooltip.append('div').attr('class', 'mz');
     tooltip.append('div').attr('class', 'intensity');
 
-    var resetButton = d3.select('#' + divId)
+    /*var resetButton = d3.select('#' + divId)
         .append('button')
         .attr('class', 'button')
-        .attr("value", "#");
+        .attr("value", "#");*/
+
 
     var minMz = d3.min(spectrum.peaks, function (d) {return d.mz});
     var maxMz = d3.max(spectrum.peaks, function (d) {return d.mz});
@@ -95,7 +96,22 @@ function SpectrumPlot(divId, spectrum) {
         .attr('width', width)
         .attr('height', height);
 
-
+    var gButton = svg.append("g")
+        .attr('class', 'button_g')
+        .attr("transform", "translate(" + padding.left + ", 0)")
+        .attr('width', width/10)
+        .attr('height', height/16);
+    var button = gButton.append("svg:rect")
+        .attr('width', width/10)
+        .attr('height', height/16)
+        .attr('rx', 10)
+        .attr('ry', 10)
+        .style("fill", "#f2f2f2");
+    var buttonText = gButton.append("svg:text")
+        .attr('class', 'label')
+        .attr('x', width/60)
+        .attr('y', height/20)
+        .text("Reset");
     var key = function (d) {return Math.round(d.mz);};
 
     var addPeaks = function (peaks) {
@@ -216,12 +232,12 @@ function SpectrumPlot(divId, spectrum) {
         .attr('class', 'zoom xy box')
         .attr("width", width - padding.left)
         .attr("height", height - padding.bottom)
-        .attr('transform', 'translate(' + padding.left + ', 0)')
+        .attr('transform', 'translate(' + padding.left + ', ' + padding.top + ')')
         .style("visibility", "hidden")
         .attr("pointer-events", "all");
 
     var rect = function(x, y, w, h) {
-        return "M"+[x,y]+",l"+[w,0]+",l"+[0,h]+",l"+[-w,0]+"z";
+        return "M"+x+" "+y+" l"+w+" "+0+" l"+0+" "+h+" l"+(-w)+" "+0+"z";
     };
     var selection = svg.append("path")
         .attr("class", "selection")
@@ -241,7 +257,7 @@ function SpectrumPlot(divId, spectrum) {
     };
     var zoomselection = function() {
         var value = selection.attr("d");
-        var segments = value.replace(/[A-Z]|[a-z]/g,'').split(","); // M291.046875,136 l146,0 l0,149 l-146,0z;
+        var segments = value.replace(/[A-Z]|[a-z]/g,'').split(" "); // M291.046875,136 l146,0 l0,149 l-146,0z;
         var x = parseFloat(segments[0]) - parseFloat(padding['left']);
         var y = parseFloat(segments[1]) - parseFloat(padding['top']);
         var w = parseFloat(segments[2]);
@@ -292,8 +308,10 @@ function SpectrumPlot(divId, spectrum) {
     };
     var resetGraph = function() {
         scaleGraph(xScale, yScale);
-    };
-    resetButton.on("click", resetGraph);
+    };buttonText
+    // resetButton.on("click", resetGraph);
+    button.on("click", resetGraph);
+    buttonText.on("click", resetGraph);
 
     var interpolateZoom = function(x, y, w, h) {
         var domainX = xAxis.scale().domain();
