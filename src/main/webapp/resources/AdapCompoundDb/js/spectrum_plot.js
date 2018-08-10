@@ -266,10 +266,16 @@ function SpectrumPlot(divId, spectrum) {
     };
 
     var scaleGraph = function(newScaleX, newScaleY) {
-        xAxis = d3.axisBottom()
-            .scale(newScaleX);
         gx.call(xAxis.scale(newScaleX));
         gy.call(yAxis.scale(newScaleY));
+        graph1.call(d3.axisBottom(newScaleX)
+            .ticks(5)
+            .tickSize(-plotHeight)
+            .tickFormat(''));
+        graph2.call(d3.axisLeft(newScaleY)
+            .ticks(5)
+            .tickSize(-plotWidth)
+            .tickFormat(''));
 
         var spectra = d3.select("svg").selectAll("line.spectrum");
         spectra
@@ -306,26 +312,10 @@ function SpectrumPlot(divId, spectrum) {
             .domain([newYDomainEnd, newYDomainStart])
             .range([height - padding['bottom'], padding['top']]);
         newScaleY.clamp(true);
-        graph1.call(d3.axisBottom(newScaleX)
-            .ticks(5)
-            .tickSize(-plotHeight)
-            .tickFormat(''));
-        graph2.call(d3.axisLeft(newScaleY)
-            .ticks(5)
-            .tickSize(-plotWidth)
-            .tickFormat(''));
-
-        // xScale = newScaleX;
-        // yScale = newScaleY;
-        // var t = d3.zoomIdentity.translate(xScale(x) + xScale(w), yScale(y)).scale((width - padding['left'] - padding['right'])/w);
-        // xRect.call(zoomX.transform, t);
 
         scaleGraph(newScaleX, newScaleY);
-        /*svg.transition()
-            .duration(750)
-            // .call(zoom.translate(translate).scale(scale).event); // not in d3 v4
-            .call( zoomSelect.transform, d3.zoomIdentity.translate(translate[0],translate[1]).scale(scale) );*/
     };
+
     gridArea.on("mousedown", function() {
         var subject = d3.select(window);
         var parent = this.parentNode;
