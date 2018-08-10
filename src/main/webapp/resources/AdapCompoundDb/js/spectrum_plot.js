@@ -308,7 +308,7 @@ function SpectrumPlot(divId, spectrum) {
     };
     var resetGraph = function() {
         scaleGraph(xScale, yScale);
-    };buttonText
+    };
     // resetButton.on("click", resetGraph);
     button.on("click", resetGraph);
     buttonText.on("click", resetGraph);
