@@ -25,6 +25,7 @@ function SpectrumPlot(divId, spectrum) {
     var intensityMax = d3.max(spectrum.peaks, function (d) {return d.intensity});
 
     var resetXScale = d3.scaleLinear()
+        // .domain([0, maxMz])
         .domain([minMz - 0.05 * mzRange, maxMz + 0.05 * mzRange])
         .range([padding['left'], width - padding['right']]);
 
@@ -36,23 +37,35 @@ function SpectrumPlot(divId, spectrum) {
     var xScale = resetXScale;
     var yScale = resetYScale;
 
+    var isScaleX = false;
+    var isScaleY = false;
+
+    var isSelection = false;
+
     // // -----------------------
     // // ----- Zoom -----
     // // -----------------------
 
-    var currentTransform = null;
-
-    var zoomGraph = function(xZ, yZ) {
-        //var xZ = arguments[0], yZ = arguments[1];
+    var zoomGraph = function() {
+        var xz = arguments[0];
         if(d3.event == null) {
             return;
         }
-        // if(currentTransform == null) {
-            currentTransform = d3.event.transform;
-        // }
-        var spectra = d3.select("svg").selectAll("line.spectrum");
 
-        if(xZ) {
+        isScaleX = isSelection;
+        isScaleY = isSelection;
+        isSelection = false;
+        if($(this).hasClass("x") || $(this).hasClass("xy")) {
+            isScaleX = true;
+        }
+        if($(this).hasClass("y") || $(this).hasClass("xy")) {
+            isScaleY = true;
+        }
+        var currentTransform = d3.event.transform;
+        var spectra = d3.select("svg").selectAll("line.spectrum");
+        console.log(currentTransform.k);
+
+        if(isScaleX) {
             console.log(xScale.domain());
             var newXscale = currentTransform.rescaleX(xScale);
             console.log(newXscale.domain())
@@ -66,21 +79,17 @@ function SpectrumPlot(divId, spectrum) {
                 });
         }
 
-        if(yZ) {
-            /*var newYscale = currentTransform.rescaleY(yScale);
+        if(isScaleY) {
+            var newYscale = currentTransform.rescaleY(yScale);
             gy.call(yAxis.scale(newYscale));
 
             spectra
                 .attr('y2', function (d) {
                     return Math.min($(this).attr("y1"), newYscale(d.intensity));
-                });*/
+                });
         }
     }
 
-    var dims = {
-        svg_dx: 100,
-        svg_dy: 100
-    };
     var zoom = d3.zoom()
         .on("zoom", zoomGraph.bind(this, true, true));
 
@@ -88,7 +97,7 @@ function SpectrumPlot(divId, spectrum) {
         /*.extent([[dims.svg_dx, dims.svg_dy], [width-(dims.svg_dx*2), height-dims.svg_dy]])
         .scaleExtent([1, Infinity])
         .translateExtent([[dims.svg_dx, dims.svg_dy], [width-(dims.svg_dx*2), height-dims.svg_dy]])*/
-        .on("zoom", zoomGraph.bind(this, true, false));
+        .on("zoom", zoomGraph);
 
     var zoomY = d3.zoom()
         .on("zoom", zoomGraph.bind(this, false, true));
@@ -200,27 +209,26 @@ function SpectrumPlot(divId, spectrum) {
         .text('intensity');
 
 
-    svg.append('svg:rect')
+    var xRect = svg.append('svg:rect')
         .attr('class', 'zoom x box')
-        .attr("width", width - padding.left)
+        .attr("width", plotWidth)
         .attr("height", padding.bottom)
         .attr('transform', 'translate(' + padding['left'] + ', ' + (height - padding['bottom']) + ')')
         .style("visibility", "hidden")
-        .attr("pointer-events", "all")
-        .call(zoomX);
+        .attr("pointer-events", "all");
+    xRect.call(zoomX);
     svg.append('svg:rect')
         .attr('class', 'zoom y box')
         .attr("width", padding.left)
-        .attr("height", height - padding.bottom)
-        .attr('transform', 'translate(0, 0)')
+        .attr("height", plotHeight)
+        .attr('transform', 'translate(0, ' + padding['top'] + ')')
         .style("visibility", "hidden")
-        .attr("pointer-events", "all")
-        .call(zoomY);
+        .attr("pointer-events", "all");
     var gridArea = svg.append('svg:rect')
         .attr('class', 'zoom xy box')
-        .attr("width", width - padding.left)
-        .attr("height", height - padding.bottom)
-        .attr('transform', 'translate(' + padding.left + ', 0)')
+        .attr("width", plotWidth)
+        .attr("height", plotHeight)
+        .attr('transform', 'translate(' + padding.left + ', ' + padding['top'] + ')')
         .style("visibility", "hidden")
         .attr("pointer-events", "all");
 
@@ -246,10 +254,10 @@ function SpectrumPlot(divId, spectrum) {
     var zoomselection = function() {
         var value = selection.attr("d");
         var segments = value.replace(/[A-Z]|[a-z]/g,'').split(","); // M291.046875,136 l146,0 l0,149 l-146,0z;
-        var x = segments[0] - padding['left'];
-        var y = segments[1];
-        var w = segments[2];
-        var h = segments[5];
+        var x = parseFloat(segments[0]) - parseFloat(padding['left']);
+        var y = parseFloat(segments[1]) - parseFloat(padding['top']);
+        var w = parseFloat(segments[2]);
+        var h = parseFloat(segments[5]);
 
         if(w > 5 || h > 5) {
             interpolateZoom(x, y, w, h);
@@ -276,8 +284,11 @@ function SpectrumPlot(divId, spectrum) {
             });
     };
     var resetGraph = function() {
-        svg
-            .call(zoomX.transform, d3.zoomIdentity);
+        // var t = d3.zoomIdentity.translate(0, 0).scale(1);
+        // xRect.call(zoomX.transform, t);
+        isScaleX = true;
+        isScaleY = true;
+        xRect.call(zoomX.transform, d3.zoomIdentity);
     };
     resetButton.on("click", resetGraph);
 
@@ -285,15 +296,15 @@ function SpectrumPlot(divId, spectrum) {
         var domainX = xAxis.scale().domain();
         var domainY = yAxis.scale().domain();
 
-        var newXDomainStart = domainX[0] + (domainX[1] - domainX[0] + 1) * x / (width - padding['left'] - padding['right']);
-        var newXDomainEnd = domainX[0] + (domainX[1] - domainX[0] + 1) * (parseInt(x) + parseInt(w)) / (width - padding['left'] - padding['right']);
+        var newXDomainStart = domainX[0] + (domainX[1] - domainX[0]) * x / plotWidth;
+        var newXDomainEnd = domainX[0] + (domainX[1] - domainX[0]) * (x + w) / plotWidth;
 
-        var newYDomainStart = domainY[1] - (domainY[1] - domainY[0] + 1) * (parseInt(y) - padding['bottom']) / (height - padding['bottom'] - padding['bottom']);
-        var newYDomainEnd = domainY[1] - (domainY[1] - domainY[0] + 1) * (parseInt(y) + parseInt(h) - padding['bottom']) / (height - padding['bottom'] - padding['bottom']);
+        var newYDomainStart = domainY[1] - (domainY[1] - domainY[0]) * y / plotHeight;
+        var newYDomainEnd = domainY[1] - (domainY[1] - domainY[0]) * (y + h) / plotHeight;
 
         var newScaleX = d3.scaleLinear()
             .domain([newXDomainStart, newXDomainEnd])
-            .range([padding['left'], width - padding['right']]);
+            .range([padding['left'], plotWidth]);
         var newScaleY = d3.scaleLinear()
             .domain([newYDomainEnd, newYDomainStart])
             .range([height - padding['bottom'], padding['top']]);
@@ -301,8 +312,17 @@ function SpectrumPlot(divId, spectrum) {
 
         // xScale = newScaleX;
         // yScale = newScaleY;
-        var t = d3.zoomIdentity.translate(xScale(x) + xScale(w), yScale(y)).scale((width - padding['left'] - padding['right'])/w);
+        isSelection = true;
+        var scaleBy = plotWidth / w;
+        var xDiff = (newXDomainStart - domainX[0]) * scaleBy;
+        var t = d3.zoomIdentity.scale(scaleBy);
         xRect.call(zoomX.transform, t);
+
+        var newDomainX = xAxis.scale().domain();
+        var newDomainY = yAxis.scale().domain();
+        xDiff = newDomainX[0] - domainX[0];
+        var t2 = d3.zoomIdentity.scale(scaleBy).translate(xDiff, 0);
+        xRect.call(zoomX.transform, t2);
 
         //scaleGraph(newScaleX, newScaleY);
         /*svg.transition()
