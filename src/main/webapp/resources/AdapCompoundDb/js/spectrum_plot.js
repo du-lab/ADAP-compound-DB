@@ -242,12 +242,25 @@ function SpectrumPlot(divId, spectrum) {
     var zoomselection = function() {
         var value = selection.attr("d");
         var segments = value.replace(/[A-Z]|[a-z]/g,'').split(","); // M291.046875,136 l146,0 l0,149 l-146,0z;
-        var x = segments[0] - padding['left'];
-        var y = segments[1];
-        var w = segments[2];
-        var h = segments[5];
+        var x = parseFloat(segments[0]) - parseFloat(padding['left']);
+        var y = parseFloat(segments[1]) - parseFloat(padding['top']);
+        var w = parseFloat(segments[2]);
+        var h = parseFloat(segments[5]);
 
-        if(w > 5 || h > 5) {
+        if(x + w < 0) {
+            w = -x;
+        }
+        if(y + h < 0) {
+            h = -y;
+        }
+        if(y + h > plotHeight) {
+            h = plotHeight - y;
+        }
+        if(x + w > plotWidth) {
+            w = plotWidth - x;
+        }
+
+        if(Math.abs(w) > 5 && Math.abs(h) > 5) {
             interpolateZoom(x, y, w, h);
         }
     };
@@ -280,11 +293,11 @@ function SpectrumPlot(divId, spectrum) {
         var domainX = xAxis.scale().domain();
         var domainY = yAxis.scale().domain();
 
-        var newXDomainStart = domainX[0] + (domainX[1] - domainX[0] + 1) * x / (width - padding['left'] - padding['right']);
-        var newXDomainEnd = domainX[0] + (domainX[1] - domainX[0] + 1) * (parseInt(x) + parseInt(w)) / (width - padding['left'] - padding['right']);
+        var newXDomainStart = domainX[0] + (domainX[1] - domainX[0]) * x / plotWidth;
+        var newXDomainEnd = domainX[0] + (domainX[1] - domainX[0]) * (x + w) / plotWidth;
 
-        var newYDomainStart = domainY[1] - (domainY[1] - domainY[0] + 1) * (parseInt(y) - padding['bottom']) / (height - padding['bottom'] - padding['bottom']);
-        var newYDomainEnd = domainY[1] - (domainY[1] - domainY[0] + 1) * (parseInt(y) + parseInt(h) - padding['bottom']) / (height - padding['bottom'] - padding['bottom']);
+        var newYDomainStart = domainY[1] - (domainY[1] - domainY[0]) * y / plotHeight;
+        var newYDomainEnd = domainY[1] - (domainY[1] - domainY[0]) * (y + h) / plotHeight;
 
         var newScaleX = d3.scaleLinear()
             .domain([newXDomainStart, newXDomainEnd])
@@ -293,6 +306,14 @@ function SpectrumPlot(divId, spectrum) {
             .domain([newYDomainEnd, newYDomainStart])
             .range([height - padding['bottom'], padding['top']]);
         newScaleY.clamp(true);
+        graph1.call(d3.axisBottom(newScaleX)
+            .ticks(5)
+            .tickSize(-plotHeight)
+            .tickFormat(''));
+        graph2.call(d3.axisLeft(newScaleY)
+            .ticks(5)
+            .tickSize(-plotWidth)
+            .tickFormat(''));
 
         // xScale = newScaleX;
         // yScale = newScaleY;
