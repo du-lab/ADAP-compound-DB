@@ -26,17 +26,14 @@ function SpectrumPlot(divId, spectrum) {
     var mzRange = maxMz - minMz;
     var intensityMax = d3.max(spectrum.peaks, function (d) {return d.intensity});
 
-    var resetXScale = d3.scaleLinear()
+    var xScale = d3.scaleLinear()
         .domain([minMz - 0.05 * mzRange, maxMz + 0.05 * mzRange])
         .range([padding['left'], width - padding['right']]);
 
-    var resetYScale = d3.scaleLinear()
+    var yScale = d3.scaleLinear()
         .domain([0, intensityMax])
         .range([height - padding['bottom'], padding['top']]);
-    resetYScale.clamp(true);
-
-    var xScale = resetXScale;
-    var yScale = resetYScale;
+    yScale.clamp(true);
 
     // // -----------------------
     // // ----- Zoom -----

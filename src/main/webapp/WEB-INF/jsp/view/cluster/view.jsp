@@ -126,6 +126,15 @@
     addPieChart('${type.name()}PieChart', ${dulab:clusterDistributionToJson(cluster.spectra, submissionCategoryMap.get(type))});
     </c:forEach>
 </script>
-
+<style>
+    .selection {
+        fill: #ADD8E6;
+        stroke: #ADD8E6;
+        fill-opacity: 0.3;
+        stroke-opacity: 0.7;
+        stroke-width: 2;
+        stroke-dasharray: 5, 5;
+    }
+</style>
 <jsp:include page="/WEB-INF/jsp/includes/column_right_news.jsp"/>
 <jsp:include page="/WEB-INF/jsp/includes/footer.jsp"/>
