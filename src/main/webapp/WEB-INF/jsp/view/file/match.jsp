@@ -219,7 +219,16 @@
 <script>
     var plot = new TwoSpectraPlot('plot', ${dulab:spectrumToJson(querySpectrum)})
 </script>
-
+<style>
+    .selection {
+        fill: #ADD8E6;
+        stroke: #ADD8E6;
+        fill-opacity: 0.3;
+        stroke-opacity: 0.7;
+        stroke-width: 2;
+        stroke-dasharray: 5, 5;
+    }
+</style>
 <!-- End the middle column -->
 
 <jsp:include page="/WEB-INF/jsp/includes/column_right_news.jsp"/>

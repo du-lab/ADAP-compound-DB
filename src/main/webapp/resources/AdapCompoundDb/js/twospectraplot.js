@@ -26,12 +26,28 @@ function TwoSpectraPlot(divId, topSpectrum) {
     var yScale = d3.scaleLinear()
         .domain([-100, 100])
         .range([height - padding['bottom'], padding['top']]);
+    yScale.clamp(true);
 
     var svg = d3.select('#' + divId)
         .append('svg')
         .attr('width', width)
         .attr('height', height);
-
+    var gButton = svg.append("g")
+        .attr('class', 'button_g')
+        .attr("transform", "translate(" + padding.left + ", 0)")
+        .attr('width', width/10)
+        .attr('height', height/16);
+    var button = gButton.append("svg:rect")
+        .attr('width', width/10)
+        .attr('height', height/16)
+        .attr('rx', 10)
+        .attr('ry', 10)
+        .style("fill", "#f2f2f2");
+    var buttonText = gButton.append("svg:text")
+        .attr('class', 'label')
+        .attr('x', width/60)
+        .attr('y', height/20)
+        .text("Reset");
     var key = function (d) {return Math.round(d.mz);};
 
     var addPeaks = function (peaks, top) {
@@ -92,15 +108,15 @@ function TwoSpectraPlot(divId, topSpectrum) {
     var xAxis = d3.axisBottom()
         .scale(xScale);
 
-    svg.append('g')
+    var gx = svg.append('g')
         .attr('class', 'axis')
         .attr('transform', 'translate(0, ' + (height - padding['bottom']) + ')')
         .call(xAxis);
 
-    svg.append('g')
+    var gridLinesX = svg.append('g')
         .attr('class', 'grid')
-        .attr('transform', 'translate(0, ' + (height - padding['bottom']) + ')')
-        .call(d3.axisBottom(xScale)
+        .attr('transform', 'translate(0, ' + (height - padding['bottom']) + ')');
+    gridLinesX.call(d3.axisBottom(xScale)
             .ticks(5)
             .tickSize(-plotHeight)
             .tickFormat(''));
@@ -115,15 +131,15 @@ function TwoSpectraPlot(divId, topSpectrum) {
     var yAxis = d3.axisLeft()
         .scale(yScale);
 
-    svg.append('g')
+    var gy = svg.append('g')
         .attr('class', 'axis')
         .attr('transform', 'translate(' + padding['left'] + ', 0)')
         .call(yAxis);
 
-    svg.append('g')
+    var gridLinesY = svg.append('g')
         .attr('class', 'grid')
-        .attr('transform', 'translate(' + padding['left'] + ', 0)')
-        .call(d3.axisLeft(yScale)
+        .attr('transform', 'translate(' + padding['left'] + ', 0)');
+    gridLinesY.call(d3.axisLeft(yScale)
             .ticks(5)
             .tickSize(-plotWidth)
             .tickFormat(''));
@@ -201,4 +217,151 @@ function TwoSpectraPlot(divId, topSpectrum) {
         svg.select('#bottomSpectrumName')
             .text(bottomSpectrum.name);
     }
+
+    var gridArea = svg.append('svg:rect')
+        .attr('class', 'zoom xy box')
+        .attr("width", width - padding.left)
+        .attr("height", height - padding.bottom)
+        .attr('transform', 'translate(' + padding.left + ', ' + padding.top + ')')
+        .style("visibility", "hidden")
+        .attr("pointer-events", "all");
+    var rect = function(x, y, w, h) {
+        return "M"+x+" "+y+" l"+w+" "+0+" l"+0+" "+h+" l"+(-w)+" "+0+"z";
+    };
+    var selection = svg.append("path")
+        .attr("class", "selection")
+        .attr("visibility", "hidden");
+
+    var startSelection = function(start) {
+        selection.attr("d", rect(start[0], start[0], 0, 0))
+            .attr("visibility", "visible");
+    };
+
+    var moveSelection = function(start, moved) {
+        selection.attr("d", rect(start[0], start[1], moved[0]-start[0], moved[1]-start[1]));
+    };
+
+    var endSelection = function(start, end) {
+        selection.attr("visibility", "hidden");
+    };
+    var zoomselection = function() {
+        var value = selection.attr("d");
+        var segments = value.replace(/[A-Z]|[a-z]/g,'').split(" "); // M291.046875,136 l146,0 l0,149 l-146,0z;
+        var x = parseFloat(segments[0]) - parseFloat(padding['left']);
+        var y = parseFloat(segments[1]) - parseFloat(padding['top']);
+        var w = parseFloat(segments[2]);
+        var h = parseFloat(segments[5]);
+
+        if(x + w < 0) {
+            w = -x;
+        }
+        if(y + h < 0) {
+            h = -y;
+        }
+        if(y + h > plotHeight) {
+            h = plotHeight - y;
+        }
+        if(x + w > plotWidth) {
+            w = plotWidth - x;
+        }
+
+        if(Math.abs(w) > 5 && Math.abs(h) > 5) {
+            interpolateZoom(x, y, w, h);
+        }
+    };
+
+    var scaleGraph = function(newScaleX, newScaleY) {
+        gx.call(xAxis.scale(newScaleX));
+        gy.call(yAxis.scale(newScaleY));
+        gridLinesX.call(d3.axisBottom(newScaleX)
+            .ticks(5)
+            .tickSize(-plotHeight)
+            .tickFormat(''));
+        gridLinesY.call(d3.axisLeft(newScaleY)
+            .ticks(5)
+            .tickSize(-plotWidth)
+            .tickFormat(''));
+
+        var spectra = d3.select("svg").selectAll("line.top,.bottom");
+        spectra
+            .attr('x1', function (d) {
+                return Math.max(padding['left'], newScaleX(d.mz));
+            })
+            .attr('x2', function (d) {
+                return Math.max(padding['left'], newScaleX(d.mz));
+            });
+        spectra
+            .attr('y1', function (d) {
+                return Math.max(padding['top'], Math.min(newScaleY(0), height - padding['bottom']));
+            });
+        spectra
+            .attr('y2', function (d) {
+                var tempIntensity = d.intensity;
+                if(d3.select(this).classed("bottom")) {
+                    tempIntensity = -tempIntensity;
+                }
+                return Math.max(padding['top'], Math.min(newScaleY(tempIntensity), height - padding['bottom']));
+            });
+    };
+    var resetGraph = function() {
+        scaleGraph(xScale, yScale);
+    };
+    button.on("click", resetGraph);
+    buttonText.on("click", resetGraph);
+
+    var interpolateZoom = function(x, y, w, h) {
+        var domainX = xAxis.scale().domain();
+        var domainY = yAxis.scale().domain();
+
+        var newXDomainStart = domainX[0] + (domainX[1] - domainX[0]) * x / plotWidth;
+        var newXDomainEnd = domainX[0] + (domainX[1] - domainX[0]) * (x + w) / plotWidth;
+
+        var newYDomainStart = domainY[1] - (domainY[1] - domainY[0]) * y / plotHeight;
+        var newYDomainEnd = domainY[1] - (domainY[1] - domainY[0]) * (y + h) / plotHeight;
+
+        var newScaleX = d3.scaleLinear()
+            .domain([newXDomainStart, newXDomainEnd])
+            .range([padding['left'], width - padding['right']]);
+        var newScaleY = d3.scaleLinear()
+            .domain([newYDomainEnd, newYDomainStart])
+            .range([height - padding['bottom'], padding['top']]);
+        newScaleY.clamp(true);
+
+        scaleGraph(newScaleX, newScaleY);
+    };
+
+    gridArea.on("mousedown", function() {
+        var subject = d3.select(window);
+        var parent = this.parentNode;
+        var start = d3.mouse(parent);
+        startSelection(start);
+        subject
+            .on("mousemove.selection", function() {
+                moveSelection(start, d3.mouse(parent));
+            }).on("mouseup.selection", function() {
+            endSelection(start, d3.mouse(parent));
+            zoomselection();
+            subject.on("mousemove.selection", null).on("mouseup.selection", null);
+        });
+    });
+
+    gridArea.on("touchstart", function() {
+        var subject = d3.select(this);
+        var parent = this.parentNode;
+        var id = d3.event.changedTouches[0].identifier;
+        var start = d3.touch(parent, id);
+        var pos;
+        startSelection(start);
+        subject
+            .on("touchmove." + id, function() {
+                if (pos = d3.touch(parent, id)) {
+                    moveSelection(start, pos);
+                }
+            }).on("touchend." + id, function() {
+            if (pos = d3.touch(parent, id)) {
+                endSelection(start, pos);
+                subject.on("touchmove." + id, null).on("touchend." + id, null);
+            }
+        });
+    });
 }
