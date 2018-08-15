@@ -34,6 +34,8 @@ public class SpectrumDTO implements Serializable {
 	private Double retentionTime;
 	
 	private String chromatographyTypeLabel;
+	
+	private String chromatographyTypeIconPath;
 
 	private String fileName;
 
@@ -99,6 +101,14 @@ public class SpectrumDTO implements Serializable {
 
 	public void setChromatographyTypeLabel(String chromatographyTypeLabel) {
 		this.chromatographyTypeLabel = chromatographyTypeLabel;
+	}
+
+	public String getChromatographyTypeIconPath() {
+		return chromatographyTypeIconPath;
+	}
+
+	public void setChromatographyTypeIconPath(String chromatographyTypeIconPath) {
+		this.chromatographyTypeIconPath = chromatographyTypeIconPath;
 	}
 
 	public String getFileName() {
