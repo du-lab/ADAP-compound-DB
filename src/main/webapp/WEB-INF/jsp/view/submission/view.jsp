@@ -268,9 +268,21 @@
                         return content;
                     }
                 },
-                {"data": "retentionTime", "targets": 2},
+                {"data": "retentionTime", "targets": 2}, //<img src="${pageContext.request.contextPath}/${spectrum.chromatographyType.iconPath}" alt="${spectrum.chromatographyType.label}" title="${spectrum.chromatographyType.label}" class="icon"/>
                 {"data": "precursor", "targets": 3},
-                {"data": "chromatographyTypeLabel", "targets": 4},
+                {
+                	"orderable": false,
+                    "targets": 4,
+                    "render": function (data, type, row, meta) {
+                        content = '<img' +
+                        ' src="${pageContext.request.contextPath}/' + row.chromatographyTypeIconPath + '"'
+                        + ' alt="' + row.chromatographyTypeLabel + '"'
+                        + ' title="' + row.chromatographyTypeLabel + '"'
+                        + ' class="icon"/>';
+
+                        return content;
+                    }
+                },
                 {"data": "fileName", "targets": 5},
                 {
                     "orderable": false,

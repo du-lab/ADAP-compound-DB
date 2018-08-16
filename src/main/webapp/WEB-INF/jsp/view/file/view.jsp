@@ -73,7 +73,7 @@
                             </td>
                             <td><fmt:formatNumber type="number" maxFractionDigits="3" value="${spectrum.retentionTime}"/></td>
                             <td>${spectrum.precursor}</td>
-                            <td><img src="${spectrum.chromatographyType.iconPath}" alt="${spectrum.chromatographyType.label}" title="${spectrum.chromatographyType.label}" class="icon"/></td>
+                            <td><img src="${pageContext.request.contextPath}/${spectrum.chromatographyType.iconPath}" alt="${spectrum.chromatographyType.label}" title="${spectrum.chromatographyType.label}" class="icon"/></td>
                             <td>${file.name}</td>
                             <td>
                                 <!-- more horiz -->
