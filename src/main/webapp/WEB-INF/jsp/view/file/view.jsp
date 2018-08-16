@@ -101,7 +101,10 @@
 </section>
 
 <c:if test="${authenticated}">
-	<section>
+    <jsp:include page="../../includes/submission_form.jsp">
+        <jsp:param value="${submission}" name="submission"/>
+    </jsp:include>
+	<%-- <section>
 	    <h1>Submit</h1>
 	    <div align="center">
 	        <div align="left" style="width: 600px">
@@ -165,7 +168,7 @@
 	            </form:form>
 	        </div>
 	    </div>
-	</section>
+	</section> --%>
 </c:if>
 
 <script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>

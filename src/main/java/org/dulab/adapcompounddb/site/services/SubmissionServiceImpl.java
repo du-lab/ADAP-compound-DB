@@ -39,11 +39,19 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     @Transactional
     public SubmissionDTO findSubmissionById(long submissionId) {
-        Submission submission = submissionRepository.findById(submissionId)
-                .orElseThrow(EmptyStackException::new);
-        ObjectMapperUtils objectMapper = new ObjectMapperUtils();
+        Submission submission = findSubmission(submissionId);
+        SubmissionDTO submissionDTO = convertToDTO(null, submission);
+		return submissionDTO;
+    }
 
-        SubmissionDTO submissionDTO = objectMapper.map(submission, SubmissionDTO.class);
+    @Override
+    @Transactional
+    public SubmissionDTO convertToDTO(SubmissionDTO submissionDTO, Submission submission) {
+
+		if(submissionDTO == null) {
+			ObjectMapperUtils objectMapper = new ObjectMapperUtils();
+			submissionDTO = objectMapper.map(submission, SubmissionDTO.class);
+		}
         if (submission.getTags() != null) {
         	submissionDTO.setTags(submission
                     .getTags()
@@ -61,7 +69,7 @@ public class SubmissionServiceImpl implements SubmissionService {
                     .collect(Collectors.toList()));
         }
 		return submissionDTO;
-    }
+	}
 
     @Override
     @Transactional

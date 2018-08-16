@@ -41,4 +41,6 @@ public interface SubmissionService {
     void saveSubmissionCategory(SubmissionCategory category);
 
     void deleteSubmissionCategory(long submissionCategoryId);
+
+	SubmissionDTO convertToDTO(SubmissionDTO submissionDTO, Submission submission);
 }

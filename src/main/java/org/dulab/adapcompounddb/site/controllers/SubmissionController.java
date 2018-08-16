@@ -112,11 +112,13 @@ public class SubmissionController extends BaseController {
 
     private String edit(Submission submission, Model model) {
 
-        model.addAttribute("submission", submission);
-
-        SubmissionForm form = createSubmissionForm(submission); 
-
-        model.addAttribute("submissionForm", form);
+        SubmissionDTO submissionDTO = submissionService.convertToDTO(null, submission);
+        model.addAttribute("submission", submissionDTO);
+//      model.addAttribute("submission", submission);
+//
+//        SubmissionForm form = createSubmissionForm(submission); 
+//
+//        model.addAttribute("submissionForm", form);
 //        model.addAttribute("edit", edit);   // Edit mode
 //        model.addAttribute("authorized", authorized);  // User is authorized to edit the submission
         model.addAttribute("authenticated", isAuthenticated());  // User is logged in
@@ -248,14 +250,14 @@ public class SubmissionController extends BaseController {
     @RequestMapping(value = "/file/submit", method = RequestMethod.POST)
     public String fileView(HttpSession session, Model model, @Valid SubmissionDTO form, Errors errors) {
 
+        Submission submission = Submission.from(session);
         if (errors.hasErrors()) {
-            model.addAttribute("edit", true);
-            model.addAttribute("authorized", true);
-            model.addAttribute("submissionForm", form);
+            model.addAttribute("authenticated", isAuthenticated());
+            form = submissionService.convertToDTO(form, submission);
+            model.addAttribute("submission", form);
             return "file/view";
         }
 
-        Submission submission = Submission.from(session);
         if (submission == null)
             return redirectFileUpload();
 
@@ -270,14 +272,15 @@ public class SubmissionController extends BaseController {
     public String submissionView(@PathVariable("submissionId") long submissionId, Model model, HttpSession session,
                                  @Valid SubmissionDTO form, Errors errors) {
 
+        Submission submission = submissionService.findSubmission(submissionId);
         if (errors.hasErrors()) {
-//            model.addAttribute("submissionForm", form);
+            form = submissionService.convertToDTO(form, submission);
+            model.addAttribute("submission", form);
             model.addAttribute("edit", true);
-            model.addAttribute("authorized", true);
+//            model.addAttribute("authorized", true);
             return "submission/view";
         }
 
-        Submission submission = submissionService.findSubmission(submissionId);
         if (submission == null)
             return submissionNotFound(model, submissionId);
 
