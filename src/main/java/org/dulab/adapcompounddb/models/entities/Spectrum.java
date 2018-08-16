@@ -1,6 +1,8 @@
 package org.dulab.adapcompounddb.models.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.persistence.*;
@@ -20,6 +22,7 @@ public class Spectrum implements Serializable {
 	private static final String PRECURSOR_MASS_PROPERTY_NAME = "PrecursorMZ";
 	private static final String RETENTION_TIME_PROPERTY_NAME = "RT";
 	private static final String REFERENCE_PROPERTY_NAME = "IS_REFERENCE";
+	private static final String SIGNIFICANCE_PROPERTY_NAME = "SIGNIFICANCE";
 
 	// *************************
 	// ***** Entity fields *****
@@ -60,6 +63,8 @@ public class Spectrum implements Serializable {
 	private Double precursor;
 
 	private Double retentionTime;
+
+	private Double significance;
 
 	@NotNull(message = "Spectrum: the field Chromatography Type is required.")
 	@Enumerated(EnumType.STRING)
@@ -125,26 +130,35 @@ public class Spectrum implements Serializable {
 	}
 
 	public void setProperties(List<SpectrumProperty> properties) {
-
-		if (properties == null)
-			return;
-
-		this.properties = properties;
-		for (SpectrumProperty property : properties) {
-
-			if (property.getName().equalsIgnoreCase(NAME_PROPERTY_NAME))
-				this.setName(property.getValue());
-
-			else if (property.getName().equalsIgnoreCase(PRECURSOR_MASS_PROPERTY_NAME))
-				this.setPrecursor(Double.valueOf(property.getValue()));
-
-			else if (property.getName().equalsIgnoreCase(RETENTION_TIME_PROPERTY_NAME))
-				this.setRetentionTime(Double.valueOf(property.getValue()));
-
-			else if (property.getName().equalsIgnoreCase(REFERENCE_PROPERTY_NAME))
-				this.setReference(true);
-		}
+        this.properties = properties;
 	}
+
+	public void addProperty(String name, String value) {
+
+	    if (properties == null)
+	        properties = new ArrayList<>();
+
+        if (name.equalsIgnoreCase(NAME_PROPERTY_NAME))
+            this.setName(value);
+
+        else if (name.equalsIgnoreCase(PRECURSOR_MASS_PROPERTY_NAME))
+            this.setPrecursor(Double.valueOf(value));
+
+        else if (name.equalsIgnoreCase(SIGNIFICANCE_PROPERTY_NAME))
+            this.setSignificance(Double.valueOf(value));
+
+        else if (name.equalsIgnoreCase(RETENTION_TIME_PROPERTY_NAME))
+            this.setRetentionTime(Double.valueOf(value));
+
+        else if (name.equalsIgnoreCase(REFERENCE_PROPERTY_NAME))
+            this.setReference(true);
+
+	    SpectrumProperty property = new SpectrumProperty();
+	    property.setName(name);
+	    property.setValue(value);
+	    property.setSpectrum(this);
+	    properties.add(property);
+    }
 
 	public List<SpectrumMatch> getMatches() {
 		return matches;
@@ -210,7 +224,15 @@ public class Spectrum implements Serializable {
 		this.chromatographyType = chromatographyType;
 	}
 
-	// ****************************
+    public Double getSignificance() {
+        return significance;
+    }
+
+    public void setSignificance(Double significance) {
+        this.significance = significance;
+    }
+
+    // ****************************
 	// ***** Standard methods *****
 	// ****************************
 

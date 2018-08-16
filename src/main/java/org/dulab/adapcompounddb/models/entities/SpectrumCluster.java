@@ -28,6 +28,10 @@ public class SpectrumCluster implements Serializable {
     @NotNull(message = "Size of cluster is required.")
     private Integer size;
 
+    private Double aveSignificance;
+    private Double minSignificance;
+    private Double maxSignificance;
+
     private List<Spectrum> spectra;
 
     private Set<DiversityIndex> diversityIndices;
@@ -97,6 +101,29 @@ public class SpectrumCluster implements Serializable {
         this.diversityIndices = diversityIndices;
     }
 
+    public Double getAveSignificance() {
+        return aveSignificance;
+    }
+
+    public void setAveSignificance(Double aveSignificance) {
+        this.aveSignificance = aveSignificance;
+    }
+
+    public Double getMinSignificance() {
+        return minSignificance;
+    }
+
+    public void setMinSignificance(Double minSignificance) {
+        this.minSignificance = minSignificance;
+    }
+
+    public Double getMaxSignificance() {
+        return maxSignificance;
+    }
+
+    public void setMaxSignificance(Double maxSignificance) {
+        this.maxSignificance = maxSignificance;
+    }
 
     // ****************************
     // ***** Standard methods *****

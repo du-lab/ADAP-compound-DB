@@ -33,8 +33,6 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
     private final MathService mathService;
 
-    private final Map<ChromatographyType, QueryParameters> queryParametersMap;
-
     @Autowired
     public SpectrumMatchServiceImpl(SpectrumRepository spectrumRepository,
                                     SpectrumMatchRepository spectrumMatchRepository,
@@ -45,57 +43,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         this.spectrumMatchRepository = spectrumMatchRepository;
         this.spectrumClusterRepository = spectrumClusterRepository;
         this.mathService = mathService;
-
-        QueryParameters gcQueryParameters = new QueryParameters()
-                .setScoreThreshold(0.75)
-                .setMzTolerance(0.01);
-
-        QueryParameters lcQueryParameters = new QueryParameters()
-                .setScoreThreshold(0.75)
-                .setMzTolerance(0.01)
-                .setPrecursorTolerance(0.01)
-                .setRetTimeTolerance(0.5);
-
-        this.queryParametersMap = new HashMap<>();
-        this.queryParametersMap.put(ChromatographyType.GAS, gcQueryParameters);
-        this.queryParametersMap.put(ChromatographyType.LIQUID_POSITIVE, lcQueryParameters);
-        this.queryParametersMap.put(ChromatographyType.LIQUID_NEGATIVE, lcQueryParameters);
     }
-
-//    @Transactional
-//    @Override
-//    public void fillSpectrumMatchTable(float mzTolerance, float scoreThreshold) {
-//
-//        List<SpectrumMatch> spectrumMatches = new ArrayList<>();
-//
-//        for (ChromatographyType chromatographyType : ChromatographyType.values()) {
-//
-//            QueryParameters params = queryParametersMap.get(chromatographyType);
-//            if (params == null)
-//                throw new IllegalStateException("Clustering query parameters are not specified.");
-//
-//            long startingTime = System.currentTimeMillis();
-//
-//            Iterable<Spectrum> unmatchedSpectra =
-//                    spectrumRepository.findUnmatchedByChromatographyType(chromatographyType);
-//
-//            long count = 0;
-//            for (Spectrum querySpectrum : unmatchedSpectra) {
-//                spectrumMatches.addAll(
-//                        spectrumRepository.spectrumSearch(
-//                                SearchType.CLUSTERING, querySpectrum, params));
-//                ++count;
-//            }
-//
-//            long elapsedTime = System.currentTimeMillis() - startingTime;
-//            LOGGER.info(String.format("%d query spectra searched with average time %d milliseconds.",
-//                    count, count > 0 ? elapsedTime / count : 0));
-//        }
-//
-//        spectrumMatchRepository.saveAll(spectrumMatches);
-//
-//        LOGGER.info(String.format("Save %d matches to the database.", spectrumMatches.size()));
-//    }
 
     @Transactional
     @Override
@@ -147,8 +95,6 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
             for (int label : Arrays.stream(labels).distinct().toArray()) {
 
-                System.out.println(label + " " + type);
-
                 int[] indices = IntStream.range(0, count)
                         .filter(i -> labels[i] == label)
                         .toArray();
@@ -178,7 +124,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
                 addConsensusSpectrum(type, cluster, mzTolerance);
 
-
+                // Calculate the diversity index
                 Set<DiversityIndex> diversityIndices = new HashSet<>();
                 for (SubmissionCategoryType categoryType : SubmissionCategoryType.values()) {
 
@@ -199,6 +145,18 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
                 }
                 cluster.setDiversityIndices(diversityIndices);
 
+                // Calculate the significance statistics
+                DoubleSummaryStatistics significanceStats = cluster.getSpectra()
+                        .stream()
+                        .map(Spectrum::getSignificance)
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.summarizingDouble(Double::doubleValue));
+
+                if (significanceStats.getCount() > 0) {
+                    cluster.setAveSignificance(significanceStats.getAverage());
+                    cluster.setMinSignificance(significanceStats.getMin());
+                    cluster.setMaxSignificance(significanceStats.getMax());
+                }
 
                 clusters.add(cluster);
             }
@@ -266,17 +224,12 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
             consensusPeaks.add(consensusPeak);
         }
 
-        SpectrumProperty nameProperty = new SpectrumProperty();
-        nameProperty.setName("Name");
-        nameProperty.setValue(getName(cluster));
-        nameProperty.setSpectrum(consensusSpectrum);
-
         consensusSpectrum.setChromatographyType(type);
         consensusSpectrum.setConsensus(true);
         consensusSpectrum.setReference(false);
         consensusSpectrum.setCluster(cluster);
         consensusSpectrum.setPeaks(consensusPeaks);
-        consensusSpectrum.setProperties(Collections.singletonList(nameProperty));
+        consensusSpectrum.addProperty("Name", getName(cluster));
 
         cluster.setConsensusSpectrum(consensusSpectrum);
     }
