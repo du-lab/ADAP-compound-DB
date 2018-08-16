@@ -151,6 +151,41 @@ public class ControllerUtils {
         return builder.toString();
     }
 
+    public static String significanceBar(double average, double min, double max) {
+        double start = -3;
+        double end = 3;
+
+        long avePercent = Math.round(100 * (average - start) / (end - start));
+        long minPercent = Math.round(100 * (min - start) / (end - start));
+        long maxPercent = Math.round(100 * (max - start) / (end - start));
+
+        String html = "<div>";
+
+        // Grey area
+        html += String.format(
+                "<div style=\"display: inline-block; width: %d&percnt;; height: 2px; background-color: #f2f2f2;\"></div>",
+                minPercent);
+
+        // Blue area
+        html += String.format(
+                "<div style=\"display: inline-block; width: %d&percnt;; height: 2px; background-color: blue;\"></div>",
+                avePercent - minPercent);
+
+        // Red area
+        html += String.format(
+                "<div style=\"display: inline-block; width: %d&percnt;; height: 2px; background-color: red;\"></div>",
+                maxPercent - avePercent);
+
+        // Grey area
+        html += String.format(
+                "<div style=\"display: inline-block; width: %d&percnt;; height: 2px; background-color: #f2f2f2;\"></div>",
+                100 - maxPercent);
+
+        html += "</div>";
+
+        return html;
+    }
+
     public static int getEntryIndex(List list, Object entry) {
 
         if (list == null) return -1;

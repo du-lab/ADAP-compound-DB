@@ -83,16 +83,10 @@
                     <td><a href="/cluster/${cluster.id}/">${cluster.consensusSpectrum.name}</a></td>
                     <td>${cluster.size}</td>
                     <td>${dulab:toIntegerScore(cluster.diameter)}</td>
-                    <td>
+                    <td title="Ave: ${cluster.aveSignificance}; Min: ${cluster.minSignificance}; Max: ${cluster.maxSignificance}">
                         <c:if test="${cluster.aveSignificance != null}">
                             <fmt:formatNumber type="number" maxFractionDigits="2"
                                               value="${cluster.aveSignificance}"/><br/>
-                            <small>
-                                Min: <fmt:formatNumber type="number" maxFractionDigits="2"
-                                                        value="${cluster.minSignificance}"/>
-                                Max: <fmt:formatNumber type="number" maxFractionDigits="2"
-                                                       value="${cluster.maxSignificance}"/>
-                            </small>
                         </c:if>
                     </td>
 
