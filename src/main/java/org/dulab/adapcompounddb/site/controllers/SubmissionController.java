@@ -11,6 +11,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
+import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
@@ -63,82 +64,61 @@ public class SubmissionController extends BaseController {
     public String fileView(HttpSession session, Model model) {
 
         Submission submission = Submission.from(session);
-        if (submission == null)
+        if (submission == null) {
             return redirectFileUpload();
-
-        return edit(Submission.from(session), model, false);
+        }
+        return edit(Submission.from(session), model);
     }
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/edit", method = RequestMethod.GET)
     public String editSubmission(@PathVariable("submissionId") long submissionId, Model model) {
 
-        Submission submission = submissionService.findSubmission(submissionId);
+    	SubmissionDTO submission = submissionService.findSubmissionById(submissionId);
 
         if (submission == null) {
             return submissionNotFound(model, submissionId);
         }
 
-        return edit(submission, model, true);
+        return view(submission, model, true);
     }
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/", method = RequestMethod.GET)
     public String viewSubmission(@PathVariable("submissionId") long submissionId, Model model) {
 
-        Submission submission = submissionService.findSubmission(submissionId);
+        SubmissionDTO submission = submissionService.findSubmissionById(submissionId);
 
         if (submission == null) {
             return submissionNotFound(model, submissionId);
         }
 
-        return view(submission, model);
+        return view(submission, model, false);
     }
 
-    private String view(Submission submission, Model model) {
+    private String view(SubmissionDTO submission, Model model, boolean edit) {
 
         // User is authorized to edit the submission
-        boolean authorized = submission.isAuthorized(getCurrentUserPrincipal());
-
-        model.addAttribute("submission", submission);
-        model.addAttribute("authorized", authorized);
-
-        return "submission/view";
-    }
-
-    private String edit(Submission submission, Model model, boolean edit) {
-
         boolean authorized = submission.isAuthorized(getCurrentUserPrincipal());
         if (!authorized && edit) {
             return "redirect:/error?errorMsg=" + ACCESS_DENIED_MESSAGE;
         }
 
+//        SubmissionForm form = createSubmissionForm(submission); 
+        model.addAttribute("submission", submission);
+        model.addAttribute("authorized", authorized);
+        model.addAttribute("edit", edit);
+
+        return "submission/view";
+    }
+
+    private String edit(Submission submission, Model model) {
+
         model.addAttribute("submission", submission);
 
-        SubmissionForm form = new SubmissionForm();
-//        form.setCategoryMap(submissionService.findAllCategories());
-
-        form.setName(submission.getName());
-        form.setDescription(submission.getDescription());
-        form.setReference(submission.getReference());
-
-        if (submission.getTags() != null)
-            form.setTags(submission
-                    .getTags()
-                    .stream()
-                    .map(SubmissionTag::getId)
-                    .map(SubmissionTagId::getName)
-                    .collect(Collectors.joining(",")));
-
-        if (submission.getCategories() != null)
-            form.setSubmissionCategoryIds(submission
-                    .getCategories()
-                    .stream()
-                    .filter(Objects::nonNull)
-                    .map(SubmissionCategory::getId)
-                    .collect(Collectors.toList()));
+        SubmissionForm form = createSubmissionForm(submission); 
 
         model.addAttribute("submissionForm", form);
-        model.addAttribute("edit", edit);   // Edit mode
-        model.addAttribute("authorized", authorized);  // User is authorized to edit the submission
+//        model.addAttribute("edit", edit);   // Edit mode
+//        model.addAttribute("authorized", authorized);  // User is authorized to edit the submission
         model.addAttribute("authenticated", isAuthenticated());  // User is logged in
 
         return "file/view";
@@ -149,10 +129,37 @@ public class SubmissionController extends BaseController {
 //        }
     }
 
+	private SubmissionForm createSubmissionForm(Submission submission) {
+		SubmissionForm form = new SubmissionForm();
+//        form.setCategoryMap(submissionService.findAllCategories());
+
+        form.setName(submission.getName());
+        form.setDescription(submission.getDescription());
+        form.setReference(submission.getReference());
+
+        if (submission.getTags() != null) {
+            form.setTags(submission
+                    .getTags()
+                    .stream()
+                    .map(SubmissionTag::getId)
+                    .map(SubmissionTagId::getName)
+                    .collect(Collectors.joining(",")));
+        }
+
+        if (submission.getCategories() != null) {
+            form.setSubmissionCategoryIds(submission
+                    .getCategories()
+                    .stream()
+                    .filter(Objects::nonNull)
+                    .map(SubmissionCategory::getId)
+                    .collect(Collectors.toList()));
+        }
+		return form;
+	}
+
     /**********************
      ***** File Clear *****
      **********************/
-
     @RequestMapping(value = "/file/clear/", method = RequestMethod.GET)
     public String clear(HttpSession session) {
         Submission.clear(session);
@@ -239,7 +246,7 @@ public class SubmissionController extends BaseController {
      **********************************/
 
     @RequestMapping(value = "/file/submit", method = RequestMethod.POST)
-    public String fileView(HttpSession session, Model model, @Valid SubmissionForm form, Errors errors) {
+    public String fileView(HttpSession session, Model model, @Valid SubmissionDTO form, Errors errors) {
 
         if (errors.hasErrors()) {
             model.addAttribute("edit", true);
@@ -261,13 +268,13 @@ public class SubmissionController extends BaseController {
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/edit", method = RequestMethod.POST)
     public String submissionView(@PathVariable("submissionId") long submissionId, Model model, HttpSession session,
-                                 @Valid SubmissionForm form, Errors errors) {
+                                 @Valid SubmissionDTO form, Errors errors) {
 
         if (errors.hasErrors()) {
 //            model.addAttribute("submissionForm", form);
             model.addAttribute("edit", true);
             model.addAttribute("authorized", true);
-            return "file/view";
+            return "submission/view";
         }
 
         Submission submission = submissionService.findSubmission(submissionId);
@@ -277,7 +284,7 @@ public class SubmissionController extends BaseController {
         return submit(submission, model, form);
     }
 
-    private String submit(Submission submission, Model model, SubmissionForm form) {
+    private String submit(Submission submission, Model model, SubmissionDTO form) {
 
 //        form.setCategoryMap(submissionService.findAllCategories());
 

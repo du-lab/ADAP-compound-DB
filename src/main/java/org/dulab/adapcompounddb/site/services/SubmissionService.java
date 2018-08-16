@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.site.services;
 
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
+import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.springframework.validation.annotation.Validated;
 
@@ -12,6 +13,8 @@ import java.util.Optional;
 public interface SubmissionService {
 
     Submission findSubmission(long submissionId);
+
+    SubmissionDTO findSubmissionById(long submissionId);
 
     List<Submission> findSubmissionsByUserId(long userId);
 

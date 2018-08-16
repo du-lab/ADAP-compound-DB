@@ -1,21 +1,6 @@
 package org.dulab.adapcompounddb.models.dto;
 
 import java.io.Serializable;
-import java.util.List;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
-import org.dulab.adapcompounddb.models.ChromatographyType;
-import org.dulab.adapcompounddb.models.dto.serializers.FileNameExtracter;
-import org.dulab.adapcompounddb.models.entities.Peak;
-import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
-import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
-import org.dulab.adapcompounddb.models.entities.SpectrumProperty;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 public class SpectrumDTO implements Serializable {
 
