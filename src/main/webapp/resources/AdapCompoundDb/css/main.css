@@ -369,9 +369,9 @@ section div.subsection div.submit {
     clear: none;
 }
 
-body {
-    font-family: Univers, Arial, sans-serif;
-}
+/*body {*/
+    /*font-family: Univers, Arial, sans-serif;*/
+/*}*/
 
 .button rect {
     stroke: #999faa; /* navy 40% */

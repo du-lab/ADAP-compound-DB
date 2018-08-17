@@ -51,6 +51,7 @@
                 <th>Name</th>
                 <th>Ret Time (min)</th>
                 <th>Precursor mass</th>
+                <th>Significance</th>
                 <th>Type</th>
                 <th>File</th>
                 <th></th>
@@ -68,7 +69,8 @@
                                     <%--<small>${dulab:abbreviate(spectrum.properties, 80)}</small>--%>
                             </td>
                             <td><fmt:formatNumber type="number" maxFractionDigits="3" value="${spectrum.retentionTime}"/></td>
-                            <td>${spectrum.precursor}</td>
+                            <td><fmt:formatNumber type="number" maxFractionDigits="3" value="${spectrum.precursor}"/></td>
+                            <td><fmt:formatNumber type="number" maxFractionDigits="3" value="${spectrum.significance}"/></td>
                             <td><img src="${spectrum.chromatographyType.iconPath}" alt="${spectrum.chromatographyType.label}" title="${spectrum.chromatographyType.label}" class="icon"/></td>
                             <td>${file.name}</td>
                             <td>

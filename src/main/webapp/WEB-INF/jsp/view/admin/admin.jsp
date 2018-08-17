@@ -64,6 +64,7 @@
                 <th title="Consensus spectrum">Consensus</th>
                 <th title="Number of spectra in a cluster">Count</th>
                 <th title="Minimum matching score between all spectra in a cluster">Score</th>
+                <th title="Average, minimum, and maximum values of the statistical significance">Significance</th>
                 <c:forEach items="${submissionCategoryTypes}" var="type">
                     <th>${type.label} Diversity</th>
                 </c:forEach>
@@ -78,6 +79,12 @@
                     <td><a href="/cluster/${cluster.id}/">${cluster.consensusSpectrum.name}</a></td>
                     <td>${cluster.size}</td>
                     <td>${dulab:toIntegerScore(cluster.diameter)}</td>
+                    <td title="Ave: ${cluster.aveSignificance}; Min: ${cluster.minSignificance}; Max: ${cluster.maxSignificance}">
+                        <c:if test="${cluster.aveSignificance != null}">
+                            <fmt:formatNumber type="number" maxFractionDigits="2"
+                                              value="${cluster.aveSignificance}"/><br/>
+                        </c:if>
+                    </td>
 
                     <c:forEach items="${submissionCategoryTypes}" var="type">
                         <td>

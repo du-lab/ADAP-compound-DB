@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.controllers;
 
+import org.dulab.adapcompounddb.models.entities.File;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
@@ -43,6 +44,20 @@ public class SpectrumController {
         return spectrum(spectrum, model);
     }
 
+    @RequestMapping(value = "/submission/{submissionId:\\d+}/{fileIndex:\\d+}/{spectrumIndex:\\d+}/", method = RequestMethod.GET)
+    public String spectrum(@PathVariable("submissionId") long submissionId,
+                           @PathVariable("fileIndex") int fileIndex,
+                           @PathVariable("spectrumIndex") int spectrumIndex,
+                           Model model) {
+
+        Submission submission = submissionService.findSubmission(submissionId);
+        Spectrum spectrum = submission
+                .getFiles().get(fileIndex)
+                .getSpectra().get(spectrumIndex);
+
+        return spectrum(spectrum, model);
+    }
+
     @RequestMapping(value = "/file/{fileIndex:\\d+}/{spectrumIndex:\\d+}/", method = RequestMethod.GET)
     public String spectrum(@PathVariable("fileIndex") int fileIndex,
                            @PathVariable("spectrumIndex") int spectrumIndex,
@@ -50,10 +65,8 @@ public class SpectrumController {
 
         Submission submission = Submission.from(session);
         Spectrum spectrum = submission
-                .getFiles()
-                .get(fileIndex)
-                .getSpectra()
-                .get(spectrumIndex);
+                .getFiles().get(fileIndex)
+                .getSpectra().get(spectrumIndex);
 
         return spectrum(spectrum, model);
     }
