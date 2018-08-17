@@ -8,10 +8,6 @@
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<jsp:include page="/WEB-INF/jsp/includes/header.jsp"/>
-<jsp:include page="/WEB-INF/jsp/includes/column_left_home.jsp"/>
-
-<!-- Start the middle column -->
 
 <section>
     <h1>Query Spectrum</h1>
@@ -229,7 +225,3 @@
         stroke-dasharray: 5, 5;
     }
 </style>
-<!-- End the middle column -->
-
-<jsp:include page="/WEB-INF/jsp/includes/column_right_news.jsp"/>
-<jsp:include page="/WEB-INF/jsp/includes/footer.jsp"/>

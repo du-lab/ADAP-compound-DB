@@ -1,10 +1,6 @@
 <%--@elvariable id="categories" type="java.util.List<org.dulab.adapcompounddb.site.controllers.ControllerUtils.CategoryWithSubmissionCount>"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
-<jsp:include page="/WEB-INF/jsp/includes/header.jsp"/>
-<jsp:include page="/WEB-INF/jsp/includes/column_left_home.jsp"/>
-
-<!-- Start the middle column -->
 
 <section>
     <h1>Categories</h1>
@@ -48,6 +44,3 @@
         $('#categories_table').DataTable();
     });
 </script>
-
-<jsp:include page="/WEB-INF/jsp/includes/column_right_news.jsp"/>
-<jsp:include page="/WEB-INF/jsp/includes/footer.jsp"/>

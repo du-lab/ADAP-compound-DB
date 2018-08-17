@@ -24,8 +24,6 @@ Grey Dark: #bfbfbf
 
 html {
     background: #f2f2f2;
-    /*background-image: url("/resources/AdapCompoundDb/img/black-carbon-fiber-pattern.jpg");*/
-    /*background: white;*/
     font-family: "Lato", sans-serif; /*"Times New Roman"*/
     font-weight: lighter;
 }
@@ -40,16 +38,16 @@ body, header, aside, section, article, h1, h2 {
 
 header {
     background: #844d36;
-    display: block;
-    font-family: "Chrimson Text", serif;
-    position: fixed;
-    z-index: 10;
-    top: 0;
-    height: 40px;
-    width: 100%;
-    padding: 10px;
     box-shadow: 0 4px 4px #542410;
     color: #ffffff;
+    display: block;
+    font-family: "Chrimson Text", serif;
+    height: 40px;
+    padding: 10px;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 10;
 }
 
 header h1 {
@@ -83,9 +81,8 @@ header a:hover {
 /***** Side *****/
 
 aside {
-    float: left;
     font-family: "Proza Libre", Helvetica, sans-serif; /*Arial*/
-    margin: 20px 10px;
+    margin: 80px 10px;
     width: 180px;
 }
 
@@ -99,7 +96,7 @@ aside li a {
     display: block;
     text-decoration: none;
     color: #542410; /*#844d36*/
-    width: 100%;
+    width: 160px;
     height: 20px;
     margin: 0;
     padding: 10px;
@@ -120,7 +117,7 @@ aside li a:hover {
 /***** Article *****/
 
 article {
-    margin: 80px 0 20px 200px;
+    margin: 80px 0 20px 0;
     min-width: 1000px;
 }
 
