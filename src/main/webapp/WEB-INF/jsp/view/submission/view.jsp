@@ -8,97 +8,106 @@
 
 <!-- Submission information -->
 <section>
-    <h1>Submission</h1>
-    <div align="center">
-        <table id="info_table" class="display" style="width: 100%; clear: none;">
-            <thead>
-            <tr>
-                <th>Property</th>
-                <th>Value</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td><strong>Name:</strong></td>
-                <td>${submission.name}</td>
-            </tr>
-            <tr>
-                <td><strong>Description:</strong></td>
-                <td><pre style="white-space: pre-wrap;">${submission.description}</pre></td>
-            </tr>
-            <c:if test="${submission.reference != null}">
-                <tr>
-                    <td><strong>URL:</strong></td>
-                    <td><a href="${submission.reference}" title="${submission.reference}" target="_blank">${dulab:abbreviate(submission.reference, 80)}</a></td>
-                </tr>
-            </c:if>
-            <c:if test="${submission.tagsAsString.length() > 0}">
-                <tr>
-                    <td><strong>Equipment:</strong></td>
-                    <td>${submission.tagsAsString}</td>
-                </tr>
-            </c:if>
-            <c:forEach items="${submissionCategoryTypes}" var="type">
-                <tr>
-                    <td><strong>${type.label}:</strong></td>
-                    <td>${submission.getCategory(type)}</td>
-                </tr>
-            </c:forEach>
-            </tbody>
-        </table>
-    </div>
-</section>
+    <div id="tabs" style="border: 0;">
+        <ul>
+            <li><a href="#tabs-info">Submission</a></li>
+            <li><a href="#tabs-files">Files</a></li>
+            <li><a href="#tabs-spectra">Spectra</a></li>
+        </ul>
 
-<!-- List of submitted files -->
-<section>
-    <h1>Files</h1>
-    <table id="file_table" class="display" style="width: 100%; clear:none;">
-        <thead>
-        <tr>
-            <th>File</th>
-            <th>Type</th>
-            <th>Size</th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        <c:forEach items="${submission.files}" var="file" varStatus="loop">
-            <tr>
-                <td><a href="${loop.index}/view/" target="_blank">${file.name}</a></td>
-                <td>${file.fileType.label}</td>
-                <td>${file.spectra.size()} spectra</td>
-                <td>
-                    <a href="${loop.index}/view/" target="_blank">
-                        <i class="material-icons" title="View">attach_file</i>
-                    </a>
-                    <a href="${loop.index}/download/" target="_blank">
-                        <i class="material-icons" title="Download">save_alt</i>
-                    </a>
-                </td>
-            </tr>
-        </c:forEach>
-        </tbody>
-    </table>
-</section>
+        <div id="tabs-info" align="center">
+            <table id="info_table" class="display" style="width: 100%; clear: none;">
+                <thead>
+                <tr>
+                    <th>Property</th>
+                    <th>Value</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td><strong>Name:</strong></td>
+                    <td>${submission.name}</td>
+                </tr>
+                <tr>
+                    <td><strong>Description:</strong></td>
+                    <td>
+                        <pre style="white-space: pre-wrap;">${submission.description}</pre>
+                    </td>
+                </tr>
+                <c:if test="${submission.reference != null}">
+                    <tr>
+                        <td><strong>URL:</strong></td>
+                        <td><a href="${submission.reference}" title="${submission.reference}"
+                               target="_blank">${dulab:abbreviate(submission.reference, 80)}</a></td>
+                    </tr>
+                </c:if>
+                <c:if test="${submission.tagsAsString.length() > 0}">
+                    <tr>
+                        <td><strong>Equipment:</strong></td>
+                        <td>${submission.tagsAsString}</td>
+                    </tr>
+                </c:if>
+                <c:forEach items="${submissionCategoryTypes}" var="type">
+                    <tr>
+                        <td><strong>${type.label}:</strong></td>
+                        <td>${submission.getCategory(type)}</td>
+                    </tr>
+                </c:forEach>
+                </tbody>
+            </table>
+        </div>
 
-<!-- List of submitted spectra -->
-<section>
-    <h1>Mass spectra</h1>
-    <div align="center">
-        <table id="spectrum_table" class="display" style="width: 100%; clear:none;">
-            <thead>
-            <tr>
-                <th></th>
-                <th>Name</th>
-                <th>Ret Time (min)</th>
-                <th>Precursor mass</th>
-                <th>Type</th>
-                <th>File</th>
-                <th></th>
-            </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+
+        <!-- List of submitted files -->
+
+        <div id="tabs-files" align="center">
+            <table id="file_table" class="display" style="width: 100%; clear:none;">
+                <thead>
+                <tr>
+                    <th>File</th>
+                    <th>Type</th>
+                    <th>Size</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <c:forEach items="${submission.files}" var="file" varStatus="loop">
+                    <tr>
+                        <td><a href="${loop.index}/view/" target="_blank">${file.name}</a></td>
+                        <td>${file.fileType.label}</td>
+                        <td>${file.spectra.size()} spectra</td>
+                        <td>
+                            <a href="${loop.index}/view/" target="_blank">
+                                <i class="material-icons" title="View">attach_file</i>
+                            </a>
+                            <a href="${loop.index}/download/" target="_blank">
+                                <i class="material-icons" title="Download">save_alt</i>
+                            </a>
+                        </td>
+                    </tr>
+                </c:forEach>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- List of submitted spectra -->
+
+        <div id="tabs-spectra" align="center">
+            <table id="spectrum_table" class="display" style="width: 100%; clear:none;">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Ret Time (min)</th>
+                    <th>Precursor mass</th>
+                    <th>Type</th>
+                    <th>File</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
     </div>
 </section>
 
@@ -116,6 +125,10 @@
 <script src="<c:url value="/resources/tag-it-6ccd2de/js/tag-it.min.js"/>"></script>
 <script>
     $(document).ready(function () {
+
+        $('#tabs').tabs({
+            heightStyle: "content"
+        });
 
         // Table with a list of spectra
         var table = $('#spectrum_table').DataTable({
