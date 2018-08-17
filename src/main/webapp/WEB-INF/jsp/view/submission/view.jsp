@@ -185,13 +185,7 @@
         });
 
         // Table with a list of files
-        $('#file_table').DataTable({
-            bLengthChange: false,
-            info: false,
-            ordering: false,
-            paging: false,
-            searching: false
-        });
+        $('#file_table').DataTable();
 
         // Selector with autocomplete
         $('#tags').tagit({
