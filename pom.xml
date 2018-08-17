@@ -11,6 +11,7 @@
     <url>http://maven.apache.org</url>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <!--<spring.version>4.3.14.RELEASE</spring.version>-->
@@ -286,6 +287,7 @@
             <artifactId>jackson-databind</artifactId>
             <version>2.9.6</version>
         </dependency>
+
 		<!-- https://mvnrepository.com/artifact/org.sitemesh/sitemesh -->
 		<!-- https://mvnrepository.com/artifact/opensymphony/sitemesh -->
 		<dependency>
@@ -293,6 +295,20 @@
 		    <artifactId>sitemesh</artifactId>
 		    <version>2.4.2</version>
 		</dependency>
+
+        <dependency>
+		    <groupId>org.modelmapper</groupId>
+		    <artifactId>modelmapper</artifactId>
+		    <version>0.7.4</version>
+		</dependency>
+
+        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.11</version>
+        </dependency>
+
     </dependencies>
     <build>
         <finalName>adap-compound-db</finalName>

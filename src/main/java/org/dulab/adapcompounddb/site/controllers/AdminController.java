@@ -7,6 +7,7 @@ import java.util.TreeMap;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.Statistics;
+import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.site.services.SpectrumMatchCalculator;
 import org.dulab.adapcompounddb.site.services.SpectrumMatchService;
 import org.dulab.adapcompounddb.site.services.StatisticsService;
@@ -51,8 +52,9 @@ public class AdminController {
     }
 
     @RequestMapping(value = "/admin/", method = RequestMethod.GET)
-    public String admin() {
-        return "admin/view";
+    public String admin(Model model) {
+        model.addAttribute("submissionCategoryTypes", SubmissionCategoryType.values());
+        return "admin/admin";
     }
 
     @RequestMapping(value = "/admin/calculatescores/", method = RequestMethod.GET)
@@ -62,12 +64,6 @@ public class AdminController {
         spectrumMatchCalculator.run();
         progress.setValue(0);
         return "redirect:/admin/";
-    }
-
-    @RequestMapping(value = "/admin/calculatescores/progress", method = RequestMethod.GET)
-    @ResponseBody
-    public int calculateScoresProgress() {
-        return Math.round(100 * spectrumMatchCalculator.getProgress());
     }
 
     @RequestMapping(value = "/admin/cluster/", method = RequestMethod.GET)

@@ -30,5 +30,15 @@
         <logger name="org.apache" level="info">
             <appender-ref ref="DulabFileAppender"/>
         </logger>
+        <logger name="org.hibernate" level="info">
+            <appender-ref ref="DulabFileAppender"/>
+        </logger>
+        <logger name="org.hibernate.SQL" level="debug" additivity="false">
+            <appender-ref ref="DulabFileAppender"/>
+        </logger>
+        <logger name="org.hibernate.type.descriptor.sql" level="debug" additivity="false">
+            <appender-ref ref="DulabFileAppender"/>
+        </logger>
+        <!--<logger name="org.hibernate.stat" level="debug"/>-->
     </loggers>
 </configuration>

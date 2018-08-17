@@ -128,48 +128,61 @@
             <form:form method="post" modelAttribute="searchForm">
                 <form:errors path="" cssClass="errors"/>
 
-                <label>
-                    <form:checkbox path="scoreThresholdCheck" onchange="
-                        $('#scoreThreshold').prop('disabled', !this.checked);
-                        $('#mzTolerance').prop('disabled', !this.checked);
-                    "/>
-                    Spectral Similarity
-                </label><br/>
-                <form:label path="scoreThreshold">Matching Score Threshold</form:label><br/>
-                <form:input path="scoreThreshold"/><br/>
-                <form:errors path="scoreThreshold" cssClass="errors"/><br/>
+                <div id="accordion">
+                    <h3>Search Parameters</h3>
+                    <div>
+                        <label>
+                            <form:checkbox path="scoreThresholdCheck" onchange="
+                                    $('#scoreThreshold').prop('disabled', !this.checked);
+                                    $('#mzTolerance').prop('disabled', !this.checked);"/>
+                            Spectral Similarity
+                        </label><br/>
+                        <form:label path="scoreThreshold">Matching Score Threshold</form:label><br/>
+                        <form:input path="scoreThreshold"/><br/>
+                        <form:errors path="scoreThreshold" cssClass="errors"/><br/>
 
-                <form:label path="mzTolerance">M/z tolerance</form:label><br/>
-                <form:input path="mzTolerance"/><br/>
-                <form:errors path="mzTolerance" cssClass="errors"/><br/>
+                        <form:label path="mzTolerance">Product Ion M/z tolerance</form:label><br/>
+                        <form:input path="mzTolerance"/><br/>
+                        <form:errors path="mzTolerance" cssClass="errors"/><br/>
 
-                <c:if test="${querySpectrum.chromatographyType != 'GAS'}">
-                    <label><form:checkbox path="massToleranceCheck"
-                                          onchange="$('#massTolerance').prop('disabled', !this.checked);"/>
-                        Mass Tolerance
-                    </label><br/>
-                    <form:input path="massTolerance"/><br/>
-                    <form:errors path="massTolerance" cssClass="errors"/><br/>
+                        <c:if test="${querySpectrum.chromatographyType != 'GAS'}">
+                            <label><form:checkbox path="massToleranceCheck"
+                                                  onchange="$('#massTolerance').prop('disabled', !this.checked);"/>
+                                Precursor Ion M/z Tolerance
+                            </label><br/>
+                            <form:input path="massTolerance"/><br/>
+                            <form:errors path="massTolerance" cssClass="errors"/><br/>
 
-                    <label><form:checkbox path="retTimeToleranceCheck"
-                                          onchange="$('#retTimeTolerance').prop('disabled', !this.checked);"/>
-                        Retention Time Tolerance
-                    </label><br/>
-                    <form:input path="retTimeTolerance"/><br/>
-                    <form:errors path="retTimeTolerance" cssClass="errors"/><br/>
-                </c:if>
+                            <label><form:checkbox path="retTimeToleranceCheck"
+                                                  onchange="$('#retTimeTolerance').prop('disabled', !this.checked);"/>
+                                Retention Time Tolerance
+                            </label><br/>
+                            <form:input path="retTimeTolerance"/><br/>
+                            <form:errors path="retTimeTolerance" cssClass="errors"/><br/>
+                        </c:if>
+                    </div>
+
+                    <h3>Equipment Selector</h3>
+                    <div>
+                        <form:input path="tags"/><br/>
+                        <form:errors path="tags" cssClass="errors"/><br/>
+                    </div>
+                </div>
+
 
                 <div align="center">
-                    <input type="submit" value="Search"/>
+                    <input type="submit" value="Search" />
                 </div>
             </form:form>
         </div>
     </div>
 </section>
 
-<script src="<c:url value="/resources/js/DataTables/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
-<script src="<c:url value="/resources/js/DataTables/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
-<script src="<c:url value="/resources/js/DataTables/Select-1.2.5/js/dataTables.select.min.js"/>"></script>
+<script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
+<script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
+<script src="<c:url value="/resources/Select-1.2.5/js/dataTables.select.min.js"/>"></script>
+<script src="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.js"/>"></script>
+<script src="<c:url value="/resources/tag-it-6ccd2de/js/tag-it.min.js"/>"></script>
 <script>
     $(document).ready(function () {
 
@@ -191,15 +204,31 @@
         $('#mzTolerance').prop('disabled', !$('#scoreThresholdCheck1').prop('checked'));
         $('#massTolerance').prop('disabled', !$('#massToleranceCheck1').prop('checked'));
         $('#retTimeTolerance').prop('disabled', !$('#retTimeToleranceCheck1').prop('checked'));
+
+        $('#accordion').accordion();
+        $('#tags').tagit({
+            autocomplete: {
+                source: ${dulab:stringsToJson(searchForm.availableTags)}
+            }
+        })
     });
 </script>
 
-<script src="/resources/js/d3/d3.min.js"></script>
-<script src="/resources/js/twospectraplot.js"></script>
+<script src="<c:url value="/resources/d3/d3.min.js"/>"></script>
+<script src="<c:url value="/resources/AdapCompoundDb/js/twospectraplot.js"/>"></script>
 <script>
     var plot = new TwoSpectraPlot('plot', ${dulab:spectrumToJson(querySpectrum)})
 </script>
-
+<style>
+    .selection {
+        fill: #ADD8E6;
+        stroke: #ADD8E6;
+        fill-opacity: 0.3;
+        stroke-opacity: 0.7;
+        stroke-width: 2;
+        stroke-dasharray: 5, 5;
+    }
+</style>
 <!-- End the middle column -->
 
 <jsp:include page="/WEB-INF/jsp/includes/column_right_news.jsp"/>

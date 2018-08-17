@@ -1,9 +1,9 @@
 package org.dulab.adapcompounddb.models.entities;
 
-import org.dulab.adapcompounddb.validation.NotBlank;
 import org.dulab.adapcompounddb.models.UserParameterType;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 

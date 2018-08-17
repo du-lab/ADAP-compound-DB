@@ -1,8 +1,8 @@
 package org.dulab.adapcompounddb.models.entities;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
@@ -20,11 +20,10 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.servlet.http.HttpSession;
+import javax.validation.constraints.NotBlank;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.dulab.adapcompounddb.models.UserRoles;
+import org.dulab.adapcompounddb.models.UserRole;
 import org.dulab.adapcompounddb.validation.Email;
-import org.dulab.adapcompounddb.validation.NotBlank;
 
 @Entity
 @Table(uniqueConstraints = {
@@ -50,7 +49,7 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
 
 //    private List<Submission> submissions;
 
-    private List<UserRoles> roles;
+    private Set<UserRole> roles;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -62,7 +61,7 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
         this.id = id;
     }
 
-    @Basic(optional = false, fetch = FetchType.EAGER)
+//    @Basic(optional = false, fetch = FetchType.EAGER)
     public String getUsername() {
         return username;
     }
@@ -71,7 +70,7 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
         this.username = username;
     }
 
-    @Basic(optional = false, fetch = FetchType.EAGER)
+//    @Basic(optional = false, fetch = FetchType.EAGER)
     public String getEmail() {
         return email;
     }
@@ -81,7 +80,7 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
     }
 
 //    @Basic(optional = false)
-    @Basic(fetch = FetchType.EAGER)
+//    @Basic(fetch = FetchType.EAGER)
     public String getHashedPassword() {
         return hashedPassword;
     }
@@ -90,52 +89,24 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
         this.hashedPassword = password;
     }
 
-    @ElementCollection(targetClass=UserRoles.class, fetch=FetchType.EAGER)
+    @ElementCollection(targetClass= UserRole.class, fetch=FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     @CollectionTable(name="UserRole", joinColumns= {@JoinColumn(name="userPrincipalId")})
     @Column(name="roleName")
-    public List<UserRoles> getRoles() {
+    public Set<UserRole> getRoles() {
 		return roles;
 	}
 
-	public void setRoles(List<UserRoles> roles) {
+	public void setRoles(Set<UserRole> roles) {
 		this.roles = roles;
 	}
-
-//    @OneToMany(
-//            targetEntity = Submission.class,
-//            mappedBy = "user",
-//            cascade = CascadeType.ALL,
-//            orphanRemoval = true
-//    )
-//    public List<Submission> getSubmissions() {
-//        return submissions;
-//    }
-//
-//    public void setSubmissions(List<Submission> submissions) {
-//        this.submissions = submissions;
-//    }
-//
-//    public void addSubmission(Submission submission) {
-//        if (submissions == null)
-//            submissions = new ArrayList<>();
-//
-//        submissions.add(submission);
-//        submission.setUser(this);
-//    }
-//
-//    public void removeSubmission(Submission submission) {
-//        if (submissions != null)
-//            submissions.remove(submission);
-//        submission.setUser(null);
-//    }
 
 	//    @Override
 
     @Transient
 	public boolean isAdmin() {
 		boolean isAdmin = false;
-		if(roles != null && roles.contains(UserRoles.ADMIN)) {
+		if(roles != null && roles.contains(UserRole.ADMIN)) {
 			isAdmin = true;
 		}
 		return isAdmin;
@@ -143,8 +114,8 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
 
 	public void assignDefaultRole() {
 		if(roles == null || roles.isEmpty()) {
-			roles = new ArrayList<>();
-			roles.add(UserRoles.USER);
+			roles = new HashSet<>();
+			roles.add(UserRole.USER);
 		}
 	}
 

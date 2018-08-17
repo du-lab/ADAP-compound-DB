@@ -1,6 +1,6 @@
 package org.dulab.adapcompounddb.models;
 
-public enum FileType implements LabeledEnum {
+public enum FileType implements EnumWithLabels {
 
     MSP("MSP: NIST text format of individual spectra");
 

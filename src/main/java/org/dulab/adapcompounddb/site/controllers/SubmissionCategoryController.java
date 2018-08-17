@@ -2,7 +2,6 @@ package org.dulab.adapcompounddb.site.controllers;
 
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
-import org.dulab.adapcompounddb.models.entities.SubmissionSource;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

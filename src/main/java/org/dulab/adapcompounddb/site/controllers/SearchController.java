@@ -22,22 +22,10 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
-@ControllerAdvice
 public class SearchController {
-
-    static final String MZ_TOLERANCE_KEY = "spectrum_search_mz_tolerance";
-    static final String NUM_HITS_KEY = "spectrum_search_num_hits";
-    static final String SCORE_THRESHOLD_KEY = "spectrum_search_score_threshold";
-    static final String CHROMATOGRAPHY_TYPE_CHECK_KEY = "spectrum_search_chromatography_type_check";
-    static final String CHROMATOGRAPHY_TYPE_KEY = "spectrum_search_chromatography_type";
-    static final String SUBMISSION_CATEGORY_IDS_CHECK_KEY = "spectrum_search_submission_category_ids_check";
-    static final String SUBMISSION_CATEGORY_IDS_KEY = "spectrum_search_submission_category_ids";
 
     private final UserPrincipalService userPrincipalService;
     private final SubmissionService submissionService;
@@ -49,8 +37,8 @@ public class SearchController {
     public SearchController(UserPrincipalService userPrincipalService,
                             SubmissionService submissionService,
                             @Qualifier("spectrumServiceImpl") SpectrumService spectrumService,
-                            @Qualifier("GCSpectrumSearchServiceImpl") SpectrumSearchService gcSpectrumSearchService,
-                            @Qualifier("LCSpectrumSearchServiceImpl") SpectrumSearchService lcSpectrumSearchService) {
+                            @Qualifier("spectrumSearchServiceGCImpl") SpectrumSearchService gcSpectrumSearchService,
+                            @Qualifier("spectrumSearchServiceLCImpl") SpectrumSearchService lcSpectrumSearchService) {
 
         this.userPrincipalService = userPrincipalService;
         this.submissionService = submissionService;
@@ -78,28 +66,16 @@ public class SearchController {
         model.addAttribute("submissionCategoryMap", submissionCategoryMap);
     }
 
-//    @PostConstruct
-//    public void init() {
-//        userPrincipalService.saveDefaultParameter(MZ_TOLERANCE_KEY, UserParameterType.FLOAT, 0.1F);
-//        userPrincipalService.saveDefaultParameter(NUM_HITS_KEY, UserParameterType.INTEGER, 10);
-//        userPrincipalService.saveDefaultParameter(SCORE_THRESHOLD_KEY, UserParameterType.FLOAT, 0.75F);
-//        userPrincipalService.saveDefaultParameter(CHROMATOGRAPHY_TYPE_CHECK_KEY, UserParameterType.BOOLEAN, false);
-//        userPrincipalService.saveDefaultParameter(CHROMATOGRAPHY_TYPE_KEY, UserParameterType.CHROMATOGRAPHY_TYPE, ChromatographyType.GAS);
-//        userPrincipalService.saveDefaultParameter(SUBMISSION_CATEGORY_IDS_CHECK_KEY, UserParameterType.BOOLEAN, false);
-//        userPrincipalService.saveDefaultParameter(SUBMISSION_CATEGORY_IDS_KEY, UserParameterType.INTEGER_LIST, new ArrayList<>(0));
-//    }
-
     @RequestMapping(
-            value = "/submission/{submissionId:\\d+}/{fileIndex:\\d+}/{spectrumIndex:\\d+}/search/",
+            value = "/submission/{submissionId:\\d+}/spectrum/{spectrumId:\\d+}/search/",
             method = RequestMethod.GET)
     public String search(@PathVariable("submissionId") long submissionId,
-                         @PathVariable("fileIndex") int fileIndex,
-                         @PathVariable("spectrumIndex") int spectrumIndex,
+                         @PathVariable("spectrumId") int spectrumId,
                          HttpSession session, Model model) {
 
         Spectrum spectrum;
         try {
-            spectrum = getQuerySpectrum(submissionId, fileIndex, spectrumIndex);
+            spectrum = spectrumService.find(spectrumId);
 
         } catch (EmptySearchResultException e) {
             model.addAttribute("errorMessage", e.getMessage());
@@ -144,7 +120,7 @@ public class SearchController {
     private String searchGet(Spectrum querySpectrum, UserPrincipal user, Model model) {
 
         SearchForm form = new SearchForm();
-//        form.initialize(userPrincipalService, user);
+        form.setAvailableTags(submissionService.findAllTags());
 
         model.addAttribute("querySpectrum", querySpectrum);
         model.addAttribute("searchForm", form);
@@ -153,16 +129,15 @@ public class SearchController {
     }
 
     @RequestMapping(
-            value = "/submission/{submissionId:\\d+}/{fileIndex:\\d+}/{spectrumIndex:\\d+}/search/",
+            value = "/submission/{submissionId:\\d+}/spectrum/{spectrumId:\\d+}/search",
             method = RequestMethod.POST)
     public ModelAndView search(@PathVariable("submissionId") long submissionId,
-                               @PathVariable("fileIndex") int fileIndex,
-                               @PathVariable("spectrumIndex") int spectrumIndex,
+            @PathVariable("spectrumId") int spectrumId,
                                HttpSession session, Model model, @Valid SearchForm searchForm, Errors errors) {
 
         Spectrum spectrum;
         try {
-            spectrum = getQuerySpectrum(submissionId, fileIndex, spectrumIndex);
+            spectrum = spectrumService.find(spectrumId);
 
         } catch (EmptySearchResultException e) {
             model.addAttribute("errorMessage", e.getMessage());
@@ -225,6 +200,12 @@ public class SearchController {
         parameters.setPrecursorTolerance(form.isMassToleranceCheck() ? form.getMassTolerance() : null);
         parameters.setRetTimeTolerance(form.isRetTimeToleranceCheck() ? form.getRetTimeTolerance() : null);
 
+        String tags = form.getTags();
+        parameters.setTags(
+                tags != null && tags.length() > 0
+                        ? new HashSet<>(Arrays.asList(tags.split(",")))
+                        : null);
+
         List<SpectrumMatch> matches = service.search(querySpectrum, parameters);
 
         model.addAttribute("matches", matches);
@@ -263,6 +244,14 @@ public class SearchController {
         private boolean retTimeToleranceCheck = false;
 
         private double retTimeTolerance = 0.5;
+
+        private String tags;
+
+        private List<String> availableTags;
+
+        // *******************************
+        // ***** Getters and Setters *****
+        // *******************************
 
         public double getMzTolerance() {
             return mzTolerance;
@@ -322,6 +311,22 @@ public class SearchController {
 
         public void setRetTimeTolerance(double retTimeTolerance) {
             this.retTimeTolerance = retTimeTolerance;
+        }
+
+        public String getTags() {
+            return tags;
+        }
+
+        public void setTags(String tags) {
+            this.tags = tags;
+        }
+
+        public List<String> getAvailableTags() {
+            return availableTags;
+        }
+
+        public void setAvailableTags(List<String> availableTags) {
+            this.availableTags = availableTags;
         }
     }
 }

@@ -1,3 +1,5 @@
+<%--@elvariable id="errorMsg" type="java.lang.String"--%>
+<%--@elvariable id="validationErrors" type="java.util.Set<javax.validation.ConstraintViolation>--%>
 <%--@elvariable id="signUpForm" type="org.dulab.site.controllers.SignUpForm"--%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -24,46 +26,40 @@
                 <li>at least eight characters long</li>
             </ul>
 
-            <c:if test="${validationErrors != null}">
-                <div class="errors">
-                    <p>Errors:</p>
-                    <ul>
-                        <c:forEach items="${validationErrors}" var="error">
-                            <li><c:out value="${error.message}"/></li>
-                        </c:forEach>
-                    </ul>
-                </div>
-            </c:if>
-
             <form:form method="POST" modelAttribute="signUpForm">
-                <form:errors path="" cssClass="errors"/><br/>
-                <form:label path="username">Username:</form:label><br/>
-                <form:input path="username"/><br/>
-                <form:errors path="username" cssClass="errors"/><br/>
-                <div>
+                <c:if test="${errorMsg != null}">
+                    <p class="errors">${errorMsg}</p>
+                </c:if>
+                <c:if test="${validationErrors != null}">
+                    <c:forEach items="${validationErrors}" var="e">
+                        <p class="errors"><c:out value="${e.message}"/></p>
+                    </c:forEach>
+                </c:if>
+                <form:errors path="*" element="div" cssClass="errors"/>
+                <p>
+                    <form:label path="username">Username:</form:label><br/>
+                    <form:input path="username"/>
+                </p>
+                <p>
                     <span>
                         <form:label path="email">E-mail address</form:label><br/>
-                        <form:input path="email"/><br/>
-                        <form:errors path="email" cssClass="errors"/><br/>
+                        <form:input path="email"/>
                     </span>
                     <span>
                         <form:label path="confirmedEmail">Confirm E-mail address</form:label><br/>
-                        <form:input path="confirmedEmail"/><br/>
-                        <form:errors path="confirmedEmail" cssClass="errors"/><br/>
+                        <form:input path="confirmedEmail"/>
                     </span>
-                </div>
-                <div>
+                </p>
+                <p>
                     <span>
                         <form:label path="password">Password:</form:label><br/>
-                        <form:password path="password"/><br/>
-                        <form:errors path="password" cssClass="errors"/><br/>
+                        <form:password path="password"/>
                     </span>
                     <span>
                         <form:label path="confirmedPassword">Confirm password:</form:label><br/>
-                        <form:password path="confirmedPassword"/><br/>
-                        <form:errors path="confirmedPassword" cssClass="errors"/><br/>
+                        <form:password path="confirmedPassword"/>
                     </span>
-                </div>
+                </p>
                 <div align="center">
                     <input type="submit" value="Sign up"/>
                 </div>

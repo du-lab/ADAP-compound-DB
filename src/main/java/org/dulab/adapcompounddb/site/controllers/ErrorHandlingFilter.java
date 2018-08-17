@@ -7,6 +7,7 @@ import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLEncoder;
 
 @WebFilter(
         filterName = "errorHandling",
@@ -24,7 +25,9 @@ public class ErrorHandlingFilter implements Filter {
         }
         catch (Exception e) {
             if (response instanceof HttpServletResponse)
-                ((HttpServletResponse) response).sendRedirect(String.format("/error?errorMsg=\"%s\"", e.getMessage()));
+                ((HttpServletResponse) response).sendRedirect(
+                        String.format("/error?errorMsg=%s",
+                                URLEncoder.encode(e.getMessage(), "UTF-8")));
             LOG.error(e.getMessage(), e.getCause());
         }
     }

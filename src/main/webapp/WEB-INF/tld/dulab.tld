@@ -24,6 +24,13 @@
     </function>
 
     <function>
+        <description>Transforms list of Strings to JSON string.</description>
+        <name>stringsToJson</name>
+        <function-class>org.dulab.adapcompounddb.site.controllers.ControllerUtils</function-class>
+        <function-signature>javax.json.JsonArray stringsToJson(java.util.List)</function-signature>
+    </function>
+
+    <function>
         <description>Transforms list of Peaks to JSON string.</description>
         <name>peaksToJson</name>
         <function-class>org.dulab.adapcompounddb.site.controllers.ControllerUtils</function-class>
@@ -52,28 +59,6 @@
         </function-signature>
     </function>
 
-    <!--<function>-->
-        <!--<description>-->
-            <!--Returns Json array with the count of spectra in a cluster, based on their SubmissionSpecimen.-->
-        <!--</description>-->
-        <!--<name>clusterSpecimenToJson</name>-->
-        <!--<function-class>org.dulab.adapcompounddb.site.controllers.ControllerUtils</function-class>-->
-        <!--<function-signature>-->
-            <!--javax.json.JsonArray clusterSpecimenToJson(java.util.List,java.util.List)-->
-        <!--</function-signature>-->
-    <!--</function>-->
-
-    <!--<function>-->
-        <!--<description>-->
-            <!--Returns Json array with the count of spectra in a cluster, based on their SubmissionDisease.-->
-        <!--</description>-->
-        <!--<name>clusterDiseaseToJson</name>-->
-        <!--<function-class>org.dulab.adapcompounddb.site.controllers.ControllerUtils</function-class>-->
-        <!--<function-signature>-->
-            <!--javax.json.JsonArray clusterDiseaseToJson(java.util.List,java.util.List)-->
-        <!--</function-signature>-->
-    <!--</function>-->
-
     <function>
         <description>Converts Json Array into a string of values and counts.</description>
         <name>jsonToHtml</name>
@@ -94,9 +79,14 @@
         <description>Transforms float score (0..1) to integer score (0..1000)</description>
         <name>toIntegerScore</name>
         <function-class>org.dulab.adapcompounddb.site.controllers.ControllerUtils</function-class>
-        <function-signature>
-            int toIntegerScore(float)
-        </function-signature>
+        <function-signature>int toIntegerScore(float)</function-signature>
+    </function>
+
+    <function>
+        <description>Determines if user is an admin</description>
+        <name>isAdmin</name>
+        <function-class>org.dulab.adapcompounddb.site.controllers.ControllerUtils</function-class>
+        <function-signature>boolean isAdmin(org.springframework.security.core.userdetails.User)</function-signature>
     </function>
 
 </taglib>

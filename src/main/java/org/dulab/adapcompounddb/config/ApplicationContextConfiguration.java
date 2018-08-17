@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
         transactionManagerRef = "jpaTransactionManager"
 )
 @ComponentScan(
-        basePackages = "org.dulab.adapcompounddb.site",
+        basePackages = {"org.dulab.adapcompounddb.site", "org.dulab.adapcompounddb.rest"},
         excludeFilters = @ComponentScan.Filter({Controller.class, ControllerAdvice.class})
 )
 @Import({WebSecurityConfiguration.class})
@@ -88,6 +88,9 @@ public class ApplicationContextConfiguration {
 
         Map<String, Object> jpaPropertyMap = new HashMap<>();
         jpaPropertyMap.put("javax.persistence.schema-generation.database.action", "none");
+//        jpaPropertyMap.put("hibernate.format_sql", true);
+//        jpaPropertyMap.put("hibernate.use_sql_comments", true);
+//        jpaPropertyMap.put("hibernate.generate_statistics", true);
         factory.setJpaPropertyMap(jpaPropertyMap);
 
         return factory;

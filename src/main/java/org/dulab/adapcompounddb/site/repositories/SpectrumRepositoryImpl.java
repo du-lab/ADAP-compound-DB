@@ -20,12 +20,17 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
         SpectrumQueryBuilder queryBuilder = new SpectrumQueryBuilder(
                 searchType, querySpectrum.getChromatographyType(), params.getExcludeSpectra());
+
         if (params.getScoreThreshold() != null && params.getMzTolerance() != null)
             queryBuilder.setSpectrum(querySpectrum, params.getMzTolerance(), params.getScoreThreshold());
+
         if (querySpectrum.getPrecursor() != null && params.getPrecursorTolerance() != null)
             queryBuilder.setPrecursorRange(querySpectrum.getPrecursor(), params.getPrecursorTolerance());
+
         if (querySpectrum.getRetentionTime() != null && params.getRetTimeTolerance() != null)
             queryBuilder.setRetentionTimeRange(querySpectrum.getRetentionTime(), params.getRetTimeTolerance());
+
+        queryBuilder.setTags(params.getTags());
 
 //        String sqlQueries = queryBuilder.build();
 //        entityManager.createNativeQuery(sqlQueries[0]).executeUpdate();

@@ -2,6 +2,9 @@ package org.dulab.adapcompounddb.models.entities;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -42,8 +45,9 @@ public class SpectrumMatch implements Serializable {
         this.id = id;
     }
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "QuerySpectrumId", referencedColumnName = "Id")
+	@JsonIgnore
     public Spectrum getQuerySpectrum() {
         return querySpectrum;
     }
@@ -52,8 +56,9 @@ public class SpectrumMatch implements Serializable {
         this.querySpectrum = querySpectrum;
     }
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "MatchSpectrumId", referencedColumnName = "Id")
+	@JsonIgnore
     public Spectrum getMatchSpectrum() {
         return matchSpectrum;
     }

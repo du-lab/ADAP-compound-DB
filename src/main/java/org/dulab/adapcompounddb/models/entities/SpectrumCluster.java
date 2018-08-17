@@ -2,8 +2,12 @@ package org.dulab.adapcompounddb.models.entities;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class SpectrumCluster implements Serializable {
@@ -26,6 +30,8 @@ public class SpectrumCluster implements Serializable {
 
     private List<Spectrum> spectra;
 
+    private Set<DiversityIndex> diversityIndices;
+
     // *******************************
     // ***** Getters and setters *****
     // *******************************
@@ -40,8 +46,9 @@ public class SpectrumCluster implements Serializable {
         this.id = id;
     }
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "ConsensusSpectrumId", referencedColumnName = "Id")
+	@JsonIgnore
     public Spectrum getConsensusSpectrum() {
         return consensusSpectrum;
     }
@@ -69,7 +76,7 @@ public class SpectrumCluster implements Serializable {
     @OneToMany(
             mappedBy = "cluster",
             fetch = FetchType.LAZY,
-            cascade = CascadeType.DETACH)
+            cascade = CascadeType.ALL)
     public List<Spectrum> getSpectra() {
         return spectra;
     }
@@ -77,6 +84,19 @@ public class SpectrumCluster implements Serializable {
     public void setSpectra(List<Spectrum> spectra) {
         this.spectra = spectra;
     }
+
+    @OneToMany(
+            mappedBy = "id.cluster",
+            fetch = FetchType.LAZY,
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    public Set<DiversityIndex> getDiversityIndices() {
+        return diversityIndices;
+    }
+
+    public void setDiversityIndices(Set<DiversityIndex> diversityIndices) {
+        this.diversityIndices = diversityIndices;
+    }
+
 
     // ****************************
     // ***** Standard methods *****

@@ -3,15 +3,24 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
-<jsp:include page="/WEB-INF/jsp/includes/header.jsp" />
-<jsp:include page="/WEB-INF/jsp/includes/column_left_home.jsp" />
+<jsp:include page="/WEB-INF/jsp/includes/header.jsp"/>
+<jsp:include page="/WEB-INF/jsp/includes/column_left_home.jsp"/>
 
 <!-- Start the middle column -->
 
 <section>
     <h1>Account</h1>
-    <p>Username: <span class="highlighted">${user.username}</span></p>
-    <p>E-mail: <span class="highlighted">${user.email}</span></p>
+    <div align="center">
+        <div style="display: inline-block">
+            <i class="material-icons color-primary-light" style="font-size:4.5em; margin: 20px;">person</i>
+        </div>
+        <div align="left" style="display: inline-block;">
+            <p><strong>Username:&nbsp;</strong>${user.username}</p>
+            <p><strong>E-mail:&nbsp;</strong><a href="mailto:${user.email}">${user.email}</a></p>
+            <p><strong>Role(s):&nbsp;</strong><c:forEach items="${user.roles}"
+                                                         var="role">${role.label}&nbsp;</c:forEach></p>
+        </div>
+    </div>
 </section>
 
 <section>
@@ -24,28 +33,37 @@
                 <th>Date / Time</th>
                 <th>Name</th>
                 <th>Properties</th>
-                <th>View / Delete</th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
             <c:forEach items="${submissionList}" var="submission">
                 <tr>
                     <td>${submission.id}</td>
-                    <td><fmt:formatDate value="${submission.dateTime}" type="DATE" dateStyle="FULL"/><br/>
-                        <small><fmt:formatDate value="${submission.dateTime}" type="TIME"/></small></td>
+                    <td><fmt:formatDate value="${submission.dateTime}" type="DATE" pattern="yyyy-MM-dd"/><br/>
+                        <small><fmt:formatDate value="${submission.dateTime}" type="TIME"/></small>
+                    </td>
                     <td>
                         <a href="${pageContext.request.contextPath}/submission/${submission.id}/">${submission.name}</a><br/>
                         <small>${dulab:abbreviate(submission.description, 80)}</small>
                     </td>
                     <td>
-                        <%--<small>${submission.chromatographyType.label}</small>--%>
+                        <c:forEach items="${submission.tags}" var="tag">${tag.id.name}&nbsp;</c:forEach>
                     </td>
                     <td>
                         <!-- more horiz -->
-                        <a href="${pageContext.request.contextPath}/submission/${submission.id}/"><i class="material-icons" title="View">&#xE5D3;</i></a>
+                        <a href="${pageContext.request.contextPath}/submission/${submission.id}/"><i
+                                class="material-icons" title="View">&#xE5D3;</i></a>
 
                         <!-- delete -->
-                        <a href="${pageContext.request.contextPath}/submission/${submission.id}/delete/"><i class="material-icons" title="Delete">&#xE872;</i></a>
+                        <a onclick="
+                                var dialog = $('#dialog-confirm');
+                                dialog.find('p').text('Delete submission ${submission.name}');
+                                dialog.attr('href', '/submission/${submission.id}/delete/');
+                                dialog.dialog('open');">
+                            <i class="material-icons" title="Delete">&#xE872;</i>
+                        </a>
+                            <%--${pageContext.request.contextPath}/submission/${submission.id}/delete/"--%>
                     </td>
                 </tr>
             </c:forEach>
@@ -54,15 +72,49 @@
     </div>
 </section>
 
-<script src="<c:url value="/resources/js/DataTables/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
-<script src="<c:url value="/resources/js/DataTables/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
+<section class="no-background">
+    <div align="center">
+        <a href="${pageContext.request.contextPath}/file/upload/" class="button">New Submission</a>
+    </div>
+</section>
+
+<script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
+<script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
+<script src="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.js"/>"></script>
 <script>
-    $(document).ready(function() {
-        $('#submission_table').DataTable();
-    })
+    $(document).ready(function () {
+
+        $('#submission_table').DataTable({
+            order: [[1, 'DESC']],
+            columnDefs: [{
+                targets: [3, 4],
+                sortable: false
+            }]
+        });
+
+        $('#dialog-confirm').dialog({
+            autoOpen: false,
+            resizable: false,
+            height: 'auto',
+            width: 400,
+            modal: true,
+            buttons: {
+                'Delete': function () {
+                    window.location.replace($(this).attr('href'));
+                },
+                'Cancel': function () {
+                    $(this).dialog('close');
+                }
+            }
+        });
+    });
 </script>
+
+<div id="dialog-confirm" title="Confirm">
+    <p></p>
+</div>
 
 <!-- End the middle column -->
 
-<jsp:include page="/WEB-INF/jsp/includes/column_right_news.jsp" />
-<jsp:include page="/WEB-INF/jsp/includes/footer.jsp" />
+<jsp:include page="/WEB-INF/jsp/includes/column_right_news.jsp"/>
+<jsp:include page="/WEB-INF/jsp/includes/footer.jsp"/>

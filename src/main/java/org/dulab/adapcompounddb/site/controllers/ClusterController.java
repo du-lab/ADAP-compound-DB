@@ -50,6 +50,6 @@ public class ClusterController {
 
         model.addAttribute("cluster", cluster);
 
-        return "cluster/view";
+        return "cluster/cluster";
     }
 }

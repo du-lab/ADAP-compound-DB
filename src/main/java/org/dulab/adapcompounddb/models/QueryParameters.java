@@ -12,6 +12,7 @@ public class QueryParameters {
     private Double precursorTolerance = null;
     private Double mzTolerance = null;
     private Double scoreThreshold = null;
+    private Set<String> tags = null;
     private Set<Spectrum> excludeSpectra = null;
 
     public Double getRetTimeTolerance() {
@@ -50,6 +51,15 @@ public class QueryParameters {
         return this;
     }
 
+    public Set<String> getTags() {
+        return tags;
+    }
+
+    public QueryParameters setTags(Set<String> tags) {
+        this.tags = tags;
+        return this;
+    }
+
     public Set<Spectrum> getExcludeSpectra() {
         return excludeSpectra;
     }
@@ -73,6 +83,7 @@ public class QueryParameters {
         params.setPrecursorTolerance(0.01);
         params.setScoreThreshold(0.75);
         params.setMzTolerance(0.01);
+        params.setTags(null);
         params.setExcludeSpectra(null);
         return params;
     }

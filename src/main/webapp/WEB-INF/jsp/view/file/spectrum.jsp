@@ -18,7 +18,7 @@
 
 <section>
     <h1>Spectrum ${spectrum}</h1>
-    <table id="property_table" class="display">
+    <table id="property_table" class="display" style="clear: none;">
         <thead>
         <tr>
             <th>Property</th>
@@ -34,14 +34,24 @@
             <td><strong>Chromatography:</strong></td>
             <td>${spectrum.chromatographyType.label}</td>
         </tr>
-        <tr>
-            <td><strong>File:</strong></td>
-            <td>${spectrum.file.name}</td>
-        </tr>
-        <tr>
-            <td><strong>Submission:</strong></td>
-            <td><a href="${submissionUrl}">${spectrum.file.submission.name}</a></td>
-        </tr>
+        <c:if test="${spectrum.file != null}">
+            <tr>
+                <td><strong>File:</strong></td>
+                <td>${spectrum.file.name}</td>
+            </tr>
+        </c:if>
+        <c:if test="${spectrum.file!= null && spectrum.file.submission != null}">
+            <tr>
+                <td><strong>Submission:</strong></td>
+                <td><a href="${submissionUrl}">${spectrum.file.submission.name}</a></td>
+            </tr>
+        </c:if>
+        <c:if test="${spectrum.cluster != null}">
+            <tr>
+                <td><strong>Cluster:</strong></td>
+                <td><a href="/cluster/${spectrum.cluster.id}/">${spectrum.cluster}</a></td>
+            </tr>
+        </c:if>
         <c:forEach items="${spectrum.properties}" var="property">
             <tr>
                 <td><strong>${property.name}:</strong></td>
@@ -87,10 +97,10 @@
     </div>
 </section>
 
-<script src="<c:url value="/resources/js/DataTables/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
-<script src="<c:url value="/resources/js/DataTables/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
-<script src="<c:url value="/resources/js/d3/d3.min.js"/>"></script>
-<script src="<c:url value="/resources/js/spectrum_plot.js"/>"></script>
+<script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
+<script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
+<script src="<c:url value="/resources/d3/d3.min.js"/>"></script>
+<script src="<c:url value="/resources/AdapCompoundDb/js/spectrum_plot.js"/>"></script>
 <script>
     $(document).ready(function () {
         $('#property_table').DataTable({
@@ -105,7 +115,16 @@
         SpectrumPlot('plot', ${dulab:spectrumToJson(spectrum)});
     })
 </script>
-
+<style>
+    .selection {
+        fill: #ADD8E6;
+        stroke: #ADD8E6;
+        fill-opacity: 0.3;
+        stroke-opacity: 0.7;
+        stroke-width: 2;
+        stroke-dasharray: 5, 5;
+    }
+</style>
 
 <%--<script src="<c:url value="/resources/js/zingchart/zingchart.min.js"/>"></script>--%>
 <%--<script type="text/javascript" src="<c:url value="/resources/js/spectrum.js"/>"></script>--%>
