@@ -42,7 +42,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     @Transactional
     public List<Submission> findSubmissionsWithTagsByUserId(long userId) {
-        return ServiceUtils.toList(submissionRepository.findWithTagsByUserId(userId));
+        return ServiceUtils.toList(submissionRepository.findByUserId(userId));
     }
 
     @Override
