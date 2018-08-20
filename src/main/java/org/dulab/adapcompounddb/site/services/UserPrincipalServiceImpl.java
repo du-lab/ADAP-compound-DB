@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
@@ -110,6 +111,11 @@ public class UserPrincipalServiceImpl implements UserPrincipalService {
 //    		userPrincipal = userPrincipalFound.get();
 //    	}
 //		return userPrincipal;
+    }
+
+    @Override
+    public List<UserPrincipal> findAllUsers() {
+        return ServiceUtils.toList(userPrincipalRepository.findAll());
     }
 
 }
