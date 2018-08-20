@@ -328,9 +328,13 @@ section div.subsection div.submit {
     text-align: right;
 }
 
+pre {
+    font-family: "Lato", sans-serif;
+    font-weight: lighter;
+    white-space: pre-wrap;
+}
+
 /***** Misc ******/
-
-
 
 .dark {background-color: #474853;}
 
@@ -361,12 +365,6 @@ section div.subsection div.submit {
 
 .progress_bar[hidden] {
     display: none;
-}
-
-
-/* Hack for DataTables.js that puts tables to a correct position */
-.dataTables_wrapper {
-    clear: none;
 }
 
 /*body {*/

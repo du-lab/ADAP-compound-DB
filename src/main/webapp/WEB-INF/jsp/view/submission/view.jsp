@@ -24,7 +24,7 @@
             </tr>
             <tr>
                 <td><strong>Description:</strong></td>
-                <td><pre style="white-space: pre-wrap;">${submission.description}</pre></td>
+                <td><pre>${submission.description}</pre></td>
             </tr>
             <c:if test="${submission.reference != null}">
                 <tr>
