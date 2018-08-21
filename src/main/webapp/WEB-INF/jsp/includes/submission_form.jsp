@@ -26,6 +26,7 @@
             </c:if>
             <form:form method="POST" modelAttribute="submission">
                 <form:errors path="" cssClass="errors"/><br/>
+                <form:hidden path="id" /><br/>
 
                 <form:label path="name">Name:</form:label><br/>
                 <form:input path="name"/><br/>

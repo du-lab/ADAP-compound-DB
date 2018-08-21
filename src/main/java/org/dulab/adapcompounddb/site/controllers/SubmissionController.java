@@ -281,8 +281,9 @@ public class SubmissionController extends BaseController {
             return "submission/view";
         }
 
-        if (submission == null)
+        if (submission == null) {
             return submissionNotFound(model, submissionId);
+        }
 
         return submit(submission, model, form);
     }
