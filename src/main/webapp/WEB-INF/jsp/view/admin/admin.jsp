@@ -1,6 +1,8 @@
 <%--@elvariable id="submissionCategoryTypes" type="org.dulab.adapcompounddv.models.SubmissionCategoryType[]"--%>
+<%--@elvariable id="availableUserRoles" type="org.dulab.adapcompound.models.UserRole[]"--%>
 <%--@elvariable id="statistics" type="java.util.Map<org.dulab.adapcompounddb.models.ChromatographyType, org.dulab.adapcompounddb.models.Statistics>"--%>
 <%--@elvariable id="clusters" type="java.util.List<org.dulab.adapcompounddb.models.entities.SpectrumCluster>"--%>
+<%--@elvariable id="users" type="java.util.List<org.dulab.adapcompounddb.models.entities.UserPrinicpal>"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
@@ -112,15 +114,59 @@
     </div>
 </section>
 
+<section>
+    <h1>Users</h1>
+    <div align="center">
+        <table id="user_table" class="display" style="width: 100%;">
+            <thead>
+            <tr>
+                <th>User</th>
+                <th>Email</th>
+                <c:forEach items="${availableUserRoles}" var="role">
+                    <th>${role.label}</th>
+                </c:forEach>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <c:forEach items="${users}" var="user">
+                <tr>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <c:forEach items="${availableUserRoles}" var="role">
+                        <td><c:if test="${user.roles.contains(role)}">
+                            <i class="material-icons">check</i>
+                        </c:if></td>
+                    </c:forEach>
+                    <td>
+                        <a onclick="confirmDeleteDialog.show(
+                                'User &quot;${user.name}&quot; and all user\'s submissions will be deleted. Are you sure?',
+                                '${pageContext.request.contextPath}/user/${user.id}/delete');">
+                            <i class="material-icons">delete</i>
+                        </a>
+                    </td>
+                </tr>
+            </c:forEach>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<div id="confirm-delete-dialog"></div>
+
 <!-- End the middle column -->
 
 <script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
 <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
+<script src="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.js"/>"></script>
+<script src="<c:url value="/resources/AdapCompoundDb/js/confirm-delete-dialog.js"/>"></script>
 <script src="<c:url value="/resources/AdapCompoundDb/js/progressBar.js"/>"></script>
 <script>
     var progressBar = new ProgressBar('progressBarDiv');
+    var confirmDeleteDialog = $('#confirm-delete-dialog').confirmDeleteDialog();
 
     $(document).ready(function () {
         $('#cluster_table').DataTable();
+        $('#user_table').DataTable();
     });
 </script>
