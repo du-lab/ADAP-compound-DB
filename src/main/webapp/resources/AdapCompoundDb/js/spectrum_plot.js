@@ -265,10 +265,16 @@ function SpectrumPlot(divId, spectrum) {
     };
 
     var scaleGraph = function(newScaleX, newScaleY) {
-        xAxis = d3.axisBottom()
-            .scale(newScaleX);
-        gx.call(xAxis.scale(newScaleX));
+    	gx.call(xAxis.scale(newScaleX));
         gy.call(yAxis.scale(newScaleY));
+        graph1.call(d3.axisBottom(newScaleX)
+            .ticks(5)
+            .tickSize(-plotHeight)
+            .tickFormat(''));
+        graph2.call(d3.axisLeft(newScaleY)
+            .ticks(5)
+            .tickSize(-plotWidth)
+            .tickFormat(''));
 
         var spectra = d3.select("svg").selectAll("line.spectrum");
         spectra
@@ -320,7 +326,7 @@ function SpectrumPlot(divId, spectrum) {
 
         var newDomainX = xAxis.scale().domain();
         var newDomainY = yAxis.scale().domain();
-        xDiff = newDomainX[0] - domainX[0];
+        xDiff = newDomainX[0] - newXDomainStart;// - padding['left'] * (newXDomainEnd - newXDomainStart) / plotWidth;
         var t2 = d3.zoomIdentity.scale(scaleBy).translate(xDiff, 0);
         xRect.call(zoomX.transform, t2);
 
