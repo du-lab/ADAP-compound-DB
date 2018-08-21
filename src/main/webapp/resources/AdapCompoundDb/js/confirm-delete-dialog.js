@@ -24,7 +24,7 @@
 
         this.show = function(message, url) {
             var div = $(this);
-            div.find('p').html('User "' + message + '" and all user\'s submissions will be deleted. Are you sure?');
+            div.find('p').html(message);
             div.attr('href', url);
             div.dialog('open');
         };

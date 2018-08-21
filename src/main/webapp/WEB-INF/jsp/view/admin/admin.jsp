@@ -132,7 +132,7 @@
                     </c:forEach>
                     <td>
                         <a onclick="confirmDeleteDialog.show(
-                                '${user.name}',
+                                'User &quot;${user.name}&quot; and all user\'s submissions will be deleted. Are you sure?',
                                 '${pageContext.request.contextPath}/user/${user.id}/delete');">
                             <i class="material-icons">delete</i>
                         </a>
