@@ -13,7 +13,6 @@ import org.dulab.adapcompounddb.models.entities.File;
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.hibernate.validator.constraints.URL;
 
-@Entity
 public class SubmissionDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -24,7 +23,7 @@ public class SubmissionDTO implements Serializable {
 
     private long id;
 
-    @NotBlank(message = "The field Name is required.")
+    @NotBlank(message = "The field 'Name' is required.")
     private String name;
 
     private String description;
@@ -43,10 +42,6 @@ public class SubmissionDTO implements Serializable {
     private String tags;
 
     private List<Long> submissionCategoryIds;
-
-    // *******************************
-    // ***** Getters and Setters *****
-    // *******************************
 
     public SubmissionCategoryDTO getCategory(SubmissionCategoryType type) {
         return getCategories().stream()
@@ -67,6 +62,10 @@ public class SubmissionDTO implements Serializable {
 
         return authorized;
     }
+
+    // *******************************
+    // ***** Getters and Setters *****
+    // *******************************
 
 	public long getId() {
 		return id;

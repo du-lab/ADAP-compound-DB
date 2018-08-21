@@ -1,7 +1,7 @@
 <%--@elvariable id="submissionCategoryTypes" type="org.dulab.adapcompounddb.models.SubmissionCategoryType[]"--%>
 <%--@elvariable id="availableCategories" type="java.util.Map<org.dulab.adapcompounddb.models.SubmissionCategoryType, java.util.List<org.dulab.adapcompounddb.models.entities.SubmissionCategories>>"--%>
 <%--@elvariable id="availableTags" type="java.util.List<org.dulab.adapcompounddb.models.entities.SubmissionTag>"--%>
-<%--@elvariable id="submission" type="org.dulab.adapcompounddb.models.entities.Submission"--%>
+<%--@elvariable id="submissionDTO" type="org.dulab.adapcompounddb.models.entities.Submission"--%>
 <%--@elvariable id="submissionForm" type="org.dulab.adapcompounddb.site.controllers.SubmissionController.SubmissionForm"--%>
 
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -26,7 +26,7 @@
         </tr>
         </thead>
         <tbody>
-        <c:forEach items="${submission.files}" var="file" varStatus="loop">
+        <c:forEach items="${submissionDTO.files}" var="file" varStatus="loop">
             <tr>
                 <td><a href="${loop.index}/view/" target="_blank">${file.name}</a></td>
                 <td>${file.fileType.label}</td>
@@ -62,8 +62,8 @@
 
             </thead>
             <tbody>
-            <c:if test="${submission.files.size() > 0}">
-                <c:forEach items="${submission.files}" var="file" varStatus="fileLoop">
+            <c:if test="${submissionDTO.files.size() > 0}">
+                <c:forEach items="${submissionDTO.files}" var="file" varStatus="fileLoop">
                     <c:forEach items="${file.spectra}" var="spectrum" varStatus="spectrumLoop">
                         <tr>
                             <td></td>
@@ -102,7 +102,7 @@
 
 <c:if test="${authenticated}">
     <jsp:include page="../../includes/submission_form.jsp">
-        <jsp:param value="${submission}" name="submission"/>
+        <jsp:param value="${submissionDTO}" name="submissionDTO"/>
     </jsp:include>
 	<%-- <section>
 	    <h1>Submit</h1>

@@ -24,7 +24,7 @@
                     </ul>
                 </div>
             </c:if>
-            <form:form method="POST" modelAttribute="submission">
+            <form:form method="POST" modelAttribute="submissionDTO">
                 <form:errors path="" cssClass="errors"/><br/>
                 <form:hidden path="id" /><br/>
 
@@ -63,7 +63,7 @@
 
                 <div align="center">
                     <c:choose>
-                        <c:when test="${submission.id > 0}">
+                        <c:when test="${submissionDTO.id > 0}">
                             <input type="submit" value="Save"/>
                         </c:when>
                         <c:otherwise>

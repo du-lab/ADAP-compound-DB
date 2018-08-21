@@ -1,5 +1,5 @@
 <%--@elvariable id="submissionCategoryTypes" type="org.dulab.adapcompounddb.models.SubmissionCategoryType[]"--%>
-<%--@elvariable id="submission" type="org.dulab.adapcompounddb.models.entities.Submission"--%>
+<%--@elvariable id="submissionDTO" type="org.dulab.adapcompounddb.models.entities.submissionDTO"--%>
 <%--@elvariable id="authorized" type="java.lang.Boolean"--%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -10,11 +10,11 @@
 
 <!-- Start the middle column -->
 
-<!-- Submission information -->
+<!-- submissionDTO information -->
 
 <c:if test="${!edit}">
     <section>
-        <h1>Submission</h1>
+        <h1>submissionDTO</h1>
         <div align="center">
             <table id="info_table" class="display" style="width: 100%; clear: none;">
                 <thead>
@@ -26,28 +26,28 @@
                 <tbody>
                 <tr>
                     <td><strong>Name:</strong></td>
-                    <td>${submission.name}</td>
+                    <td>${submissionDTO.name}</td>
                 </tr>
                 <tr>
                     <td><strong>Description:</strong></td>
-                    <td><pre style="white-space: pre-wrap;">${submission.description}</pre></td>
+                    <td><pre style="white-space: pre-wrap;">${submissionDTO.description}</pre></td>
                 </tr>
-                <c:if test="${submission.reference != null}">
+                <c:if test="${submissionDTO.reference != null}">
                     <tr>
                         <td><strong>URL:</strong></td>
-                        <td><a href="${submission.reference}" title="${submission.reference}" target="_blank">${dulab:abbreviate(submission.reference, 80)}</a></td>
+                        <td><a href="${submissionDTO.reference}" title="${submissionDTO.reference}" target="_blank">${dulab:abbreviate(submissionDTO.reference, 80)}</a></td>
                     </tr>
                 </c:if>
-                <c:if test="${submission.tags > 0}">
+                <c:if test="${submissionDTO.tags > 0}">
                     <tr>
                         <td><strong>Equipment:</strong></td>
-                        <td>${submission.tags}</td>
+                        <td>${submissionDTO.tags}</td>
                     </tr>
                 </c:if>
                 <c:forEach items="${submissionCategoryTypes}" var="type">
                     <tr>
                         <td><strong>${type.label}:</strong></td>
-                        <td>${submission.getCategory(type)}</td>
+                        <td>${submissionDTO.getCategory(type)}</td>
                     </tr>
                 </c:forEach>
                 </tbody>
@@ -69,7 +69,7 @@
         </tr>
         </thead>
         <tbody>
-        <c:forEach items="${submission.files}" var="file" varStatus="loop">
+        <c:forEach items="${submissionDTO.files}" var="file" varStatus="loop">
             <tr>
                 <td><a href="${loop.index}/view/" target="_blank">${file.name}</a></td>
                 <td>${file.fileType.label}</td>
@@ -113,7 +113,7 @@
 <c:choose>
     <c:when test="${edit}">
        <jsp:include page="../../includes/submission_form.jsp">
-           <jsp:param value="${submission}" name="submission"/>
+           <jsp:param value="${submissionDTO}" name="submissionDTO"/>
        </jsp:include>
         <%-- <section>
             <h1>Submit</h1>
@@ -136,7 +136,7 @@
                             </ul>
                         </div>
                     </c:if>
-                    <form:form method="POST" modelAttribute="submission">
+                    <form:form method="POST" modelAttribute="submissionDTO">
                         <form:errors path="" cssClass="errors"/><br/>
         
                         <form:label path="name">Name:</form:label><br/>
@@ -174,7 +174,7 @@
         
                         <div align="center">
                             <c:choose>
-                                <c:when test="${submission.id > 0}">
+                                <c:when test="${submissionDTO.id > 0}">
                                     <input type="submit" value="Save"/>
                                 </c:when>
                                 <c:otherwise>
@@ -208,7 +208,7 @@
             serverSide: true,
             processing: true,
             ajax: {
-                url: "${pageContext.request.contextPath}/spectrum/findSpectrumBySubmissionId.json?submissionId=${submission.id}",
+                url: "${pageContext.request.contextPath}/spectrum/findSpectrumBySubmissionId.json?submissionId=${submissionDTO.id}",
 
                 data: function (data) {
                     data.column = data.order[0].column;
@@ -273,7 +273,7 @@
                 })
         }).draw();
 
-        // Table with submission information
+        // Table with submissionDTO information
         $('#info_table').DataTable({
             bLengthChange: false,
             info: false,
