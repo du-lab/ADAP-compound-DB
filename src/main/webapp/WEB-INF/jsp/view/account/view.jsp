@@ -44,7 +44,8 @@
                         <small>${dulab:abbreviate(submission.description, 80)}</small>
                     </td>
                     <td>
-                        <c:forEach items="${submission.tags}" var="tag">${tag.id.name}&nbsp;</c:forEach>
+                        ${submission.tagsAsString}
+                        <%--<c:forEach items="${submission.tags}" var="tag">${tag.id.name}&nbsp;</c:forEach>--%>
                     </td>
                     <td>
                         <!-- more horiz -->
