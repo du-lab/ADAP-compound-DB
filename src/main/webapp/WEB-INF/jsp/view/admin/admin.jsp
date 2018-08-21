@@ -121,18 +121,24 @@
             </tr>
             </thead>
             <tbody>
-                <c:forEach items="${users}" var="user">
-                    <tr>
-                        <td>${user.name}</td>
-                        <td>${user.email}</td>
-                        <c:forEach items="${availableUserRoles}" var="role">
-                            <td><c:if test="${user.roles.contains(role)}">
-                                <i class="material-icons">check</i>
-                            </c:if></td>
-                        </c:forEach>
-                        <td><a onclick="confirmDeleteDialog.show()"><i class="material-icons">delete</i></a></td>
-                    </tr>
-                </c:forEach>
+            <c:forEach items="${users}" var="user">
+                <tr>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <c:forEach items="${availableUserRoles}" var="role">
+                        <td><c:if test="${user.roles.contains(role)}">
+                            <i class="material-icons">check</i>
+                        </c:if></td>
+                    </c:forEach>
+                    <td>
+                        <a onclick="confirmDeleteDialog.show(
+                                '${user.name}',
+                                '${pageContext.request.contextPath}/user/${user.id}/delete');">
+                            <i class="material-icons">delete</i>
+                        </a>
+                    </td>
+                </tr>
+            </c:forEach>
             </tbody>
         </table>
     </div>

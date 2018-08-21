@@ -27,4 +27,6 @@ public interface UserPrincipalService {
     List<UserPrincipal> findAllUsers();
 
 	UserPrincipal findUserByUsername(String username);
+
+	void delete(long id);
 }

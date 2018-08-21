@@ -118,4 +118,9 @@ public class UserPrincipalServiceImpl implements UserPrincipalService {
         return ServiceUtils.toList(userPrincipalRepository.findAll());
     }
 
+
+    @Override
+    public void delete(long id) {
+        userPrincipalRepository.deleteById(id);
+    }
 }
