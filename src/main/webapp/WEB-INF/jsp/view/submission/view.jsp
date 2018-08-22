@@ -5,12 +5,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
-<jsp:include page="/WEB-INF/jsp/includes/header.jsp"/>
-<jsp:include page="/WEB-INF/jsp/includes/column_left_home.jsp"/>
-
-<!-- Start the middle column -->
-
-<!-- submissionDTO information -->
 
 <c:if test="${!edit}">
     <section>
@@ -18,6 +12,8 @@
         <div align="center">
             <table id="info_table" class="display" style="width: 100%; clear: none;">
                 <thead>
+
+
                 <tr>
                     <th>Property</th>
                     <th>Value</th>
@@ -30,12 +26,15 @@
                 </tr>
                 <tr>
                     <td><strong>Description:</strong></td>
-                    <td><pre style="white-space: pre-wrap;">${submissionDTO.description}</pre></td>
+                    <td>
+                        <pre>${submissionDTO.description}</pre>
+                    </td>
                 </tr>
                 <c:if test="${submissionDTO.reference != null}">
                     <tr>
                         <td><strong>URL:</strong></td>
-                        <td><a href="${submissionDTO.reference}" title="${submissionDTO.reference}" target="_blank">${dulab:abbreviate(submissionDTO.reference, 80)}</a></td>
+                        <td><a href="${submissionDTO.reference}" title="${submissionDTO.reference}"
+                               target="_blank">${dulab:abbreviate(submissionDTO.reference, 80)}</a></td>
                     </tr>
                 </c:if>
                 <c:if test="${submissionDTO.tags > 0}">
@@ -109,84 +108,11 @@
     </div>
 </section>
 
-
 <c:choose>
     <c:when test="${edit}">
-       <jsp:include page="../../includes/submission_form.jsp">
-           <jsp:param value="${submissionDTO}" name="submissionDTO"/>
-       </jsp:include>
-        <%-- <section>
-            <h1>Submit</h1>
-            <div align="center">
-                <div align="left" style="width: 600px">
-                    <p>
-                        Please provide name and detailed description of the data when you submit mass spectra to the library.
-                        This information will be used for finding unknown compounds.
-                    </p>
-                </div>
-        
-                <div align="left" class="subsection">
-                    <c:if test="${validationErrors != null}">
-                        <div class="errors">
-                            <p>Errors:</p>
-                            <ul>
-                                <c:forEach items="${validationErrors}" var="error">
-                                    <li><c:out value="${error.message}"/></li>
-                                </c:forEach>
-                            </ul>
-                        </div>
-                    </c:if>
-                    <form:form method="POST" modelAttribute="submissionDTO">
-                        <form:errors path="" cssClass="errors"/><br/>
-        
-                        <form:label path="name">Name:</form:label><br/>
-                        <form:input path="name"/><br/>
-                        <form:errors path="name" cssClass="errors"/><br/>
-        
-                        <form:label path="description">Description:</form:label><br/>
-                        <form:textarea path="description" rows="12" cols="80"/><br/>
-                        <form:errors path="description" cssClass="errors"/><br/>
-        
-                        <form:label path="reference">Reference:</form:label><br/>
-                        <form:input path="reference"/><br/>
-                        <form:errors path="reference" cssClass="errors"/><br/>
-        
-                        <c:forEach items="${submissionCategoryTypes}" var="type">
-                            <label>${type.label}:</label><br/>
-                            <span style="vertical-align: bottom;">
-                                <form:select path="submissionCategoryIds" multiple="false">
-                                    <form:option value="0" label="Please select..."/>
-                                    <form:options items="${availableCategories[type]}" itemLabel="name" itemValue="id"/>
-                                </form:select><br/>
-                            </span>
-                            <a href="<c:url value="/categories/${type}/"/>">
-                                <i class="material-icons" title="View categories for ${type.label}">&#xE896;</i>
-                            </a>
-                            <a href="<c:url value="/categories/${type}/add/"/>">
-                                <i class="material-icons" title="Add category for ${type.label}">&#xE147;</i>
-                            </a><br/>
-                        </c:forEach>
-                        <form:errors path="submissionCategoryIds" cssClass="errors"/><br/>
-        
-                        <form:label path="tags">Equipment:</form:label><br/>
-                        <form:input path="tags"/><br/>
-                        <form:errors path="tags" cssClass="errors"/><br/>
-        
-                        <div align="center">
-                            <c:choose>
-                                <c:when test="${submissionDTO.id > 0}">
-                                    <input type="submit" value="Save"/>
-                                </c:when>
-                                <c:otherwise>
-                                    <input type="submit" value="Submit" formaction="submit"/>
-                                    <a href="clear/" class="button">Clear</a>
-                                </c:otherwise>
-                            </c:choose>
-                        </div>
-                    </form:form>
-                </div>
-            </div>
-        </section> --%>
+        <jsp:include page="../../includes/submission_form.jsp">
+            <jsp:param value="${submissionDTO}" name="submissionDTO"/>
+        </jsp:include>
     </c:when>
     <c:when test="${authorized}">
         <section class="no-background">
@@ -196,6 +122,7 @@
         </section>
     </c:when>
 </c:choose>
+
 <script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
 <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
 <script src="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.js"/>"></script>
@@ -228,17 +155,20 @@
                         return content;
                     }
                 },
-                {"data": "retentionTime", "targets": 2}, //<img src="${pageContext.request.contextPath}/${spectrum.chromatographyType.iconPath}" alt="${spectrum.chromatographyType.label}" title="${spectrum.chromatographyType.label}" class="icon"/>
+                {
+                    "data": "retentionTime",
+                    "targets": 2
+                }, //<img src="${pageContext.request.contextPath}/${spectrum.chromatographyType.iconPath}" alt="${spectrum.chromatographyType.label}" title="${spectrum.chromatographyType.label}" class="icon"/>
                 {"data": "precursor", "targets": 3},
                 {
                     "orderable": false,
                     "targets": 4,
                     "render": function (data, type, row, meta) {
                         content = '<img' +
-                        ' src="${pageContext.request.contextPath}/' + row.chromatographyTypeIconPath + '"'
-                        + ' alt="' + row.chromatographyTypeLabel + '"'
-                        + ' title="' + row.chromatographyTypeLabel + '"'
-                        + ' class="icon"/>';
+                            ' src="${pageContext.request.contextPath}/' + row.chromatographyTypeIconPath + '"'
+                            + ' alt="' + row.chromatographyTypeLabel + '"'
+                            + ' title="' + row.chromatographyTypeLabel + '"'
+                            + ' class="icon"/>';
 
                         return content;
                     }
@@ -283,13 +213,7 @@
         });
 
         // Table with a list of files
-        $('#file_table').DataTable({
-            bLengthChange: false,
-            info: false,
-            ordering: false,
-            paging: false,
-            searching: false
-        });
+        $('#file_table').DataTable();
 
         // Selector with autocomplete
         $('#tags').tagit({
@@ -299,8 +223,3 @@
         });
     })
 </script>
-
-<!-- End the middle column -->
-
-<jsp:include page="/WEB-INF/jsp/includes/column_right_news.jsp"/>
-<jsp:include page="/WEB-INF/jsp/includes/footer.jsp"/>

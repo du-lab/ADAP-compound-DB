@@ -30,31 +30,32 @@ public class MspFileReaderService implements FileReaderService {
         List<Spectrum> spectra = new ArrayList<>();
         Spectrum spectrum = new Spectrum();
         List<Peak> peaks = new ArrayList<>();
-        List<SpectrumProperty> properties = new ArrayList<>();
 
         String line;
         while ((line = reader.readLine()) != null) {
             if (line.trim().isEmpty()) {
 
                 if (!peaks.isEmpty()) {
-                    spectrum.setProperties(properties);
                     spectrum.setChromatographyType(type);
                     spectrum.setPeaks(peaks);
                     spectra.add(spectrum);
                 }
 
                 spectrum = new Spectrum();
-                properties = new ArrayList<>();
                 peaks = new ArrayList<>();
             }
-            else if (line.contains(":"))
-                addProperty(spectrum, properties, line);
-            else
+            else if (line.contains(":")) {
+                // Add property
+                for (String s : line.split(";")) {
+                    String[] nameValuePair = s.split(":", 2);
+                    if (nameValuePair.length == 2)
+                        spectrum.addProperty(nameValuePair[0].trim(), nameValuePair[1].trim());
+                }
+            } else
                 addPeak(spectrum, peaks, line);
         }
 
         if (!peaks.isEmpty()) {
-            spectrum.setProperties(properties);
             spectrum.setChromatographyType(type);
             spectrum.setPeaks(peaks);
             spectra.add(spectrum);
@@ -63,20 +64,6 @@ public class MspFileReaderService implements FileReaderService {
         reader.close();
 
         return spectra;
-    }
-
-    private void addProperty(Spectrum spectrum, List<SpectrumProperty> properties, String line) {
-
-        for (String s : line.split(";")) {
-            String[] nameValuePair = s.split(":", 2);
-            if (nameValuePair.length == 2) {
-                SpectrumProperty property = new SpectrumProperty();
-                property.setName(nameValuePair[0].trim());
-                property.setValue(nameValuePair[1].trim());
-                property.setSpectrum(spectrum);
-                properties.add(property);
-            }
-        }
     }
 
     private void addPeak(Spectrum spectrum, List<Peak> peaks, String line) {
@@ -97,19 +84,4 @@ public class MspFileReaderService implements FileReaderService {
             }
         }
     }
-
-//    private void addSpectrum(List<Spectrum> spectra,
-//                             List<SpectrumProperty> properties,
-//                             List<Peak> peaks) {
-//
-//        if (peaks.isEmpty() || properties.isEmpty()) {
-//            LOG.warn("Attempt to save a spectrum with zero peaks");
-//            return;
-//        }
-//
-//        Spectrum spectrum = new Spectrum();
-//        spectrum.setProperties(properties);
-//        spectrum.setPeaks(peaks);
-//        spectra.add(spectrum);
-//    }
 }

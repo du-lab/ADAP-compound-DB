@@ -281,6 +281,10 @@ public class SubmissionController extends BaseController {
 
         List<SubmissionTag> tags = new ArrayList<>();
         for (String name : form.getTags().split(",")) {
+
+            if (name.trim().isEmpty())
+                continue;
+
             SubmissionTag submissionTag = new SubmissionTag();
             submissionTag.setId(new SubmissionTagId(submission, name.toLowerCase()));
             tags.add(submissionTag);

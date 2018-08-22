@@ -4,11 +4,6 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<jsp:include page="/WEB-INF/jsp/includes/header.jsp" />
-<jsp:include page="/WEB-INF/jsp/includes/column_left_home.jsp" />
-
-<!-- Start the middle column -->
-
 <section>
     <h1>Log-in</h1>
     <div align="center">
@@ -46,8 +41,3 @@
         <a href="<c:url value="/signup"/>" class="button">Register</a>
     </div>
 </section>
-
-<!-- End the middle column -->
-
-<jsp:include page="/WEB-INF/jsp/includes/column_right_news.jsp" />
-<jsp:include page="/WEB-INF/jsp/includes/footer.jsp" />

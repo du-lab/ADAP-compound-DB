@@ -2,10 +2,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<jsp:include page="/WEB-INF/jsp/includes/header.jsp"/>
-<jsp:include page="/WEB-INF/jsp/includes/column_left_home.jsp"/>
-
-<!-- Start the middle column -->
 
 <c:choose>
     <c:when test="${spectrum.file.submission.id > 0}">
@@ -125,14 +121,3 @@
         stroke-dasharray: 5, 5;
     }
 </style>
-
-<%--<script src="<c:url value="/resources/js/zingchart/zingchart.min.js"/>"></script>--%>
-<%--<script type="text/javascript" src="<c:url value="/resources/js/spectrum.js"/>"></script>--%>
-<%--<script>--%>
-<%--addPlot("chartDiv", '${dulab:peaksToJson(spectrum.peaks)}');--%>
-<%--</script>--%>
-
-<!-- End the middle column -->
-
-<jsp:include page="/WEB-INF/jsp/includes/column_right_news.jsp"/>
-<jsp:include page="/WEB-INF/jsp/includes/footer.jsp"/>

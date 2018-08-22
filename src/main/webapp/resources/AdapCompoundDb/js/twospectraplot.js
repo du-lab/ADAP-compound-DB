@@ -36,7 +36,8 @@ function TwoSpectraPlot(divId, topSpectrum) {
         .attr('class', 'button_g')
         .attr("transform", "translate(" + padding.left + ", 0)")
         .attr('width', width/10)
-        .attr('height', height/16);
+        .attr('height', height/16)
+        .style("cursor", "pointer");
     var button = gButton.append("svg:rect")
         .attr('width', width/10)
         .attr('height', height/16)

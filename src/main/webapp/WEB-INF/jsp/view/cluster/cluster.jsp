@@ -4,10 +4,48 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
-<jsp:include page="/WEB-INF/jsp/includes/header.jsp"/>
-<jsp:include page="/WEB-INF/jsp/includes/column_left_home.jsp"/>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<!-- Start the middle column -->
+<section>
+    <h1>Cluster</h1>
+    <div align="center">
+        <table id="property_table" class="display" style="width: 100%;">
+            <thead>
+            <tr>
+                <th>Property</th>
+                <th>Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><strong>Consensus Spectrum</strong></td>
+                <td><a href="${pageContext.request.contextPath}/spectrum/${cluster.consensusSpectrum.id}/">
+                    ${cluster.consensusSpectrum.name}</a></td>
+            </tr>
+            <tr>
+                <td><strong>Number of spectra</strong></td>
+                <td>${cluster.size}</td>
+            </tr>
+            <tr>
+                <td><strong>Similarity Score</strong></td>
+                <td>${dulab:toIntegerScore(cluster.diameter)}</td>
+            </tr>
+            <tr>
+                <td><strong>Average significance</strong></td>
+                <td>${cluster.aveSignificance}</td>
+            </tr>
+            <tr>
+                <td><strong>Minimum significance</strong></td>
+                <td>${cluster.minSignificance}</td>
+            </tr>
+            <tr>
+                <td><strong>Maximum significance</strong></td>
+                <td>${cluster.maxSignificance}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
 
 <section>
     <h1>Spectrum Plot</h1>
@@ -60,22 +98,26 @@
     <table id="big_spectrum_table" class="display nowrap" style="width: 100%;">
         <thead>
         <tr>
-            <th>Id</th>
             <th>Spectrum</th>
+            <th title="Retention time (min)">RT</th>
+            <th>Precursor m/z</th>
+            <th>Significance</th>
             <c:forEach items="${submissionCategoryTypes}" var="type">
                 <th>${type.label}</th>
             </c:forEach>
-            <th>View</th>
+            <th></th>
         </tr>
         </thead>
         <tbody>
         <c:forEach items="${cluster.spectra}" var="spectrum">
             <tr>
-                <td>${spectrum.id}</td>
                 <td><a href="/spectrum/${spectrum.id}/">${spectrum.name}</a><br/>
                     <small><a href="/submission/${spectrum.file.submission.id}/">${spectrum.file.submission.name}</a>
                     </small>
                 </td>
+                <td><fmt:formatNumber type="number" maxFractionDigits="3" value="${spectrum.retentionTime}"/></td>
+                <td><fmt:formatNumber type="number" maxFractionDigits="3" value="${spectrum.precursor}"/></td>
+                <td><fmt:formatNumber type="number" maxFractionDigits="3" value="${spectrum.significance}"/></td>
                 <c:forEach items="${submissionCategoryTypes}" var="type">
                     <td>${spectrum.file.submission.getCategory(type)}</td>
                 </c:forEach>
@@ -93,6 +135,13 @@
 <script src="<c:url value="/resources/Select-1.2.5/js/dataTables.select.min.js"/>"></script>
 <script>
     $(document).ready(function () {
+
+        $('#property_table').DataTable({
+            info: false,
+            ordering: false,
+            paging: false,
+            searching: false
+        });
 
         var table = $('#spectrum_table').DataTable({
             bLengthChange: false,
@@ -134,5 +183,3 @@
         stroke-dasharray: 5, 5;
     }
 </style>
-<jsp:include page="/WEB-INF/jsp/includes/column_right_news.jsp"/>
-<jsp:include page="/WEB-INF/jsp/includes/footer.jsp"/>
