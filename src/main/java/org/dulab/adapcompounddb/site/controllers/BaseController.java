@@ -9,7 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 
 public abstract class BaseController {
-    
+
     protected static final String ACCESS_DENIED_MESSAGE = "Sorry you do not have access to this page";
 
     @Autowired
@@ -29,9 +29,9 @@ public abstract class BaseController {
 
     public String getCurrentUsername() {
         String username = null;
-        Object user = getAuthentication().getPrincipal();
+        final Object user = getAuthentication().getPrincipal();
 
-        if(user instanceof User && user != null) {
+        if (user instanceof User && user != null) {
             username = ((User) user).getUsername();
         }
 

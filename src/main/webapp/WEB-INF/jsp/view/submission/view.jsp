@@ -1,5 +1,5 @@
 <%--@elvariable id="submissionCategoryTypes" type="org.dulab.adapcompounddb.models.SubmissionCategoryType[]"--%>
-<%--@elvariable id="submissionDTO" type="org.dulab.adapcompounddb.models.entities.submissionDTO"--%>
+<%--@elvariable id="submissionForm" type="org.dulab.adapcompounddb.models.entities.submissionForm"--%>
 <%--@elvariable id="authorized" type="java.lang.Boolean"--%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -8,7 +8,7 @@
 
 <c:if test="${!edit}">
     <section>
-        <h1>submissionDTO</h1>
+        <h1>Submission</h1>
         <div align="center">
             <table id="info_table" class="display" style="width: 100%; clear: none;">
                 <thead>
@@ -22,31 +22,31 @@
                 <tbody>
                 <tr>
                     <td><strong>Name:</strong></td>
-                    <td>${submissionDTO.name}</td>
+                    <td>${submission.name}</td>
                 </tr>
                 <tr>
                     <td><strong>Description:</strong></td>
                     <td>
-                        <pre>${submissionDTO.description}</pre>
+                        <pre>${submission.description}</pre>
                     </td>
                 </tr>
-                <c:if test="${submissionDTO.reference != null}">
+                <c:if test="${submission.reference != null}">
                     <tr>
                         <td><strong>URL:</strong></td>
-                        <td><a href="${submissionDTO.reference}" title="${submissionDTO.reference}"
-                               target="_blank">${dulab:abbreviate(submissionDTO.reference, 80)}</a></td>
+                        <td><a href="${submission.reference}" title="${submission.reference}"
+                               target="_blank">${dulab:abbreviate(submission.reference, 80)}</a></td>
                     </tr>
                 </c:if>
-                <c:if test="${submissionDTO.tags > 0}">
+                <c:if test="${submission.tagsAsString.length() > 0}">
                     <tr>
                         <td><strong>Equipment:</strong></td>
-                        <td>${submissionDTO.tags}</td>
+                        <td>${submission.tagsAsString}</td>
                     </tr>
                 </c:if>
                 <c:forEach items="${submissionCategoryTypes}" var="type">
                     <tr>
                         <td><strong>${type.label}:</strong></td>
-                        <td>${submissionDTO.getCategory(type)}</td>
+                        <td>${submission.getCategory(type)}</td>
                     </tr>
                 </c:forEach>
                 </tbody>
@@ -68,7 +68,7 @@
         </tr>
         </thead>
         <tbody>
-        <c:forEach items="${submissionDTO.files}" var="file" varStatus="loop">
+        <c:forEach items="${submission.files}" var="file" varStatus="loop">
             <tr>
                 <td><a href="${loop.index}/view/" target="_blank">${file.name}</a></td>
                 <td>${file.fileType.label}</td>
@@ -111,7 +111,7 @@
 <c:choose>
     <c:when test="${edit}">
         <jsp:include page="../../includes/submission_form.jsp">
-            <jsp:param value="${submissionDTO}" name="submissionDTO"/>
+            <jsp:param value="${submissionForm}" name="submissionForm"/>
         </jsp:include>
     </c:when>
     <c:when test="${authorized}">
@@ -135,7 +135,7 @@
             serverSide: true,
             processing: true,
             ajax: {
-                url: "${pageContext.request.contextPath}/spectrum/findSpectrumBySubmissionId.json?submissionId=${submissionDTO.id}",
+                url: "${pageContext.request.contextPath}/spectrum/findSpectrumBySubmissionId.json?submissionId=${submission.id}",
 
                 data: function (data) {
                     data.column = data.order[0].column;
@@ -203,7 +203,7 @@
                 })
         }).draw();
 
-        // Table with submissionDTO information
+        // Table with submissionForm information
         $('#info_table').DataTable({
             bLengthChange: false,
             info: false,

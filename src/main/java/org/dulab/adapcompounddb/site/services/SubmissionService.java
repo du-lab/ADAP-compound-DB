@@ -1,7 +1,6 @@
 package org.dulab.adapcompounddb.site.services;
 
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
-import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.springframework.validation.annotation.Validated;
 
@@ -14,19 +13,15 @@ public interface SubmissionService {
 
     Submission findSubmission(long submissionId);
 
-    SubmissionDTO findSubmissionById(long submissionId);
-
     List<Submission> findSubmissionsByUserId(long userId);
 
     List<Submission> findSubmissionsWithTagsByUserId(long userId);
 
-    void saveSubmission(
-            @NotNull(message = "The submission is required.") Submission submission);
+    void saveSubmission(@NotNull(message = "The submission is required.") Submission submission);
 
     void deleteSubmission(Submission submission);
 
     void delete(long submissionId);
-
 
     List<String> findAllTags();
 
@@ -41,6 +36,4 @@ public interface SubmissionService {
     void saveSubmissionCategory(SubmissionCategory category);
 
     void deleteSubmissionCategory(long submissionCategoryId);
-
-    SubmissionDTO convertToDTO(SubmissionDTO submissionDTO, Submission submission);
 }

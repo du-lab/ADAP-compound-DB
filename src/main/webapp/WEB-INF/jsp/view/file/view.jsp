@@ -22,7 +22,7 @@
         </tr>
         </thead>
         <tbody>
-        <c:forEach items="${submissionDTO.files}" var="file" varStatus="loop">
+        <c:forEach items="${submission.files}" var="file" varStatus="loop">
             <tr>
                 <td><a href="${loop.index}/view/" target="_blank">${file.name}</a></td>
                 <td>${file.fileType.label}</td>
@@ -58,8 +58,8 @@
 
             </thead>
             <tbody>
-            <c:if test="${submissionDTO.files.size() > 0}">
-                <c:forEach items="${submissionDTO.files}" var="file" varStatus="fileLoop">
+            <c:if test="${submission.files.size() > 0}">
+                <c:forEach items="${submission.files}" var="file" varStatus="fileLoop">
                     <c:forEach items="${file.spectra}" var="spectrum" varStatus="spectrumLoop">
                         <tr>
                             <td></td>
@@ -97,7 +97,7 @@
 
 <c:if test="${authenticated}">
     <jsp:include page="../../includes/submission_form.jsp">
-        <jsp:param value="${submissionDTO}" name="submissionDTO"/>
+        <jsp:param value="${submissionForm}" name="submissionForm"/>
     </jsp:include>
 </c:if>
 

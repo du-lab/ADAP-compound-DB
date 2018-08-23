@@ -1,10 +1,5 @@
 package org.dulab.adapcompounddb.config;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +12,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -36,26 +30,27 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     UserDetailsService userDetailsService;
 
     @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) {
+    public void configureGlobal(final AuthenticationManagerBuilder auth) {
         auth.authenticationProvider(authProvider());
     }
 
     @Bean
     public DaoAuthenticationProvider authProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        final DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(new BCryptPasswordEncoder());
         return authProvider;
     }
 
     @Override
-    public void configure(WebSecurity security) {
-        // Stop Spring Security from evaluating access to static resources to make it as fast as possible.
+    public void configure(final WebSecurity security) {
+        // Stop Spring Security from evaluating access to static resources to make it as
+        // fast as possible.
         security.ignoring().antMatchers("/resources/**");
     }
 
     @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    protected void configure(final HttpSecurity http) throws Exception {
 
         http.csrf().disable();
 
@@ -77,25 +72,19 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // Submit URL of login page.
                 .loginProcessingUrl("/j_spring_security_check") // Submit URL
                 .loginPage("/login/")//
-                .successHandler(new AuthenticationSuccessHandler() {
-                    @Override
-                    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-                        if (authentication.isAuthenticated()) {
-                            request.getSession().setAttribute(SESSION_ATTRIBUTE_KEY, authentication.getPrincipal());
-                            response.sendRedirect(request.getServletContext().getContextPath() + "/");
-                        } else {
-                            request.getRequestDispatcher("/login?loginFailed=true").forward(request, response);
-                        }
+                .successHandler((request, response, authentication) -> {
+                    if (authentication.isAuthenticated()) {
+                        request.getSession().setAttribute(SESSION_ATTRIBUTE_KEY, authentication.getPrincipal());
+                        response.sendRedirect(request.getServletContext().getContextPath() + "/");
+                    } else {
+                        request.getRequestDispatcher("/login?loginFailed=true").forward(request, response);
                     }
-                })
-                .failureUrl("/login?loginFailed=true")//
+                }).failureUrl("/login?loginFailed=true")//
                 .usernameParameter("username")//
                 .passwordParameter("password")
                 // Config for Logout Page
-                .and().logout()
-                .logoutUrl("/logout").logoutSuccessUrl("/")
-                .invalidateHttpSession(true).deleteCookies("JSESSIONID")
-                .permitAll();
+                .and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout")).logoutSuccessUrl("/")
+                .deleteCookies("JSESSIONID").invalidateHttpSession(true).permitAll();
     }
 
 }

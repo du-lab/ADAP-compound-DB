@@ -1,16 +1,13 @@
 package org.dulab.adapcompounddb.site.services;
 
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
-import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.repositories.*;
-import org.dulab.adapcompounddb.utils.ObjectMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class SubmissionServiceImpl implements SubmissionService {
@@ -33,33 +30,6 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Transactional
     public Submission findSubmission(final long submissionId) {
         return submissionRepository.findById(submissionId).orElseThrow(EmptyStackException::new);
-    }
-
-    @Override
-    @Transactional
-    public SubmissionDTO findSubmissionById(final long submissionId) {
-        final Submission submission = findSubmission(submissionId);
-        final SubmissionDTO submissionDTO = convertToDTO(null, submission);
-        return submissionDTO;
-    }
-
-    @Override
-    @Transactional
-    public SubmissionDTO convertToDTO(SubmissionDTO submissionDTO, final Submission submission) {
-
-        if (submissionDTO == null) {
-            final ObjectMapperUtils objectMapper = new ObjectMapperUtils();
-            submissionDTO = objectMapper.map(submission, SubmissionDTO.class);
-        }
-        if (submission.getTags() != null) {
-            submissionDTO.setTags(submission.getTags().stream().map(SubmissionTag::getId).map(SubmissionTagId::getName)
-                    .collect(Collectors.joining(",")));
-        }
-        if (submission.getCategories() != null) {
-            submissionDTO.setSubmissionCategoryIds(submission.getCategories().stream().filter(Objects::nonNull)
-                    .map(SubmissionCategory::getId).collect(Collectors.toList()));
-        }
-        return submissionDTO;
     }
 
     @Override
