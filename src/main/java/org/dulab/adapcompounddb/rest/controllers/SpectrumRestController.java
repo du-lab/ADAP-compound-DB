@@ -17,27 +17,27 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 @RequestMapping("/spectrum")
 public class SpectrumRestController {
 
-	private final SpectrumService spectrumService;
+    private final SpectrumService spectrumService;
 
-	@Autowired
-	public SpectrumRestController(SpectrumService spectrumService) {
-		this.spectrumService = spectrumService;
-	}
+    @Autowired
+    public SpectrumRestController(SpectrumService spectrumService) {
+        this.spectrumService = spectrumService;
+    }
 
-	@RequestMapping(value="/findSpectrumBySubmissionId", produces="application/json")
-	public String findSpectrumBySubmissionId(@RequestParam("submissionId") Long submissionId,
-								@RequestParam("start") Integer start,
-								@RequestParam("length") Integer length,
-								@RequestParam("column") Integer column,
-								@RequestParam("sortDirection") String sortDirection,
-								@RequestParam("search") String searchStr,
-								HttpServletRequest request) throws JsonProcessingException {
+    @RequestMapping(value="/findSpectrumBySubmissionId", produces="application/json")
+    public String findSpectrumBySubmissionId(@RequestParam("submissionId") Long submissionId,
+                                @RequestParam("start") Integer start,
+                                @RequestParam("length") Integer length,
+                                @RequestParam("column") Integer column,
+                                @RequestParam("sortDirection") String sortDirection,
+                                @RequestParam("search") String searchStr,
+                                HttpServletRequest request) throws JsonProcessingException {
 
-		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-		SpectrumTableResponse response = spectrumService.findSpectrumBySubmissionId(submissionId, searchStr, start, length, column, sortDirection);
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        SpectrumTableResponse response = spectrumService.findSpectrumBySubmissionId(submissionId, searchStr, start, length, column, sortDirection);
 
-		String jsonString = objectMapper.writeValueAsString(response);
-		return jsonString;
-	}	
+        String jsonString = objectMapper.writeValueAsString(response);
+        return jsonString;
+    }    
 }

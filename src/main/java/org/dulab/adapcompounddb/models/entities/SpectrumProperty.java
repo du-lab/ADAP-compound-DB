@@ -37,7 +37,7 @@ public class SpectrumProperty implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "SpectrumId", referencedColumnName = "Id")
-	@JsonIgnore
+    @JsonIgnore
     public Spectrum getSpectrum() {
         return spectrum;
     }

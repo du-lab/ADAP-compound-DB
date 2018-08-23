@@ -52,7 +52,7 @@ public class SpectrumCluster implements Serializable {
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "ConsensusSpectrumId", referencedColumnName = "Id")
-	@JsonIgnore
+    @JsonIgnore
     public Spectrum getConsensusSpectrum() {
         return consensusSpectrum;
     }

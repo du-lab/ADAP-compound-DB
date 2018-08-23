@@ -73,7 +73,7 @@ public class SubmissionController extends BaseController {
     @RequestMapping(value = "/submission/{submissionId:\\d+}/edit", method = RequestMethod.GET)
     public String editSubmission(@PathVariable("submissionId") long submissionId, Model model) {
 
-    	SubmissionDTO submission = submissionService.findSubmissionById(submissionId);
+        SubmissionDTO submission = submissionService.findSubmissionById(submissionId);
 
         if (submission == null) {
             return submissionNotFound(model, submissionId);
@@ -118,8 +118,8 @@ public class SubmissionController extends BaseController {
         return "file/view";
     }
 
-	private SubmissionForm createSubmissionForm(Submission submission) {
-		SubmissionForm form = new SubmissionForm();
+    private SubmissionForm createSubmissionForm(Submission submission) {
+        SubmissionForm form = new SubmissionForm();
 //        form.setCategoryMap(submissionService.findAllCategories());
 
         form.setName(submission.getName());
@@ -143,8 +143,8 @@ public class SubmissionController extends BaseController {
                     .map(SubmissionCategory::getId)
                     .collect(Collectors.toList()));
         }
-		return form;
-	}
+        return form;
+    }
 
     /**********************
      ***** File Clear *****
@@ -259,7 +259,7 @@ public class SubmissionController extends BaseController {
 
         Submission submission = submissionService.findSubmission(submissionId);
         if (errors.hasErrors()) {
-        	submissionDTO.setFiles(submission.getFiles());
+            submissionDTO.setFiles(submission.getFiles());
             model.addAttribute("submissionDTO", submissionDTO);
             model.addAttribute("edit", true);
             return "submission/view";
@@ -308,9 +308,9 @@ public class SubmissionController extends BaseController {
             model.addAttribute("submissionForm", form);
             return "file/view";
         } catch (Exception e) {
-			// TODO: handle exception
-        	throw e;
-		}
+            // TODO: handle exception
+            throw e;
+        }
 
         model.addAttribute("message", "Mass spectra are submitted successfully.");
         return "redirect:/submission/" + submission.getId() + "/";

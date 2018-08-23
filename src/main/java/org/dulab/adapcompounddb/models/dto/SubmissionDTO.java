@@ -67,77 +67,77 @@ public class SubmissionDTO implements Serializable {
     // ***** Getters and Setters *****
     // *******************************
 
-	public long getId() {
-		return id;
-	}
+    public long getId() {
+        return id;
+    }
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    public void setId(long id) {
+        this.id = id;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public String getReference() {
-		return reference;
-	}
+    public String getReference() {
+        return reference;
+    }
 
-	public void setReference(String reference) {
-		this.reference = reference;
-	}
+    public void setReference(String reference) {
+        this.reference = reference;
+    }
 
-	public Date getDateTime() {
-		return dateTime;
-	}
+    public Date getDateTime() {
+        return dateTime;
+    }
 
-	public void setDateTime(Date dateTime) {
-		this.dateTime = dateTime;
-	}
+    public void setDateTime(Date dateTime) {
+        this.dateTime = dateTime;
+    }
 
-	public UserPrincipal getUser() {
-		return user;
-	}
+    public UserPrincipal getUser() {
+        return user;
+    }
 
-	public void setUser(UserPrincipal user) {
-		this.user = user;
-	}
+    public void setUser(UserPrincipal user) {
+        this.user = user;
+    }
 
-	public List<SubmissionCategoryDTO> getCategories() {
-		return categories;
-	}
+    public List<SubmissionCategoryDTO> getCategories() {
+        return categories;
+    }
 
-	public void setCategories(List<SubmissionCategoryDTO> categories) {
-		this.categories = categories;
-	}
+    public void setCategories(List<SubmissionCategoryDTO> categories) {
+        this.categories = categories;
+    }
 
-	public List<File> getFiles() {
-		return files;
-	}
+    public List<File> getFiles() {
+        return files;
+    }
 
-	public void setFiles(List<File> files) {
-		this.files = files;
-	}
+    public void setFiles(List<File> files) {
+        this.files = files;
+    }
 
-	public String getTags() {
-		return tags;
-	}
+    public String getTags() {
+        return tags;
+    }
 
-	public void setTags(String tags) {
-		this.tags = tags;
-	}
+    public void setTags(String tags) {
+        this.tags = tags;
+    }
 
     public List<Long> getSubmissionCategoryIds() {
         return submissionCategoryIds;

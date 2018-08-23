@@ -2,7 +2,7 @@ package org.dulab.adapcompounddb.models;
 
 public enum UserRole implements EnumWithLabels {
 
-	ADMIN("Administrator"),
+    ADMIN("Administrator"),
     USER("Registered User");
 
     private final String label;

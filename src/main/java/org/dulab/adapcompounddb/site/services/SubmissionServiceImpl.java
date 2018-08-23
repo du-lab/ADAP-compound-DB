@@ -3,6 +3,7 @@ package org.dulab.adapcompounddb.site.services;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
 import org.dulab.adapcompounddb.models.entities.*;
+import org.dulab.adapcompounddb.site.controllers.SubmissionController.SubmissionForm;
 import org.dulab.adapcompounddb.site.repositories.*;
 import org.dulab.adapcompounddb.utils.ObjectMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,19 +42,19 @@ public class SubmissionServiceImpl implements SubmissionService {
     public SubmissionDTO findSubmissionById(long submissionId) {
         Submission submission = findSubmission(submissionId);
         SubmissionDTO submissionDTO = convertToDTO(null, submission);
-		return submissionDTO;
+        return submissionDTO;
     }
 
     @Override
     @Transactional
     public SubmissionDTO convertToDTO(SubmissionDTO submissionDTO, Submission submission) {
 
-		if(submissionDTO == null) {
-			ObjectMapperUtils objectMapper = new ObjectMapperUtils();
-			submissionDTO = objectMapper.map(submission, SubmissionDTO.class);
-		}
+        if(submissionDTO == null) {
+            ObjectMapperUtils objectMapper = new ObjectMapperUtils();
+            submissionDTO = objectMapper.map(submission, SubmissionDTO.class);
+        }
         if (submission.getTags() != null) {
-        	submissionDTO.setTags(submission
+            submissionDTO.setTags(submission
                     .getTags()
                     .stream()
                     .map(SubmissionTag::getId)
@@ -61,15 +62,15 @@ public class SubmissionServiceImpl implements SubmissionService {
                     .collect(Collectors.joining(",")));
         }
         if (submission.getCategories() != null) {
-        	submissionDTO.setSubmissionCategoryIds(submission
+            submissionDTO.setSubmissionCategoryIds(submission
                     .getCategories()
                     .stream()
                     .filter(Objects::nonNull)
                     .map(SubmissionCategory::getId)
                     .collect(Collectors.toList()));
         }
-		return submissionDTO;
-	}
+        return submissionDTO;
+    }
 
     @Override
     @Transactional
@@ -100,7 +101,6 @@ public class SubmissionServiceImpl implements SubmissionService {
     public void delete(long submissionId) {
         submissionRepository.deleteById(submissionId);
     }
-
 
     @Override
     public List<String> findAllTags() {

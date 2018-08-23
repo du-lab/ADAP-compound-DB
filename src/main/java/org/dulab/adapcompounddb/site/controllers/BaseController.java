@@ -9,36 +9,36 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 
 public abstract class BaseController {
-	
-	protected static final String ACCESS_DENIED_MESSAGE = "Sorry you do not have access to this page";
+    
+    protected static final String ACCESS_DENIED_MESSAGE = "Sorry you do not have access to this page";
 
-	@Autowired
-	UserPrincipalService userPrincipalService;
+    @Autowired
+    UserPrincipalService userPrincipalService;
 
-	public SecurityContext getSecurityContext() {
-		return SecurityContextHolder.getContext();
-	}
+    public SecurityContext getSecurityContext() {
+        return SecurityContextHolder.getContext();
+    }
 
     public UserPrincipal getCurrentUserPrincipal() {
-		return userPrincipalService.findUserByUsername(getCurrentUsername());
-	}
+        return userPrincipalService.findUserByUsername(getCurrentUsername());
+    }
 
-	public Authentication getAuthentication() {
-		return getSecurityContext().getAuthentication();
-	}
+    public Authentication getAuthentication() {
+        return getSecurityContext().getAuthentication();
+    }
 
-	public String getCurrentUsername() {
-		String username = null;
-		Object user = getAuthentication().getPrincipal();
+    public String getCurrentUsername() {
+        String username = null;
+        Object user = getAuthentication().getPrincipal();
 
-		if(user instanceof User && user != null) {
-			username = ((User) user).getUsername();
-		}
+        if(user instanceof User && user != null) {
+            username = ((User) user).getUsername();
+        }
 
-		return username;
-	}
+        return username;
+    }
 
-	public boolean isAuthenticated() {
-		return getCurrentUsername() != null;
-	}
+    public boolean isAuthenticated() {
+        return getCurrentUsername() != null;
+    }
 }

@@ -7,45 +7,45 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SpectrumTableResponse implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private Long recordsFiltered;
+    private Long recordsFiltered;
 
-	private Long recordsTotal;
+    private Long recordsTotal;
 
-	private List<SpectrumDTO> spectrumList;
+    private List<SpectrumDTO> spectrumList;
 
-	public SpectrumTableResponse() {
-		super();
-	}
+    public SpectrumTableResponse() {
+        super();
+    }
 
-	public SpectrumTableResponse(List<SpectrumDTO> spectrumList) {
-		this.spectrumList = spectrumList;
-	}
+    public SpectrumTableResponse(List<SpectrumDTO> spectrumList) {
+        this.spectrumList = spectrumList;
+    }
 
-	public Long getRecordsFiltered() {
-		return recordsFiltered;
-	}
+    public Long getRecordsFiltered() {
+        return recordsFiltered;
+    }
 
-	public void setRecordsFiltered(Long recordsFiltered) {
-		this.recordsFiltered = recordsFiltered;
-	}
+    public void setRecordsFiltered(Long recordsFiltered) {
+        this.recordsFiltered = recordsFiltered;
+    }
 
-	public Long getRecordsTotal() {
-		return recordsTotal;
-	}
+    public Long getRecordsTotal() {
+        return recordsTotal;
+    }
 
-	public void setRecordsTotal(Long recordsTotal) {
-		this.recordsTotal = recordsTotal;
-	}
+    public void setRecordsTotal(Long recordsTotal) {
+        this.recordsTotal = recordsTotal;
+    }
 
-	@JsonProperty("data")
-	public List<SpectrumDTO> getSpectrumList() {
-		return spectrumList;
-	}
+    @JsonProperty("data")
+    public List<SpectrumDTO> getSpectrumList() {
+        return spectrumList;
+    }
 
-	public void setSpectrumList(List<SpectrumDTO> spectrumList) {
-		this.spectrumList = spectrumList;
-	}
+    public void setSpectrumList(List<SpectrumDTO> spectrumList) {
+        this.spectrumList = spectrumList;
+    }
 
 }

@@ -94,30 +94,30 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
     @CollectionTable(name="UserRole", joinColumns= {@JoinColumn(name="userPrincipalId")})
     @Column(name="roleName")
     public Set<UserRole> getRoles() {
-		return roles;
-	}
+        return roles;
+    }
 
-	public void setRoles(Set<UserRole> roles) {
-		this.roles = roles;
-	}
+    public void setRoles(Set<UserRole> roles) {
+        this.roles = roles;
+    }
 
-	//    @Override
+    //    @Override
 
     @Transient
-	public boolean isAdmin() {
-		boolean isAdmin = false;
-		if(roles != null && roles.contains(UserRole.ADMIN)) {
-			isAdmin = true;
-		}
-		return isAdmin;
-	}
+    public boolean isAdmin() {
+        boolean isAdmin = false;
+        if(roles != null && roles.contains(UserRole.ADMIN)) {
+            isAdmin = true;
+        }
+        return isAdmin;
+    }
 
-	public void assignDefaultRole() {
-		if(roles == null || roles.isEmpty()) {
-			roles = new HashSet<>();
-			roles.add(UserRole.USER);
-		}
-	}
+    public void assignDefaultRole() {
+        if(roles == null || roles.isEmpty()) {
+            roles = new HashSet<>();
+            roles.add(UserRole.USER);
+        }
+    }
 
     @Transient
     public String getName() {

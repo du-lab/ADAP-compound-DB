@@ -105,12 +105,12 @@ public class UserPrincipalServiceImpl implements UserPrincipalService {
         return userPrincipalRepository.findUserPrincipalWithRolesByUsername(username)
                 .orElse(null);
 
-//    	UserPrincipal userPrincipal = null;
-//    	Optional<UserPrincipal> userPrincipalFound = userPrincipalRepository.findUserPrincipalWithRolesByUsername(username);
-//    	if(userPrincipalFound.isPresent()) {
-//    		userPrincipal = userPrincipalFound.get();
-//    	}
-//		return userPrincipal;
+//        UserPrincipal userPrincipal = null;
+//        Optional<UserPrincipal> userPrincipalFound = userPrincipalRepository.findUserPrincipalWithRolesByUsername(username);
+//        if(userPrincipalFound.isPresent()) {
+//            userPrincipal = userPrincipalFound.get();
+//        }
+//        return userPrincipal;
     }
 
     @Override

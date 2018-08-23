@@ -12,14 +12,14 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 public class FileNameExtracter extends StdDeserializer<String> {
 
-	protected FileNameExtracter(Class<String> t) {
-		super(t);
-	}
+    protected FileNameExtracter(Class<String> t) {
+        super(t);
+    }
 
-	@Override
-	public String deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-		
-		return null;
-	}
+    @Override
+    public String deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+        
+        return null;
+    }
 
 }
