@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Entity;
 import javax.validation.constraints.NotBlank;
 
 import org.apache.commons.lang3.StringUtils;
@@ -36,28 +35,25 @@ public class SubmissionDTO implements Serializable {
     private UserPrincipal user;
 
     private List<SubmissionCategoryDTO> categories;
-    
+
     private List<File> files;
 
     private String tags;
 
     private List<Long> submissionCategoryIds;
 
-    public SubmissionCategoryDTO getCategory(SubmissionCategoryType type) {
-        return getCategories().stream()
-                .filter(c -> c.getCategoryType() == type)
-                .findFirst()
-                .orElse(null);
+    public SubmissionCategoryDTO getCategory(final SubmissionCategoryType type) {
+        return getCategories().stream().filter(c -> c.getCategoryType() == type).findFirst().orElse(null);
     }
 
-    public boolean isAuthorized(UserPrincipal user) {
+    public boolean isAuthorized(final UserPrincipal user) {
         boolean authorized = false;
         if (user == null) {
             authorized = false;
         } else if (user.isAdmin()) {
             authorized = true;
         } else if (id != 0) {
-            authorized = StringUtils.equals(user.getUsername(), this.getUser().getUsername());
+            authorized = StringUtils.equals(user.getUsername(), getUser().getUsername());
         }
 
         return authorized;
@@ -71,7 +67,7 @@ public class SubmissionDTO implements Serializable {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(final long id) {
         this.id = id;
     }
 
@@ -79,7 +75,7 @@ public class SubmissionDTO implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -87,7 +83,7 @@ public class SubmissionDTO implements Serializable {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -95,7 +91,7 @@ public class SubmissionDTO implements Serializable {
         return reference;
     }
 
-    public void setReference(String reference) {
+    public void setReference(final String reference) {
         this.reference = reference;
     }
 
@@ -103,7 +99,7 @@ public class SubmissionDTO implements Serializable {
         return dateTime;
     }
 
-    public void setDateTime(Date dateTime) {
+    public void setDateTime(final Date dateTime) {
         this.dateTime = dateTime;
     }
 
@@ -111,7 +107,7 @@ public class SubmissionDTO implements Serializable {
         return user;
     }
 
-    public void setUser(UserPrincipal user) {
+    public void setUser(final UserPrincipal user) {
         this.user = user;
     }
 
@@ -119,7 +115,7 @@ public class SubmissionDTO implements Serializable {
         return categories;
     }
 
-    public void setCategories(List<SubmissionCategoryDTO> categories) {
+    public void setCategories(final List<SubmissionCategoryDTO> categories) {
         this.categories = categories;
     }
 
@@ -127,7 +123,7 @@ public class SubmissionDTO implements Serializable {
         return files;
     }
 
-    public void setFiles(List<File> files) {
+    public void setFiles(final List<File> files) {
         this.files = files;
     }
 
@@ -135,7 +131,7 @@ public class SubmissionDTO implements Serializable {
         return tags;
     }
 
-    public void setTags(String tags) {
+    public void setTags(final String tags) {
         this.tags = tags;
     }
 
@@ -143,7 +139,7 @@ public class SubmissionDTO implements Serializable {
         return submissionCategoryIds;
     }
 
-    public void setSubmissionCategoryIds(List<Long> submissionCategoryIds) {
+    public void setSubmissionCategoryIds(final List<Long> submissionCategoryIds) {
         this.submissionCategoryIds = submissionCategoryIds;
     }
 }

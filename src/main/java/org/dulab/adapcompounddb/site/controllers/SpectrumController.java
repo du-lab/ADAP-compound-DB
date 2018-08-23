@@ -1,6 +1,5 @@
 package org.dulab.adapcompounddb.site.controllers;
 
-import org.dulab.adapcompounddb.models.entities.File;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
@@ -21,57 +20,49 @@ public class SpectrumController {
     private final SubmissionService submissionService;
 
     @Autowired
-    public SpectrumController(SpectrumService spectrumService, SubmissionService submissionService) {
+    public SpectrumController(final SpectrumService spectrumService, final SubmissionService submissionService) {
         this.spectrumService = spectrumService;
         this.submissionService = submissionService;
     }
 
     @RequestMapping(value = "/spectrum/{spectrumId:\\d+}", method = RequestMethod.GET)
-    public String spectrum(@PathVariable("spectrumId") long spectrumId,
-                           Model model) {
+    public String spectrum(@PathVariable("spectrumId") final long spectrumId, final Model model) {
 
-        Spectrum spectrum = spectrumService.find(spectrumId);
+        final Spectrum spectrum = spectrumService.find(spectrumId);
 
         return spectrum(spectrum, model);
     }
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/spectrum/{spectrumId:\\d+}")
-    public String spectrum(@PathVariable("spectrumId") int spectrumId,
-                           Model model) {
+    public String spectrum(@PathVariable("spectrumId") final int spectrumId, final Model model) {
 
-        Spectrum spectrum = spectrumService.find(spectrumId);
+        final Spectrum spectrum = spectrumService.find(spectrumId);
 
         return spectrum(spectrum, model);
     }
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/{fileIndex:\\d+}/{spectrumIndex:\\d+}/", method = RequestMethod.GET)
-    public String spectrum(@PathVariable("submissionId") long submissionId,
-                           @PathVariable("fileIndex") int fileIndex,
-                           @PathVariable("spectrumIndex") int spectrumIndex,
-                           Model model) {
+    public String spectrum(@PathVariable("submissionId") final long submissionId,
+            @PathVariable("fileIndex") final int fileIndex, @PathVariable("spectrumIndex") final int spectrumIndex,
+            final Model model) {
 
-        Submission submission = submissionService.findSubmission(submissionId);
-        Spectrum spectrum = submission
-                .getFiles().get(fileIndex)
-                .getSpectra().get(spectrumIndex);
+        final Submission submission = submissionService.findSubmission(submissionId);
+        final Spectrum spectrum = submission.getFiles().get(fileIndex).getSpectra().get(spectrumIndex);
 
         return spectrum(spectrum, model);
     }
 
     @RequestMapping(value = "/file/{fileIndex:\\d+}/{spectrumIndex:\\d+}/", method = RequestMethod.GET)
-    public String spectrum(@PathVariable("fileIndex") int fileIndex,
-                           @PathVariable("spectrumIndex") int spectrumIndex,
-                           HttpSession session, Model model) {
+    public String spectrum(@PathVariable("fileIndex") final int fileIndex,
+            @PathVariable("spectrumIndex") final int spectrumIndex, final HttpSession session, final Model model) {
 
-        Submission submission = Submission.from(session);
-        Spectrum spectrum = submission
-                .getFiles().get(fileIndex)
-                .getSpectra().get(spectrumIndex);
+        final Submission submission = Submission.from(session);
+        final Spectrum spectrum = submission.getFiles().get(fileIndex).getSpectra().get(spectrumIndex);
 
         return spectrum(spectrum, model);
     }
 
-    public String spectrum(Spectrum spectrum, Model model) {
+    public String spectrum(final Spectrum spectrum, final Model model) {
         model.addAttribute("spectrum", spectrum);
         return "file/spectrum";
     }

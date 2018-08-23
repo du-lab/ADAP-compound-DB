@@ -2,7 +2,6 @@ package org.dulab.adapcompounddb.models.entities;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.persistence.*;
@@ -78,22 +77,25 @@ public class Spectrum implements Serializable {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(final long id) {
         this.id = id;
     }
 
     public String getName() {
         String fullName = name;
-        if (fullName == null)
+        if (fullName == null) {
             fullName = "UNKNOWN";
-        if (reference)
+        }
+        if (reference) {
             fullName = "[RS] " + fullName;
-        if (consensus)
+        }
+        if (consensus) {
             fullName = "[CS] " + fullName;
+        }
         return fullName;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -101,7 +103,7 @@ public class Spectrum implements Serializable {
         return file;
     }
 
-    public void setFile(File file) {
+    public void setFile(final File file) {
         this.file = file;
     }
 
@@ -109,18 +111,21 @@ public class Spectrum implements Serializable {
         return peaks;
     }
 
-    public void setPeaks(List<Peak> peaks) {
+    public void setPeaks(final List<Peak> peaks) {
 
-        if (peaks == null)
+        if (peaks == null) {
             return;
+        }
 
-        double totalIntensity = peaks.stream().mapToDouble(Peak::getIntensity).sum();
+        final double totalIntensity = peaks.stream().mapToDouble(Peak::getIntensity).sum();
 
-        if (totalIntensity <= 0.0)
+        if (totalIntensity <= 0.0) {
             return;
+        }
 
-        for (Peak peak : peaks)
+        for (final Peak peak : peaks) {
             peak.setIntensity(peak.getIntensity() / totalIntensity);
+        }
 
         this.peaks = peaks;
     }
@@ -129,31 +134,29 @@ public class Spectrum implements Serializable {
         return properties;
     }
 
-    public void setProperties(List<SpectrumProperty> properties) {
+    public void setProperties(final List<SpectrumProperty> properties) {
         this.properties = properties;
     }
 
-    public void addProperty(String name, String value) {
+    public void addProperty(final String name, final String value) {
 
-        if (properties == null)
+        if (properties == null) {
             properties = new ArrayList<>();
+        }
 
-        if (name.equalsIgnoreCase(NAME_PROPERTY_NAME))
-            this.setName(value);
+        if (name.equalsIgnoreCase(NAME_PROPERTY_NAME)) {
+            setName(value);
+        } else if (name.equalsIgnoreCase(PRECURSOR_MASS_PROPERTY_NAME)) {
+            setPrecursor(Double.valueOf(value));
+        } else if (name.equalsIgnoreCase(SIGNIFICANCE_PROPERTY_NAME)) {
+            setSignificance(Double.valueOf(value));
+        } else if (name.equalsIgnoreCase(RETENTION_TIME_PROPERTY_NAME)) {
+            setRetentionTime(Double.valueOf(value));
+        } else if (name.equalsIgnoreCase(REFERENCE_PROPERTY_NAME)) {
+            setReference(true);
+        }
 
-        else if (name.equalsIgnoreCase(PRECURSOR_MASS_PROPERTY_NAME))
-            this.setPrecursor(Double.valueOf(value));
-
-        else if (name.equalsIgnoreCase(SIGNIFICANCE_PROPERTY_NAME))
-            this.setSignificance(Double.valueOf(value));
-
-        else if (name.equalsIgnoreCase(RETENTION_TIME_PROPERTY_NAME))
-            this.setRetentionTime(Double.valueOf(value));
-
-        else if (name.equalsIgnoreCase(REFERENCE_PROPERTY_NAME))
-            this.setReference(true);
-
-        SpectrumProperty property = new SpectrumProperty();
+        final SpectrumProperty property = new SpectrumProperty();
         property.setName(name);
         property.setValue(value);
         property.setSpectrum(this);
@@ -164,7 +167,7 @@ public class Spectrum implements Serializable {
         return matches;
     }
 
-    public void setMatches(List<SpectrumMatch> matches) {
+    public void setMatches(final List<SpectrumMatch> matches) {
         this.matches = matches;
     }
 
@@ -172,7 +175,7 @@ public class Spectrum implements Serializable {
         return matches2;
     }
 
-    public void setMatches2(List<SpectrumMatch> matches2) {
+    public void setMatches2(final List<SpectrumMatch> matches2) {
         this.matches2 = matches2;
     }
 
@@ -180,7 +183,7 @@ public class Spectrum implements Serializable {
         return cluster;
     }
 
-    public void setCluster(SpectrumCluster cluster) {
+    public void setCluster(final SpectrumCluster cluster) {
         this.cluster = cluster;
     }
 
@@ -188,7 +191,7 @@ public class Spectrum implements Serializable {
         return consensus;
     }
 
-    public void setConsensus(boolean consensus) {
+    public void setConsensus(final boolean consensus) {
         this.consensus = consensus;
     }
 
@@ -196,7 +199,7 @@ public class Spectrum implements Serializable {
         return reference;
     }
 
-    public void setReference(boolean reference) {
+    public void setReference(final boolean reference) {
         this.reference = reference;
     }
 
@@ -204,7 +207,7 @@ public class Spectrum implements Serializable {
         return precursor;
     }
 
-    public void setPrecursor(Double precursor) {
+    public void setPrecursor(final Double precursor) {
         this.precursor = precursor;
     }
 
@@ -212,7 +215,7 @@ public class Spectrum implements Serializable {
         return retentionTime;
     }
 
-    public void setRetentionTime(Double retentionTime) {
+    public void setRetentionTime(final Double retentionTime) {
         this.retentionTime = retentionTime;
     }
 
@@ -220,7 +223,7 @@ public class Spectrum implements Serializable {
         return chromatographyType;
     }
 
-    public void setChromatographyType(ChromatographyType chromatographyType) {
+    public void setChromatographyType(final ChromatographyType chromatographyType) {
         this.chromatographyType = chromatographyType;
     }
 
@@ -228,7 +231,7 @@ public class Spectrum implements Serializable {
         return significance;
     }
 
-    public void setSignificance(Double significance) {
+    public void setSignificance(final Double significance) {
         this.significance = significance;
     }
 
@@ -237,11 +240,13 @@ public class Spectrum implements Serializable {
     // ****************************
 
     @Override
-    public boolean equals(Object other) {
-        if (this == other)
+    public boolean equals(final Object other) {
+        if (this == other) {
             return true;
-        if (!(other instanceof Spectrum))
+        }
+        if (!(other instanceof Spectrum)) {
             return false;
+        }
         return id == ((Spectrum) other).id;
     }
 

@@ -16,17 +16,17 @@ public class ObjectMapperUtils {
         mapper = new ModelMapper();
     }
 
-    public <T> T map(Object source, Class<T> destination) {
+    public <T> T map(final Object source, final Class<T> destination) {
         return mapper.map(source, destination);
     }
 
-    public <T, E> List<E> map(List<T> source, Class<E> destination) {
-        if(source == null) {
+    public <T, E> List<E> map(final List<T> source, final Class<E> destination) {
+        if (source == null) {
             return Collections.emptyList();
         }
-        List<E> destinationList = new ArrayList<>();
-        Iterator<T> itr = source.iterator();
-        while(itr.hasNext()) {
+        final List<E> destinationList = new ArrayList<>();
+        final Iterator<T> itr = source.iterator();
+        while (itr.hasNext()) {
             destinationList.add(map(itr.next(), destination));
         }
 

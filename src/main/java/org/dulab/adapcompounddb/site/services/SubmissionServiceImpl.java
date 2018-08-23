@@ -3,7 +3,6 @@ package org.dulab.adapcompounddb.site.services;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
 import org.dulab.adapcompounddb.models.entities.*;
-import org.dulab.adapcompounddb.site.controllers.SubmissionController.SubmissionForm;
 import org.dulab.adapcompounddb.site.repositories.*;
 import org.dulab.adapcompounddb.utils.ObjectMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +20,9 @@ public class SubmissionServiceImpl implements SubmissionService {
     private final SubmissionCategoryRepository submissionCategoryRepository;
 
     @Autowired
-    public SubmissionServiceImpl(SubmissionRepository submissionRepository,
-                                 SubmissionTagRepository submissionTagRepository,
-                                 SubmissionCategoryRepository submissionCategoryRepository) {
+    public SubmissionServiceImpl(final SubmissionRepository submissionRepository,
+            final SubmissionTagRepository submissionTagRepository,
+            final SubmissionCategoryRepository submissionCategoryRepository) {
 
         this.submissionRepository = submissionRepository;
         this.submissionTagRepository = submissionTagRepository;
@@ -32,73 +31,64 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     @Override
     @Transactional
-    public Submission findSubmission(long submissionId) {
-        return submissionRepository.findById(submissionId)
-                .orElseThrow(EmptyStackException::new);
+    public Submission findSubmission(final long submissionId) {
+        return submissionRepository.findById(submissionId).orElseThrow(EmptyStackException::new);
     }
 
     @Override
     @Transactional
-    public SubmissionDTO findSubmissionById(long submissionId) {
-        Submission submission = findSubmission(submissionId);
-        SubmissionDTO submissionDTO = convertToDTO(null, submission);
+    public SubmissionDTO findSubmissionById(final long submissionId) {
+        final Submission submission = findSubmission(submissionId);
+        final SubmissionDTO submissionDTO = convertToDTO(null, submission);
         return submissionDTO;
     }
 
     @Override
     @Transactional
-    public SubmissionDTO convertToDTO(SubmissionDTO submissionDTO, Submission submission) {
+    public SubmissionDTO convertToDTO(SubmissionDTO submissionDTO, final Submission submission) {
 
-        if(submissionDTO == null) {
-            ObjectMapperUtils objectMapper = new ObjectMapperUtils();
+        if (submissionDTO == null) {
+            final ObjectMapperUtils objectMapper = new ObjectMapperUtils();
             submissionDTO = objectMapper.map(submission, SubmissionDTO.class);
         }
         if (submission.getTags() != null) {
-            submissionDTO.setTags(submission
-                    .getTags()
-                    .stream()
-                    .map(SubmissionTag::getId)
-                    .map(SubmissionTagId::getName)
+            submissionDTO.setTags(submission.getTags().stream().map(SubmissionTag::getId).map(SubmissionTagId::getName)
                     .collect(Collectors.joining(",")));
         }
         if (submission.getCategories() != null) {
-            submissionDTO.setSubmissionCategoryIds(submission
-                    .getCategories()
-                    .stream()
-                    .filter(Objects::nonNull)
-                    .map(SubmissionCategory::getId)
-                    .collect(Collectors.toList()));
+            submissionDTO.setSubmissionCategoryIds(submission.getCategories().stream().filter(Objects::nonNull)
+                    .map(SubmissionCategory::getId).collect(Collectors.toList()));
         }
         return submissionDTO;
     }
 
     @Override
     @Transactional
-    public List<Submission> findSubmissionsByUserId(long userId) {
+    public List<Submission> findSubmissionsByUserId(final long userId) {
         return ServiceUtils.toList(submissionRepository.findByUserId(userId));
     }
 
     @Override
     @Transactional
-    public List<Submission> findSubmissionsWithTagsByUserId(long userId) {
+    public List<Submission> findSubmissionsWithTagsByUserId(final long userId) {
         return ServiceUtils.toList(submissionRepository.findByUserId(userId));
     }
 
     @Override
     @Transactional
-    public void saveSubmission(Submission submission) {
+    public void saveSubmission(final Submission submission) {
         submissionRepository.save(submission);
     }
 
     @Override
     @Transactional
-    public void deleteSubmission(Submission submission) {
+    public void deleteSubmission(final Submission submission) {
         submissionRepository.delete(submission);
     }
 
     @Override
     @Transactional
-    public void delete(long submissionId) {
+    public void delete(final long submissionId) {
         submissionRepository.deleteById(submissionId);
     }
 
@@ -113,28 +103,28 @@ public class SubmissionServiceImpl implements SubmissionService {
     }
 
     @Override
-    public List<SubmissionCategory> findAllCategories(SubmissionCategoryType categoryType) {
+    public List<SubmissionCategory> findAllCategories(final SubmissionCategoryType categoryType) {
         return ServiceUtils.toList(submissionCategoryRepository.findAllByCategoryType(categoryType));
     }
 
     @Override
-    public long countSubmissionsByCategoryId(long submissionCategoryId) {
+    public long countSubmissionsByCategoryId(final long submissionCategoryId) {
 //        return submissionRepository.countByCategoryId(submissionCategoryId);
         return submissionCategoryRepository.countSubmissionsBySubmissionCategoryId(submissionCategoryId);
     }
 
     @Override
-    public void saveSubmissionCategory(SubmissionCategory category) {
+    public void saveSubmissionCategory(final SubmissionCategory category) {
         submissionCategoryRepository.save(category);
     }
 
     @Override
-    public Optional<SubmissionCategory> findSubmissionCategory(long submissionCategoryId) {
+    public Optional<SubmissionCategory> findSubmissionCategory(final long submissionCategoryId) {
         return submissionCategoryRepository.findById(submissionCategoryId);
     }
 
     @Override
-    public void deleteSubmissionCategory(long submissionCategoryId) {
+    public void deleteSubmissionCategory(final long submissionCategoryId) {
         submissionCategoryRepository.deleteById(submissionCategoryId);
     }
 }
