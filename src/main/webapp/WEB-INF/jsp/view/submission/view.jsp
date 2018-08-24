@@ -113,7 +113,7 @@
          </jsp:include>
         </section>
     </c:when>
-    <c:when test="${authorized}">
+    <c:when test="${submissionForm.authorized}">
         <section class="no-background">
             <div align="center">
                 <a href="edit" class="button">Edit Submission</a>
@@ -145,7 +145,7 @@
             "columnDefs": [
                 {"defaultContent": "", "targets": 0, "orderable": false},
                 {
-                    "data": "name", "orderable": false,
+                    "orderable": false,
                     "targets": 1,
                     "render": function (data, type, row, meta) {
                         content = '<a href="spectrum/' + row.id + '/">' +
@@ -156,8 +156,14 @@
                     }
                 },
                 {
-                    "data": "retentionTime",
-                    "targets": 2
+                    "targets": 2,
+                    "render": function (data, type, row, meta) {
+                        var value = row.retentionTime;
+                        if(value != null && !isNaN(value)) {
+                            value = value.toFixed(3);
+                        }
+                        return value;
+                    }
                 },
                 {"data": "precursor", "targets": 3},
                 {"data": "significance", "targets": 4},
@@ -194,7 +200,7 @@
                             '<a href="spectrum/' + row.id + '/search/">' +
                             '<i class="material-icons" title="Search spectrum">&#xE8B6;</i>' +
                             '</a>';
-                        if (JSON.parse("${authorized && edit}")) {
+                        if (JSON.parse("${submissionForm.authorized && edit}")) {
                             content += '<a href="spectrum/' + row.id + '/delete">' +
                                 '<i class="material-icons" title="Delete spectrum">&#xE872;</i>' +
                                 '</a>';

@@ -98,10 +98,10 @@ public class SubmissionController extends BaseController {
             return "redirect:/error?errorMsg=" + ACCESS_DENIED_MESSAGE;
         }
         final SubmissionForm submissionForm = createSubmissionForm(submission);
+        submissionForm.setAuthorized(authorized);
 
         model.addAttribute("submission", submission);
         model.addAttribute("submissionForm", submissionForm);
-        model.addAttribute("authorized", authorized);
         model.addAttribute("edit", edit);
 
         return "submission/view";
@@ -341,8 +341,18 @@ public class SubmissionController extends BaseController {
 
         private List<Long> submissionCategoryIds;
 
+        private boolean authorized;
+
         public Long getId() {
             return id;
+        }
+
+        public boolean isAuthorized() {
+            return authorized;
+        }
+
+        public void setAuthorized(final boolean authorized) {
+            this.authorized = authorized;
         }
 
         public void setId(final Long id) {
