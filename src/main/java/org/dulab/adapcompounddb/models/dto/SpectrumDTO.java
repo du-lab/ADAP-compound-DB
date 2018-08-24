@@ -17,9 +17,9 @@ public class SpectrumDTO implements Serializable {
     private Double precursor;
 
     private Double retentionTime;
-    
+
     private String chromatographyTypeLabel;
-    
+
     private String chromatographyTypeIconPath;
 
     private String fileName;
@@ -28,104 +28,20 @@ public class SpectrumDTO implements Serializable {
 
     private Integer spectrumIndex;
 
+    private Double significance;
+
     // ****************************
     // ***** Standard methods *****
     // ****************************
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public boolean isConsensus() {
-        return consensus;
-    }
-
-    public void setConsensus(boolean consensus) {
-        this.consensus = consensus;
-    }
-
-    public boolean isReference() {
-        return reference;
-    }
-
-    public void setReference(boolean reference) {
-        this.reference = reference;
-    }
-
-    public Double getPrecursor() {
-        return precursor;
-    }
-
-    public void setPrecursor(Double precursor) {
-        this.precursor = precursor;
-    }
-
-    public Double getRetentionTime() {
-        return retentionTime;
-    }
-
-    public void setRetentionTime(Double retentionTime) {
-        this.retentionTime = retentionTime;
-    }
-
-    public String getChromatographyTypeLabel() {
-        return chromatographyTypeLabel;
-    }
-
-    public void setChromatographyTypeLabel(String chromatographyTypeLabel) {
-        this.chromatographyTypeLabel = chromatographyTypeLabel;
-    }
-
-    public String getChromatographyTypeIconPath() {
-        return chromatographyTypeIconPath;
-    }
-
-    public void setChromatographyTypeIconPath(String chromatographyTypeIconPath) {
-        this.chromatographyTypeIconPath = chromatographyTypeIconPath;
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-    public Integer getFileIndex() {
-        return fileIndex;
-    }
-
-    public void setFileIndex(Integer fileIndex) {
-        this.fileIndex = fileIndex;
-    }
-
-    public Integer getSpectrumIndex() {
-        return spectrumIndex;
-    }
-
-    public void setSpectrumIndex(Integer spectrumIndex) {
-        this.spectrumIndex = spectrumIndex;
-    }
-
     @Override
-    public boolean equals(Object other) {
-        if (this == other)
+    public boolean equals(final Object other) {
+        if (this == other) {
             return true;
-        if (!(other instanceof SpectrumDTO))
+        }
+        if (!(other instanceof SpectrumDTO)) {
             return false;
+        }
         return id == ((SpectrumDTO) other).id;
     }
 
@@ -137,5 +53,105 @@ public class SpectrumDTO implements Serializable {
     @Override
     public String toString() {
         return getName();
+    }
+
+    // ****************************
+    // ***** Getter/Setter methods *****
+    // ****************************
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(final long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
+    }
+
+    public boolean isConsensus() {
+        return consensus;
+    }
+
+    public void setConsensus(final boolean consensus) {
+        this.consensus = consensus;
+    }
+
+    public boolean isReference() {
+        return reference;
+    }
+
+    public void setReference(final boolean reference) {
+        this.reference = reference;
+    }
+
+    public Double getPrecursor() {
+        return precursor;
+    }
+
+    public void setPrecursor(final Double precursor) {
+        this.precursor = precursor;
+    }
+
+    public Double getRetentionTime() {
+        return retentionTime;
+    }
+
+    public void setRetentionTime(final Double retentionTime) {
+        this.retentionTime = retentionTime;
+    }
+
+    public String getChromatographyTypeLabel() {
+        return chromatographyTypeLabel;
+    }
+
+    public void setChromatographyTypeLabel(final String chromatographyTypeLabel) {
+        this.chromatographyTypeLabel = chromatographyTypeLabel;
+    }
+
+    public String getChromatographyTypeIconPath() {
+        return chromatographyTypeIconPath;
+    }
+
+    public void setChromatographyTypeIconPath(final String chromatographyTypeIconPath) {
+        this.chromatographyTypeIconPath = chromatographyTypeIconPath;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(final String fileName) {
+        this.fileName = fileName;
+    }
+
+    public Integer getFileIndex() {
+        return fileIndex;
+    }
+
+    public void setFileIndex(final Integer fileIndex) {
+        this.fileIndex = fileIndex;
+    }
+
+    public Integer getSpectrumIndex() {
+        return spectrumIndex;
+    }
+
+    public void setSpectrumIndex(final Integer spectrumIndex) {
+        this.spectrumIndex = spectrumIndex;
+    }
+
+    public Double getSignificance() {
+        return significance;
+    }
+
+    public void setSignificance(final Double significance) {
+        this.significance = significance;
     }
 }
