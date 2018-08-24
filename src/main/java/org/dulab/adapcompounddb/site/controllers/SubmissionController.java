@@ -109,8 +109,6 @@ public class SubmissionController extends BaseController {
 
     private String edit(final Submission submission, final Model model, final boolean authenticated) {
 
-//        final SubmissionDTO submissionDTO = submissionService.convertToDTO(null, submission);
-
         final SubmissionForm submissionForm = createSubmissionForm(submission);
         model.addAttribute("submission", submission);
         model.addAttribute("submissionForm", submissionForm);

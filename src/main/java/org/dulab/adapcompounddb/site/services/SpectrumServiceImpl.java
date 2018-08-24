@@ -26,16 +26,13 @@ public class SpectrumServiceImpl implements SpectrumService {
     private final SpectrumRepository spectrumRepository;
 
     public static enum ColumnInformation {
-        NAME(1, "name"),
-        RETENTIONTIME(2, "retentionTime"),
-        PRECURSOR(3, "precursor"),
-        CHROMATOGRAPHYTYPE(4, "chromatographyType"),
-        FILE(5, "file.name");
+        NAME(1, "name"), RETENTIONTIME(2, "retentionTime"), PRECURSOR(3, "precursor"), SIGNIFICANCE(4, "significance"),
+        CHROMATOGRAPHYTYPE(5, "chromatographyType");
 
         private int position;
         private String sortColumnName;
 
-        private ColumnInformation(int position, String sortColumnName) {
+        private ColumnInformation(final int position, final String sortColumnName) {
             this.position = position;
             this.sortColumnName = sortColumnName;
         }
@@ -44,7 +41,7 @@ public class SpectrumServiceImpl implements SpectrumService {
             return position;
         }
 
-        public void setPosition(int position) {
+        public void setPosition(final int position) {
             this.position = position;
         }
 
@@ -52,14 +49,14 @@ public class SpectrumServiceImpl implements SpectrumService {
             return sortColumnName;
         }
 
-        public void setSortColumnName(String sortColumnName) {
+        public void setSortColumnName(final String sortColumnName) {
             this.sortColumnName = sortColumnName;
         }
 
-        public static String getColumnNameFromPosition(int position) {
+        public static String getColumnNameFromPosition(final int position) {
             String columnName = null;
-            for(ColumnInformation columnInformation : ColumnInformation.values()) {
-                if(position == columnInformation.getPosition()) {
+            for (final ColumnInformation columnInformation : ColumnInformation.values()) {
+                if (position == columnInformation.getPosition()) {
                     columnName = columnInformation.getSortColumnName();
                 }
             }
@@ -68,35 +65,36 @@ public class SpectrumServiceImpl implements SpectrumService {
     }
 
     @Autowired
-    public SpectrumServiceImpl(SpectrumRepository spectrumRepository) {
+    public SpectrumServiceImpl(final SpectrumRepository spectrumRepository) {
         this.spectrumRepository = spectrumRepository;
     }
 
     @Override
     @Transactional
-    public Spectrum find(long id) throws EmptySearchResultException {
-        return spectrumRepository.findById(id)
-                .orElseThrow(EmptySearchResultException::new);
+    public Spectrum find(final long id) throws EmptySearchResultException {
+        return spectrumRepository.findById(id).orElseThrow(EmptySearchResultException::new);
     }
 
     @Override
     @Transactional
-    public SpectrumTableResponse findSpectrumBySubmissionId(Long submissionId, String searchStr, Integer start, Integer length, Integer column, String orderDirection) {
-        ObjectMapperUtils objectMapper = new ObjectMapperUtils();
+    public SpectrumTableResponse findSpectrumBySubmissionId(final Long submissionId, final String searchStr,
+            final Integer start, final Integer length, final Integer column, final String orderDirection) {
+        final ObjectMapperUtils objectMapper = new ObjectMapperUtils();
         Pageable pageable = null;
 
-        String sortColumn = ColumnInformation.getColumnNameFromPosition(column);
-        if(sortColumn != null) {
-            Sort sort = new Sort(Sort.Direction.fromString(orderDirection), sortColumn);
-            pageable = PageRequest.of(start/length, length, sort);
+        final String sortColumn = ColumnInformation.getColumnNameFromPosition(column);
+        if (sortColumn != null) {
+            final Sort sort = new Sort(Sort.Direction.fromString(orderDirection), sortColumn);
+            pageable = PageRequest.of(start / length, length, sort);
         } else {
-            pageable = PageRequest.of(start/length, length);
+            pageable = PageRequest.of(start / length, length);
         }
 
-        Page<Spectrum> spectrumPage = spectrumRepository.findSpectrumBySubmissionId(submissionId, searchStr, pageable);
+        final Page<Spectrum> spectrumPage = spectrumRepository.findSpectrumBySubmissionId(submissionId, searchStr,
+                pageable);
 
-        List<SpectrumDTO> spectrumList = objectMapper.map(spectrumPage.getContent(), SpectrumDTO.class);
-        SpectrumTableResponse response = new SpectrumTableResponse(spectrumList);
+        final List<SpectrumDTO> spectrumList = objectMapper.map(spectrumPage.getContent(), SpectrumDTO.class);
+        final SpectrumTableResponse response = new SpectrumTableResponse(spectrumList);
         response.setRecordsTotal(spectrumPage.getTotalElements());
         response.setRecordsFiltered(spectrumPage.getTotalElements());
 

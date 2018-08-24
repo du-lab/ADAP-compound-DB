@@ -32,7 +32,7 @@ public class FileUploadController {
 
     private static final Logger LOG = LogManager.getLogger();
 
-    private Map<FileType, FileReaderService> fileReaderServiceMap;
+    private final Map<FileType, FileReaderService> fileReaderServiceMap;
 
     public FileUploadController() {
         fileReaderServiceMap = new HashMap<>();
@@ -40,30 +40,34 @@ public class FileUploadController {
     }
 
     @ModelAttribute
-    public void addAttributes(Model model) {
+    public void addAttributes(final Model model) {
         model.addAttribute("chromatographyTypeList", ChromatographyType.values());
         model.addAttribute("fileTypeList", FileType.values());
     }
 
     @RequestMapping(value = "/file/upload/", method = RequestMethod.GET)
-    public String upload(Model model, HttpSession session) {
-        if (Submission.from(session) != null)
+    public String upload(final Model model, final HttpSession session) {
+        if (Submission.from(session) != null) {
             return "redirect:/file/";
+        }
 
-        FileUploadForm form = new FileUploadForm();
+        final FileUploadForm form = new FileUploadForm();
         form.setFileType(FileType.MSP);
         model.addAttribute("fileUploadForm", form);
         return "file/upload";
     }
 
     @RequestMapping(value = "/file/upload/", method = RequestMethod.POST, consumes = "multipart/form-data")
-    public String upload(Model model, HttpSession session, @Valid FileUploadForm form, Errors errors) {
+    public String upload(final Model model, final HttpSession session, @Valid final FileUploadForm form,
+            final Errors errors) {
 
-        if (Submission.from(session) != null)
+        if (Submission.from(session) != null) {
             return "redirect:/file/";
+        }
 
-        if (errors.hasErrors())
+        if (errors.hasErrors()) {
             return "file/upload";
+        }
 
 //        MultipartFile file = form.getFile();
 
@@ -72,29 +76,28 @@ public class FileUploadController {
 //        submission.setFileType(form.getFileType());
 //        submission.setChromatographyType(form.getChromatographyType());
 
-        FileReaderService service = fileReaderServiceMap.get(form.fileType);
+        final FileReaderService service = fileReaderServiceMap.get(form.fileType);
         if (service == null) {
             LOG.warn("Cannot find an implementation of FileReaderService for a file of type {}", form.getFileType());
             model.addAttribute("message", "Cannot read this file type.");
             return "file/upload";
         }
 
-        Submission submission = new Submission();
+        final Submission submission = new Submission();
 
-        List<File> files = new ArrayList<>(form.getFiles().size());
-        for (MultipartFile multipartFile : form.getFiles()) {
-            File file = new File();
+        final List<File> files = new ArrayList<>(form.getFiles().size());
+        for (final MultipartFile multipartFile : form.getFiles()) {
+            final File file = new File();
             file.setName(multipartFile.getOriginalFilename());
             file.setFileType(form.getFileType());
             file.setSubmission(submission);
             try {
                 file.setContent(multipartFile.getBytes());
-                file.setSpectra(
-                        service.read(multipartFile.getInputStream(), form.getChromatographyType()));
+                file.setSpectra(service.read(multipartFile.getInputStream(), form.getChromatographyType()));
                 file.getSpectra().forEach(s -> s.setFile(file));
                 files.add(file);
 
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 LOG.warn(e);
                 model.addAttribute("message", "Cannot read this file: " + e.getMessage());
                 return "file/upload";
@@ -112,7 +115,6 @@ public class FileUploadController {
         return "redirect:/file/";
     }
 
-
     private static class FileUploadForm {
 
         @NotNull(message = "Chromatography type must be selected.")
@@ -128,7 +130,7 @@ public class FileUploadController {
             return chromatographyType;
         }
 
-        public void setChromatographyType(ChromatographyType chromatographyType) {
+        public void setChromatographyType(final ChromatographyType chromatographyType) {
             this.chromatographyType = chromatographyType;
         }
 
@@ -136,7 +138,7 @@ public class FileUploadController {
             return fileType;
         }
 
-        public void setFileType(FileType fileType) {
+        public void setFileType(final FileType fileType) {
             this.fileType = fileType;
         }
 
@@ -144,7 +146,7 @@ public class FileUploadController {
             return files;
         }
 
-        public void setFiles(List<MultipartFile> files) {
+        public void setFiles(final List<MultipartFile> files) {
             this.files = files;
         }
     }

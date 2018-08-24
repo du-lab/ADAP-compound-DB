@@ -6,54 +6,51 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 
-<c:if test="${!edit}">
-    <section>
-        <h1>Submission</h1>
-        <div align="center">
-            <table id="info_table" class="display" style="width: 100%; clear: none;">
-                <thead>
 
-
-                <tr>
-                    <th>Property</th>
-                    <th>Value</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td><strong>Name:</strong></td>
-                    <td>${submission.name}</td>
-                </tr>
-                <tr>
-                    <td><strong>Description:</strong></td>
-                    <td>
-                        <pre>${submission.description}</pre>
-                    </td>
-                </tr>
-                <c:if test="${submission.reference != null}">
-                    <tr>
-                        <td><strong>URL:</strong></td>
-                        <td><a href="${submission.reference}" title="${submission.reference}"
-                               target="_blank">${dulab:abbreviate(submission.reference, 80)}</a></td>
-                    </tr>
-                </c:if>
-                <c:if test="${submission.tagsAsString.length() > 0}">
-                    <tr>
-                        <td><strong>Equipment:</strong></td>
-                        <td>${submission.tagsAsString}</td>
-                    </tr>
-                </c:if>
-                <c:forEach items="${submissionCategoryTypes}" var="type">
-                    <tr>
-                        <td><strong>${type.label}:</strong></td>
-                        <td>${submission.getCategory(type)}</td>
-                    </tr>
-                </c:forEach>
-                </tbody>
-            </table>
-        </div>
-    </section>
-</c:if>
+<section>
+    <h1>Submission</h1>
+    <div align="center">
+        <table id="info_table" class="display" style="width: 100%; clear: none;">
+            <thead>
+	            <tr>
+	                <th>Property</th>
+	                <th>Value</th>
+	            </tr>
+            </thead>
+            <tbody>
+	            <tr>
+	                <td><strong>Name:</strong></td>
+	                <td>${submission.name}</td>
+	            </tr>
+	            <tr>
+	                <td><strong>Description:</strong></td>
+	                <td>
+	                    <pre>${submission.description}</pre>
+	                </td>
+	            </tr>
+	            <c:if test="${submission.reference != null}">
+	                <tr>
+	                    <td><strong>URL:</strong></td>
+	                    <td><a href="${submission.reference}" title="${submission.reference}"
+	                           target="_blank">${dulab:abbreviate(submission.reference, 80)}</a></td>
+	                </tr>
+	            </c:if>
+	            <c:if test="${submission.tagsAsString.length() > 0}">
+	                <tr>
+	                    <td><strong>Equipment:</strong></td>
+	                    <td>${submission.tagsAsString}</td>
+	                </tr>
+	            </c:if>
+	            <c:forEach items="${submissionCategoryTypes}" var="type">
+	                <tr>
+	                    <td><strong>${type.label}:</strong></td>
+	                    <td>${submission.getCategory(type)}</td>
+	                </tr>
+	            </c:forEach>
+            </tbody>
+        </table>
+    </div>
+</section>
 
 <!-- List of submitted files -->
 <section>
@@ -93,15 +90,15 @@
     <div align="center">
         <table id="spectrum_table" class="display" style="width: 100%; clear:none;">
             <thead>
-            <tr>
-                <th></th>
-                <th>Name</th>
-                <th>Ret Time (min)</th>
-                <th>Precursor mass</th>
-                <th>Type</th>
-                <th>File</th>
-                <th></th>
-            </tr>
+	            <tr>
+	                <th></th>
+	                <th>Name</th>
+	                <th>Ret Time (min)</th>
+	                <th>Precursor mass</th>
+	                <th>Significance</th>
+	                <th>Type</th>
+	                <th></th>
+	            </tr>
             </thead>
             <tbody></tbody>
         </table>
@@ -110,9 +107,11 @@
 
 <c:choose>
     <c:when test="${edit}">
-        <jsp:include page="../../includes/submission_form.jsp">
-            <jsp:param value="${submissionForm}" name="submissionForm"/>
-        </jsp:include>
+        <section>
+         <jsp:include page="../../includes/submission_form.jsp">
+             <jsp:param value="${submissionForm}" name="submissionForm"/>
+         </jsp:include>
+        </section>
     </c:when>
     <c:when test="${authorized}">
         <section class="no-background">
@@ -151,18 +150,30 @@
                     "render": function (data, type, row, meta) {
                         content = '<a href="spectrum/' + row.id + '/">' +
                             row.name +
-                            '</a>';
+                            '</a>' +
+                            '<br/><small>' + row.fileName + '</small>';
                         return content;
                     }
                 },
                 {
                     "data": "retentionTime",
                     "targets": 2
-                }, //<img src="${pageContext.request.contextPath}/${spectrum.chromatographyType.iconPath}" alt="${spectrum.chromatographyType.label}" title="${spectrum.chromatographyType.label}" class="icon"/>
+                },
                 {"data": "precursor", "targets": 3},
+                {"data": "significance", "targets": 4},
+                {
+                    "targets": 4,
+                    "render": function (data, type, row, meta) {
+                    	var value = row.significance;
+                    	if(value != null && !isNaN(value)) {
+                    		value = value.toFixed(3);
+                    	}
+                        return value;
+                    }
+                },
                 {
                     "orderable": false,
-                    "targets": 4,
+                    "targets": 5,
                     "render": function (data, type, row, meta) {
                         content = '<img' +
                             ' src="${pageContext.request.contextPath}/' + row.chromatographyTypeIconPath + '"'
@@ -173,7 +184,6 @@
                         return content;
                     }
                 },
-                {"data": "fileName", "targets": 5},
                 {
                     "orderable": false,
                     "targets": 6,
