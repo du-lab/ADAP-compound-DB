@@ -81,13 +81,13 @@ public class SubmissionController extends BaseController {
     @RequestMapping(value = "/submission/{submissionId:\\d+}/", method = RequestMethod.GET)
     public String viewSubmission(@PathVariable("submissionId") final long submissionId, final Model model) {
 
-        final Submission submissionDTO = submissionService.findSubmission(submissionId);
+        final Submission submission = submissionService.findSubmission(submissionId);
 
-        if (submissionDTO == null) {
+        if (submission == null) {
             return submissionNotFound(model, submissionId);
         }
 
-        return view(submissionDTO, model, false);
+        return view(submission, model, false);
     }
 
     private String view(final Submission submission, final Model model, final boolean edit) {
