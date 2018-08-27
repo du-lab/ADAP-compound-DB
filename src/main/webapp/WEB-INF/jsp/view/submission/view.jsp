@@ -107,11 +107,9 @@
 
 <c:choose>
     <c:when test="${edit}">
-        <section>
          <jsp:include page="../../includes/submission_form.jsp">
              <jsp:param value="${submissionForm}" name="submissionForm"/>
          </jsp:include>
-        </section>
     </c:when>
     <c:when test="${submissionForm.authorized}">
         <section class="no-background">
