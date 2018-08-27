@@ -1,5 +1,6 @@
 <%--@elvariable id="submissionCategoryTypes" type="org.dulab.adapcompounddb.models.SubmissionCategoryType[]"--%>
 <%--@elvariable id="submissionForm" type="org.dulab.adapcompounddb.models.entities.submissionForm"--%>
+<%--@elvariable id="submission" type="org.dulab.adapcompounddb.models.entities.Submission"--%>
 <%--@elvariable id="authorized" type="java.lang.Boolean"--%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -12,41 +13,41 @@
     <div align="center">
         <table id="info_table" class="display" style="width: 100%; clear: none;">
             <thead>
-	            <tr>
-	                <th>Property</th>
-	                <th>Value</th>
-	            </tr>
+            <tr>
+                <th>Property</th>
+                <th>Value</th>
+            </tr>
             </thead>
             <tbody>
-	            <tr>
-	                <td><strong>Name:</strong></td>
-	                <td>${submission.name}</td>
-	            </tr>
-	            <tr>
-	                <td><strong>Description:</strong></td>
-	                <td>
-	                    <pre>${submission.description}</pre>
-	                </td>
-	            </tr>
-	            <c:if test="${submission.reference != null}">
-	                <tr>
-	                    <td><strong>URL:</strong></td>
-	                    <td><a href="${submission.reference}" title="${submission.reference}"
-	                           target="_blank">${dulab:abbreviate(submission.reference, 80)}</a></td>
-	                </tr>
-	            </c:if>
-	            <c:if test="${submission.tagsAsString.length() > 0}">
-	                <tr>
-	                    <td><strong>Equipment:</strong></td>
-	                    <td>${submission.tagsAsString}</td>
-	                </tr>
-	            </c:if>
-	            <c:forEach items="${submissionCategoryTypes}" var="type">
-	                <tr>
-	                    <td><strong>${type.label}:</strong></td>
-	                    <td>${submission.getCategory(type)}</td>
-	                </tr>
-	            </c:forEach>
+            <tr>
+                <td><strong>Name:</strong></td>
+                <td>${submission.name}</td>
+            </tr>
+            <tr>
+                <td><strong>Description:</strong></td>
+                <td>
+                    <pre>${submission.description}</pre>
+                </td>
+            </tr>
+            <c:if test="${submission.reference != null}">
+                <tr>
+                    <td><strong>URL:</strong></td>
+                    <td><a href="${submission.reference}" title="${submission.reference}"
+                           target="_blank">${dulab:abbreviate(submission.reference, 80)}</a></td>
+                </tr>
+            </c:if>
+            <c:if test="${submission.tagsAsString.length() > 0}">
+                <tr>
+                    <td><strong>Equipment:</strong></td>
+                    <td>${submission.tagsAsString}</td>
+                </tr>
+            </c:if>
+            <c:forEach items="${submissionCategoryTypes}" var="type">
+                <tr>
+                    <td><strong>${type.label}:</strong></td>
+                    <td>${submission.getCategory(type)}</td>
+                </tr>
+            </c:forEach>
             </tbody>
         </table>
     </div>
@@ -90,15 +91,15 @@
     <div align="center">
         <table id="spectrum_table" class="display" style="width: 100%; clear:none;">
             <thead>
-	            <tr>
-	                <th></th>
-	                <th>Name</th>
-	                <th>Ret Time (min)</th>
-	                <th>Precursor mass</th>
-	                <th>Significance</th>
-	                <th>Type</th>
-	                <th></th>
-	            </tr>
+            <tr>
+                <th></th>
+                <th>Name</th>
+                <th>Ret Time (min)</th>
+                <th>Precursor mass</th>
+                <th>Significance</th>
+                <th>Type</th>
+                <th></th>
+            </tr>
             </thead>
             <tbody></tbody>
         </table>
@@ -107,9 +108,9 @@
 
 <c:choose>
     <c:when test="${edit}">
-         <jsp:include page="../../includes/submission_form.jsp">
-             <jsp:param value="${submissionForm}" name="submissionForm"/>
-         </jsp:include>
+        <jsp:include page="../../includes/submission_form.jsp">
+            <jsp:param value="${submissionForm}" name="submissionForm"/>
+        </jsp:include>
     </c:when>
     <c:when test="${submissionForm.authorized}">
         <section class="no-background">
@@ -128,7 +129,7 @@
     $(document).ready(function () {
 
         // Table with a list of spectra
-        var table = $('#spectrum_table').DataTable({
+        $('#spectrum_table').DataTable({
             serverSide: true,
             processing: true,
             ajax: {
@@ -141,9 +142,16 @@
                 }
             },
             "columnDefs": [
-                {"defaultContent": "", "targets": 0, "orderable": false},
                 {
+                    "targets": 0,
                     "orderable": false,
+                    "searchable": false,
+                    "render": function (data, type, row, meta) {
+                        return meta.settings.oAjaxData.start + meta.row + 1;
+                    }
+                },
+                {
+                    "orderable": true,
                     "targets": 1,
                     "render": function (data, type, row, meta) {
                         content = '<a href="spectrum/' + row.id + '/">' +
@@ -157,7 +165,7 @@
                     "targets": 2,
                     "render": function (data, type, row, meta) {
                         var value = row.retentionTime;
-                        if(value != null && !isNaN(value)) {
+                        if (value != null && !isNaN(value)) {
                             value = value.toFixed(3);
                         }
                         return value;
@@ -168,10 +176,10 @@
                 {
                     "targets": 4,
                     "render": function (data, type, row, meta) {
-                    	var value = row.significance;
-                    	if(value != null && !isNaN(value)) {
-                    		value = value.toFixed(3);
-                    	}
+                        var value = row.significance;
+                        if (value != null && !isNaN(value)) {
+                            value = value.toFixed(3);
+                        }
                         return value;
                     }
                 },
@@ -208,14 +216,6 @@
                 }
             ]
         });
-
-        table.on('order.dt search.dt', function () {
-            table.column(0, {search: 'applied', order: 'applied'})
-                .nodes()
-                .each(function (cell, i) {
-                    cell.innerHTML = i + 1;
-                })
-        }).draw();
 
         // Table with submissionForm information
         $('#info_table').DataTable({
