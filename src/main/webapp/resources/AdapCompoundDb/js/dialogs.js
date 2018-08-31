@@ -32,3 +32,29 @@
         return this;
     }
 })(jQuery);
+
+(function ($) {
+    $.fn.progressDialog = function () {
+
+        var div = $(this);
+
+        div.attr('title', 'In progress...');
+        div.append('<p></p>');
+
+        div.dialog({
+            autoOpen: false,
+            resizable: false,
+            height: 'auto',
+            width: 400,
+            modal: true
+        });
+
+        this.show = function(message) {
+            var div = $(this);
+            div.find('p').html(message);
+            div.dialog('open');
+        };
+
+        return this;
+    }
+})(jQuery);

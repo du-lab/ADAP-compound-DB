@@ -159,7 +159,7 @@
 <script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
 <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
 <script src="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.js"/>"></script>
-<script src="<c:url value="/resources/AdapCompoundDb/js/confirm-delete-dialog.js"/>"></script>
+<script src="<c:url value="/resources/AdapCompoundDb/js/dialogs.js"/>"></script>
 <script src="<c:url value="/resources/AdapCompoundDb/js/progressBar.js"/>"></script>
 <script>
     var progressBar = new ProgressBar('progressBarDiv');
