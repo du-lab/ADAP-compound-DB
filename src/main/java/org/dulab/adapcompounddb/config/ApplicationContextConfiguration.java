@@ -23,20 +23,12 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 import org.springframework.web.bind.annotation.ControllerAdvice;
 
 @Configuration
-@EnableTransactionManagement(
-        mode = AdviceMode.PROXY,
-        proxyTargetClass = false
-)
-@EnableJpaRepositories(
-        basePackages = "org.dulab.adapcompounddb.site.repositories",
-        entityManagerFactoryRef = "entityManagerFactoryBean",
-        transactionManagerRef = "jpaTransactionManager"
-)
-@ComponentScan(
-        basePackages = {"org.dulab.adapcompounddb.site", "org.dulab.adapcompounddb.rest"},
-        excludeFilters = @ComponentScan.Filter({Controller.class, ControllerAdvice.class})
-)
-@Import({WebSecurityConfiguration.class})
+@EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = false)
+@EnableJpaRepositories(basePackages = "org.dulab.adapcompounddb.site.repositories", entityManagerFactoryRef = "entityManagerFactoryBean", transactionManagerRef = "jpaTransactionManager")
+@ComponentScan(basePackages = { "org.dulab.adapcompounddb.site",
+        "org.dulab.adapcompounddb.rest" }, excludeFilters = @ComponentScan.Filter({ Controller.class,
+                ControllerAdvice.class }))
+@Import({ WebSecurityConfiguration.class })
 public class ApplicationContextConfiguration {
 
     @Autowired
@@ -44,22 +36,22 @@ public class ApplicationContextConfiguration {
 
     @Bean
     public LocalValidatorFactoryBean localValidatorFactoryBean() {
-        LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
+        final LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
         validator.setProviderClass(HibernateValidator.class);
         return validator;
     }
 
     @Bean
     public MethodValidationPostProcessor methodValidationPostProcessor() {
-        MethodValidationPostProcessor processor = new MethodValidationPostProcessor();
-        processor.setValidator(this.localValidatorFactoryBean());
+        final MethodValidationPostProcessor processor = new MethodValidationPostProcessor();
+        processor.setValidator(localValidatorFactoryBean());
         return processor;
     }
 
     @Bean
 //    @Profile("!test")
     public DataSource adapCompoundDbDataSource() {
-        JndiDataSourceLookup lookup = new JndiDataSourceLookup();
+        final JndiDataSourceLookup lookup = new JndiDataSourceLookup();
         return lookup.getDataSource("jdbc/AdapCompoundDbDataSource");
     }
 
@@ -75,21 +67,21 @@ public class ApplicationContextConfiguration {
 
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean() {
-
-        HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
+        final HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
         adapter.setDatabasePlatform("org.hibernate.dialect.MySQL5InnoDBDialect");
 
-        LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
+        final LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
         factory.setJpaVendorAdapter(adapter);
         factory.setDataSource(dataSource);
         factory.setPackagesToScan("org.dulab.adapcompounddb.models.entities");
         factory.setSharedCacheMode(SharedCacheMode.ENABLE_SELECTIVE);
         factory.setValidationMode(ValidationMode.NONE);
 
-        Map<String, Object> jpaPropertyMap = new HashMap<>();
+        final Map<String, Object> jpaPropertyMap = new HashMap<>();
         jpaPropertyMap.put("javax.persistence.schema-generation.database.action", "none");
 //        jpaPropertyMap.put("hibernate.format_sql", true);
 //        jpaPropertyMap.put("hibernate.use_sql_comments", true);
+        jpaPropertyMap.put("hibernate.show_sql", true);
 //        jpaPropertyMap.put("hibernate.generate_statistics", true);
         factory.setJpaPropertyMap(jpaPropertyMap);
 

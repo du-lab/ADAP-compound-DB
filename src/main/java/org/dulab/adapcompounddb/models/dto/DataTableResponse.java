@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class SpectrumTableResponse implements Serializable {
+public class DataTableResponse implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -13,21 +13,21 @@ public class SpectrumTableResponse implements Serializable {
 
     private Long recordsTotal;
 
-    private List<SpectrumDTO> spectrumList;
+    private List<? extends Serializable> dataList;
 
-    public SpectrumTableResponse() {
+    public DataTableResponse() {
         super();
     }
 
-    public SpectrumTableResponse(List<SpectrumDTO> spectrumList) {
-        this.spectrumList = spectrumList;
+    public DataTableResponse(final List<? extends Serializable> dataList) {
+        this.dataList = dataList;
     }
 
     public Long getRecordsFiltered() {
         return recordsFiltered;
     }
 
-    public void setRecordsFiltered(Long recordsFiltered) {
+    public void setRecordsFiltered(final Long recordsFiltered) {
         this.recordsFiltered = recordsFiltered;
     }
 
@@ -35,17 +35,17 @@ public class SpectrumTableResponse implements Serializable {
         return recordsTotal;
     }
 
-    public void setRecordsTotal(Long recordsTotal) {
+    public void setRecordsTotal(final Long recordsTotal) {
         this.recordsTotal = recordsTotal;
     }
 
     @JsonProperty("data")
-    public List<SpectrumDTO> getSpectrumList() {
-        return spectrumList;
+    public List<? extends Serializable> getSpectrumList() {
+        return dataList;
     }
 
-    public void setSpectrumList(List<SpectrumDTO> spectrumList) {
-        this.spectrumList = spectrumList;
+    public void setSpectrumList(final List<? extends Serializable> dataList) {
+        this.dataList = dataList;
     }
 
 }

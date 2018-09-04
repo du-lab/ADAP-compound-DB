@@ -2,7 +2,7 @@ package org.dulab.adapcompounddb.rest.controllers;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.dulab.adapcompounddb.models.dto.SpectrumTableResponse;
+import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,24 +20,29 @@ public class SpectrumRestController {
     private final SpectrumService spectrumService;
 
     @Autowired
-    public SpectrumRestController(SpectrumService spectrumService) {
+    public SpectrumRestController(final SpectrumService spectrumService) {
         this.spectrumService = spectrumService;
     }
 
-    @RequestMapping(value="/findSpectrumBySubmissionId", produces="application/json")
-    public String findSpectrumBySubmissionId(@RequestParam("submissionId") Long submissionId,
-                                @RequestParam("start") Integer start,
-                                @RequestParam("length") Integer length,
-                                @RequestParam("column") Integer column,
-                                @RequestParam("sortDirection") String sortDirection,
-                                @RequestParam("search") String searchStr,
-                                HttpServletRequest request) throws JsonProcessingException {
+    @RequestMapping(value = "/findSpectrumBySubmissionId", produces = "application/json")
+    public String findSpectrumBySubmissionId(@RequestParam("submissionId") final Long submissionId,
+            @RequestParam("start") final Integer start, @RequestParam("length") final Integer length,
+            @RequestParam("column") final Integer column, @RequestParam("sortDirection") final String sortDirection,
+            @RequestParam("search") final String searchStr, final HttpServletRequest request)
+            throws JsonProcessingException {
 
-        ObjectMapper objectMapper = new ObjectMapper();
+        final ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-        SpectrumTableResponse response = spectrumService.findSpectrumBySubmissionId(submissionId, searchStr, start, length, column, sortDirection);
+        final DataTableResponse response = spectrumService.findSpectrumBySubmissionId(submissionId, searchStr, start,
+                length, column, sortDirection);
 
-        String jsonString = objectMapper.writeValueAsString(response);
+        final String jsonString = objectMapper.writeValueAsString(response);
         return jsonString;
-    }    
+    }
+
+    @RequestMapping(value = "/updateReferenceOfAllSpectraOfSubmission", produces = "application/json")
+    public Boolean updateReferenceOfAllSpectraOfSubmission(@RequestParam("submissionId") Long submissionId,
+            @RequestParam("value") boolean value) throws JsonProcessingException {
+        return spectrumService.updateReferenceOfAllSpectraOfSubmission(submissionId, value);
+    }
 }

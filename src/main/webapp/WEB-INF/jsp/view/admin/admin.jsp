@@ -61,54 +61,54 @@
     <div align="center">
         <table id="cluster_table" class="display" style="width: 100%;">
             <thead>
-            <tr>
-                <th>ID</th>
-                <th title="Consensus spectrum">Consensus</th>
-                <th title="Number of spectra in a cluster">Count</th>
-                <th title="Minimum matching score between all spectra in a cluster">Score</th>
-                <th title="Average, minimum, and maximum values of the statistical significance">Significance</th>
-                <c:forEach items="${submissionCategoryTypes}" var="type">
-                    <th>${type.label} Diversity</th>
-                </c:forEach>
-                <th title="Chromatography type">Type</th>
-                <th></th>
-            </tr>
+                <tr>
+                    <th>ID</th>
+                    <th title="Consensus spectrum">Consensus</th>
+                    <th title="Number of spectra in a cluster">Count</th>
+                    <th title="Minimum matching score between all spectra in a cluster">Score</th>
+                    <th title="Average, minimum, and maximum values of the statistical significance">Significance</th>
+                    <c:forEach items="${submissionCategoryTypes}" var="type">
+                        <th>${type.label} Diversity</th>
+                    </c:forEach>
+                    <th title="Chromatography type">Type</th>
+                    <th></th>
+                </tr>
             </thead>
             <tbody>
-            <c:forEach items="${clusters}" var="cluster">
-                <tr>
-                    <td>${cluster.id}</td>
-                    <td><a href="/cluster/${cluster.id}/">${cluster.consensusSpectrum.name}</a></td>
-                    <td>${cluster.size}</td>
-                    <td>${dulab:toIntegerScore(cluster.diameter)}</td>
-                    <td title="Ave: ${cluster.aveSignificance}; Min: ${cluster.minSignificance}; Max: ${cluster.maxSignificance}">
-                        <c:if test="${cluster.aveSignificance != null}">
-                            <fmt:formatNumber type="number" maxFractionDigits="2"
-                                              value="${cluster.aveSignificance}"/><br/>
-                        </c:if>
-                    </td>
-
-                    <c:forEach items="${submissionCategoryTypes}" var="type">
-                        <td>
-                            <c:forEach items="${cluster.diversityIndices}" var="diversityIndex">
-                                <c:if test="${diversityIndex.id.categoryType == type}">
-                                    <fmt:formatNumber type="number" maxFractionDigits="3"
-                                                      value="${diversityIndex.diversity}"/>
-                                </c:if>
-                            </c:forEach>
+                <c:forEach items="${clusters}" var="cluster">
+                    <tr>
+                        <td>${cluster.id}</td>
+                        <td><a href="/cluster/${cluster.id}/">${cluster.consensusSpectrum.name}</a></td>
+                        <td>${cluster.size}</td>
+                        <td>${dulab:toIntegerScore(cluster.diameter)}</td>
+                        <td title="Ave: ${cluster.aveSignificance}; Min: ${cluster.minSignificance}; Max: ${cluster.maxSignificance}">
+                            <c:if test="${cluster.aveSignificance != null}">
+                                <fmt:formatNumber type="number" maxFractionDigits="2"
+                                                  value="${cluster.aveSignificance}"/><br/>
+                            </c:if>
                         </td>
-                    </c:forEach>
 
-                    <td><img src="${cluster.consensusSpectrum.chromatographyType.iconPath}"
-                             alt="${cluster.consensusSpectrum.chromatographyType.name()}"
-                             title="${cluster.consensusSpectrum.chromatographyType.label}"
-                             class="icon"/></td>
-                    <td>
-                        <!--more horiz-->
-                        <a href="/cluster/${cluster.id}/"><i class="material-icons" title="View">&#xE5D3;</i></a>
-                    </td>
-                </tr>
-            </c:forEach>
+                        <c:forEach items="${submissionCategoryTypes}" var="type">
+                            <td>
+                                <c:forEach items="${cluster.diversityIndices}" var="diversityIndex">
+                                    <c:if test="${diversityIndex.id.categoryType == type}">
+                                        <fmt:formatNumber type="number" maxFractionDigits="3"
+                                                          value="${diversityIndex.diversity}"/>
+                                    </c:if>
+                                </c:forEach>
+                            </td>
+                        </c:forEach>
+
+                        <td><img src="${pageContext.request.contextPath}/${cluster.consensusSpectrum.chromatographyType.iconPath}"
+                                 alt="${pageContext.request.contextPath}/${cluster.consensusSpectrum.chromatographyType.name()}"
+                                 title="${pageContext.request.contextPath}/${cluster.consensusSpectrum.chromatographyType.label}"
+                                 class="icon"/></td>
+                        <td>
+                            <!--more horiz-->
+                            <a href="/cluster/${cluster.id}/"><i class="material-icons" title="View">&#xE5D3;</i></a>
+                        </td>
+                    </tr>
+                </c:forEach>
             </tbody>
         </table>
     </div>
@@ -119,34 +119,84 @@
     <div align="center">
         <table id="user_table" class="display" style="width: 100%;">
             <thead>
-            <tr>
-                <th>User</th>
-                <th>Email</th>
-                <c:forEach items="${availableUserRoles}" var="role">
-                    <th>${role.label}</th>
-                </c:forEach>
-                <th></th>
-            </tr>
+                <tr>
+                    <th>User</th>
+                    <th>Email</th>
+                    <c:forEach items="${availableUserRoles}" var="role">
+                        <th>${role.label}</th>
+                    </c:forEach>
+                    <th></th>
+                </tr>
             </thead>
             <tbody>
-            <c:forEach items="${users}" var="user">
+                <c:forEach items="${users}" var="user">
+                    <tr>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <c:forEach items="${availableUserRoles}" var="role">
+                            <td>
+                                <c:if test="${user.roles.contains(role)}">
+                                    <i class="material-icons">check</i>
+                                </c:if>
+                            </td>
+                        </c:forEach>
+                        <td>
+                            <a onclick="confirmDeleteDialog.show(
+                                    'User &quot;${user.name}&quot; and all user\'s submissions will be deleted. Are you sure?', 
+                                    '${pageContext.request.contextPath}/user/${user.id}/delete');">
+                                <i class="material-icons">delete</i>
+                            </a>
+                        </td>
+                    </tr>
+                </c:forEach>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section>
+    <h1>Submissions</h1>
+    <div align="center">
+        <table id="submission_table" class="display" style="width: 100%;">
+            <thead>
                 <tr>
-                    <td>${user.name}</td>
-                    <td>${user.email}</td>
-                    <c:forEach items="${availableUserRoles}" var="role">
-                        <td><c:if test="${user.roles.contains(role)}">
-                            <i class="material-icons">check</i>
-                        </c:if></td>
-                    </c:forEach>
-                    <td>
-                        <a onclick="confirmDeleteDialog.show(
-                                'User &quot;${user.name}&quot; and all user\'s submissions will be deleted. Are you sure?',
-                                '${pageContext.request.contextPath}/user/${user.id}/delete');">
-                            <i class="material-icons">delete</i>
-                        </a>
-                    </td>
+                    <th>ID</th>
+                    <th>Date / Time</th>
+                    <th>Name</th>
+                    <th>Properties</th>
+                    <th></th>
+                    <th>Reference</th>
                 </tr>
-            </c:forEach>
+            </thead>
+            <tbody>
+                <%-- <c:forEach items="${submissionList}" var="submission">
+                    <tr>
+                        <td>${submission.id}</td>
+                        <td><fmt:formatDate value="${submission.dateTime}" type="DATE" pattern="yyyy-MM-dd"/><br/>
+                            <small><fmt:formatDate value="${submission.dateTime}" type="TIME"/></small>
+                        </td>
+                        <td>
+                            <a href="${pageContext.request.contextPath}/submission/${submission.id}/">${submission.name}</a><br/>
+                            <small>${dulab:abbreviate(submission.description, 80)}</small>
+                        </td>
+                        <td>
+                            ${submission.tagsAsString}
+                            <c:forEach items="${submission.tags}" var="tag">${tag.id.name}&nbsp;</c:forEach>
+                        </td>
+                        <td>
+                            <!-- more horiz -->
+                            <a href="${pageContext.request.contextPath}/submission/${submission.id}/"><i
+                                    class="material-icons" title="View">&#xE5D3;</i></a>
+    
+                            <!-- delete -->
+                            <a onclick="confirmDeleteDialog.show(
+                                    'Submission &quot;${submission.name}&quot; and all its spectra will be deleted. Are you sure?',
+                                    '${pageContext.request.contextPath}/submission/${submission.id}/delete/');">
+                                <i class="material-icons" title="Delete">&#xE872;</i>
+                            </a>
+                        </td>
+                    </tr>
+                </c:forEach> --%>
             </tbody>
         </table>
     </div>
@@ -169,4 +219,99 @@
         $('#cluster_table').DataTable();
         $('#user_table').DataTable();
     });
+
+    $('#submission_table').DataTable({
+        serverSide: true,
+        processing: true,
+        ajax: {
+            url: "${pageContext.request.contextPath}/submission/findAllSubmissions.json",
+
+            data: function (data) {
+                data.column = data.order[0].column;
+                data.sortDirection = data.order[0].dir;
+                data.search = data.search["value"];
+            }
+        },
+        "columnDefs": [
+            {
+                "targets": 0,
+                "orderable": true,
+                "data": "id"
+            },
+            {
+                "targets": 1,
+                "orderable": true,
+                "data": "formattedDate"
+            },
+            {
+                "targets": 2,
+                "orderable": true,
+                "render": function (data, type, row, meta) {
+                    content = '<a href="${pageContext.request.contextPath}/submission/' + row.id + '/">' +
+                        row.name +
+                        '</a>';
+                    return content;
+                }
+            },
+            {
+                "targets": 3,
+                "orderable": false,
+                "data": "tagsAsString"
+            },
+            {
+                "targets": 4,
+                "orderable": false,
+                "render": function (data, type, row, meta) {
+                    var clickEve = "confirmDeleteDialog.show(" +
+                        "'Submission &quot;" + row.name + "&quot; and all its spectra will be deleted. Are you sure?'," +
+                        "'${pageContext.request.contextPath}/submission/" + row.id + "/delete/');";
+                    var content = '<a href="${pageContext.request.contextPath}/submission/' + row.id + '/">' +
+                        '<i class="material-icons" title="View">&#xE5D3;</i>' +
+                        '</a>' +
+                        '<a onclick="' + clickEve + '">' +
+                        '<i class="material-icons" title="Delete">&#xE872;</i></a>';
+
+                    return content;
+                }
+            },
+            {
+                "targets": 5,
+                "orderable": false,
+                "render": function (data, type, row, meta) {
+                    var content = '<label class="switch" id="reference_checkbox">' +
+                        '<input type="checkbox" value="' + row.id + '" ';
+                    if(row.allSpectrumReference == 1) {
+                    	content += 'checked'
+                    }
+                    content += '><span class="checkbox-slider ';
+                    if(row.allSpectrumReference == null) {
+                    	content += 'translate-middle';
+                    }
+                    content += '"></span></label>';
+                    return content;
+                }
+            }
+        ]
+    }).on('draw', function() {
+        $("#reference_checkbox > input[type='checkbox']").each(function() {
+            $(this).on("change", function() {
+                $(this).parent().find("span.checkbox-slider").removeClass("translate-middle");
+                updateReferenceOfAllSpectraOfSubmission($(this).val(), $(this).is(":checked"));
+            });
+        });
+    });
+
+    function updateReferenceOfAllSpectraOfSubmission(submissionId, reference) {
+        $.ajax({
+              url: "${pageContext.request.contextPath}/spectrum/updateReferenceOfAllSpectraOfSubmission",
+              type: "GET",
+              contentType: 'application/json; charset=utf-8',
+              data: {"value": reference, "submissionId": submissionId},
+              success: function (r) {
+              },
+              error: function (xhr) {
+                  alert('Error while selecting list..!!');
+              }
+        });
+    }
 </script>

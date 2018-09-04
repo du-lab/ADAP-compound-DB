@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.ConstraintViolationException;
@@ -21,6 +22,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
@@ -311,9 +313,9 @@ public class SubmissionController extends BaseController {
     }
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/delete/")
-    public String delete(@PathVariable("submissionId") final long id) {
+    public String delete(@PathVariable("submissionId") final long id, final HttpServletRequest request, @RequestHeader(value = "referer", required = false) final String referer) {
         submissionService.delete(id);
-        return "redirect:/account/";
+        return "redirect:" + referer;
     }
 
     private String redirectFileUpload() {

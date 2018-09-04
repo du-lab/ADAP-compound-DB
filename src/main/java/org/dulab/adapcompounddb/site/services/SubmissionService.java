@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.site.services;
 
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
+import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.springframework.validation.annotation.Validated;
 
@@ -36,4 +37,7 @@ public interface SubmissionService {
     void saveSubmissionCategory(SubmissionCategory category);
 
     void deleteSubmissionCategory(long submissionCategoryId);
+
+    DataTableResponse findAllSubmissionsForResponse(String searchStr, Integer start, Integer length, Integer column,
+            String orderDirection);
 }

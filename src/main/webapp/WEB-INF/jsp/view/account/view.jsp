@@ -24,43 +24,43 @@
     <div align="center">
         <table id="submission_table" class="display" style="width: 100%;">
             <thead>
-            <tr>
-                <th>ID</th>
-                <th>Date / Time</th>
-                <th>Name</th>
-                <th>Properties</th>
-                <th></th>
-            </tr>
+	            <tr>
+	                <th>ID</th>
+	                <th>Date / Time</th>
+	                <th>Name</th>
+	                <th>Properties</th>
+	                <th></th>
+	            </tr>
             </thead>
             <tbody>
-            <c:forEach items="${submissionList}" var="submission">
-                <tr>
-                    <td>${submission.id}</td>
-                    <td><fmt:formatDate value="${submission.dateTime}" type="DATE" pattern="yyyy-MM-dd"/><br/>
-                        <small><fmt:formatDate value="${submission.dateTime}" type="TIME"/></small>
-                    </td>
-                    <td>
-                        <a href="${pageContext.request.contextPath}/submission/${submission.id}/">${submission.name}</a><br/>
-                        <small>${dulab:abbreviate(submission.description, 80)}</small>
-                    </td>
-                    <td>
-                        ${submission.tagsAsString}
-                        <%--<c:forEach items="${submission.tags}" var="tag">${tag.id.name}&nbsp;</c:forEach>--%>
-                    </td>
-                    <td>
-                        <!-- more horiz -->
-                        <a href="${pageContext.request.contextPath}/submission/${submission.id}/"><i
-                                class="material-icons" title="View">&#xE5D3;</i></a>
-
-                        <!-- delete -->
-                        <a onclick="confirmDeleteDialog.show(
-                                'Submission &quot;${submission.name}&quot; and all its spectra will be deleted. Are you sure?',
-                                '${pageContext.request.contextPath}/submission/${submission.id}/delete/');">
-                            <i class="material-icons" title="Delete">&#xE872;</i>
-                        </a>
-                    </td>
-                </tr>
-            </c:forEach>
+	            <c:forEach items="${submissionList}" var="submission">
+	                <tr>
+	                    <td>${submission.id}</td>
+	                    <td><fmt:formatDate value="${submission.dateTime}" type="DATE" pattern="yyyy-MM-dd"/><br/>
+	                        <small><fmt:formatDate value="${submission.dateTime}" type="TIME"/></small>
+	                    </td>
+	                    <td>
+	                        <a href="${pageContext.request.contextPath}/submission/${submission.id}/">${submission.name}</a><br/>
+	                        <small>${dulab:abbreviate(submission.description, 80)}</small>
+	                    </td>
+	                    <td>
+	                        ${submission.tagsAsString}
+	                        <%--<c:forEach items="${submission.tags}" var="tag">${tag.id.name}&nbsp;</c:forEach>--%>
+	                    </td>
+	                    <td>
+	                        <!-- more horiz -->
+	                        <a href="${pageContext.request.contextPath}/submission/${submission.id}/"><i
+	                                class="material-icons" title="View">&#xE5D3;</i></a>
+	
+	                        <!-- delete -->
+	                        <a onclick="confirmDeleteDialog.show(
+	                                'Submission &quot;${submission.name}&quot; and all its spectra will be deleted. Are you sure?',
+	                                '${pageContext.request.contextPath}/submission/${submission.id}/delete/');">
+	                            <i class="material-icons" title="Delete">&#xE872;</i>
+	                        </a>
+	                    </td>
+	                </tr>
+	            </c:forEach>
             </tbody>
         </table>
     </div>

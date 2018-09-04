@@ -1,12 +1,11 @@
 package org.dulab.adapcompounddb.site.services;
 
 import java.util.List;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.dto.SpectrumDTO;
-import org.dulab.adapcompounddb.models.dto.SpectrumTableResponse;
+import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.utils.ObjectMapperUtils;
@@ -25,7 +24,7 @@ public class SpectrumServiceImpl implements SpectrumService {
 
     private final SpectrumRepository spectrumRepository;
 
-    public static enum ColumnInformation {
+    private static enum ColumnInformation {
         NAME(1, "name"), RETENTIONTIME(2, "retentionTime"), PRECURSOR(3, "precursor"), SIGNIFICANCE(4, "significance"),
         CHROMATOGRAPHYTYPE(5, "chromatographyType");
 
@@ -41,16 +40,8 @@ public class SpectrumServiceImpl implements SpectrumService {
             return position;
         }
 
-        public void setPosition(final int position) {
-            this.position = position;
-        }
-
         public String getSortColumnName() {
             return sortColumnName;
-        }
-
-        public void setSortColumnName(final String sortColumnName) {
-            this.sortColumnName = sortColumnName;
         }
 
         public static String getColumnNameFromPosition(final int position) {
@@ -77,7 +68,7 @@ public class SpectrumServiceImpl implements SpectrumService {
 
     @Override
     @Transactional
-    public SpectrumTableResponse findSpectrumBySubmissionId(final Long submissionId, final String searchStr,
+    public DataTableResponse findSpectrumBySubmissionId(final Long submissionId, final String searchStr,
             final Integer start, final Integer length, final Integer column, final String orderDirection) {
         final ObjectMapperUtils objectMapper = new ObjectMapperUtils();
         Pageable pageable = null;
@@ -94,7 +85,7 @@ public class SpectrumServiceImpl implements SpectrumService {
                 pageable);
 
         final List<SpectrumDTO> spectrumList = objectMapper.map(spectrumPage.getContent(), SpectrumDTO.class);
-        final SpectrumTableResponse response = new SpectrumTableResponse(spectrumList);
+        final DataTableResponse response = new DataTableResponse(spectrumList);
         response.setRecordsTotal(spectrumPage.getTotalElements());
         response.setRecordsFiltered(spectrumPage.getTotalElements());
 
@@ -109,5 +100,11 @@ public class SpectrumServiceImpl implements SpectrumService {
     @Override
     public long countReferenceSpectra() {
         return spectrumRepository.countByReferenceTrue();
+    }
+
+    @Override
+    @Transactional
+    public Boolean updateReferenceOfAllSpectraOfSubmission(final Long submissionId, final boolean value) {
+        return spectrumRepository.updateReferenceOfAllSpectraOfSubmission(submissionId, value) == 1;
     }
 }
