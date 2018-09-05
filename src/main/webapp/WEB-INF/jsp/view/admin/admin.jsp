@@ -49,7 +49,7 @@
                 <td>Calculates matching scores for all spectra in the library</td>
             </tr>
             <tr>
-                <td><a href="cluster/" class="button">Cluster spectra...</a></td>
+                <td><a id="button-cluster" href="cluster/" class="button">Cluster spectra...</a></td>
                 <td>Cluster spectra into clusters</td>
             </tr>
         </table>
@@ -153,6 +153,7 @@
 </section>
 
 <div id="confirm-delete-dialog"></div>
+<div id="progress-dialog"></div>
 
 <!-- End the middle column -->
 
@@ -164,9 +165,14 @@
 <script>
     var progressBar = new ProgressBar('progressBarDiv');
     var confirmDeleteDialog = $('#confirm-delete-dialog').confirmDeleteDialog();
+    var progressDialog = $('#progress-dialog').progressDialog();
 
     $(document).ready(function () {
         $('#cluster_table').DataTable();
         $('#user_table').DataTable();
     });
+
+    $('#button-cluster').click(function () {
+        progressDialog.show('Clustering may take a while. Please wait...');
+    })
 </script>
