@@ -59,7 +59,8 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
             int count = 0;
 
             for (Spectrum spectrum : spectrumRepository
-                    .findAllByConsensusFalseAndReferenceFalseAndChromatographyType(type)) {
+//                    .findAllByConsensusFalseAndReferenceFalseAndChromatographyType(type)) {
+                    .findSpectraForClustering(type)) {
                 spectrumIdToIndexMap.put(spectrum.getId(), count++);
                 spectrumIds.add(spectrum.getId());
             }
@@ -74,10 +75,13 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
             for (SpectrumMatch spectrumMatch : spectrumMatchRepository
                     .findAllByQuerySpectrumChromatographyType(type)) {
 
-                int queryIndex = spectrumIdToIndexMap.get(
+                Integer queryIndex = spectrumIdToIndexMap.get(
                         spectrumMatch.getQuerySpectrum().getId());
-                int matchIndex = spectrumIdToIndexMap.get(
+                Integer matchIndex = spectrumIdToIndexMap.get(
                         spectrumMatch.getMatchSpectrum().getId());
+
+                if (queryIndex == null || matchIndex == null)
+                    continue;
 
                 double distance = similarityToDistance(spectrumMatch.getScore());
 
