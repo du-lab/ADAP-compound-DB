@@ -5,8 +5,8 @@ public enum ChromatographyType implements EnumWithLabelsAndIcons {
     GAS("Gas Chromatography", "resources/AdapCompoundDb/img/chromatography/icon_gc.svg"),
     LIQUID_POSITIVE("Liquid Chromatography (Positive)", "resources/AdapCompoundDb/img/chromatography/icon_lc+.svg"),
     LIQUID_NEGATIVE("Liquid Chromatography (Negative)", "resources/AdapCompoundDb/img/chromatography/icon_lc-.svg"),
-    LC_MSMS_POS("LC MS/MS (Pos)", null),
-    LC_MSMS_NEG("LC MS/MS (Neg)", null);
+    LC_MSMS_POS("LC MS/MS (Pos)", "resources/AdapCompoundDb/img/chromatography/icon_lcmsms+.svg"),
+    LC_MSMS_NEG("LC MS/MS (Neg)", "resources/AdapCompoundDb/img/chromatography/icon_lcmsms-.svg");
 
     private final String label;
     private final String iconPath;

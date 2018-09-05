@@ -99,7 +99,7 @@
                         </td>
                     </c:forEach>
 
-                    <td><img src="${cluster.consensusSpectrum.chromatographyType.iconPath}"
+                    <td><img src="${pageContext.request.contextPath}/${cluster.consensusSpectrum.chromatographyType.iconPath}"
                              alt="${cluster.consensusSpectrum.chromatographyType.name()}"
                              title="${cluster.consensusSpectrum.chromatographyType.label}"
                              class="icon"/></td>
