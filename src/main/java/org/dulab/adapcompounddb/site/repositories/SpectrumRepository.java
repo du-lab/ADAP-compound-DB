@@ -22,6 +22,13 @@ public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, Spec
     Iterable<Spectrum> findAllByConsensusFalseAndReferenceFalseAndChromatographyType(
             ChromatographyType chromatographyType);
 
+    @Query("SELECT s FROM Spectrum s WHERE " +
+            "(SIZE(s.matches) > 1 OR SIZE(s.matches2) > 1) " +
+            "AND s.consensus=FALSE " +
+            "AND s.reference=FALSE " +
+            "AND s.chromatographyType=?1")
+    Iterable<Spectrum> findSpectraForClustering(ChromatographyType type);
+
     long countByConsensusIsFalse();
 
     long countByChromatographyTypeAndConsensusFalse(ChromatographyType chromatographyType);
