@@ -272,18 +272,20 @@ public class SubmissionController extends BaseController {
         submission.setReference(submissionForm.getReference());
         submission.setDateTime(new Date());
 
-        final List<SubmissionTag> tags = new ArrayList<>();
+        List<SubmissionTag> tags = submission.getTags();
+        if (tags == null) {
+            tags = new ArrayList<>();
+            submission.setTags(tags);
+        }
+        tags.clear();
         for (final String name : submissionForm.getTags().split(",")) {
 
-            if (name.trim().isEmpty()) {
-                continue;
-            }
+            if (name.trim().isEmpty()) continue;
 
             final SubmissionTag submissionTag = new SubmissionTag();
             submissionTag.setId(new SubmissionTagId(submission, name.toLowerCase()));
             tags.add(submissionTag);
         }
-        submission.setTags(tags);
 
         final List<SubmissionCategory> categories = new ArrayList<>();
         for (final long id : submissionForm.getSubmissionCategoryIds()) {
