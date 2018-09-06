@@ -8,50 +8,52 @@
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 
 
-<section>
-    <h1>Submission</h1>
-    <div align="center">
-        <table id="info_table" class="display" style="width: 100%; clear: none;">
-            <thead>
-            <tr>
-                <th>Property</th>
-                <th>Value</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td><strong>Name:</strong></td>
-                <td>${submission.name}</td>
-            </tr>
-            <tr>
-                <td><strong>Description:</strong></td>
-                <td>
-                    <pre>${submission.description}</pre>
-                </td>
-            </tr>
-            <c:if test="${submission.reference != null}">
+<c:if test="${!edit}">
+    <section>
+        <h1>Submission</h1>
+        <div align="center">
+            <table id="info_table" class="display" style="width: 100%; clear: none;">
+                <thead>
                 <tr>
-                    <td><strong>URL:</strong></td>
-                    <td><a href="${submission.reference}" title="${submission.reference}"
-                           target="_blank">${dulab:abbreviate(submission.reference, 80)}</a></td>
+                    <th>Property</th>
+                    <th>Value</th>
                 </tr>
-            </c:if>
-            <c:if test="${submission.tagsAsString.length() > 0}">
+                </thead>
+                <tbody>
                 <tr>
-                    <td><strong>Equipment:</strong></td>
-                    <td>${submission.tagsAsString}</td>
+                    <td><strong>Name:</strong></td>
+                    <td>${submission.name}</td>
                 </tr>
-            </c:if>
-            <c:forEach items="${submissionCategoryTypes}" var="type">
                 <tr>
-                    <td><strong>${type.label}:</strong></td>
-                    <td>${submission.getCategory(type)}</td>
+                    <td><strong>Description:</strong></td>
+                    <td>
+                        <pre>${submission.description}</pre>
+                    </td>
                 </tr>
-            </c:forEach>
-            </tbody>
-        </table>
-    </div>
-</section>
+                <c:if test="${submission.reference != null}">
+                    <tr>
+                        <td><strong>URL:</strong></td>
+                        <td><a href="${submission.reference}" title="${submission.reference}"
+                               target="_blank">${dulab:abbreviate(submission.reference, 80)}</a></td>
+                    </tr>
+                </c:if>
+                <c:if test="${submission.tagsAsString.length() > 0}">
+                    <tr>
+                        <td><strong>Equipment:</strong></td>
+                        <td>${submission.tagsAsString}</td>
+                    </tr>
+                </c:if>
+                <c:forEach items="${submissionCategoryTypes}" var="type">
+                    <tr>
+                        <td><strong>${type.label}:</strong></td>
+                        <td>${submission.getCategory(type)}</td>
+                    </tr>
+                </c:forEach>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</c:if>
 
 <!-- List of submitted files -->
 <section>

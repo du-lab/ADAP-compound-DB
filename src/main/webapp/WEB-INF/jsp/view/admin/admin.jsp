@@ -274,11 +274,11 @@
                     var content = '<label class="switch" id="reference_checkbox">' +
                         '<input type="checkbox" value="' + row.id + '" ';
                     if(row.allSpectrumReference == 1) {
-                    	content += 'checked'
+                        content += 'checked'
                     }
                     content += '><span class="checkbox-slider ';
                     if(row.allSpectrumReference == null) {
-                    	content += 'translate-middle';
+                        content += 'translate-middle';
                     }
                     content += '"></span></label>';
                     return content;
