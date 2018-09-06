@@ -42,13 +42,15 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
         QueryParameters lcQueryParameters = new QueryParameters()
                 .setScoreThreshold(0.75)
                 .setMzTolerance(0.01)
-                .setPrecursorTolerance(0.01)
-                .setRetTimeTolerance(0.5);
+                .setPrecursorTolerance(0.01);
+//                .setRetTimeTolerance(0.5);
 
         this.queryParametersMap = new HashMap<>();
         this.queryParametersMap.put(ChromatographyType.GAS, gcQueryParameters);
         this.queryParametersMap.put(ChromatographyType.LIQUID_POSITIVE, lcQueryParameters);
         this.queryParametersMap.put(ChromatographyType.LIQUID_NEGATIVE, lcQueryParameters);
+        this.queryParametersMap.put(ChromatographyType.LC_MSMS_POS, lcQueryParameters);
+        this.queryParametersMap.put(ChromatographyType.LC_MSMS_NEG, lcQueryParameters);
     }
 
     @Override
