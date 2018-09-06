@@ -61,7 +61,7 @@ public class Submission implements Serializable {
     @OneToMany(
             mappedBy = "submission",
             fetch = FetchType.LAZY,
-            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            cascade = {CascadeType.PERSIST, CascadeType.ALL},
             orphanRemoval = true
     )
     private List<File> files;

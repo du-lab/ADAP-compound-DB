@@ -54,9 +54,9 @@ public class Spectrum implements Serializable {
     @JoinColumn(name = "ClusterId", referencedColumnName = "Id")
     private SpectrumCluster cluster;
 
-    private Boolean consensus;
+    private boolean consensus;
 
-    private Boolean reference;
+    private boolean reference;
 
     private Double precursor;
 
@@ -184,19 +184,19 @@ public class Spectrum implements Serializable {
         this.cluster = cluster;
     }
 
-    public Boolean isConsensus() {
+    public boolean isConsensus() {
         return consensus;
     }
 
-    public void setConsensus(final Boolean consensus) {
+    public void setConsensus(boolean consensus) {
         this.consensus = consensus;
     }
 
-    public Boolean isReference() {
+    public boolean isReference() {
         return reference;
     }
 
-    public void setReference(final Boolean reference) {
+    public void setReference(boolean reference) {
         this.reference = reference;
     }
 

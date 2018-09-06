@@ -161,6 +161,7 @@
                     <th>ID</th>
                     <th>Date / Time</th>
                     <th>Name</th>
+                    <th>User</th>
                     <th>Properties</th>
                     <th>Reference (Off/On)</th>
                     <th></th>
@@ -255,11 +256,19 @@
             },
             {
                 "targets": 3,
+                "orderable": true,
+                "render": function (data, type, row, meta) {
+                    content = row.user.name + '<br/><small>' + row.user.email + '<small>';
+                    return content;
+                }
+            },
+            {
+                "targets": 4,
                 "orderable": false,
                 "data": "tagsAsString"
             },
             {
-                "targets": 4,
+                "targets": 5,
                 "orderable": false,
                 "render": function (data, type, row, meta) {
                     var content = '<label class="switch" id="reference_checkbox">' +
@@ -276,7 +285,7 @@
                 }
             },
             {
-                "targets": 5,
+                "targets": 6,
                 "orderable": false,
                 "render": function (data, type, row, meta) {
                     var clickEve = "confirmDeleteDialog.show(" +

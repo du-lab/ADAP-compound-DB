@@ -26,7 +26,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     private final SpectrumRepository spectrumRepository;
 
     private static enum ColumnInformation {
-        ID(0, "id"), DATE(1, "dateTime"), NAME(2, "name");
+        ID(0, "id"), DATE(1, "dateTime"), NAME(2, "name"), USER(3, "user.username");
 
         private int position;
         private String sortColumnName;
