@@ -162,8 +162,8 @@
                     <th>Date / Time</th>
                     <th>Name</th>
                     <th>Properties</th>
+                    <th>Reference (Off/On)</th>
                     <th></th>
-                    <th>Reference</th>
                 </tr>
             </thead>
             <tbody>
@@ -262,22 +262,6 @@
                 "targets": 4,
                 "orderable": false,
                 "render": function (data, type, row, meta) {
-                    var clickEve = "confirmDeleteDialog.show(" +
-                        "'Submission &quot;" + row.name + "&quot; and all its spectra will be deleted. Are you sure?'," +
-                        "'${pageContext.request.contextPath}/submission/" + row.id + "/delete/');";
-                    var content = '<a href="${pageContext.request.contextPath}/submission/' + row.id + '/">' +
-                        '<i class="material-icons" title="View">&#xE5D3;</i>' +
-                        '</a>' +
-                        '<a onclick="' + clickEve + '">' +
-                        '<i class="material-icons" title="Delete">&#xE872;</i></a>';
-
-                    return content;
-                }
-            },
-            {
-                "targets": 5,
-                "orderable": false,
-                "render": function (data, type, row, meta) {
                     var content = '<label class="switch" id="reference_checkbox">' +
                         '<input type="checkbox" value="' + row.id + '" ';
                     if(row.allSpectrumReference == 1) {
@@ -288,6 +272,22 @@
                     	content += 'translate-middle';
                     }
                     content += '"></span></label>';
+                    return content;
+                }
+            },
+            {
+                "targets": 5,
+                "orderable": false,
+                "render": function (data, type, row, meta) {
+                    var clickEve = "confirmDeleteDialog.show(" +
+                        "'Submission &quot;" + row.name + "&quot; and all its spectra will be deleted. Are you sure?'," +
+                        "'${pageContext.request.contextPath}/submission/" + row.id + "/delete/');";
+                    var content = '<a href="${pageContext.request.contextPath}/submission/' + row.id + '/">' +
+                        '<i class="material-icons" title="View">&#xE5D3;</i>' +
+                        '</a>' +
+                        '<a onclick="' + clickEve + '">' +
+                        '<i class="material-icons" title="Delete">&#xE872;</i></a>';
+
                     return content;
                 }
             }

@@ -413,7 +413,7 @@ pre {
     position: relative;
     display: inline-block;
     width: 60px;
-    height: 34px;
+    height: 1.5em; /*34px;*/
 }
 
 .switch input {
@@ -427,36 +427,34 @@ pre {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #b67960;
-    -webkit-transition: .4s;
-    transition: .4s;
+    background-color: #bfbfbf; /*#b67960*/
 }
 
 .checkbox-slider:before {
     position: absolute;
-    content: "";
-    height: 26px;
-    width: 26px;
-    left: 4px;
-    bottom: 4px;
+    font-size: 1em;
+    height: 80%; /*26px*/
+    width: 40%; /*26px*/
+    left: 10%; /*4px*/
+    bottom: 10%; /*4px*/
     background-color: white;
     -webkit-transition: .4s;
     transition: .4s;
-    content: "Off";
+    content: "";
 }
 
 input:checked + .checkbox-slider {
     background-color: #b47cff;
 }
 
-input:focus + .checkbox-slider {
-    box-shadow: 0 0 1px #b47cff;
-}
+/*input:focus + .checkbox-slider {*/
+    /*box-shadow: 0 0 10px #b47cff;*/
+/*}*/
 
 input:checked + .checkbox-slider:before {
     transform: translateX(100%);
-    text-transform: translateX(50%);
-    content: "On";
+    /*text-transform: translateX(50%);*/
+    content: "";
 }
 
 .translate-middle:before {
@@ -465,5 +463,5 @@ input:checked + .checkbox-slider:before {
 }
 
 .translate-middle {
-    background-color: #ccc;
+    background-color: red; /*#ccc*/
 }
