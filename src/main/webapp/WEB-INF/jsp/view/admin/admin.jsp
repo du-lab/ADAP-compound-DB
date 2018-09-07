@@ -56,7 +56,7 @@
     </div>
 </section>
 
-<section>
+<%-- <section>
     <h1>Clusters</h1>
     <div align="center">
         <table id="cluster_table" class="display" style="width: 100%;">
@@ -112,7 +112,7 @@
             </tbody>
         </table>
     </div>
-</section>
+</section> --%>
 
 <section>
     <h1>Users</h1>

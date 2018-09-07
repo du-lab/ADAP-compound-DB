@@ -19,7 +19,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class AdminController {
@@ -32,10 +31,10 @@ public class AdminController {
     private final Progress progress;
 
     @Autowired
-    public AdminController(SpectrumMatchCalculator spectrumMatchCalculator,
-                           SpectrumMatchService spectrumMatchService,
-                           StatisticsService statisticsService,
-                           UserPrincipalService userPrincipalService) {
+    public AdminController(final SpectrumMatchCalculator spectrumMatchCalculator,
+            final SpectrumMatchService spectrumMatchService,
+            final StatisticsService statisticsService,
+            final UserPrincipalService userPrincipalService) {
 
         this.spectrumMatchCalculator = spectrumMatchCalculator;
         this.spectrumMatchService = spectrumMatchService;
@@ -46,18 +45,19 @@ public class AdminController {
     }
 
     @ModelAttribute
-    public void addAttributes(Model model) {
+    public void addAttributes(final Model model) {
 
-        Map<ChromatographyType, Statistics> statisticsMap = new TreeMap<>();
-        for (ChromatographyType type : ChromatographyType.values())
+        final Map<ChromatographyType, Statistics> statisticsMap = new TreeMap<>();
+        for (final ChromatographyType type : ChromatographyType.values()) {
             statisticsMap.put(type, statisticsService.getStatistics(type));
+        }
 
         model.addAttribute("statistics", statisticsMap);
-        model.addAttribute("clusters", spectrumMatchService.getAllClusters());
+        //        model.addAttribute("clusters", spectrumMatchService.getAllClusters());
     }
 
     @RequestMapping(value = "/admin/", method = RequestMethod.GET)
-    public String admin(Model model) {
+    public String admin(final Model model) {
 
         model.addAttribute("submissionCategoryTypes", SubmissionCategoryType.values());
         model.addAttribute("availableUserRoles", UserRole.values());
@@ -67,7 +67,7 @@ public class AdminController {
 
     @RequestMapping(value = "/admin/calculatescores/", method = RequestMethod.GET)
     public String calculateScores() {
-//        spectrumMatchService.fillSpectrumMatchTable(0.01F, 0.75F);
+        //        spectrumMatchService.fillSpectrumMatchTable(0.01F, 0.75F);
         progress.setValue(0);
         spectrumMatchCalculator.run();
         progress.setValue(0);
@@ -78,7 +78,7 @@ public class AdminController {
     public String cluster() {
         try {
             spectrumMatchService.cluster(0.1F, 2, 0.75F);
-        } catch (EmptySearchResultException e) {
+        } catch (final EmptySearchResultException e) {
             System.out.println(e.getMessage());
         }
         return "redirect:/admin/";
@@ -95,7 +95,7 @@ public class AdminController {
             return value;
         }
 
-        public void setValue(Integer value) {
+        public void setValue(final Integer value) {
             this.value = value;
         }
     }
