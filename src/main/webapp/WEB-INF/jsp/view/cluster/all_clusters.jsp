@@ -22,40 +22,40 @@
             </tr>
             </thead>
             <tbody>
-            <c:forEach items="${clusters}" var="cluster">
-                <tr>
-                    <td>${cluster.id}</td>
-                    <td><a href="${pageContext.request.contextPath}/cluster/${cluster.id}/">${cluster.consensusSpectrum.name}</a></td>
-                    <td>${cluster.size}</td>
-                    <td>${dulab:toIntegerScore(cluster.diameter)}</td>
-                    <td title="Ave: ${cluster.aveSignificance}; Min: ${cluster.minSignificance}; Max: ${cluster.maxSignificance}">
-                        <c:if test="${cluster.aveSignificance != null}">
-                            <fmt:formatNumber type="number" maxFractionDigits="2"
-                                              value="${cluster.aveSignificance}"/><br/>
-                        </c:if>
-                    </td>
-
-                    <c:forEach items="${submissionCategoryTypes}" var="type">
-                        <td>
-                            <c:forEach items="${cluster.diversityIndices}" var="diversityIndex">
-                                <c:if test="${diversityIndex.id.categoryType == type}">
-                                    <fmt:formatNumber type="number" maxFractionDigits="3"
-                                                      value="${diversityIndex.diversity}"/>
-                                </c:if>
-                            </c:forEach>
-                        </td>
-                    </c:forEach>
-
-                    <td><img src="${pageContext.request.contextPath}/${cluster.consensusSpectrum.chromatographyType.iconPath}"
-                             alt="${cluster.consensusSpectrum.chromatographyType.name()}"
-                             title="${cluster.consensusSpectrum.chromatographyType.label}"
-                             class="icon"/></td>
-                    <td>
-                        <!--more horiz-->
-                        <a href="${pageContext.request.contextPath}/cluster/${cluster.id}/"><i class="material-icons" title="View">&#xE5D3;</i></a>
-                    </td>
-                </tr>
-            </c:forEach>
+	            <%-- <c:forEach items="${clusters}" var="cluster">
+	                <tr>
+	                    <td>${cluster.id}</td>
+	                    <td><a href="${pageContext.request.contextPath}/cluster/${cluster.id}/">${cluster.consensusSpectrum.name}</a></td>
+	                    <td>${cluster.size}</td>
+	                    <td>${dulab:toIntegerScore(cluster.diameter)}</td>
+	                    <td title="Ave: ${cluster.aveSignificance}; Min: ${cluster.minSignificance}; Max: ${cluster.maxSignificance}">
+	                        <c:if test="${cluster.aveSignificance != null}">
+	                            <fmt:formatNumber type="number" maxFractionDigits="2"
+	                                              value="${cluster.aveSignificance}"/><br/>
+	                        </c:if>
+	                    </td>
+	
+	                    <c:forEach items="${submissionCategoryTypes}" var="type">
+	                        <td>
+	                            <c:forEach items="${cluster.diversityIndices}" var="diversityIndex">
+	                                <c:if test="${diversityIndex.id.categoryType == type}">
+	                                    <fmt:formatNumber type="number" maxFractionDigits="3"
+	                                                      value="${diversityIndex.diversity}"/>
+	                                </c:if>
+	                            </c:forEach>
+	                        </td>
+	                    </c:forEach>
+	
+	                    <td><img src="${pageContext.request.contextPath}/${cluster.consensusSpectrum.chromatographyType.iconPath}"
+	                             alt="${cluster.consensusSpectrum.chromatographyType.name()}"
+	                             title="${cluster.consensusSpectrum.chromatographyType.label}"
+	                             class="icon"/></td>
+	                    <td>
+	                        <!--more horiz-->
+	                        <a href="${pageContext.request.contextPath}/cluster/${cluster.id}/"><i class="material-icons" title="View">&#xE5D3;</i></a>
+	                    </td>
+	                </tr>
+	            </c:forEach> --%>
             </tbody>
         </table>
     </div>
@@ -66,6 +66,123 @@
 <script src="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.js"/>"></script>
 <script>
     $(document).ready(function () {
-        $('#cluster_table').DataTable();
+        $('#cluster_table').DataTable({
+            serverSide: true,
+            processing: true,
+            ajax: {
+                url: "${pageContext.request.contextPath}/spectrum/findClusters.json",
+
+                data: function (data) {
+                    data.column = data.order[0].column;
+                    data.sortDirection = data.order[0].dir;
+                    data.search = data.search["value"];
+                }
+            },
+            "columnDefs": [
+                {
+                    "targets": 0,
+                    "orderable": true,
+                    "data": "id"
+                },
+                {
+                    "targets": 1,
+                    "orderable": true,
+                    "render": function (data, type, row, meta) {
+                        content = '<a href="${pageContext.request.contextPath}/cluster/' + row.id + '/">' +
+                            row.consensusSpectrum.name +
+                            '</a>';
+                        return content
+                    }
+                },
+                {
+                    "targets": 2,
+                    "orderable": true,
+                    "data": "size"
+                },
+                {
+                    "targets": 3,
+                    "orderable": true,
+                    "render": function (data, type, row, meta) {
+                        return row.diameter.toFixed(3);
+                    }
+                },
+                {
+                    "targets": 4,
+                    "orderable": false,
+                    "render": function (data, type, row, meta) {
+                        var content = '<span title="Ave: ' + row.aveSignificance + '; Min: ' + row.minSignificance + '; Max: ' + row.maxSignificance + '}">';
+                        if(row.aveSignificance) {
+                            content += row.aveSignificance;
+                        }
+                        content += '</td>';
+                        return content;
+                    }
+                },
+                {
+                    "targets": 5,
+                    "orderable": false,
+                    "render": function (data, type, row, meta) {
+                        var content = '';
+                        var indices = row.diversityIndices;
+                        for(i=0; i<indices.length; i++) {
+                            if(indices[i].categoryType == 'SOURCE') {
+                                content += indices[i].diversity;
+                            }
+                        }
+                        return content;
+                    }
+                },
+                {
+                    "targets": 6,
+                    "orderable": false,
+                    "render": function (data, type, row, meta) {
+                        var content = '';
+	                    var indices = row.diversityIndices;
+	                    for(i=0; i<indices.length; i++) {
+	                        if(indices[i].categoryType == 'TREATMENT') {
+	                            content += indices[i].diversity;
+	                        }
+	                    }
+	                    return content;
+                    }
+                },
+                {
+                    "targets": 7,
+                    "orderable": false,
+                    "render": function (data, type, row, meta) {
+                        var content = '';
+	                    var indices = row.diversityIndices;
+	                    for(i=0; i<indices.length; i++) {
+	                        if(indices[i].categoryType == 'SPECIMEN') {
+	                            content += indices[i].diversity;
+	                        }
+	                    }
+	                    return content;
+                    }
+                },
+                {
+                    "targets": 8,
+                    "orderable": false,
+                    "render": function (data, type, row, meta) {
+                    	var content = '<img' +
+                        ' src="${pageContext.request.contextPath}/' + row.consensusSpectrum.chromatographyTypeIconPath + '"'
+                        + ' alt="' + row.consensusSpectrum.chromatographyTypeLabel + '"'
+                        + ' title="' + row.consensusSpectrum.chromatographyTypeLabel + '"'
+                        + ' class="icon"/>';
+
+                        return content;
+                    }
+                },
+                {
+                    "targets": 9,
+                    "orderable": false,
+                    "render": function (data, type, row, meta) {
+                        var content = '<a href="${pageContext.request.contextPath}/cluster/'
+                        + row.id + '/"><i class="material-icons" title="View">&#xE5D3;</i></a>';
+                        return content;
+                    }
+                }
+            ]
+        });
     });
 </script>

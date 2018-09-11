@@ -1,37 +1,21 @@
-package org.dulab.adapcompounddb.models.entities;
+package org.dulab.adapcompounddb.models.dto;
 
 import java.io.Serializable;
 
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Transient;
-
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 
-@Entity
-public class DiversityIndex implements Serializable {
+public class DiversityIndexDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @EmbeddedId
-    private DiversityIndexId id;
+    private SubmissionCategoryType categoryType;
 
     private double diversity;
-
-    @Transient
-    private SubmissionCategoryType categoryType;
 
     // *******************************
     // ***** Getters and Setters *****
     // *******************************
 
-    public DiversityIndexId getId() {
-        return id;
-    }
-
-    public void setId(final DiversityIndexId id) {
-        this.id = id;
-    }
 
     public double getDiversity() {
         return diversity;
@@ -42,7 +26,6 @@ public class DiversityIndex implements Serializable {
     }
 
     public SubmissionCategoryType getCategoryType() {
-        categoryType = id.getCategoryType();
         return categoryType;
     }
 
