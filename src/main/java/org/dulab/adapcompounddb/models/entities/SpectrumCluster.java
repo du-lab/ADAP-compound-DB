@@ -50,7 +50,7 @@ public class SpectrumCluster implements Serializable {
         this.id = id;
     }
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "ConsensusSpectrumId", referencedColumnName = "Id")
     @JsonIgnore
     public Spectrum getConsensusSpectrum() {

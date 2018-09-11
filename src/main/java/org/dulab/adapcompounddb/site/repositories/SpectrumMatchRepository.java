@@ -1,7 +1,10 @@
 package org.dulab.adapcompounddb.site.repositories;
 
+import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 import org.dulab.adapcompounddb.models.ChromatographyType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
@@ -17,4 +20,9 @@ public interface SpectrumMatchRepository extends CrudRepository<SpectrumMatch, L
     int countDistinctQuerySpectrum();
 
     long countByQuerySpectrumChromatographyType(ChromatographyType type);
+
+    @Query("SELECT sm FROM SpectrumMatch sm " +
+            "WHERE NOT sm.matchSpectrum.id = sm.querySpectrum.id AND sm.querySpectrum.chromatographyType = ?1 " +
+            "ORDER BY sm.score DESC, sm.querySpectrum.id ASC, sm.matchSpectrum.id ASC")
+    Page<SpectrumMatch> findByChromatographyType(ChromatographyType type, Pageable pageable);
 }

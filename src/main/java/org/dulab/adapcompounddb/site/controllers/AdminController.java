@@ -9,22 +9,20 @@ import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.Statistics;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.UserRole;
-import org.dulab.adapcompounddb.site.services.SpectrumMatchCalculator;
-import org.dulab.adapcompounddb.site.services.SpectrumMatchService;
-import org.dulab.adapcompounddb.site.services.StatisticsService;
-import org.dulab.adapcompounddb.site.services.UserPrincipalService;
+import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
+import org.dulab.adapcompounddb.site.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class AdminController {
 
     private final SpectrumMatchCalculator spectrumMatchCalculator;
+    private final SpectrumClusterer spectrumClusterer;
     private final SpectrumMatchService spectrumMatchService;
     private final StatisticsService statisticsService;
     private final UserPrincipalService userPrincipalService;
@@ -33,11 +31,13 @@ public class AdminController {
 
     @Autowired
     public AdminController(SpectrumMatchCalculator spectrumMatchCalculator,
+                           SpectrumClusterer spectrumClusterer,
                            SpectrumMatchService spectrumMatchService,
                            StatisticsService statisticsService,
                            UserPrincipalService userPrincipalService) {
 
         this.spectrumMatchCalculator = spectrumMatchCalculator;
+        this.spectrumClusterer = spectrumClusterer;
         this.spectrumMatchService = spectrumMatchService;
         this.statisticsService = statisticsService;
         this.userPrincipalService = userPrincipalService;
@@ -67,7 +67,6 @@ public class AdminController {
 
     @RequestMapping(value = "/admin/calculatescores/", method = RequestMethod.GET)
     public String calculateScores() {
-//        spectrumMatchService.fillSpectrumMatchTable(0.01F, 0.75F);
         progress.setValue(0);
         spectrumMatchCalculator.run();
         progress.setValue(0);
@@ -77,7 +76,10 @@ public class AdminController {
     @RequestMapping(value = "/admin/cluster/", method = RequestMethod.GET)
     public String cluster() {
         try {
-            spectrumMatchService.cluster(0.1F, 2, 0.75F);
+//            spectrumClusterer.removeAll();
+            for (ChromatographyType type : ChromatographyType.values())
+                spectrumClusterer.cluster(type, 2, 0.25F, 0.01F);
+            spectrumClusterer.removeAll();
         } catch (EmptySearchResultException e) {
             System.out.println(e.getMessage());
         }

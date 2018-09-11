@@ -62,7 +62,7 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void run() {
 
-        List<SpectrumMatch> spectrumMatches = new ArrayList<>();
+//        List<SpectrumMatch> spectrumMatches = new ArrayList<>();
 
         final long countUnmatched = spectrumRepository.countUnmatched();
 
@@ -83,9 +83,10 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
 
             LOGGER.info(String.format("Matching unmatched spectra of %s...", chromatographyType));
             for (Spectrum querySpectrum : unmatchedSpectra) {
-                spectrumMatches.addAll(
+                List<SpectrumMatch> spectrumMatches =
                         spectrumRepository.spectrumSearch(
-                                SearchType.CLUSTERING, querySpectrum, params));
+                                SearchType.CLUSTERING, querySpectrum, params);
+                spectrumMatchRepository.saveAll(spectrumMatches);
                 progress += progressStep;
             }
 
@@ -94,10 +95,10 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
                     chromatographyType.getLabel(), countUnmatched > 0 ? elapsedTime / countUnmatched : 0));
         }
 
-        LOGGER.info("Saving matches to the database...");
-        spectrumMatchRepository.saveAll(spectrumMatches);
+//        LOGGER.info("Saving matches to the database...");
+//        spectrumMatchRepository.saveAll(spectrumMatches);
         progress = 0F;
 
-        LOGGER.info(String.format("Total %d matches are saved to the database.", spectrumMatches.size()));
+//        LOGGER.info(String.format("Total %d matches are saved to the database.", spectrumMatches.size()));
     }
 }
