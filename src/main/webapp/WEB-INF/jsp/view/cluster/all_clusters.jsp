@@ -4,13 +4,13 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <section>
-    <h1>Clusters</h1>
+    <h1>Consensus spectra</h1>
     <div align="center">
         <table id="cluster_table" class="display" style="width: 100%;">
             <thead>
             <tr>
                 <th>ID</th>
-                <th title="Consensus spectrum">Consensus</th>
+                <th title="Consensus spectrum">Spectrum</th>
                 <th title="Number of spectra in a cluster">Count</th>
                 <th title="Minimum matching score between all spectra in a cluster">Score</th>
                 <th title="Average, minimum, and maximum values of the statistical significance">Significance</th>
