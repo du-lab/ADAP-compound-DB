@@ -1,5 +1,7 @@
 package org.dulab.adapcompounddb.site.services;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.DistanceMatrixWrapper;
@@ -24,6 +26,8 @@ import java.util.stream.IntStream;
 @Service
 public class SpectrumClustererImpl implements SpectrumClusterer {
 
+    private static final Logger LOGGER = LogManager.getLogger(SpectrumClusterer.class);
+
     private final SpectrumRepository spectrumRepository;
     private final SpectrumMatchRepository spectrumMatchRepository;
     private final SpectrumClusterRepository spectrumClusterRepository;;
@@ -41,12 +45,16 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
     @Transactional
     @Override
     public void removeAll() {
+        LOGGER.info("Deleting old clusters...");
         spectrumClusterRepository.deleteAllEmptyClusters();
+        LOGGER.info("Deleting old clusters is completed");
     }
 
     @Transactional
     @Override
     public void cluster(ChromatographyType type, int minNumSpectra, float scoreTolerance, float mzTolerance) {
+
+        LOGGER.info(String.format("Clustering spectra of type \"%s\"...", type));
 
         List<Spectrum> spectra = ServiceUtils.toList(spectrumRepository.findSpectraForClustering(type));
 
@@ -54,8 +62,10 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                 pageable -> spectrumMatchRepository.findByChromatographyType(type, pageable),
                 spectra);
 
-        if (matrix.getNumElements() == 0)
+        if (matrix.getNumElements() == 0) {
+            LOGGER.info("No matches found.");
             return;
+        }
 
         CompleteSparseHierarchicalClusterer clusterer = new CompleteSparseHierarchicalClusterer(matrix);
         clusterer.cluster(scoreTolerance);
@@ -66,6 +76,8 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                 .mapToLong(Integer::longValue)
                 .distinct()
                 .toArray();
+
+        LOGGER.info("Saving new clusters to the database...");
 
         for (long label : uniqueLabels) {
 
@@ -82,6 +94,8 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
             SpectrumCluster cluster = createCluster(spectrumIds, mzTolerance);
             spectrumClusterRepository.save(cluster);
         }
+
+        LOGGER.info(String.format("Clustering spectra of type \"%s\" is completed.", type));
     }
 
     private SpectrumCluster createCluster(Set<Long> spectrumIds, float mzTolerance)
