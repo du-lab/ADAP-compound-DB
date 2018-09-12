@@ -22,40 +22,6 @@
             </tr>
             </thead>
             <tbody>
-	            <%-- <c:forEach items="${clusters}" var="cluster">
-	                <tr>
-	                    <td>${cluster.id}</td>
-	                    <td><a href="${pageContext.request.contextPath}/cluster/${cluster.id}/">${cluster.consensusSpectrum.name}</a></td>
-	                    <td>${cluster.size}</td>
-	                    <td>${dulab:toIntegerScore(cluster.diameter)}</td>
-	                    <td title="Ave: ${cluster.aveSignificance}; Min: ${cluster.minSignificance}; Max: ${cluster.maxSignificance}">
-	                        <c:if test="${cluster.aveSignificance != null}">
-	                            <fmt:formatNumber type="number" maxFractionDigits="2"
-	                                              value="${cluster.aveSignificance}"/><br/>
-	                        </c:if>
-	                    </td>
-	
-	                    <c:forEach items="${submissionCategoryTypes}" var="type">
-	                        <td>
-	                            <c:forEach items="${cluster.diversityIndices}" var="diversityIndex">
-	                                <c:if test="${diversityIndex.id.categoryType == type}">
-	                                    <fmt:formatNumber type="number" maxFractionDigits="3"
-	                                                      value="${diversityIndex.diversity}"/>
-	                                </c:if>
-	                            </c:forEach>
-	                        </td>
-	                    </c:forEach>
-	
-	                    <td><img src="${pageContext.request.contextPath}/${cluster.consensusSpectrum.chromatographyType.iconPath}"
-	                             alt="${cluster.consensusSpectrum.chromatographyType.name()}"
-	                             title="${cluster.consensusSpectrum.chromatographyType.label}"
-	                             class="icon"/></td>
-	                    <td>
-	                        <!--more horiz-->
-	                        <a href="${pageContext.request.contextPath}/cluster/${cluster.id}/"><i class="material-icons" title="View">&#xE5D3;</i></a>
-	                    </td>
-	                </tr>
-	            </c:forEach> --%>
             </tbody>
         </table>
     </div>
@@ -108,7 +74,7 @@
                 },
                 {
                     "targets": 4,
-                    "orderable": false,
+                    "orderable": true,
                     "render": function (data, type, row, meta) {
                         var content = '<span title="Ave: ' + row.aveSignificance + '; Min: ' + row.minSignificance + '; Max: ' + row.maxSignificance + '}">';
                         if(row.aveSignificance) {
@@ -120,7 +86,7 @@
                 },
                 {
                     "targets": 5,
-                    "orderable": false,
+                    "orderable": true,
                     "render": function (data, type, row, meta) {
                         var content = '';
                         var indices = row.diversityIndices;
@@ -134,7 +100,7 @@
                 },
                 {
                     "targets": 6,
-                    "orderable": false,
+                    "orderable": true,
                     "render": function (data, type, row, meta) {
                         var content = '';
 	                    var indices = row.diversityIndices;
@@ -148,7 +114,7 @@
                 },
                 {
                     "targets": 7,
-                    "orderable": false,
+                    "orderable": true,
                     "render": function (data, type, row, meta) {
                         var content = '';
 	                    var indices = row.diversityIndices;
