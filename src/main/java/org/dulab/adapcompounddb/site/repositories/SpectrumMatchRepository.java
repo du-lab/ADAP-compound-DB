@@ -26,9 +26,4 @@ public interface SpectrumMatchRepository extends CrudRepository<SpectrumMatch, L
             "WHERE NOT sm.matchSpectrum.id = sm.querySpectrum.id AND sm.querySpectrum.chromatographyType = ?1 " +
             "ORDER BY sm.score DESC, sm.querySpectrum.id ASC, sm.matchSpectrum.id ASC")
     Page<SpectrumMatch> findByChromatographyType(ChromatographyType type, Pageable pageable);
-
-    @Query(value="select s from SpectrumCluster s "
-            + "where "
-            + "s.consensusSpectrum.name like %:search%")
-    Page<SpectrumCluster> findClusters(@Param("search") String searchStr, Pageable pageable);
 }

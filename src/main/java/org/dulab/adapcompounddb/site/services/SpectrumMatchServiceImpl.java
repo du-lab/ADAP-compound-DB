@@ -360,7 +360,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
             pageable = PageRequest.of(start / length, length);
         }
 
-        final Page<SpectrumCluster> spectrumPage = spectrumMatchRepository.findClusters(searchStr, pageable);
+        final Page<SpectrumCluster> spectrumPage = spectrumClusterRepository.findClusters(searchStr, pageable);
 
         final List<SpectrumClusterDTO> spectrumList = objectMapper.map(spectrumPage.getContent(), SpectrumClusterDTO.class);
         final DataTableResponse response = new DataTableResponse(spectrumList);
