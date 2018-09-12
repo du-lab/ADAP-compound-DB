@@ -222,6 +222,7 @@
     });
 
     $('#submission_table').DataTable({
+        "order": [[1, "desc"]],
         serverSide: true,
         processing: true,
         ajax: {
