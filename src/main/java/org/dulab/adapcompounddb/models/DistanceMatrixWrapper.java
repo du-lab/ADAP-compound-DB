@@ -17,7 +17,7 @@ import java.util.stream.IntStream;
 
 public class DistanceMatrixWrapper implements Matrix {
 
-    private static final int PAGE_SIZE = 100;
+    private static final int PAGE_SIZE = 1000;
     private final Function<Pageable, Page<SpectrumMatch>> function;
     private final Map<Long, Integer> spectrumIndexMap;
 
