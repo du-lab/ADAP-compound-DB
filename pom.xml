@@ -309,6 +309,12 @@
             <version>8.0.11</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.du-lab.jsparsehc</groupId>
+            <artifactId>jsparsehc</artifactId>
+            <version>0.0.3</version>
+        </dependency>
+
     </dependencies>
     <build>
         <finalName>adap-compound-db</finalName>
