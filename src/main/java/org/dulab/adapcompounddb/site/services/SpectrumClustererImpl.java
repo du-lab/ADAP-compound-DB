@@ -125,6 +125,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                 .stream()
                 .map(Spectrum::getSignificance)
                 .filter(Objects::nonNull)
+                .map(Math::abs)
                 .collect(Collectors.summarizingDouble(Double::doubleValue));
 
         if (significanceStats.getCount() > 0) {
