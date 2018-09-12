@@ -29,6 +29,7 @@ import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
+import org.dulab.adapcompounddb.utils.MathUtils;
 import org.dulab.adapcompounddb.utils.ObjectMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -50,8 +51,6 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     private final SpectrumRepository spectrumRepository;
     private final SpectrumMatchRepository spectrumMatchRepository;
     private final SpectrumClusterRepository spectrumClusterRepository;
-
-    private final MathService mathService;
 
     private static enum ColumnInformation {
         ID(0, "id"), NAME(1, "consensusSpectrum.name"), COUNT(2, "size"), SCORE(3, "diameter");
@@ -86,13 +85,11 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     @Autowired
     public SpectrumMatchServiceImpl(final SpectrumRepository spectrumRepository,
             final SpectrumMatchRepository spectrumMatchRepository,
-            final SpectrumClusterRepository spectrumClusterRepository,
-            final MathService mathService) {
+            final SpectrumClusterRepository spectrumClusterRepository) {
 
         this.spectrumRepository = spectrumRepository;
         this.spectrumMatchRepository = spectrumMatchRepository;
         this.spectrumClusterRepository = spectrumClusterRepository;
-        this.mathService = mathService;
     }
 
     @Transactional
@@ -187,7 +184,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
                 final Set<DiversityIndex> diversityIndices = new HashSet<>();
                 for (final SubmissionCategoryType categoryType : SubmissionCategoryType.values()) {
 
-                    final double diversity = mathService.diversityIndex(
+                    final double diversity = MathUtils.diversityIndex(
                             cluster.getSpectra()
                             .stream()
                             .map(Spectrum::getFile).filter(Objects::nonNull)

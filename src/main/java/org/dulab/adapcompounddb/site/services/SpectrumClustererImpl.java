@@ -8,6 +8,7 @@ import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
+import org.dulab.adapcompounddb.utils.MathUtils;
 import org.dulab.jsparcehc.CompleteSparseHierarchicalClusterer;
 import org.dulab.jsparcehc.Matrix;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,19 +26,16 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
     private final SpectrumRepository spectrumRepository;
     private final SpectrumMatchRepository spectrumMatchRepository;
-    private final SpectrumClusterRepository spectrumClusterRepository;
-    private final MathService mathService;
+    private final SpectrumClusterRepository spectrumClusterRepository;;
 
     @Autowired
     public SpectrumClustererImpl(SpectrumRepository spectrumRepository,
                                  SpectrumMatchRepository spectrumMatchRepository,
-                                 SpectrumClusterRepository spectrumClusterRepository,
-                                 MathService mathService) {
+                                 SpectrumClusterRepository spectrumClusterRepository) {
 
         this.spectrumRepository = spectrumRepository;
         this.spectrumMatchRepository = spectrumMatchRepository;
         this.spectrumClusterRepository = spectrumClusterRepository;
-        this.mathService = mathService;
     }
 
     @Transactional
@@ -142,7 +140,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
         for (final SubmissionCategoryType categoryType : SubmissionCategoryType.values()) {
 
-            final double diversity = mathService.diversityIndex(cluster.getSpectra()
+            final double diversity = MathUtils.diversityIndex(cluster.getSpectra()
                     .stream()
                     .map(Spectrum::getFile).filter(Objects::nonNull)
                     .map(File::getSubmission).filter(Objects::nonNull)

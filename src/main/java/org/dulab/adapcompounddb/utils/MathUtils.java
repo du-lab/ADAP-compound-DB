@@ -1,18 +1,17 @@
-package org.dulab.adapcompounddb.site.services;
+package org.dulab.adapcompounddb.utils;
 
 import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
-import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
 
-@Service
-public class MathServiceImpl implements MathService {
+public class MathUtils {
 
-    @Override
-    public double diversityIndex(List<SubmissionCategory> categories) {
+    public static double diversityIndex(List<SubmissionCategory> categories) {
 
         // Count the number of entries of each category
         Map<Optional<SubmissionCategory>, Long> categoryCountMap = categories
@@ -23,10 +22,10 @@ public class MathServiceImpl implements MathService {
         final double entropy = categoryCountMap.values()
                 .stream()
                 .mapToDouble(count -> count.doubleValue() / categories.size())
-                .map(p -> -p * Math.log(p))
+                .map(p -> -p * java.lang.Math.log(p))
                 .sum();
 
         // Calculate the diversity index
-        return Math.exp(entropy);
+        return java.lang.Math.exp(entropy);
     }
 }
