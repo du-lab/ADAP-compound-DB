@@ -1,6 +1,5 @@
 package org.dulab.adapcompounddb.site.services;
 
-import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +20,8 @@ public class MathServiceImpl implements MathService {
                 .collect(groupingBy(Optional::ofNullable, counting()));
 
         // Calculate entropy
-        final double entropy = categoryCountMap.values().stream()
+        final double entropy = categoryCountMap.values()
+                .stream()
                 .mapToDouble(count -> count.doubleValue() / categories.size())
                 .map(p -> -p * Math.log(p))
                 .sum();

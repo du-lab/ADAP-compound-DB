@@ -3,10 +3,8 @@ package org.dulab.adapcompounddb.site.services;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.DistanceMatrixWrapper;
-import org.dulab.adapcompounddb.models.entities.Peak;
-import org.dulab.adapcompounddb.models.entities.Spectrum;
-import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
-import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
+import org.dulab.adapcompounddb.models.SubmissionCategoryType;
+import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
@@ -28,15 +26,18 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
     private final SpectrumRepository spectrumRepository;
     private final SpectrumMatchRepository spectrumMatchRepository;
     private final SpectrumClusterRepository spectrumClusterRepository;
+    private final MathService mathService;
 
     @Autowired
     public SpectrumClustererImpl(SpectrumRepository spectrumRepository,
                                  SpectrumMatchRepository spectrumMatchRepository,
-                                 SpectrumClusterRepository spectrumClusterRepository) {
+                                 SpectrumClusterRepository spectrumClusterRepository,
+                                 MathService mathService) {
 
         this.spectrumRepository = spectrumRepository;
         this.spectrumMatchRepository = spectrumMatchRepository;
         this.spectrumClusterRepository = spectrumClusterRepository;
+        this.mathService = mathService;
     }
 
     @Transactional
@@ -120,6 +121,9 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
             cluster.setMaxSignificance(significanceStats.getMax());
         }
 
+        // Calculate diversity
+        cluster.setDiversityIndices(getDiversityIndices(cluster));
+
         Spectrum consensusSpectrum = createConsensusSpectrum(spectra, mzTolerance);
         consensusSpectrum.setCluster(cluster);
         cluster.setConsensusSpectrum(consensusSpectrum);
@@ -132,6 +136,37 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                 .orElseThrow(() -> new EmptySearchResultException(id));
     }
 
+    private Set<DiversityIndex> getDiversityIndices(SpectrumCluster cluster) {
+
+        Set<DiversityIndex> diversityIndices = new HashSet<>();
+
+        for (final SubmissionCategoryType categoryType : SubmissionCategoryType.values()) {
+
+            final double diversity = mathService.diversityIndex(cluster.getSpectra()
+                    .stream()
+                    .map(Spectrum::getFile).filter(Objects::nonNull)
+                    .map(File::getSubmission).filter(Objects::nonNull)
+                    .map(s -> s.getCategory(categoryType))
+                    .collect(Collectors.toList()));
+
+            if (diversity > 0.0) {
+                final DiversityIndex diversityIndex = new DiversityIndex();
+                diversityIndex.setId(new DiversityIndexId(cluster, categoryType));
+                diversityIndex.setDiversity(diversity);
+                diversityIndices.add(diversityIndex);
+            }
+        }
+
+        return diversityIndices;
+    }
+
+    /**
+     * Creates a consensus spectrum by clustering all m/z values and calculating average intensities for each cluster
+     *
+     * @param spectra     list of spectra
+     * @param mzTolerance maximum distance between m/z values in a cluster
+     * @return consensus spectrum
+     */
     private Spectrum createConsensusSpectrum(List<Spectrum> spectra, float mzTolerance) {
 
         ChromatographyType type = spectra.stream()
@@ -189,6 +224,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
         return consensusSpectrum;
     }
+
 
     /**
      * Selects the most frequent name in the cluster
