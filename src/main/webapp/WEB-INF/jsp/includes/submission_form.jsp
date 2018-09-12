@@ -67,7 +67,7 @@
                             <input type="submit" value="Save"/>
                         </c:when>
                         <c:otherwise>
-                            <input type="submit" value="Submit" formaction="submit"/>
+                            <input id="button-submit" type="submit" value="Submit" formaction="submit"/>
                             <a href="clear/" class="button">Clear</a>
                         </c:otherwise>
                     </c:choose>
@@ -76,3 +76,16 @@
         </div>
     </div>
 </section>
+
+<div id="progress-dialog"></div>
+
+<script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
+<script src="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.js"/>"></script>
+<script src="<c:url value="/resources/AdapCompoundDb/js/dialogs.js"/>"></script>
+<script>
+    var progressDialog = $('#progress-dialog').progressDialog();
+
+    $('#button-submit').click(function () {
+        progressDialog.show('Submitting new spectra may take a while. Please wait...');
+    })
+</script>
