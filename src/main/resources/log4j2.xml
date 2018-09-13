@@ -33,10 +33,10 @@
         <logger name="org.hibernate" level="info">
             <appender-ref ref="DulabFileAppender"/>
         </logger>
-        <logger name="org.hibernate.SQL" level="debug" additivity="false">
+        <logger name="org.hibernate.SQL" level="info" additivity="false">
             <appender-ref ref="DulabFileAppender"/>
         </logger>
-        <logger name="org.hibernate.type.descriptor.sql" level="debug" additivity="false">
+        <logger name="org.hibernate.type.descriptor.sql" level="info" additivity="false">
             <appender-ref ref="DulabFileAppender"/>
         </logger>
         <!--<logger name="org.hibernate.stat" level="debug"/>-->
