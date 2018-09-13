@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.site.controllers;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -77,8 +78,10 @@ public class AdminController {
     @RequestMapping(value = "/admin/cluster/", method = RequestMethod.GET)
     public String cluster() {
         try {
-            for (ChromatographyType type : ChromatographyType.values())
-                spectrumClusterer.cluster(type, 2, 0.25F, 0.01F);
+            Arrays.stream(ChromatographyType.values())
+                    .parallel()
+                    .forEach(t -> spectrumClusterer
+                            .cluster(t, 2, 0.25F, 0.01F));
             spectrumClusterer.removeAll();
         } catch (EmptySearchResultException e) {
             System.out.println(e.getMessage());

@@ -63,7 +63,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                 spectra);
 
         if (matrix.getNumElements() == 0) {
-            LOGGER.info("No matches found.");
+            LOGGER.info(String.format("No matches found for spectra of type \"%s\".", type));
             return;
         }
 
@@ -77,7 +77,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                 .distinct()
                 .toArray();
 
-        LOGGER.info("Saving new clusters to the database...");
+        LOGGER.info(String.format("Saving new clusters of type \"%s\" to the database...", type));
 
         for (long label : uniqueLabels) {
 
