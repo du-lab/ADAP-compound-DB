@@ -111,22 +111,22 @@ public class Spectrum implements Serializable {
     }
 
     public void setPeaks(final List<Peak> peaks) {
+        setPeaks(peaks, false);
+    }
 
-        if (peaks == null) {
-            return;
-        }
-
-        final double totalIntensity = peaks.stream().mapToDouble(Peak::getIntensity).sum();
-
-        if (totalIntensity <= 0.0) {
-            return;
-        }
-
-        for (final Peak peak : peaks) {
-            peak.setIntensity(peak.getIntensity() / totalIntensity);
-        }
+    public void setPeaks(final List<Peak> peaks, boolean normalize) {
 
         this.peaks = peaks;
+
+        if (peaks != null && normalize) {
+
+            double totalIntensity = peaks.stream()
+                    .mapToDouble(Peak::getIntensity)
+                    .sum();
+
+            for (Peak peak : peaks)
+                peak.setIntensity(peak.getIntensity() / totalIntensity);
+        }
     }
 
     public List<SpectrumProperty> getProperties() {
