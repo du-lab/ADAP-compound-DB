@@ -11,8 +11,8 @@ import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.utils.MathUtils;
-import org.dulab.jsparcehc.CompleteSparseHierarchicalClusterer;
 import org.dulab.jsparcehc.Matrix;
+import org.dulab.jsparcehc.SparseHierarchicalClusterer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,7 +67,8 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
             return;
         }
 
-        CompleteSparseHierarchicalClusterer clusterer = new CompleteSparseHierarchicalClusterer(matrix);
+        SparseHierarchicalClusterer clusterer = new SparseHierarchicalClusterer(
+                matrix, new org.dulab.jsparcehc.CompleteLinkage());
         clusterer.cluster(scoreTolerance);
         Map<Integer, Integer> labelMap = clusterer.getLabels();
 
