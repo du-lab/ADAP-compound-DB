@@ -9,7 +9,7 @@ import org.dulab.adapcompounddb.models.entities.Spectrum;
 
 public class SpectrumQueryBuilder {
 
-    private final String peakView;
+    private final SearchType searchType;
 
     private final ChromatographyType chromatographyType;
 
@@ -28,19 +28,11 @@ public class SpectrumQueryBuilder {
     private double scoreThreshold;
 
 
-    public SpectrumQueryBuilder(SearchType searchType, ChromatographyType chromatographyType, Set<Spectrum> excludeSpectra) {
+    public SpectrumQueryBuilder(SearchType searchType,
+                                ChromatographyType chromatographyType,
+                                Set<Spectrum> excludeSpectra) {
 
-        switch (searchType) {
-            case SIMILARITY_SEARCH:
-                this.peakView = "SearchSpectrumPeakViewV2";
-                break;
-            case CLUSTERING:
-                this.peakView = "ClusterSpectrumPeakView";
-                break;
-            default:
-                this.peakView = "SearchSpectrumPeakViewV2";
-        }
-
+        this.searchType = searchType;
         this.chromatographyType = chromatographyType;
         this.excludeSpectra = excludeSpectra;
     }
@@ -79,8 +71,19 @@ public class SpectrumQueryBuilder {
 
         StringBuilder librarySelectionBuilder = new StringBuilder();
 
+        switch (searchType) {
+
+            case CLUSTERING:
+                librarySelectionBuilder.append("Consensus IS FALSE AND Reference IS FALSE");
+                break;
+
+            case SIMILARITY_SEARCH:
+            default:
+                librarySelectionBuilder.append("(Consensus IS TRUE OR Reference IS TRUE)");
+        }
+
         librarySelectionBuilder.append(
-                String.format("ChromatographyType = \"%s\"", chromatographyType));
+                String.format(" AND ChromatographyType = \"%s\"", chromatographyType));
 
         if (precursorRange != null)
             librarySelectionBuilder.append(
@@ -117,16 +120,17 @@ public class SpectrumQueryBuilder {
 
         String query;
         if (spectrum == null)
-            query = String.format("SELECT DISTINCT SpectrumId, 0 AS Score FROM %s\n", peakView);
+            query = "SELECT DISTINCT SpectrumId, 0 AS Score FROM Peak\n";
 
         else {
             query = "SELECT SpectrumId, POWER(SUM(Product), 2) AS Score FROM (\n";  // 0 AS Id, NULL AS QuerySpectrumId, SpectrumId AS MatchSpectrumId
 
             query += spectrum.getPeaks()
                     .stream()
-                    .map(p -> String.format("\tSELECT SpectrumId, MAX(SQRT(Intensity * %f)) AS Product FROM %s " +
-                                    "WHERE Mz > %f AND Mz < %f AND %s GROUP BY SpectrumId\n",
-                            p.getIntensity(), peakView,
+                    .map(p -> String.format("\tSELECT SpectrumId, MAX(SQRT(Intensity * %f)) AS Product " +
+                                    "FROM Peak, Spectrum " +
+                                    "WHERE Peak.SpectrumId = Spectrum.Id AND Peak.Mz > %f AND Peak.Mz < %f AND %s GROUP BY SpectrumId\n",
+                            p.getIntensity(),
                             p.getMz() - mzTolerance,
                             p.getMz() + mzTolerance,
                             librarySelectionBuilder.toString()))
