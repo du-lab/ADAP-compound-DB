@@ -59,10 +59,10 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+//    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void run() {
 
-//        List<SpectrumMatch> spectrumMatches = new ArrayList<>();
+        List<SpectrumMatch> spectrumMatches = new ArrayList<>();
 
         final long countUnmatched = spectrumRepository.countUnmatched();
 
@@ -79,26 +79,38 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
             Iterable<Spectrum> unmatchedSpectra =
                     spectrumRepository.findUnmatchedByChromatographyType(chromatographyType);
 
-            long startingTime = System.currentTimeMillis();
-
             LOGGER.info(String.format("Matching unmatched spectra of %s...", chromatographyType));
+            long count = 0;
+            long startingTime = System.currentTimeMillis();
             for (Spectrum querySpectrum : unmatchedSpectra) {
-                List<SpectrumMatch> spectrumMatches =
+
+                spectrumMatches.addAll(
                         spectrumRepository.spectrumSearch(
-                                SearchType.CLUSTERING, querySpectrum, params);
-                spectrumMatchRepository.saveAll(spectrumMatches);
+                                SearchType.CLUSTERING, querySpectrum, params));
+
+//                spectrumMatchRepository.saveAll(spectrumMatches);
+//                spectrumMatchRepository.flush();
                 progress += progressStep;
+                count += 1;
+
+                if (count == 100) {
+                    long endingTime = System.currentTimeMillis();
+                    LOGGER.info(String.format("%d spectra of %s are matched with average time %d milliseconds.",
+                            count, chromatographyType.getLabel(), (endingTime - startingTime) / count));
+                    count = 0;
+                    startingTime = endingTime;
+                }
             }
 
             long elapsedTime = System.currentTimeMillis() - startingTime;
-            LOGGER.info(String.format("Unmatched spectra of %s are matched with average time %d milliseconds.",
-                    chromatographyType.getLabel(), countUnmatched > 0 ? elapsedTime / countUnmatched : 0));
+            LOGGER.info(String.format("%d spectra of %s are matched with average time %d milliseconds.",
+                    count, chromatographyType.getLabel(), count > 0 ? elapsedTime / count : 0));
         }
 
-//        LOGGER.info("Saving matches to the database...");
-//        spectrumMatchRepository.saveAll(spectrumMatches);
+        LOGGER.info("Saving matches to the database...");
+        spectrumMatchRepository.saveAll(spectrumMatches);
         progress = 0F;
 
-//        LOGGER.info(String.format("Total %d matches are saved to the database.", spectrumMatches.size()));
+        LOGGER.info(String.format("Total %d matches are saved to the database.", spectrumMatches.size()));
     }
 }

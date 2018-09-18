@@ -1,17 +1,15 @@
 package org.dulab.adapcompounddb.site.repositories;
 
-import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface SpectrumMatchRepository extends CrudRepository<SpectrumMatch, Long> {
+public interface SpectrumMatchRepository extends JpaRepository<SpectrumMatch, Long> {
 
     List<SpectrumMatch> findAllByQuerySpectrumId(long querySpectrumId);
 
