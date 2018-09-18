@@ -76,9 +76,12 @@
                     "targets": 4,
                     "orderable": true,
                     "render": function (data, type, row, meta) {
-                        var content = '<span title="Ave: ' + row.aveSignificance + '; Min: ' + row.minSignificance + '; Max: ' + row.maxSignificance + '}">';
+                    	var content = '';
                         if(row.aveSignificance) {
-                            content += row.aveSignificance;
+                            content += '></span></td>';
+	                    	var avgSignificance = row.aveSignificance.toFixed(3);
+	                        content = '<span title="Ave: ' + row.aveSignificance + '; Min: ' + row.minSignificance.toFixed(3) + '; Max: ' + row.maxSignificance.toFixed(3) + '}"></span>';
+                            content += avgSignificance;
                         }
                         content += '</td>';
                         return content;
@@ -92,7 +95,7 @@
                         var indices = row.diversityIndices;
                         for(i=0; i<indices.length; i++) {
                             if(indices[i].categoryType == 'SOURCE') {
-                                content += indices[i].diversity;
+                                content += indices[i].diversity.toFixed(3);
                             }
                         }
                         return content;
@@ -106,7 +109,7 @@
 	                    var indices = row.diversityIndices;
 	                    for(i=0; i<indices.length; i++) {
 	                        if(indices[i].categoryType == 'TREATMENT') {
-	                            content += indices[i].diversity;
+	                            content += indices[i].diversity.toFixed(3);
 	                        }
 	                    }
 	                    return content;
@@ -120,7 +123,7 @@
 	                    var indices = row.diversityIndices;
 	                    for(i=0; i<indices.length; i++) {
 	                        if(indices[i].categoryType == 'SPECIMEN') {
-	                            content += indices[i].diversity;
+	                            content += indices[i].diversity.toFixed(3);
 	                        }
 	                    }
 	                    return content;

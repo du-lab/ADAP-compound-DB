@@ -20,6 +20,7 @@ public interface SpectrumClusterRepository extends JpaRepository<SpectrumCluster
 
     @Query(value="select s from SpectrumCluster s "
             + "where "
-            + "s.consensusSpectrum.name like %:search%")
+            + "s.consensusSpectrum.name like %:search% "
+    		+ "OR s.consensusSpectrum.chromatographyType like %:search%")
     Page<SpectrumCluster> findClusters(@Param("search") String searchStr, Pageable pageable);
 }
