@@ -28,6 +28,9 @@ function TwoSpectraPlot(divId, topSpectrum) {
         .range([height - padding['bottom'], padding['top']]);
     yScale.clamp(true);
 
+    var resetXScale = xScale;
+    var resetYScale = yScale;
+
     var svg = d3.select('#' + divId)
         .append('svg')
         .attr('width', width)
@@ -200,10 +203,10 @@ function TwoSpectraPlot(divId, topSpectrum) {
 
         peaks.transition()
             .attr('x1', function (d) {
-                return xScale(d.mz);
+                return Math.max(padding['left'], xScale(d.mz));
             })
             .attr('x2', function (d) {
-                return xScale(d.mz);
+                return Math.max(padding['left'], xScale(d.mz));
             })
             .attr('y1', yScale(0))
             .attr('y2', function (d) {
@@ -274,6 +277,8 @@ function TwoSpectraPlot(divId, topSpectrum) {
     var scaleGraph = function(newScaleX, newScaleY) {
         gx.call(xAxis.scale(newScaleX));
         gy.call(yAxis.scale(newScaleY));
+        xScale = newScaleX;
+        yScale = newScaleY;
         gridLinesX.call(d3.axisBottom(newScaleX)
             .ticks(5)
             .tickSize(-plotHeight)
@@ -284,18 +289,16 @@ function TwoSpectraPlot(divId, topSpectrum) {
             .tickFormat(''));
 
         var spectra = d3.select("svg").selectAll("line.top,.bottom");
-        spectra
+        spectra.transition()
             .attr('x1', function (d) {
                 return Math.max(padding['left'], newScaleX(d.mz));
             })
             .attr('x2', function (d) {
                 return Math.max(padding['left'], newScaleX(d.mz));
-            });
-        spectra
+            })
             .attr('y1', function (d) {
                 return Math.max(padding['top'], Math.min(newScaleY(0), height - padding['bottom']));
-            });
-        spectra
+            })
             .attr('y2', function (d) {
                 var tempIntensity = d.intensity;
                 if(d3.select(this).classed("bottom")) {
@@ -305,7 +308,7 @@ function TwoSpectraPlot(divId, topSpectrum) {
             });
     };
     var resetGraph = function() {
-        scaleGraph(xScale, yScale);
+        scaleGraph(resetXScale, resetYScale);
     };
     button.on("click", resetGraph);
     buttonText.on("click", resetGraph);
