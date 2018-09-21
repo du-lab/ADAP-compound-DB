@@ -161,9 +161,9 @@
     });
 </script>
 
-<script src="/resources/d3/d3.min.js"></script>
-<script src="/resources/AdapCompoundDb/js/twospectraplot.js"></script>
-<script src="/resources/AdapCompoundDb/js/piechart.js"></script>
+<script src="<c:url value="/resources/d3/d3.min.js"/>"></script>
+<script src="<c:url value="/resources/AdapCompoundDb/js/twospectraplot.js"/>"></script>
+<script src="<c:url value="/resources/AdapCompoundDb/js/piechart.js"/>"></script>
 <script>
     // Add Spectrum Plot
     var plot = new TwoSpectraPlot('plot', ${dulab:spectrumToJson(cluster.consensusSpectrum)});

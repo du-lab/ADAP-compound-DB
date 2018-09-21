@@ -78,12 +78,17 @@
                     "render": function (data, type, row, meta) {
                     	var content = '';
                         if(row.aveSignificance) {
-                            content += '></span></td>';
 	                    	var avgSignificance = row.aveSignificance.toFixed(3);
-	                        content = '<span title="Ave: ' + row.aveSignificance + '; Min: ' + row.minSignificance.toFixed(3) + '; Max: ' + row.maxSignificance.toFixed(3) + '}"></span>';
+	                        content += '<span title="Ave: ' + row.aveSignificance;
+	                        if(row.minSignificance) {
+	                            content += '; Min: ' + row.minSignificance.toFixed(3);
+	                        }
+	                        if(row.maxSignificance) {
+	                            content += '; Max: ' + row.maxSignificance.toFixed(3);
+	                        }
+	                        content += '}"></span>';
                             content += avgSignificance;
                         }
-                        content += '</td>';
                         return content;
                     }
                 },
