@@ -97,15 +97,6 @@
                     "orderable": true,
                     "render": function (data, type, row, meta) {
                         var content = '';
-                        /* var indices = row.consensusSpectrum.diversityIndices;
-                        if(indices != undefined) {
-	                        for(i=0; i<indices.length; i++) {
-	                            if(indices[i].categoryType == 'SOURCE') {
-	                                content += indices[i].diversity.toFixed(3);
-	                            }
-	                        }
-                        }
-                        return content; */
                         if(row.source != undefined) {
                             content = row.source.toFixed(3);
                         }
@@ -117,15 +108,6 @@
                     "orderable": true,
                     "render": function (data, type, row, meta) {
                         var content = '';
-                        /* var indices = row.consensusSpectrum.diversityIndices;
-                        if(indices != undefined) {
-		                    for(i=0; i<indices.length; i++) {
-		                        if(indices[i].categoryType == 'SPECIMEN') {
-		                            content += indices[i].diversity.toFixed(3);
-		                        }
-                            }
-                        }
-	                    return content; */
 	                    if(row.specimen != undefined) {
 	                        content = row.specimen.toFixed(3);
 	                    }
@@ -137,15 +119,6 @@
                     "orderable": true,
                     "render": function (data, type, row, meta) {
                         var content = '';
-                        /* var indices = row.consensusSpectrum.diversityIndices;
-	                    if(indices != undefined) {
-		                    for(i=0; i<indices.length; i++) {
-		                        if(indices[i].categoryType == 'TREATMENT') {
-		                            content += indices[i].diversity.toFixed(3);
-		                        }
-		                    }
-	                    }
-	                    return content; */
                         if(row.treatment != undefined) {
                             content = row.treatment.toFixed(3);
                         }
