@@ -9,7 +9,11 @@ import javax.sql.DataSource;
 
 import org.hibernate.validator.HibernateValidator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.AdviceMode;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -26,8 +30,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 @EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = false)
 @EnableJpaRepositories(basePackages = "org.dulab.adapcompounddb.site.repositories", entityManagerFactoryRef = "entityManagerFactoryBean", transactionManagerRef = "jpaTransactionManager")
 @ComponentScan(basePackages = { "org.dulab.adapcompounddb.site",
-        "org.dulab.adapcompounddb.rest" }, excludeFilters = @ComponentScan.Filter({ Controller.class,
-                ControllerAdvice.class }))
+"org.dulab.adapcompounddb.rest" }, excludeFilters = @ComponentScan.Filter({ Controller.class,
+    ControllerAdvice.class }))
 @Import({ WebSecurityConfiguration.class })
 public class ApplicationContextConfiguration {
 
@@ -49,21 +53,21 @@ public class ApplicationContextConfiguration {
     }
 
     @Bean
-//    @Profile("!test")
+    //    @Profile("!test")
     public DataSource adapCompoundDbDataSource() {
         final JndiDataSourceLookup lookup = new JndiDataSourceLookup();
         return lookup.getDataSource("jdbc/AdapCompoundDbDataSource");
     }
 
-//    @Bean
-//    @Profile("test")
-//    public DataSource adapCompoundDbDataSourceTest() {
-//        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-//        dataSource.setUrl("jdbc:mysql://localhost:3306/adapcompounddb");
-//        dataSource.setUsername("root");
-//        dataSource.setPassword("sesame");
-//        return dataSource;
-//    }
+    //    @Bean
+    //    @Profile("test")
+    //    public DataSource adapCompoundDbDataSourceTest() {
+    //        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+    //        dataSource.setUrl("jdbc:mysql://localhost:3306/adapcompounddb");
+    //        dataSource.setUsername("root");
+    //        dataSource.setPassword("sesame");
+    //        return dataSource;
+    //    }
 
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean() {
@@ -79,10 +83,10 @@ public class ApplicationContextConfiguration {
 
         final Map<String, Object> jpaPropertyMap = new HashMap<>();
         jpaPropertyMap.put("javax.persistence.schema-generation.database.action", "none");
-//        jpaPropertyMap.put("hibernate.format_sql", true);
-//        jpaPropertyMap.put("hibernate.use_sql_comments", true);
-//        jpaPropertyMap.put("hibernate.show_sql", true);
-//        jpaPropertyMap.put("hibernate.generate_statistics", true);
+        //        jpaPropertyMap.put("hibernate.format_sql", true);
+        //        jpaPropertyMap.put("hibernate.use_sql_comments", true);
+        //        jpaPropertyMap.put("hibernate.show_sql", true);
+        //        jpaPropertyMap.put("hibernate.generate_statistics", true);
         factory.setJpaPropertyMap(jpaPropertyMap);
 
         return factory;

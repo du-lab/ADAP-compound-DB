@@ -26,6 +26,7 @@ import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
+import org.dulab.adapcompounddb.models.entities.views.ClusterPage;
 import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
@@ -53,7 +54,10 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     private final SpectrumClusterRepository spectrumClusterRepository;
 
     private static enum ColumnInformation {
-        ID(0, "id"), NAME(1, "consensusSpectrum.name"), COUNT(2, "size"), SCORE(3, "diameter"), SIGNIFICANCE(4, "aveSignificance");
+        ID(0, "id"), NAME(1, "spectrumCluster.consensusSpectrum.name"),
+        COUNT(2, "spectrumCluster.size"), SCORE(3, "spectrumCluster.diameter"), SIGNIFICANCE(4, "spectrumCluster.aveSignificance"),
+        SOURCE(5,"source"), SPECIMEN(6,"specimen"), TREATMENT(7,"treatment"),
+        CHROMATOGRAPHYTYPE(8, "spectrumCluster.consensusSpectrum.chromatographyType");
 
         private int position;
         private String sortColumnName;
@@ -357,9 +361,17 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
             pageable = PageRequest.of(start / length, length);
         }
 
-        final Page<SpectrumCluster> spectrumPage = spectrumClusterRepository.findClusters(searchStr, pageable);
+        final Page<ClusterPage> spectrumPage = spectrumClusterRepository.findClusters(searchStr, pageable);
+        final List<SpectrumClusterDTO> spectrumList = new ArrayList<>();
 
-        final List<SpectrumClusterDTO> spectrumList = objectMapper.map(spectrumPage.getContent(), SpectrumClusterDTO.class);
+        for(final ClusterPage clusterPage: spectrumPage.getContent()) {
+            final SpectrumClusterDTO spectrumCluster = objectMapper.map(clusterPage.getSpectrumCluster(), SpectrumClusterDTO.class);
+            spectrumCluster.setSource(clusterPage.getSource());
+            spectrumCluster.setSpecimen(clusterPage.getSpecimen());
+            spectrumCluster.setTreatment(clusterPage.getTreatment());
+            spectrumList.add(spectrumCluster);
+        }
+
         final DataTableResponse response = new DataTableResponse(spectrumList);
         response.setRecordsTotal(spectrumPage.getTotalElements());
         response.setRecordsFiltered(spectrumPage.getTotalElements());
