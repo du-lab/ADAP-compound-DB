@@ -86,10 +86,10 @@ public class Spectrum implements Serializable {
             fullName = "UNKNOWN";
         }
         if (reference) {
-            fullName = "[RS] " + fullName;
+            fullName = "[Ref Spec] " + fullName;
         }
         if (consensus) {
-            fullName = "[CS] " + fullName;
+            fullName = "[Con Spec] " + fullName;
         }
         return fullName;
     }

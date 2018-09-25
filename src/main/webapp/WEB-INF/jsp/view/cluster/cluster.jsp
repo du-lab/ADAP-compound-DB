@@ -7,7 +7,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <section>
-    <h1>Cluster</h1>
+    <h1>Consensus Spectrum</h1>
     <div align="center">
         <table id="property_table" class="display" style="width: 100%;">
             <thead>
@@ -22,26 +22,45 @@
                 <td><a href="${pageContext.request.contextPath}/spectrum/${cluster.consensusSpectrum.id}/">
                     ${cluster.consensusSpectrum.name}</a></td>
             </tr>
+            <c:if test="${cluster.consensusSpectrum.precursor != null}">
+                <tr>
+                    <td><strong>Precursor M/z</strong></td>
+                    <td>${cluster.consensusSpectrum.precursor}</td>
+                </tr>
+            </c:if>
             <tr>
-                <td><strong>Number of spectra</strong></td>
+                <td><strong>Number of submitted spectra</strong></td>
                 <td>${cluster.size}</td>
+            </tr>
+            <tr>
+                <td><strong>Chromatography Type</strong></td>
+                <td>
+                    <img src="${pageContext.request.contextPath}/${cluster.consensusSpectrum.chromatographyType.iconPath}"
+                         class="icon"/>&nbsp;${cluster.consensusSpectrum.chromatographyType.label}
+                </td>
             </tr>
             <tr>
                 <td><strong>Similarity Score</strong></td>
                 <td>${dulab:toIntegerScore(cluster.diameter)}</td>
             </tr>
-            <tr>
-                <td><strong>Average significance</strong></td>
-                <td>${cluster.aveSignificance}</td>
-            </tr>
-            <tr>
-                <td><strong>Minimum significance</strong></td>
-                <td>${cluster.minSignificance}</td>
-            </tr>
-            <tr>
-                <td><strong>Maximum significance</strong></td>
-                <td>${cluster.maxSignificance}</td>
-            </tr>
+            <c:if test="${cluster.aveSignificance != null}">
+                <tr>
+                    <td><strong>Average significance</strong></td>
+                    <td>${cluster.aveSignificance}</td>
+                </tr>
+            </c:if>
+            <c:if test="${cluster.minSignificance != null}">
+                <tr>
+                    <td><strong>Minimum significance</strong></td>
+                    <td>${cluster.minSignificance}</td>
+                </tr>
+            </c:if>
+            <c:if test="${cluster.maxSignificance != null}">
+                <tr>
+                    <td><strong>Maximum significance</strong></td>
+                    <td>${cluster.maxSignificance}</td>
+                </tr>
+            </c:if>
             </tbody>
         </table>
     </div>
