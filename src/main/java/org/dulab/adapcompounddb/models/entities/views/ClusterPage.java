@@ -15,7 +15,7 @@ import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
 import org.hibernate.annotations.Immutable;
 
 @Entity
-@Table(name="clusterpage")
+@Table(name="ClusterPage")
 @Immutable
 public class ClusterPage implements Serializable {
 
@@ -29,39 +29,18 @@ public class ClusterPage implements Serializable {
     @Column(name="id", updatable=false, nullable=false)
     private Long id;
 
-    /*@Column
-    private String name;
-
-    @Column
-    private Integer size;
-
-    @Column
-    private Double diameter;
-
-    @Column
-    private Double aveSignificance;
-
-    @Column
-    private Double minSignificance;
-
-    @Column
-    private Double maxSignificance;
-
-    @Enumerated(EnumType.STRING)
-    ChromatographyType chromatographyType;*/
-
     @OneToOne
     @JoinColumn(name="id")
-    SpectrumCluster spectrumCluster;
+    private SpectrumCluster spectrumCluster;
 
     @Column
-    Double source;
+    private Double source;
 
     @Column
-    Double specimen;
+    private Double specimen;
 
     @Column
-    Double treatment;
+    private Double treatment;
 
     public Long getId() {
         return id;
@@ -70,34 +49,6 @@ public class ClusterPage implements Serializable {
     public void setId(final Long id) {
         this.id = id;
     }
-
-    /* public String getName() {
-        return soename;
-    }
-
-    public Integer getSize() {
-        return size;
-    }
-
-    public Double getDiameter() {
-        return diameter;
-    }
-
-    public Double getAveSignificance() {
-        return aveSignificance;
-    }
-
-    public Double getMinSignificance() {
-        return minSignificance;
-    }
-
-    public Double getMaxSignificance() {
-        return maxSignificance;
-    }
-
-    public ChromatographyType getChromatographyType() {
-        return chromatographyType;
-    }*/
 
     public SpectrumCluster getSpectrumCluster() {
         return spectrumCluster;
