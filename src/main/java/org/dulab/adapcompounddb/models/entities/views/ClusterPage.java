@@ -15,7 +15,7 @@ import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
 import org.hibernate.annotations.Immutable;
 
 @Entity
-@Table(name="clusterpage1")
+@Table(name="clusterpage")
 @Immutable
 public class ClusterPage implements Serializable {
 
