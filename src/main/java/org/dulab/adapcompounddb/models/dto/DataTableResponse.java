@@ -44,7 +44,7 @@ public class DataTableResponse implements Serializable {
         return dataList;
     }
 
-    public void setSpectrumList(final List<? extends Serializable> dataList) {
+    public void setDataList(final List<? extends Serializable> dataList) {
         this.dataList = dataList;
     }
 

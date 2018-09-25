@@ -185,7 +185,7 @@
                     }
                 },
                 {
-                    "orderable": false,
+                    "orderable": true,
                     "targets": 5,
                     "render": function (data, type, row, meta) {
                         content = '<img' +

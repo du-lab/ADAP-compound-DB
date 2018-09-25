@@ -1,8 +1,10 @@
 package org.dulab.adapcompounddb.rest.controllers;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
+import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.site.services.SpectrumMatchService;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,13 +34,19 @@ public class SpectrumRestController {
     public String findSpectrumBySubmissionId(@RequestParam("submissionId") final Long submissionId,
             @RequestParam("start") final Integer start, @RequestParam("length") final Integer length,
             @RequestParam("column") final Integer column, @RequestParam("sortDirection") final String sortDirection,
-            @RequestParam("search") final String searchStr, final HttpServletRequest request)
+            @RequestParam("search") final String searchStr, final HttpServletRequest request, final HttpSession session)
                     throws JsonProcessingException {
 
         final ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-        final DataTableResponse response = spectrumService.findSpectrumBySubmissionId(submissionId, searchStr, start,
-                length, column, sortDirection);
+        DataTableResponse response = null;
+
+        if(submissionId > 0 ) {
+            response = spectrumService.findSpectrumBySubmissionId(submissionId, searchStr, start,
+                    length, column, sortDirection);
+        } else {
+            response = spectrumService.processPagination(Submission.from(session), searchStr, start, length, column, sortDirection);
+        }
 
         final String jsonString = objectMapper.writeValueAsString(response);
         return jsonString;

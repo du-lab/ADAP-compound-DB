@@ -1,8 +1,16 @@
 package org.dulab.adapcompounddb.site.services;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
+import org.apache.commons.beanutils.BeanComparator;
+import org.apache.commons.collections.comparators.NullComparator;
+import org.apache.commons.collections.comparators.ReverseComparator;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
@@ -17,6 +25,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -98,11 +107,46 @@ public class SpectrumServiceImpl implements SpectrumService {
     @Override
     public DataTableResponse processPagination(final Submission submission, final String searchStr,
             final Integer start, final Integer length, final Integer column, final String orderDirection) {
-        final List<Spectrum> spectrumList = submission.getFiles().stream()
-                .flatMap(file -> file.getSpectra().stream()).collect(Collectors.toList());
+        final List<Spectrum> spectrumList = new ArrayList<>(submission.getFiles().stream()
+                .flatMap(file -> file.getSpectra().stream()).collect(Collectors.toList()));
+        final ObjectMapperUtils objectMapper = new ObjectMapperUtils();
+
+        if(StringUtils.isNotBlank(searchStr)) {
+            final List<Spectrum> tempList = spectrumList.stream()
+                    .filter(s -> StringUtils.containsIgnoreCase(s.getName(), searchStr)
+                            || StringUtils.containsIgnoreCase(s.getChromatographyType().getLabel(), searchStr))
+                    .collect(Collectors.toList());
+            spectrumList.clear();;
+            spectrumList.addAll(tempList);
+        }
 
         final String sortColumn = ColumnInformation.getColumnNameFromPosition(column);
-        return null;
+        if(sortColumn != null) {
+            Comparator<Object> comparator = new BeanComparator<>(sortColumn, new NullComparator(false));
+            if(Sort.Direction.fromString(orderDirection).equals(Direction.DESC)) {
+                comparator = new ReverseComparator(comparator);
+            }
+            Collections.sort(spectrumList, comparator);
+        }
+
+        final int totalSize = spectrumList.size();
+        final List<SpectrumDTO> subList = IntStream.range(start, start + length)
+                .filter(i -> i < totalSize)
+                .mapToObj(i -> {
+                    final Spectrum spectrum = spectrumList.get(i);
+                    final SpectrumDTO dto = objectMapper.map(spectrum, SpectrumDTO.class);
+                    final int fileIndex = submission.getFiles().indexOf(spectrum.getFile());
+                    dto.setFileIndex(fileIndex);
+                    dto.setSpectrumIndex(submission.getFiles().get(fileIndex).getSpectra().indexOf(spectrum));
+                    return dto;
+                })
+                .collect(Collectors.toList()); //spectrumList.subList(start, start + length);
+
+        final DataTableResponse response = new DataTableResponse(objectMapper.map(subList, SpectrumDTO.class));
+        response.setRecordsTotal(Long.valueOf(totalSize));
+        response.setRecordsFiltered(Long.valueOf(totalSize));
+
+        return response;
     }
 
     @Override

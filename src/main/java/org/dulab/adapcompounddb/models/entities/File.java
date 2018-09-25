@@ -1,13 +1,24 @@
 package org.dulab.adapcompounddb.models.entities;
 
-import org.dulab.adapcompounddb.models.FileType;
+import java.io.Serializable;
+import java.util.List;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
-import java.util.List;
+
+import org.dulab.adapcompounddb.models.FileType;
 
 @Entity
 public class File implements Serializable {
@@ -46,7 +57,7 @@ public class File implements Serializable {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(final long id) {
         this.id = id;
     }
 
@@ -54,7 +65,7 @@ public class File implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -63,7 +74,7 @@ public class File implements Serializable {
         return fileType;
     }
 
-    public void setFileType(FileType fileType) {
+    public void setFileType(final FileType fileType) {
         this.fileType = fileType;
     }
 
@@ -71,7 +82,7 @@ public class File implements Serializable {
         return content;
     }
 
-    public void setContent(byte[] content) {
+    public void setContent(final byte[] content) {
         this.content = content;
     }
 
@@ -81,7 +92,7 @@ public class File implements Serializable {
         return submission;
     }
 
-    public void setSubmission(Submission submission) {
+    public void setSubmission(final Submission submission) {
         this.submission = submission;
     }
 
@@ -90,12 +101,12 @@ public class File implements Serializable {
             fetch = FetchType.LAZY,
             cascade = CascadeType.ALL,
             orphanRemoval = true
-    )
+            )
     public List<Spectrum> getSpectra() {
         return spectra;
     }
 
-    public void setSpectra(List<Spectrum> spectra) {
+    public void setSpectra(final List<Spectrum> spectra) {
         this.spectra = spectra;
     }
 
@@ -104,9 +115,16 @@ public class File implements Serializable {
     // *************************
 
     @Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        if (!(other instanceof File)) return false;
+    public boolean equals(final Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof File)) {
+            return false;
+        }
+        if(id == 0) {
+            super.equals(other);
+        }
         return id == ((File) other).id;
     }
 

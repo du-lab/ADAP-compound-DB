@@ -4,7 +4,19 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.ColumnResult;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.SqlResultSetMapping;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -114,18 +126,19 @@ public class Spectrum implements Serializable {
         setPeaks(peaks, false);
     }
 
-    public void setPeaks(final List<Peak> peaks, boolean normalize) {
+    public void setPeaks(final List<Peak> peaks, final boolean normalize) {
 
         this.peaks = peaks;
 
         if (peaks != null && normalize) {
 
-            double totalIntensity = peaks.stream()
+            final double totalIntensity = peaks.stream()
                     .mapToDouble(Peak::getIntensity)
                     .sum();
 
-            for (Peak peak : peaks)
+            for (final Peak peak : peaks) {
                 peak.setIntensity(peak.getIntensity() / totalIntensity);
+            }
         }
     }
 
@@ -188,7 +201,7 @@ public class Spectrum implements Serializable {
         return consensus;
     }
 
-    public void setConsensus(boolean consensus) {
+    public void setConsensus(final boolean consensus) {
         this.consensus = consensus;
     }
 
@@ -196,7 +209,7 @@ public class Spectrum implements Serializable {
         return reference;
     }
 
-    public void setReference(boolean reference) {
+    public void setReference(final boolean reference) {
         this.reference = reference;
     }
 
@@ -244,12 +257,19 @@ public class Spectrum implements Serializable {
         if (!(other instanceof Spectrum)) {
             return false;
         }
+        if(id == 0) {
+            return super.equals(other);
+        }
         return id == ((Spectrum) other).id;
     }
 
     @Override
     public int hashCode() {
-        return Long.hashCode(id);
+        if(id == 0) {
+            return super.hashCode();
+        } else {
+            return Long.hashCode(id);
+        }
     }
 
     @Override
