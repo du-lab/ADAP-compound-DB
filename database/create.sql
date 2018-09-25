@@ -358,3 +358,16 @@ CREATE OR REPLACE VIEW `adapcompounddb`.`SearchSpectrumPeakViewV2` AS
 SET SQL_MODE = @OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS = @OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS = @OLD_UNIQUE_CHECKS;
+
+-- -----------------------------------------------------
+-- View `adapcompounddb`.`clusterpage` view for cluster pagination
+-- -----------------------------------------------------
+create view ClusterPage as
+    select 
+        sc.id as id,
+        coalesce(sum(case when d.CategoryType = "SOURCE" then Diversity end)) as "source",
+        coalesce(sum(case when d.CategoryType = "SPECIMEN" then Diversity end)) as "specimen",
+        coalesce(sum(case when d.CategoryType = "TREATMENT" then Diversity end)) as "treatment"
+    from
+       spectrumcluster sc
+       left join diversityindex d on sc.id = d.ClusterId group by sc.Id;
