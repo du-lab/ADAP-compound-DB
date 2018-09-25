@@ -3,10 +3,8 @@ package org.dulab.adapcompounddb.models.dto;
 import java.io.Serializable;
 import java.util.Set;
 
-import javax.persistence.Entity;
-import javax.validation.constraints.NotNull;
+import org.dulab.adapcompounddb.models.ChromatographyType;
 
-@Entity
 public class SpectrumClusterDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -16,23 +14,36 @@ public class SpectrumClusterDTO implements Serializable {
     // *************************
 
     private long id;
-
-    private SpectrumDTO consensusSpectrum;
-
-    @NotNull(message = "Diameter of cluster is required.")
-    private Double diameter;
-
-    @NotNull(message = "Size of cluster is required.")
     private Integer size;
 
+    private Double diameter;
     private Double aveSignificance;
     private Double minSignificance;
     private Double maxSignificance;
+
+    ChromatographyType chromatographyType;
+
+    SpectrumDTO consensusSpectrum;
     private Set<DiversityIndexDTO> diversityIndices;
+
+    Double source;
+    Double specimen;
+    Double treatment;
 
     // *******************************
     // ***** Getters and setters *****
     // *******************************
+
+    @Override
+    public boolean equals(final Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof SpectrumClusterDTO)) {
+            return false;
+        }
+        return id == ((SpectrumClusterDTO) other).id;
+    }
 
     public long getId() {
         return id;
@@ -50,20 +61,20 @@ public class SpectrumClusterDTO implements Serializable {
         this.consensusSpectrum = consensusSpectrum;
     }
 
-    public Double getDiameter() {
-        return diameter;
-    }
-
-    public void setDiameter(final Double diameter) {
-        this.diameter = diameter;
-    }
-
     public Integer getSize() {
         return size;
     }
 
     public void setSize(final Integer size) {
         this.size = size;
+    }
+
+    public Double getDiameter() {
+        return diameter;
+    }
+
+    public void setDiameter(final Double diameter) {
+        this.diameter = diameter;
     }
 
     public Double getAveSignificance() {
@@ -90,6 +101,14 @@ public class SpectrumClusterDTO implements Serializable {
         this.maxSignificance = maxSignificance;
     }
 
+    public ChromatographyType getChromatographyType() {
+        return chromatographyType;
+    }
+
+    public void setChromatographyType(final ChromatographyType chromatographyType) {
+        this.chromatographyType = chromatographyType;
+    }
+
     public Set<DiversityIndexDTO> getDiversityIndices() {
         return diversityIndices;
     }
@@ -98,20 +117,34 @@ public class SpectrumClusterDTO implements Serializable {
         this.diversityIndices = diversityIndices;
     }
 
+    public Double getSource() {
+        return source;
+    }
+
+    public void setSource(final Double source) {
+        this.source = source;
+    }
+
+    public Double getSpecimen() {
+        return specimen;
+    }
+
+    public void setSpecimen(final Double specimen) {
+        this.specimen = specimen;
+    }
+
+    public Double getTreatment() {
+        return treatment;
+    }
+
+    public void setTreatment(final Double treatment) {
+        this.treatment = treatment;
+    }
+
+
     // ****************************
     // ***** Standard methods *****
     // ****************************
-
-    @Override
-    public boolean equals(final Object other) {
-        if (this == other) {
-            return true;
-        }
-        if (!(other instanceof SpectrumClusterDTO)) {
-            return false;
-        }
-        return id == ((SpectrumClusterDTO) other).id;
-    }
 
     @Override
     public int hashCode() {
