@@ -76,17 +76,17 @@
                     "targets": 4,
                     "orderable": true,
                     "render": function (data, type, row, meta) {
-                    	var content = '';
+                        var content = '';
                         if(row.aveSignificance) {
-	                    	var avgSignificance = row.aveSignificance.toFixed(3);
-	                        content += '<span title="Ave: ' + row.aveSignificance;
-	                        if(row.minSignificance) {
-	                            content += '; Min: ' + row.minSignificance.toFixed(3);
-	                        }
-	                        if(row.maxSignificance) {
-	                            content += '; Max: ' + row.maxSignificance.toFixed(3);
-	                        }
-	                        content += '}"></span>';
+                            var avgSignificance = row.aveSignificance.toFixed(3);
+                            content += '<span title="Ave: ' + row.aveSignificance;
+                            if(row.minSignificance) {
+                                content += '; Min: ' + row.minSignificance.toFixed(3);
+                            }
+                            if(row.maxSignificance) {
+                                content += '; Max: ' + row.maxSignificance.toFixed(3);
+                            }
+                            content += '}"></span>';
                             content += avgSignificance;
                         }
                         return content;
@@ -108,10 +108,10 @@
                     "orderable": true,
                     "render": function (data, type, row, meta) {
                         var content = '';
-	                    if(row.specimen != undefined) {
-	                        content = row.specimen.toFixed(3);
-	                    }
-	                    return content;
+                        if(row.specimen != undefined) {
+                            content = row.specimen.toFixed(3);
+                        }
+                        return content;
                     }
                 },
                 {
@@ -129,7 +129,7 @@
                     "targets": 8,
                     "orderable": true,
                     "render": function (data, type, row, meta) {
-                    	var content = '<img' +
+                        var content = '<img' +
                         ' src="${pageContext.request.contextPath}/' + row.consensusSpectrum.chromatographyTypeIconPath + '"'
                         + ' alt="' + row.consensusSpectrum.chromatographyTypeLabel + '"'
                         + ' title="' + row.consensusSpectrum.chromatographyTypeLabel + '"'

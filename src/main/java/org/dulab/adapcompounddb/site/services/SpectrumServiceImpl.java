@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.site.services;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -8,6 +9,7 @@ import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.SpectrumDTO;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
+import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.utils.ObjectMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,6 +93,16 @@ public class SpectrumServiceImpl implements SpectrumService {
         response.setRecordsFiltered(spectrumPage.getTotalElements());
 
         return response;
+    }
+
+    @Override
+    public DataTableResponse processPagination(final Submission submission, final String searchStr,
+            final Integer start, final Integer length, final Integer column, final String orderDirection) {
+        final List<Spectrum> spectrumList = submission.getFiles().stream()
+                .flatMap(file -> file.getSpectra().stream()).collect(Collectors.toList());
+
+        final String sortColumn = ColumnInformation.getColumnNameFromPosition(column);
+        return null;
     }
 
     @Override

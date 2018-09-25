@@ -129,7 +129,6 @@
 <script src="<c:url value="/resources/tag-it-6ccd2de/js/tag-it.min.js"/>"></script>
 <script>
     $(document).ready(function () {
-
         // Table with a list of spectra
         $('#spectrum_table').DataTable({
             serverSide: true,
@@ -237,5 +236,5 @@
                 source: ${dulab:stringsToJson(availableTags)}
             }
         });
-    })
+    });
 </script>
