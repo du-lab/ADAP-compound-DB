@@ -237,8 +237,9 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
         consensusSpectrum.addProperty("Name", getName(spectra));
 
         spectra.stream()
-                .mapToDouble(Spectrum::getPrecursor)
+                .map(Spectrum::getPrecursor)
                 .filter(Objects::nonNull)
+                .mapToDouble(Double::doubleValue)
                 .average()
                 .ifPresent(consensusSpectrum::setPrecursor);
 
