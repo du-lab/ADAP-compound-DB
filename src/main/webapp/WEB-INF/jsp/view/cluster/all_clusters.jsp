@@ -47,8 +47,11 @@
             "columnDefs": [
                 {
                     "targets": 0,
-                    "orderable": true,
-                    "data": "id"
+                    "orderable": false,
+                    "searchable": false,
+                    "render": function (data, type, row, meta) {
+                        return meta.settings.oAjaxData.start + meta.row + 1;
+                    }
                 },
                 {
                     "targets": 1,

@@ -236,6 +236,13 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
         consensusSpectrum.setPeaks(consensusPeaks, true);
         consensusSpectrum.addProperty("Name", getName(spectra));
 
+        spectra.stream()
+                .map(Spectrum::getPrecursor)
+                .filter(Objects::nonNull)
+                .mapToDouble(Double::doubleValue)
+                .average()
+                .ifPresent(consensusSpectrum::setPrecursor);
+
         return consensusSpectrum;
     }
 
