@@ -370,4 +370,4 @@ create view ClusterPage as
         coalesce(sum(case when d.CategoryType = "TREATMENT" then Diversity end)) as "treatment"
     from
        spectrumcluster sc
-       left join diversityindex d on sc.id = d.ClusterId group by sc.ConsensusSpectrumId;
+       left join diversityindex d on sc.id = d.ClusterId group by sc.Id;
