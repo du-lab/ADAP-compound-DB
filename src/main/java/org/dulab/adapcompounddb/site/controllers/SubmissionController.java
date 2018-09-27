@@ -1,7 +1,12 @@
 package org.dulab.adapcompounddb.site.controllers;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,7 +17,11 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
-import org.dulab.adapcompounddb.models.entities.*;
+import org.dulab.adapcompounddb.models.entities.File;
+import org.dulab.adapcompounddb.models.entities.Submission;
+import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
+import org.dulab.adapcompounddb.models.entities.SubmissionTag;
+import org.dulab.adapcompounddb.models.entities.SubmissionTagId;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.hibernate.validator.constraints.URL;
@@ -49,7 +58,7 @@ public class SubmissionController extends BaseController {
                 .stream(SubmissionCategoryType.values()).collect(Collectors.toMap(t -> t, t -> new ArrayList<>()));
 
         submissionService.findAllCategories()
-                .forEach(category -> availableCategories.get(category.getCategoryType()).add(category));
+        .forEach(category -> availableCategories.get(category.getCategoryType()).add(category));
 
         model.addAttribute("availableCategories", availableCategories);
     }
@@ -121,7 +130,7 @@ public class SubmissionController extends BaseController {
 
     private SubmissionForm createSubmissionForm(final Submission submission) {
         final SubmissionForm form = new SubmissionForm();
-//        form.setCategoryMap(submissionService.findAllCategories());
+        //        form.setCategoryMap(submissionService.findAllCategories());
 
         form.setId(submission.getId());
         form.setName(submission.getName());
@@ -206,7 +215,7 @@ public class SubmissionController extends BaseController {
     @RequestMapping(value = "/submission/{submissionId:\\d+}/{fileIndex:\\d+}/download/", method = RequestMethod.GET)
     public String submissionRawDownload(@PathVariable("submissionId") final long id,
             @PathVariable("fileIndex") final int fileIndex, final HttpServletResponse response, final Model model)
-            throws IOException {
+                    throws IOException {
 
         final Submission submission = submissionService.findSubmission(id);
         if (submission == null) {
@@ -282,7 +291,9 @@ public class SubmissionController extends BaseController {
         tags.clear();
         for (final String name : submissionForm.getTags().split(",")) {
 
-            if (name.trim().isEmpty()) continue;
+            if (name.trim().isEmpty()) {
+                continue;
+            }
 
             final SubmissionTag submissionTag = new SubmissionTag();
             submissionTag.setId(new SubmissionTagId(submission, name.toLowerCase()));
@@ -306,7 +317,6 @@ public class SubmissionController extends BaseController {
             model.addAttribute("submissionForm", submissionForm);
             return "file/view";
         } catch (final Exception e) {
-            // TODO: handle exception
             throw e;
         }
 

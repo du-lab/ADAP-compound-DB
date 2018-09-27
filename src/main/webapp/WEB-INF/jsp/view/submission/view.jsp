@@ -8,120 +8,121 @@
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 
 
-<c:if test="${!edit}">
-    <section>
-        <h1>Submission</h1>
-        <div align="center">
-            <table id="info_table" class="display" style="width: 100%; clear: none;">
-                <thead>
-                <tr>
-                    <th>Property</th>
-                    <th>Value</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td><strong>Name:</strong></td>
-                    <td>${submission.name}</td>
-                </tr>
-                <tr>
-                    <td><strong>Description:</strong></td>
-                    <td>
-                        <pre>${submission.description}</pre>
-                    </td>
-                </tr>
-                <c:if test="${submission.reference != null}">
-                    <tr>
-                        <td><strong>URL:</strong></td>
-                        <td><a href="${submission.reference}" title="${submission.reference}"
-                               target="_blank">${dulab:abbreviate(submission.reference, 80)}</a></td>
-                    </tr>
-                </c:if>
-                <c:if test="${submission.tagsAsString.length() > 0}">
-                    <tr>
-                        <td><strong>Equipment:</strong></td>
-                        <td>${submission.tagsAsString}</td>
-                    </tr>
-                </c:if>
-                <c:forEach items="${submissionCategoryTypes}" var="type">
-                    <tr>
-                        <td><strong>${type.label}:</strong></td>
-                        <td>${submission.getCategory(type)}</td>
-                    </tr>
-                </c:forEach>
-                </tbody>
-            </table>
-        </div>
-    </section>
-</c:if>
-
-<!-- List of submitted files -->
 <section>
-    <h1>Files</h1>
-    <table id="file_table" class="display" style="width: 100%; clear:none;">
-        <thead>
-        <tr>
-            <th>File</th>
-            <th>Type</th>
-            <th>Size</th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        <c:forEach items="${submission.files}" var="file" varStatus="loop">
-            <tr>
-                <td><a href="${loop.index}/view/" target="_blank">${file.name}</a></td>
-                <td>${file.fileType.label}</td>
-                <td>${file.spectra.size()} spectra</td>
-                <td>
-                    <a href="${loop.index}/view/" target="_blank">
-                        <i class="material-icons" title="View">attach_file</i>
-                    </a>
-                    <a href="${loop.index}/download/" target="_blank">
-                        <i class="material-icons" title="Download">save_alt</i>
-                    </a>
-                </td>
-            </tr>
-        </c:forEach>
-        </tbody>
-    </table>
-</section>
-
-<!-- List of submitted spectra -->
-<section>
-    <h1>Mass spectra</h1>
-    <div align="center">
-        <table id="spectrum_table" class="display" style="width: 100%; clear:none;">
+    <div class="tabbed-pane">
+        <span class="active" data-tab="submission" style="width: 33.2%; border-radius: 10px 0 0 0;">Submission Properties</span>
+        <span data-tab="files" style="width: 33.2%;">Files</span>
+        <span data-tab="mass_spectra" style="width: 33.2%; border-radius: 0 10px 0 0; float: right;">Mass Spectra</span>
+    </div>
+    <div id="submission">
+        <c:choose>
+            <c:when test="${edit && submissionForm.authorized}">
+                <jsp:include page="../../includes/submission_form.jsp">
+                    <jsp:param value="${submissionForm}" name="submissionForm" />
+                </jsp:include>
+            </c:when>
+            <c:otherwise>
+                <div align="center">
+                    <table id="info_table" class="display"
+                        style="max-width: 800px; clear: none;">
+                        <thead>
+                            <tr>
+                                <th>Property</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Name:</strong></td>
+                                <td>${submission.name}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Description:</strong></td>
+                                <td><pre>${submission.description}</pre>
+                                </td>
+                            </tr>
+                            <c:if test="${submission.reference != null}">
+                                <tr>
+                                    <td><strong>URL:</strong></td>
+                                    <td><a href="${submission.reference}"
+                                        title="${submission.reference}"
+                                        target="_blank">${dulab:abbreviate(submission.reference, 80)}</a>
+                                    </td>
+                                </tr>
+                            </c:if>
+                            <c:if
+                                test="${submission.tagsAsString.length() > 0}">
+                                <tr>
+                                    <td><strong>Equipment:</strong></td>
+                                    <td>${submission.tagsAsString}</td>
+                                </tr>
+                            </c:if>
+                            <c:forEach items="${submissionCategoryTypes}" var="type">
+                                <tr>
+                                    <td><strong>${type.label}:</strong></td>
+                                    <td>${submission.getCategory(type)}</td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                </div>
+                <div align="center">
+                    <a href="edit" class="button">Edit Submission</a>
+                </div>
+            </c:otherwise>
+        </c:choose>
+    </div>
+    
+    <!-- List of submitted files -->
+    <div id="files" class="hide">
+        <table id="file_table" class="display" style="width: 100%; clear:none;">
             <thead>
             <tr>
-                <th></th>
-                <th>Name</th>
-                <th>Ret Time (min)</th>
-                <th>Precursor mass</th>
-                <th>Significance</th>
+                <th>File</th>
                 <th>Type</th>
+                <th>Size</th>
                 <th></th>
             </tr>
             </thead>
-            <tbody></tbody>
+            <tbody>
+                <c:forEach items="${submission.files}" var="file" varStatus="loop">
+                    <tr>
+                        <td><a href="${loop.index}/view/" target="_blank">${file.name}</a></td>
+                        <td>${file.fileType.label}</td>
+                        <td>${file.spectra.size()} spectra</td>
+                        <td>
+                            <a href="${loop.index}/view/" target="_blank">
+                                <i class="material-icons" title="View">attach_file</i>
+                            </a>
+                            <a href="${loop.index}/download/" target="_blank">
+                                <i class="material-icons" title="Download">save_alt</i>
+                            </a>
+                        </td>
+                    </tr>
+                </c:forEach>
+            </tbody>
         </table>
     </div>
-</section>
 
-<c:choose>
-    <c:when test="${edit}">
-        <jsp:include page="../../includes/submission_form.jsp">
-            <jsp:param value="${submissionForm}" name="submissionForm"/>
-        </jsp:include>
-    </c:when>
-    <c:when test="${submissionForm.authorized}">
-        <section class="no-background">
-            <div align="center">
-                <a href="edit" class="button">Edit Submission</a>
-            </div>
-        </section>
-    </c:when>
-</c:choose>
+    <div id="mass_spectra" class="hide center">
+        <div align="center">
+            <table id="spectrum_table" class="display" style="width: 100%; clear:none;">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Ret Time (min)</th>
+                    <th>Precursor mass</th>
+                    <th>Significance</th>
+                    <th>Type</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</section>
 
 <script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
 <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>

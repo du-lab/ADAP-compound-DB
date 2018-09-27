@@ -465,3 +465,40 @@ input:checked + .checkbox-slider:before {
 .translate-middle {
     background-color: red; /*#ccc*/
 }
+
+div.tabbed-pane ul {
+    list-style: none;
+}
+
+.tabbed-pane {
+    margin: 0px;
+    font-size: 1.5em;
+    background: #b67960;
+    border-radius: 10px 10px 0 0;
+}
+
+div.tabbed-pane span {
+    display: inline-block;
+    text-align: center;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 10px 0 5px;
+    text-shadow: 0 0 2px #542410;
+}
+
+/* div.tabbed-pane span:hover {
+    background: #844d36;
+    transition: 400ms;
+} */
+
+.tabbed-pane span.active {
+    background: #542410;
+    color: #ffffff;
+    text-shadow: 0 0 5px #542410;
+    transition: 400ms;
+    font-weight: bold;
+}
+
+.hide {
+    display: none;
+}

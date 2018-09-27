@@ -11,63 +11,71 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <section>
-    <h1>Files</h1>
-    <table id="file_table" class="display" style="width: 100%; clear:none;">
-        <thead>
-        <tr>
-            <th>File</th>
-            <th>Type</th>
-            <th>Size</th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        <c:forEach items="${submission.files}" var="file" varStatus="loop">
-            <tr>
-                <td><a href="${loop.index}/view/" target="_blank">${file.name}</a></td>
-                <td>${file.fileType.label}</td>
-                <td>${file.spectra.size()} spectra</td>
-                <td>
-                    <a href="${loop.index}/view/" target="_blank">
-                        <i class="material-icons" title="View">attach_file</i>
-                    </a>
-                    <a href="${loop.index}/download/" target="_blank">
-                        <i class="material-icons" title="Download">save_alt</i>
-                    </a>
-                </td>
-            </tr>
-        </c:forEach>
-        </tbody>
-    </table>
-</section>
-
-<section>
-    <h1>Mass spectra</h1>
-    <div align="center">
-        <table id="spectrum_table" class="display" style="width: 100%; clear:none;">
+    <div class="tabbed-pane">
+        <c:if test="${authenticated}">
+            <span class="active" data-tab="submission" style="width: 33.2%; border-radius: 10px 0 0 0;">Submission Properties</span>
+        </c:if>
+        <span class="${!authenticated ? 'active' : ''}" data-tab="files" style="width: 33.2%;">Files</span>
+        <span data-tab="mass_spectra" style="width: 33.2%; border-radius: 0 10px 0 0; float: right;">Mass Spectra</span>
+    </div>
+    <div id="submission">
+        <c:if test="${authenticated}">
+            <jsp:include page="../../includes/submission_form.jsp">
+                <jsp:param value="${submissionForm}" name="submissionForm"/>
+            </jsp:include>
+        </c:if>
+    </div>
+    <div id="files"class="${!authenticated ? '' : 'hide'}">
+        <table id="file_table" class="display" style="width: 100%; clear:none;">
             <thead>
             <tr>
-                <th></th>
-                <th>Name</th>
-                <th>Ret Time (min)</th>
-                <th>Precursor mass</th>
-                <th>Significance</th>
+                <th>File</th>
                 <th>Type</th>
+                <th>Size</th>
                 <th></th>
             </tr>
-
             </thead>
             <tbody>
+            <c:forEach items="${submission.files}" var="file" varStatus="loop">
+                <tr>
+                    <td><a href="${loop.index}/view/" target="_blank">${file.name}</a></td>
+                    <td>${file.fileType.label}</td>
+                    <td>${file.spectra.size()} spectra</td>
+                    <td>
+                        <a href="${loop.index}/view/" target="_blank">
+                            <i class="material-icons" title="View">attach_file</i>
+                        </a>
+                        <a href="${loop.index}/download/" target="_blank">
+                            <i class="material-icons" title="Download">save_alt</i>
+                        </a>
+                    </td>
+                </tr>
+            </c:forEach>
             </tbody>
         </table>
     </div>
-</section>
 
-<c:if test="${authenticated}">
-    <jsp:include page="../../includes/submission_form.jsp">
-        <jsp:param value="${submissionForm}" name="submissionForm"/>
-    </jsp:include>
-</c:if>
+    <div id="mass_spectra" class="hide">
+        <div align="center">
+            <table id="spectrum_table" class="display" style="width: 100%; clear:none;">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Ret Time (min)</th>
+                    <th>Precursor mass</th>
+                    <th>Significance</th>
+                    <th>Type</th>
+                    <th></th>
+                </tr>
+    
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>s
 
 <script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
 <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
@@ -120,8 +128,26 @@
                         return value;
                     }
                 },
-                {"data": "precursor", "targets": 3},
-                {"data": "significance", "targets": 4},
+                {
+                    "targets": 3,
+                    "render": function (data, type, row, meta) {
+                        var value = row.precursor;
+                        if (value != null && !isNaN(value)) {
+                            value = value.toFixed(3);
+                        }
+                        return value;
+                    }
+                },
+                {
+                    "targets": 4,
+                    "render": function (data, type, row, meta) {
+                        var value = row.precursor;
+                        if (value != null && !isNaN(value)) {
+                            value = value.toFixed(3);
+                        }
+                        return value;
+                    }
+                },
                 {
                     "targets": 4,
                     "render": function (data, type, row, meta) {
@@ -166,13 +192,13 @@
             ]
         });
 
-        table.on('order.dt search.dt', function () {
+        /* table.on('order.dt search.dt', function () {
             table.column(0, {search: 'applied', order: 'applied'})
                 .nodes()
                 .each(function (cell, i) {
                     cell.innerHTML = i + 1;
                 })
-        }).draw();
+        }).draw(); */
 
         // Table with a list of files
         $('#file_table').DataTable({
