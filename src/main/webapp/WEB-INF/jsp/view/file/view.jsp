@@ -78,7 +78,7 @@
 
         // Table with a list of spectra
 
-        $('#spectrum_table').DataTable({
+        var table = $('#spectrum_table').DataTable({
             serverSide: true,
             processing: true,
             ajax: {
