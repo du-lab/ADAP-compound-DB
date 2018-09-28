@@ -58,38 +58,6 @@
 
             </thead>
             <tbody>
-            <c:if test="${submission.files.size() > 0}">
-                <c:forEach items="${submission.files}" var="file" varStatus="fileLoop">
-                    <c:forEach items="${file.spectra}" var="spectrum" varStatus="spectrumLoop">
-                        <tr>
-                            <td></td>
-                            <td>
-                                <a href="${fileLoop.index}/${spectrumLoop.index}/">${spectrum}</a><br/>
-                                <small>${file.name}</small>
-                            </td>
-                            <td><fmt:formatNumber type="number" maxFractionDigits="3"
-                                                  value="${spectrum.retentionTime}"/></td>
-                            <td><fmt:formatNumber type="number" maxFractionDigits="3"
-                                                  value="${spectrum.precursor}"/></td>
-                            <td><fmt:formatNumber type="number" maxFractionDigits="3"
-                                                  value="${spectrum.significance}"/></td>
-                            <td><img src="${pageContext.request.contextPath}/${spectrum.chromatographyType.iconPath}"
-                                     alt="${spectrum.chromatographyType.label}"
-                                     title="${spectrum.chromatographyType.label}" class="icon"/></td>
-                            <td>
-                                <!-- more horiz -->
-                                <a href="${fileLoop.index}/${spectrumLoop.index}/">
-                                    <i class="material-icons" title="View spectrum">&#xE5D3;</i>
-                                </a>
-                                <!-- search -->
-                                <a href="${fileLoop.index}/${spectrumLoop.index}/search/">
-                                    <i class="material-icons" title="Search spectrum">&#xE8B6;</i>
-                                </a>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                </c:forEach>
-            </c:if>
             </tbody>
         </table>
     </div>
@@ -109,13 +77,93 @@
     $(document).ready(function () {
 
         // Table with a list of spectra
+
         var table = $('#spectrum_table').DataTable({
+            serverSide: true,
             processing: true,
-            'columnDefs': [{
-                'searchable': false,
-                'orderable': false,
-                'targets': 0
-            }]
+            ajax: {
+                url: "${pageContext.request.contextPath}/spectrum/findSpectrumBySubmissionId.json?submissionId=${submission.id}",
+
+                data: function (data) {
+                    data.column = data.order[0].column;
+                    data.sortDirection = data.order[0].dir;
+                    data.search = data.search["value"];
+                }
+            },
+            "columnDefs": [
+                {
+                    "targets": 0,
+                    "orderable": false,
+                    "searchable": false,
+                    "render": function (data, type, row, meta) {
+                        return meta.settings.oAjaxData.start + meta.row + 1;
+                    }
+                },
+                {
+                    "orderable": true,
+                    "targets": 1,
+                    "render": function (data, type, row, meta) {
+                        content = '<a href="' + row.fileIndex +'/' + row.spectrumIndex + '/">' +
+                            row.name +
+                            '</a>' +
+                            '<br/><small>' + row.fileName + '</small>';
+                        return content;
+                    }
+                },
+                {
+                    "targets": 2,
+                    "render": function (data, type, row, meta) {
+                        var value = row.retentionTime;
+                        if (value != null && !isNaN(value)) {
+                            value = value.toFixed(3);
+                        }
+                        return value;
+                    }
+                },
+                {"data": "precursor", "targets": 3},
+                {"data": "significance", "targets": 4},
+                {
+                    "targets": 4,
+                    "render": function (data, type, row, meta) {
+                        var value = row.significance;
+                        if (value != null && !isNaN(value)) {
+                            value = value.toFixed(3);
+                        }
+                        return value;
+                    }
+                },
+                {
+                    "orderable": true,
+                    "targets": 5,
+                    "render": function (data, type, row, meta) {
+                        content = '<img' +
+                            ' src="${pageContext.request.contextPath}/' + row.chromatographyTypeIconPath + '"'
+                            + ' alt="' + row.chromatographyTypeLabel + '"'
+                            + ' title="' + row.chromatographyTypeLabel + '"'
+                            + ' class="icon"/>';
+
+                        return content;
+                    }
+                },
+                {
+                    "orderable": false,
+                    "targets": 6,
+                    "render": function (data, type, row, meta) {
+                        content = '<a href="' + row.fileIndex +'/' + row.spectrumIndex + '/">' +
+                            '<i class="material-icons" title="View spectrum">&#xE5D3;</i>' +
+                            '</a>' +
+                            '<a href="' + row.fileIndex +'/' + row.spectrumIndex + '/search/">' +
+                            '<i class="material-icons" title="Search spectrum">&#xE8B6;</i>' +
+                            '</a>';
+                        if (JSON.parse("${submissionForm.authorized && edit}")) {
+                            content += '<a href="spectrum/' + row.id + '/delete">' +
+                                '<i class="material-icons" title="Delete spectrum">&#xE872;</i>' +
+                                '</a>';
+                        }
+                        return content;
+                    }
+                }
+            ]
         });
 
         table.on('order.dt search.dt', function () {

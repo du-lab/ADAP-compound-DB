@@ -2,6 +2,7 @@ package org.dulab.adapcompounddb.site.services;
 
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
+import org.dulab.adapcompounddb.models.entities.Submission;
 import org.springframework.validation.annotation.Validated;
 
 @Validated
@@ -17,4 +18,7 @@ public interface SpectrumService {
     long countReferenceSpectra();
 
     Boolean updateReferenceOfAllSpectraOfSubmission(Long submissionId, boolean value);
+
+    DataTableResponse processPagination(Submission from, final String searchStr,
+            final Integer start, final Integer length, final Integer column, final String orderDirection);
 }
