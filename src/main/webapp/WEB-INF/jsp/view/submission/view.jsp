@@ -10,9 +10,9 @@
 
 <section>
     <div class="tabbed-pane">
-        <span class="active" data-tab="submission" style="width: 33.2%; border-radius: 10px 0 0 0;">Submission Properties</span>
-        <span data-tab="files" style="width: 33.2%;">Files</span>
-        <span data-tab="mass_spectra" style="width: 33.2%; border-radius: 0 10px 0 0; float: right;">Mass Spectra</span>
+        <span class="active" data-tab="submission" style="width: 33%; border-radius: 10px 0 0 0; width: ${width}; border-right: solid #ffffff">Submission Properties</span>
+        <span data-tab="files" style="width: 33%; border-right: solid #ffffff">Files</span>
+        <span data-tab="mass_spectra" style="width: 33%; border-radius: 0 10px 0 0; float: right;">Mass Spectra</span>
     </div>
     <div id="submission">
         <c:choose>

@@ -472,6 +472,7 @@ div.tabbed-pane ul {
 
 .tabbed-pane {
     margin: 0px;
+    padding: 5px 0px 5px 0px;
     font-size: 1.5em;
     background: #b67960;
     border-radius: 10px 10px 0 0;
@@ -480,10 +481,11 @@ div.tabbed-pane ul {
 div.tabbed-pane span {
     display: inline-block;
     text-align: center;
-    color: #ffffff;
+    color: #542410;
     cursor: pointer;
     padding: 10px 0 5px;
-    text-shadow: 0 0 2px #542410;
+    text-shadow: 0 0 5px #542410;
+    font-weight: bold;
 }
 
 /* div.tabbed-pane span:hover {
@@ -492,7 +494,6 @@ div.tabbed-pane span {
 } */
 
 .tabbed-pane span.active {
-    background: #542410;
     color: #ffffff;
     text-shadow: 0 0 5px #542410;
     transition: 400ms;
@@ -501,4 +502,5 @@ div.tabbed-pane span {
 
 .hide {
     display: none;
+    transition: 400ms;
 }

@@ -12,11 +12,13 @@
 
 <section>
     <div class="tabbed-pane">
+        <c:set var="width" value="49" />
         <c:if test="${authenticated}">
-            <span class="active" data-tab="submission" style="width: 33.2%; border-radius: 10px 0 0 0;">Submission Properties</span>
+            <c:set var="width" value="33%" />
+            <span class="active" data-tab="submission" style="width: ${width}%; border-radius: 10px 0 0 0; border-right: solid #ffffff">Submission Properties</span>
         </c:if>
-        <span class="${!authenticated ? 'active' : ''}" data-tab="files" style="width: 33.2%;">Files</span>
-        <span data-tab="mass_spectra" style="width: 33.2%; border-radius: 0 10px 0 0; float: right;">Mass Spectra</span>
+        <span class="${!authenticated ? 'active' : ''}" data-tab="files" style="width: ${width}%; border-right: solid #ffffff">Files</span>
+        <span data-tab="mass_spectra" style="width: ${width + 1}%; border-radius: 0 10px 0 0; float: right;">Mass Spectra</span>
     </div>
     <div id="submission">
         <c:if test="${authenticated}">
