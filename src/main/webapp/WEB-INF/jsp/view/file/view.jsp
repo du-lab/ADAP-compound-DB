@@ -10,15 +10,17 @@
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
+<script type="text/javascript" src="<c:url value="/resources/AdapCompoundDb/js/application.js"/>"></script>
+
 <section>
     <div class="tabbed-pane">
         <c:set var="width" value="49" />
         <c:if test="${authenticated}">
-            <c:set var="width" value="33%" />
+            <c:set var="width" value="33" />
             <span class="active" data-tab="submission" style="width: ${width}%; border-radius: 10px 0 0 0; border-right: solid #ffffff">Submission Properties</span>
         </c:if>
         <span class="${!authenticated ? 'active' : ''}" data-tab="files" style="width: ${width}%; border-right: solid #ffffff">Files</span>
-        <span data-tab="mass_spectra" style="width: ${width + 1}%; border-radius: 0 10px 0 0; float: right;">Mass Spectra</span>
+        <span data-tab="mass_spectra" style="width: ${width}%; border-radius: 0 10px 0 0; float: right;">Mass Spectra</span>
     </div>
     <div id="submission">
         <c:if test="${authenticated}">

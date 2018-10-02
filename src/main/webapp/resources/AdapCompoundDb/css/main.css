@@ -472,10 +472,11 @@ div.tabbed-pane ul {
 
 .tabbed-pane {
     margin: 0px;
-    padding: 5px 0px 5px 0px;
+    padding: 10px 0px 5px 0px;
     font-size: 1.5em;
     background: #b67960;
-    border-radius: 10px 10px 0 0;
+    border-radius: 10px 5px 0 0;
+    min-width: 1075px;
 }
 
 div.tabbed-pane span {
@@ -483,7 +484,7 @@ div.tabbed-pane span {
     text-align: center;
     color: #542410;
     cursor: pointer;
-    padding: 10px 0 5px;
+    /* padding: 10px 0 5px; */
     text-shadow: 0 0 5px #542410;
     font-weight: bold;
 }

@@ -7,10 +7,11 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 
+<script type="text/javascript" src="<c:url value="/resources/AdapCompoundDb/js/application.js"/>"></script>
 
 <section>
     <div class="tabbed-pane">
-        <span class="active" data-tab="submission" style="width: 33%; border-radius: 10px 0 0 0; width: ${width}; border-right: solid #ffffff">Submission Properties</span>
+        <span class="active" data-tab="submission" style="width: 33%; border-radius: 10px 0 0 0; border-right: solid #ffffff">Submission Properties</span>
         <span data-tab="files" style="width: 33%; border-right: solid #ffffff">Files</span>
         <span data-tab="mass_spectra" style="width: 33%; border-radius: 0 10px 0 0; float: right;">Mass Spectra</span>
     </div>
@@ -136,7 +137,6 @@
             processing: true,
             ajax: {
                 url: "${pageContext.request.contextPath}/spectrum/findSpectrumBySubmissionId.json?submissionId=${submission.id}",
-
                 data: function (data) {
                     data.column = data.order[0].column;
                     data.sortDirection = data.order[0].dir;
