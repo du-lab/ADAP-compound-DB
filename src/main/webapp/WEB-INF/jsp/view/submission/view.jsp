@@ -173,8 +173,26 @@
                         return value;
                     }
                 },
-                {"data": "precursor", "targets": 3},
-                {"data": "significance", "targets": 4},
+                {
+                    "targets": 3,
+                    "render": function (data, type, row, meta) {
+                        var value = row.precursor;
+                        if (value != null && !isNaN(value)) {
+                            value = value.toFixed(3);
+                        }
+                        return value;
+                    }
+                },
+                {
+                    "targets": 4,
+                    "render": function (data, type, row, meta) {
+                        var value = row.significance;
+                        if (value != null && !isNaN(value)) {
+                            value = value.toFixed(3);
+                        }
+                        return value;
+                    }
+                },
                 {
                     "targets": 4,
                     "render": function (data, type, row, meta) {

@@ -145,16 +145,6 @@
                 {
                     "targets": 4,
                     "render": function (data, type, row, meta) {
-                        var value = row.precursor;
-                        if (value != null && !isNaN(value)) {
-                            value = value.toFixed(3);
-                        }
-                        return value;
-                    }
-                },
-                {
-                    "targets": 4,
-                    "render": function (data, type, row, meta) {
                         var value = row.significance;
                         if (value != null && !isNaN(value)) {
                             value = value.toFixed(3);
