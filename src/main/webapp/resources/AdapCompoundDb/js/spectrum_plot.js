@@ -232,6 +232,7 @@ function SpectrumPlot(divId, spectrum) {
         .attr("height", height - padding.bottom)
         .attr('transform', 'translate(' + padding.left + ', ' + padding.top + ')')
         .style("visibility", "hidden")
+        .style("cursor", "crosshair")
         .attr("pointer-events", "all");
 
     var rect = function(x, y, w, h) {
