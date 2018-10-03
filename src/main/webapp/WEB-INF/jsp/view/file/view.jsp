@@ -14,22 +14,22 @@
 
 <section>
     <div class="tabbed-pane">
-        <c:set var="width" value="49" />
+        <%-- <c:set var="width" value="49" />
         <c:if test="${authenticated}">
             <c:set var="width" value="33" />
             <span class="active" data-tab="submission" style="width: ${width}%; border-radius: 10px 0 0 0; border-right: solid #ffffff">Submission Properties</span>
-        </c:if>
-        <span class="${!authenticated ? 'active' : ''}" data-tab="files" style="width: ${width}%; border-right: solid #ffffff">Files</span>
-        <span data-tab="mass_spectra" style="width: ${width}%; border-radius: 0 10px 0 0; float: right;">Mass Spectra</span>
+        </c:if> --%>
+        <span class="active" data-tab="files" style="width: 49%; border-right: solid #ffffff">Files</span>
+        <span data-tab="mass_spectra" style="width: 49%; border-radius: 0 10px 0 0; float: right;">Mass Spectra</span>
     </div>
-    <div id="submission">
+    <%-- <div id="submission">
         <c:if test="${authenticated}">
             <jsp:include page="../../includes/submission_form.jsp">
                 <jsp:param value="${submissionForm}" name="submissionForm"/>
             </jsp:include>
         </c:if>
-    </div>
-    <div id="files"class="${!authenticated ? '' : 'hide'}">
+    </div> --%>
+    <div id="files"class="active">
         <table id="file_table" class="display" style="width: 100%; clear:none;">
             <thead>
             <tr>
@@ -63,16 +63,15 @@
         <div align="center">
             <table id="spectrum_table" class="display" style="width: 100%; clear:none;">
                 <thead>
-                <tr>
-                    <th></th>
-                    <th>Name</th>
-                    <th>Ret Time (min)</th>
-                    <th>Precursor mass</th>
-                    <th>Significance</th>
-                    <th>Type</th>
-                    <th></th>
-                </tr>
-    
+                    <tr>
+                        <th></th>
+                        <th>Name</th>
+                        <th>Ret Time (min)</th>
+                        <th>Precursor mass</th>
+                        <th>Significance</th>
+                        <th>Type</th>
+                        <th></th>
+                    </tr>
                 </thead>
                 <tbody>
                 </tbody>

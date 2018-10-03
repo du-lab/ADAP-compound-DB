@@ -5,7 +5,20 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -53,7 +66,7 @@ public class Submission implements Serializable {
             fetch = FetchType.LAZY,
             cascade = CascadeType.ALL,
             orphanRemoval = true
-    )
+            )
     private List<SubmissionTag> tags;
 
     @NotNull(message = "Submission: File list is required.")
@@ -63,7 +76,7 @@ public class Submission implements Serializable {
             fetch = FetchType.LAZY,
             cascade = {CascadeType.PERSIST, CascadeType.ALL},
             orphanRemoval = true
-    )
+            )
     private List<File> files;
 
     @NotNull(message = "You must log in to submit mass spectra to the library.")
@@ -83,7 +96,7 @@ public class Submission implements Serializable {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(final long id) {
         this.id = id;
     }
 
@@ -91,7 +104,7 @@ public class Submission implements Serializable {
         return name != null ? name : "New Submission";
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -99,7 +112,7 @@ public class Submission implements Serializable {
         return description;
     }
 
-    public void setDescription(String desription) {
+    public void setDescription(final String desription) {
         this.description = desription;
     }
 
@@ -107,15 +120,18 @@ public class Submission implements Serializable {
         return categories;
     }
 
-    public void setCategories(List<SubmissionCategory> categories) {
+    public void setCategories(final List<SubmissionCategory> categories) {
         this.categories = categories;
     }
 
-    public SubmissionCategory getCategory(SubmissionCategoryType type) {
-        return getCategories().stream()
-                .filter(c -> c.getCategoryType() == type)
-                .findFirst()
-                .orElse(null);
+    public SubmissionCategory getCategory(final SubmissionCategoryType type) {
+        if(categories != null) {
+            return getCategories().stream()
+                    .filter(c -> c.getCategoryType() == type)
+                    .findFirst()
+                    .orElse(null);
+        }
+        return null;
     }
 
 
@@ -123,7 +139,7 @@ public class Submission implements Serializable {
         return tags;
     }
 
-    public void setTags(List<SubmissionTag> tags) {
+    public void setTags(final List<SubmissionTag> tags) {
         this.tags = tags;
     }
 
@@ -131,7 +147,7 @@ public class Submission implements Serializable {
         return files;
     }
 
-    public void setFiles(List<File> files) {
+    public void setFiles(final List<File> files) {
         this.files = files;
     }
 
@@ -139,7 +155,7 @@ public class Submission implements Serializable {
         return user;
     }
 
-    public void setUser(UserPrincipal user) {
+    public void setUser(final UserPrincipal user) {
         this.user = user;
     }
 
@@ -147,7 +163,7 @@ public class Submission implements Serializable {
         return dateTime;
     }
 
-    public void setDateTime(Date dateTime) {
+    public void setDateTime(final Date dateTime) {
         this.dateTime = dateTime;
     }
 
@@ -155,7 +171,7 @@ public class Submission implements Serializable {
         return reference;
     }
 
-    public void setReference(String reference) {
+    public void setReference(final String reference) {
         this.reference = reference;
     }
 
@@ -163,7 +179,7 @@ public class Submission implements Serializable {
     // ***** Other methods *****
     // *************************
 
-    public boolean isAuthorized(UserPrincipal user) {
+    public boolean isAuthorized(final UserPrincipal user) {
         boolean authorized = false;
         if (user == null) {
             authorized = false;
@@ -187,9 +203,13 @@ public class Submission implements Serializable {
     }
 
     @Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        if (!(other instanceof Submission)) return false;
+    public boolean equals(final Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof Submission)) {
+            return false;
+        }
         return id == ((Submission) other).id;
     }
 
@@ -198,15 +218,15 @@ public class Submission implements Serializable {
         return Long.hashCode(id);
     }
 
-    public static Submission from(HttpSession session) {
+    public static Submission from(final HttpSession session) {
         return session == null ? null : (Submission) session.getAttribute(SESSION_ATTRIBUTE_KEY);
     }
 
-    public static void assign(HttpSession session, Submission submission) {
+    public static void assign(final HttpSession session, final Submission submission) {
         session.setAttribute(SESSION_ATTRIBUTE_KEY, submission);
     }
 
-    public static void clear(HttpSession session) {
+    public static void clear(final HttpSession session) {
         session.removeAttribute(SESSION_ATTRIBUTE_KEY);
     }
 }
