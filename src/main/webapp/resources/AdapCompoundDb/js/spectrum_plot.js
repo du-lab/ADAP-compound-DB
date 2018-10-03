@@ -293,14 +293,13 @@ function SpectrumPlot(divId, spectrum) {
             .tickFormat(''));
 
         var spectra = d3.select("svg").selectAll("line.spectrum");
-        spectra
+        spectra.transition()
             .attr('x1', function (d) {
                 return Math.max(padding['left'], newScaleX(d.mz));
             })
             .attr('x2', function (d) {
                 return Math.max(padding['left'], newScaleX(d.mz));
-            });
-        spectra
+            })
             .attr('y2', function (d) {
                 return Math.min($(this).attr("y1"), newScaleY(d.intensity));
             });
