@@ -22,9 +22,6 @@
         	tabs.each(function(index, element) {
 	            if(index < numberOfTabs - 1) {
 	                $(element).css("border-right", "3px solid #ffffff");
-	                //$(element).css("box-shadow", "5px 0px 0px 0px #ffffff");
-	                $(element).css("margin-right", "-3px");
-	            	$(element).css("width", 100.0/(numberOfTabs) + "%");
 	            }
 
 	            if(index === 0) {
@@ -33,8 +30,8 @@
 
 	            if(index === numberOfTabs - 1) {
 	            	$(element).css("border-radius", "0 10px 0 0");
-	            	$(element).css("width", (100.0/(numberOfTabs) - 0.5).toFixed(1) + "%");
 	            }
+            	$(element).css("width", "calc(" + 100.0/(numberOfTabs) + "% - 7px");
 
                 $(element).click(function() {
                     $(this).parent().children().each(function() {
