@@ -484,7 +484,6 @@ div.tabbed-pane span {
     text-align: center;
     color: #542410;
     cursor: pointer;
-    /* padding: 10px 0 5px; */
     text-shadow: 0 0 5px #542410;
     font-weight: bold;
 }

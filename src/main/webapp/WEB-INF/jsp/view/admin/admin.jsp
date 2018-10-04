@@ -10,12 +10,9 @@
 
 <section>
     <div class="tabbed-pane">
-        <span class="active" data-tab="tools"
-            style="width: 33.2%; border-radius: 10px 0 0 0;">Tools</span>
-        <span data-tab="users" style="width: 33.2%;">All Users</span> <span
-            data-tab="submissions"
-            style="width: 33.2%; border-radius: 0 10px 0 0; float: right;">All
-            Submissions</span>
+        <span class="active" data-tab="tools">Tools</span>
+        <span data-tab="users">All Users</span>
+        <span data-tab="submissions">All Submissions</span>
     </div>
 
     <div id="tools">
@@ -132,7 +129,11 @@
 <script src="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.js"/>"></script>
 <script src="<c:url value="/resources/AdapCompoundDb/js/dialogs.js"/>"></script>
 <script src="<c:url value="/resources/AdapCompoundDb/js/progressBar.js"/>"></script>
+<script type="text/javascript" src="<c:url value="/resources/AdapCompoundDb/js/tabs.js"/>"></script>
 <script>
+    $(".tabbed-pane").each(function() {
+        $(this).tabbedPane();
+    });
     var progressBar = new ProgressBar('progressBarDiv');
     var confirmDeleteDialog = $('#confirm-delete-dialog').confirmDeleteDialog();
     var progressDialog = $('#progress-dialog').progressDialog();

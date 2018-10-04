@@ -7,13 +7,11 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 
-<script type="text/javascript" src="<c:url value="/resources/AdapCompoundDb/js/application.js"/>"></script>
-
 <section>
     <div class="tabbed-pane">
-        <span class="active" data-tab="submission" style="width: 33%; border-radius: 10px 0 0 0; border-right: solid #ffffff">Submission Properties</span>
-        <span data-tab="files" style="width: 33%; border-right: solid #ffffff">Files</span>
-        <span data-tab="mass_spectra" style="width: 33%; border-radius: 0 10px 0 0; float: right;">Mass Spectra</span>
+        <span class="active" data-tab="submission">Submission Properties</span>
+        <span data-tab="files">Files</span>
+        <span data-tab="mass_spectra">Mass Spectra</span>
     </div>
     <div id="submission">
         <c:choose>
@@ -129,6 +127,7 @@
 <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
 <script src="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.js"/>"></script>
 <script src="<c:url value="/resources/tag-it-6ccd2de/js/tag-it.min.js"/>"></script>
+<script type="text/javascript" src="<c:url value="/resources/AdapCompoundDb/js/tabs.js"/>"></script>
 <script>
     $(document).ready(function () {
         // Table with a list of spectra
@@ -234,6 +233,10 @@
                     }
                 }
             ]
+        });
+
+        $(".tabbed-pane").each(function() {
+            $(this).tabbedPane();
         });
 
         // Table with submissionForm information
