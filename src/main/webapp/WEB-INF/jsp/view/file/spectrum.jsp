@@ -14,12 +14,12 @@
 
 <section>
     <div class="tabbed-pane">
-        <span class="active" data-tab="spectrum">Spectrum ${spectrum}</span>
+        <span class="active" data-tab="spectrum">Spectrum Properties</span>
         <span data-tab="peaks">Peaks</span>
     </div>
 
     <div id="spectrum" align="center">
-        <table id="property_table" class="display" style="clear: none;">
+        <table id="property_table" class="display" style="clear: none; max-width: 1000px;">
             <thead>
             <tr>
                 <th>Property</th>
@@ -87,9 +87,9 @@
                 </tbody>
             </table>
         </div>
-    </div>
-    <div align="center">
-        <a href="search/" class="button">Search</a>
+        <div align="center">
+            <a href="search/" class="button">Search</a>
+        </div>
     </div>
 </section>
 

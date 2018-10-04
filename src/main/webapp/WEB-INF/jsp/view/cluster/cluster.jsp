@@ -14,7 +14,7 @@
         <span data-tab="spectrum_list">Spectrum List</span>
     </div>
     <div id="consensus_spectrum" align="center">
-        <table id="property_table" class="display" style="width: 100%;">
+        <table id="property_table" class="display" style="width: 100%; max-width: 1000px;">
             <thead>
             <tr>
                 <th>Property</th>
