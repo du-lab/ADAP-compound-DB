@@ -489,10 +489,10 @@ div.tabbed-pane span {
     font-weight: bold;
 }
 
-/*div.tabbed-pane span:hover {*/
-    /*background: #844d36;*/
-    /*transition: 400ms;*/
-/*}*/
+/* div.tabbed-pane span:hover {
+    background: #844d36;
+    transition: 400ms;
+} */
 
 .tabbed-pane span.active {
     color: #ffffff;

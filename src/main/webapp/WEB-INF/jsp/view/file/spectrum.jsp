@@ -13,54 +13,57 @@
 </c:choose>
 
 <section>
-    <h1>Spectrum ${spectrum}</h1>
-    <table id="property_table" class="display" style="clear: none;">
-        <thead>
-        <tr>
-            <th>Property</th>
-            <th>Value</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td><strong>Full Name:</strong></td>
-            <td>${spectrum.name}</td>
-        </tr>
-        <tr>
-            <td><strong>Chromatography:</strong></td>
-            <td>${spectrum.chromatographyType.label}</td>
-        </tr>
-        <c:if test="${spectrum.file != null}">
-            <tr>
-                <td><strong>File:</strong></td>
-                <td>${spectrum.file.name}</td>
-            </tr>
-        </c:if>
-        <c:if test="${spectrum.file!= null && spectrum.file.submission != null}">
-            <tr>
-                <td><strong>Submission:</strong></td>
-                <td><a href="${submissionUrl}">${spectrum.file.submission.name}</a></td>
-            </tr>
-        </c:if>
-        <c:if test="${spectrum.cluster != null}">
-            <tr>
-                <td><strong>Cluster:</strong></td>
-                <td><a href="/cluster/${spectrum.cluster.id}/">${spectrum.cluster}</a></td>
-            </tr>
-        </c:if>
-        <c:forEach items="${spectrum.properties}" var="property">
-            <tr>
-                <td><strong>${property.name}:</strong></td>
-                <td>${property.value}</td>
-            </tr>
-        </c:forEach>
-        </tbody>
-    </table>
-</section>
+    <div class="tabbed-pane">
+        <span class="active" data-tab="spectrum">Spectrum Properties</span>
+        <span data-tab="peaks">Peaks</span>
+    </div>
 
-<section>
-    <h1>Peaks</h1>
-    <div align="center">
+    <div id="spectrum" align="center">
+        <table id="property_table" class="display" style="clear: none; max-width: 1000px;">
+            <thead>
+            <tr>
+                <th>Property</th>
+                <th>Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><strong>Full Name:</strong></td>
+                <td>${spectrum.name}</td>
+            </tr>
+            <tr>
+                <td><strong>Chromatography:</strong></td>
+                <td>${spectrum.chromatographyType.label}</td>
+            </tr>
+            <c:if test="${spectrum.file != null}">
+                <tr>
+                    <td><strong>File:</strong></td>
+                    <td>${spectrum.file.name}</td>
+                </tr>
+            </c:if>
+            <c:if test="${spectrum.file!= null && spectrum.file.submission != null}">
+                <tr>
+                    <td><strong>Submission:</strong></td>
+                    <td><a href="${submissionUrl}">${spectrum.file.submission.name}</a></td>
+                </tr>
+            </c:if>
+            <c:if test="${spectrum.cluster != null}">
+                <tr>
+                    <td><strong>Cluster:</strong></td>
+                    <td><a href="/cluster/${spectrum.cluster.id}/">${spectrum.cluster}</a></td>
+                </tr>
+            </c:if>
+            <c:forEach items="${spectrum.properties}" var="property">
+                <tr>
+                    <td><strong>${property.name}:</strong></td>
+                    <td>${property.value}</td>
+                </tr>
+            </c:forEach>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="peaks" class="hide" align="center">
         <div id="plot" style="display: inline-block; vertical-align: top; margin: 20px;"></div>
         <div style="display: inline-block; max-width: 500px; vertical-align: top;">
             <table id="peak_table" class="display" style="width: 100%;">
@@ -84,12 +87,9 @@
                 </tbody>
             </table>
         </div>
-    </div>
-</section>
-
-<section>
-    <div align="center">
-        <a href="search/" class="button">Search</a>
+        <div align="center">
+            <a href="search/" class="button">Search</a>
+        </div>
     </div>
 </section>
 
@@ -97,7 +97,12 @@
 <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
 <script src="<c:url value="/resources/d3/d3.min.js"/>"></script>
 <script src="<c:url value="/resources/AdapCompoundDb/js/spectrum_plot.js"/>"></script>
+<script type="text/javascript" src="<c:url value="/resources/AdapCompoundDb/js/tabs.js"/>"></script>
 <script>
+
+    $(".tabbed-pane").each(function() {
+        $(this).tabbedPane();
+    });
     $(document).ready(function () {
         $('#property_table').DataTable({
             info: false,

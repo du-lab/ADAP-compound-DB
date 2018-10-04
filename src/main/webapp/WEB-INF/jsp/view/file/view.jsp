@@ -14,8 +14,8 @@
 
 <section>
     <div class="tabbed-pane">
-        <span class="active" data-tab="files" style="width: 49%; border-right: solid #ffffff">Files</span>
-        <span data-tab="mass_spectra" style="width: 49%; border-radius: 0 10px 0 0; float: right;">Mass Spectra</span>
+        <span class="active" data-tab="files">Files</span>
+        <span data-tab="mass_spectra">Mass Spectra</span>
     </div>
     <div id="files"class="active">
         <table id="file_table" class="display" style="width: 100%; clear:none;">
@@ -73,6 +73,7 @@
 <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
 <script src="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.js"/>"></script>
 <script src="<c:url value="/resources/tag-it-6ccd2de/js/tag-it.min.js"/>"></script>
+<script type="text/javascript" src="<c:url value="/resources/AdapCompoundDb/js/tabs.js"/>"></script>
 <script>
     $(document).ready(function () {
 
@@ -181,6 +182,10 @@
                     cell.innerHTML = i + 1;
                 })
         }).draw(); */
+
+        $(".tabbed-pane").each(function() {
+            $(this).tabbedPane();
+        });
 
         // Table with a list of files
         $('#file_table').DataTable({

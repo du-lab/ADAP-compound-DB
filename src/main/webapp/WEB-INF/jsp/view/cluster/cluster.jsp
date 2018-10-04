@@ -7,9 +7,14 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <section>
-    <h1>Consensus Spectrum</h1>
-    <div align="center">
-        <table id="property_table" class="display" style="width: 100%;">
+    <div class="tabbed-pane">
+        <span class="active" data-tab="consensus_spectrum">Consensus Spectrum</span>
+        <span data-tab="spectrum_plot">Spectrum Plot</span>
+        <span data-tab="pie_chart">Pie Chart</span>
+        <span data-tab="spectrum_list">Spectrum List</span>
+    </div>
+    <div id="consensus_spectrum" align="center">
+        <table id="property_table" class="display" style="width: 100%; max-width: 1000px;">
             <thead>
             <tr>
                 <th>Property</th>
@@ -64,12 +69,8 @@
             </tbody>
         </table>
     </div>
-</section>
 
-<section>
-    <h1>Spectrum Plot</h1>
-
-    <div align="center">
+    <div id="spectrum_plot" align="center" class="hide">
         <div id="plot" style="display: inline-block; vertical-align: top;"></div>
 
         <div align="center" style="display: inline-block; vertical-align: top; width: 400px;">
@@ -92,10 +93,8 @@
             </table>
         </div>
     </div>
-</section>
 
-<section id="pieChartSection">
-    <div align="center">
+    <div id="pie_chart" align="center" class="hide">
         <c:forEach items="${submissionCategoryTypes}" var="type">
             <div align="center" style="display: inline-block; margin: 10px;">
                 <h2>${type.label} Distribution</h2>
@@ -110,41 +109,40 @@
             </div>
         </c:forEach>
     </div>
-</section>
 
-<section>
-    <h1>Spectrum List</h1>
-    <table id="big_spectrum_table" class="display nowrap" style="width: 100%;">
-        <thead>
-        <tr>
-            <th>Spectrum</th>
-            <th title="Retention time (min)">RT</th>
-            <th>Precursor m/z</th>
-            <th>Significance</th>
-            <c:forEach items="${submissionCategoryTypes}" var="type">
-                <th>${type.label}</th>
-            </c:forEach>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        <c:forEach items="${cluster.spectra}" var="spectrum">
+    <div id="spectrum_list" align="center" class="hide">
+        <table id="big_spectrum_table" class="display nowrap" style="width: 100%;">
+            <thead>
             <tr>
-                <td><a href="/spectrum/${spectrum.id}/">${spectrum.name}</a><br/>
-                    <small><a href="/submission/${spectrum.file.submission.id}/">${spectrum.file.submission.name}</a>
-                    </small>
-                </td>
-                <td><fmt:formatNumber type="number" maxFractionDigits="3" value="${spectrum.retentionTime}"/></td>
-                <td><fmt:formatNumber type="number" maxFractionDigits="3" value="${spectrum.precursor}"/></td>
-                <td><fmt:formatNumber type="number" maxFractionDigits="3" value="${spectrum.significance}"/></td>
+                <th>Spectrum</th>
+                <th title="Retention time (min)">RT</th>
+                <th>Precursor m/z</th>
+                <th>Significance</th>
                 <c:forEach items="${submissionCategoryTypes}" var="type">
-                    <td>${spectrum.file.submission.getCategory(type)}</td>
+                    <th>${type.label}</th>
                 </c:forEach>
-                <td><a href="/spectrum/${spectrum.id}/"><i class="material-icons" title="View">&#xE5D3;</i></a></td>
+                <th></th>
             </tr>
-        </c:forEach>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+            <c:forEach items="${cluster.spectra}" var="spectrum">
+                <tr>
+                    <td><a href="/spectrum/${spectrum.id}/">${spectrum.name}</a><br/>
+                        <small><a href="/submission/${spectrum.file.submission.id}/">${spectrum.file.submission.name}</a>
+                        </small>
+                    </td>
+                    <td><fmt:formatNumber type="number" maxFractionDigits="3" value="${spectrum.retentionTime}"/></td>
+                    <td><fmt:formatNumber type="number" maxFractionDigits="3" value="${spectrum.precursor}"/></td>
+                    <td><fmt:formatNumber type="number" maxFractionDigits="3" value="${spectrum.significance}"/></td>
+                    <c:forEach items="${submissionCategoryTypes}" var="type">
+                        <td>${spectrum.file.submission.getCategory(type)}</td>
+                    </c:forEach>
+                    <td><a href="/spectrum/${spectrum.id}/"><i class="material-icons" title="View">&#xE5D3;</i></a></td>
+                </tr>
+            </c:forEach>
+            </tbody>
+        </table>
+    </div>
 </section>
 
 <!-- End the middle column -->
@@ -183,9 +181,14 @@
 <script src="<c:url value="/resources/d3/d3.min.js"/>"></script>
 <script src="<c:url value="/resources/AdapCompoundDb/js/twospectraplot.js"/>"></script>
 <script src="<c:url value="/resources/AdapCompoundDb/js/piechart.js"/>"></script>
+<script type="text/javascript" src="<c:url value="/resources/AdapCompoundDb/js/tabs.js"/>"></script>
 <script>
     // Add Spectrum Plot
     var plot = new TwoSpectraPlot('plot', ${dulab:spectrumToJson(cluster.consensusSpectrum)});
+
+    $(".tabbed-pane").each(function() {
+        $(this).tabbedPane();
+    });
 
     // Add pie chart
     <c:forEach items="${submissionCategoryTypes}" var="type">
