@@ -19,8 +19,8 @@
             <c:set var="width" value="33" />
             <span class="active" data-tab="submission" style="width: ${width}%; border-radius: 10px 0 0 0; border-right: solid #ffffff">Submission Properties</span>
         </c:if>
-        <span class="${!authenticated ? 'active' : ''}" data-tab="files" style="width: ${width}%; border-right: solid #ffffff">Files</span>
-        <span data-tab="mass_spectra" style="width: ${width}%; border-radius: 0 10px 0 0; float: right;">Mass Spectra</span>
+        <span class="${!authenticated ? 'active' : ''}" data-tab="mass_spectra" style="width: ${width}%; border-right: solid #ffffff">Mass Spectra</span>
+        <span data-tab="files" style="width: ${width}%; border-radius: 0 10px 0 0; float: right;">Files</span>
     </div>
     <div id="submission">
         <c:if test="${authenticated}">
@@ -29,7 +29,7 @@
             </jsp:include>
         </c:if>
     </div>
-    <div id="files"class="${!authenticated ? '' : 'hide'}">
+    <div id="files" class="hide">
         <table id="file_table" class="display" style="width: 100%; clear:none;">
             <thead>
             <tr>
@@ -59,7 +59,7 @@
         </table>
     </div>
 
-    <div id="mass_spectra" class="hide">
+    <div id="mass_spectra" class="${!authenticated ? '' : 'hide'}">
         <div align="center">
             <table id="spectrum_table" class="display" style="width: 100%; clear:none;">
                 <thead>
@@ -79,7 +79,7 @@
             </table>
         </div>
     </div>
-</section>s
+</section>
 
 <script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
 <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
