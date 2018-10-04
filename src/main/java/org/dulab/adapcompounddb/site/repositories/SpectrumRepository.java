@@ -41,7 +41,7 @@ public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, Spec
             "inner join s.file f " +
             "inner join f.submission sub "
             + "where sub.id = ?1 "
-            + "and (sub.name like %?2% or f.name like %?2%)")
+            + "and s.name like %?2%")
     Page<Spectrum> findSpectrumBySubmissionId(Long submissionId, String searchStr, Pageable pageable);
 
     @Query("SELECT COUNT(s) FROM Spectrum s WHERE s.matches IS EMPTY "
@@ -49,10 +49,10 @@ public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, Spec
     long countUnmatchedBySubmissionChromatographyType(ChromatographyType chromatographyType);
 
     @Query(value="select temp.t from (select reference, "
-                + "(select max(reference) from Spectrum s1 where s1.FileId in (SELECT distinct f.id from File f where f.SubmissionId = :submissionId)) as t "
-                + "from Spectrum s2 where s2.FileId in (SELECT distinct f.id from File f where f.SubmissionId = :submissionId) group by reference) "
-                + "as temp "
-                + "group by temp.t having count(temp.reference) = 1", nativeQuery=true)
+            + "(select max(reference) from Spectrum s1 where s1.FileId in (SELECT distinct f.id from File f where f.SubmissionId = :submissionId)) as t "
+            + "from Spectrum s2 where s2.FileId in (SELECT distinct f.id from File f where f.SubmissionId = :submissionId) group by reference) "
+            + "as temp "
+            + "group by temp.t having count(temp.reference) = 1", nativeQuery=true)
     Integer getSpectrumReferenceOfSubmissionIfSame(@Param("submissionId") Long submissionId);
 
     long countByConsensusTrue();

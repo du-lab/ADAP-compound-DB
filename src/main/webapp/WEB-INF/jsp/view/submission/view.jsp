@@ -17,7 +17,7 @@
     </div>
     <div id="submission">
         <c:choose>
-            <c:when test="${edit && submissionForm.authorized}">
+            <c:when test="${(edit && submissionForm.authorized) || submissionForm.id == 0}">
                 <jsp:include page="../../includes/submission_form.jsp">
                     <jsp:param value="${submissionForm}" name="submissionForm" />
                 </jsp:include>
@@ -212,7 +212,6 @@
                             + ' alt="' + row.chromatographyTypeLabel + '"'
                             + ' title="' + row.chromatographyTypeLabel + '"'
                             + ' class="icon"/>';
-
                         return content;
                     }
                 },
