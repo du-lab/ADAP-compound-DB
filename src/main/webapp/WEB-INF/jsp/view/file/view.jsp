@@ -10,8 +10,6 @@
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<script type="text/javascript" src="<c:url value="/resources/AdapCompoundDb/js/application.js"/>"></script>
-
 <section>
     <div class="tabbed-pane">
         <span class="active" data-tab="files">Files</span>
@@ -78,8 +76,7 @@
     $(document).ready(function () {
 
         // Table with a list of spectra
-
-        var table = $('#spectrum_table').DataTable({
+        $('#spectrum_table').DataTable({
             serverSide: true,
             processing: true,
             ajax: {
@@ -174,14 +171,6 @@
                 }
             ]
         });
-
-        /* table.on('order.dt search.dt', function () {
-            table.column(0, {search: 'applied', order: 'applied'})
-                .nodes()
-                .each(function (cell, i) {
-                    cell.innerHTML = i + 1;
-                })
-        }).draw(); */
 
         $(".tabbed-pane").each(function() {
             $(this).tabbedPane();
