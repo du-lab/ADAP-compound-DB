@@ -50,7 +50,7 @@ public class Spectrum implements Serializable {
 
     @NotNull(message = "Spectrum: peak list is required.")
     @Valid
-    @OneToMany(targetEntity = Peak.class, mappedBy = "spectrum", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(targetEntity = Peak.class, mappedBy = "spectrum", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Peak> peaks;
 
     @OneToMany(targetEntity = SpectrumProperty.class, mappedBy = "spectrum", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

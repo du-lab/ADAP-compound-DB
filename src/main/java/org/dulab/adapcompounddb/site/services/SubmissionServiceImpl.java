@@ -1,10 +1,25 @@
 package org.dulab.adapcompounddb.site.services;
 
+import java.util.ArrayList;
+import java.util.EmptyStackException;
+import java.util.List;
+import java.util.Optional;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
-import org.dulab.adapcompounddb.models.entities.*;
-import org.dulab.adapcompounddb.site.repositories.*;
+import org.dulab.adapcompounddb.models.entities.Peak;
+import org.dulab.adapcompounddb.models.entities.Spectrum;
+import org.dulab.adapcompounddb.models.entities.Submission;
+import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
+import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
+import org.dulab.adapcompounddb.site.repositories.SubmissionCategoryRepository;
+import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
+import org.dulab.adapcompounddb.site.repositories.SubmissionTagRepository;
 import org.dulab.adapcompounddb.utils.ObjectMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,9 +27,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.*;
 
 @Service
 public class SubmissionServiceImpl implements SubmissionService {
@@ -24,6 +38,9 @@ public class SubmissionServiceImpl implements SubmissionService {
     private final SubmissionTagRepository submissionTagRepository;
     private final SubmissionCategoryRepository submissionCategoryRepository;
     private final SpectrumRepository spectrumRepository;
+
+    @PersistenceContext
+    EntityManager em;
 
     private static enum ColumnInformation {
         ID(0, "id"), DATE(1, "dateTime"), NAME(2, "name"), USER(3, "user.username");
@@ -106,7 +123,7 @@ public class SubmissionServiceImpl implements SubmissionService {
         final List<SubmissionDTO> submissionList = objectMapper.map(submissionPage.getContent(), SubmissionDTO.class);
 
         for (final SubmissionDTO sub : submissionList) {
-            Integer reference = spectrumRepository.getSpectrumReferenceOfSubmissionIfSame(sub.getId());
+            final Integer reference = spectrumRepository.getSpectrumReferenceOfSubmissionIfSame(sub.getId());
             sub.setAllSpectrumReference(reference);
         }
 
@@ -124,9 +141,66 @@ public class SubmissionServiceImpl implements SubmissionService {
     }
 
     @Override
-    @Transactional
+    @Transactional(propagation=Propagation.REQUIRES_NEW)
     public void saveSubmission(final Submission submission) {
-        submissionRepository.save(submission);
+        final List<Spectrum> spectrumList = new ArrayList<>();
+        submission.getFiles().stream().forEach(f->spectrumList.addAll(f.getSpectra()));
+
+        final Submission submissionObj = submissionRepository.save(submission);
+
+        final List<Spectrum> savedSpectrumList = new ArrayList<>();
+        submissionObj.getFiles().stream().forEach(f->savedSpectrumList.addAll(f.getSpectra()));
+
+        final StringBuilder sql = new StringBuilder("INSERT INTO `peak`(" +
+                "`Mz`, `Intensity`, `SpectrumId`) VALUES ");
+
+        for(int i=0; i<spectrumList.size(); i++) {
+            final List<Peak> peaks = spectrumList.get(i).getPeaks();
+            for(int j=0; j<peaks.size(); j++) {
+                if(i != 0 || j != 0) {
+                    sql.append(",");
+                }
+                final Peak p = peaks.get(j);
+                sql.append("(");
+                sql.append(p.getMz());
+                sql.append(",");
+                sql.append(p.getIntensity());
+                sql.append(",");
+                sql.append(savedSpectrumList.get(i).getId());
+                sql.append(")");
+            }
+        }
+        final Query query = em.createNativeQuery(sql.toString());
+        query.executeUpdate();
+        /*final Session sess = em.unwrap(Session.class);
+        sess.setHibernateFlushMode(FlushMode.MANUAL);
+        sess.save(submission);
+        sess.flush();*/
+        /*StringBuilder sql = new StringBuilder("Insert into submission (" +
+                "`Name`, `Description`," +
+                "`DateTime`, `UserPrincipalId`," +
+                "`SourceId`, `SpecimenId`, `DiseaseId`," +
+                "`reference`) VALUES ");
+        sql.append("(");
+        sql.append(submission.getName());
+        sql.append(",");
+        sql.append(submission.getDescription());
+        sql.append(",");
+        sql.append(submission.getDateTime());
+        sql.append(",");
+        sql.append(submission.getUser().getId());
+        sql.append(",");
+        sql.append(submission.getDescription());
+        sql.append(",");
+        sql.append(submission.getName());
+        sql.append(",");
+        sql.append(submission.getName());
+        sql.append(",");
+        sql.append(submission.getName());
+        sql.append(",");
+
+
+        Query query = em.createNativeQuery(sql.toString());*/
     }
 
     @Override
@@ -158,7 +232,7 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     @Override
     public long countSubmissionsByCategoryId(final long submissionCategoryId) {
-//        return submissionRepository.countByCategoryId(submissionCategoryId);
+        //        return submissionRepository.countByCategoryId(submissionCategoryId);
         return submissionCategoryRepository.countSubmissionsBySubmissionCategoryId(submissionCategoryId);
     }
 

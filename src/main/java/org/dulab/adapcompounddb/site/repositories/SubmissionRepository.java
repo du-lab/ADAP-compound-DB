@@ -18,4 +18,5 @@ public interface SubmissionRepository extends CrudRepository<Submission, Long> {
     Iterable<Submission> findWithTagsByUserId(long userPrincipalId);
 
     void deleteById(long id);
+
 }
