@@ -5,14 +5,9 @@ import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Optional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
-import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
@@ -38,9 +33,6 @@ public class SubmissionServiceImpl implements SubmissionService {
     private final SubmissionTagRepository submissionTagRepository;
     private final SubmissionCategoryRepository submissionCategoryRepository;
     private final SpectrumRepository spectrumRepository;
-
-    @PersistenceContext
-    EntityManager em;
 
     private static enum ColumnInformation {
         ID(0, "id"), DATE(1, "dateTime"), NAME(2, "name"), USER(3, "user.username");
@@ -144,34 +136,14 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Transactional(propagation=Propagation.REQUIRES_NEW)
     public void saveSubmission(final Submission submission) {
         final List<Spectrum> spectrumList = new ArrayList<>();
-        submission.getFiles().stream().forEach(f->spectrumList.addAll(f.getSpectra()));
+        submission.getFiles().stream().forEach(f -> spectrumList.addAll(f.getSpectra()));
 
         final Submission submissionObj = submissionRepository.save(submission);
 
         final List<Spectrum> savedSpectrumList = new ArrayList<>();
         submissionObj.getFiles().stream().forEach(f->savedSpectrumList.addAll(f.getSpectra()));
 
-        final StringBuilder sql = new StringBuilder("INSERT INTO `peak`(" +
-                "`Mz`, `Intensity`, `SpectrumId`) VALUES ");
-
-        for(int i=0; i<spectrumList.size(); i++) {
-            final List<Peak> peaks = spectrumList.get(i).getPeaks();
-            for(int j=0; j<peaks.size(); j++) {
-                if(i != 0 || j != 0) {
-                    sql.append(",");
-                }
-                final Peak p = peaks.get(j);
-                sql.append("(");
-                sql.append(p.getMz());
-                sql.append(",");
-                sql.append(p.getIntensity());
-                sql.append(",");
-                sql.append(savedSpectrumList.get(i).getId());
-                sql.append(")");
-            }
-        }
-        final Query query = em.createNativeQuery(sql.toString());
-        query.executeUpdate();
+        spectrumRepository.savePeaksFromSpectrum(this, spectrumList, savedSpectrumList);
         /*final Session sess = em.unwrap(Session.class);
         sess.setHibernateFlushMode(FlushMode.MANUAL);
         sess.save(submission);
