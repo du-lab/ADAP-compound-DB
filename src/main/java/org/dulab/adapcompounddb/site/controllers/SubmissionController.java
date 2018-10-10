@@ -16,6 +16,8 @@ import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.entities.File;
 import org.dulab.adapcompounddb.models.entities.Submission;
@@ -37,8 +39,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 @Controller
-@SessionAttributes({ "submissionCategoryTypes", "availableTags", "availableCategories" })
+@SessionAttributes({"submissionCategoryTypes", "availableTags", "availableCategories"})
 public class SubmissionController extends BaseController {
+
+    private static final Logger LOGGER = LogManager.getLogger(SubmissionController.class);
 
     private static final String SESSION_ATTRIBUTE_KEY = "currentUser";
     private final SubmissionService submissionService;
@@ -58,7 +62,7 @@ public class SubmissionController extends BaseController {
                 .stream(SubmissionCategoryType.values()).collect(Collectors.toMap(t -> t, t -> new ArrayList<>()));
 
         submissionService.findAllCategories()
-        .forEach(category -> availableCategories.get(category.getCategoryType()).add(category));
+                .forEach(category -> availableCategories.get(category.getCategoryType()).add(category));
 
         model.addAttribute("availableCategories", availableCategories);
     }
@@ -125,7 +129,7 @@ public class SubmissionController extends BaseController {
         model.addAttribute("submissionForm", submissionForm);
         model.addAttribute("authenticated", authenticated); // User is logged in
 
-        if(authenticated) {
+        if (authenticated) {
             return "submission/view";
         } else {
             return "file/view";
@@ -167,7 +171,7 @@ public class SubmissionController extends BaseController {
      ************************************/
     @RequestMapping(value = "/file/{fileIndex:\\d+}/view/", method = RequestMethod.GET)
     public String fileRawView(@PathVariable("fileIndex") final int fileIndex, final HttpSession session,
-            final HttpServletResponse response) throws IOException {
+                              final HttpServletResponse response) throws IOException {
 
         final Submission submission = Submission.from(session);
 
@@ -181,7 +185,7 @@ public class SubmissionController extends BaseController {
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/{fileIndex:\\d+}/view/", method = RequestMethod.GET)
     public String rawView(@PathVariable("submissionId") final long id, @PathVariable("fileIndex") final int fileIndex,
-            final HttpServletResponse response, final Model model) throws IOException {
+                          final HttpServletResponse response, final Model model) throws IOException {
 
         final Submission submission = submissionService.findSubmission(id);
 
@@ -205,7 +209,7 @@ public class SubmissionController extends BaseController {
 
     @RequestMapping(value = "/file/{fileIndex:\\d+}/download/", method = RequestMethod.GET)
     public String fileRawDownload(@PathVariable("fileIndex") final int fileIndex, final HttpSession session,
-            final HttpServletResponse response) throws IOException {
+                                  final HttpServletResponse response) throws IOException {
 
         final Submission submission = Submission.from(session);
         if (submission == null) {
@@ -218,8 +222,8 @@ public class SubmissionController extends BaseController {
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/{fileIndex:\\d+}/download/", method = RequestMethod.GET)
     public String submissionRawDownload(@PathVariable("submissionId") final long id,
-            @PathVariable("fileIndex") final int fileIndex, final HttpServletResponse response, final Model model)
-                    throws IOException {
+                                        @PathVariable("fileIndex") final int fileIndex, final HttpServletResponse response, final Model model)
+            throws IOException {
 
         final Submission submission = submissionService.findSubmission(id);
         if (submission == null) {
@@ -241,7 +245,7 @@ public class SubmissionController extends BaseController {
      **********************************/
     @RequestMapping(value = "/file/submit", method = RequestMethod.POST)
     public String fileView(final HttpSession session, final Model model, @Valid final SubmissionForm submissionForm,
-            final Errors errors) {
+                           final Errors errors) {
 
         final Submission submission = Submission.from(session);
         if (errors.hasErrors()) {
@@ -263,7 +267,7 @@ public class SubmissionController extends BaseController {
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/edit", method = RequestMethod.POST)
     public String submissionView(@PathVariable("submissionId") final long submissionId, final Model model,
-            final HttpSession session, @Valid final SubmissionForm submissionForm, final Errors errors) {
+                                 final HttpSession session, @Valid final SubmissionForm submissionForm, final Errors errors) {
 
         final Submission submission = submissionService.findSubmission(submissionId);
         if (errors.hasErrors()) {
@@ -314,7 +318,11 @@ public class SubmissionController extends BaseController {
         submission.setCategories(categories);
 
         try {
+            long time = System.currentTimeMillis();
             submissionService.saveSubmission(submission);
+            LOGGER.info(String.format(
+                    "New submission is saved to the database in %.3f sec.",
+                    (System.currentTimeMillis() - time) / 1000.0));
         } catch (final ConstraintViolationException e) {
             e.printStackTrace();
             model.addAttribute("validationErrors", e.getConstraintViolations());
