@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
+import org.dulab.adapcompounddb.models.entities.File;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
@@ -135,15 +136,17 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     @Transactional(propagation=Propagation.REQUIRES_NEW)
     public void saveSubmission(final Submission submission) {
-        final List<Spectrum> spectrumList = new ArrayList<>();
-        submission.getFiles().stream().forEach(f -> spectrumList.addAll(f.getSpectra()));
+        final List<File> fileList = submission.getFiles();
 
         final Submission submissionObj = submissionRepository.save(submission);
 
-        final List<Spectrum> savedSpectrumList = new ArrayList<>();
-        submissionObj.getFiles().stream().forEach(f->savedSpectrumList.addAll(f.getSpectra()));
+        final List<Long> savedFileIds = new ArrayList<>();
+        submissionObj.getFiles().stream().forEach(f->savedFileIds.add(f.getId()));
 
-        spectrumRepository.savePeaksFromSpectrum(this, spectrumList, savedSpectrumList);
+
+        if(fileList.get(0).getSpectra().get(0).getId() == 0) {
+            spectrumRepository.saveSpectrumAndPeaks(fileList, savedFileIds);
+        }
         /*final Session sess = em.unwrap(Session.class);
         sess.setHibernateFlushMode(FlushMode.MANUAL);
         sess.save(submission);

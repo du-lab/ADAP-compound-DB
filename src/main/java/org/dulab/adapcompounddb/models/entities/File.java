@@ -29,7 +29,7 @@ public class File implements Serializable {
     // ***** Entity Fields *****
     // *************************
 
-    private long id;
+    private Long id;
 
     @NotBlank(message = "File: the field Name is required.")
     private String name;
@@ -53,11 +53,11 @@ public class File implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(final long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -99,7 +99,7 @@ public class File implements Serializable {
     @OneToMany(
             mappedBy = "file",
             fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL,
+            cascade = CascadeType.REFRESH,
             orphanRemoval = true
             )
     public List<Spectrum> getSpectra() {
