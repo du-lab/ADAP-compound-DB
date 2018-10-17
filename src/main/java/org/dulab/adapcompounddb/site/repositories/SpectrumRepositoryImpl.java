@@ -2,11 +2,13 @@ package org.dulab.adapcompounddb.site.repositories;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import javax.swing.text.html.Option;
 
 import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
@@ -15,6 +17,8 @@ import org.dulab.adapcompounddb.site.services.SubmissionServiceImpl;
 
 public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
+    public static final String DOUBLE_QUOTE = "\"";
+    public static final String COMMA = ",";
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -38,16 +42,12 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
         queryBuilder.setTags(params.getTags());
 
-        //        String sqlQueries = queryBuilder.build();
-        //        entityManager.createNativeQuery(sqlQueries[0]).executeUpdate();
         final String sqlQuery = queryBuilder.build();
 
         @SuppressWarnings("unchecked")
         final List<Object[]> resultList = entityManager
         .createNativeQuery(sqlQuery, "SpectrumScoreMapping")
         .getResultList();
-
-        //        entityManager.createNativeQuery(sqlQueries[2]).executeUpdate();
 
         final List<SpectrumMatch> matches = new ArrayList<>();
         for (final Object[] objects : resultList) {
@@ -71,75 +71,35 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         final StringBuilder propertySql = new StringBuilder("INSERT INTO `spectrumproperty`(" +
                 "`SpectrumId`, `Name`, `Value`) VALUES ");
 
+        String peakValueString = "(%f, %f, %d)";
+        String propertyValueString = "(%d, %s, %s)";
+
         for(int i=0; i<spectrumList.size(); i++) {
             final List<Peak> peaks = spectrumList.get(i).getPeaks();
             for(int j=0; j<peaks.size(); j++) {
                 if(i != 0 || j != 0) {
-                    peakSql.append(",");
+                    peakSql.append(COMMA);
                 }
                 final Peak p = peaks.get(j);
-                peakSql.append("(");
-                peakSql.append("\"");
-                peakSql.append(p.getMz());
-                peakSql.append("\"");
-                peakSql.append(",");
-                peakSql.append(p.getIntensity());
-                peakSql.append(",");
-                peakSql.append(savedSpectrumIdList.get(i));
-                peakSql.append(")");
+
+                peakSql.append(String.format(peakValueString, p.getMz(), p.getIntensity(), savedSpectrumIdList.get(i)));
             }
 
             final List<SpectrumProperty> properties = spectrumList.get(i).getProperties();
             for(int j=0; j<properties.size(); j++) {
                 if(i != 0 || j != 0) {
-                    propertySql.append(",");
+                    propertySql.append(COMMA);
                 }
                 final SpectrumProperty sp = properties.get(j);
-                propertySql.append("(");
-                propertySql.append(savedSpectrumIdList.get(i));
-                propertySql.append(",");
-                propertySql.append("\"");
-                propertySql.append(sp.getName());
-                propertySql.append("\"");
-                propertySql.append(",");
-                propertySql.append("\"");
-                propertySql.append(sp.getValue());
-                propertySql.append("\"");
-                propertySql.append(")");
+                propertySql.append(String.format(propertyValueString, savedSpectrumIdList.get(i), DOUBLE_QUOTE + sp.getName() + DOUBLE_QUOTE, DOUBLE_QUOTE + sp.getValue() + DOUBLE_QUOTE));
             }
         }
-//        peakSql.append(";");
-//        peakSql.append(propertySql);
+
         final Query peakQuery = entityManager.createNativeQuery(peakSql.toString());
         peakQuery.executeUpdate();
         final Query propertyQuery = entityManager.createNativeQuery(propertySql.toString());
         propertyQuery.executeUpdate();
     }
-
-    /*@Override
-    public void savePropertiesFromSpectrum(final List<Spectrum> spectrumList, final List<Long> savedSpectrumIdList) {
-        final StringBuilder propertySql = new StringBuilder("INSERT INTO `spectrumproperty`(" +
-                "`SpectrumId`, `Name`, `Value`) VALUES ");
-
-        for(int i=0; i<spectrumList.size(); i++) {
-            final List<SpectrumProperty> properties = spectrumList.get(i).getProperties();
-            for(int j=0; j<properties.size(); j++) {
-                if(i != 0 || j != 0) {
-                    propertySql.append(",");
-                }
-                final SpectrumProperty sp = properties.get(j);
-                propertySql.append("(");
-                propertySql.append(savedSpectrumIdList.get(i));
-                propertySql.append(",");
-                propertySql.append(sp.getName());
-                propertySql.append(",");
-                propertySql.append(sp.getValue());
-                propertySql.append(")");
-            }
-        }
-        final Query query = entityManager.createNativeQuery(propertySql.toString());
-        query.executeUpdate();
-    }*/
 
     @Override
     public void saveSpectrumAndPeaks(final List<File> fileList, final List<Long> savedFileIdList) {
@@ -149,59 +109,25 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                 "`Name`, `Precursor`, `RetentionTime`," +
                 "`Significance`, `ChromatographyType`, `FileId`" +
                 ") VALUES ");
+        String propertyValueString = "(%s, %f, %f, %f, %s, %d)";
 
         for(int i=0; i<fileList.size(); i++) {
             final List<Spectrum> spectra = fileList.get(i).getSpectra();
             spectrumList.addAll(spectra);
             for(int j=0; j<spectra.size(); j++) {
                 if(i != 0 || j != 0) {
-                    insertSql.append(",");
+                    insertSql.append(COMMA);
                 }
                 final Spectrum spectrum = spectra.get(j);
-                insertSql.append("(\"");
-                insertSql.append(spectrum.getName());
-                insertSql.append("\"");
-                insertSql.append(",");
 
-                if(spectrum.getPrecursor() != null) {
-                    insertSql.append("\"");
-                }
-                insertSql.append(spectrum.getPrecursor());
-                if(spectrum.getPrecursor() != null) {
-                    insertSql.append("\"");
-                }
-
-                insertSql.append(",");
-
-                if(spectrum.getRetentionTime() != null) {
-                    insertSql.append("\"");
-                }
-                insertSql.append(spectrum.getRetentionTime());
-                if(spectrum.getRetentionTime() != null) {
-                    insertSql.append("\"");
-                }
-
-                insertSql.append(",");
-
-                if(spectrum.getSignificance() != null) {
-                    insertSql.append("\"");
-                }
-                insertSql.append(spectrum.getSignificance());
-                if(spectrum.getSignificance() != null) {
-                    insertSql.append("\"");
-                }
-
-                insertSql.append(",");
-
-                insertSql.append("\"");
-                insertSql.append(spectrum.getChromatographyType().name());
-                insertSql.append("\"");
-
-                insertSql.append(",");
-
-                insertSql.append("\"");
-                insertSql.append(savedFileIdList.get(i));
-                insertSql.append("\")");
+                insertSql.append(String.format(propertyValueString,
+                        DOUBLE_QUOTE + spectrum.getName() + DOUBLE_QUOTE,
+                        spectrum.getPrecursor(),
+                        spectrum.getRetentionTime(),
+                        spectrum.getSignificance(),
+                        DOUBLE_QUOTE + spectrum.getChromatographyType().name() + DOUBLE_QUOTE,
+                        savedFileIdList.get(i)
+                        ));
             }
         }
         final Query insertQuery = entityManager.createNativeQuery(insertSql.toString());
