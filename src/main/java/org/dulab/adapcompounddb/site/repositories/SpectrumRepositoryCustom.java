@@ -13,11 +13,7 @@ public interface SpectrumRepositoryCustom {
 
     List<SpectrumMatch> spectrumSearch(SearchType searchType, Spectrum querySpectrum, QueryParameters params);
 
-//    void savePeaksFromSpectrum(List<Spectrum> spectrumList, List<Long> savedSpectrumIdList);
-
     void savePeaksAndPropertiesQuery(List<Spectrum> spectrumList, List<Long> savedSpectrumIdList);
-
-//    void savePropertiesFromSpectrum(List<Spectrum> spectrumList, List<Long> savedSpectrumIdList);
 
     public void saveSpectrumAndPeaks(final List<File> fileList, final List<Long> savedFileIdList);
 }
