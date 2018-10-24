@@ -2,18 +2,19 @@ package org.dulab.adapcompounddb.site.repositories;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import javax.swing.text.html.Option;
 
 import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
-import org.dulab.adapcompounddb.models.entities.*;
-import org.dulab.adapcompounddb.site.services.SubmissionServiceImpl;
+import org.dulab.adapcompounddb.models.entities.File;
+import org.dulab.adapcompounddb.models.entities.Peak;
+import org.dulab.adapcompounddb.models.entities.Spectrum;
+import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
+import org.dulab.adapcompounddb.models.entities.SpectrumProperty;
 
 public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
@@ -71,8 +72,8 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         final StringBuilder propertySql = new StringBuilder("INSERT INTO `spectrumproperty`(" +
                 "`SpectrumId`, `Name`, `Value`) VALUES ");
 
-        String peakValueString = "(%f, %f, %d)";
-        String propertyValueString = "(%d, %s, %s)";
+        final String peakValueString = "(%f, %f, %d)";
+        final String propertyValueString = "(%d, %s, %s)";
 
         for(int i=0; i<spectrumList.size(); i++) {
             final List<Peak> peaks = spectrumList.get(i).getPeaks();
@@ -109,7 +110,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                 "`Name`, `Precursor`, `RetentionTime`," +
                 "`Significance`, `ChromatographyType`, `FileId`" +
                 ") VALUES ");
-        String propertyValueString = "(%s, %f, %f, %f, %s, %d)";
+        final String propertyValueString = "(%s, %f, %f, %f, %s, %d)";
 
         for(int i=0; i<fileList.size(); i++) {
             final List<Spectrum> spectra = fileList.get(i).getSpectra();
@@ -133,14 +134,14 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         final Query insertQuery = entityManager.createNativeQuery(insertSql.toString());
         insertQuery.executeUpdate();
 
-        List<Long> fileIds = new ArrayList<>();
+        final List<Long> fileIds = new ArrayList<>();
         fileList.stream().forEach(file -> fileIds.add(file.getId()));
         final StringBuilder selectSql = new StringBuilder("select s.id from Spectrum s where s.file.id in (:fileIds)");
 
-        TypedQuery selectQuery = entityManager.createQuery(selectSql.toString(), Long.class);
+        final TypedQuery selectQuery = entityManager.createQuery(selectSql.toString(), Long.class);
         selectQuery.setParameter("fileIds", fileIds);
 
-        List<Long> spectrumIds = selectQuery.getResultList();
+        final List<Long> spectrumIds = selectQuery.getResultList();
 
         savePeaksAndPropertiesQuery(spectrumList, spectrumIds);
     }

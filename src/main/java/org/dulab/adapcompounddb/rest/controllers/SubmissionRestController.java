@@ -1,5 +1,7 @@
 package org.dulab.adapcompounddb.rest.controllers;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
@@ -36,6 +38,15 @@ public class SubmissionRestController {
                 sortDirection);
 
         final String jsonString = objectMapper.writeValueAsString(response);
+        return jsonString;
+    }
+
+    @RequestMapping(value="/getTagsForPie", produces="application/json")
+    public String getTagsForPie(final Long clusterId) throws JsonProcessingException {
+        final List<String> tags = submissionService.findTagsFromACluster(clusterId);
+
+        final ObjectMapper objectMapper = new ObjectMapper();
+        final String jsonString = objectMapper.writeValueAsString(tags);
         return jsonString;
     }
 }

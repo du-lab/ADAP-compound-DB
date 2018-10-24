@@ -1,13 +1,15 @@
 package org.dulab.adapcompounddb.site.services;
 
-import org.dulab.adapcompounddb.models.SubmissionCategoryType;
-import org.dulab.adapcompounddb.models.dto.DataTableResponse;
-import org.dulab.adapcompounddb.models.entities.*;
-import org.springframework.validation.annotation.Validated;
-
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
+
+import javax.validation.constraints.NotNull;
+
+import org.dulab.adapcompounddb.models.SubmissionCategoryType;
+import org.dulab.adapcompounddb.models.dto.DataTableResponse;
+import org.dulab.adapcompounddb.models.entities.Submission;
+import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
+import org.springframework.validation.annotation.Validated;
 
 @Validated
 public interface SubmissionService {
@@ -40,4 +42,6 @@ public interface SubmissionService {
 
     DataTableResponse findAllSubmissionsForResponse(String searchStr, Integer start, Integer length, Integer column,
             String orderDirection);
+
+    List<String> findTagsFromACluster(Long clusterId);
 }

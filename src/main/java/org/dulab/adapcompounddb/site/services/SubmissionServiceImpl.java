@@ -9,7 +9,6 @@ import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
 import org.dulab.adapcompounddb.models.entities.File;
-import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
@@ -224,5 +223,10 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     public void deleteSubmissionCategory(final long submissionCategoryId) {
         submissionCategoryRepository.deleteById(submissionCategoryId);
+    }
+
+    @Override
+    public List<String> findTagsFromACluster(final Long clusterId) {
+        return submissionTagRepository.findTagsFromACluster(clusterId);
     }
 }
