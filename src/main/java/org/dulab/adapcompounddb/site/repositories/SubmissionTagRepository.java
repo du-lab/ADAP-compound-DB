@@ -13,10 +13,10 @@ public interface SubmissionTagRepository extends CrudRepository<SubmissionTag, S
     @Query("SELECT DISTINCT t.id.name FROM SubmissionTag t")
     Iterable<String> findUniqueSubmissionTagNames();
 
-    @Query("SELECT DISTINCT s.id, tag.id.name from Spectrum sp, SubmissionTag tag "
+    @Query("SELECT distinct f.submission.id, tag.id.name from Spectrum sp, SubmissionTag tag "
             + "inner join tag.id.submission s "
             + "inner join sp.file f "
             + "where sp.cluster.id = :clusterId "
             + "and f.submission.id = s.id")
-    List<String> findTagsFromACluster(@Param("clusterId") Long clusterId);
+    List<Object[]> findTagsFromACluster(@Param("clusterId") Long clusterId);
 }

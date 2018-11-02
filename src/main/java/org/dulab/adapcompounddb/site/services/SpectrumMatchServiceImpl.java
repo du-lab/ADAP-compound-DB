@@ -186,6 +186,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
                 // Calculate the diversity index
                 final Set<DiversityIndex> diversityIndices = new HashSet<>();
+
                 for (final SubmissionCategoryType categoryType : SubmissionCategoryType.values()) {
 
                     final double diversity = MathUtils.diversityIndex(

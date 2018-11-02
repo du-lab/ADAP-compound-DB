@@ -1,7 +1,10 @@
 package org.dulab.adapcompounddb.site.controllers;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.json.Json;
@@ -11,13 +14,20 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.validation.constraints.NotBlank;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.dulab.adapcompounddb.models.UserRole;
 import org.dulab.adapcompounddb.models.entities.File;
 import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
+import org.dulab.adapcompounddb.utils.MathUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.google.gson.Gson;
 
 public class ControllerUtils {
 
@@ -139,9 +149,82 @@ public class ControllerUtils {
                     .add("label", category.getName())
                     .add("count", (double) numSpectraInCluster / numSpectraInTotal)
                     .build());
+
+            jsonArrayBuilder.add(
+                    Json.createObjectBuilder()
+                    .add("label", category.getName() + numSpectraInCluster)
+                    .add("count", (double) numSpectraInCluster / numSpectraInTotal)
+                    .build());
         }
 
         return jsonArrayBuilder.build();
+    }
+
+    public static String clusterTagsToJson(final List<String> tagList) {
+
+        final Map<String, List<String>> tagMap = new HashMap<>(); // source:<src1, src2, src1, src2>
+
+        tagList.forEach(tag -> {
+            final String[] arr = tag.split(":", 2);
+            if(arr.length == 2) {
+                final String key = arr[0].trim();
+                final String value = arr[1].trim();
+
+                List<String> valueList = tagMap.get(key);
+                if(CollectionUtils.isEmpty(valueList)) {
+                    valueList = new ArrayList<>();
+                    tagMap.put(key, valueList);
+                }
+                valueList.add(value);
+            }
+        });
+
+        final Map<String, Map<String, Double>> pieCount = new HashMap<>(); // source: (<src1: 2>, <src2:2>)
+        tagMap.forEach((key, value) -> {
+            final Map<String, Double> countMap = new HashMap<>(); // <src1:2>
+            final double diversity = MathUtils.diversityIndex(value);
+            value.forEach(val -> {
+                Double count = countMap.get(val);
+                if(count == null) {
+                    count = 0.0;
+                }
+                count = count + 1;
+                countMap.put(val, count);
+            });
+            countMap.put("diversity", diversity);
+            pieCount.put(key, countMap);
+        });
+        final ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+
+        final List<Map<String, String>> pieChart = new ArrayList<>(); // source: {src1: 2, src2: 2}
+        pieCount.forEach((k, v) -> {
+            final Map<String, String> tag = new HashMap<>();
+            tag.put("name", k);
+            final List<Map<String, String>> elementList = new ArrayList<>();
+            v.forEach((l, c) -> {
+                final Map<String, String> element = new HashMap<>();
+                if(l.equals("diversity")) {
+                    tag.put(l, c.toString());
+                } else {
+                    final Integer count = c.intValue();
+                    element.put("label", l);
+                    element.put("count", count.toString());
+                    elementList.add(element);
+                }
+            });
+            String jsonString;
+            try {
+                jsonString = mapper.writeValueAsString(elementList);
+                tag.put("values", jsonString);
+            } catch (final JsonProcessingException e) {
+                e.printStackTrace();
+            }
+            pieChart.add(tag);
+        });
+
+
+        return new Gson().toJson(pieChart, List.class);
     }
 
     public static String jsonToHtml(final JsonArray jsonArray) {
@@ -207,7 +290,7 @@ public class ControllerUtils {
         return html;
     }
 
-    public static int getEntryIndex(final List list, final Object entry) {
+    public static int getEntryIndex(final List<?> list, final Object entry) {
 
         if (list == null) {
             return -1;

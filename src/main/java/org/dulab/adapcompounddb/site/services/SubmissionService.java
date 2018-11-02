@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.site.services;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.validation.constraints.NotNull;
@@ -44,4 +45,6 @@ public interface SubmissionService {
             String orderDirection);
 
     List<String> findTagsFromACluster(Long clusterId);
+
+    Map<String, List<String>> groupTags(List<String> tags);
 }

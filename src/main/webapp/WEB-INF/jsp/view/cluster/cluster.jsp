@@ -95,7 +95,7 @@
     </div>
 
     <div id="pie_chart" align="center" class="hide">
-        <c:forEach items="${submissionCategoryTypes}" var="type">
+        <%-- <c:forEach items="${submissionCategoryTypes}" var="type">
             <div align="center" style="display: inline-block; margin: 10px;">
                 <h2>${type.label} Distribution</h2>
                 <c:forEach items="${cluster.diversityIndices}" var="diversityIndex">
@@ -107,7 +107,8 @@
                 </c:forEach>
                 <div id="${type.name()}PieChart" align="center"></div>
             </div>
-        </c:forEach>
+        </c:forEach> --%>
+        <div id='charts'></div>
     </div>
 
     <div id="spectrum_list" align="center" class="hide">
@@ -190,10 +191,18 @@
         $(this).tabbedPane();
     });
 
-    // Add pie chart
-    <c:forEach items="${submissionCategoryTypes}" var="type">
-    addPieChart('${type.name()}PieChart', ${dulab:clusterDistributionToJson(cluster.spectra, submissionCategoryMap.get(type))});
-    </c:forEach>
+    var pieChart = '${dulab:clusterTagsToJson(tags)}';
+    var jsonVal = JSON.parse(pieChart);
+
+    $pieDiv = $("#charts");
+    $.each(jsonVal, function(data) {
+        $pieDiv.append('<div style="display: inline-block; margin: 10px;">' +
+                            '<div>' + data.name + '</div>' +
+                            '<div>' + data.diversity + '</div>' +
+                            '<div id="' + data.values + '-PieChart"></div>' +
+                        '</div>');
+        addPieChart(k + '-PieChart', v);
+    });
 </script>
 <style>
     .selection {
@@ -203,5 +212,8 @@
         stroke-opacity: 0.7;
         stroke-width: 2;
         stroke-dasharray: 5, 5;
+    }
+    .charts div {
+        display: inline-block;
     }
 </style>

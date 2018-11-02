@@ -2,9 +2,12 @@ package org.dulab.adapcompounddb.site.services;
 
 import java.util.ArrayList;
 import java.util.EmptyStackException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
@@ -146,35 +149,6 @@ public class SubmissionServiceImpl implements SubmissionService {
         if(fileList.get(0).getSpectra().get(0).getId() == 0) {
             spectrumRepository.saveSpectrumAndPeaks(fileList, savedFileIds);
         }
-        /*final Session sess = em.unwrap(Session.class);
-        sess.setHibernateFlushMode(FlushMode.MANUAL);
-        sess.save(submission);
-        sess.flush();*/
-        /*StringBuilder sql = new StringBuilder("Insert into submission (" +
-                "`Name`, `Description`," +
-                "`DateTime`, `UserPrincipalId`," +
-                "`SourceId`, `SpecimenId`, `DiseaseId`," +
-                "`reference`) VALUES ");
-        sql.append("(");
-        sql.append(submission.getName());
-        sql.append(",");
-        sql.append(submission.getDescription());
-        sql.append(",");
-        sql.append(submission.getDateTime());
-        sql.append(",");
-        sql.append(submission.getUser().getId());
-        sql.append(",");
-        sql.append(submission.getDescription());
-        sql.append(",");
-        sql.append(submission.getName());
-        sql.append(",");
-        sql.append(submission.getName());
-        sql.append(",");
-        sql.append(submission.getName());
-        sql.append(",");
-
-
-        Query query = em.createNativeQuery(sql.toString());*/
     }
 
     @Override
@@ -227,6 +201,33 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     @Override
     public List<String> findTagsFromACluster(final Long clusterId) {
-        return submissionTagRepository.findTagsFromACluster(clusterId);
+        final List<Object[]> tagArr = submissionTagRepository.findTagsFromACluster(clusterId);
+        final List<String> tagList = new ArrayList<>();
+        tagArr.forEach(arr -> {
+            tagList.add((String) arr[1]);
+        });
+        return tagList;
+    }
+
+    @Override
+    public Map<String, List<String>> groupTags(final List<String> tags) {
+        final Map<String, List<String>> tagMap = new HashMap<>();
+
+        tags.forEach(tag -> {
+            final String[] arr = tag.split(":", 2);
+            if(arr.length == 2) {
+                final String key = arr[0].trim();
+                final String value = arr[1].trim();
+
+                List<String> valueList = tagMap.get(key);
+                if(CollectionUtils.isEmpty(valueList)) {
+                    valueList = new ArrayList<>();
+                    tagMap.put(key, valueList);
+                }
+                valueList.add(value);
+            }
+        });
+
+        return tagMap;
     }
 }

@@ -10,7 +10,11 @@ import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.Statistics;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.UserRole;
-import org.dulab.adapcompounddb.site.services.*;
+import org.dulab.adapcompounddb.site.services.SpectrumClusterer;
+import org.dulab.adapcompounddb.site.services.SpectrumMatchCalculator;
+import org.dulab.adapcompounddb.site.services.SpectrumMatchService;
+import org.dulab.adapcompounddb.site.services.StatisticsService;
+import org.dulab.adapcompounddb.site.services.UserPrincipalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,11 +34,11 @@ public class AdminController {
     private final Progress progress;
 
     @Autowired
-    public AdminController(SpectrumMatchCalculator spectrumMatchCalculator,
-                           SpectrumClusterer spectrumClusterer,
-                           SpectrumMatchService spectrumMatchService,
-                           StatisticsService statisticsService,
-                           UserPrincipalService userPrincipalService) {
+    public AdminController(final SpectrumMatchCalculator spectrumMatchCalculator,
+            final SpectrumClusterer spectrumClusterer,
+            final SpectrumMatchService spectrumMatchService,
+            final StatisticsService statisticsService,
+            final UserPrincipalService userPrincipalService) {
 
         this.spectrumMatchCalculator = spectrumMatchCalculator;
         this.spectrumClusterer = spectrumClusterer;
@@ -79,11 +83,11 @@ public class AdminController {
     public String cluster() {
         try {
             Arrays.stream(ChromatographyType.values())
-                    .parallel()
-                    .forEach(t -> spectrumClusterer
-                            .cluster(t, 2, 0.25F, 0.01F));
+            .parallel()
+            .forEach(t -> spectrumClusterer
+                    .cluster(t, 2, 0.25F, 0.01F));
             spectrumClusterer.removeAll();
-        } catch (EmptySearchResultException e) {
+        } catch (final EmptySearchResultException e) {
             System.out.println(e.getMessage());
         }
         return "redirect:/admin/";
