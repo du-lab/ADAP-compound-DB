@@ -7,7 +7,7 @@ function addPieChart(idName, dataset) {
     var legendRectSize = 18;
     var legendSpacing = 4;
 
-    var total = d3.sum(dataset.map(function (d) {return parseInt(d.count);}));
+    var total = d3.sum(dataset.map(function (d) {return d.count;}));
 
     var tooltip = d3.select('#' + idName)
         .append('div')

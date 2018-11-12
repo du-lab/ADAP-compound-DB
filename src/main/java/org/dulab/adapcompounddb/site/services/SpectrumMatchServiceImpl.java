@@ -26,7 +26,6 @@ import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
-import org.dulab.adapcompounddb.models.entities.views.ClusterPage;
 import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
@@ -362,17 +361,9 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
             pageable = PageRequest.of(start / length, length);
         }
 
-        final Page<ClusterPage> spectrumPage = spectrumClusterRepository.findClusters(searchStr, pageable);
-        final List<SpectrumClusterDTO> spectrumList = new ArrayList<>();
+        final Page<SpectrumCluster> spectrumPage = spectrumClusterRepository.findClusters(searchStr, pageable);
 
-        for(final ClusterPage clusterPage: spectrumPage.getContent()) {
-            final SpectrumClusterDTO spectrumCluster = objectMapper.map(clusterPage.getSpectrumCluster(), SpectrumClusterDTO.class);
-            spectrumCluster.setSource(clusterPage.getSource());
-            spectrumCluster.setSpecimen(clusterPage.getSpecimen());
-            spectrumCluster.setTreatment(clusterPage.getTreatment());
-            spectrumList.add(spectrumCluster);
-        }
-
+        final List<SpectrumClusterDTO> spectrumList = objectMapper.map(spectrumPage.getContent(), SpectrumClusterDTO.class);
         final DataTableResponse response = new DataTableResponse(spectrumList);
         response.setRecordsTotal(spectrumPage.getTotalElements());
         response.setRecordsFiltered(spectrumPage.getTotalElements());

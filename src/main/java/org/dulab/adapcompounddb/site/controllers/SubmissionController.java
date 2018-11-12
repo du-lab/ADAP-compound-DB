@@ -2,10 +2,8 @@ package org.dulab.adapcompounddb.site.controllers;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -18,7 +16,6 @@ import javax.validation.constraints.NotBlank;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.entities.File;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
@@ -55,7 +52,7 @@ public class SubmissionController extends BaseController {
 
     @ModelAttribute
     public void addAttributes(final Model model) {
-        model.addAttribute("submissionCategoryTypes", SubmissionCategoryType.values());
+        /*model.addAttribute("submissionCategoryTypes", SubmissionCategoryType.values());
         model.addAttribute("availableTags", submissionService.findAllTags());
 
         final Map<SubmissionCategoryType, List<SubmissionCategory>> availableCategories = Arrays
@@ -64,7 +61,7 @@ public class SubmissionController extends BaseController {
         submissionService.findAllCategories()
                 .forEach(category -> availableCategories.get(category.getCategoryType()).add(category));
 
-        model.addAttribute("availableCategories", availableCategories);
+        model.addAttribute("availableCategories", availableCategories);*/
     }
 
     /********************************
@@ -171,7 +168,7 @@ public class SubmissionController extends BaseController {
      ************************************/
     @RequestMapping(value = "/file/{fileIndex:\\d+}/view/", method = RequestMethod.GET)
     public String fileRawView(@PathVariable("fileIndex") final int fileIndex, final HttpSession session,
-                              final HttpServletResponse response) throws IOException {
+            final HttpServletResponse response) throws IOException {
 
         final Submission submission = Submission.from(session);
 
@@ -185,7 +182,7 @@ public class SubmissionController extends BaseController {
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/{fileIndex:\\d+}/view/", method = RequestMethod.GET)
     public String rawView(@PathVariable("submissionId") final long id, @PathVariable("fileIndex") final int fileIndex,
-                          final HttpServletResponse response, final Model model) throws IOException {
+            final HttpServletResponse response, final Model model) throws IOException {
 
         final Submission submission = submissionService.findSubmission(id);
 
@@ -209,7 +206,7 @@ public class SubmissionController extends BaseController {
 
     @RequestMapping(value = "/file/{fileIndex:\\d+}/download/", method = RequestMethod.GET)
     public String fileRawDownload(@PathVariable("fileIndex") final int fileIndex, final HttpSession session,
-                                  final HttpServletResponse response) throws IOException {
+            final HttpServletResponse response) throws IOException {
 
         final Submission submission = Submission.from(session);
         if (submission == null) {
@@ -222,8 +219,8 @@ public class SubmissionController extends BaseController {
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/{fileIndex:\\d+}/download/", method = RequestMethod.GET)
     public String submissionRawDownload(@PathVariable("submissionId") final long id,
-                                        @PathVariable("fileIndex") final int fileIndex, final HttpServletResponse response, final Model model)
-            throws IOException {
+            @PathVariable("fileIndex") final int fileIndex, final HttpServletResponse response, final Model model)
+                    throws IOException {
 
         final Submission submission = submissionService.findSubmission(id);
         if (submission == null) {
@@ -245,7 +242,7 @@ public class SubmissionController extends BaseController {
      **********************************/
     @RequestMapping(value = "/file/submit", method = RequestMethod.POST)
     public String fileView(final HttpSession session, final Model model, @Valid final SubmissionForm submissionForm,
-                           final Errors errors) {
+            final Errors errors) {
 
         final Submission submission = Submission.from(session);
         if (errors.hasErrors()) {
@@ -267,7 +264,7 @@ public class SubmissionController extends BaseController {
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/edit", method = RequestMethod.POST)
     public String submissionView(@PathVariable("submissionId") final long submissionId, final Model model,
-                                 final HttpSession session, @Valid final SubmissionForm submissionForm, final Errors errors) {
+            final HttpSession session, @Valid final SubmissionForm submissionForm, final Errors errors) {
 
         final Submission submission = submissionService.findSubmission(submissionId);
         if (errors.hasErrors()) {
@@ -308,17 +305,17 @@ public class SubmissionController extends BaseController {
             tags.add(submissionTag);
         }
 
-        final List<SubmissionCategory> categories = new ArrayList<>();
-        for (final long id : submissionForm.getSubmissionCategoryIds()) {
-            if (id > 0) {
-                categories.add(submissionService.findSubmissionCategory(id).orElseThrow(() -> new IllegalStateException(
-                        String.format("Submission Category with ID = %d cannot be found.", id))));
-            }
-        }
-        submission.setCategories(categories);
+        //        final List<SubmissionCategory> categories = new ArrayList<>();
+        //        for (final long id : submissionForm.getSubmissionCategoryIds()) {
+        //            if (id > 0) {
+        //                categories.add(submissionService.findSubmissionCategory(id).orElseThrow(() -> new IllegalStateException(
+        //                        String.format("Submission Category with ID = %d cannot be found.", id))));
+        //            }
+        //        }
+        //submission.setCategories(categories);
 
         try {
-            long time = System.currentTimeMillis();
+            final long time = System.currentTimeMillis();
             submissionService.saveSubmission(submission);
             LOGGER.info(String.format(
                     "New submission is saved to the database in %.3f sec.",

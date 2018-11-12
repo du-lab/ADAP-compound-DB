@@ -209,6 +209,29 @@ public class SubmissionServiceImpl implements SubmissionService {
         return tagList;
     }
 
+    public Map<String, List<String>> generateTagMapOfACluster(final Long clusterId) {
+        final List<String> tagList = findTagsFromACluster(clusterId)
+                ;
+        final Map<String, List<String>> tagMap = new HashMap<>(); // source:<src1, src2, src1, src2>
+
+        tagList.forEach(tag -> {
+            final String[] arr = tag.split(":", 2);
+            if(arr.length == 2) {
+                final String key = arr[0].trim();
+                final String value = arr[1].trim();
+
+                List<String> valueList = tagMap.get(key);
+                if(CollectionUtils.isEmpty(valueList)) {
+                    valueList = new ArrayList<>();
+                    tagMap.put(key, valueList);
+                }
+                valueList.add(value);
+            }
+        });
+
+        return tagMap;
+    }
+
     @Override
     public Map<String, List<String>> groupTags(final List<String> tags) {
         final Map<String, List<String>> tagMap = new HashMap<>();

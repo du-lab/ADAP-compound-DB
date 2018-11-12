@@ -24,7 +24,6 @@ import org.dulab.adapcompounddb.utils.MathUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.gson.Gson;
@@ -196,11 +195,13 @@ public class ControllerUtils {
         });
         final ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        final Gson gson = new Gson();
 
-        final List<Map<String, String>> pieChart = new ArrayList<>(); // source: {src1: 2, src2: 2}
+        final List<Map<String, Object>> pieChart = new ArrayList<>(); // source: {src1: 2, src2: 2}
         pieCount.forEach((k, v) -> {
-            final Map<String, String> tag = new HashMap<>();
+            final Map<String, Object> tag = new HashMap<>();
             tag.put("name", k);
+
             final List<Map<String, String>> elementList = new ArrayList<>();
             v.forEach((l, c) -> {
                 final Map<String, String> element = new HashMap<>();
@@ -213,18 +214,11 @@ public class ControllerUtils {
                     elementList.add(element);
                 }
             });
-            String jsonString;
-            try {
-                jsonString = mapper.writeValueAsString(elementList);
-                tag.put("values", jsonString);
-            } catch (final JsonProcessingException e) {
-                e.printStackTrace();
-            }
+            tag.put("values", elementList);
             pieChart.add(tag);
         });
 
-
-        return new Gson().toJson(pieChart, List.class);
+        return gson.toJson(pieChart, List.class);
     }
 
     public static String jsonToHtml(final JsonArray jsonArray) {

@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.models;
 
+@Deprecated
 public enum SubmissionCategoryType implements EnumWithLabels {
 
     SOURCE("Source"),

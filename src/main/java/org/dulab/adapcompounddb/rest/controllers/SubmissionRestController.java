@@ -32,8 +32,7 @@ public class SubmissionRestController {
 
         final ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-        final DataTableResponse response = submissionService.findAllSubmissionsForResponse(searchStr, start, length, column,
-                sortDirection);
+        final DataTableResponse response = submissionService.findAllSubmissionsForResponse(searchStr, start, length, column, sortDirection);
 
         final String jsonString = objectMapper.writeValueAsString(response);
         return jsonString;

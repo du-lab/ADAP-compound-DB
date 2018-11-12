@@ -1,13 +1,23 @@
 package org.dulab.adapcompounddb.models.entities;
 
-import org.dulab.adapcompounddb.models.SubmissionCategoryType;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.validation.constraints.NotBlank;
+
+import org.dulab.adapcompounddb.models.SubmissionCategoryType;
+
 @Entity
+@Deprecated
 public class SubmissionCategory implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -29,7 +39,7 @@ public class SubmissionCategory implements Serializable {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(final long id) {
         this.id = id;
     }
 
@@ -37,7 +47,7 @@ public class SubmissionCategory implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -45,7 +55,7 @@ public class SubmissionCategory implements Serializable {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -54,7 +64,7 @@ public class SubmissionCategory implements Serializable {
         return categoryType;
     }
 
-    public void setCategoryType(SubmissionCategoryType categoryType) {
+    public void setCategoryType(final SubmissionCategoryType categoryType) {
         this.categoryType = categoryType;
     }
 
@@ -66,14 +76,18 @@ public class SubmissionCategory implements Serializable {
         return submissions;
     }
 
-    public void setSubmissions(List<Submission> submissions) {
+    public void setSubmissions(final List<Submission> submissions) {
         this.submissions = submissions;
     }
 
     @Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        if (!(other instanceof SubmissionCategory)) return false;
+    public boolean equals(final Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof SubmissionCategory)) {
+            return false;
+        }
         return id == ((SubmissionCategory) other).id;
     }
 

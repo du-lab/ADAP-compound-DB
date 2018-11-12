@@ -119,9 +119,9 @@
                 <th title="Retention time (min)">RT</th>
                 <th>Precursor m/z</th>
                 <th>Significance</th>
-                <c:forEach items="${submissionCategoryTypes}" var="type">
+                <%-- <c:forEach items="${submissionCategoryTypes}" var="type">
                     <th>${type.label}</th>
-                </c:forEach>
+                </c:forEach> --%>
                 <th></th>
             </tr>
             </thead>
@@ -135,9 +135,11 @@
                     <td><fmt:formatNumber type="number" maxFractionDigits="3" value="${spectrum.retentionTime}"/></td>
                     <td><fmt:formatNumber type="number" maxFractionDigits="3" value="${spectrum.precursor}"/></td>
                     <td><fmt:formatNumber type="number" maxFractionDigits="3" value="${spectrum.significance}"/></td>
-                    <c:forEach items="${submissionCategoryTypes}" var="type">
+
+                    <%-- <c:forEach items="${submissionCategoryTypes}" var="type">
                         <td>${spectrum.file.submission.getCategory(type)}</td>
-                    </c:forEach>
+                    </c:forEach> --%>
+
                     <td><a href="/spectrum/${spectrum.id}/"><i class="material-icons" title="View">&#xE5D3;</i></a></td>
                 </tr>
             </c:forEach>
@@ -185,23 +187,24 @@
 <script type="text/javascript" src="<c:url value="/resources/AdapCompoundDb/js/tabs.js"/>"></script>
 <script>
     // Add Spectrum Plot
-    var plot = new TwoSpectraPlot('plot', ${dulab:spectrumToJson(cluster.consensusSpectrum)});
+    var plot = new TwoSpectraPlot('plot', JSON.parse('${dulab:spectrumToJson(cluster.consensusSpectrum)}'));
 
     $(".tabbed-pane").each(function() {
         $(this).tabbedPane();
     });
 
-    var pieChart = '${dulab:clusterTagsToJson(tags)}';
-    var jsonVal = JSON.parse(pieChart);
+    var pieChartVal = '${dulab:clusterTagsToJson(tags)}';
+    // $pieChart = $(pieChartVal).replaceAll("/]\"/g", "]").replaceAll(/\"[/g, "[");
+    var jsonVal = JSON.parse(pieChartVal);
 
     $pieDiv = $("#charts");
-    $.each(jsonVal, function(data) {
+    $.each(jsonVal, function(k, v) {
         $pieDiv.append('<div style="display: inline-block; margin: 10px;">' +
-                            '<div>' + data.name + '</div>' +
-                            '<div>' + data.diversity + '</div>' +
-                            '<div id="' + data.values + '-PieChart"></div>' +
+                            '<div>diversity: ' + v.diversity + '</div>' +
+                            '<div id="PieChart-' + k + '"></div>' +
+                            '<div>' + v.name + '</div>' +
                         '</div>');
-        addPieChart(k + '-PieChart', v);
+        addPieChart('PieChart-' + k, v.values);
     });
 </script>
 <style>
