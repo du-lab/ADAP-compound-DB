@@ -1,5 +1,12 @@
 package org.dulab.adapcompounddb.models;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 import org.dulab.jsparcehc.Matrix;
@@ -7,13 +14,6 @@ import org.dulab.jsparcehc.MatrixElement;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class DistanceMatrixWrapper implements Matrix {
 
@@ -24,7 +24,7 @@ public class DistanceMatrixWrapper implements Matrix {
     private Page<SpectrumMatch> page;
     private Iterator<SpectrumMatch> iterator;
 
-    public DistanceMatrixWrapper(Function<Pageable, Page<SpectrumMatch>> function, List<Spectrum> spectra) {
+    public DistanceMatrixWrapper(final Function<Pageable, Page<SpectrumMatch>> function, final List<Spectrum> spectra) {
         this.function = function;
         spectrumIndexMap = IntStream.range(0, spectra.size())
                 .boxed()
@@ -59,16 +59,18 @@ public class DistanceMatrixWrapper implements Matrix {
 
         // If iterator has a next element, return that element
         if (iterator.hasNext()) {
-            SpectrumMatch match = iterator.next();
-            int row = spectrumIndexMap.get(
+            final SpectrumMatch match = iterator.next();
+            final Integer row = spectrumIndexMap.get(
                     match.getMatchSpectrum().getId());
-            int col = spectrumIndexMap.get(
+            final Integer col = spectrumIndexMap.get(
                     match.getQuerySpectrum().getId());
-            float distance = (float) (1.0 - match.getScore());
-            distance = Math.max(0F, distance);
-            distance = Math.min(1F, distance);
+            if(row != null) {
+                float distance = (float) (1.0 - match.getScore());
+                distance = Math.max(0F, distance);
+                distance = Math.min(1F, distance);
 
-            return new MatrixElement(row, col, distance);
+                return new MatrixElement(row, col, distance);
+            }
         }
 
         // Otherwise, return null
