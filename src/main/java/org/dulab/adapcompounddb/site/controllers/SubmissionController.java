@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 @Controller
-@SessionAttributes({"submissionCategoryTypes", "availableTags", "availableCategories"})
+@SessionAttributes({"availableTags"})
 public class SubmissionController extends BaseController {
 
     private static final Logger LOGGER = LogManager.getLogger(SubmissionController.class);
@@ -52,8 +52,8 @@ public class SubmissionController extends BaseController {
 
     @ModelAttribute
     public void addAttributes(final Model model) {
-        /*model.addAttribute("submissionCategoryTypes", SubmissionCategoryType.values());
         model.addAttribute("availableTags", submissionService.findAllTags());
+        /*model.addAttribute("submissionCategoryTypes", SubmissionCategoryType.values());
 
         final Map<SubmissionCategoryType, List<SubmissionCategory>> availableCategories = Arrays
                 .stream(SubmissionCategoryType.values()).collect(Collectors.toMap(t -> t, t -> new ArrayList<>()));

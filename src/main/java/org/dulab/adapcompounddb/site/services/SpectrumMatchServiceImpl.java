@@ -53,10 +53,10 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     private final SpectrumClusterRepository spectrumClusterRepository;
 
     private static enum ColumnInformation {
-        ID(0, "id"), NAME(1, "spectrumCluster.consensusSpectrum.name"),
-        COUNT(2, "spectrumCluster.size"), SCORE(3, "spectrumCluster.diameter"), SIGNIFICANCE(4, "spectrumCluster.aveSignificance"),
-        SOURCE(5,"source"), SPECIMEN(6,"specimen"), TREATMENT(7,"treatment"),
-        CHROMATOGRAPHYTYPE(8, "spectrumCluster.consensusSpectrum.chromatographyType");
+        ID(0, "id"), NAME(1, "consensusSpectrum.name"),
+        COUNT(2, "size"), SCORE(3, "diameter"), SIGNIFICANCE(4, "aveSignificance"),
+        MIN_DIVERSITY(5,"minDiversity"), MAX_DIVERSITY(6,"maxDiversity"), AVE_DIVERSITY(7,"aveDiversity"),
+        CHROMATOGRAPHYTYPE(8, "consensusSpectrum.chromatographyType");
 
         private int position;
         private String sortColumnName;
