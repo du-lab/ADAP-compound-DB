@@ -371,3 +371,13 @@ create view ClusterPage as
     from
        spectrumcluster sc
        left join diversityindex d on sc.id = d.ClusterId group by sc.Id;
+
+
+ALTER TABLE `spectrumcluster` 
+ADD COLUMN `AveDiversity` DOUBLE NULL;
+
+ALTER TABLE `spectrumcluster` 
+ADD COLUMN `MinDiversity` DOUBLE NULL AFTER `AveDiversity`;
+
+ALTER TABLE `spectrumcluster` 
+ADD COLUMN `MaxDiversity` DOUBLE NULL AFTER `MinDiversity`;
