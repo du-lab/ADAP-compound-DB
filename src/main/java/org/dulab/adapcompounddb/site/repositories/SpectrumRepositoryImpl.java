@@ -77,6 +77,8 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
         for(int i=0; i<spectrumList.size(); i++) {
             final List<Peak> peaks = spectrumList.get(i).getPeaks();
+            final List<SpectrumProperty> properties = spectrumList.get(i).getProperties();
+
             for(int j=0; j<peaks.size(); j++) {
                 if(i != 0 || j != 0) {
                     peakSql.append(COMMA);
@@ -86,7 +88,6 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                 peakSql.append(String.format(peakValueString, p.getMz(), p.getIntensity(), savedSpectrumIdList.get(i)));
             }
 
-            final List<SpectrumProperty> properties = spectrumList.get(i).getProperties();
             for(int j=0; j<properties.size(); j++) {
                 if(i != 0 || j != 0) {
                     propertySql.append(COMMA);
@@ -138,11 +139,45 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         fileList.stream().forEach(file -> fileIds.add(file.getId()));
         final StringBuilder selectSql = new StringBuilder("select s.id from Spectrum s where s.file.id in (:fileIds)");
 
-        final TypedQuery selectQuery = entityManager.createQuery(selectSql.toString(), Long.class);
+        final TypedQuery<Long> selectQuery = entityManager.createQuery(selectSql.toString(), Long.class);
         selectQuery.setParameter("fileIds", fileIds);
 
         final List<Long> spectrumIds = selectQuery.getResultList();
 
         savePeaksAndPropertiesQuery(spectrumList, spectrumIds);
+    }
+
+    @Override
+    public void savePeaksAndProperties(final Long spectrumId, final List<Peak> peaks, final List<SpectrumProperty> properties) {
+        final StringBuilder peakSql = new StringBuilder("INSERT INTO `peak`(" +
+                "`Mz`, `Intensity`, `SpectrumId`) VALUES ");
+        final StringBuilder propertySql = new StringBuilder("INSERT INTO `spectrumproperty`(" +
+                "`SpectrumId`, `Name`, `Value`) VALUES ");
+
+        final String peakValueString = "(%f, %f, %d)";
+        final String propertyValueString = "(%d, %s, %s)";
+
+
+        for(int j=0; j<peaks.size(); j++) {
+            if(j != 0) {
+                peakSql.append(COMMA);
+            }
+            final Peak p = peaks.get(j);
+
+            peakSql.append(String.format(peakValueString, p.getMz(), p.getIntensity(), spectrumId));
+        }
+
+        for(int j=0; j<properties.size(); j++) {
+            if(j != 0) {
+                propertySql.append(COMMA);
+            }
+            final SpectrumProperty sp = properties.get(j);
+            propertySql.append(String.format(propertyValueString, spectrumId, DOUBLE_QUOTE + sp.getName() + DOUBLE_QUOTE, DOUBLE_QUOTE + sp.getValue() + DOUBLE_QUOTE));
+        }
+
+        final Query peakQuery = entityManager.createNativeQuery(peakSql.toString());
+        peakQuery.executeUpdate();
+        final Query propertyQuery = entityManager.createNativeQuery(propertySql.toString());
+        propertyQuery.executeUpdate();
     }
 }

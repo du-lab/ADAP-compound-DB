@@ -22,6 +22,7 @@ import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
+import org.dulab.adapcompounddb.models.entities.SpectrumProperty;
 import org.dulab.adapcompounddb.models.entities.SubmissionTag;
 import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
@@ -111,7 +112,13 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
             }
 
             final SpectrumCluster cluster = createCluster(spectrumIds, mzTolerance);
+            final Spectrum consensusSpectrum = cluster.getConsensusSpectrum();
+            final List<Peak> peaks = new ArrayList<>(consensusSpectrum.getPeaks());
+            final List<SpectrumProperty> properties = new ArrayList<>(consensusSpectrum.getProperties());
+
             spectrumClusterRepository.save(cluster);
+
+            spectrumRepository.savePeaksAndProperties(consensusSpectrum.getId(), peaks, properties);
         }
 
         LOGGER.info(String.format("Clustering spectra of type \"%s\" is completed.", type));
