@@ -200,10 +200,10 @@
     $pieDiv = $("#charts");
     $.each(jsonVal, function(k, v) {
         $pieDiv.append('<div style="display: inline-block; margin: 10px;">' +
-                            '<div>diversity: ' + v.diversity + '</div>' +
-                            '<div id="PieChart-' + k + '"></div>' +
-                            '<div>' + v.name + '</div>' +
-                        '</div>');
+                           '<div>diversity: ' + parseFloat(v.diversity).toFixed(2) + '</div>' +
+                           '<div id="PieChart-' + k + '"></div>' +
+                           '<div>' + v.name + '</div>' +
+                       '</div>');
         addPieChart('PieChart-' + k, v.values);
     });
 </script>
