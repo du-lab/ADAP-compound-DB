@@ -66,9 +66,9 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
     @Override
     public void savePeaksAndPropertiesQuery(final List<Spectrum> spectrumList, final List<Long> savedSpectrumIdList) {
-        final StringBuilder peakSql = new StringBuilder("INSERT INTO `peak`(" +
+        final StringBuilder peakSql = new StringBuilder("INSERT INTO `Peak`(" +
                 "`Mz`, `Intensity`, `SpectrumId`) VALUES ");
-        final StringBuilder propertySql = new StringBuilder("INSERT INTO `spectrumproperty`(" +
+        final StringBuilder propertySql = new StringBuilder("INSERT INTO `SpectrumProperty`(" +
                 "`SpectrumId`, `Name`, `Value`) VALUES ");
 
         String peakValueString = "(%f, %f, %d)";
@@ -105,7 +105,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     public void saveSpectrumAndPeaks(final List<File> fileList, final List<Long> savedFileIdList) {
         final List<Spectrum> spectrumList = new ArrayList<>();
 
-        final StringBuilder insertSql = new StringBuilder("INSERT INTO `spectrum`(" +
+        final StringBuilder insertSql = new StringBuilder("INSERT INTO `Spectrum`(" +
                 "`Name`, `Precursor`, `RetentionTime`," +
                 "`Significance`, `ChromatographyType`, `FileId`" +
                 ") VALUES ");
