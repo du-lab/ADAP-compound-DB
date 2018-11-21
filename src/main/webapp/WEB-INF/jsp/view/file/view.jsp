@@ -12,10 +12,10 @@
 
 <section>
     <div class="tabbed-pane">
-        <span class="active" data-tab="files">Files</span>
-        <span data-tab="mass_spectra">Mass Spectra</span>
+        <span class="active" data-tab="mass_spectra">Mass Spectra</span>
+        <span data-tab="files">Files</span>
     </div>
-    <div id="files"class="active">
+    <div id="files" class="hide">
         <table id="file_table" class="display" style="width: 100%; clear:none;">
             <thead>
             <tr>
@@ -45,27 +45,31 @@
         </table>
     </div>
 
-    <div id="mass_spectra" class="hide">
+    <div id="mass_spectra" class="active">
         <div align="center">
             <table id="spectrum_table" class="display" style="width: 100%; clear:none;">
                 <thead>
-                <tr>
-                    <th></th>
-                    <th>Name</th>
-                    <th>Ret Time (min)</th>
-                    <th>Precursor mass</th>
-                    <th>Significance</th>
-                    <th>Type</th>
-                    <th></th>
-                </tr>
-    
+                    <tr>
+                        <th></th>
+                        <th>Name</th>
+                        <th>Ret Time (min)</th>
+                        <th>Precursor mass</th>
+                        <th>Significance</th>
+                        <th>Type</th>
+                        <th></th>
+                    </tr>
                 </thead>
+
                 <tbody>
                 </tbody>
             </table>
         </div>
     </div>
 </section>
+
+<div style="text-align: center;">
+    <a href="clear/" class="button">Clear</a>
+</div>
 
 <script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
 <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>

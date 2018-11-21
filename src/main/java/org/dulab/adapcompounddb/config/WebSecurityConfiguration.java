@@ -58,7 +58,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers("/", "/login", "/logout").permitAll();
 
         // For ADMIN only.
-        http.authorizeRequests().antMatchers("/admin/").access("hasRole('ROLE_ADMIN')");
+        http.authorizeRequests().antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')");
         http.authorizeRequests().antMatchers("/findAllSubmissions/").access("hasRole('ROLE_ADMIN')");
         http.authorizeRequests().antMatchers("/account/").access("isAuthenticated()");
         http.authorizeRequests().antMatchers(HttpMethod.POST, "/file/submit").access("isAuthenticated()");
@@ -70,22 +70,22 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         // Config for Login Form
         http.authorizeRequests().and().formLogin()//
-                // Submit URL of login page.
-                .loginProcessingUrl("/j_spring_security_check") // Submit URL
-                .loginPage("/login/")//
-                .successHandler((request, response, authentication) -> {
-                    if (authentication.isAuthenticated()) {
-                        request.getSession().setAttribute(SESSION_ATTRIBUTE_KEY, authentication.getPrincipal());
-                        response.sendRedirect(request.getServletContext().getContextPath() + "/");
-                    } else {
-                        request.getRequestDispatcher("/login?loginFailed=true").forward(request, response);
-                    }
-                }).failureUrl("/login?loginFailed=true")//
-                .usernameParameter("username")//
-                .passwordParameter("password")
-                // Config for Logout Page
-                .and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout")).logoutSuccessUrl("/")
-                .deleteCookies("JSESSIONID").invalidateHttpSession(true).permitAll();
+        // Submit URL of login page.
+        .loginProcessingUrl("/j_spring_security_check") // Submit URL
+        .loginPage("/login/")//
+        .successHandler((request, response, authentication) -> {
+            if (authentication.isAuthenticated()) {
+                request.getSession().setAttribute(SESSION_ATTRIBUTE_KEY, authentication.getPrincipal());
+                response.sendRedirect(request.getServletContext().getContextPath() + "/");
+            } else {
+                request.getRequestDispatcher("/login?loginFailed=true").forward(request, response);
+            }
+        }).failureUrl("/login?loginFailed=true")//
+        .usernameParameter("username")//
+        .passwordParameter("password")
+        // Config for Logout Page
+        .and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout/")).logoutSuccessUrl("/")
+        .deleteCookies("JSESSIONID").invalidateHttpSession(true).permitAll();
     }
 
 }

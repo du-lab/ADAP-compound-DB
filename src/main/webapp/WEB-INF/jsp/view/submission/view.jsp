@@ -10,8 +10,8 @@
 <section>
     <div class="tabbed-pane">
         <span class="active" data-tab="submission">Submission Properties</span>
-        <span data-tab="files">Files</span>
         <span data-tab="mass_spectra">Mass Spectra</span>
+        <span data-tab="files">Files</span>
     </div>
     <div id="submission">
         <c:choose>
@@ -155,9 +155,13 @@
                     "orderable": true,
                     "targets": 1,
                     "render": function (data, type, row, meta) {
-                        content = '<a href="spectrum/' + row.id + '/">' +
-                            row.name +
-                            '</a>' +
+                    	var content = '';
+                        if(row.id > 0) {
+                            content = '<a href="spectrum/' + row.id + '/">';
+                        } else {
+                            content = '<a href="' + row.fileIndex +'/' + row.spectrumIndex + '/">'
+                        }
+                        content = content + row.name + '</a>' +
                             '<br/><small>' + row.fileName + '</small>';
                         return content;
                     }
@@ -193,16 +197,6 @@
                     }
                 },
                 {
-                    "targets": 4,
-                    "render": function (data, type, row, meta) {
-                        var value = row.significance;
-                        if (value != null && !isNaN(value)) {
-                            value = value.toFixed(3);
-                        }
-                        return value;
-                    }
-                },
-                {
                     "orderable": true,
                     "targets": 5,
                     "render": function (data, type, row, meta) {
@@ -211,6 +205,7 @@
                             + ' alt="' + row.chromatographyTypeLabel + '"'
                             + ' title="' + row.chromatographyTypeLabel + '"'
                             + ' class="icon"/>';
+
                         return content;
                     }
                 },
@@ -218,12 +213,21 @@
                     "orderable": false,
                     "targets": 6,
                     "render": function (data, type, row, meta) {
-                        content = '<a href="spectrum/' + row.id + '/">' +
+                        var content = '';
+                        if(row.id > 0) {
+                            content = '<a href="spectrum/' + row.id + '/">';
+                        } else {
+                            content = '<a href="' + row.fileIndex +'/' + row.spectrumIndex + '/">'
+                        }
+                        content = content +
                             '<i class="material-icons" title="View spectrum">&#xE5D3;</i>' +
-                            '</a>' +
-                            '<a href="spectrum/' + row.id + '/search/">' +
-                            '<i class="material-icons" title="Search spectrum">&#xE8B6;</i>' +
                             '</a>';
+                        if(row.id > 0) {
+                        	content = content + '<a href="spectrum/' + row.id + '/search/">';
+                        } else {
+                        	content = content + '<a href="' + row.fileIndex +'/' + row.spectrumIndex + '/search/">';
+                        }
+                        content = content + '<i class="material-icons" title="Search spectrum">&#xE8B6;</i></a>';
                         if (JSON.parse("${submissionForm.authorized && edit}")) {
                             content += '<a href="spectrum/' + row.id + '/delete">' +
                                 '<i class="material-icons" title="Delete spectrum">&#xE872;</i>' +
