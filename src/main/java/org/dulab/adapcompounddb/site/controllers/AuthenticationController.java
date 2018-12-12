@@ -32,7 +32,7 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @Autowired
-    public AuthenticationController(AuthenticationService authenticationService) {
+    public AuthenticationController(final AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
     }
 
@@ -41,7 +41,7 @@ public class AuthenticationController {
      ****************/
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public ModelAndView login(Model model, HttpSession session, @RequestParam(name = "loginFailed", required = false, defaultValue = "false") Boolean loginFailed) {
+    public ModelAndView login(final Model model, final HttpSession session, @RequestParam(name = "loginFailed", required = false, defaultValue = "false") final Boolean loginFailed) {
         if (UserPrincipal.from(session) != null) {
             return getHomeRedirect();
         }
@@ -52,48 +52,49 @@ public class AuthenticationController {
         return new ModelAndView("login");
     }
 
-//    @RequestMapping(value = "/login", method = RequestMethod.POST)
-//    public ModelAndView login(Model model, HttpSession session, HttpServletRequest request,
-//                              @Valid LogInForm form, Errors errors, @RequestParam(name = "loginFailed", defaultValue = "false") Boolean loginFailed) {
-//
-//        if (UserPrincipal.from(session) != null)
-//            return getHomeRedirect();
-//
-//        if (errors.hasErrors()) {
-//            form.setPassword(null);
-//            return new ModelAndView("login");
-//        }
-//
-//        UserPrincipal principal;
-//        try {
-//            principal = authenticationService.authenticate(form.getUsername(), form.getPassword());
-//        } catch (ConstraintViolationException e) {
-//            form.setPassword(null);
-//            model.addAttribute("validationErrors", e.getConstraintViolations());
-//            return new ModelAndView("login");
-//        }
-//
-//        model.addAttribute("loginFailed", loginFailed);
-//        if (principal == null) {
-//            form.setPassword(null);
-//            model.addAttribute("loginFailed", true);
-//            model.addAttribute("logInForm", form);
-//            return new ModelAndView("login");
-//        }
-//
-//        UserPrincipal.assign(session, principal);
-//        request.changeSessionId();
-//        return getHomeRedirect();
-//    }
+    //    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    //    public ModelAndView login(Model model, HttpSession session, HttpServletRequest request,
+    //                              @Valid LogInForm form, Errors errors, @RequestParam(name = "loginFailed", defaultValue = "false") Boolean loginFailed) {
+    //
+    //        if (UserPrincipal.from(session) != null)
+    //            return getHomeRedirect();
+    //
+    //        if (errors.hasErrors()) {
+    //            form.setPassword(null);
+    //            return new ModelAndView("login");
+    //        }
+    //
+    //        UserPrincipal principal;
+    //        try {
+    //            principal = authenticationService.authenticate(form.getUsername(), form.getPassword());
+    //        } catch (ConstraintViolationException e) {
+    //            form.setPassword(null);
+    //            model.addAttribute("validationErrors", e.getConstraintViolations());
+    //            return new ModelAndView("login");
+    //        }
+    //
+    //        model.addAttribute("loginFailed", loginFailed);
+    //        if (principal == null) {
+    //            form.setPassword(null);
+    //            model.addAttribute("loginFailed", true);
+    //            model.addAttribute("logInForm", form);
+    //            return new ModelAndView("login");
+    //        }
+    //
+    //        UserPrincipal.assign(session, principal);
+    //        request.changeSessionId();
+    //        return getHomeRedirect();
+    //    }
 
     /*****************
      ***** Sign Up *****
      *****************/
 
     @RequestMapping(value = "/signup", method = RequestMethod.GET)
-    public ModelAndView signup(Model model, HttpSession session) {
-        if (UserPrincipal.from(session) != null)
+    public ModelAndView signup(final Model model, final HttpSession session) {
+        if (UserPrincipal.from(session) != null) {
             return getHomeRedirect();
+        }
 
         model.addAttribute("signupFailed", false);
         model.addAttribute("signUpForm", new SignUpForm());
@@ -102,10 +103,11 @@ public class AuthenticationController {
     }
 
     @RequestMapping(value = "/signup", method = RequestMethod.POST)
-    public ModelAndView signup(Model model, HttpSession session, HttpServletRequest request,
-                               @Valid SignUpForm form, Errors errors) {
-        if (UserPrincipal.from(session) != null)
+    public ModelAndView signup(final Model model, final HttpSession session, final HttpServletRequest request,
+            @Valid final SignUpForm form, final Errors errors) {
+        if (UserPrincipal.from(session) != null) {
             return getHomeRedirect();
+        }
 
         if (errors.hasErrors()) {
             form.setPassword(null);
@@ -113,25 +115,24 @@ public class AuthenticationController {
             return new ModelAndView("signup");
         }
 
-        UserPrincipal principal = new UserPrincipal();
+        final UserPrincipal principal = new UserPrincipal();
         principal.setUsername(form.getUsername());
         principal.setEmail(form.getEmail());
         try {
             authenticationService.saveUser(principal, form.getPassword());
-        }
-        catch (Throwable t) {
-
+        } catch (Throwable t) {
             LOG.warn("Error during authentication", t);
 
             if (t instanceof ConstraintViolationException) {
                 model.addAttribute("validationErrors",
                         ((ConstraintViolationException) t).getConstraintViolations());
-
             } else if (t instanceof DataIntegrityViolationException) {
-                while (t.getCause() != null) t = t.getCause();
+                while (t.getCause() != null) {
+                    t = t.getCause();
+                }
                 model.addAttribute("errorMsg",
                         t.getMessage().contains("Duplicate")
-                                ? "Username is already used."
+                        ? "Username is already used."
                                 : t.getMessage());
             }
 
@@ -150,7 +151,7 @@ public class AuthenticationController {
      *****************/
 
     @RequestMapping(value = "logout", method = RequestMethod.GET)
-    public ModelAndView logout(HttpSession session) {
+    public ModelAndView logout(final HttpSession session) {
         session.invalidate();
         return getHomeRedirect();
     }
@@ -176,7 +177,7 @@ public class AuthenticationController {
             return username;
         }
 
-        public void setUsername(String username) {
+        public void setUsername(final String username) {
             this.username = username;
         }
 
@@ -184,15 +185,15 @@ public class AuthenticationController {
             return password;
         }
 
-        public void setPassword(String password) {
+        public void setPassword(final String password) {
             this.password = password;
         }
     }
 
     @FieldMatch.List({
-            @FieldMatch(first = "email", second = "confirmedEmail", message = "The E-mail fields must match."),
-            @FieldMatch(first = "password", second = "confirmedPassword",
-                    message = "The Password fields must match.")
+        @FieldMatch(first = "email", second = "confirmedEmail", message = "The E-mail fields must match."),
+        @FieldMatch(first = "password", second = "confirmedPassword",
+        message = "The Password fields must match.")
     })
     public static class SignUpForm {
 
@@ -215,7 +216,7 @@ public class AuthenticationController {
             return username;
         }
 
-        public void setUsername(String username) {
+        public void setUsername(final String username) {
             this.username = username;
         }
 
@@ -223,7 +224,7 @@ public class AuthenticationController {
             return email;
         }
 
-        public void setEmail(String email) {
+        public void setEmail(final String email) {
             this.email = email;
         }
 
@@ -231,7 +232,7 @@ public class AuthenticationController {
             return confirmedEmail;
         }
 
-        public void setConfirmedEmail(String confirmedEmail) {
+        public void setConfirmedEmail(final String confirmedEmail) {
             this.confirmedEmail = confirmedEmail;
         }
 
@@ -239,7 +240,7 @@ public class AuthenticationController {
             return password;
         }
 
-        public void setPassword(String password) {
+        public void setPassword(final String password) {
             this.password = password;
         }
 
@@ -247,7 +248,7 @@ public class AuthenticationController {
             return confirmedPassword;
         }
 
-        public void setConfirmedPassword(String confirmedPassword) {
+        public void setConfirmedPassword(final String confirmedPassword) {
             this.confirmedPassword = confirmedPassword;
         }
     }

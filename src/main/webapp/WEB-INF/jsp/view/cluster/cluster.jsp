@@ -128,8 +128,8 @@
             <tbody>
             <c:forEach items="${cluster.spectra}" var="spectrum">
                 <tr>
-                    <td><a href="/spectrum/${spectrum.id}/">${spectrum.name}</a><br/>
-                        <small><a href="/submission/${spectrum.file.submission.id}/">${spectrum.file.submission.name}</a>
+                    <td><a href="${pageContext.request.contextPath}/spectrum/${spectrum.id}/">${spectrum.name}</a><br/>
+                        <small><a href="${pageContext.request.contextPath}/submission/${spectrum.file.submission.id}/">${spectrum.file.submission.name}</a>
                         </small>
                     </td>
                     <td><fmt:formatNumber type="number" maxFractionDigits="3" value="${spectrum.retentionTime}"/></td>
@@ -140,7 +140,7 @@
                         <td>${spectrum.file.submission.getCategory(type)}</td>
                     </c:forEach> --%>
 
-                    <td><a href="/spectrum/${spectrum.id}/"><i class="material-icons" title="View">&#xE5D3;</i></a></td>
+                    <td><a href="${pageContext.request.contextPath}/spectrum/${spectrum.id}/"><i class="material-icons" title="View">&#xE5D3;</i></a></td>
                 </tr>
             </c:forEach>
             </tbody>

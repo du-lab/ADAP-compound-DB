@@ -45,16 +45,26 @@
         <div>
             <table>
                 <tr>
-                    <td><a href="calculatescores/" class="button"
-                        onclick="progressBar.start('calculatescores/progress')">Calculate
-                            Matching Scores...</a></td>
-                    <td>Calculates matching scores for all spectra
-                        in the library</td>
+                    <td>Calculates matching scores for all spectra in the library</td>
+                    <td>
+                        <!-- <a href="calculatescores/" class="button"
+                            onclick="progressBar.start('calculatescores/progress')">Calculate Matching Scores...</a> -->
+                        <button class="button" id="calculate_match_button">Calculate Matching Scores</button>
+                    </td>
+                    <td>
+                        <progress id="match_progress" value="0" max="100" style="width:50em; height: 1.4em;"></progress>
+                    </td>
                 </tr>
                 <tr>
-                    <td><a id="button-cluster" href="cluster/"
-                        class="button">Cluster spectra...</a></td>
                     <td>Cluster spectra into clusters</td>
+                    <td>
+                        <!-- <a id="button-cluster" href="cluster/"
+                            class="button">Cluster spectra...</a> -->
+                        <button class="button" id="cluster_button">Cluster spectra</button>
+                    </td>
+                    <td>
+                        <progress id="cluster_progress" value="0" max="100" style="width:50em; height: 1.4em;"></progress>
+                    </td>
                 </tr>
             </table>
         </div>
@@ -86,8 +96,7 @@
                                         <i class="material-icons">check</i>
                                     </c:if></td>
                             </c:forEach>
-                            <td><a
-                                onclick="confirmDeleteDialog.show(
+                            <td><a onclick="confirmDeleteDialog.show(
                                 'User &quot;${user.name}&quot; and all user\'s submissions will be deleted. Are you sure?',
                                 '${pageContext.request.contextPath}/user/${user.id}/delete');">
                                     <i class="material-icons">delete</i>
@@ -134,7 +143,6 @@
     $(".tabbed-pane").each(function() {
         $(this).tabbedPane();
     });
-    var progressBar = new ProgressBar('progressBarDiv');
     var confirmDeleteDialog = $('#confirm-delete-dialog').confirmDeleteDialog();
     var progressDialog = $('#progress-dialog').progressDialog();
 
@@ -247,7 +255,46 @@
         });
     }
 
-    $('#button-cluster').click(function () {
-        progressDialog.show('Clustering may take a while. Please wait...');
-    })
+
+
+    var clusterButton = $('#cluster_button');
+    var matchButton = $('#calculate_match_button');
+    $(clusterButton).attr("disabled", "disabled");
+    $(matchButton).attr("disabled", "disabled");
+
+    var counter = 0;
+    var buttonHandler = function() {
+        counter++;
+        if(counter == 2) {
+            $(clusterButton).removeAttr("disabled");
+            $(matchButton).removeAttr("disabled");
+        }
+    }
+    var scoreProgressBar = new ProgressBar('calculatescores/progress', 'match_progress', 3000, buttonHandler);
+    var clusterProgressBar = new ProgressBar('cluster/progress', 'cluster_progress', 500, buttonHandler);
+
+    scoreProgressBar.start();
+    clusterProgressBar.start();
+
+    $(matchButton).click(function () {
+        $(clusterButton).attr("disabled", "disabled");
+        $(matchButton).attr("disabled", "disabled");
+        $.ajax({
+            url: "admin/calculatescores"
+        }).done(function() {
+            $("#match_progress").removeClass("hide");
+            scoreProgressBar.start();
+        });
+    });
+
+    $(clusterButton).click(function () {
+        $(clusterButton).attr("disabled", "disabled");
+        $(matchButton).attr("disabled", "disabled");
+        $.ajax({
+            url: "admin/cluster"
+        }).done(function() {
+            $("#cluster_progress").removeClass("hide");
+            clusterProgressBar.start(); 
+        });
+    });
 </script>

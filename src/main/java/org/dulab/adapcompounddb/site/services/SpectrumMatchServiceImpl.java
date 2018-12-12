@@ -95,6 +95,11 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         this.spectrumClusterRepository = spectrumClusterRepository;
     }
 
+    @Override
+    public float getProgress() {
+        return progress;
+    }
+
     @Transactional
     @Override
     public void cluster(final float mzTolerance, final int minNumSpectra, final float scoreThreshold)

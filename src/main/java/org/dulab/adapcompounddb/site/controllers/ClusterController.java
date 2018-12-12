@@ -49,7 +49,7 @@ public class ClusterController {
 
     @RequestMapping(value="/allClusters/", method=RequestMethod.GET)
     public String clusters(final Model model) {
-        final List<SpectrumCluster> allClusters =  spectrumMatchService.getAllClusters();
+        final List<SpectrumCluster> allClusters = spectrumMatchService.getAllClusters();
         model.addAttribute("clusters", allClusters);
         return "cluster/all_clusters";
     }

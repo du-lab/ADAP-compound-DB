@@ -91,8 +91,7 @@ public class SpectrumCluster implements Serializable {
 
     @OneToMany(
             mappedBy = "cluster",
-            fetch = FetchType.LAZY,
-            cascade = {})
+            fetch = FetchType.LAZY)
     public List<Spectrum> getSpectra() {
         return spectra;
     }

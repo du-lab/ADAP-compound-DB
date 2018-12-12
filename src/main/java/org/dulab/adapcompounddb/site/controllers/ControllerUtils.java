@@ -89,7 +89,7 @@ public class ControllerUtils {
     public static JsonObject spectrumToJson(final Spectrum spectrum) {
 
         final JsonObjectBuilder jsonObjectBuilder = Json.createObjectBuilder();
-        jsonObjectBuilder.add("name", spectrum.getName());
+        jsonObjectBuilder.add("name", spectrum.getName().replace("'", ""));
 
         final double maxIntensity = spectrum.getPeaks().stream()
                 .mapToDouble(Peak::getIntensity)

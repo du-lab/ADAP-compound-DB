@@ -1,5 +1,10 @@
 package org.dulab.adapcompounddb.site.services;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.ChromatographyType;
@@ -11,10 +16,6 @@ import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.*;
 
 @Service
 public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
@@ -26,24 +27,24 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
 
     private final Map<ChromatographyType, QueryParameters> queryParametersMap;
 
-    private float progress = 0F;
+    private float progress = -1F;
 
     @Autowired
-    public SpectrumMatchCalculatorImpl(SpectrumRepository spectrumRepository,
-                                       SpectrumMatchRepository spectrumMatchRepository) {
+    public SpectrumMatchCalculatorImpl(final SpectrumRepository spectrumRepository,
+            final SpectrumMatchRepository spectrumMatchRepository) {
 
         this.spectrumRepository = spectrumRepository;
         this.spectrumMatchRepository = spectrumMatchRepository;
 
-        QueryParameters gcQueryParameters = new QueryParameters()
+        final QueryParameters gcQueryParameters = new QueryParameters()
                 .setScoreThreshold(0.75)
                 .setMzTolerance(0.01);
 
-        QueryParameters lcQueryParameters = new QueryParameters()
+        final QueryParameters lcQueryParameters = new QueryParameters()
                 .setScoreThreshold(0.75)
                 .setMzTolerance(0.01)
                 .setPrecursorTolerance(0.01);
-//                .setRetTimeTolerance(0.5);
+        //                .setRetTimeTolerance(0.5);
 
         this.queryParametersMap = new HashMap<>();
         this.queryParametersMap.put(ChromatographyType.GAS, gcQueryParameters);
@@ -59,42 +60,43 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
     }
 
     @Override
-//    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    //    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void run() {
 
-        List<SpectrumMatch> spectrumMatches = new ArrayList<>();
+        final List<SpectrumMatch> spectrumMatches = new ArrayList<>();
 
         final long countUnmatched = spectrumRepository.countUnmatched();
 
         progress = 0F;
-        float progressStep = 1F / countUnmatched;
+        float progressStep = 0F;
 
-        for (ChromatographyType chromatographyType : ChromatographyType.values()) {
+        for (final ChromatographyType chromatographyType : ChromatographyType.values()) {
 
-            QueryParameters params = queryParametersMap.get(chromatographyType);
-            if (params == null)
+            final QueryParameters params = queryParametersMap.get(chromatographyType);
+            if (params == null) {
                 throw new IllegalStateException("Clustering query parameters are not specified.");
+            }
 
             LOGGER.info(String.format("Retrieving unmatched spectra of %s...", chromatographyType));
-            Iterable<Spectrum> unmatchedSpectra =
+            final Iterable<Spectrum> unmatchedSpectra =
                     spectrumRepository.findUnmatchedByChromatographyType(chromatographyType);
 
             LOGGER.info(String.format("Matching unmatched spectra of %s...", chromatographyType));
             long count = 0;
             long startingTime = System.currentTimeMillis();
-            for (Spectrum querySpectrum : unmatchedSpectra) {
+            for (final Spectrum querySpectrum : unmatchedSpectra) {
 
-                spectrumMatches.addAll(
-                        spectrumRepository.spectrumSearch(
-                                SearchType.CLUSTERING, querySpectrum, params));
+                spectrumMatches.addAll(spectrumRepository.spectrumSearch(
+                        SearchType.CLUSTERING, querySpectrum, params));
 
-//                spectrumMatchRepository.saveAll(spectrumMatches);
-//                spectrumMatchRepository.flush();
-                progress += progressStep;
+                //                spectrumMatchRepository.saveAll(spectrumMatches);
+                //                spectrumMatchRepository.flush();
+                progressStep = progressStep + 1F;
+                progress = progressStep / countUnmatched;
                 count += 1;
 
                 if (count == 100) {
-                    long endingTime = System.currentTimeMillis();
+                    final long endingTime = System.currentTimeMillis();
                     LOGGER.info(String.format("%d spectra of %s are matched with average time %d milliseconds.",
                             count, chromatographyType.getLabel(), (endingTime - startingTime) / count));
                     count = 0;
@@ -102,14 +104,14 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
                 }
             }
 
-            long elapsedTime = System.currentTimeMillis() - startingTime;
+            final long elapsedTime = System.currentTimeMillis() - startingTime;
             LOGGER.info(String.format("%d spectra of %s are matched with average time %d milliseconds.",
                     count, chromatographyType.getLabel(), count > 0 ? elapsedTime / count : 0));
         }
 
         LOGGER.info("Saving matches to the database...");
         spectrumMatchRepository.saveAll(spectrumMatches);
-        progress = 0F;
+        progress = -1F;
 
         LOGGER.info(String.format("Total %d matches are saved to the database.", spectrumMatches.size()));
     }
