@@ -265,7 +265,7 @@
     var counter = 0;
     var buttonHandler = function() {
         counter++;
-        if(counter == 2) {
+        if(counter >= 2) {
             $(clusterButton).removeAttr("disabled");
             $(matchButton).removeAttr("disabled");
         }
