@@ -60,6 +60,11 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
     }
 
     @Override
+    public void setProgress(final float progress) {
+        this.progress = progress;
+    }
+
+    @Override
     //    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void run() {
 
