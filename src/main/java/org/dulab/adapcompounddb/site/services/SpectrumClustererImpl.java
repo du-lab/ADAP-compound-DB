@@ -18,12 +18,14 @@ import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.DistanceMatrixWrapper;
+import org.dulab.adapcompounddb.models.dto.TagInfo;
 import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 import org.dulab.adapcompounddb.models.entities.SpectrumProperty;
 import org.dulab.adapcompounddb.models.entities.SubmissionTag;
+import org.dulab.adapcompounddb.site.controllers.ControllerUtils;
 import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
@@ -197,7 +199,26 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
         }
 
         // Calculate diversity
-        setDiversityIndices(cluster);
+        // setDiversityIndices(cluster);
+        final List<TagInfo> tagInfoList = ControllerUtils.getDiversityIndices(cluster.getSpectra());
+        Double minDiversity = Double.MAX_VALUE;
+        Double maxDiversity = 0.0;
+        Double avgDiversity = 0.0;
+        for(final TagInfo tagInfo : tagInfoList) {
+            final Double diversity = tagInfo.getDiversity();
+
+            avgDiversity += diversity;
+            if(diversity > maxDiversity) {
+                maxDiversity = diversity;
+            }
+            if(diversity < minDiversity) {
+                minDiversity = diversity;
+            }
+        };
+        avgDiversity = avgDiversity / tagInfoList   .size();
+        cluster.setMinDiversity(minDiversity);
+        cluster.setMaxDiversity(maxDiversity);
+        cluster.setAveDiversity(avgDiversity);
 
         final Spectrum consensusSpectrum = createConsensusSpectrum(spectra, mzTolerance);
         consensusSpectrum.setCluster(cluster);
@@ -214,19 +235,6 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
     private void setDiversityIndices(final SpectrumCluster cluster) {
 
         final List<String> tagList = new ArrayList<>();
-
-        /*cluster.getSpectra()
-        .stream()
-        .map(Spectrum::getFile)
-        .map(File::getSubmission)
-        .map(Submission::getTags)
-        .collect(Collectors.toList())
-        .stream()
-        .map(l -> l.stream()
-                .map(SubmissionTag::getId)
-                .map(SubmissionTagId::getName)
-                .collect(Collectors.toList()))
-        .map(s -> tagList.addAll(s));*/
 
         for(final Spectrum s: cluster.getSpectra()) {
             for(final SubmissionTag tag: s.getFile().getSubmission().getTags()) {

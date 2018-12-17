@@ -60,7 +60,7 @@ public class ClusterController {
         final SpectrumCluster cluster = spectrumMatchService.getCluster(id);
         final List<String> tags = submissionService.findTagsFromACluster(id);
         model.addAttribute("cluster", cluster);
-        model.addAttribute("tags", tags);
+        //        model.addAttribute("tags", tags);
 
         return "cluster/cluster";
     }

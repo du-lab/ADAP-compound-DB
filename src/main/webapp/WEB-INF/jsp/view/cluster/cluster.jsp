@@ -6,6 +6,12 @@
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
+<div>
+    ${cluster.consensusSpectrum.name} | 
+    <img src="${pageContext.request.contextPath}/${cluster.consensusSpectrum.chromatographyType.iconPath}" class="icon"/> |
+    ${cluster.size} total spectra | ${dulab:toIntegerScore(cluster.diameter)} similarity score | ${cluster.aveSignificance} significance
+</div>
+
 <section>
     <div class="tabbed-pane">
         <span class="active" data-tab="consensus_spectrum">Consensus Spectrum</span>
@@ -95,19 +101,6 @@
     </div>
 
     <div id="pie_chart" align="center" class="hide">
-        <%-- <c:forEach items="${submissionCategoryTypes}" var="type">
-            <div align="center" style="display: inline-block; margin: 10px;">
-                <h2>${type.label} Distribution</h2>
-                <c:forEach items="${cluster.diversityIndices}" var="diversityIndex">
-                    <c:if test="${diversityIndex.id.categoryType == type}">
-                        <div align="center" style="margin-bottom: 20px;">
-                            <strong>Diversity:&nbsp;</strong>${diversityIndex.diversity}
-                        </div>
-                    </c:if>
-                </c:forEach>
-                <div id="${type.name()}PieChart" align="center"></div>
-            </div>
-        </c:forEach> --%>
         <div id='charts'></div>
     </div>
 
@@ -119,9 +112,6 @@
                 <th title="Retention time (min)">RT</th>
                 <th>Precursor m/z</th>
                 <th>Significance</th>
-                <%-- <c:forEach items="${submissionCategoryTypes}" var="type">
-                    <th>${type.label}</th>
-                </c:forEach> --%>
                 <th></th>
             </tr>
             </thead>
@@ -135,11 +125,6 @@
                     <td><fmt:formatNumber type="number" maxFractionDigits="3" value="${spectrum.retentionTime}"/></td>
                     <td><fmt:formatNumber type="number" maxFractionDigits="3" value="${spectrum.precursor}"/></td>
                     <td><fmt:formatNumber type="number" maxFractionDigits="3" value="${spectrum.significance}"/></td>
-
-                    <%-- <c:forEach items="${submissionCategoryTypes}" var="type">
-                        <td>${spectrum.file.submission.getCategory(type)}</td>
-                    </c:forEach> --%>
-
                     <td><a href="${pageContext.request.contextPath}/spectrum/${spectrum.id}/"><i class="material-icons" title="View">&#xE5D3;</i></a></td>
                 </tr>
             </c:forEach>
@@ -193,8 +178,7 @@
         $(this).tabbedPane();
     });
 
-    var pieChartVal = '${dulab:clusterTagsToJson(tags)}';
-    // $pieChart = $(pieChartVal).replaceAll("/]\"/g", "]").replaceAll(/\"[/g, "[");
+    var pieChartVal = '${dulab:clusterTagsToJson(cluster.spectra)}';
     var jsonVal = JSON.parse(pieChartVal);
 
     $pieDiv = $("#charts");

@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 
 import javax.json.Json;
@@ -16,11 +17,15 @@ import javax.validation.constraints.NotBlank;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.dulab.adapcompounddb.models.UserRole;
+import org.dulab.adapcompounddb.models.dto.TagInfo;
 import org.dulab.adapcompounddb.models.entities.File;
 import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
+import org.dulab.adapcompounddb.models.entities.SubmissionTag;
+import org.dulab.adapcompounddb.site.services.SpectrumClusterer;
 import org.dulab.adapcompounddb.utils.MathUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
@@ -29,6 +34,9 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.gson.Gson;
 
 public class ControllerUtils {
+
+    @Autowired
+    SpectrumClusterer spectrumClusterer;
 
     private static final String ROLE_ADMIN = "ROLE_" + UserRole.ADMIN.name();
 
@@ -159,7 +167,44 @@ public class ControllerUtils {
         return jsonArrayBuilder.build();
     }
 
-    public static String clusterTagsToJson(final List<String> tagList) {
+    public static String clusterTagsToJson(final List<Spectrum> spectra) {
+
+        final List<TagInfo> tagInfoList = getDiversityIndices(spectra);
+        final ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        final Gson gson = new Gson();
+
+        final List<Map<String, Object>> pieChart = new ArrayList<>(); // source: {src1: 2, src2: 2}
+
+        tagInfoList.forEach(tagInfo -> {
+            final Map<String, Object> tag = new HashMap<>();
+            tag.put("name", tagInfo.getName());
+            tag.put("diversity", tagInfo.getDiversity());
+
+            final List<Map<String, String>> elementList = new ArrayList<>();
+            tagInfo.getCountMap().forEach((l, c) -> {
+                final Map<String, String> element = new HashMap<>();
+                final Integer count = c.intValue();
+                element.put("label", l);
+                element.put("count", count.toString());
+                elementList.add(element);
+            });
+            tag.put("values", elementList);
+            pieChart.add(tag);
+        });
+
+        return gson.toJson(pieChart, List.class);
+    }
+
+    public static List<TagInfo> getDiversityIndices(final List<Spectrum> spectra) {
+
+        final List<String> tagList = new ArrayList<>();
+
+        for(final Spectrum s: spectra) {
+            for(final SubmissionTag tag: s.getFile().getSubmission().getTags()) {
+                tagList.add(tag.getId().getName());
+            }
+        }
 
         final Map<String, List<String>> tagMap = new HashMap<>(); // source:<src1, src2, src1, src2>
 
@@ -177,48 +222,30 @@ public class ControllerUtils {
                 valueList.add(value);
             }
         });
+        final List<TagInfo> tagInfoList = new ArrayList<>();
 
-        final Map<String, Map<String, Double>> pieCount = new HashMap<>(); // source: (<src1: 2>, <src2:2>)
-        tagMap.forEach((key, value) -> {
-            final Map<String, Double> countMap = new HashMap<>(); // <src1:2>
-            final double diversity = MathUtils.diversityIndex(value);
-            value.forEach(val -> {
-                Double count = countMap.get(val);
+        for(final Entry<String, List<String>> entry : tagMap.entrySet()) {
+            final TagInfo tagInfo = new TagInfo();
+            final double diversity = MathUtils.diversityIndex(entry.getValue());
+            //            diversityMap.put(entry.getKey(), diversity);
+
+            tagInfo.setName(entry.getKey());
+            tagInfo.setDiversity(diversity);
+
+            final Map<String, Integer> countMap = new HashMap<>();
+            entry.getValue().forEach(tag -> {
+                Integer count = countMap.get(tag);
                 if(count == null) {
-                    count = 0.0;
+                    count = 0;
+                    countMap.put(tag, count);
                 }
-                count = count + 1;
-                countMap.put(val, count);
+                count++;
             });
-            countMap.put("diversity", diversity);
-            pieCount.put(key, countMap);
-        });
-        final ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-        final Gson gson = new Gson();
+            tagInfo.setCountMap(countMap);
+            tagInfoList.add(tagInfo);
+        };
 
-        final List<Map<String, Object>> pieChart = new ArrayList<>(); // source: {src1: 2, src2: 2}
-        pieCount.forEach((k, v) -> {
-            final Map<String, Object> tag = new HashMap<>();
-            tag.put("name", k);
-
-            final List<Map<String, String>> elementList = new ArrayList<>();
-            v.forEach((l, c) -> {
-                final Map<String, String> element = new HashMap<>();
-                if(l.equals("diversity")) {
-                    tag.put(l, c.toString());
-                } else {
-                    final Integer count = c.intValue();
-                    element.put("label", l);
-                    element.put("count", count.toString());
-                    elementList.add(element);
-                }
-            });
-            tag.put("values", elementList);
-            pieChart.add(tag);
-        });
-
-        return gson.toJson(pieChart, List.class);
+        return tagInfoList;
     }
 
     public static String jsonToHtml(final JsonArray jsonArray) {
