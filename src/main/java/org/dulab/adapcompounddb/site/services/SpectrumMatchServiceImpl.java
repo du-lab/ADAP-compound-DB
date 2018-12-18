@@ -26,6 +26,7 @@ import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
+import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
@@ -370,4 +371,23 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
         return response;
     }
+
+	@Override
+	public void loadTagsofCluster(SpectrumCluster cluster) {
+		try {
+			for(Spectrum s : cluster.getSpectra()) {
+				if(s != null) {
+					File f = s.getFile();
+					if(f != null) {
+						Submission sub = f.getSubmission();
+						if(sub != null) {
+							sub.getTags();
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

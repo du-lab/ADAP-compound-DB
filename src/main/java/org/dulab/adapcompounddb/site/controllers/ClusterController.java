@@ -58,7 +58,8 @@ public class ClusterController {
     public String cluster(@PathVariable("id") final long id, final Model model) {
 
         final SpectrumCluster cluster = spectrumMatchService.getCluster(id);
-        final List<String> tags = submissionService.findTagsFromACluster(id);
+        spectrumMatchService.loadTagsofCluster(cluster);
+//        final List<String> tags = submissionService.findTagsFromACluster(id);
         model.addAttribute("cluster", cluster);
         //        model.addAttribute("tags", tags);
 

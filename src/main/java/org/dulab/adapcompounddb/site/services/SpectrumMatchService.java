@@ -20,4 +20,6 @@ public interface SpectrumMatchService {
 
     DataTableResponse findAllClusters(String searchStr, Integer start, Integer length, Integer column,
             String sortDirection);
+
+	void loadTagsofCluster(SpectrumCluster cluster);
 }

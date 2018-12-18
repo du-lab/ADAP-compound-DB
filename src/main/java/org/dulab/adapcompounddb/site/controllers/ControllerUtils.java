@@ -201,9 +201,13 @@ public class ControllerUtils {
         final List<String> tagList = new ArrayList<>();
 
         for(final Spectrum s: spectra) {
-            for(final SubmissionTag tag: s.getFile().getSubmission().getTags()) {
-                tagList.add(tag.getId().getName());
-            }
+        	if(s.getFile() != null &&
+        			s.getFile().getSubmission() != null &&
+        			CollectionUtils.isNotEmpty(s.getFile().getSubmission().getTags())) {
+	            for(final SubmissionTag tag: s.getFile().getSubmission().getTags()) {
+	                tagList.add(tag.getId().getName());
+	            }
+        	}
         }
 
         final Map<String, List<String>> tagMap = new HashMap<>(); // source:<src1, src2, src1, src2>
@@ -237,9 +241,9 @@ public class ControllerUtils {
                 Integer count = countMap.get(tag);
                 if(count == null) {
                     count = 0;
-                    countMap.put(tag, count);
                 }
                 count++;
+                countMap.put(tag, count);
             });
             tagInfo.setCountMap(countMap);
             tagInfoList.add(tagInfo);
