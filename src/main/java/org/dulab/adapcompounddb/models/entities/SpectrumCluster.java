@@ -1,13 +1,21 @@
 package org.dulab.adapcompounddb.models.entities;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class SpectrumCluster implements Serializable {
@@ -32,6 +40,10 @@ public class SpectrumCluster implements Serializable {
     private Double minSignificance;
     private Double maxSignificance;
 
+    private Double aveDiversity;
+    private Double minDiversity;
+    private Double maxDiversity;
+
     private List<Spectrum> spectra;
 
     private Set<DiversityIndex> diversityIndices;
@@ -46,7 +58,7 @@ public class SpectrumCluster implements Serializable {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(final long id) {
         this.id = id;
     }
 
@@ -57,7 +69,7 @@ public class SpectrumCluster implements Serializable {
         return consensusSpectrum;
     }
 
-    public void setConsensusSpectrum(Spectrum consensusSpectrum) {
+    public void setConsensusSpectrum(final Spectrum consensusSpectrum) {
         this.consensusSpectrum = consensusSpectrum;
     }
 
@@ -65,7 +77,7 @@ public class SpectrumCluster implements Serializable {
         return diameter;
     }
 
-    public void setDiameter(Double diameter) {
+    public void setDiameter(final Double diameter) {
         this.diameter = diameter;
     }
 
@@ -73,19 +85,18 @@ public class SpectrumCluster implements Serializable {
         return size;
     }
 
-    public void setSize(Integer size) {
+    public void setSize(final Integer size) {
         this.size = size;
     }
 
     @OneToMany(
             mappedBy = "cluster",
-            fetch = FetchType.LAZY,
-            cascade = {})
+            fetch = FetchType.LAZY)
     public List<Spectrum> getSpectra() {
         return spectra;
     }
 
-    public void setSpectra(List<Spectrum> spectra) {
+    public void setSpectra(final List<Spectrum> spectra) {
         this.spectra = spectra;
     }
 
@@ -97,7 +108,7 @@ public class SpectrumCluster implements Serializable {
         return diversityIndices;
     }
 
-    public void setDiversityIndices(Set<DiversityIndex> diversityIndices) {
+    public void setDiversityIndices(final Set<DiversityIndex> diversityIndices) {
         this.diversityIndices = diversityIndices;
     }
 
@@ -105,7 +116,7 @@ public class SpectrumCluster implements Serializable {
         return aveSignificance;
     }
 
-    public void setAveSignificance(Double aveSignificance) {
+    public void setAveSignificance(final Double aveSignificance) {
         this.aveSignificance = aveSignificance;
     }
 
@@ -113,7 +124,7 @@ public class SpectrumCluster implements Serializable {
         return minSignificance;
     }
 
-    public void setMinSignificance(Double minSignificance) {
+    public void setMinSignificance(final Double minSignificance) {
         this.minSignificance = minSignificance;
     }
 
@@ -121,7 +132,7 @@ public class SpectrumCluster implements Serializable {
         return maxSignificance;
     }
 
-    public void setMaxSignificance(Double maxSignificance) {
+    public void setMaxSignificance(final Double maxSignificance) {
         this.maxSignificance = maxSignificance;
     }
 
@@ -129,10 +140,38 @@ public class SpectrumCluster implements Serializable {
     // ***** Standard methods *****
     // ****************************
 
+    public Double getAveDiversity() {
+        return aveDiversity;
+    }
+
+    public void setAveDiversity(final Double aveDiversity) {
+        this.aveDiversity = aveDiversity;
+    }
+
+    public Double getMinDiversity() {
+        return minDiversity;
+    }
+
+    public void setMinDiversity(final Double minDiversity) {
+        this.minDiversity = minDiversity;
+    }
+
+    public Double getMaxDiversity() {
+        return maxDiversity;
+    }
+
+    public void setMaxDiversity(final Double maxDiversity) {
+        this.maxDiversity = maxDiversity;
+    }
+
     @Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        if (!(other instanceof SpectrumCluster)) return false;
+    public boolean equals(final Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof SpectrumCluster)) {
+            return false;
+        }
         return id == ((SpectrumCluster) other).id;
     }
 

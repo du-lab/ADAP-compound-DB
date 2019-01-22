@@ -47,9 +47,9 @@
                         <th>Score</th>
                         <th>Spectrum</th>
                         <th>Size</th>
-                        <th>Sources</th>
-                        <th>Species</th>
-                        <th>Disease</th>
+                        <th>Minimum diversity</th>
+                        <th>Maximum diversity</th>
+                        <th>Average diversity</th>
                         <th>View</th>
                     </tr>
                     </thead>
@@ -204,7 +204,7 @@
         $('#accordion').accordion();
         $('#tags').tagit({
             autocomplete: {
-                source: ${dulab:stringsToJson(searchForm.availableTags)}
+                source: '${dulab:stringsToJson(searchForm.availableTags)}'
             }
         })
     });
@@ -213,7 +213,7 @@
 <script src="<c:url value="/resources/d3/d3.min.js"/>"></script>
 <script src="<c:url value="/resources/AdapCompoundDb/js/twospectraplot.js"/>"></script>
 <script>
-    var plot = new TwoSpectraPlot('plot', ${dulab:spectrumToJson(querySpectrum)})
+    var plot = new TwoSpectraPlot('plot', '${dulab:spectrumToJson(querySpectrum)}')
 </script>
 <style>
     .selection {

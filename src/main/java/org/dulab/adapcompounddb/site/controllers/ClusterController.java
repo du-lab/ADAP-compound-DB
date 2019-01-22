@@ -49,7 +49,7 @@ public class ClusterController {
 
     @RequestMapping(value="/allClusters/", method=RequestMethod.GET)
     public String clusters(final Model model) {
-        final List<SpectrumCluster> allClusters =  spectrumMatchService.getAllClusters();
+        final List<SpectrumCluster> allClusters = spectrumMatchService.getAllClusters();
         model.addAttribute("clusters", allClusters);
         return "cluster/all_clusters";
     }
@@ -58,7 +58,10 @@ public class ClusterController {
     public String cluster(@PathVariable("id") final long id, final Model model) {
 
         final SpectrumCluster cluster = spectrumMatchService.getCluster(id);
+        spectrumMatchService.loadTagsofCluster(cluster);
+//        final List<String> tags = submissionService.findTagsFromACluster(id);
         model.addAttribute("cluster", cluster);
+        //        model.addAttribute("tags", tags);
 
         return "cluster/cluster";
     }

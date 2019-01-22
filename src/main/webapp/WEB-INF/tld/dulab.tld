@@ -60,6 +60,15 @@
     </function>
 
     <function>
+        <description>
+            Returns Json array with the count of spectra in a cluster, based on their SubmissionCategory.
+        </description>
+        <name>clusterTagsToJson</name>
+        <function-class>org.dulab.adapcompounddb.site.controllers.ControllerUtils</function-class>
+        <function-signature>java.lang.String clusterTagsToJson(java.util.List)</function-signature>
+    </function>
+
+    <function>
         <description>Converts Json Array into a string of values and counts.</description>
         <name>jsonToHtml</name>
         <function-class>org.dulab.adapcompounddb.site.controllers.ControllerUtils</function-class>

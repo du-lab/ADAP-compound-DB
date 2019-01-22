@@ -56,8 +56,7 @@ function TwoSpectraPlot(divId, topSpectrum) {
 
     var addPeaks = function (peaks, top) {
 
-        if (top === undefined)
-            top = true;
+        if (top === undefined){top = true;}
 
         return peaks.append('line')
             .attr('class', top ? 'top' : 'bottom')
@@ -320,9 +319,15 @@ function TwoSpectraPlot(divId, topSpectrum) {
 
         var newXDomainStart = domainX[0] + (domainX[1] - domainX[0]) * x / plotWidth;
         var newXDomainEnd = domainX[0] + (domainX[1] - domainX[0]) * (x + w) / plotWidth;
+        if(newXDomainStart > newXDomainEnd) {
+            [newXDomainStart, newXDomainEnd] = [newXDomainEnd, newXDomainStart]
+        }
 
         var newYDomainStart = domainY[1] - (domainY[1] - domainY[0]) * y / plotHeight;
         var newYDomainEnd = domainY[1] - (domainY[1] - domainY[0]) * (y + h) / plotHeight;
+        if(newYDomainEnd > newYDomainStart) {
+            [newYDomainStart, newYDomainEnd] = [newYDomainEnd, newYDomainStart]
+        }
 
         var newScaleX = d3.scaleLinear()
             .domain([newXDomainStart, newXDomainEnd])

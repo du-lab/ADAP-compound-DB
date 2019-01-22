@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
+    <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -39,21 +39,6 @@
             <form:input path="reference"/><br/>
             <form:errors path="reference" cssClass="errors"/><br/>
 
-            <c:forEach items="${submissionCategoryTypes}" var="type">
-                <label>${type.label}:</label><br/>
-                <span style="vertical-align: bottom;">
-                    <form:select path="submissionCategoryIds" multiple="false">
-                        <form:option value="0" label="Please select..."/>
-                        <form:options items="${availableCategories[type]}" itemLabel="name" itemValue="id"/>
-                    </form:select><br/>
-                </span>
-                <a href="<c:url value="/categories/${type}/"/>">
-                    <i class="material-icons" title="View categories for ${type.label}">&#xE896;</i>
-                </a>
-                <a href="<c:url value="/categories/${type}/add/"/>">
-                    <i class="material-icons" title="Add category for ${type.label}">&#xE147;</i>
-                </a><br/>
-            </c:forEach>
             <form:errors path="submissionCategoryIds" cssClass="errors"/><br/>
 
             <form:label path="tags">Equipment:</form:label><br/>

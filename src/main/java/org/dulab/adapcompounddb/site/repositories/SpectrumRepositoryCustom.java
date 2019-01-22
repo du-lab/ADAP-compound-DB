@@ -5,9 +5,10 @@ import java.util.List;
 import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.entities.File;
+import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
-import org.dulab.adapcompounddb.site.services.SubmissionServiceImpl;
+import org.dulab.adapcompounddb.models.entities.SpectrumProperty;
 
 public interface SpectrumRepositoryCustom {
 
@@ -15,5 +16,7 @@ public interface SpectrumRepositoryCustom {
 
     void savePeaksAndPropertiesQuery(List<Spectrum> spectrumList, List<Long> savedSpectrumIdList);
 
-    public void saveSpectrumAndPeaks(final List<File> fileList, final List<Long> savedFileIdList);
+    void saveSpectrumAndPeaks(final List<File> fileList, final List<Long> savedFileIdList);
+
+    void savePeaksAndProperties(Long spectrumId, List<Peak> peaks, List<SpectrumProperty> properties);
 }

@@ -14,9 +14,9 @@
                 <th title="Number of spectra in a cluster">Count</th>
                 <th title="Minimum matching score between all spectra in a cluster">Score</th>
                 <th title="Average, minimum, and maximum values of the statistical significance">Significance</th>
-                <c:forEach items="${submissionCategoryTypes}" var="type">
-                    <th>${type.label} Diversity</th>
-                </c:forEach>
+                <th>Minimum Diversity</th>
+                <th>Maximum Diversity</th>
+                <th>Average Diversity</th>
                 <th title="Chromatography type">Type</th>
                 <th></th>
             </tr>
@@ -82,15 +82,14 @@
                         var content = '';
                         if(row.aveSignificance) {
                             var avgSignificance = row.aveSignificance.toFixed(3);
-                            content += '<span title="Ave: ' + row.aveSignificance;
+                            content += '<span title="{Average: ' + row.aveSignificance;
                             if(row.minSignificance) {
                                 content += '; Min: ' + row.minSignificance.toFixed(3);
                             }
                             if(row.maxSignificance) {
                                 content += '; Max: ' + row.maxSignificance.toFixed(3);
                             }
-                            content += '}"></span>';
-                            content += avgSignificance;
+                            content += '}">' + avgSignificance + '</span>';
                         }
                         return content;
                     }
@@ -100,8 +99,8 @@
                     "orderable": true,
                     "render": function (data, type, row, meta) {
                         var content = '';
-                        if(row.source != undefined) {
-                            content = row.source.toFixed(3);
+                        if(row.minDiversity != undefined) {
+                            content = row.minDiversity.toFixed(3);
                         }
                         return content;
                     }
@@ -111,8 +110,8 @@
                     "orderable": true,
                     "render": function (data, type, row, meta) {
                         var content = '';
-                        if(row.specimen != undefined) {
-                            content = row.specimen.toFixed(3);
+                        if(row.maxDiversity != undefined) {
+                            content = row.maxDiversity.toFixed(3);
                         }
                         return content;
                     }
@@ -122,8 +121,8 @@
                     "orderable": true,
                     "render": function (data, type, row, meta) {
                         var content = '';
-                        if(row.treatment != undefined) {
-                            content = row.treatment.toFixed(3);
+                        if(row.aveDiversity != undefined) {
+                            content = row.aveDiversity.toFixed(3);
                         }
                         return content;
                     }

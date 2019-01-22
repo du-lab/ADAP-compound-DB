@@ -1,8 +1,6 @@
 package org.dulab.adapcompounddb.site.controllers;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
@@ -17,7 +15,6 @@ import org.dulab.adapcompounddb.validation.FieldMatch;
 import org.dulab.adapcompounddb.validation.Password;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -123,15 +120,12 @@ public class AuthenticationController {
         principal.setEmail(form.getEmail());
         try {
             authenticationService.saveUser(principal, form.getPassword());
-        }
-        catch (Throwable t) {
-
+        } catch (Throwable t) {
             LOG.warn("Error during authentication", t);
 
             if (t instanceof ConstraintViolationException) {
                 model.addAttribute("validationErrors",
                         ((ConstraintViolationException) t).getConstraintViolations());
-
             } else if (t instanceof DataIntegrityViolationException) {
                 while (t.getCause() != null) {
                     t = t.getCause();
@@ -157,13 +151,8 @@ public class AuthenticationController {
      *****************/
 
     @RequestMapping(value = "logout", method = RequestMethod.GET)
-    public ModelAndView logout(final HttpServletRequest request, final HttpServletResponse response) {
-        final HttpSession session= request.getSession(false);
-        SecurityContextHolder.clearContext();
+    public ModelAndView logout(final HttpSession session) {
         session.invalidate();
-        for(final Cookie cookie : request.getCookies()) {
-            cookie.setMaxAge(0);
-        }
         return getHomeRedirect();
     }
 

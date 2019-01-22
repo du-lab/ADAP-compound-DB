@@ -2,14 +2,16 @@ package org.dulab.adapcompounddb.site.services;
 
 import java.util.ArrayList;
 import java.util.EmptyStackException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
 import org.dulab.adapcompounddb.models.entities.File;
-import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
@@ -147,35 +149,6 @@ public class SubmissionServiceImpl implements SubmissionService {
         if(fileList.get(0).getSpectra().get(0).getId() == 0) {
             spectrumRepository.saveSpectrumAndPeaks(fileList, savedFileIds);
         }
-        /*final Session sess = em.unwrap(Session.class);
-        sess.setHibernateFlushMode(FlushMode.MANUAL);
-        sess.save(submission);
-        sess.flush();*/
-        /*StringBuilder sql = new StringBuilder("Insert into submission (" +
-                "`Name`, `Description`," +
-                "`DateTime`, `UserPrincipalId`," +
-                "`SourceId`, `SpecimenId`, `DiseaseId`," +
-                "`reference`) VALUES ");
-        sql.append("(");
-        sql.append(submission.getName());
-        sql.append(",");
-        sql.append(submission.getDescription());
-        sql.append(",");
-        sql.append(submission.getDateTime());
-        sql.append(",");
-        sql.append(submission.getUser().getId());
-        sql.append(",");
-        sql.append(submission.getDescription());
-        sql.append(",");
-        sql.append(submission.getName());
-        sql.append(",");
-        sql.append(submission.getName());
-        sql.append(",");
-        sql.append(submission.getName());
-        sql.append(",");
-
-
-        Query query = em.createNativeQuery(sql.toString());*/
     }
 
     @Override
@@ -224,5 +197,60 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     public void deleteSubmissionCategory(final long submissionCategoryId) {
         submissionCategoryRepository.deleteById(submissionCategoryId);
+    }
+
+    @Override
+    public List<String> findTagsFromACluster(final Long clusterId) {
+        final List<Object[]> tagArr = submissionTagRepository.findTagsFromACluster(clusterId);
+        final List<String> tagList = new ArrayList<>();
+        tagArr.forEach(arr -> {
+            tagList.add((String) arr[1]);
+        });
+        return tagList;
+    }
+
+    public Map<String, List<String>> generateTagMapOfACluster(final Long clusterId) {
+        final List<String> tagList = findTagsFromACluster(clusterId)
+                ;
+        final Map<String, List<String>> tagMap = new HashMap<>(); // source:<src1, src2, src1, src2>
+
+        tagList.forEach(tag -> {
+            final String[] arr = tag.split(":", 2);
+            if(arr.length == 2) {
+                final String key = arr[0].trim();
+                final String value = arr[1].trim();
+
+                List<String> valueList = tagMap.get(key);
+                if(CollectionUtils.isEmpty(valueList)) {
+                    valueList = new ArrayList<>();
+                    tagMap.put(key, valueList);
+                }
+                valueList.add(value);
+            }
+        });
+
+        return tagMap;
+    }
+
+    @Override
+    public Map<String, List<String>> groupTags(final List<String> tags) {
+        final Map<String, List<String>> tagMap = new HashMap<>();
+
+        tags.forEach(tag -> {
+            final String[] arr = tag.split(":", 2);
+            if(arr.length == 2) {
+                final String key = arr[0].trim();
+                final String value = arr[1].trim();
+
+                List<String> valueList = tagMap.get(key);
+                if(CollectionUtils.isEmpty(valueList)) {
+                    valueList = new ArrayList<>();
+                    tagMap.put(key, valueList);
+                }
+                valueList.add(value);
+            }
+        });
+
+        return tagMap;
     }
 }

@@ -26,9 +26,11 @@ public class SpectrumClusterDTO implements Serializable {
     SpectrumDTO consensusSpectrum;
     private Set<DiversityIndexDTO> diversityIndices;
 
-    Double source;
-    Double specimen;
-    Double treatment;
+
+
+    private Double aveDiversity;
+    private Double minDiversity;
+    private Double maxDiversity;
 
     // *******************************
     // ***** Getters and setters *****
@@ -117,34 +119,33 @@ public class SpectrumClusterDTO implements Serializable {
         this.diversityIndices = diversityIndices;
     }
 
-    public Double getSource() {
-        return source;
-    }
-
-    public void setSource(final Double source) {
-        this.source = source;
-    }
-
-    public Double getSpecimen() {
-        return specimen;
-    }
-
-    public void setSpecimen(final Double specimen) {
-        this.specimen = specimen;
-    }
-
-    public Double getTreatment() {
-        return treatment;
-    }
-
-    public void setTreatment(final Double treatment) {
-        this.treatment = treatment;
-    }
-
-
     // ****************************
     // ***** Standard methods *****
     // ****************************
+
+    public Double getAveDiversity() {
+        return aveDiversity;
+    }
+
+    public void setAveDiversity(final Double aveDiversity) {
+        this.aveDiversity = aveDiversity;
+    }
+
+    public Double getMinDiversity() {
+        return minDiversity;
+    }
+
+    public void setMinDiversity(final Double minDiversity) {
+        this.minDiversity = minDiversity;
+    }
+
+    public Double getMaxDiversity() {
+        return maxDiversity;
+    }
+
+    public void setMaxDiversity(final Double maxDiversity) {
+        this.maxDiversity = maxDiversity;
+    }
 
     @Override
     public int hashCode() {

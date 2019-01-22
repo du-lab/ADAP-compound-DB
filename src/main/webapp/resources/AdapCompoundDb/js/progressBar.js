@@ -1,23 +1,35 @@
-function ProgressBar(divId) {
+function ProgressBar(url, progressBarId, interval, callback) {
 
-    var div = $('#' + divId);
-    // div.prop('hidden', 'true');
+    var progress = $('#' + progressBarId);
 
-    this.start = function (url) {
+    this.start = function () {
         var width = 0;
-        var id = setInterval(frame, 1000);
-        // div.prop('hidden', 'false');
+
+        var id = setInterval(frame, interval);
 
         function frame() {
             if (width >= 100) {
+                console.log("width1: " + width);
                 clearInterval(id);
-                div.css('width', '100%');
-                // div.prop('hidden', 'true');
+                $(progress).addClass("hide");
+                callback();
+            } else {
+                $.getJSON(window.location.href.concat(url), function(percentage) {
+                    width = percentage;
+                    console.log("width2: " + width + " " + percentage);
+                    if(width < 0) {
+                        clearInterval(id);
+                        $(progress).addClass("hide");
+                        callback();
+                    } else {
+                        $(progress).removeClass("hide");
+                        $(progress).attr("value", width);
+                    }
+                });
+
             }
-            else {
-                $.getJSON(window.location.href.concat(url), function(percentage) {width = percentage;});
-                div.css('width', width + '%');
-            }
-        }
+        };
+
+        frame();
     };
 }

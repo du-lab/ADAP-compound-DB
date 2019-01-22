@@ -26,7 +26,7 @@ import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
-import org.dulab.adapcompounddb.models.entities.views.ClusterPage;
+import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
@@ -54,10 +54,10 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     private final SpectrumClusterRepository spectrumClusterRepository;
 
     private static enum ColumnInformation {
-        ID(0, "id"), NAME(1, "spectrumCluster.consensusSpectrum.name"),
-        COUNT(2, "spectrumCluster.size"), SCORE(3, "spectrumCluster.diameter"), SIGNIFICANCE(4, "spectrumCluster.aveSignificance"),
-        SOURCE(5,"source"), SPECIMEN(6,"specimen"), TREATMENT(7,"treatment"),
-        CHROMATOGRAPHYTYPE(8, "spectrumCluster.consensusSpectrum.chromatographyType");
+        ID(0, "id"), NAME(1, "consensusSpectrum.name"),
+        COUNT(2, "size"), SCORE(3, "diameter"), SIGNIFICANCE(4, "aveSignificance"),
+        MIN_DIVERSITY(5,"minDiversity"), MAX_DIVERSITY(6,"maxDiversity"), AVE_DIVERSITY(7,"aveDiversity"),
+        CHROMATOGRAPHYTYPE(8, "consensusSpectrum.chromatographyType");
 
         private int position;
         private String sortColumnName;
@@ -186,6 +186,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
                 // Calculate the diversity index
                 final Set<DiversityIndex> diversityIndices = new HashSet<>();
+
                 for (final SubmissionCategoryType categoryType : SubmissionCategoryType.values()) {
 
                     final double diversity = MathUtils.diversityIndex(
@@ -361,21 +362,32 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
             pageable = PageRequest.of(start / length, length);
         }
 
-        final Page<ClusterPage> spectrumPage = spectrumClusterRepository.findClusters(searchStr, pageable);
-        final List<SpectrumClusterDTO> spectrumList = new ArrayList<>();
+        final Page<SpectrumCluster> spectrumPage = spectrumClusterRepository.findClusters(searchStr, pageable);
 
-        for(final ClusterPage clusterPage: spectrumPage.getContent()) {
-            final SpectrumClusterDTO spectrumCluster = objectMapper.map(clusterPage.getSpectrumCluster(), SpectrumClusterDTO.class);
-            spectrumCluster.setSource(clusterPage.getSource());
-            spectrumCluster.setSpecimen(clusterPage.getSpecimen());
-            spectrumCluster.setTreatment(clusterPage.getTreatment());
-            spectrumList.add(spectrumCluster);
-        }
-
+        final List<SpectrumClusterDTO> spectrumList = objectMapper.map(spectrumPage.getContent(), SpectrumClusterDTO.class);
         final DataTableResponse response = new DataTableResponse(spectrumList);
         response.setRecordsTotal(spectrumPage.getTotalElements());
         response.setRecordsFiltered(spectrumPage.getTotalElements());
 
         return response;
     }
+
+	@Override
+	public void loadTagsofCluster(SpectrumCluster cluster) {
+		try {
+			for(Spectrum s : cluster.getSpectra()) {
+				if(s != null) {
+					File f = s.getFile();
+					if(f != null) {
+						Submission sub = f.getSubmission();
+						if(sub != null) {
+							sub.getTags();
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

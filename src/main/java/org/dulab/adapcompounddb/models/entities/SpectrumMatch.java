@@ -1,13 +1,18 @@
 package org.dulab.adapcompounddb.models.entities;
 
-import javax.persistence.*;
+import java.io.Serializable;
+import java.util.Objects;
+
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.annotations.GenericGenerator;
-
-import java.io.Serializable;
-import java.util.Objects;
 
 @Entity
 //@SqlResultSetMapping(
@@ -42,29 +47,29 @@ public class SpectrumMatch implements Serializable {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(final long id) {
         this.id = id;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade={})
     @JoinColumn(name = "QuerySpectrumId", referencedColumnName = "Id")
     @JsonIgnore
     public Spectrum getQuerySpectrum() {
         return querySpectrum;
     }
 
-    public void setQuerySpectrum(Spectrum querySpectrum) {
+    public void setQuerySpectrum(final Spectrum querySpectrum) {
         this.querySpectrum = querySpectrum;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade={})
     @JoinColumn(name = "MatchSpectrumId", referencedColumnName = "Id")
     @JsonIgnore
     public Spectrum getMatchSpectrum() {
         return matchSpectrum;
     }
 
-    public void setMatchSpectrum(Spectrum matchSpectrum) {
+    public void setMatchSpectrum(final Spectrum matchSpectrum) {
         this.matchSpectrum = matchSpectrum;
     }
 
@@ -72,14 +77,18 @@ public class SpectrumMatch implements Serializable {
         return score;
     }
 
-    public void setScore(double score) {
+    public void setScore(final double score) {
         this.score = score;
     }
 
     @Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        if (!(other instanceof SpectrumMatch)) return false;
+    public boolean equals(final Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof SpectrumMatch)) {
+            return false;
+        }
         return querySpectrum.equals(((SpectrumMatch) other).querySpectrum)
                 && matchSpectrum.equals(((SpectrumMatch) other).matchSpectrum);
     }

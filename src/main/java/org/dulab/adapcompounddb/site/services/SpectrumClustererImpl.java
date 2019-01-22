@@ -1,12 +1,31 @@
 package org.dulab.adapcompounddb.site.services;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.DoubleSummaryStatistics;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.DistanceMatrixWrapper;
-import org.dulab.adapcompounddb.models.SubmissionCategoryType;
-import org.dulab.adapcompounddb.models.entities.*;
+import org.dulab.adapcompounddb.models.dto.TagInfo;
+import org.dulab.adapcompounddb.models.entities.Peak;
+import org.dulab.adapcompounddb.models.entities.Spectrum;
+import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
+import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
+import org.dulab.adapcompounddb.models.entities.SpectrumProperty;
+import org.dulab.adapcompounddb.models.entities.SubmissionTag;
+import org.dulab.adapcompounddb.site.controllers.ControllerUtils;
 import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
@@ -15,96 +34,140 @@ import org.dulab.jsparcehc.Matrix;
 import org.dulab.jsparcehc.SparseHierarchicalClusterer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
 import smile.clustering.HierarchicalClustering;
 import smile.clustering.linkage.CompleteLinkage;
 
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
 @Service
 public class SpectrumClustererImpl implements SpectrumClusterer {
+
+    private static final float MZ_TOLERANCE = 0.01F;
+
+    private static final float SCORE_TOLERANCE = 0.25F;
+
+    private static final int MIN_NUM_SPECTRA = 2;
 
     private static final Logger LOGGER = LogManager.getLogger(SpectrumClusterer.class);
 
     private final SpectrumRepository spectrumRepository;
     private final SpectrumMatchRepository spectrumMatchRepository;
-    private final SpectrumClusterRepository spectrumClusterRepository;;
+    private final SpectrumClusterRepository spectrumClusterRepository;
+
+    private float progress = -0.1F;
 
     @Autowired
-    public SpectrumClustererImpl(SpectrumRepository spectrumRepository,
-                                 SpectrumMatchRepository spectrumMatchRepository,
-                                 SpectrumClusterRepository spectrumClusterRepository) {
+    public SpectrumClustererImpl(final SpectrumRepository spectrumRepository,
+            final SpectrumMatchRepository spectrumMatchRepository,
+            final SpectrumClusterRepository spectrumClusterRepository) {
 
         this.spectrumRepository = spectrumRepository;
         this.spectrumMatchRepository = spectrumMatchRepository;
         this.spectrumClusterRepository = spectrumClusterRepository;
     }
 
-    @Transactional
+    @Transactional(propagation=Propagation.REQUIRES_NEW)
     @Override
     public void removeAll() {
         LOGGER.info("Deleting old clusters...");
-        spectrumClusterRepository.deleteAllEmptyClusters();
+        try {
+            spectrumClusterRepository.deleteAllEmptyClusters();
+            spectrumClusterRepository.deleteAllConsensusSpectra();
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
         LOGGER.info("Deleting old clusters is completed");
     }
 
-    @Transactional
     @Override
-    public void cluster(ChromatographyType type, int minNumSpectra, float scoreTolerance, float mzTolerance) {
-
-        LOGGER.info(String.format("Clustering spectra of type \"%s\"...", type));
-
-        List<Spectrum> spectra = ServiceUtils.toList(spectrumRepository.findSpectraForClustering(type));
-
-        Matrix matrix = new DistanceMatrixWrapper(
-                pageable -> spectrumMatchRepository.findByChromatographyType(type, pageable),
-                spectra);
-
-        if (matrix.getNumElements() == 0) {
-            LOGGER.info(String.format("No matches found for spectra of type \"%s\".", type));
-            return;
-        }
-
-        SparseHierarchicalClusterer clusterer = new SparseHierarchicalClusterer(
-                matrix, new org.dulab.jsparcehc.CompleteLinkage());
-        clusterer.cluster(scoreTolerance);
-        Map<Integer, Integer> labelMap = clusterer.getLabels();
-
-        long[] uniqueLabels = labelMap.values()
-                .stream()
-                .mapToLong(Integer::longValue)
-                .distinct()
-                .toArray();
-
-        LOGGER.info(String.format("Saving new clusters of type \"%s\" to the database...", type));
-
-        for (long label : uniqueLabels) {
-
-            Set<Long> spectrumIds = labelMap.entrySet()
-                    .stream()
-                    .filter(e -> e.getValue() == label)
-                    .map(Map.Entry::getKey)
-                    .map(i -> spectra.get(i).getId())
-                    .collect(Collectors.toSet());
-
-            if (spectrumIds.size() < minNumSpectra)
-                continue;
-
-            SpectrumCluster cluster = createCluster(spectrumIds, mzTolerance);
-            spectrumClusterRepository.save(cluster);
-        }
-
-        LOGGER.info(String.format("Clustering spectra of type \"%s\" is completed.", type));
+    public float getProgress() {
+        return progress;
     }
 
-    private SpectrumCluster createCluster(Set<Long> spectrumIds, float mzTolerance)
+    @Override
+    public void setProgress(final float progress) {
+        this.progress = progress;
+    }
+
+    @Transactional(propagation=Propagation.REQUIRES_NEW)
+    @Override
+    public void cluster(/*final ChromatographyType type, final int minNumSpectra, final float scoreTolerance, final float mzTolerance*/) {
+
+        try {
+
+            progress = 0F;
+            final ChromatographyType[] values = ChromatographyType.values();
+            final float step = 1F / values.length;
+            for(int i=0; i<values.length; i++) {
+                final ChromatographyType type = values[i];
+                LOGGER.info(String.format("Clustering spectra of type \"%s\"...", type));
+
+                final List<Spectrum> spectra = ServiceUtils.toList(spectrumRepository.findSpectraForClustering(type));
+
+                final Matrix matrix = new DistanceMatrixWrapper(pageable -> spectrumMatchRepository.findByChromatographyType(type, pageable), spectra);
+
+                if (matrix.getNumElements() == 0) {
+                    LOGGER.info(String.format("No matches found for spectra of type \"%s\".", type));
+                    progress = (i+1) * step;
+                    continue;
+                }
+
+                final SparseHierarchicalClusterer clusterer = new SparseHierarchicalClusterer(
+                        matrix, new org.dulab.jsparcehc.CompleteLinkage());
+                try {
+                    clusterer.cluster(SCORE_TOLERANCE);
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                }
+                final Map<Integer, Integer> labelMap = clusterer.getLabels();
+
+                final long[] uniqueLabels = labelMap.values()
+                        .stream()
+                        .mapToLong(Integer::longValue)
+                        .distinct()
+                        .toArray();
+
+                final long total = uniqueLabels.length;
+                float count = 0F;
+
+                LOGGER.info(String.format("Saving new clusters of type \"%s\" to the database...", type));
+
+                for (final long label : uniqueLabels) {
+                    count += 1F;
+                    final Set<Long> spectrumIds = labelMap.entrySet()
+                            .stream()
+                            .filter(e -> e.getValue() == label)
+                            .map(Map.Entry::getKey)
+                            .map(index -> spectra.get(index).getId())
+                            .collect(Collectors.toSet());
+
+                    if (spectrumIds.size() >= MIN_NUM_SPECTRA) {
+
+                        final SpectrumCluster cluster = createCluster(spectrumIds, MZ_TOLERANCE);
+                        final Spectrum consensusSpectrum = cluster.getConsensusSpectrum();
+                        final List<Peak> peaks = new ArrayList<>(consensusSpectrum.getPeaks());
+                        final List<SpectrumProperty> properties = new ArrayList<>(consensusSpectrum.getProperties());
+
+                        spectrumClusterRepository.save(cluster);
+                        spectrumRepository.savePeaksAndProperties(consensusSpectrum.getId(), peaks, properties);
+                    }
+                    progress = step*count/total + step*i;
+                }
+
+                LOGGER.info(String.format("Clustering spectra of type \"%s\" is completed.", type));
+            }
+            progress = -0.1F;
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private SpectrumCluster createCluster(final Set<Long> spectrumIds, final float mzTolerance)
             throws EmptySearchResultException {
 
-        SpectrumCluster cluster = new SpectrumCluster();
-
-        List<Spectrum> spectra = spectrumIds.stream()
+        final SpectrumCluster cluster = new SpectrumCluster();
+        final List<Spectrum> spectra = spectrumIds.stream()
                 .map(this::findSpectrum)
                 .peek(s -> s.setCluster(cluster))
                 .collect(Collectors.toList());
@@ -122,7 +185,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                 .orElse(0.0));
 
         // Calculate the significance statistics
-        DoubleSummaryStatistics significanceStats = cluster.getSpectra()
+        final DoubleSummaryStatistics significanceStats = cluster.getSpectra()
                 .stream()
                 .map(Spectrum::getSignificance)
                 .filter(Objects::nonNull)
@@ -136,42 +199,95 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
         }
 
         // Calculate diversity
-        cluster.setDiversityIndices(getDiversityIndices(cluster));
+        // setDiversityIndices(cluster);
+        final List<TagInfo> tagInfoList = ControllerUtils.getDiversityIndices(cluster.getSpectra());
 
-        Spectrum consensusSpectrum = createConsensusSpectrum(spectra, mzTolerance);
+        if (!tagInfoList.isEmpty()) {
+            Double minDiversity = Double.MAX_VALUE;
+            Double maxDiversity = 0.0;
+            Double avgDiversity = 0.0;
+            for (final TagInfo tagInfo : tagInfoList) {
+                final Double diversity = tagInfo.getDiversity();
+
+                avgDiversity += diversity;
+                if (diversity > maxDiversity) {
+                    maxDiversity = diversity;
+                }
+                if (diversity < minDiversity) {
+                    minDiversity = diversity;
+                }
+            }
+            avgDiversity = avgDiversity / tagInfoList.size();
+            cluster.setMinDiversity(minDiversity);
+            cluster.setMaxDiversity(maxDiversity);
+            cluster.setAveDiversity(avgDiversity);
+        }
+
+        final Spectrum consensusSpectrum = createConsensusSpectrum(spectra, mzTolerance);
         consensusSpectrum.setCluster(cluster);
         cluster.setConsensusSpectrum(consensusSpectrum);
 
         return cluster;
     }
 
-    private Spectrum findSpectrum(long id) throws EmptySearchResultException {
+    private Spectrum findSpectrum(final long id) throws EmptySearchResultException {
         return spectrumRepository.findById(id)
                 .orElseThrow(() -> new EmptySearchResultException(id));
     }
 
-    private Set<DiversityIndex> getDiversityIndices(SpectrumCluster cluster) {
+    private void setDiversityIndices(final SpectrumCluster cluster) {
 
-        Set<DiversityIndex> diversityIndices = new HashSet<>();
+        final List<String> tagList = new ArrayList<>();
 
-        for (final SubmissionCategoryType categoryType : SubmissionCategoryType.values()) {
-
-            final double diversity = MathUtils.diversityIndex(cluster.getSpectra()
-                    .stream()
-                    .map(Spectrum::getFile).filter(Objects::nonNull)
-                    .map(File::getSubmission).filter(Objects::nonNull)
-                    .map(s -> s.getCategory(categoryType))
-                    .collect(Collectors.toList()));
-
-            if (diversity > 0.0) {
-                final DiversityIndex diversityIndex = new DiversityIndex();
-                diversityIndex.setId(new DiversityIndexId(cluster, categoryType));
-                diversityIndex.setDiversity(diversity);
-                diversityIndices.add(diversityIndex);
+        for(final Spectrum s: cluster.getSpectra()) {
+            for(final SubmissionTag tag: s.getFile().getSubmission().getTags()) {
+                tagList.add(tag.getId().getName());
             }
         }
 
-        return diversityIndices;
+        final Map<String, List<String>> tagMap = new HashMap<>(); // source:<src1, src2, src1, src2>
+
+        tagList.forEach(tag -> {
+            final String[] arr = tag.split(":", 2);
+            if(arr.length == 2) {
+                final String key = arr[0].trim();
+                final String value = arr[1].trim();
+
+                List<String> valueList = tagMap.get(key);
+                if(CollectionUtils.isEmpty(valueList)) {
+                    valueList = new ArrayList<>();
+                    tagMap.put(key, valueList);
+                }
+                valueList.add(value);
+            }
+        });
+
+        if(tagMap.size() == 0) {
+            return;
+        }
+
+        Double minDiversity = Double.MAX_VALUE;
+        Double maxDiversity = 0.0;
+        Double avgDiversity = 0.0;
+
+        for(final Entry<String, List<String>> entry : tagMap.entrySet()) {
+
+            final double diversity = MathUtils.diversityIndex(entry.getValue());
+            avgDiversity += diversity;
+            if(diversity > maxDiversity) {
+                maxDiversity = diversity;
+            }
+            if(diversity < minDiversity) {
+                minDiversity = diversity;
+            }
+        };
+
+        avgDiversity = avgDiversity / tagMap.size();
+
+        cluster.setMinDiversity(minDiversity);
+        cluster.setMaxDiversity(maxDiversity);
+
+        cluster.setAveDiversity(avgDiversity);
     }
 
     /**
@@ -181,48 +297,49 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
      * @param mzTolerance maximum distance between m/z values in a cluster
      * @return consensus spectrum
      */
-    private Spectrum createConsensusSpectrum(List<Spectrum> spectra, float mzTolerance) {
+    private Spectrum createConsensusSpectrum(final List<Spectrum> spectra, final float mzTolerance) {
 
-        ChromatographyType type = spectra.stream()
+        final ChromatographyType type = spectra.stream()
                 .map(Spectrum::getChromatographyType)
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("Cannot determine chromatography type"));
 
-        Peak[] peaks = spectra.stream()
+        final Peak[] peaks = spectra.stream()
                 .flatMap(s -> s.getPeaks().stream())
                 .toArray(Peak[]::new);
 
-        double[][] mzDistance = new double[peaks.length][peaks.length];
-        for (int i = 0; i < peaks.length; ++i)
+        final double[][] mzDistance = new double[peaks.length][peaks.length];
+        for (int i = 0; i < peaks.length; ++i) {
             for (int j = i + 1; j < peaks.length; ++j) {
-                double distance = Math.abs(peaks[i].getMz() - peaks[j].getMz());
+                final double distance = Math.abs(peaks[i].getMz() - peaks[j].getMz());
                 mzDistance[i][j] = distance;
                 mzDistance[j][i] = distance;
             }
+        }
 
-        int[] labels = new HierarchicalClustering(new CompleteLinkage(mzDistance)).partition(mzTolerance);
+        final int[] labels = new HierarchicalClustering(new CompleteLinkage(mzDistance)).partition(mzTolerance);
 
-        int[] uniqueLabels = Arrays.stream(labels)
+        final int[] uniqueLabels = Arrays.stream(labels)
                 .distinct()
                 .toArray();
 
-        Spectrum consensusSpectrum = new Spectrum();
-        List<Peak> consensusPeaks = new ArrayList<>(uniqueLabels.length);
+        final Spectrum consensusSpectrum = new Spectrum();
+        final List<Peak> consensusPeaks = new ArrayList<>(uniqueLabels.length);
 
-        for (int label : uniqueLabels) {
+        for (final int label : uniqueLabels) {
 
-            double mz = IntStream.range(0, labels.length)
+            final double mz = IntStream.range(0, labels.length)
                     .filter(i -> labels[i] == label)
                     .mapToDouble(i -> peaks[i].getMz())
                     .average()
                     .orElseThrow(() -> new IllegalStateException("Could not calculate average m/z value."));
 
-            double intensity = IntStream.range(0, labels.length)
+            final double intensity = IntStream.range(0, labels.length)
                     .filter(i -> labels[i] == label)
                     .mapToDouble(i -> peaks[i].getIntensity())
                     .sum() / spectra.size();
 
-            Peak consensusPeak = new Peak();
+            final Peak consensusPeak = new Peak();
             consensusPeak.setMz(mz);
             consensusPeak.setIntensity(intensity);
             consensusPeak.setSpectrum(consensusSpectrum);
@@ -237,11 +354,11 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
         consensusSpectrum.addProperty("Name", getName(spectra));
 
         spectra.stream()
-                .map(Spectrum::getPrecursor)
-                .filter(Objects::nonNull)
-                .mapToDouble(Double::doubleValue)
-                .average()
-                .ifPresent(consensusSpectrum::setPrecursor);
+        .map(Spectrum::getPrecursor)
+        .filter(Objects::nonNull)
+        .mapToDouble(Double::doubleValue)
+        .average()
+        .ifPresent(consensusSpectrum::setPrecursor);
 
         return consensusSpectrum;
     }
@@ -253,14 +370,14 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
      * @param spectra list of spectra
      * @return the most frequent name
      */
-    private String getName(List<Spectrum> spectra) {
+    private String getName(final List<Spectrum> spectra) {
 
         String maxName = "";
         int maxCount = 0;
-        Map<String, Integer> nameCountMap = new HashMap<>();
-        for (Spectrum spectrum : spectra) {
-            String name = spectrum.getName();
-            int count = nameCountMap.getOrDefault(name, 0) + 1;
+        final Map<String, Integer> nameCountMap = new HashMap<>();
+        for (final Spectrum spectrum : spectra) {
+            final String name = spectrum.getName();
+            final int count = nameCountMap.getOrDefault(name, 0) + 1;
             nameCountMap.put(name, count);
             if (count > maxCount) {
                 maxCount = count;

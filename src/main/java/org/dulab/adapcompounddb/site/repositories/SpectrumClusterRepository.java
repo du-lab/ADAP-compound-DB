@@ -3,7 +3,6 @@ package org.dulab.adapcompounddb.site.repositories;
 import java.util.List;
 
 import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
-import org.dulab.adapcompounddb.models.entities.views.ClusterPage;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,12 +15,16 @@ public interface SpectrumClusterRepository extends JpaRepository<SpectrumCluster
     void deleteByIdNotIn(List<Long> ids);
 
     @Modifying
-    @Query("DELETE FROM SpectrumCluster c WHERE SIZE(c.spectra) = 1")
+    @Query("DELETE FROM SpectrumCluster c WHERE 1 = 1")
     void deleteAllEmptyClusters();
 
-    @Query(value="select s from ClusterPage s "
+    @Modifying
+    @Query("DELETE FROM Spectrum c WHERE consensus = 1")
+    void deleteAllConsensusSpectra();
+
+    @Query(value="select s from SpectrumCluster s "
             + "where "
-            + "s.spectrumCluster.consensusSpectrum.name like %:search% "
-            + "OR s.spectrumCluster.consensusSpectrum.chromatographyType like %:search%" )
-    Page<ClusterPage> findClusters(@Param("search") String searchStr, Pageable pageable);
+            + "s.consensusSpectrum.name like %:search% "
+            + "OR s.consensusSpectrum.chromatographyType like %:search%" )
+    Page<SpectrumCluster> findClusters(@Param("search") String searchStr, Pageable pageable);
 }

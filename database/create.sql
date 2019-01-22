@@ -371,3 +371,26 @@ create view ClusterPage as
     from
        spectrumcluster sc
        left join diversityindex d on sc.id = d.ClusterId group by sc.Id;
+
+-- -----------------------------------------------------
+-- Add diversity columns to `spectrumcluster`
+-- -----------------------------------------------------
+ALTER TABLE `spectrumcluster` 
+ADD COLUMN `AveDiversity` DOUBLE NULL;
+
+ALTER TABLE `spectrumcluster` 
+ADD COLUMN `MinDiversity` DOUBLE NULL AFTER `AveDiversity`;
+
+ALTER TABLE `spectrumcluster` 
+ADD COLUMN `MaxDiversity` DOUBLE NULL AFTER `MinDiversity`;
+
+
+ALTER TABLE `spectrum` 
+DROP FOREIGN KEY `Spectrum_SpectrumCluster_Id_fk`;
+
+ALTER TABLE `spectrum` 
+ADD CONSTRAINT `Spectrum_SpectrumCluster_Id_fk`
+  FOREIGN KEY (`ClusterId`)
+  REFERENCES `spectrumcluster` (`id`)
+  ON DELETE SET NULL
+  ON UPDATE CASCADE;

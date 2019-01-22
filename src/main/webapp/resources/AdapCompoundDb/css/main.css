@@ -506,3 +506,12 @@ div.tabbed-pane span {
     display: none;
     transition: 400ms;
 }
+.fade {
+    display: none;
+}
+progress {
+  text-align: center;
+}
+progress:after {
+  content: attr(value)'%';
+}
