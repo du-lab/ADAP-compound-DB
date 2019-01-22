@@ -201,24 +201,27 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
         // Calculate diversity
         // setDiversityIndices(cluster);
         final List<TagInfo> tagInfoList = ControllerUtils.getDiversityIndices(cluster.getSpectra());
-        Double minDiversity = Double.MAX_VALUE;
-        Double maxDiversity = 0.0;
-        Double avgDiversity = 0.0;
-        for(final TagInfo tagInfo : tagInfoList) {
-            final Double diversity = tagInfo.getDiversity();
 
-            avgDiversity += diversity;
-            if(diversity > maxDiversity) {
-                maxDiversity = diversity;
+        if (!tagInfoList.isEmpty()) {
+            Double minDiversity = Double.MAX_VALUE;
+            Double maxDiversity = 0.0;
+            Double avgDiversity = 0.0;
+            for (final TagInfo tagInfo : tagInfoList) {
+                final Double diversity = tagInfo.getDiversity();
+
+                avgDiversity += diversity;
+                if (diversity > maxDiversity) {
+                    maxDiversity = diversity;
+                }
+                if (diversity < minDiversity) {
+                    minDiversity = diversity;
+                }
             }
-            if(diversity < minDiversity) {
-                minDiversity = diversity;
-            }
-        };
-        avgDiversity = avgDiversity / tagInfoList   .size();
-        cluster.setMinDiversity(minDiversity);
-        cluster.setMaxDiversity(maxDiversity);
-        cluster.setAveDiversity(avgDiversity);
+            avgDiversity = avgDiversity / tagInfoList.size();
+            cluster.setMinDiversity(minDiversity);
+            cluster.setMaxDiversity(maxDiversity);
+            cluster.setAveDiversity(avgDiversity);
+        }
 
         final Spectrum consensusSpectrum = createConsensusSpectrum(spectra, mzTolerance);
         consensusSpectrum.setCluster(cluster);
