@@ -52,7 +52,6 @@
                     </c:when>
                     <c:otherwise>
                         <input id="button-submit" type="submit" value="Submit" formaction="submit"/>
-                        <a href="clear/" class="button">Clear</a>
                     </c:otherwise>
                 </c:choose>
             </div>

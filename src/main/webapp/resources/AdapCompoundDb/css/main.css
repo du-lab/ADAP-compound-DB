@@ -231,7 +231,7 @@ section div.heading {
 
 section form {padding: 0 20px;}
 
-a.button, form input[type=submit], input[type=button] {
+/* section */ a.button, form input[type=submit], input[type=button] {
     background: #b47cff; /*#474853, #8e8268*/
     border: none;
     border-radius: 5px;
@@ -254,7 +254,7 @@ a.button, form input[type=submit], input[type=button] {
     /*border-radius: 3px;*/
 /*}*/
 
-a.button:hover, form input[type=submit]:hover, input[type=button]:hover {
+/* section */ a.button:hover, form input[type=submit]:hover, input[type=button]:hover {
     background: #7c4dff;
     box-shadow: 0 0 5px #bfbfbf;
     text-decoration: none;

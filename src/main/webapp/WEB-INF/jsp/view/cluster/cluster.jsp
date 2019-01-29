@@ -6,10 +6,12 @@
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<div>
-    ${cluster.consensusSpectrum.name} |
-    <img src="${pageContext.request.contextPath}/${cluster.consensusSpectrum.chromatographyType.iconPath}" class="icon"/> |
-    ${cluster.size} total spectra | ${dulab:toIntegerScore(cluster.diameter)} similarity score | ${cluster.aveSignificance} significance
+<div align="center">
+    <strong>
+        ${cluster.consensusSpectrum.name} | 
+        <img src="${pageContext.request.contextPath}/${cluster.consensusSpectrum.chromatographyType.iconPath}" class="icon"/> |
+        ${cluster.size} total spectra | ${dulab:toIntegerScore(cluster.diameter)} similarity score | ${cluster.aveSignificance} significance
+    </strong>
 </div>
 
 <section>
