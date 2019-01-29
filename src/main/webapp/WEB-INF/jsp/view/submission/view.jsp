@@ -123,12 +123,12 @@
     </div>
 </section>
 
-<div align="center">
-<!-- <div style="text-align: right; margin-right: 40px;"> -->
-    <a href="clear/" class="button">
-        <i class="material-icons" title="Delete">&#xE872;</i>
-    </a>
-</div>
+<c:if test="${submissionForm.id == 0}">
+    <div align="center">
+    <!-- <div style="text-align: right; margin-right: 40px;"> -->
+        <a href="clear/" class="button">Clear</a>
+    </div>
+</c:if>
 <script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
 <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
 <script src="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.js"/>"></script>
