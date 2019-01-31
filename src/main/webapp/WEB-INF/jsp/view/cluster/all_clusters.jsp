@@ -72,7 +72,7 @@
                     "targets": 3,
                     "orderable": true,
                     "render": function (data, type, row, meta) {
-                        return row.diameter.toFixed(3);
+                        return row.diameter.toFixed(3) * 1000;
                     }
                 },
                 {
