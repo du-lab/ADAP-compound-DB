@@ -6,7 +6,7 @@
 <section>
     <h1>Consensus spectra</h1>
     <div align="center">
-        <table id="cluster_table" class="display" style="width: 100%;">
+        <table id="cluster_table" class="display responsive" style="width: 100%;">
             <thead>
             <tr>
                 <th>ID</th>
@@ -27,14 +27,14 @@
     </div>
 </section>
 
-<script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
-<script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
-<script src="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.js"/>"></script>
 <script>
     $(document).ready(function () {
         $('#cluster_table').DataTable({
             serverSide: true,
             processing: true,
+            responsive: true,
+            scrollX: true,
+            scroller: true,
             ajax: {
                 url: "${pageContext.request.contextPath}/spectrum/findClusters.json",
 

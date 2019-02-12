@@ -84,6 +84,9 @@
     $(document).ready(function () {
         $('#submission_table').DataTable({
             order: [[1, 'DESC']],
+            responsive: true,
+            scrollX: true,
+            scroller: true,
             columnDefs: [{
                 targets: [3, 4],
                 sortable: false

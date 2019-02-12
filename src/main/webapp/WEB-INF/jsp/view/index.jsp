@@ -63,7 +63,7 @@
     </div>
 </section>
 
-<section class="no-background">
+<section>
     <h1>Contact Information</h1>
     <div align="center">
         <div align="left" class="text large-subsection">
