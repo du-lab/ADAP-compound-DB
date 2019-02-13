@@ -2,6 +2,10 @@
 <%--@elvariable id="countConsensusSpectra" type="java.lang.Long"--%>
 <%--@elvariable id="countReferenceSpectra" type="java.lang.Long"--%>
 
+<script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
+<script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
+<script src="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.js"/>"></script>
+
 <div align="center">
     <h1>Welcome to ADAP Spectral Library!</h1>
 </div>

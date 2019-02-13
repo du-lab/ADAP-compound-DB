@@ -45,7 +45,7 @@
         <div>
             <table style="width: 100%;">
                 <thead>
-                    <tr><th class="desktop" style="width: 30%;"></th><th style="width: 25%;"></th><th></th></tr>
+                    <tr><th class="desktop" style="width: 20%;"></th><th style="width: 25%;"></th><th></th></tr>
                 </thead>
                 <tbody>
                     <tr>
@@ -114,8 +114,7 @@
     </div>
 
     <div id="submissions" align="center" class="hide">
-        <table id="submission_table" class="display responsive"
-            style="width: 100%;">
+        <table id="submission_table" class="display responsive" style="width: 100%;">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -153,7 +152,11 @@
 
     $(document).ready(function () {
         $('#cluster_table').DataTable();
-        $('#user_table').DataTable();
+        $('#user_table').DataTable({
+            responsive: true,
+            scrollX: true,
+            scroller: true,
+        });
     });
 
     $('#submission_table').DataTable({
@@ -262,8 +265,6 @@
               }
         });
     }
-
-
 
     var clusterButton = $('#cluster_button');
     var matchButton = $('#calculate_match_button');

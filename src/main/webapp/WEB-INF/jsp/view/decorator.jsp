@@ -28,44 +28,7 @@
     <link rel="stylesheet" href="<c:url value="/resources/AdapCompoundDb/css/classes.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/AdapCompoundDb/css/plots.css"/>">
     <link rel="stylesheet" href="<c:url value="https://fonts.googleapis.com/css?family=Crimson+Text|Proza+Libre|Lato:300,400"/>">
-
-    <script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
-    <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
-    <script src="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.js"/>"></script>
 </head>
-
-<script type="text/javascript">
-$(document).ready(function () {
-    $(document).click(function(e){
-        var side = $(".side");
-        if($(side).hasClass("menu") && e.target.id != "menu") {
-            var menu = $(e.target).closest(".side");
-            if(menu.length == 0) {
-                $(".side").removeClass("menu");
-                animateIcon("view_headline");
-            }
-        }
-    });
-    
-    var animateIcon = function(content) {
-        $('#menu').animate({
-            'opacity' : 0
-        }, 100, function(){
-            $(this).html(content).animate({'opacity': 1}, 100);
-        });
-    };
-    
-    $("#menu").click(function() {
-        if($("#menu").html() == 'view_headline') {
-        	animateIcon("clear");
-            $(".side").addClass("menu");
-        } else {
-            animateIcon("view_headline");
-            $(".side").removeClass("menu");
-        }
-    });
-});
-</script>
 
 <body>
 
@@ -121,5 +84,38 @@ $(document).ready(function () {
     </div>
 
 </body>
+
+<script type="text/javascript">
+$(document).ready(function () {
+    $(document).click(function(e){
+        var side = $(".side");
+        if($(side).hasClass("menu") && e.target.id != "menu") {
+            var menu = $(e.target).closest(".side");
+            if(menu.length == 0) {
+                $(".side").removeClass("menu");
+                animateIcon("view_headline");
+            }
+        }
+    });
+    
+    var animateIcon = function(content) {
+        $('#menu').animate({
+            'opacity' : 0
+        }, 100, function(){
+            $(this).html(content).animate({'opacity': 1}, 100);
+        });
+    };
+    
+    $("#menu").click(function() {
+        if($("#menu").html() == 'view_headline') {
+            animateIcon("clear");
+            $(".side").addClass("menu");
+        } else {
+            animateIcon("view_headline");
+            $(".side").removeClass("menu");
+        }
+    });
+});
+</script>
 
 </html>

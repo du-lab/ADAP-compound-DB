@@ -138,6 +138,7 @@ aside li a:hover {
 
 article {
     margin: 80px 0 20px 0;
+    height: 100%;
     width: 100%;
 }
 
@@ -174,7 +175,7 @@ section h1 {
 section h2 {
     color: #844d36;
     display: block;
-    font-size: 2.2em;
+    font-size: 1.0em;
     font-weight: normal;
     margin: 10px;
     text-align: center;
@@ -263,6 +264,7 @@ section form {padding: 0 20px;}
     margin-right: 10px;
     padding: 8px 15px 8px 15px;
     text-decoration: none;
+    text-align: center;
 }
 
 /*section form input[type=file] {*/
@@ -523,8 +525,8 @@ div.tabbed-pane span {
 }
 
 .hide {
-    display: none;
-    transition: 400ms;
+    visibility: hidden;
+    height: 0px;
 }
 .fade {
     display: none;
@@ -537,5 +539,5 @@ progress:after {
 }
 
 .desktop {
-    display: none;
+    display: none !important;
 }

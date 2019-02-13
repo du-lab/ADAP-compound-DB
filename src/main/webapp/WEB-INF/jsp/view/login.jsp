@@ -7,7 +7,7 @@
 <section>
     <h1>Log-in</h1>
     <div align="center">
-        <div align="left" class="subsection">
+        <div class="subsection">
             <p>You must log in to submit new mass spectra to the library.</p>
             <c:if test="${param['loginFailed']}">
                 <p class="errors">The username and password you entered are not correct. Please try again.</p><br/>
