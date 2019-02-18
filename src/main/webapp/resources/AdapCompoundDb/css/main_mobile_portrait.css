@@ -535,8 +535,7 @@ div.tabbed-pane span {
 }
 
 .hide {
-    visibility: hidden;
-    height: 0px;
+    display: none;
 }
 .fade {
     display: none;

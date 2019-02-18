@@ -75,7 +75,7 @@
         </div>
     </div>
 
-    <div id="users" class="hide">
+    <div id="users" class="">
         <div align="center">
             <table id="user_table" class="display" style="width: 100%;">
                 <thead>
@@ -113,7 +113,7 @@
         </div>
     </div>
 
-    <div id="submissions" class="hide">
+    <div id="submissions" class="">
         <table id="submission_table" class="display" style="width: 100%;">
             <thead>
                 <tr>
@@ -144,9 +144,6 @@
 <script src="<c:url value="/resources/AdapCompoundDb/js/progressBar.js"/>"></script>
 <script type="text/javascript" src="<c:url value="/resources/AdapCompoundDb/js/tabs.js"/>"></script>
 <script>
-    $(".tabbed-pane").each(function() {
-        $(this).tabbedPane();
-    });
     var confirmDeleteDialog = $('#confirm-delete-dialog').confirmDeleteDialog();
     var progressDialog = $('#progress-dialog').progressDialog();
 
@@ -156,98 +153,103 @@
             scrollX: true,
             scroller: true,
         });
-    });
 
-    $('#submission_table').DataTable({
-        "order": [[1, "desc"]],
-        serverSide: true,
-        processing: true,
-        scrollX: true,
-        scroller: true,
-        ajax: {
-            url: "${pageContext.request.contextPath}/submission/findAllSubmissions.json",
-
-            data: function (data) {
-                data.column = data.order[0].column;
-                data.sortDirection = data.order[0].dir;
-                data.search = data.search["value"];
-            }
-        },
-        "columnDefs": [
-            {
-                "targets": 0,
-                "orderable": true,
-                "data": "id"
-            },
-            {
-                "targets": 1,
-                "orderable": true,
-                "data": "formattedDate"
-            },
-            {
-                "targets": 2,
-                "orderable": true,
-                "render": function (data, type, row, meta) {
-                    content = '<a href="${pageContext.request.contextPath}/submission/' + row.id + '/">' +
-                        row.name +
-                        '</a>';
-                    return content;
+        $('#submission_table').DataTable({
+            "order": [[1, "desc"]],
+            serverSide: true,
+            processing: true,
+            scrollX: true,
+            scroller: true,
+            ajax: {
+                url: "${pageContext.request.contextPath}/submission/findAllSubmissions.json",
+    
+                data: function (data) {
+                    data.column = data.order[0].column;
+                    data.sortDirection = data.order[0].dir;
+                    data.search = data.search["value"];
                 }
             },
-            {
-                "targets": 3,
-                "orderable": true,
-                "render": function (data, type, row, meta) {
-                    content = row.user.name + '<br/><small>' + row.user.email + '<small>';
-                    return content;
-                }
-            },
-            {
-                "targets": 4,
-                "orderable": false,
-                "data": "tagsAsString"
-            },
-            {
-                "targets": 5,
-                "orderable": false,
-                "render": function (data, type, row, meta) {
-                    var content = '<label class="switch" id="reference_checkbox">' +
-                        '<input type="checkbox" value="' + row.id + '" ';
-                    if(row.allSpectrumReference == 1) {
-                        content += 'checked'
+            "columnDefs": [
+                {
+                    "targets": 0,
+                    "orderable": true,
+                    "data": "id"
+                },
+                {
+                    "targets": 1,
+                    "orderable": true,
+                    "data": "formattedDate"
+                },
+                {
+                    "targets": 2,
+                    "orderable": true,
+                    "render": function (data, type, row, meta) {
+                        content = '<a href="${pageContext.request.contextPath}/submission/' + row.id + '/">' +
+                            row.name +
+                            '</a>';
+                        return content;
                     }
-                    content += '><span class="checkbox-slider ';
-                    if(row.allSpectrumReference == null) {
-                        content += 'translate-middle';
+                },
+                {
+                    "targets": 3,
+                    "orderable": true,
+                    "render": function (data, type, row, meta) {
+                        content = row.user.name + '<br/><small>' + row.user.email + '<small>';
+                        return content;
                     }
-                    content += '"></span></label>';
-                    return content;
+                },
+                {
+                    "targets": 4,
+                    "orderable": false,
+                    "data": "tagsAsString"
+                },
+                {
+                    "targets": 5,
+                    "orderable": false,
+                    "render": function (data, type, row, meta) {
+                        var content = '<label class="switch" id="reference_checkbox">' +
+                            '<input type="checkbox" value="' + row.id + '" ';
+                        if(row.allSpectrumReference == 1) {
+                            content += 'checked'
+                        }
+                        content += '><span class="checkbox-slider ';
+                        if(row.allSpectrumReference == null) {
+                            content += 'translate-middle';
+                        }
+                        content += '"></span></label>';
+                        return content;
+                    }
+                },
+                {
+                    "targets": 6,
+                    "orderable": false,
+                    "render": function (data, type, row, meta) {
+                        var clickEve = "confirmDeleteDialog.show(" +
+                            "'Submission &quot;" + row.name + "&quot; and all its spectra will be deleted. Are you sure?'," +
+                            "'${pageContext.request.contextPath}/submission/" + row.id + "/delete/');";
+                        var content = '<a href="${pageContext.request.contextPath}/submission/' + row.id + '/">' +
+                            '<i class="material-icons" title="View">&#xE5D3;</i>' +
+                            '</a>' +
+                            '<a onclick="' + clickEve + '">' +
+                            '<i class="material-icons" title="Delete">&#xE872;</i></a>';
+    
+                        return content;
+                    }
                 }
-            },
-            {
-                "targets": 6,
-                "orderable": false,
-                "render": function (data, type, row, meta) {
-                    var clickEve = "confirmDeleteDialog.show(" +
-                        "'Submission &quot;" + row.name + "&quot; and all its spectra will be deleted. Are you sure?'," +
-                        "'${pageContext.request.contextPath}/submission/" + row.id + "/delete/');";
-                    var content = '<a href="${pageContext.request.contextPath}/submission/' + row.id + '/">' +
-                        '<i class="material-icons" title="View">&#xE5D3;</i>' +
-                        '</a>' +
-                        '<a onclick="' + clickEve + '">' +
-                        '<i class="material-icons" title="Delete">&#xE872;</i></a>';
-
-                    return content;
-                }
+            ],
+            "fnInitComplete": function (oSettings, json) {
+                $("#users").addClass("hide");
+                $("#submissions").addClass("hide");
             }
-        ]
-    }).on('draw', function() {
-        $("#reference_checkbox > input[type='checkbox']").each(function() {
-            $(this).on("change", function() {
-                $(this).parent().find("span.checkbox-slider").removeClass("translate-middle");
-                updateReferenceOfAllSpectraOfSubmission($(this).val(), $(this).is(":checked"));
+        }).on('draw', function() {
+            $("#reference_checkbox > input[type='checkbox']").each(function() {
+                $(this).on("change", function() {
+                    $(this).parent().find("span.checkbox-slider").removeClass("translate-middle");
+                    updateReferenceOfAllSpectraOfSubmission($(this).val(), $(this).is(":checked"));
+                });
             });
         });
+
     });
 
     function updateReferenceOfAllSpectraOfSubmission(submissionId, reference) {
@@ -303,5 +305,8 @@
             $("#cluster_progress").removeClass("hide");
             clusterProgressBar.start(); 
         });
+    });
+    $(".tabbed-pane").each(function() {
+        $(this).tabbedPane();
     });
 </script>
