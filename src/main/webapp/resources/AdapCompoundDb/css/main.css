@@ -296,6 +296,7 @@ section form textarea {
     padding: 10px;
     box-shadow: 1px 1px 1px #f2f2f2;
     border-radius: 3px;
+    width: 400px;
 }
 
 section form input[type=text]:disabled {
@@ -335,6 +336,16 @@ pre {
     font-weight: lighter;
     white-space: pre-wrap;
 }
+
+/***** Graph ******/
+.plot {
+    display: inline-block;
+    vertical-align: top;
+    margin: 20px;
+    width: 600px;
+    height: 600px; 
+}
+
 
 /***** Misc ******/
 
@@ -504,8 +515,8 @@ div.tabbed-pane span {
 }
 
 .hide {
-    display: none;
-    transition: 400ms;
+    visibility: hidden;
+    height: 0px;
 }
 .fade {
     display: none;

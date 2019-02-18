@@ -5,9 +5,9 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <div align="center">
-    <div align="left" style="width: 600px">
+    <div>
         <p>
-            Please provide name and detailed description of the data when you submit mass spectra to the library.
+            Please provide name and detailed description of the data when you submit mass spectra to the library.<br/>
             This information will be used for finding unknown compounds.
         </p>
     </div>
@@ -32,7 +32,7 @@
             <form:errors path="name" cssClass="errors"/><br/>
 
             <form:label path="description">Description:</form:label><br/>
-            <form:textarea path="description" rows="12" cols="80"/><br/>
+            <form:textarea path="description" /><br/>
             <form:errors path="description" cssClass="errors"/><br/>
 
             <form:label path="reference">Reference:</form:label><br/>

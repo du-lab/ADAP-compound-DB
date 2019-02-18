@@ -1,7 +1,7 @@
 function addPieChart(idName, dataset) {
 
-    var width = 360;
-    var height = 360;
+    var width = 320;
+    var height = 320;
     var radius = Math.min(width, height) / 2;
     var donutWidth = 75;
     var legendRectSize = 18;

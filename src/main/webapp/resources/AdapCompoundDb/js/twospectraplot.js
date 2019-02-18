@@ -1,7 +1,7 @@
 function TwoSpectraPlot(divId, topSpectrum) {
 
-    var width = 600;
-    var height = 600;
+    var width = $('#' + divId).width();
+    var height = $('#' + divId).height();
     var label_offset = 40;
     var padding = {'top': 40, 'right': 40, 'bottom': 240, 'left': 40};
 
@@ -36,7 +36,7 @@ function TwoSpectraPlot(divId, topSpectrum) {
         .attr('width', width)
         .attr('height', height);
     var gButton = svg.append("g")
-        .attr('class', 'button_g')
+        .attr('class', 'button_g desktop')
         .attr("transform", "translate(" + padding.left + ", 0)")
         .attr('width', width/10)
         .attr('height', height/16)
@@ -233,7 +233,7 @@ function TwoSpectraPlot(divId, topSpectrum) {
         return "M"+x+" "+y+" l"+w+" "+0+" l"+0+" "+h+" l"+(-w)+" "+0+"z";
     };
     var selection = svg.append("path")
-        .attr("class", "selection")
+        .attr("class", "selection desktop")
         .attr("visibility", "hidden");
 
     var startSelection = function(start) {

@@ -19,7 +19,7 @@
     </div>
 
     <div id="spectrum" align="center">
-        <table id="property_table" class="display" style="clear: none; max-width: 1000px;">
+        <table id="property_table" class="display responsive" style="clear: none; max-width: 1000px;">
             <thead>
             <tr>
                 <th>Property</th>
@@ -64,8 +64,8 @@
     </div>
 
     <div id="peaks" class="hide" align="center">
-        <div id="plot" style="display: inline-block; vertical-align: top; margin: 20px;"></div>
-        <div style="display: inline-block; max-width: 500px; vertical-align: top;">
+        <div id="plot" style="" class="plot"></div>
+        <div style="display: inline-block; max-width: 100%; vertical-align: top;">
             <table id="peak_table" class="display" style="width: 100%;">
                 <thead>
                 <tr>
@@ -108,10 +108,20 @@
             info: false,
             ordering: false,
             paging: false,
-            searching: false
+            searching: false,
+            responsive: true,
+            scrollX: true,
+            scroller: true
         });
 
-        $('#peak_table').DataTable();
+        $('#peak_table').DataTable({
+            responsive: true,
+            scrollX: true,
+            scroller: true,
+            responsive: true,
+            scrollX: true,
+            scroller: true
+        });
 
         SpectrumPlot('plot', ${dulab:spectrumToJson(spectrum)});
     })

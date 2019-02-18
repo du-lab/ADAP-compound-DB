@@ -53,7 +53,7 @@ header {
 header h1 {
     display: inline-block;
     font-family: "Proza Libre", sans-serif;
-    font-size: 1.8em;
+    font-size: 1.5em;
     /* margin: 0 120px 0 120px; */
     /*letter-spacing: 0.05em;*/
     /*text-shadow: 0 1px 1px #f2f2f2;*/
@@ -315,6 +315,7 @@ section form textarea {
     padding: 10px;
     box-shadow: 1px 1px 1px #f2f2f2;
     border-radius: 3px;
+    resize: none;
 }
 
 section form input[type=text]:disabled {
@@ -421,6 +422,15 @@ pre {
 
 .button #gradient-stop.active, .button #gradient-stop.pressed {
     stop-color: #000f2b; /* navy 100% */
+}
+
+/***** Graph ******/
+.plot {
+    display: inline-block;
+    vertical-align: top;
+    margin: 5px;
+    width: 90%;
+    height: 400px;
 }
 
 .button text {

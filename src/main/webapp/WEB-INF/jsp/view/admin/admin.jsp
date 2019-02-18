@@ -77,7 +77,7 @@
 
     <div id="users" class="hide">
         <div align="center">
-            <table id="user_table" class="display responsive" style="width: 100%;">
+            <table id="user_table" class="display" style="width: 100%;">
                 <thead>
                     <tr>
                         <th>User</th>
@@ -113,8 +113,8 @@
         </div>
     </div>
 
-    <div id="submissions" align="center" class="hide">
-        <table id="submission_table" class="display responsive" style="width: 100%;">
+    <div id="submissions" class="hide">
+        <table id="submission_table" class="display" style="width: 100%;">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -153,7 +153,6 @@
     $(document).ready(function () {
         $('#cluster_table').DataTable();
         $('#user_table').DataTable({
-            responsive: true,
             scrollX: true,
             scroller: true,
         });
@@ -163,7 +162,6 @@
         "order": [[1, "desc"]],
         serverSide: true,
         processing: true,
-        responsive: true,
         scrollX: true,
         scroller: true,
         ajax: {
