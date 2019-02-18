@@ -16,7 +16,7 @@
         <span data-tab="files">Files</span>
     </div>
     <div id="files" class="hide">
-        <table id="file_table" class="display" style="width: 100%; clear:none;">
+        <table id="file_table" class="display responsive" style="width: 100%; clear:none;">
             <thead>
             <tr>
                 <th>File</th>
@@ -47,7 +47,7 @@
 
     <div id="mass_spectra" class="active">
         <div align="center">
-            <table id="spectrum_table" class="display" style="width: 100%; clear:none;">
+            <table id="spectrum_table" class="display responsive" style="width: 100%; clear:none;">
                 <thead>
                     <tr>
                         <th></th>
@@ -83,6 +83,9 @@
         $('#spectrum_table').DataTable({
             serverSide: true,
             processing: true,
+            responsive: true,
+            scrollX: true,
+            scroller: true,
             ajax: {
                 url: "${pageContext.request.contextPath}/spectrum/findSpectrumBySubmissionId.json?submissionId=${submission.id}",
 
@@ -182,6 +185,9 @@
 
         // Table with a list of files
         $('#file_table').DataTable({
+            responsive: true,
+            scrollX: true,
+            scroller: true,
             // bLengthChange: false,
             // info: false,
             // ordering: false,

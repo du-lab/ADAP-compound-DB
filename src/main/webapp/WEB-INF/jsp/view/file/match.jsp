@@ -31,7 +31,7 @@
 <c:if test="${matches != null && matches.size() > 0}">
     <section id="chartSection">
         <h1>Comparison</h1>
-        <div id="plot" align="center"></div>
+        <div id="plot" align="center" class="plot"></div>
     </section>
 </c:if>
 
@@ -41,7 +41,7 @@
     <div align="center">
         <c:choose>
             <c:when test="${matches != null && matches.size() > 0}">
-                <table id="match_table" class="display nowrap" style="width: 100%;">
+                <table id="match_table" class="display responsive" style="max-width: 100%;">
                     <thead>
                     <tr>
                         <th>Score</th>
@@ -183,9 +183,11 @@
     $(document).ready(function () {
 
         var table = $('#match_table').DataTable({
-            'order': [[0, 'desc']],
+            order: [[0, 'desc']],
+            select: {style: 'single'},
+            responsive: true,
             scrollX: true,
-            select: {style: 'single'}
+            scroller: true
         });
 
         table.on('select', function (e, dt, type, indexes) {
@@ -213,7 +215,7 @@
 <script src="<c:url value="/resources/d3/d3.min.js"/>"></script>
 <script src="<c:url value="/resources/AdapCompoundDb/js/twospectraplot.js"/>"></script>
 <script>
-    var plot = new TwoSpectraPlot('plot', '${dulab:spectrumToJson(querySpectrum)}')
+    var plot = new TwoSpectraPlot('plot', JSON.parse('${dulab:spectrumToJson(querySpectrum)}'))
 </script>
 <style>
     .selection {

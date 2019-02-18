@@ -6,7 +6,7 @@
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<div align="center">
+<div align="center" class="desktop">
     <strong>
         ${cluster.consensusSpectrum.name} | 
         <img src="${pageContext.request.contextPath}/${cluster.consensusSpectrum.chromatographyType.iconPath}" class="icon"/> |
@@ -79,10 +79,10 @@
     </div>
 
     <div id="spectrum_plot" align="center" class="hide">
-        <div id="plot" style="display: inline-block; vertical-align: top;"></div>
+        <div id="plot" style="display: inline-block; vertical-align: top;" class="plot"></div>
 
-        <div align="center" style="display: inline-block; vertical-align: top; width: 400px;">
-            <table id="spectrum_table" class="display nowrap" style="width: 100%;">
+        <div align="center" style="display: inline-block; vertical-align: top;">
+            <table id="spectrum_table" class="display responsive" style="width: 100%;">
                 <thead>
                 <tr>
                     <th>Spectrum</th>
@@ -107,7 +107,7 @@
     </div>
 
     <div id="spectrum_list" align="center" class="hide">
-        <table id="big_spectrum_table" class="display nowrap" style="width: 100%;">
+        <table id="big_spectrum_table" class="display responsive">
             <thead>
             <tr>
                 <th>Spectrum</th>
@@ -147,13 +147,19 @@
             info: false,
             ordering: false,
             paging: false,
-            searching: false
+            searching: false,
+            responsive: true,
+            scrollX: true,
+            scroller: true
         });
 
         var table = $('#spectrum_table').DataTable({
             bLengthChange: false,
             scrollX: true,
-            select: {style: 'single'}
+            select: {style: 'single'},
+            responsive: true,
+            scrollX: true,
+            scroller: true
         });
 
         table.on('select', function (e, dt, type, indexes) {
@@ -164,9 +170,16 @@
 
         table.rows(':eq(0)').select();
 
-        $('#big_spectrum_table').DataTable();
+        $('#big_spectrum_table').DataTable({
+        	responsive: true,
+            scrollX: true,
+            scroller: true
+        });
     });
 </script>
+<script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
+<script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
+<script src="<c:url value="/resources/Select-1.2.5/js/dataTables.select.min.js"/>"></script>
 
 <script src="<c:url value="/resources/d3/d3.min.js"/>"></script>
 <script src="<c:url value="/resources/AdapCompoundDb/js/twospectraplot.js"/>"></script>

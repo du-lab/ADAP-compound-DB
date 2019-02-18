@@ -1,7 +1,7 @@
 function SpectrumPlot(divId, spectrum) {
 
-    var width = 600;
-    var height = 400;
+    var width = $('#' + divId).width();
+    var height = $('#' + divId).width();
     var label_offset = 40;
     var padding = {'top': 40, 'right': 40, 'bottom': 40, 'left': 40};
 
@@ -94,7 +94,7 @@ function SpectrumPlot(divId, spectrum) {
         .attr('height', height);
 
     var gButton = svg.append("g")
-        .attr('class', 'button_g')
+        .attr('class', 'button_g desktop')
         .attr("transform", "translate(" + padding.left + ", 0)")
         .attr('width', width/10)
         .attr('height', height/16)
@@ -210,7 +210,6 @@ function SpectrumPlot(divId, spectrum) {
         .style('text-anchor', 'middle')
         .text('intensity');
 
-
     var xRect = svg.append('svg:rect')
         .attr('class', 'zoom x box')
         .attr("width", width - padding.left)
@@ -239,7 +238,7 @@ function SpectrumPlot(divId, spectrum) {
         return "M"+x+" "+y+" l"+w+" "+0+" l"+0+" "+h+" l"+(-w)+" "+0+"z";
     };
     var selection = svg.append("path")
-        .attr("class", "selection")
+        .attr("class", "selection desktop")
         .attr("visibility", "hidden");
 
     var startSelection = function(start) {

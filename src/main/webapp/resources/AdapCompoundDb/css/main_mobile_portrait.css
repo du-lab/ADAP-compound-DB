@@ -30,7 +30,7 @@ html {
 
 body, header, aside, section, article, h1, h2 {
     display: block;
-    margin: 0;
+    margin: 0 0 5px 0;
     padding: 0;
 }
 
@@ -42,31 +42,32 @@ header {
     color: #ffffff;
     display: block;
     font-family: "Chrimson Text", serif;
-    height: 40px;
     padding: 10px;
     position: fixed;
     top: 0;
     width: 100%;
     z-index: 10;
+    margin-bottom: 5px;
 }
 
 header h1 {
     display: inline-block;
     font-family: "Proza Libre", sans-serif;
-    margin: 0 120px 0 120px;
+    font-size: 1.5em;
+    /* margin: 0 120px 0 120px; */
     /*letter-spacing: 0.05em;*/
     /*text-shadow: 0 1px 1px #f2f2f2;*/
 }
 
 header h2 {
     display: inline-block;
-    font-size: smaller;
+    font-size: medium; /*smaller*/
 }
 
 header div.user {
     display: inline-block;
     margin: 0 40px;
-    /*float: right;*/
+    float: right;
 }
 
 header a {
@@ -83,8 +84,6 @@ header a:hover {
 aside {
     font-family: "Proza Libre", Helvetica, sans-serif; /*Arial*/
     margin: 80px 10px;
-    width: 180px;
-    z-index: 1;
 }
 
 aside ul {
@@ -96,9 +95,9 @@ aside ul {
 aside li a {
     display: block;
     text-decoration: none;
-    color: #542410; /*#844d36*/
-    width: 160px;
-    height: 20px;
+    color: #ffffff; /*#844d36*/
+    /* width: 100%;
+    height: 20px; */
     margin: 0;
     padding: 10px;
 }
@@ -112,21 +111,41 @@ aside li i.material-icons {
 aside li a:hover {
     background: #ffffff;
     border-radius: 10px;
+    color: #542410;
     box-shadow: 0 0 10px #bfbfbf; /*#e4e4e4*/
+}
+
+.side {
+    width: 70%;
+    height: 80%;
+    position: fixed;
+    background: #844d36;
+    opacity: 1;
+    z-index: 1;
+    border-radius: 10px;
+    box-shadow: 4px 4px 4px #542410;
+    transform: translateX(-100%) translateY(-100%);
+    transition: transform 250ms ease-in-out;
+}
+
+.side.menu {
+    transform: translateX(0) translateY(0);
+    transition: transform 250ms ease-in-out;
+    /* transition: width 300ms ease-in-out; */
 }
 
 /***** Article *****/
 
 article {
     margin: 80px 0 20px 0;
-    min-width: 1000px;
+    height: 100%;
+    width: 100%;
 }
 
 article section {
     background: #ffffff;
-    border-radius: 10px;
+    /* border-radius: 10%; */
     box-shadow: 0 0 10px #bfbfbf; /*#e4e4e4*/
-    margin: 20px 40px;
     min-width: 320px;
     padding: 0 0 10px 0;
 }
@@ -137,7 +156,6 @@ article section.transparent {background: none;}
 
 section h1 {
     background: #b67960;
-    border-radius: 10px 10px 0 0;
     color: #ffffff; /*#844d36*/
     display: block;
     font-family: "Proza Libre", Times, serif;
@@ -157,7 +175,7 @@ section h1 {
 section h2 {
     color: #844d36;
     display: block;
-    font-size: 1.2em;
+    font-size: 1.0em;
     font-weight: normal;
     margin: 10px;
     text-align: center;
@@ -246,6 +264,7 @@ section form {padding: 0 20px;}
     margin-right: 10px;
     padding: 8px 15px 8px 15px;
     text-decoration: none;
+    text-align: center;
 }
 
 /*section form input[type=file] {*/
@@ -296,7 +315,7 @@ section form textarea {
     padding: 10px;
     box-shadow: 1px 1px 1px #f2f2f2;
     border-radius: 3px;
-    width: 400px;
+    resize: none;
 }
 
 section form input[type=text]:disabled {
@@ -331,21 +350,15 @@ section div.subsection div.submit {
     text-align: right;
 }
 
+table {
+    font-size: 0.8em;
+}
+
 pre {
     font-family: "Lato", sans-serif;
     font-weight: lighter;
     white-space: pre-wrap;
 }
-
-/***** Graph ******/
-.plot {
-    display: inline-block;
-    vertical-align: top;
-    margin: 20px;
-    width: 600px;
-    height: 600px; 
-}
-
 
 /***** Misc ******/
 
@@ -358,7 +371,7 @@ pre {
     box-shadow: 0 0 5px #000000;
     color: #000000;
     display: none;
-    font-size: 14px;
+    font-size: 18px;
     left: 130px;
     opacity: 0.8;
     padding: 10px;
@@ -409,6 +422,15 @@ pre {
 
 .button #gradient-stop.active, .button #gradient-stop.pressed {
     stop-color: #000f2b; /* navy 100% */
+}
+
+/***** Graph ******/
+.plot {
+    display: inline-block;
+    vertical-align: top;
+    margin: 5px;
+    width: 90%;
+    height: 400px;
 }
 
 .button text {
@@ -487,9 +509,9 @@ div.tabbed-pane ul {
     width: 100%;
     margin: 0px;
     padding: 10px 0px 5px 0px;
-    font-size: 1.5em;
+    font-size: 1.0em;
     background: #b67960;
-    border-radius: 10px 5px 0 0;
+    display: inline-flex;
 }
 
 div.tabbed-pane span {
@@ -497,8 +519,6 @@ div.tabbed-pane span {
     text-align: center;
     color: #542410;
     cursor: pointer;
-    /* padding: 10px 0 5px; */
-    /*text-shadow: 0 0 5px #542410;*/
     font-weight: bold;
 }
 
@@ -527,6 +547,7 @@ progress {
 progress:after {
   content: attr(value)'%';
 }
-.mobile {
+
+.desktop {
     display: none !important;
 }

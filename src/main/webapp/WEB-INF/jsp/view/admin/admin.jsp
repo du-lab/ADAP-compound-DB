@@ -43,29 +43,34 @@
 
         <h3>Admin Tools</h3>
         <div>
-            <table>
-                <tr>
-                    <td>Calculates matching scores for all spectra in the library</td>
-                    <td>
-                        <!-- <a href="calculatescores/" class="button"
-                            onclick="progressBar.start('calculatescores/progress')">Calculate Matching Scores...</a> -->
-                        <button class="button" id="calculate_match_button">Calculate Matching Scores</button>
-                    </td>
-                    <td>
-                        <progress id="match_progress" value="0" max="100" style="width:50em; height: 1.4em;"></progress>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Cluster spectra into clusters</td>
-                    <td>
-                        <!-- <a id="button-cluster" href="cluster/"
-                            class="button">Cluster spectra...</a> -->
-                        <button class="button" id="cluster_button">Cluster spectra</button>
-                    </td>
-                    <td>
-                        <progress id="cluster_progress" value="0" max="100" style="width:50em; height: 1.4em;"></progress>
-                    </td>
-                </tr>
+            <table style="width: 100%;">
+                <thead>
+                    <tr><th class="desktop" style="width: 20%;"></th><th style="width: 25%;"></th><th></th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="desktop">Calculates matching scores for all spectra in the library</td>
+                        <td>
+                            <!-- <a href="calculatescores/" class="button"
+                                onclick="progressBar.start('calculatescores/progress')">Calculate Matching Scores...</a> -->
+                            <button class="button" id="calculate_match_button" style="width: 100%;">Calculate Matching Scores</button>
+                        </td>
+                        <td>
+                            <progress id="match_progress" value="0" max="100" style="width:100%; height: 1.4em;"></progress>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="desktop">Cluster spectra into clusters</td>
+                        <td>
+                            <!-- <a id="button-cluster" href="cluster/"
+                                class="button">Cluster spectra...</a> -->
+                            <button class="button" id="cluster_button" style="width: 100%;">Cluster spectra</button>
+                        </td>
+                        <td>
+                            <progress id="cluster_progress" value="0" max="100" style="width:100%; height: 1.4em;"></progress>
+                        </td>
+                    </tr>
+                </tbody>
             </table>
         </div>
     </div>
@@ -108,9 +113,8 @@
         </div>
     </div>
 
-    <div id="submissions" align="center" class="hide">
-        <table id="submission_table" class="display"
-            style="width: 100%;">
+    <div id="submissions" class="hide">
+        <table id="submission_table" class="display" style="width: 100%;">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -148,13 +152,18 @@
 
     $(document).ready(function () {
         $('#cluster_table').DataTable();
-        $('#user_table').DataTable();
+        $('#user_table').DataTable({
+            scrollX: true,
+            scroller: true,
+        });
     });
 
     $('#submission_table').DataTable({
         "order": [[1, "desc"]],
         serverSide: true,
         processing: true,
+        scrollX: true,
+        scroller: true,
         ajax: {
             url: "${pageContext.request.contextPath}/submission/findAllSubmissions.json",
 
@@ -254,8 +263,6 @@
               }
         });
     }
-
-
 
     var clusterButton = $('#cluster_button');
     var matchButton = $('#calculate_match_button');
