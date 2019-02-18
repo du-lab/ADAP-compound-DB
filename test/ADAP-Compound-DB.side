@@ -1,0 +1,17 @@
+{
+  "id": "af97da98-3d86-4c1e-8b22-acd1d24e7819",
+  "version": "2.0",
+  "name": "ADAP-Compound-DB",
+  "url": "http://localhost:8080",
+  "tests": [],
+  "suites": [{
+    "id": "8988b3b7-a3ae-4597-9867-fec4f81b8cff",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": []
+  }],
+  "urls": ["http://localhost:8080/"],
+  "plugins": []
+}
