@@ -83,7 +83,7 @@ header a:hover {
 
 aside {
     font-family: "Proza Libre", Helvetica, sans-serif; /*Arial*/
-    margin: 80px 10px;
+    margin: 80px 10px 0px 10px;
 }
 
 aside ul {
@@ -117,7 +117,6 @@ aside li a:hover {
 
 .side {
     width: 70%;
-    height: 80%;
     position: fixed;
     background: #844d36;
     opacity: 1;
@@ -428,9 +427,12 @@ pre {
 .plot {
     display: inline-block;
     vertical-align: top;
-    margin: 5px;
-    width: 90%;
-    height: 400px;
+    position: relative;
+    width: 300px;
+    height: 350px;
+}
+svg text {
+    font-size: 12px;
 }
 
 .button text {
@@ -509,7 +511,7 @@ div.tabbed-pane ul {
     width: 100%;
     margin: 0px;
     padding: 10px 0px 5px 0px;
-    font-size: 1.0em;
+    font-size: 0.8em;
     background: #b67960;
     display: inline-flex;
 }

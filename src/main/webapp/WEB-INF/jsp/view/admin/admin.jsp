@@ -152,6 +152,9 @@
         $('#user_table').DataTable({
             scrollX: true,
             scroller: true,
+            "fnInitComplete": function (oSettings, json) {
+                $("#users").addClass("hide");
+            }
         });
 
         $('#submission_table').DataTable({
@@ -238,7 +241,6 @@
                 }
             ],
             "fnInitComplete": function (oSettings, json) {
-                $("#users").addClass("hide");
                 $("#submissions").addClass("hide");
             }
         }).on('draw', function() {

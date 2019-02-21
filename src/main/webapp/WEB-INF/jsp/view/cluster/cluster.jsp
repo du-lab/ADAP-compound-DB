@@ -78,7 +78,7 @@
         </table>
     </div>
 
-    <div id="spectrum_plot" align="center" class="hide">
+    <div id="spectrum_plot" align="center">
         <div id="plot" style="display: inline-block; vertical-align: top;" class="plot"></div>
 
         <div align="center" style="display: inline-block; vertical-align: top;">
@@ -106,7 +106,7 @@
         <div id='charts'></div>
     </div>
 
-    <div id="spectrum_list" align="center" class="hide">
+    <div id="spectrum_list" align="center">
         <table id="big_spectrum_table" class="display responsive">
             <thead>
             <tr>
@@ -159,7 +159,10 @@
             select: {style: 'single'},
             responsive: true,
             scrollX: true,
-            scroller: true
+            scroller: true,
+            "fnInitComplete": function (oSettings, json) {
+                $('#spectrum_plot').addClass("hide");
+            }
         });
 
         table.on('select', function (e, dt, type, indexes) {
@@ -173,7 +176,10 @@
         $('#big_spectrum_table').DataTable({
         	responsive: true,
             scrollX: true,
-            scroller: true
+            scroller: true,
+            "fnInitComplete": function (oSettings, json) {
+                $('#spectrum_list').addClass("hide");
+            }
         });
     });
 </script>

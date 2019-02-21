@@ -1,7 +1,7 @@
 function SpectrumPlot(divId, spectrum) {
 
-    var width = $('#' + divId).width();
-    var height = $('#' + divId).width();
+	var width = $('#' + divId).width();
+    var height = $('#' + divId).height();
     var label_offset = 40;
     var padding = {'top': 40, 'right': 40, 'bottom': 40, 'left': 40};
 
