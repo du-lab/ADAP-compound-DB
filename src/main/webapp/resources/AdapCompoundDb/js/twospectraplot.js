@@ -1,9 +1,13 @@
 function TwoSpectraPlot(divId, topSpectrum) {
 
-    var width = $('#' + divId).width();
+	var width = $('#' + divId).width();
     var height = $('#' + divId).height();
+    /*if(width > 600) {
+    	width = $('#' + divId).width();
+    	height = $('#' + divId).height();
+    }*/
     var label_offset = 40;
-    var padding = {'top': 40, 'right': 40, 'bottom': 240, 'left': 40};
+    var padding = {'top': 40, 'right': 40, 'bottom': 40, 'left': 40};
 
     var plotWidth = width - padding['left'] - padding['right'];
     var plotHeight = height - padding['top'] - padding['bottom'];

@@ -1,11 +1,11 @@
 function addPieChart(idName, dataset) {
 
-    var width = 320;
-    var height = 320;
+    var width = 280;
+    var height = 280;
     var radius = Math.min(width, height) / 2;
     var donutWidth = 75;
     var legendRectSize = 18;
-    var legendSpacing = 4;
+    var legendSpacing = 10;
 
     var total = d3.sum(dataset.map(function (d) {return d.count;}));
 
@@ -77,7 +77,7 @@ function addPieChart(idName, dataset) {
         .attr('transform', function (d, i) {
             var height = legendRectSize + legendSpacing;
             var offset = height * color.domain().length / 2;
-            var horz = -4 * legendRectSize;
+            var horz = -3 * legendRectSize;
             var vert = i * height - offset;
             return 'translate(' + horz + ', ' + vert + ')';
         });

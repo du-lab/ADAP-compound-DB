@@ -63,7 +63,7 @@
         </table>
     </div>
 
-    <div id="peaks" class="hide" align="center">
+    <div id="peaks" align="center">
         <div id="plot" style="" class="plot"></div>
         <div style="display: inline-block; max-width: 100%; vertical-align: top;">
             <table id="peak_table" class="display" style="width: 100%;">
@@ -120,7 +120,10 @@
             scroller: true,
             responsive: true,
             scrollX: true,
-            scroller: true
+            scroller: true,
+            "fnInitComplete": function (oSettings, json) {
+                $('#peaks').addClass("hide");
+            }
         });
 
         SpectrumPlot('plot', ${dulab:spectrumToJson(spectrum)});
