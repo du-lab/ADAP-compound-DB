@@ -394,3 +394,26 @@ ADD CONSTRAINT `Spectrum_SpectrumCluster_Id_fk`
   REFERENCES `spectrumcluster` (`id`)
   ON DELETE SET NULL
   ON UPDATE CASCADE;
+
+
+-- -----------------------------------------------------
+-- Add `feedback` table
+-- -----------------------------------------------------
+CREATE TABLE `feedback` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` TEXT NOT NULL,
+  `email` TEXT NOT NULL,
+  `affiliation` TEXT NULL,
+  `message` TEXT NOT NULL,
+  `submit_date` DATETIME NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE);
+
+
+DROP TRIGGER IF EXISTS `feedback_BEFORE_INSERT`;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` TRIGGER `feedback_BEFORE_INSERT` BEFORE INSERT ON `feedback` FOR EACH ROW BEGIN
+	SET NEW.submit_date = SYSDATE();
+END$$
+DELIMITER ;
