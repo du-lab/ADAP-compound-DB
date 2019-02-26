@@ -517,15 +517,23 @@ div.tabbed-pane span {
 .hide {
     display: none;
 }
+
 .fade {
     display: none;
 }
+
 progress {
   text-align: center;
 }
+
 progress:after {
   content: attr(value)'%';
 }
+
 .mobile {
     display: none !important;
+}
+
+.success-message {
+    color: #54ab79;
 }

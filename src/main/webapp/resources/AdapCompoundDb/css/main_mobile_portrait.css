@@ -552,3 +552,7 @@ progress:after {
 .desktop {
     display: none !important;
 }
+
+.success-message {
+    color: #54ab79;
+}

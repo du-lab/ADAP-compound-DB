@@ -36,7 +36,11 @@
         <h1>
             <i class="material-icons mobile" title="Menu" id="menu">view_headline</i>
             ADAP Spectral Library
+            <sup>Beta</sup>
         </h1>
+        <h2>
+            <a href="${pageContext.request.contextPath}/feedback"><button>Leave Feedback</button></a>
+        </h2>
 
         <c:if test="${currentUser != null}">
             <div class="user">User: ${currentUser.username} (<a href="<c:url value="/logout"/>">Log out</a>)</div>
