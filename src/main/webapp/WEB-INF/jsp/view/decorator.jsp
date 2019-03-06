@@ -38,10 +38,6 @@
             ADAP Spectral Library
             <sup>Beta</sup>
         </h1>
-        <h2>
-            <a href="${pageContext.request.contextPath}/feedback"><button>Leave Feedback</button></a>
-        </h2>
-
         <c:if test="${currentUser != null}">
             <div class="user">User: ${currentUser.username} (<a href="<c:url value="/logout"/>">Log out</a>)</div>
         </c:if>
@@ -58,8 +54,7 @@
                         <li><a href="<c:url value="/allClusters/" />"><i
                                 class="material-icons">equalizer</i>Spectra</a></li>
                         <c:if test="${currentUser == null}">
-                            <li><a href="<c:url value="/login/"/>"><i class="material-icons">person</i>Log-in
-                                / Sign-up</a></li>
+                            <li><a href="<c:url value="/login/"/>"><i class="material-icons">person</i>Log-in / Sign-up</a></li>
                         </c:if>
                         <c:if test="${currentUser != null}">
                             <c:if test="${dulab:isAdmin(currentUser)}">
@@ -74,6 +69,8 @@
                             <li><a href="<c:url value="/logout/"/>"><i class="material-icons">transit_enterexit</i>Log out</a>
                             </li>
                         </c:if>
+                            <li><a href="<c:url value="/feedback"/>">Leave Feedback</a>
+                        <li><a href="https://www.du-lab.org/" target="_blank">About us</a></li>
                     </ul>
                 </nav>
             </aside>

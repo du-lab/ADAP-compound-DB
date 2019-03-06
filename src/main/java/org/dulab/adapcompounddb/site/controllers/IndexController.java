@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Controller
@@ -56,6 +57,7 @@ public class IndexController extends BaseController {
 
     @Getter(value=AccessLevel.PUBLIC)
     @Setter(value=AccessLevel.PUBLIC)
+    @RequiredArgsConstructor
     public static class FeedbackForm {
 
         @NotBlank(message = "Please provide your Name.")
