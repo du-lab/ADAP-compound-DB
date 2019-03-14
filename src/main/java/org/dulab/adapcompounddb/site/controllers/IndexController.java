@@ -1,8 +1,8 @@
 package org.dulab.adapcompounddb.site.controllers;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 
+import org.dulab.adapcompounddb.models.dto.FeedbackDTO;
 import org.dulab.adapcompounddb.site.services.FeedbackService;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +11,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 @Controller
 public class IndexController extends BaseController {
@@ -39,36 +34,19 @@ public class IndexController extends BaseController {
 
     @RequestMapping(value = "/feedback", method = RequestMethod.GET)
     public String feedback(final Model model) {
-        model.addAttribute("feedbackForm", new FeedbackForm());
+        model.addAttribute("feedbackForm", new FeedbackDTO());
         return "feedback";
     }
 
     @RequestMapping(value = "/feedback", method = RequestMethod.POST)
-    public String feedback(final Model model, @Valid final FeedbackForm form, final Errors errors) {
+    public String feedback(final Model model, @Valid final FeedbackDTO form, final Errors errors) {
         if(errors.hasErrors()) {
             return "feedback";
         }
         feedbackService.saveFeedback(form);
 
-        model.addAttribute("feedbackForm", new FeedbackForm());
+        model.addAttribute("feedbackForm", new FeedbackDTO());
         model.addAttribute("status", successMessage);
         return "feedback";
-    }
-
-    @Getter(value=AccessLevel.PUBLIC)
-    @Setter(value=AccessLevel.PUBLIC)
-    @RequiredArgsConstructor
-    public static class FeedbackForm {
-
-        @NotBlank(message = "Please provide your Name.")
-        private String name;
-
-        private String affiliation;
-
-        @NotBlank(message = "Please provide your Email for contact.")
-        private String email;
-
-        @NotBlank(message = "Your Feedback Message is required.")
-        private String message;
     }
 }

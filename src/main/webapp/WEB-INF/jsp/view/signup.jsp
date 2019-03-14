@@ -33,7 +33,7 @@
                 <form:errors path="*" element="div" cssClass="errors"/>
                 <p>
                     <form:label path="username">Username:</form:label><br/>
-                    <form:input path="username"/>
+                    <form:input path="username" autofocus="autofocus" />
                 </p>
                 <p>
                     <span>

@@ -21,7 +21,7 @@
 
             <form:form method="POST" action="${pageContext.request.contextPath}/j_spring_security_check" modelAttribute="logInForm">
                 <form:label path="username">Username:</form:label><br/>
-                <form:input path="username"/><br/>
+                <form:input path="username" autofocus="autofocus" /><br/>
                 <form:errors path="username" cssClass="errors"/><br/>
                 <form:label path="password">Password:</form:label><br/>
                 <form:password path="password"/><br/>

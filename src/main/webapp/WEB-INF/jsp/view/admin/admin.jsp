@@ -13,6 +13,7 @@
         <span class="active" data-tab="tools">Tools</span>
         <span data-tab="users">All Users</span>
         <span data-tab="submissions">All Submissions</span>
+        <span data-tab="feedback">Feedback</span>
     </div>
 
     <div id="tools">
@@ -123,6 +124,22 @@
                     <th>User</th>
                     <th>Properties</th>
                     <th>Reference (Off/On)</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="feedback" class="">
+        <table id="feedback_table" class="display" style="width: 100%;">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Message</th>
+                    <th>By</th>
+                    <th>Date</th>
                     <th></th>
                 </tr>
             </thead>
@@ -252,6 +269,77 @@
             });
         });
 
+
+        $('#feedback_table').DataTable({
+            "order": [[3, "desc"]],
+            serverSide: true,
+            processing: true,
+            scrollX: true,
+            scroller: true,
+            ajax: {
+                url: "${pageContext.request.contextPath}/feedback/findAllFeedback.json",
+    
+                data: function (data) {
+                    data.column = data.order[0].column;
+                    data.sortDirection = data.order[0].dir;
+                    data.search = data.search["value"];
+                }
+            },
+            "columnDefs": [
+                {
+                    "targets": 0,
+                    "orderable": true,
+                    "data": "id"
+                },
+                {
+                    "targets": 1,
+                    "orderable": false,
+                    "render": function (data, type, row, meta) {
+                        msg = row.message;
+                        if(msg.length > 20) {
+                            msg = msg.substr(0, 20) + "...";
+                        }
+                        
+                        content = '<span title="' + row.message + '">'
+                                        + msg + '</span>';
+                        return content;
+                    }
+                },
+                {
+                    "targets": 2,
+                    "orderable": true,
+                    "render": function (data, type, row, meta) {
+                        content = row.name
+                                        + '<br/>'
+                                        + '<small>' + row.email + '<small>'
+                                        + '<br/>'
+                                        + '<small>Affiliation: ' + row.affiliation + '<small>';
+                        return content;
+                    }
+                },
+                {
+                    "targets": 3,
+                    "orderable": true,
+                    "render": function (data, type, row, meta) {
+                        content = row.submitDate;
+                        return content;
+                    }
+                },
+                {
+                    "targets": 4,
+                    "orderable": true,
+                    "render": function (data, type, row, meta) {
+                        content = '<a href="${pageContext.request.contextPath}/feedback/' + row.id + '/">' +
+                            '<i class="material-icons" title="View">&#xE5D3;</i>' +
+                            '</a>';
+                        return content;
+                    }
+                }
+            ],
+            "fnInitComplete": function (oSettings, json) {
+                $("#feedback").addClass("hide");
+            }
+        })
     });
 
     function updateReferenceOfAllSpectraOfSubmission(submissionId, reference) {

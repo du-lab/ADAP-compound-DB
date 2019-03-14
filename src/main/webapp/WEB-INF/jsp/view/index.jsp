@@ -72,12 +72,12 @@
     <div align="center">
         <div align="left" class="text large-subsection">
             <p>
-                This library is currently being actively developed by the Du-Lab team.
+                This library is currently being actively developed by the Du-Lab team (<a href="https://www.du-lab.org/" target="_blank"><strong>https://www.du-lab.org/</strong></a>).
             </p>
             <p>
                 If you encounter any issues
-                (which is quite possible) or would like to provide a feedback on your experience using ADAP Spectral
-                Library, please contact us through the email
+                (which is quite possible) or would like to provide a feedback on your experience using ADAP Spectral 
+                Library click <a href="feedback/"><strong>here</strong></a>,<br/>or please contact us through the email
                 <a href="mailto:dulab.binf@gmail.com">dulab.binf@gmail.com</a>.
             </p>
         </div>

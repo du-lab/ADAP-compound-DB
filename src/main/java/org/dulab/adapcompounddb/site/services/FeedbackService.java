@@ -2,15 +2,18 @@ package org.dulab.adapcompounddb.site.services;
 
 import javax.validation.Valid;
 
+import org.dulab.adapcompounddb.models.dto.DataTableResponse;
+import org.dulab.adapcompounddb.models.dto.FeedbackDTO;
 import org.dulab.adapcompounddb.models.entities.Feedback;
-import org.dulab.adapcompounddb.site.controllers.IndexController.FeedbackForm;
 
 public interface FeedbackService {
 
-    void saveFeedback(@Valid FeedbackForm form);
+    void saveFeedback(@Valid FeedbackDTO form);
 
     void sendFeedbackEmail(Feedback feedback);
 
+    DataTableResponse findAllFeedbackForResponse(String searchStr, Integer start, Integer length, Integer column,
+            String sortDirection);
 
     String htmlTemplate = "<html lang=\"en\" class=\"\">" +
             "" +
