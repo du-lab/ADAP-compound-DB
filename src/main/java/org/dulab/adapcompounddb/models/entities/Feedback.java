@@ -8,7 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.validation.constraints.NotBlank;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +19,7 @@ import lombok.Setter;
 @Setter
 public class Feedback implements Serializable {
 
-    private static final long serialVersionUID = 1L;@NotBlank(message = "The username is required.")
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +33,10 @@ public class Feedback implements Serializable {
 
     private String message;
 
+    @Temporal(TemporalType.DATE)
     @Column(name="submit_date")
     private Date submitDate;
 
+    @Column(name="read_flag")
+    private Boolean read;
 }

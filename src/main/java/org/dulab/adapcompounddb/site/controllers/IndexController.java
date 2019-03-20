@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class IndexController extends BaseController {
@@ -39,14 +40,16 @@ public class IndexController extends BaseController {
     }
 
     @RequestMapping(value = "/feedback", method = RequestMethod.POST)
-    public String feedback(final Model model, @Valid final FeedbackDTO form, final Errors errors) {
+    public ModelAndView feedback(final Model model, @Valid final FeedbackDTO form, final Errors errors) {
         if(errors.hasErrors()) {
-            return "feedback";
+            model.addAttribute("feedbackForm", form);
+            model.addAttribute("errors", errors.getFieldErrors());
+            return new ModelAndView("feedback");
         }
         feedbackService.saveFeedback(form);
 
         model.addAttribute("feedbackForm", new FeedbackDTO());
         model.addAttribute("status", successMessage);
-        return "feedback";
+        return new ModelAndView("feedback");
     }
 }

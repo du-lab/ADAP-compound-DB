@@ -15,6 +15,7 @@ public interface FeedbackService {
     DataTableResponse findAllFeedbackForResponse(String searchStr, Integer start, Integer length, Integer column,
             String sortDirection);
 
+    FeedbackDTO getFeedBackById(Integer id);
     String htmlTemplate = "<html lang=\"en\" class=\"\">" +
             "" +
             "<head>" +

@@ -156,7 +156,6 @@ public class AuthenticationController {
         return getHomeRedirect();
     }
 
-
     private ModelAndView getHomeRedirect() {
         return new ModelAndView(new RedirectView("/", true, false));
     }

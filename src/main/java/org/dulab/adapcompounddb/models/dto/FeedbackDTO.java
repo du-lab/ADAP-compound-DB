@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import javax.validation.constraints.NotBlank;
 
+import org.dulab.adapcompounddb.validation.Email;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,10 +25,13 @@ public class FeedbackDTO implements Serializable {
     private String affiliation;
 
     @NotBlank(message = "Please provide your Email for contact.")
+    @Email
     private String email;
 
     @NotBlank(message = "Your Feedback Message is required.")
     private String message;
 
     private String submitDate;
+
+    private Boolean read;
 }
