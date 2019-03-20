@@ -15,6 +15,15 @@
             We will address them asap.
         </p>
     </div>
+    <c:if test="${errors != null}">
+        <div class="errors" align="center">
+            <ul class="no-bullet-list">
+                <c:forEach items="${errors}" var="error">
+                    <li><c:out value="${error.defaultMessage}"/></li>
+                </c:forEach>
+            </ul>
+        </div>
+    </c:if>
     <div align="center">
         <div align="left" class="subsection">
             <form:form method="POST" modelAttribute="feedbackForm">

@@ -138,6 +138,7 @@
                 <tr>
                     <th>Id</th>
                     <th>Message</th>
+                    <th></th>
                     <th>By</th>
                     <th>Date</th>
                     <th></th>
@@ -161,8 +162,11 @@
 <script src="<c:url value="/resources/AdapCompoundDb/js/progressBar.js"/>"></script>
 <script type="text/javascript" src="<c:url value="/resources/AdapCompoundDb/js/tabs.js"/>"></script>
 <script>
-    var confirmDeleteDialog = $('#confirm-delete-dialog').confirmDeleteDialog();
+var confirmDeleteDialog = $('#confirm-delete-dialog').confirmDeleteDialog();
     var progressDialog = $('#progress-dialog').progressDialog();
+    var markRead = function(obj) {
+        $(obj).closest("tr").find("td:eq(2)").find("i").html("drafts");
+    };
 
     $(document).ready(function () {
         $('#cluster_table').DataTable();
@@ -300,13 +304,25 @@
                             msg = msg.substr(0, 20) + "...";
                         }
                         
-                        content = '<span title="' + row.message + '">'
+                        content = '<span title="' + row.message.substr(0, 500) + '">'
                                         + msg + '</span>';
                         return content;
                     }
                 },
                 {
                     "targets": 2,
+                    "orderable": false,
+                    "render": function (data, type, row, meta) {
+                        if(row.read) {
+                            content = '<i class="material-icons">drafts</i>';
+                        } else {
+                            content = '<i class="material-icons">mail</i>';
+                        }
+                        return content;
+                    }
+                },
+                {
+                    "targets": 3,
                     "orderable": true,
                     "render": function (data, type, row, meta) {
                         content = row.name
@@ -318,7 +334,7 @@
                     }
                 },
                 {
-                    "targets": 3,
+                    "targets": 4,
                     "orderable": true,
                     "render": function (data, type, row, meta) {
                         content = row.submitDate;
@@ -326,10 +342,10 @@
                     }
                 },
                 {
-                    "targets": 4,
+                    "targets": 5,
                     "orderable": true,
                     "render": function (data, type, row, meta) {
-                        content = '<a href="${pageContext.request.contextPath}/feedback/' + row.id + '/">' +
+                        content = '<a onclick="markRead(this);" target="_blank" href="${pageContext.request.contextPath}/admin/feedback/' + row.id + '/">' +
                             '<i class="material-icons" title="View">&#xE5D3;</i>' +
                             '</a>';
                         return content;

@@ -79,6 +79,10 @@ public class FeedbackServiceImpl implements FeedbackService {
         final ObjectMapperUtils objectMapper = new ObjectMapperUtils();
         return objectMapper.map(feedbackRepository.findById(id).get(), FeedbackDTO.class);
     }
+
+    @Override
+    public void markRead(final Integer id) {
+        feedbackRepository.markRead(id);
     }
 
     @Override

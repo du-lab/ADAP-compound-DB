@@ -16,6 +16,8 @@ public interface FeedbackService {
             String sortDirection);
 
     FeedbackDTO getFeedBackById(Integer id);
+
+    void markRead(Integer id);
     String htmlTemplate = "<html lang=\"en\" class=\"\">" +
             "" +
             "<head>" +
