@@ -115,6 +115,27 @@ aside li a:hover {
     box-shadow: 0 0 10px #bfbfbf; /*#e4e4e4*/
 }
 
+.feedback {
+    display: block;
+    text-decoration: none;
+    width: 80%;
+    height: 20px;
+    margin: 0px 10px;
+    padding: 10px;
+    border-radius: 10% 50% 50% 10%;
+    background: #ffffff;
+    color: #542410;
+    text-shadow: 0 0 5px #542410;
+    text-align: center;
+}
+
+.feedback:hover {
+    background: #542410;
+    color: #ffffff;
+    text-shadow: 0 0 5px #ffffff;
+    box-shadow: 0 0 10px #bfbfbf;
+}
+
 .side {
     width: 70%;
     position: fixed;
@@ -555,4 +576,8 @@ progress:after {
 
 .success-message {
     color: #54ab79;
+}
+
+.no-bullet-list {
+    list-style-type: none;
 }

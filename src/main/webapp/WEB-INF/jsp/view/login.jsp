@@ -11,13 +11,16 @@
             <p>You must log in to submit new mass spectra to the library.</p>
             <c:if test="${param['loginFailed']}">
                 <p class="errors">The username and password you entered are not correct. Please try again.</p><br/>
-            </c:if><c:if test="${validationErrors != null}"><div class="errors">
-                <ul>
-                    <c:forEach items="${validationErrors}" var="error">
-                        <li><c:out value="${error.message}"/></li>
-                    </c:forEach>
-                </ul>
-            </div></c:if>
+            </c:if>
+            <c:if test="${validationErrors != null}">
+                <div class="errors">
+                    <ul>
+                        <c:forEach items="${validationErrors}" var="error">
+                            <li><c:out value="${error.message}"/></li>
+                        </c:forEach>
+                    </ul>
+                </div>
+            </c:if>
 
             <form:form method="POST" action="${pageContext.request.contextPath}/j_spring_security_check" modelAttribute="logInForm">
                 <form:label path="username">Username:</form:label><br/>

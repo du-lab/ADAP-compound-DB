@@ -69,11 +69,11 @@
                             <li><a href="<c:url value="/logout/"/>"><i class="material-icons">transit_enterexit</i>Log out</a>
                             </li>
                         </c:if>
-                            <li><a href="<c:url value="/feedback"/>">Leave Feedback</a>
-                        <li><a href="https://www.du-lab.org/" target="_blank">About us</a></li>
+                        <%-- <li><a class="feedback" href="<c:url value="/feedback"/>">Leave Feedback</a></li> --%>
                     </ul>
                 </nav>
             </aside>
+            <a class="feedback" href="<c:url value="/feedback"/>"><strong>Leave Feedback</strong></a>
         </div>
 
         <div style="width: 100%;">
