@@ -2,7 +2,11 @@ package org.dulab.adapcompounddb.config;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.persistence.SharedCacheMode;
 import javax.persistence.ValidationMode;
 import javax.sql.DataSource;
@@ -95,5 +99,32 @@ public class ApplicationContextConfiguration {
     @Bean
     public PlatformTransactionManager jpaTransactionManager() {
         return new JpaTransactionManager(entityManagerFactoryBean().getObject());
+    }
+
+    @Bean("email_properties")
+    public Properties getEmailProperties() {
+        final Properties prop = new Properties();
+        try {
+            final Context initContext = new InitialContext();
+            final Context envContext  = (Context)initContext.lookup("java:/comp/env");
+
+            // Used for smtp properties
+            prop.put("mail.smtp.auth", true);
+            prop.put("mail.smtp.starttls.enable", "true");
+            prop.put("mail.smtp.host", envContext.lookup("email_smtp_host"));
+            prop.put("mail.smtp.port", envContext.lookup("email_smtp_port"));
+            prop.put("mail.smtp.ssl.trust", envContext.lookup("email_smtp_host"));
+
+            // Used for smtp authentication
+            prop.put("username", envContext.lookup("email_username"));
+            prop.put("password", envContext.lookup("email_password"));
+
+            // Used as a FROM/TO email addresses
+            prop.put("email_from", envContext.lookup("email_from"));
+            prop.put("email_to", envContext.lookup("email_to"));
+        } catch (final NamingException e) {
+        }
+
+        return prop;
     }
 }

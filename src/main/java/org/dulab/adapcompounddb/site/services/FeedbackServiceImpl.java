@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.services;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -18,24 +19,22 @@ import org.dulab.adapcompounddb.models.dto.FeedbackDTO;
 import org.dulab.adapcompounddb.models.entities.Feedback;
 import org.dulab.adapcompounddb.site.repositories.FeedbackRepository;
 import org.dulab.adapcompounddb.utils.ObjectMapperUtils;
-import org.springframework.context.annotation.Bean;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class FeedbackServiceImpl implements FeedbackService {
 
     private static final String DESC = "DESC";
-    private static final String TO_EMAIL = "nilanjan.mhatre@gmail.com";
-    private static final String FROM = "nmhatre@uncc.edu";
-    private static final String USERNAME = "";
-    private static final String PASSWORD = "";
-    private static final String SUBJECT = "ADAP ccompound Spectral library - You have received a new message";
-
     private final FeedbackRepository feedbackRepository;
+
+    private final Properties properties;
 
     private static enum ColumnInformation {
         ID(0, "id"), MESSAGE(1, "message"), NAME(2, "name"), DATE(3, "submitDate");
@@ -71,9 +70,12 @@ public class FeedbackServiceImpl implements FeedbackService {
         }
     }
 
-    public FeedbackServiceImpl(final FeedbackRepository feedbackRepository) {
+    public FeedbackServiceImpl(final FeedbackRepository feedbackRepository, @Qualifier("email_properties") final Properties properties) {
         super();
         this.feedbackRepository = feedbackRepository;
+        this.properties = properties;
+    }
+
     @Override
     public FeedbackDTO getFeedBackById(final Integer id) {
         final ObjectMapperUtils objectMapper = new ObjectMapperUtils();
@@ -89,26 +91,31 @@ public class FeedbackServiceImpl implements FeedbackService {
     public void saveFeedback(@Valid final FeedbackDTO form) {
         final ObjectMapperUtils objectMapper = new ObjectMapperUtils();
         final Feedback feedback = objectMapper.map(form, Feedback.class);
+        feedback.setRead(false);
+        final Date today = new Date();
+        feedback.setSubmitDate(today);
         feedbackRepository.save(feedback);
-        sendFeedbackEmail(feedback);
+        final Integer count = feedbackRepository.getFeedbackCountOfDay(today);
+        if(count < EMAIL_MAX_COUNT) {
+            sendFeedbackEmail(feedback);
+        }
     }
 
     @Override
     public void sendFeedbackEmail(final Feedback feedback) {
-        final Properties prop = getEmailProperties();
-        final Session session = Session.getInstance(prop, new Authenticator() {
+        final Session session = Session.getInstance(properties, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(USERNAME, PASSWORD);
+                return new PasswordAuthentication(properties.getProperty("username"), properties.getProperty("password"));
             }
         });
 
         try {
             final MimeMessage message = new MimeMessage(session);
 
-            message.setFrom(new InternetAddress(FROM));
-            message.addRecipient(Message.RecipientType.TO, new InternetAddress(TO_EMAIL));
-            message.setSubject(SUBJECT);
+            message.setFrom(new InternetAddress(properties.getProperty("email_from")));
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(properties.getProperty("email_to")));
+            message.setSubject(FeedbackService.SUBJECT);
             message.setContent(getHTMLMessage(feedback), "text/html");
 
             Transport.send(message);
@@ -122,18 +129,6 @@ public class FeedbackServiceImpl implements FeedbackService {
                 .replace("{email}", feedback.getEmail())
                 .replace("{affiliation}", feedback.getAffiliation())
                 .replace("{message}", feedback.getMessage());
-    }
-
-    @Bean
-    public Properties getEmailProperties() {
-        final Properties prop = new Properties();
-        prop.put("mail.smtp.auth", true);
-        prop.put("mail.smtp.starttls.enable", "true");
-        prop.put("mail.smtp.host", "email-smtp.us-east-1.amazonaws.com");
-        prop.put("mail.smtp.port", "25");
-        prop.put("mail.smtp.ssl.trust", "email-smtp.us-east-1.amazonaws.com");
-
-        return prop;
     }
 
     @Override

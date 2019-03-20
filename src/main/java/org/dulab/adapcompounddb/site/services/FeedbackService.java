@@ -18,6 +18,10 @@ public interface FeedbackService {
     FeedbackDTO getFeedBackById(Integer id);
 
     void markRead(Integer id);
+
+    // Email constants
+    int EMAIL_MAX_COUNT = 1500;
+    String SUBJECT = "ADAP ccompound Spectral library - You have received a new message";
     String htmlTemplate = "<html lang=\"en\" class=\"\">" +
             "" +
             "<head>" +
@@ -32,18 +36,23 @@ public interface FeedbackService {
             "      padding: 10px;" +
             "    }" +
             "" +
+            "    .title {" +
+            "      font-weight: bold;" +
+            "      padding: 5px;" +
+            "    }" +
+            "" +
             "    .container {" +
             "      width: 40%;" +
             "      padding: 10px;" +
             "      border: solid 1px #6c757d;" +
-            "      background-color: #49d889;" +
+            "      background-color: #b67960;" +
             "    }" +
             "" +
             "    .message {" +
             "      border: solid 1px #6c757d;" +
             "      padding: 10px;" +
-            "      background: #b67960;" +
             "      font-weight: bold;" +
+            "      font-size: 1.3em;" +
             "    }" +
             "    </style>" +
             "</head>" +
@@ -54,7 +63,7 @@ public interface FeedbackService {
             "" +
             "    <div class=\"container\">" +
             "      <div class=\"row\">" +
-            "        <div class=\"col\">" +
+            "        <div class=\"col title\">" +
             "          Name" +
             "        </div>" +
             "        <div class=\"col content\">" +
@@ -63,7 +72,7 @@ public interface FeedbackService {
             "      </div>" +
             "" +
             "      <div class=\"row\">" +
-            "        <div class=\"col\">" +
+            "        <div class=\"col title\">" +
             "          Email" +
             "        </div>" +
             "        <div class=\"col content\">" +
@@ -72,7 +81,7 @@ public interface FeedbackService {
             "      </div>" +
             "" +
             "      <div class=\"row\">" +
-            "        <div class=\"col\">" +
+            "        <div class=\"col title\">" +
             "          Affiliation" +
             "        </div>" +
             "        <div class=\"col content\">" +
@@ -81,7 +90,7 @@ public interface FeedbackService {
             "      </div>" +
             "" +
             "      <div class=\"row\">" +
-            "        <div class=\"col\">" +
+            "        <div class=\"col title\">" +
             "          Message" +
             "        </div>" +
             "      </div>" +
