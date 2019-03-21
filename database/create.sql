@@ -405,7 +405,8 @@ CREATE TABLE `feedback` (
   `email` TEXT NOT NULL,
   `affiliation` TEXT NULL,
   `message` TEXT NOT NULL,
-  `submit_date` DATETIME NULL,
+  `SubmitDate` DATETIME NULL,
+  `ReadFlag` DATETIME NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE);
 
@@ -414,6 +415,6 @@ DROP TRIGGER IF EXISTS `feedback_BEFORE_INSERT`;
 
 DELIMITER $$
 CREATE DEFINER=`root`@`localhost` TRIGGER `feedback_BEFORE_INSERT` BEFORE INSERT ON `feedback` FOR EACH ROW BEGIN
-	SET NEW.submit_date = SYSDATE();
+	SET NEW.SubmitDate = SYSDATE();
 END$$
 DELIMITER ;

@@ -91,7 +91,7 @@ public class FeedbackServiceImpl implements FeedbackService {
     public void saveFeedback(@Valid final FeedbackDTO form) {
         final ObjectMapperUtils objectMapper = new ObjectMapperUtils();
         final Feedback feedback = objectMapper.map(form, Feedback.class);
-        feedback.setRead(false);
+        feedback.setReadFlag(false);
         final Date today = new Date();
         feedback.setSubmitDate(today);
         feedbackRepository.save(feedback);

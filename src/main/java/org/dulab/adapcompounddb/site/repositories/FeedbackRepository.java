@@ -21,7 +21,7 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Integer> {
 
     @Modifying(clearAutomatically = true)
     @Query("UPDATE Feedback f "
-            + " SET f.read = True "
+            + " SET f.readFlag = True "
             + " WHERE f.id = :id")
     void markRead(@Param("id") Integer id);
 

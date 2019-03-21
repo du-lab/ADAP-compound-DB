@@ -3,7 +3,6 @@ package org.dulab.adapcompounddb.models.entities;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -34,9 +33,7 @@ public class Feedback implements Serializable {
     private String message;
 
     @Temporal(TemporalType.DATE)
-    @Column(name="submit_date")
     private Date submitDate;
 
-    @Column(name="read_flag")
-    private Boolean read;
+    private Boolean readFlag;
 }
