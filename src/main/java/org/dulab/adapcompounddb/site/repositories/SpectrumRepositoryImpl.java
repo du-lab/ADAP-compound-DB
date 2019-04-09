@@ -149,9 +149,9 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
     @Override
     public void savePeaksAndProperties(final Long spectrumId, final List<Peak> peaks, final List<SpectrumProperty> properties) {
-        final StringBuilder peakSql = new StringBuilder("INSERT INTO `peak`(" +
+        final StringBuilder peakSql = new StringBuilder("INSERT INTO `Peak`(" +
                 "`Mz`, `Intensity`, `SpectrumId`) VALUES ");
-        final StringBuilder propertySql = new StringBuilder("INSERT INTO `spectrumproperty`(" +
+        final StringBuilder propertySql = new StringBuilder("INSERT INTO `SpectrumProperty`(" +
                 "`SpectrumId`, `Name`, `Value`) VALUES ");
 
         final String peakValueString = "(%f, %f, %d)";
