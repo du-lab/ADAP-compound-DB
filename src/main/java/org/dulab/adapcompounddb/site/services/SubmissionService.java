@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import javax.validation.constraints.NotNull;
 
+import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.entities.Submission;
@@ -47,4 +48,6 @@ public interface SubmissionService {
     List<String> findTagsFromACluster(Long clusterId);
 
     Map<String, List<String>> groupTags(List<String> tags);
+
+    ChromatographyType getChromatographyTypeBySubmissionId(Long submissionId);
 }

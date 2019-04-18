@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -134,6 +136,29 @@ public class SearchController {
         return searchGet(spectrum, UserPrincipal.from(session), model);
     }
 
+    @RequestMapping(value = "/search/{submissionId}/", method = RequestMethod.GET)
+    public String searchAllSpectrum(@PathVariable(name="submissionId", required=false) final long submissionId, final HttpSession session, final Model model) {
+        final SearchForm form = new SearchForm();
+        form.setAvailableTags(submissionService.findAllTags());
+        final Submission submission = submissionService.findSubmission(submissionId);
+
+        model.addAttribute("searchForm", form);
+        model.addAttribute("submission", submission);
+        return "submission/match";
+    }
+
+    @RequestMapping(value = "/search/{submissionId:\\d+}/", method = RequestMethod.POST)
+    public ModelAndView searchAllSpectrum(@PathVariable("submissionId") final long submissionId,
+            final HttpSession session, final Model model, @Valid final SearchForm form, final Errors errors) {
+
+        if (errors.hasErrors()) {
+            return new ModelAndView("file/match");
+        }
+        final Submission submission = submissionService.findSubmission(submissionId);
+
+        return searchPost(submission, UserPrincipal.from(session), form, model, errors);
+    }
+
     private String searchGet(final Spectrum querySpectrum, final UserPrincipal user, final Model model) {
 
         final SearchForm form = new SearchForm();
@@ -234,6 +259,49 @@ public class SearchController {
         model.addAttribute("form", form);
 
         return new ModelAndView("file/match");
+    }
+
+    private ModelAndView searchPost(final Submission submission, final UserPrincipal user,
+            final SearchForm form, @Valid final Model model, final Errors errors) {
+
+        if (errors.hasErrors()) {
+            model.addAttribute("submission", submission);
+            return new ModelAndView("file/match");
+        }
+
+        final SpectrumSearchService service =
+                spectrumSearchServiceMap.get(submissionService.getChromatographyTypeBySubmissionId(submission.getId()));
+
+        final QueryParameters parameters = new QueryParameters();
+        parameters.setScoreThreshold(form.isScoreThresholdCheck() ? form.getFloatScoreThreshold() : null);
+        parameters.setMzTolerance(form.isScoreThresholdCheck() ? form.getMzTolerance() : null);
+        parameters.setPrecursorTolerance(form.isMassToleranceCheck() ? form.getMassTolerance() : null);
+        parameters.setRetTimeTolerance(form.isRetTimeToleranceCheck() ? form.getRetTimeTolerance() : null);
+
+        final String tags = form.getTags();
+        parameters.setTags(
+                tags != null && tags.length() > 0 ?
+                        new HashSet<>(Arrays.asList(tags.split(",")))
+                        : null);
+
+        final List<SpectrumMatch> matches = new ArrayList<>();
+        final Set<Spectrum> spectra = new HashSet<>(spectrumService.findSpectrumBySubmissionId(submission.getId()));
+        Set<Long> spectraIdList = spectra.stream().map(s -> s.getId()).collect(Collectors.toSet());
+        parameters.addExludeSpectra(spectraIdList);
+        List<SpectrumMatch> currentMatches = null;
+        for(final Spectrum s: spectra) {
+            currentMatches = service.search(s, parameters);
+            spectraIdList = currentMatches.stream().map(m -> m.getMatchSpectrum().getId()).collect(Collectors.toSet());
+            parameters.addExludeSpectra(spectraIdList);
+            matches.addAll(currentMatches);
+        }
+
+        model.addAttribute("matches", matches);
+
+        model.addAttribute("submission", submission);
+        model.addAttribute("form", form);
+
+        return new ModelAndView("submission/match");
     }
 
 

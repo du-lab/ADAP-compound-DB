@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
@@ -252,5 +253,10 @@ public class SubmissionServiceImpl implements SubmissionService {
         });
 
         return tagMap;
+    }
+
+    @Override
+    public ChromatographyType getChromatographyTypeBySubmissionId(final Long submissionId) {
+        return submissionCategoryRepository.getChromatographyTypeBySubmissionId(submissionId);
     }
 }

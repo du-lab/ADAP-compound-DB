@@ -68,7 +68,8 @@
 </section>
 
 <div style="text-align: center;">
-    <a href="clear/" class="button">Clear</a>
+    <a href="clear/" class="button" style="text-align: center;">Clear</a>
+    <a href="${pageContext.request.contextPath}/search/${submission.id}/" class="button" style="text-align: right;">Search all spectra</a>
 </div>
 
 <script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>

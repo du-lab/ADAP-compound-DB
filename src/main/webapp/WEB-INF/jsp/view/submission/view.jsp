@@ -123,12 +123,13 @@
     </div>
 </section>
 
-<c:if test="${submissionForm.id == 0}">
-    <div align="center">
-    <!-- <div style="text-align: right; margin-right: 40px;"> -->
-        <a href="clear/" class="button">Clear</a>
-    </div>
-</c:if>
+<div align="center">
+    <c:if test="${submissionForm.id == 0}">
+        <!-- <div style="text-align: right; margin-right: 40px;"> -->
+            <a href="clear/" class="button">Clear</a>
+    </c:if>
+    <a href="${pageContext.request.contextPath}/search/${submission.id}/" class="button" style="text-align: right;">Search all spectra</a>
+</div>
 
 <script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
 <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>

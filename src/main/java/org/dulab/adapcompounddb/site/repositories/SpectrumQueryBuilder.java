@@ -13,7 +13,7 @@ public class SpectrumQueryBuilder {
 
     private final ChromatographyType chromatographyType;
 
-    private final Set<Spectrum> excludeSpectra;
+    private final Set<Long> excludeSpectra;
 
     private Range precursorRange = null;
 
@@ -28,9 +28,9 @@ public class SpectrumQueryBuilder {
     private double scoreThreshold;
 
 
-    public SpectrumQueryBuilder(SearchType searchType,
-                                ChromatographyType chromatographyType,
-                                Set<Spectrum> excludeSpectra) {
+    public SpectrumQueryBuilder(final SearchType searchType,
+            final ChromatographyType chromatographyType,
+            final Set<Long> excludeSpectra) {
 
         this.searchType = searchType;
         this.chromatographyType = chromatographyType;
@@ -41,24 +41,24 @@ public class SpectrumQueryBuilder {
     // ***** Setters *****
     // *******************
 
-    public SpectrumQueryBuilder setPrecursorRange(double precursor, double tolerance) {
+    public SpectrumQueryBuilder setPrecursorRange(final double precursor, final double tolerance) {
         this.precursorRange = new Range(precursor - tolerance, precursor + tolerance);
         return this;
     }
 
-    public SpectrumQueryBuilder setRetentionTimeRange(double retentionTime, double tolerance) {
+    public SpectrumQueryBuilder setRetentionTimeRange(final double retentionTime, final double tolerance) {
         this.retentionTimeRange = new Range(retentionTime - tolerance, retentionTime + tolerance);
         return this;
     }
 
-    public SpectrumQueryBuilder setSpectrum(Spectrum spectrum, double mzTolerance, double scoreThreshold) {
+    public SpectrumQueryBuilder setSpectrum(final Spectrum spectrum, final double mzTolerance, final double scoreThreshold) {
         this.spectrum = spectrum;
         this.mzTolerance = mzTolerance;
         this.scoreThreshold = scoreThreshold;
         return this;
     }
 
-    public SpectrumQueryBuilder setTags(Set<String> tags) {
+    public SpectrumQueryBuilder setTags(final Set<String> tags) {
         this.tags = tags;
         return this;
     }
@@ -69,46 +69,51 @@ public class SpectrumQueryBuilder {
         // Library spectra selection
         // -------------------------
 
-        StringBuilder librarySelectionBuilder = new StringBuilder();
+        final StringBuilder librarySelectionBuilder = new StringBuilder();
 
         switch (searchType) {
 
-            case CLUSTERING:
-                librarySelectionBuilder.append("Consensus IS FALSE AND Reference IS FALSE");
-                break;
+        case CLUSTERING:
+            librarySelectionBuilder.append("Consensus IS FALSE AND Reference IS FALSE");
+            break;
 
-            case SIMILARITY_SEARCH:
-            default:
-                librarySelectionBuilder.append("(Consensus IS TRUE OR Reference IS TRUE)");
+        case SIMILARITY_SEARCH:
+        default:
+            librarySelectionBuilder.append("(Consensus IS TRUE OR Reference IS TRUE)");
         }
 
         librarySelectionBuilder.append(
                 String.format(" AND ChromatographyType = \"%s\"", chromatographyType));
 
-        if (precursorRange != null)
+        if (precursorRange != null) {
             librarySelectionBuilder.append(
                     String.format(" AND Precursor > %f AND Precursor < %f",
                             precursorRange.getStart(), precursorRange.getEnd()));
+        }
 
-        if (retentionTimeRange != null)
+        if (retentionTimeRange != null) {
             librarySelectionBuilder.append(
                     String.format(" AND RetentionTime > %f AND RetentionTime < %f",
                             retentionTimeRange.getStart(), retentionTimeRange.getEnd()));
+        }
 
-        if (excludeSpectra != null)
+        if (excludeSpectra != null) {
             librarySelectionBuilder.append(
                     String.format(" AND SpectrumId NOT IN (%s)",
-                            excludeSpectra.stream()
-                                    .map(s -> Long.toString(s.getId()))
-                                    .distinct()
-                                    .collect(Collectors.joining(","))));
+                            excludeSpectra
+                            .stream()
+                            .map(l -> l.toString())
+                            .collect(Collectors.joining(","))));
 
-        if (tags != null)
+        }
+
+        if (tags != null) {
             librarySelectionBuilder.append(
                     String.format(" AND (%s)",
                             tags.stream()
-                                    .map(t -> String.format("SubmissionTagName = \"%s\"", t))
-                                    .collect(Collectors.joining(" OR "))));
+                            .map(t -> String.format("SubmissionTagName = \"%s\"", t))
+                            .collect(Collectors.joining(" OR "))));
+        }
 
         // --------------------------------
         // End of library spectra selection
@@ -119,17 +124,16 @@ public class SpectrumQueryBuilder {
         // -----------------------
 
         String query;
-        if (spectrum == null)
+        if (spectrum == null) {
             query = "SELECT DISTINCT SpectrumId, 0 AS Score FROM Peak\n";
-
-        else {
+        } else {
             query = "SELECT SpectrumId, POWER(SUM(Product), 2) AS Score FROM (\n";  // 0 AS Id, NULL AS QuerySpectrumId, SpectrumId AS MatchSpectrumId
 
             query += spectrum.getPeaks()
                     .stream()
                     .map(p -> String.format("\tSELECT SpectrumId, MAX(SQRT(Intensity * %f)) AS Product " +
-                                    "FROM Peak, Spectrum " +
-                                    "WHERE Peak.SpectrumId = Spectrum.Id AND Peak.Mz > %f AND Peak.Mz < %f AND %s GROUP BY SpectrumId\n",
+                            "FROM Peak, Spectrum " +
+                            "WHERE Peak.SpectrumId = Spectrum.Id AND Peak.Mz > %f AND Peak.Mz < %f AND %s GROUP BY SpectrumId\n",
                             p.getIntensity(),
                             p.getMz() - mzTolerance,
                             p.getMz() + mzTolerance,
@@ -153,7 +157,7 @@ public class SpectrumQueryBuilder {
         private final double start;
         private final double end;
 
-        public Range(double start, double end) {
+        public Range(final double start, final double end) {
             this.start = start;
             this.end = end;
         }

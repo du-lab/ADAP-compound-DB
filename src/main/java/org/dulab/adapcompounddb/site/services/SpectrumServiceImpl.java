@@ -164,4 +164,10 @@ public class SpectrumServiceImpl implements SpectrumService {
     public Boolean updateReferenceOfAllSpectraOfSubmission(final Long submissionId, final boolean value) {
         return spectrumRepository.updateReferenceOfAllSpectraOfSubmission(submissionId, value) == 1;
     }
+
+    @Override
+    public List<Spectrum> findSpectrumBySubmissionId(final Long submissionId) {
+        // TODO Auto-generated method stub
+        return spectrumRepository.findSpectrumBySubmissionId(submissionId);
+    }
 }

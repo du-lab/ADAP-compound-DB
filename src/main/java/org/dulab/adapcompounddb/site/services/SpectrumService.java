@@ -1,5 +1,7 @@
 package org.dulab.adapcompounddb.site.services;
 
+import java.util.List;
+
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.Submission;
@@ -12,6 +14,8 @@ public interface SpectrumService {
 
     DataTableResponse findSpectrumBySubmissionId(Long submissionId, String searchStr, Integer start, Integer length,
             Integer column, String orderDirection);
+
+    List<Spectrum> findSpectrumBySubmissionId(Long submissionId);
 
     long countConsensusSpectra();
 
