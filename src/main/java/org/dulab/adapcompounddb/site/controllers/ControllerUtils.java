@@ -1,12 +1,8 @@
 package org.dulab.adapcompounddb.site.controllers;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -18,11 +14,7 @@ import javax.validation.constraints.NotBlank;
 import org.apache.commons.collections.CollectionUtils;
 import org.dulab.adapcompounddb.models.UserRole;
 import org.dulab.adapcompounddb.models.dto.TagInfo;
-import org.dulab.adapcompounddb.models.entities.File;
-import org.dulab.adapcompounddb.models.entities.Peak;
-import org.dulab.adapcompounddb.models.entities.Spectrum;
-import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
-import org.dulab.adapcompounddb.models.entities.SubmissionTag;
+import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.services.SpectrumClusterer;
 import org.dulab.adapcompounddb.utils.MathUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -198,58 +190,104 @@ public class ControllerUtils {
 
     public static List<TagInfo> getDiversityIndices(final List<Spectrum> spectra) {
 
-        final List<String> tagList = new ArrayList<>();
+        // Find unique keys among all tags of all spectra
+        final List<String> keys = spectra.stream()
+                .flatMap(s -> getTags(s).stream())
+                .map(t -> {
+                    String[] values = t.split(":");
+                    if (values.length >= 2)
+                        return values[0].trim();
+                    else
+                        return null;
+                })
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
 
-        for(final Spectrum s: spectra) {
-        	if(s.getFile() != null &&
-        			s.getFile().getSubmission() != null &&
-        			CollectionUtils.isNotEmpty(s.getFile().getSubmission().getTags())) {
-	            for(final SubmissionTag tag: s.getFile().getSubmission().getTags()) {
-	                tagList.add(tag.getId().getName());
-	            }
-        	}
+
+        // For each key, find its values and their count
+        List<TagInfo> tagInfoList = new ArrayList<>(keys.size());
+        for (String key : keys) {
+
+            Map<String, Integer> countMap = new HashMap<>();
+            for (Spectrum spectrum : spectra) {
+
+                List<String> tagValues = getTags(spectrum).stream()
+                        .map(t -> {
+                            String[] values = t.split(":");
+                            if (values.length < 2 || !values[0].trim().equalsIgnoreCase(key))
+                                return null;
+
+                            return values[1].trim();
+                        })
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+
+                if (tagValues.isEmpty())
+                    countMap.compute("undefined", (k, v) -> (v == null) ? 1 : v + 1);
+                else {
+                    for (String value : tagValues)
+                        countMap.compute(value, (k, v) -> (v == null) ? 1 : v + 1);
+                }
+
+            }
+
+            // Save values and their counts to TagInfo
+            TagInfo tagInfo = new TagInfo();
+            tagInfo.setName(key);
+            tagInfo.setCountMap(countMap);
+            tagInfo.setDiversity(getDiversity(countMap));
+
+            tagInfoList.add(tagInfo);
         }
 
-        final Map<String, List<String>> tagMap = new HashMap<>(); // source:<src1, src2, src1, src2>
-
-        tagList.forEach(tag -> {
-            final String[] arr = tag.split(":", 2);
-            if(arr.length == 2) {
-                final String key = arr[0].trim();
-                final String value = arr[1].trim();
-
-                List<String> valueList = tagMap.get(key);
-                if(CollectionUtils.isEmpty(valueList)) {
-                    valueList = new ArrayList<>();
-                    tagMap.put(key, valueList);
-                }
-                valueList.add(value);
-            }
-        });
-        final List<TagInfo> tagInfoList = new ArrayList<>();
-
-        for(final Entry<String, List<String>> entry : tagMap.entrySet()) {
-            final TagInfo tagInfo = new TagInfo();
-            final double diversity = MathUtils.diversityIndex(entry.getValue());
-            //            diversityMap.put(entry.getKey(), diversity);
-
-            tagInfo.setName(entry.getKey());
-            tagInfo.setDiversity(diversity);
-
-            final Map<String, Integer> countMap = new HashMap<>();
-            entry.getValue().forEach(tag -> {
-                Integer count = countMap.get(tag);
-                if(count == null) {
-                    count = 0;
-                }
-                count++;
-                countMap.put(tag, count);
-            });
-            tagInfo.setCountMap(countMap);
-            tagInfoList.add(tagInfo);
-        };
-
         return tagInfoList;
+    }
+
+
+    private static List<String> getTags(Spectrum spectrum) {
+
+        if (spectrum.getFile() != null && spectrum.getFile().getSubmission() != null) {
+
+            List<SubmissionTag> tags = spectrum.getFile().getSubmission().getTags();
+            return tags.stream()
+                    .map(SubmissionTag::getId)
+                    .map(SubmissionTagId::getName)
+                    .collect(Collectors.toList());
+        }
+
+        return new ArrayList<>(0);
+    }
+
+    private static double getDiversity(Map<String, Integer> countMap) {
+
+        Collection<Integer> counts = countMap.values();
+
+        int total = counts.stream()
+                .mapToInt(Integer::intValue)
+                .sum();
+
+        double enthropy = -1 * counts.stream()
+                .mapToDouble(Integer::doubleValue)
+                .map(c -> c / total)
+                .map(p -> p * Math.log(p))
+                .sum();
+
+        return Math.exp(enthropy);
+    }
+
+    private static TagInfo stringToTagInfoWithName(String tag) {
+
+        if (tag == null) return null;
+
+        String[] values = tag.split(":");
+        if (values.length < 2)
+            return null;
+
+        TagInfo tagInfo = new TagInfo();
+        tagInfo.setName(values[0].trim());
+
+        return tagInfo;
     }
 
     public static String jsonToHtml(final JsonArray jsonArray) {
