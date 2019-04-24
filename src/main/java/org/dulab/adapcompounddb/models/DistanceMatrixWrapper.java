@@ -23,6 +23,7 @@ public class DistanceMatrixWrapper implements Matrix {
 
     private Page<SpectrumMatch> page;
     private Iterator<SpectrumMatch> iterator;
+    private long totalElements;
 
     public DistanceMatrixWrapper(final Function<Pageable, Page<SpectrumMatch>> function, final List<Spectrum> spectra) {
         this.function = function;
@@ -36,6 +37,7 @@ public class DistanceMatrixWrapper implements Matrix {
     public void init() {
         page = function.apply(PageRequest.of(0, PAGE_SIZE));
         iterator = page.iterator();
+        totalElements = page.getTotalElements();
     }
 
     @Override
@@ -45,7 +47,8 @@ public class DistanceMatrixWrapper implements Matrix {
 
     @Override
     public int getNumElements() {
-        return (int) page.getTotalElements();
+//        return (int) page.getTotalElements();
+        return (int) totalElements;
     }
 
     @Override
