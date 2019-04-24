@@ -2,6 +2,7 @@ package org.dulab.adapcompounddb.site.repositories;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -10,11 +11,7 @@ import javax.persistence.TypedQuery;
 
 import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
-import org.dulab.adapcompounddb.models.entities.File;
-import org.dulab.adapcompounddb.models.entities.Peak;
-import org.dulab.adapcompounddb.models.entities.Spectrum;
-import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
-import org.dulab.adapcompounddb.models.entities.SpectrumProperty;
+import org.dulab.adapcompounddb.models.entities.*;
 
 public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
@@ -45,10 +42,9 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
         final String sqlQuery = queryBuilder.build();
 
-        @SuppressWarnings("unchecked")
-        final List<Object[]> resultList = entityManager
-        .createNativeQuery(sqlQuery, "SpectrumScoreMapping")
-        .getResultList();
+        @SuppressWarnings("unchecked") final List<Object[]> resultList = entityManager
+                .createNativeQuery(sqlQuery, "SpectrumScoreMapping")
+                .getResultList();
 
         final List<SpectrumMatch> matches = new ArrayList<>();
         for (final Object[] objects : resultList) {
@@ -75,12 +71,12 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         final String peakValueString = "(%f, %f, %d)";
         final String propertyValueString = "(%d, %s, %s)";
 
-        for(int i=0; i<spectrumList.size(); i++) {
+        for (int i = 0; i < spectrumList.size(); i++) {
             final List<Peak> peaks = spectrumList.get(i).getPeaks();
             final List<SpectrumProperty> properties = spectrumList.get(i).getProperties();
 
-            for(int j=0; j<peaks.size(); j++) {
-                if(i != 0 || j != 0) {
+            for (int j = 0; j < peaks.size(); j++) {
+                if (i != 0 || j != 0) {
                     peakSql.append(COMMA);
                 }
                 final Peak p = peaks.get(j);
@@ -88,8 +84,8 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                 peakSql.append(String.format(peakValueString, p.getMz(), p.getIntensity(), savedSpectrumIdList.get(i)));
             }
 
-            for(int j=0; j<properties.size(); j++) {
-                if(i != 0 || j != 0) {
+            for (int j = 0; j < properties.size(); j++) {
+                if (i != 0 || j != 0) {
                     propertySql.append(COMMA);
                 }
                 final SpectrumProperty sp = properties.get(j);
@@ -113,11 +109,11 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                 ") VALUES ");
         final String propertyValueString = "(%s, %f, %f, %f, %s, %d)";
 
-        for(int i=0; i<fileList.size(); i++) {
+        for (int i = 0; i < fileList.size(); i++) {
             final List<Spectrum> spectra = fileList.get(i).getSpectra();
             spectrumList.addAll(spectra);
-            for(int j=0; j<spectra.size(); j++) {
-                if(i != 0 || j != 0) {
+            for (int j = 0; j < spectra.size(); j++) {
+                if (i != 0 || j != 0) {
                     insertSql.append(COMMA);
                 }
                 final Spectrum spectrum = spectra.get(j);
@@ -129,7 +125,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                         spectrum.getSignificance(),
                         DOUBLE_QUOTE + spectrum.getChromatographyType().name() + DOUBLE_QUOTE,
                         savedFileIdList.get(i)
-                        ));
+                ));
             }
         }
         final Query insertQuery = entityManager.createNativeQuery(insertSql.toString());
@@ -158,8 +154,8 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         final String propertyValueString = "(%d, %s, %s)";
 
 
-        for(int j=0; j<peaks.size(); j++) {
-            if(j != 0) {
+        for (int j = 0; j < peaks.size(); j++) {
+            if (j != 0) {
                 peakSql.append(COMMA);
             }
             final Peak p = peaks.get(j);
@@ -167,8 +163,8 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
             peakSql.append(String.format(peakValueString, p.getMz(), p.getIntensity(), spectrumId));
         }
 
-        for(int j=0; j<properties.size(); j++) {
-            if(j != 0) {
+        for (int j = 0; j < properties.size(); j++) {
+            if (j != 0) {
                 propertySql.append(COMMA);
             }
             final SpectrumProperty sp = properties.get(j);
@@ -179,5 +175,23 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         peakQuery.executeUpdate();
         final Query propertyQuery = entityManager.createNativeQuery(propertySql.toString());
         propertyQuery.executeUpdate();
+    }
+
+    @Override
+    public void updateSpectraInCluster(final SpectrumCluster cluster) {
+
+        StringBuilder sqlBuilder = new StringBuilder("UPDATE Spectrum ");
+        sqlBuilder.append(String.format("SET ClusterId = %d WHERE ", cluster.getId()));
+        sqlBuilder.append(
+                cluster.getSpectra()
+                        .stream()
+                        .map(Spectrum::getId)
+                        .map(id -> String.format("Id = %d", id))
+                        .collect(Collectors.joining(" OR ")));
+
+        String sqlQuery = sqlBuilder.toString();
+
+        Query nativeQuery = entityManager.createNativeQuery(sqlQuery);
+        nativeQuery.executeUpdate();
     }
 }

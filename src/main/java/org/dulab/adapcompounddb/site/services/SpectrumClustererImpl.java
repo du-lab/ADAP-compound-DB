@@ -151,6 +151,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
                         spectrumClusterRepository.save(cluster);
                         spectrumRepository.savePeaksAndProperties(consensusSpectrum.getId(), peaks, properties);
+                        spectrumRepository.updateSpectraInCluster(cluster);
                     }
                     progress = step*count/total + step*i;
                 }
@@ -169,7 +170,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
         final SpectrumCluster cluster = new SpectrumCluster();
         final List<Spectrum> spectra = spectrumIds.stream()
                 .map(this::findSpectrum)
-                .peek(s -> s.setCluster(cluster))
+//                .peek(s -> s.setCluster(cluster))
                 .collect(Collectors.toList());
 
         cluster.setSpectra(spectra);
@@ -185,7 +186,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                 .orElse(0.0));
 
         // Calculate the significance statistics
-        final DoubleSummaryStatistics significanceStats = cluster.getSpectra()
+        final DoubleSummaryStatistics significanceStats = spectra
                 .stream()
                 .map(Spectrum::getSignificance)
                 .filter(Objects::nonNull)
@@ -200,7 +201,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
         // Calculate diversity
         // setDiversityIndices(cluster);
-        final List<TagInfo> tagInfoList = ControllerUtils.getDiversityIndices(cluster.getSpectra());
+        final List<TagInfo> tagInfoList = ControllerUtils.getDiversityIndices(spectra);
 
         if (!tagInfoList.isEmpty()) {
             Double minDiversity = Double.MAX_VALUE;
