@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.site.repositories;
 
 import java.util.List;
+import java.util.Set;
 
 import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
@@ -16,5 +17,5 @@ public interface SpectrumRepositoryCustom {
 
     void savePeaksAndProperties(Long spectrumId, List<Peak> peaks, List<SpectrumProperty> properties);
 
-    void updateSpectraInCluster(final SpectrumCluster cluster);
+    void updateSpectraInCluster(final long clusterId, final Set<Long> spectrumIds);
 }

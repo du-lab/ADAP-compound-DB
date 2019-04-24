@@ -2,6 +2,7 @@ package org.dulab.adapcompounddb.site.repositories;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -178,16 +179,14 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     }
 
     @Override
-    public void updateSpectraInCluster(final SpectrumCluster cluster) {
+    public void updateSpectraInCluster(final long clusterId, final Set<Long> spectrumIds) {
 
         StringBuilder sqlBuilder = new StringBuilder("UPDATE Spectrum ");
-        sqlBuilder.append(String.format("SET ClusterId = %d WHERE ", cluster.getId()));
-        sqlBuilder.append(
-                cluster.getSpectra()
-                        .stream()
-                        .map(Spectrum::getId)
-                        .map(id -> String.format("Id = %d", id))
-                        .collect(Collectors.joining(" OR ")));
+        sqlBuilder.append(String.format("SET ClusterId = %d WHERE ", clusterId));
+        sqlBuilder.append(spectrumIds
+                .stream()
+                .map(id -> String.format("Id = %d", id))
+                .collect(Collectors.joining(" OR ")));
 
         String sqlQuery = sqlBuilder.toString();
 

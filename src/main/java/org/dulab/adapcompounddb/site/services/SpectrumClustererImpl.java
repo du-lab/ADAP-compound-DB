@@ -151,7 +151,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
                         spectrumClusterRepository.save(cluster);
                         spectrumRepository.savePeaksAndProperties(consensusSpectrum.getId(), peaks, properties);
-                        spectrumRepository.updateSpectraInCluster(cluster);
+                        spectrumRepository.updateSpectraInCluster(cluster.getId(), spectrumIds);
                     }
                     progress = step*count/total + step*i;
                 }
@@ -173,7 +173,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 //                .peek(s -> s.setCluster(cluster))
                 .collect(Collectors.toList());
 
-        cluster.setSpectra(spectra);
+//        cluster.setSpectra(spectra);
         cluster.setSize(spectra.size());
 
         // Calculate diameter
