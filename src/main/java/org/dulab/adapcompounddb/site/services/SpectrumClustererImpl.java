@@ -197,6 +197,8 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 //                .peek(s -> s.setCluster(cluster))
                 .collect(Collectors.toList());
 
+        LOGGER.info("\t\tSpectra are collected");
+
 //        cluster.setSpectra(spectra);
         cluster.setSize(spectra.size());
 
@@ -209,6 +211,8 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                 .min()
                 .orElse(0.0));
 
+        LOGGER.info("\t\tDiameter is calculated");
+
         // Calculate the significance statistics
         final DoubleSummaryStatistics significanceStats = spectra
                 .stream()
@@ -216,6 +220,8 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                 .filter(Objects::nonNull)
                 .map(Math::abs)
                 .collect(Collectors.summarizingDouble(Double::doubleValue));
+
+        LOGGER.info("\t\tStatistics is calculated");
 
         if (significanceStats.getCount() > 0) {
             cluster.setAveSignificance(significanceStats.getAverage());
@@ -226,6 +232,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
         // Calculate diversity
         // setDiversityIndices(cluster);
         final List<TagInfo> tagInfoList = ControllerUtils.getDiversityIndices(spectra);
+        LOGGER.info("\t\tDiversity is calculated");
 
         if (!tagInfoList.isEmpty()) {
             Double minDiversity = Double.MAX_VALUE;
@@ -251,6 +258,8 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
         final Spectrum consensusSpectrum = createConsensusSpectrum(spectra, mzTolerance);
         consensusSpectrum.setCluster(cluster);
         cluster.setConsensusSpectrum(consensusSpectrum);
+
+        LOGGER.info("\t\tConsensus spectrum is created");
 
         return cluster;
     }
