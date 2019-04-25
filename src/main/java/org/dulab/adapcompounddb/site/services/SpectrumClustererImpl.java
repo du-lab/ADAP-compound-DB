@@ -134,6 +134,9 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                 LOGGER.info(String.format("Saving new clusters of type \"%s\" to the database...", type));
 
                 for (final long label : uniqueLabels) {
+
+                    LOGGER.info(String.format("Creating Cluster %d", label));
+
                     count += 1F;
                     final Set<Long> spectrumIds = labelMap.entrySet()
                             .stream()
@@ -142,12 +145,22 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                             .map(index -> spectra.get(index).getId())
                             .collect(Collectors.toSet());
 
+                    LOGGER.info(String.format("\t%d spectrum IDs are retrieved", spectrumIds.size()));
+
                     if (spectrumIds.size() >= MIN_NUM_SPECTRA) {
 
                         final SpectrumCluster cluster = createCluster(spectrumIds, MZ_TOLERANCE);
+
+                        LOGGER.info(String.format("\tCluster %d is created", label));
+
                         final Spectrum consensusSpectrum = cluster.getConsensusSpectrum();
+
+                        LOGGER.info(String.format("\tConsensus spectrum for Cluster %d is built", label));
+
                         final List<Peak> peaks = new ArrayList<>(consensusSpectrum.getPeaks());
                         final List<SpectrumProperty> properties = new ArrayList<>(consensusSpectrum.getProperties());
+
+                        LOGGER.info(String.format("\tCluster %d is being saved", label));
 
                         spectrumClusterRepository.save(cluster);
                         spectrumRepository.savePeaksAndProperties(consensusSpectrum.getId(), peaks, properties);
