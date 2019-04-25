@@ -165,6 +165,17 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                         spectrumClusterRepository.save(cluster);
                         spectrumRepository.savePeaksAndProperties(consensusSpectrum.getId(), peaks, properties);
                         spectrumRepository.updateSpectraInCluster(cluster.getId(), spectrumIds);
+
+                        long heapSize = Runtime.getRuntime().totalMemory();
+                        long heapMaxSize = Runtime.getRuntime().maxMemory();
+                        long heapFreeSize = Runtime.getRuntime().freeMemory();
+
+                        LOGGER.info(String.format(
+                                "Memory: heap = %.3fMB, max = %.3fMB, free = %.3fMB",
+                                (double) heapSize / 1048576,
+                                (double) heapMaxSize / 1048576,
+                                (double) heapFreeSize / 1048576
+                        ));
                     }
                     progress = step*count/total + step*i;
                 }
