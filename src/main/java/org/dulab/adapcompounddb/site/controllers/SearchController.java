@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -18,6 +19,7 @@ import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
+import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 import org.dulab.adapcompounddb.models.entities.Submission;
@@ -36,8 +38,16 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.Getter;
+import lombok.Setter;
 
 @Controller
 public class SearchController {
@@ -47,6 +57,7 @@ public class SearchController {
     private final SpectrumService spectrumService;
 
     private final Map<ChromatographyType, SpectrumSearchService> spectrumSearchServiceMap;
+    private final Map<SearchParams, List<SpectrumMatch>> cachedSpectraSearchResults;
 
     @Autowired
     public SearchController(final UserPrincipalService userPrincipalService,
@@ -59,7 +70,9 @@ public class SearchController {
         this.submissionService = submissionService;
         this.spectrumService = spectrumService;
 
+        this.cachedSpectraSearchResults = new Hashtable<>();
         this.spectrumSearchServiceMap = new HashMap<>();
+
         this.spectrumSearchServiceMap.put(ChromatographyType.GAS, gcSpectrumSearchService);
         this.spectrumSearchServiceMap.put(ChromatographyType.LIQUID_POSITIVE, lcSpectrumSearchService);
         this.spectrumSearchServiceMap.put(ChromatographyType.LIQUID_NEGATIVE, lcSpectrumSearchService);
@@ -147,7 +160,7 @@ public class SearchController {
         return "submission/match";
     }
 
-    @RequestMapping(value = "/search/{submissionId:\\d+}/", method = RequestMethod.POST)
+    /*@RequestMapping(value = "/search/{submissionId:\\d+}/", method = RequestMethod.POST)
     public ModelAndView searchAllSpectrum(@PathVariable("submissionId") final long submissionId,
             final HttpSession session, final Model model, @Valid final SearchForm form, final Errors errors) {
 
@@ -157,6 +170,71 @@ public class SearchController {
         final Submission submission = submissionService.findSubmission(submissionId);
 
         return searchPost(submission, UserPrincipal.from(session), form, model, errors);
+    }*/
+
+    @RequestMapping(value = "/search-spectra")
+    public String searchSpectraBySubmission(final SearchParams searchParams, final Model model) {
+
+        final List<SpectrumMatch> matches = getSpectraBySearchParams(searchParams);
+        model.addAttribute("submissionId", searchParams.getSubmissionId());
+        return "../includes/search_spectra";
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/search-spectra-data", produces="application/json")
+    public String getSearchSpectraData(final SearchParams searchParams, @RequestParam("start") final Integer start,
+            @RequestParam("length") final Integer length) throws JsonProcessingException {
+
+        final List<SpectrumMatch> matches = getSpectraBySearchParams(searchParams);
+        final int size = matches.size();
+        final DataTableResponse response = new DataTableResponse();
+        response.setDataList(matches.subList(start, start + length > size ? size : start + length));
+        response.setRecordsFiltered(new Long(size));
+        response.setRecordsTotal(new Long(size));
+        final ObjectMapper objectMapper = new ObjectMapper();
+        final String jsonString = objectMapper.writeValueAsString(response);
+        return jsonString;
+    }
+
+    public List<SpectrumMatch> getSpectraBySearchParams(final SearchParams searchParams) {
+        //        return new ArrayList<>();
+        List<SpectrumMatch> matches = cachedSpectraSearchResults.get(searchParams);
+        if(matches == null) {
+            final SpectrumSearchService service =
+                    spectrumSearchServiceMap.get(submissionService.getChromatographyTypeBySubmissionId(searchParams.getSubmissionId()));
+
+            final QueryParameters parameters = new QueryParameters();
+            parameters.setScoreThreshold(searchParams.getIsScoreThreshold() ? searchParams.getScoreThreshold() : null);
+            parameters.setMzTolerance(searchParams.getIsScoreThreshold() ? searchParams.getMzTolerance() : null);
+            parameters.setPrecursorTolerance(searchParams.getIsMassTolerance() ? searchParams.getMassTolerance() : null);
+            parameters.setRetTimeTolerance(searchParams.getIsRetTimeTolerance() ? searchParams.getRetTimeTolerance() : null);
+
+            final String tags = searchParams.getTags();
+            parameters.setTags(
+                    tags != null && tags.length() > 0 ?
+                            new HashSet<>(Arrays.asList(tags.split(",")))
+                            : null);
+
+            final Set<Spectrum> spectra = new HashSet<>(spectrumService.findSpectrumBySubmissionId(searchParams.getSubmissionId()));
+            final Set<Long> spectraIdList = spectra.stream().map(s -> s.getId()).collect(Collectors.toSet());
+            parameters.addExludeSpectra(spectraIdList);
+            List<SpectrumMatch> currentMatches = null;
+
+            matches = new ArrayList<>();
+            SpectrumMatch spectrumMatch = null;
+            for(final Spectrum s: spectra) {
+                currentMatches = service.search(s, parameters);
+                if(currentMatches != null && currentMatches.size() > 0) {
+                    spectrumMatch =currentMatches.get(0);
+                } else {
+                    spectrumMatch = new SpectrumMatch();
+                    spectrumMatch.setQuerySpectrumName(s.getName());
+                }
+                matches.add(spectrumMatch);
+            }
+            cachedSpectraSearchResults.put(searchParams, matches);
+        }
+        return matches;
     }
 
     private String searchGet(final Spectrum querySpectrum, final UserPrincipal user, final Model model) {
@@ -284,11 +362,13 @@ public class SearchController {
                         new HashSet<>(Arrays.asList(tags.split(",")))
                         : null);
 
-        final List<SpectrumMatch> matches = new ArrayList<>();
         final Set<Spectrum> spectra = new HashSet<>(spectrumService.findSpectrumBySubmissionId(submission.getId()));
         Set<Long> spectraIdList = spectra.stream().map(s -> s.getId()).collect(Collectors.toSet());
         parameters.addExludeSpectra(spectraIdList);
         List<SpectrumMatch> currentMatches = null;
+
+        List<SpectrumMatch> matches = null;
+        matches = new ArrayList<>();
         for(final Spectrum s: spectra) {
             currentMatches = service.search(s, parameters);
             spectraIdList = currentMatches.stream().map(m -> m.getMatchSpectrum().getId()).collect(Collectors.toSet());
@@ -416,5 +496,39 @@ public class SearchController {
         public void setAvailableTags(final List<String> availableTags) {
             this.availableTags = availableTags;
         }
+    }
+}
+
+
+@Getter
+@Setter
+class SearchParams {
+    Long submissionId;
+    Boolean isScoreThreshold;
+    Double scoreThreshold;
+    Double mzTolerance;
+    Boolean isMassTolerance;
+    Double massTolerance;
+    Boolean isRetTimeTolerance;
+    Double retTimeTolerance;
+    String tags;
+
+    @Override
+    public int hashCode() {
+        return (submissionId.toString() +
+                isScoreThreshold.toString() +
+                (isScoreThreshold ? scoreThreshold.toString() : "") +
+                (isScoreThreshold ? mzTolerance.toString() : "") +
+                isMassTolerance.toString() + // false
+                (isMassTolerance ? massTolerance.toString() : "") +
+                isRetTimeTolerance.toString() +
+                (isRetTimeTolerance ? retTimeTolerance.toString() : "") +
+                tags)
+                .hashCode();
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        return this.hashCode() == obj.hashCode();
     }
 }

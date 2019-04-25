@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -36,8 +37,14 @@ public class SpectrumMatch implements Serializable {
     //    @NotNull(message = "Query spectrum is required.")
     private Spectrum querySpectrum;
 
+    @Transient
+    private String querySpectrumName;
+
     @NotNull(message = "Match Spectrum is required.")
     private Spectrum matchSpectrum;
+
+    @Transient
+    private String matchSpectrumName;
 
     private double score;
 
@@ -60,6 +67,7 @@ public class SpectrumMatch implements Serializable {
 
     public void setQuerySpectrum(final Spectrum querySpectrum) {
         this.querySpectrum = querySpectrum;
+        setQuerySpectrumName(querySpectrum.getName());
     }
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade={})
@@ -71,6 +79,7 @@ public class SpectrumMatch implements Serializable {
 
     public void setMatchSpectrum(final Spectrum matchSpectrum) {
         this.matchSpectrum = matchSpectrum;
+        setMatchSpectrumName(matchSpectrum.getName());
     }
 
     public double getScore() {
@@ -102,5 +111,21 @@ public class SpectrumMatch implements Serializable {
     public String toString() {
         return String.format("Match between spectra ID = %d and ID = %d: %f",
                 querySpectrum.getId(), matchSpectrum.getId(), score);
+    }
+
+    public String getQuerySpectrumName() {
+        return querySpectrumName;
+    }
+
+    public void setQuerySpectrumName(final String querySpectrumName) {
+        this.querySpectrumName = querySpectrumName;
+    }
+
+    public String getMatchSpectrumName() {
+        return matchSpectrumName;
+    }
+
+    public void setMatchSpectrumName(final String matchSpectrumName) {
+        this.matchSpectrumName = matchSpectrumName;
     }
 }
