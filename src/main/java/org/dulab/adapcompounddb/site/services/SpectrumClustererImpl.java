@@ -1,7 +1,6 @@
 package org.dulab.adapcompounddb.site.services;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.DoubleSummaryStatistics;
 import java.util.HashMap;
 import java.util.List;
@@ -38,9 +37,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import smile.clustering.HierarchicalClustering;
-import smile.clustering.linkage.CompleteLinkage;
-
 @Service
 public class SpectrumClustererImpl implements SpectrumClusterer {
 
@@ -49,6 +45,8 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
     private static final float SCORE_TOLERANCE = 0.25F;
 
     private static final int MIN_NUM_SPECTRA = 2;
+
+    private static final double PEAK_INTENSITY_FRACTION = 0.05;
 
     private static final Logger LOGGER = LogManager.getLogger(SpectrumClusterer.class);
 
@@ -328,6 +326,87 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("Cannot determine chromatography type"));
 
+        // Create consensus peaks
+        List<Peak> consensusPeaks;
+        if (checkForIntegerMzValues(spectra))
+            consensusPeaks = createConsensusPeaksWithIntegerMz(spectra);
+        else
+            consensusPeaks = createConsensusPeaksWithFractionalMz(spectra, mzTolerance);
+
+        // Filter peaks
+        double intensityThreshold = PEAK_INTENSITY_FRACTION * consensusPeaks.stream()
+                .mapToDouble(Peak::getIntensity)
+                .max()
+                .orElse(0.0);
+
+        consensusPeaks = consensusPeaks.stream()
+                .filter(p -> p.getIntensity() > intensityThreshold)
+                .collect(Collectors.toList());
+
+        Spectrum consensusSpectrum = new Spectrum();
+        consensusSpectrum.setChromatographyType(type);
+        consensusSpectrum.setConsensus(true);
+        consensusSpectrum.setReference(false);
+        consensusSpectrum.addProperty("Name", getName(spectra));
+
+        consensusPeaks.forEach(p -> p.setSpectrum(consensusSpectrum));
+        consensusSpectrum.setPeaks(consensusPeaks, true);
+
+        spectra.stream()
+                .map(Spectrum::getPrecursor)
+                .filter(Objects::nonNull)
+                .mapToDouble(Double::doubleValue)
+                .average()
+                .ifPresent(consensusSpectrum::setPrecursor);
+
+        return consensusSpectrum;
+    }
+
+
+    private Matrix getMzDistanceMatrix(List<Spectrum> spectra, float mzTolerance) {
+
+        MatrixImpl distanceMatrix = new MatrixImpl(mzTolerance);
+
+        for (int i = 0; i < spectra.size(); ++i) {
+
+            List<Peak> peaks1 = spectra.get(i).getPeaks();
+            double intensityThreshold1 = PEAK_INTENSITY_FRACTION * peaks1.stream()
+                    .mapToDouble(Peak::getIntensity)
+                    .max()
+                    .orElse(0.0);
+
+            for (Peak peak1 : peaks1) {
+
+                if (peak1.getIntensity() < intensityThreshold1)
+                    continue;
+
+                for (int j = i + 1; j < spectra.size(); ++j) {
+
+                    List<Peak> peaks2 = spectra.get(j).getPeaks();
+                    double intensityThreshold2 = PEAK_INTENSITY_FRACTION * peaks2.stream()
+                            .mapToDouble(Peak::getIntensity)
+                            .max()
+                            .orElse(0.0);
+
+                    for (Peak peak2 : peaks2) {
+
+                        if (peak2.getIntensity() < intensityThreshold2)
+                            continue;
+
+                        distanceMatrix.add(
+                                (int) peak1.getId(),
+                                (int) peak2.getId(),
+                                (float) Math.abs(peak1.getMz() - peak2.getMz()));
+                    }
+                }
+            }
+        }
+
+        return distanceMatrix;
+    }
+
+    private List<Peak> createConsensusPeaksWithFractionalMz(List<Spectrum> spectra, float mzTolerance) {
+
         Matrix distanceMatrix = getMzDistanceMatrix(spectra, mzTolerance);
 
         LOGGER.info(String.format("\tNumber of m/z distances: %d", distanceMatrix.getNumElements()));
@@ -343,7 +422,6 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                 .distinct()
                 .toArray();
 
-        final Spectrum consensusSpectrum = new Spectrum();
         final List<Peak> consensusPeaks = new ArrayList<>(uniqueLabels.length);
 
         for (final int label : uniqueLabels) {
@@ -368,70 +446,47 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
             final Peak consensusPeak = new Peak();
             consensusPeak.setMz(mz);
             consensusPeak.setIntensity(intensity);
-            consensusPeak.setSpectrum(consensusSpectrum);
-
             consensusPeaks.add(consensusPeak);
         }
 
-        consensusSpectrum.setChromatographyType(type);
-        consensusSpectrum.setConsensus(true);
-        consensusSpectrum.setReference(false);
-        consensusSpectrum.setPeaks(consensusPeaks, true);
-        consensusSpectrum.addProperty("Name", getName(spectra));
-
-        spectra.stream()
-                .map(Spectrum::getPrecursor)
-                .filter(Objects::nonNull)
-                .mapToDouble(Double::doubleValue)
-                .average()
-                .ifPresent(consensusSpectrum::setPrecursor);
-
-        return consensusSpectrum;
+        return consensusPeaks;
     }
 
+    private List<Peak> createConsensusPeaksWithIntegerMz(List<Spectrum> spectra) {
 
-    private Matrix getMzDistanceMatrix(List<Spectrum> spectra, float mzTolerance) {
+        // Get all m/z values from all spectra
+        int[] mzValues = spectra.stream()
+                .flatMapToInt(s -> s.getPeaks().stream().mapToInt(p -> (int) p.getMz()))
+                .toArray();
 
-        MatrixImpl distanceMatrix = new MatrixImpl(mzTolerance);
+        // Calculate average intensity for each m/z value
+        double[] intensities = new double[mzValues.length];
+        for (int i = 0; i < mzValues.length; ++i) {
 
-        for (int i = 0; i < spectra.size(); ++i) {
+            int mz = mzValues[i];
 
-            List<Peak> peaks1 = spectra.get(i).getPeaks();
-            double intensityThreshold1 = 0.05 * peaks1.stream()
-                    .mapToDouble(Peak::getIntensity)
-                    .max()
-                    .orElse(0.0);
-
-            for (Peak peak1 : peaks1) {
-
-                if (peak1.getIntensity() < intensityThreshold1)
-                    continue;
-
-                for (int j = i + 1; j < spectra.size(); ++j) {
-
-                    List<Peak> peaks2 = spectra.get(j).getPeaks();
-                    double intensityThreshold2 = 0.05 * peaks2.stream()
-                            .mapToDouble(Peak::getIntensity)
-                            .max()
-                            .orElse(0.0);
-
-                    for (Peak peak2 : peaks2) {
-
-                        if (peak2.getIntensity() < intensityThreshold2)
-                            continue;
-
-                        distanceMatrix.add(
-                                (int) peak1.getId(),
-                                (int) peak2.getId(),
-                                (float) Math.abs(peak1.getMz() - peak2.getMz()));
+            double sum = 0.0;
+            for (Spectrum spectrum : spectra) {
+                for (Peak peak : spectrum.getPeaks()) {
+                    if ((int) peak.getMz() == mz) {
+                        sum += peak.getIntensity();
+                        break;
                     }
                 }
             }
+            intensities[i] = sum / spectra.size();
         }
 
-        return distanceMatrix;
+        // Return a list of peak with calculated m/z values and intensities
+        return IntStream.range(0, mzValues.length)
+                .mapToObj(i -> {
+                    Peak peak = new Peak();
+                    peak.setMz(mzValues[i]);
+                    peak.setIntensity(intensities[i]);
+                    return peak;
+                })
+                .collect(Collectors.toList());
     }
-
 
     /**
      * Selects the most frequent name in the cluster
@@ -455,5 +510,14 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
         }
 
         return maxName;
+    }
+
+
+    private boolean checkForIntegerMzValues(List<Spectrum> spectra) {
+        for (Spectrum spectrum : spectra)
+            for (Peak peak : spectrum.getPeaks())
+                if (peak.getMz() % 1 != 0)
+                    return false;
+        return true;
     }
 }
