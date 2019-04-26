@@ -146,37 +146,30 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                             .map(index -> spectra.get(index).getId())
                             .collect(Collectors.toSet());
 
-                    LOGGER.info(String.format("\t%d spectrum IDs are retrieved", spectrumIds.size()));
-
                     if (spectrumIds.size() >= MIN_NUM_SPECTRA) {
 
                         final SpectrumCluster cluster = createCluster(spectrumIds, MZ_TOLERANCE);
-
-                        LOGGER.info(String.format("\tCluster %d is created", label));
-
                         final Spectrum consensusSpectrum = cluster.getConsensusSpectrum();
-
-                        LOGGER.info(String.format("\tConsensus spectrum for Cluster %d is built", label));
 
                         final List<Peak> peaks = new ArrayList<>(consensusSpectrum.getPeaks());
                         final List<SpectrumProperty> properties = new ArrayList<>(consensusSpectrum.getProperties());
 
-                        LOGGER.info(String.format("\tCluster %d is being saved", label));
+                        LOGGER.info(String.format("\tCluster %d is being saved...", label));
 
                         spectrumClusterRepository.save(cluster);
                         spectrumRepository.savePeaksAndProperties(consensusSpectrum.getId(), peaks, properties);
                         spectrumRepository.updateSpectraInCluster(cluster.getId(), spectrumIds);
 
-                        long heapSize = Runtime.getRuntime().totalMemory();
-                        long heapMaxSize = Runtime.getRuntime().maxMemory();
-                        long heapFreeSize = Runtime.getRuntime().freeMemory();
-
-                        LOGGER.info(String.format(
-                                "Memory: heap = %.3fMB, max = %.3fMB, free = %.3fMB",
-                                (double) heapSize / 1048576,
-                                (double) heapMaxSize / 1048576,
-                                (double) heapFreeSize / 1048576
-                        ));
+//                        long heapSize = Runtime.getRuntime().totalMemory();
+//                        long heapMaxSize = Runtime.getRuntime().maxMemory();
+//                        long heapFreeSize = Runtime.getRuntime().freeMemory();
+//
+//                        LOGGER.info(String.format(
+//                                "Memory: heap = %.3fMB, max = %.3fMB, free = %.3fMB",
+//                                (double) heapSize / 1048576,
+//                                (double) heapMaxSize / 1048576,
+//                                (double) heapFreeSize / 1048576
+//                        ));
                     }
                     progress = step * count / total + step * i;
                 }
@@ -198,8 +191,6 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 //                .peek(s -> s.setCluster(cluster))
                 .collect(Collectors.toList());
 
-        LOGGER.info("\t\tSpectra are collected");
-
 //        cluster.setSpectra(spectra);
         cluster.setSize(spectra.size());
 
@@ -212,8 +203,6 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                 .min()
                 .orElse(0.0));
 
-        LOGGER.info("\t\tDiameter is calculated");
-
         // Calculate the significance statistics
         final DoubleSummaryStatistics significanceStats = spectra
                 .stream()
@@ -221,8 +210,6 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                 .filter(Objects::nonNull)
                 .map(Math::abs)
                 .collect(Collectors.summarizingDouble(Double::doubleValue));
-
-        LOGGER.info("\t\tStatistics is calculated");
 
         if (significanceStats.getCount() > 0) {
             cluster.setAveSignificance(significanceStats.getAverage());
@@ -233,7 +220,6 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
         // Calculate diversity
         // setDiversityIndices(cluster);
         final List<TagInfo> tagInfoList = ControllerUtils.getDiversityIndices(spectra);
-        LOGGER.info("\t\tDiversity is calculated");
 
         if (!tagInfoList.isEmpty()) {
             Double minDiversity = Double.MAX_VALUE;
@@ -256,11 +242,13 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
             cluster.setAveDiversity(avgDiversity);
         }
 
+        LOGGER.info("\tConsensus spectrum is being constructed...");
+
         final Spectrum consensusSpectrum = createConsensusSpectrum(spectra, mzTolerance);
         consensusSpectrum.setCluster(cluster);
         cluster.setConsensusSpectrum(consensusSpectrum);
 
-        LOGGER.info("\t\tConsensus spectrum is created");
+        LOGGER.info("\tConsensus spectrum is created");
 
         return cluster;
     }
@@ -340,22 +328,9 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("Cannot determine chromatography type"));
 
-        MatrixImpl distanceMatrix = new MatrixImpl(mzTolerance);
+        Matrix distanceMatrix = getMzDistanceMatrix(spectra, mzTolerance);
 
-        for (int i = 0; i < spectra.size(); ++i) {
-            List<Peak> peaks1 = spectra.get(i).getPeaks();
-            for (Peak peak1 : peaks1) {
-                for (int j = i + 1; j < spectra.size(); ++j) {
-                    List<Peak> peaks2 = spectra.get(j).getPeaks();
-                    for (Peak peak2 : peaks2) {
-                        distanceMatrix.add(
-                                (int) peak1.getId(),
-                                (int) peak2.getId(),
-                                (float) Math.abs(peak1.getMz() - peak2.getMz()));
-                    }
-                }
-            }
-        }
+        LOGGER.info(String.format("\tNumber of m/z distances: %d", distanceMatrix.getNumElements()));
 
         SparseHierarchicalClusterer clusterer = new SparseHierarchicalClusterer(
                 distanceMatrix, new org.dulab.jsparcehc.CompleteLinkage());
@@ -412,6 +387,49 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                 .ifPresent(consensusSpectrum::setPrecursor);
 
         return consensusSpectrum;
+    }
+
+
+    private Matrix getMzDistanceMatrix(List<Spectrum> spectra, float mzTolerance) {
+
+        MatrixImpl distanceMatrix = new MatrixImpl(mzTolerance);
+
+        for (int i = 0; i < spectra.size(); ++i) {
+
+            List<Peak> peaks1 = spectra.get(i).getPeaks();
+            double intensityThreshold1 = 0.05 * peaks1.stream()
+                    .mapToDouble(Peak::getIntensity)
+                    .max()
+                    .orElse(0.0);
+
+            for (Peak peak1 : peaks1) {
+
+                if (peak1.getIntensity() < intensityThreshold1)
+                    continue;
+
+                for (int j = i + 1; j < spectra.size(); ++j) {
+
+                    List<Peak> peaks2 = spectra.get(j).getPeaks();
+                    double intensityThreshold2 = 0.05 * peaks2.stream()
+                            .mapToDouble(Peak::getIntensity)
+                            .max()
+                            .orElse(0.0);
+
+                    for (Peak peak2 : peaks2) {
+
+                        if (peak2.getIntensity() < intensityThreshold2)
+                            continue;
+
+                        distanceMatrix.add(
+                                (int) peak1.getId(),
+                                (int) peak2.getId(),
+                                (float) Math.abs(peak1.getMz() - peak2.getMz()));
+                    }
+                }
+            }
+        }
+
+        return distanceMatrix;
     }
 
 
