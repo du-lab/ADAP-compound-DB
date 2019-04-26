@@ -16,6 +16,10 @@ import org.dulab.adapcompounddb.models.entities.*;
 
 public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
+    private static final String PEAK_VALUE_SQL_STRING = "(%f, %f, %d)";
+    private static final String PROPERTY_VALUE_SQL_STRING = "(%d, %s, %s)";
+    private static final String SPECTRUM_VALUE_SQL_STRING = "(%s, %f, %f, %f, %s, %d)";
+
     public static final String DOUBLE_QUOTE = "\"";
     public static final String COMMA = ",";
     @PersistenceContext
@@ -108,7 +112,8 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                 "`Name`, `Precursor`, `RetentionTime`," +
                 "`Significance`, `ChromatographyType`, `FileId`" +
                 ") VALUES ");
-        final String propertyValueString = "(%s, %f, %f, %f, %s, %d)";
+
+//        final String propertyValueString = "(%s, %f, %f, %f, %s, %d)";
 
         for (int i = 0; i < fileList.size(); i++) {
             final List<Spectrum> spectra = fileList.get(i).getSpectra();
@@ -119,7 +124,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                 }
                 final Spectrum spectrum = spectra.get(j);
 
-                insertSql.append(String.format(propertyValueString,
+                insertSql.append(String.format(SPECTRUM_VALUE_SQL_STRING,
                         DOUBLE_QUOTE + spectrum.getName() + DOUBLE_QUOTE,
                         spectrum.getPrecursor(),
                         spectrum.getRetentionTime(),
@@ -132,11 +137,11 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         final Query insertQuery = entityManager.createNativeQuery(insertSql.toString());
         insertQuery.executeUpdate();
 
-        final List<Long> fileIds = new ArrayList<>();
-        fileList.stream().forEach(file -> fileIds.add(file.getId()));
-        final StringBuilder selectSql = new StringBuilder("select s.id from Spectrum s where s.file.id in (:fileIds)");
+        final List<Long> fileIds = new ArrayList<>(fileList.size());
+        fileList.forEach(file -> fileIds.add(file.getId()));
+        final String selectSql = "select s.id from Spectrum s where s.file.id in (:fileIds)";
 
-        final TypedQuery<Long> selectQuery = entityManager.createQuery(selectSql.toString(), Long.class);
+        final TypedQuery<Long> selectQuery = entityManager.createQuery(selectSql, Long.class);
         selectQuery.setParameter("fileIds", fileIds);
 
         final List<Long> spectrumIds = selectQuery.getResultList();
@@ -146,14 +151,11 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
     @Override
     public void savePeaksAndProperties(final Long spectrumId, final List<Peak> peaks, final List<SpectrumProperty> properties) {
-        final StringBuilder peakSql = new StringBuilder("INSERT INTO `Peak`(" +
-                "`Mz`, `Intensity`, `SpectrumId`) VALUES ");
-        final StringBuilder propertySql = new StringBuilder("INSERT INTO `SpectrumProperty`(" +
-                "`SpectrumId`, `Name`, `Value`) VALUES ");
+        final StringBuilder peakSql = new StringBuilder("INSERT INTO `Peak` (`Mz`, `Intensity`, `SpectrumId`) VALUES ");
+        final StringBuilder propertySql = new StringBuilder("INSERT INTO `SpectrumProperty` (`SpectrumId`, `Name`, `Value`) VALUES ");
 
-        final String peakValueString = "(%f, %f, %d)";
-        final String propertyValueString = "(%d, %s, %s)";
-
+//        final String peakValueString = "(%f, %f, %d)";
+//        final String propertyValueString = "(%d, %s, %s)";
 
         for (int j = 0; j < peaks.size(); j++) {
             if (j != 0) {
@@ -161,7 +163,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
             }
             final Peak p = peaks.get(j);
 
-            peakSql.append(String.format(peakValueString, p.getMz(), p.getIntensity(), spectrumId));
+            peakSql.append(String.format(PEAK_VALUE_SQL_STRING, p.getMz(), p.getIntensity(), spectrumId));
         }
 
         for (int j = 0; j < properties.size(); j++) {
@@ -169,7 +171,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                 propertySql.append(COMMA);
             }
             final SpectrumProperty sp = properties.get(j);
-            propertySql.append(String.format(propertyValueString, spectrumId, DOUBLE_QUOTE + sp.getName() + DOUBLE_QUOTE, DOUBLE_QUOTE + sp.getValue() + DOUBLE_QUOTE));
+            propertySql.append(String.format(PROPERTY_VALUE_SQL_STRING, spectrumId, DOUBLE_QUOTE + sp.getName() + DOUBLE_QUOTE, DOUBLE_QUOTE + sp.getValue() + DOUBLE_QUOTE));
         }
 
         final Query peakQuery = entityManager.createNativeQuery(peakSql.toString());
