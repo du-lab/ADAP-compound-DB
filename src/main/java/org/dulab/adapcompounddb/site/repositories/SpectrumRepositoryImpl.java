@@ -184,11 +184,12 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     public void updateSpectraInCluster(final long clusterId, final Set<Long> spectrumIds) {
 
         StringBuilder sqlBuilder = new StringBuilder("UPDATE Spectrum ");
-        sqlBuilder.append(String.format("SET ClusterId = %d WHERE ", clusterId));
+        sqlBuilder.append(String.format("SET ClusterId = %d WHERE Id IN (", clusterId));
         sqlBuilder.append(spectrumIds
                 .stream()
-                .map(id -> String.format("Id = %d", id))
-                .collect(Collectors.joining(" OR ")));
+                .map(String::valueOf)
+                .collect(Collectors.joining(", ")));
+        sqlBuilder.append(")");
 
         String sqlQuery = sqlBuilder.toString();
 
