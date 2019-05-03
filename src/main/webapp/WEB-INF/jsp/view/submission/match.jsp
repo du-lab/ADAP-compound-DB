@@ -215,72 +215,71 @@
 <script type="text/javascript"
     src="<c:url value="/resources/jQuery-3.2.1/jquery.blockUI.js"/>"></script>
 <script>
-	$(document)
+    $(document)
             .ready(
                     function() {
 
-	                    var table = $('#match_table').DataTable({
-	                        order : [ [ 0, 'desc' ] ],
-	                        select : {
-		                        style : 'single'
-	                        },
-	                        responsive : true,
-	                        scrollX : true,
-	                        scroller : true
-	                    });
+                        var table = $('#match_table').DataTable({
+                            order : [ [ 0, 'desc' ] ],
+                            select : {
+                                style : 'single'
+                            },
+                            responsive : true,
+                            scrollX : true,
+                            scroller : true
+                        });
 
-	                    table.on('select', function(e, dt, type, indexes) {
-		                    var row = table.row(indexes).node();
-		                    var spectrum = JSON.parse($(row).attr(
-		                            'data-spectrum'));
-		                    plot.update(spectrum);
-	                    });
+                        table.on('select', function(e, dt, type, indexes) {
+                            var row = table.row(indexes).node();
+                            var spectrum = JSON.parse($(row).attr('data-spectrum'));
+                            plot.update(spectrum);
+                        });
 
-	                    table.rows(':eq(0)').select();
+                        table.rows(':eq(0)').select();
 
-	                    $('#scoreThreshold').prop('disabled',
-	                            !$('#scoreThresholdCheck1').prop('checked'));
-	                    $('#mzTolerance').prop('disabled',
-	                            !$('#scoreThresholdCheck1').prop('checked'));
-	                    $('#massTolerance').prop('disabled',
-	                            !$('#massToleranceCheck1').prop('checked'));
-	                    $('#retTimeTolerance').prop('disabled',
-	                            !$('#retTimeToleranceCheck1').prop('checked'));
+                        $('#scoreThreshold').prop('disabled',
+                                !$('#scoreThresholdCheck1').prop('checked'));
+                        $('#mzTolerance').prop('disabled',
+                                !$('#scoreThresholdCheck1').prop('checked'));
+                        $('#massTolerance').prop('disabled',
+                                !$('#massToleranceCheck1').prop('checked'));
+                        $('#retTimeTolerance').prop('disabled',
+                                !$('#retTimeToleranceCheck1').prop('checked'));
 
-	                    $('#accordion').accordion();
-	                    $('#tags')
-	                            .tagit(
-	                                    {
-		                                    autocomplete : {
-			                                    source : '${dulab:stringsToJson(searchForm.availableTags)}'
-		                                    }
-	                                    })
+                        $('#accordion').accordion();
+                        $('#tags')
+                                .tagit(
+                                        {
+                                            autocomplete : {
+                                                source : '${dulab:stringsToJson(searchForm.availableTags)}'
+                                            }
+                                        })
                     });
 
     function searchSpectra() {
-	    $('#matches').block({ 
+        $('#matches').block({ 
             message: '<h2>Searching</h2><img src="<c:url value="/resources/AdapCompoundDb/img/icons/index.equalizer-bars-loader.gif"/>">', 
             css: { border: '3px solid #542410' } 
         }); 
-	    $.ajax({
-	                type : "GET",
-	                url : "${pageContext.request.contextPath}/search-spectra?decorator=no_decorator",
-	                data : {
-	                    submissionId : '${submission.id}',
-	                    isScoreThreshold : $("#scoreThresholdCheck1").prop('checked'),
-	                    scoreThreshold : $("#scoreThreshold").val(), // true
-	                    mzTolerance : $("#mzTolerance").val(), //100
-	                    isMassTolerance : $("#massToleranceCheck1").prop('checked'),
-	                    massTolerance : $("#massTolerance").val(),
-	                    isRetTimeTolerance : $("#retTimeToleranceCheck1").prop('checked'),
-	                    retTimeTolerance : $("#retTimeTolerance").val(),
-	                    tags : $('#tags').val()
-	                },
-	                success : function(data) {
-		                $("#matches").html(data);
-		                $("#matches").unblock();
-	                }
-	            });
+        $.ajax({
+                    type : "GET",
+                    url : "${pageContext.request.contextPath}/search-spectra?decorator=no_decorator",
+                    data : {
+                        submissionId : '${submission.id}',
+                        isScoreThreshold : $("#scoreThresholdCheck1").prop('checked'),
+                        scoreThreshold : $("#scoreThreshold").val(), // true
+                        mzTolerance : $("#mzTolerance").val(), //100
+                        isMassTolerance : $("#massToleranceCheck1").prop('checked'),
+                        massTolerance : $("#massTolerance").val(),
+                        isRetTimeTolerance : $("#retTimeToleranceCheck1").prop('checked'),
+                        retTimeTolerance : $("#retTimeTolerance").val(),
+                        tags : $('#tags').val()
+                    },
+                    success : function(data) {
+                        $("#matches").html(data);
+                        $('#matches').unblock();
+                    }
+                });
     }
 </script>
 

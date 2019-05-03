@@ -41,7 +41,6 @@ public class SubmissionController extends BaseController {
 
     private static final Logger LOGGER = LogManager.getLogger(SubmissionController.class);
 
-    private static final String SESSION_ATTRIBUTE_KEY = "currentUser";
     private final SubmissionService submissionService;
 
     @Autowired
@@ -70,12 +69,12 @@ public class SubmissionController extends BaseController {
 
     @RequestMapping(value = "/file/", method = RequestMethod.GET)
     public String fileView(final HttpSession session, final Model model) {
-        final Submission submission = Submission.from(session);
+        final Submission submission = getSubmissionFromSession(session);
         if (submission == null) {
             return redirectFileUpload();
         }
         final boolean authenticated = session.getAttribute(SESSION_ATTRIBUTE_KEY) != null;
-        return edit(Submission.from(session), model, authenticated);
+        return edit(getSubmissionFromSession(session), model, authenticated);
     }
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/edit", method = RequestMethod.GET)
@@ -159,7 +158,7 @@ public class SubmissionController extends BaseController {
      **********************/
     @RequestMapping(value = "/file/clear/", method = RequestMethod.GET)
     public String clear(final HttpSession session) {
-        Submission.clear(session);
+        clearSession(session);
         return "redirect:/file/upload/";
     }
 
@@ -170,7 +169,7 @@ public class SubmissionController extends BaseController {
     public String fileRawView(@PathVariable("fileIndex") final int fileIndex, final HttpSession session,
             final HttpServletResponse response) throws IOException {
 
-        final Submission submission = Submission.from(session);
+        final Submission submission = getSubmissionFromSession(session);
 
         if (submission == null) {
             return redirectFileUpload();
@@ -208,7 +207,7 @@ public class SubmissionController extends BaseController {
     public String fileRawDownload(@PathVariable("fileIndex") final int fileIndex, final HttpSession session,
             final HttpServletResponse response) throws IOException {
 
-        final Submission submission = Submission.from(session);
+        final Submission submission = getSubmissionFromSession(session);
         if (submission == null) {
             return redirectFileUpload();
         }
@@ -244,7 +243,7 @@ public class SubmissionController extends BaseController {
     public String fileView(final HttpSession session, final Model model, @Valid final SubmissionForm submissionForm,
             final Errors errors) {
 
-        final Submission submission = Submission.from(session);
+        final Submission submission = getSubmissionFromSession(session);
         if (errors.hasErrors()) {
             model.addAttribute("authenticated", isAuthenticated());
             model.addAttribute("submissionForm", submissionForm);
@@ -258,7 +257,7 @@ public class SubmissionController extends BaseController {
         submission.setUser(getCurrentUserPrincipal());
 
         final String response = submit(submission, model, submissionForm);
-        Submission.clear(session);
+        clearSession(session);
         return response;
     }
 

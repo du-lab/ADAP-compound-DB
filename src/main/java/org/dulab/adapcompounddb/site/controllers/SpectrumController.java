@@ -1,5 +1,7 @@
 package org.dulab.adapcompounddb.site.controllers;
 
+import javax.servlet.http.HttpSession;
+
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
@@ -11,10 +13,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.servlet.http.HttpSession;
-
 @Controller
-public class SpectrumController {
+public class SpectrumController extends BaseController {
 
     private final SpectrumService spectrumService;
     private final SubmissionService submissionService;
@@ -56,7 +56,7 @@ public class SpectrumController {
     public String spectrum(@PathVariable("fileIndex") final int fileIndex,
             @PathVariable("spectrumIndex") final int spectrumIndex, final HttpSession session, final Model model) {
 
-        final Submission submission = Submission.from(session);
+        final Submission submission = getSubmissionFromSession(session);
         final Spectrum spectrum = submission.getFiles().get(fileIndex).getSpectra().get(spectrumIndex);
 
         return spectrum(spectrum, model);

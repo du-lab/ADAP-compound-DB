@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
-import org.dulab.adapcompounddb.models.entities.Submission;
+import org.dulab.adapcompounddb.site.controllers.BaseController;
 import org.dulab.adapcompounddb.site.services.SpectrumMatchService;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 @RestController
 @RequestMapping("/spectrum")
-public class SpectrumRestController {
+public class SpectrumRestController extends BaseController {
 
     private final SpectrumService spectrumService;
 
@@ -45,7 +45,7 @@ public class SpectrumRestController {
             response = spectrumService.findSpectrumBySubmissionId(submissionId, searchStr, start,
                     length, column, sortDirection);
         } else {
-            response = spectrumService.processPagination(Submission.from(session), searchStr, start, length, column, sortDirection);
+            response = spectrumService.processPagination(getSubmissionFromSession(session), searchStr, start, length, column, sortDirection);
         }
 
         final String jsonString = objectMapper.writeValueAsString(response);

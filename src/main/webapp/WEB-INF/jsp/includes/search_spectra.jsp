@@ -6,8 +6,6 @@
 
 <head>
     <meta name="decorator" id="decorator" content="no_decorator" />
-    <script type="text/javascript"
-        src="<c:url value="/resources/jQuery-3.2.1/jquery.blockUI.js"/>"></script>
 </head>
 
 <table id="match_table" class="display responsive" style="width: 100%;">
@@ -48,7 +46,9 @@ $("#match_table").DataTable({
         {
             "targets": 0,
             "orderable": false,
-            "data": "score"
+            "render": function (data, type, row, meta) {
+                return parseFloat(row.score).toFixed(3);
+            }
         },
         {
             "targets": 1,

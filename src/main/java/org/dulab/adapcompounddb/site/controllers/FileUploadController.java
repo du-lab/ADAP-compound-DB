@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 
 @Controller
-public class FileUploadController {
+public class FileUploadController extends BaseController {
 
     private static final Logger LOG = LogManager.getLogger();
 
@@ -47,7 +47,7 @@ public class FileUploadController {
 
     @RequestMapping(value = "/file/upload/", method = RequestMethod.GET)
     public String upload(final Model model, final HttpSession session) {
-        if (Submission.from(session) != null) {
+        if (getSubmissionFromSession(session) != null) {
             return "redirect:/file/";
         }
 
@@ -61,7 +61,7 @@ public class FileUploadController {
     public String upload(final Model model, final HttpSession session, @Valid final FileUploadForm form,
             final Errors errors) {
 
-        if (Submission.from(session) != null) {
+        if (getSubmissionFromSession(session) != null) {
             return "redirect:/file/";
         }
 
@@ -69,12 +69,12 @@ public class FileUploadController {
             return "file/upload";
         }
 
-//        MultipartFile file = form.getFile();
+        //        MultipartFile file = form.getFile();
 
-//        submission.setName(file.getOriginalFilename());
-//        submission.setFilename(file.getOriginalFilename());
-//        submission.setFileType(form.getFileType());
-//        submission.setChromatographyType(form.getChromatographyType());
+        //        submission.setName(file.getOriginalFilename());
+        //        submission.setFilename(file.getOriginalFilename());
+        //        submission.setFileType(form.getFileType());
+        //        submission.setChromatographyType(form.getChromatographyType());
 
         final FileReaderService service = fileReaderServiceMap.get(form.fileType);
         if (service == null) {
@@ -111,7 +111,7 @@ public class FileUploadController {
 
         submission.setFiles(files);
 
-        Submission.assign(session, submission);
+        assign(session, submission);
         return "redirect:/file/";
     }
 

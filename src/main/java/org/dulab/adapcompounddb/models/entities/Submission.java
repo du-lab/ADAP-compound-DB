@@ -19,7 +19,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -216,17 +215,5 @@ public class Submission implements Serializable {
     @Override
     public int hashCode() {
         return Long.hashCode(id);
-    }
-
-    public static Submission from(final HttpSession session) {
-        return session == null ? null : (Submission) session.getAttribute(SESSION_ATTRIBUTE_KEY);
-    }
-
-    public static void assign(final HttpSession session, final Submission submission) {
-        session.setAttribute(SESSION_ATTRIBUTE_KEY, submission);
-    }
-
-    public static void clear(final HttpSession session) {
-        session.removeAttribute(SESSION_ATTRIBUTE_KEY);
     }
 }

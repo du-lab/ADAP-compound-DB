@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,14 +49,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Controller
-public class SearchController {
+public class SearchController extends BaseController {
 
     private final UserPrincipalService userPrincipalService;
     private final SubmissionService submissionService;
     private final SpectrumService spectrumService;
 
     private final Map<ChromatographyType, SpectrumSearchService> spectrumSearchServiceMap;
-    private final Map<SearchParams, List<SpectrumMatch>> cachedSpectraSearchResults;
 
     @Autowired
     public SearchController(final UserPrincipalService userPrincipalService,
@@ -70,7 +68,6 @@ public class SearchController {
         this.submissionService = submissionService;
         this.spectrumService = spectrumService;
 
-        this.cachedSpectraSearchResults = new Hashtable<>();
         this.spectrumSearchServiceMap = new HashMap<>();
 
         this.spectrumSearchServiceMap.put(ChromatographyType.GAS, gcSpectrumSearchService);
@@ -121,7 +118,7 @@ public class SearchController {
             @PathVariable("spectrumIndex") final int spectrumIndex,
             final HttpSession session, final Model model) {
 
-        final Submission submission = Submission.from(session);
+        final Submission submission = getSubmissionFromSession(session);
         if (submission == null) {
             return "redirect:/file/upload/";
         }
@@ -153,7 +150,16 @@ public class SearchController {
     public String searchAllSpectrum(@PathVariable(name="submissionId", required=false) final long submissionId, final HttpSession session, final Model model) {
         final SearchForm form = new SearchForm();
         form.setAvailableTags(submissionService.findAllTags());
-        final Submission submission = submissionService.findSubmission(submissionId);
+        Submission submission = null;
+        if(submissionId == 0) {
+            submission = getSubmissionFromSession(session);
+        } else {
+            submission = submissionService.findSubmission(submissionId);
+        }
+
+        if(submission == null) {
+            return "redirect:/";
+        }
 
         model.addAttribute("searchForm", form);
         model.addAttribute("submission", submission);
@@ -173,35 +179,41 @@ public class SearchController {
     }*/
 
     @RequestMapping(value = "/search-spectra")
-    public String searchSpectraBySubmission(final SearchParams searchParams, final Model model) {
-
-        final List<SpectrumMatch> matches = getSpectraBySearchParams(searchParams);
+    public String searchSpectraBySubmission(final HttpSession session, final SearchParams searchParams, final Model model) {
+        getSpectraBySearchParams(session, searchParams);
         model.addAttribute("submissionId", searchParams.getSubmissionId());
         return "../includes/search_spectra";
     }
 
     @ResponseBody
     @RequestMapping(value = "/search-spectra-data", produces="application/json")
-    public String getSearchSpectraData(final SearchParams searchParams, @RequestParam("start") final Integer start,
-            @RequestParam("length") final Integer length) throws JsonProcessingException {
+    public String getSearchSpectraData(final HttpSession session, final SearchParams searchParams, @RequestParam("start") final Integer start,
+            @RequestParam("length") final Integer length) {
 
-        final List<SpectrumMatch> matches = getSpectraBySearchParams(searchParams);
+        final List<SpectrumMatch> matches = getSpectraBySearchParams(session, searchParams);
         final int size = matches.size();
         final DataTableResponse response = new DataTableResponse();
         response.setDataList(matches.subList(start, start + length > size ? size : start + length));
         response.setRecordsFiltered(new Long(size));
         response.setRecordsTotal(new Long(size));
         final ObjectMapper objectMapper = new ObjectMapper();
-        final String jsonString = objectMapper.writeValueAsString(response);
+        String jsonString = "{}";
+        try {
+            jsonString = objectMapper.writeValueAsString(response);
+        } catch (final JsonProcessingException e) {
+            e.printStackTrace();
+        }
         return jsonString;
     }
 
-    public List<SpectrumMatch> getSpectraBySearchParams(final SearchParams searchParams) {
+    public List<SpectrumMatch> getSpectraBySearchParams(final HttpSession session, final SearchParams searchParams) {
         //        return new ArrayList<>();
-        List<SpectrumMatch> matches = cachedSpectraSearchResults.get(searchParams);
+        final Map<SearchParams, List<SpectrumMatch>> cachedSpectraSearchResults = getSearchResultCache(session);
+        List<SpectrumMatch> matches = null;
+        if(cachedSpectraSearchResults != null) {
+            matches = cachedSpectraSearchResults.get(searchParams);
+        }
         if(matches == null) {
-            final SpectrumSearchService service =
-                    spectrumSearchServiceMap.get(submissionService.getChromatographyTypeBySubmissionId(searchParams.getSubmissionId()));
 
             final QueryParameters parameters = new QueryParameters();
             parameters.setScoreThreshold(searchParams.getIsScoreThreshold() ? searchParams.getScoreThreshold() : null);
@@ -215,7 +227,14 @@ public class SearchController {
                             new HashSet<>(Arrays.asList(tags.split(",")))
                             : null);
 
-            final Set<Spectrum> spectra = new HashSet<>(spectrumService.findSpectrumBySubmissionId(searchParams.getSubmissionId()));
+            final Set<Spectrum> spectra = new HashSet<>();
+            if(searchParams.getSubmissionId() > 0) {
+                spectra.addAll(spectrumService.findSpectrumBySubmissionId(searchParams.getSubmissionId()));
+            } else {
+                getSubmissionFromSession(session).getFiles().forEach(f -> spectra.addAll(f.getSpectra()));
+            }
+            final SpectrumSearchService service =
+                    spectrumSearchServiceMap.get(spectra.stream().findFirst().get().getChromatographyType());
             final Set<Long> spectraIdList = spectra.stream().map(s -> s.getId()).collect(Collectors.toSet());
             parameters.addExludeSpectra(spectraIdList);
             List<SpectrumMatch> currentMatches = null;
@@ -232,7 +251,7 @@ public class SearchController {
                 }
                 matches.add(spectrumMatch);
             }
-            cachedSpectraSearchResults.put(searchParams, matches);
+            addSearchResultsToCache(session, searchParams, matches);
         }
         return matches;
     }
@@ -272,7 +291,7 @@ public class SearchController {
             @PathVariable("spectrumIndex") final int spectrumIndex,
             final HttpSession session, final Model model, @Valid final SearchForm form, final Errors errors) {
 
-        final Submission submission = Submission.from(session);
+        final Submission submission = getSubmissionFromSession(session);
         if (submission == null) {
             return new ModelAndView(new RedirectView("/file/upload/"));
         }
@@ -515,7 +534,7 @@ class SearchParams {
 
     @Override
     public int hashCode() {
-        return (submissionId.toString() +
+        final String hashString = submissionId.toString() +
                 isScoreThreshold.toString() +
                 (isScoreThreshold ? scoreThreshold.toString() : "") +
                 (isScoreThreshold ? mzTolerance.toString() : "") +
@@ -523,8 +542,8 @@ class SearchParams {
                 (isMassTolerance ? massTolerance.toString() : "") +
                 isRetTimeTolerance.toString() +
                 (isRetTimeTolerance ? retTimeTolerance.toString() : "") +
-                tags)
-                .hashCode();
+                tags;
+        return hashString.hashCode();
     }
 
     @Override

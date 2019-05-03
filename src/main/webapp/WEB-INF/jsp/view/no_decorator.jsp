@@ -13,7 +13,6 @@
 
 <body>
 
-
     <div style="width: 100%;">
         <article>
             <decorator:body/>
