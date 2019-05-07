@@ -267,7 +267,7 @@
                     data : {
                         submissionId : '${submission.id}',
                         isScoreThreshold : $("#scoreThresholdCheck1").prop('checked'),
-                        scoreThreshold : $("#scoreThreshold").val(), // true
+                        scoreThreshold : $("#scoreThreshold").val() / 1000, // true
                         mzTolerance : $("#mzTolerance").val(), //100
                         isMassTolerance : $("#massToleranceCheck1").prop('checked'),
                         massTolerance : $("#massTolerance").val(),
@@ -277,6 +277,9 @@
                     },
                     success : function(data) {
                         $("#matches").html(data);
+                        $('#matches').unblock();
+                    },
+                    fail: function(data) {
                         $('#matches').unblock();
                     }
                 });

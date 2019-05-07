@@ -62,11 +62,16 @@ public abstract class BaseController {
     public void clearSession(final HttpSession session) {
         session.removeAttribute(SESSION_ATTRIBUTE_KEY);
         final Map<SearchParams, List<SpectrumMatch>> cache = getSearchResultCache(session);
-        cache.keySet().forEach(params -> {
+        SearchParams searchParams = null;
+        for(final SearchParams params: cache.keySet()) {
             if(params.getSubmissionId() == 0) {
-                cache.remove(params);
+                searchParams  = params;
+                break;
             }
-        });
+        }
+        if(searchParams != null) {
+            cache.remove(searchParams);
+        }
     }
 
     public void addSearchResultsToCache(final HttpSession session, final SearchParams searchParams, final List<SpectrumMatch> matches) {

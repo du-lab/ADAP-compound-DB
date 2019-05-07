@@ -33,7 +33,7 @@ $("#match_table").DataTable({
         data: function (data) {
             data.submissionId = '${submissionId}';
             data.isScoreThreshold = $("#scoreThresholdCheck1").prop('checked');
-            data.scoreThreshold = $("#scoreThreshold").val();
+            data.scoreThreshold = $("#scoreThreshold").val() / 1000;
             data.mzTolerance = $("#mzTolerance").val();
             data.isMassTolerance = $("#massToleranceCheck1").prop('checked');
             data.massTolerance = $("#massTolerance").val();
