@@ -72,21 +72,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public void changePassword(String username, String oldpass, String newpass) {
         UserPrincipal principal = userPrincipalRepository.findUserPrincipalByUsername(username).orElse(null);
-        String salt = BCrypt.gensalt(HASHING_LOG_ROUNDS);
-        System.out.println("current password:"+ principal.getHashedPassword());
-        System.out.println("old password:"+ BCrypt.hashpw(oldpass, salt));
-        //
-        //principal.getHashedPassword() == BCrypt.hashpw(oldpass, salt)
         if(BCrypt.checkpw(oldpass, principal.getHashedPassword())){
-            LOG.info("Generating a salt...");
-            LOG.info("Hashing the password with the generated salt...");
+            String salt = BCrypt.gensalt(HASHING_LOG_ROUNDS);
             principal.setHashedPassword(BCrypt.hashpw(newpass, salt));
+            userPrincipalRepository.save(principal);
         }
-        LOG.info("Assigning default role...");
-        principal.assignDefaultRole();
-        LOG.info("Saving the user...");
-        userPrincipalRepository.save(principal);
-        LOG.info("Registering is completed.");
+        // did not pass the password change, notice user about the information
+
+        
+
     }
 
     @Override
