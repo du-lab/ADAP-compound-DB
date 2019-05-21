@@ -21,4 +21,9 @@ public interface AuthenticationService {
     void saveUser(
             @NotNull(message = "The user principal is required.") @Valid UserPrincipal principal,
             @Password(message = "Please match the requested format.") String password);
+
+    void changePassword(
+            String username,
+            @Password(message = "Please match the requested format.") String oldpass,
+            @Password(message = "Please match the requested format.") String newpass);
 }

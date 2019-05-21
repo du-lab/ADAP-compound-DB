@@ -17,6 +17,9 @@
                                                          var="role">${role.label}&nbsp;</c:forEach></p>
         </div>
     </div>
+    <div align="center">
+        <a href="${pageContext.request.contextPath}/account/changePassword" class="button">Changing Password</a>
+    </div>
 </section>
 
 <section>
