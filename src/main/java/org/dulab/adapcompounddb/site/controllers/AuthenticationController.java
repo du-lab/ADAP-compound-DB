@@ -2,6 +2,7 @@ package org.dulab.adapcompounddb.site.controllers;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.swing.*;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -178,8 +179,6 @@ public class AuthenticationController {
         try {
             authenticationService.changePassword(user.getUsername(),form.getOldpass(),form.getNewpass());
         } catch (Throwable t) {
-            LOG.warn("Error during authentication", t);
-
             if (t instanceof ConstraintViolationException) {
                 model.addAttribute("validationErrors",
                         ((ConstraintViolationException) t).getConstraintViolations());
@@ -189,9 +188,9 @@ public class AuthenticationController {
                }
             }
             form.setRenewpass(null);
-           return new ModelAndView("account/changePassword");
+            return new ModelAndView("account/changePassword");
        }
-        return new ModelAndView("redirect:/login");
+        return new ModelAndView("account/changePassword");
     }
 
 
@@ -364,4 +363,5 @@ public class AuthenticationController {
     /**********************
      ***** Functions *****
      **********************/
+
 }

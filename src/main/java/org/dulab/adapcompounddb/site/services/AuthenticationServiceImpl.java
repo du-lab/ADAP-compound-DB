@@ -11,11 +11,9 @@ import org.dulab.adapcompounddb.site.repositories.UserPrincipalRepository;
 import org.hibernate.Hibernate;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.servlet.http.HttpSession;
+import javax.swing.*;
 
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
@@ -72,15 +70,24 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public void changePassword(String username, String oldpass, String newpass) {
         UserPrincipal principal = userPrincipalRepository.findUserPrincipalByUsername(username).orElse(null);
-        if(BCrypt.checkpw(oldpass, principal.getHashedPassword())){
-            String salt = BCrypt.gensalt(HASHING_LOG_ROUNDS);
-            principal.setHashedPassword(BCrypt.hashpw(newpass, salt));
-            userPrincipalRepository.save(principal);
+        if(BCrypt.checkpw(oldpass, principal.getHashedPassword())){                     // check if the old password is equal to current password
+            // check if the new password is the same as old password
+            if(BCrypt.checkpw(newpass, principal.getHashedPassword())) {                // then check if the new password is the same as current password,
+                String msg = "The new password cannot be the same as old password!!";   // alert user and do not change the password.
+                msgbox(msg);
+            } else {                                                              // then check if the new password is different from the current password,
+                String salt = BCrypt.gensalt(HASHING_LOG_ROUNDS);                 // update new password as current password and alert update successfully.
+                principal.setHashedPassword(BCrypt.hashpw(newpass, salt));
+                userPrincipalRepository.save(principal);
+                String msg = "Changing password successfully";
+                msgbox(msg);
+            }
         }
-        // did not pass the password change, notice user about the information
-
-        
-
+        else{
+            // did not change the password successfully, notice user about the information
+            String msg = "Changing password failed!";
+            msgbox(msg);
+        }
     }
 
     @Override
@@ -88,4 +95,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public Optional<UserPrincipal> findUser(long id) {
         return userPrincipalRepository.findById(id);
     }
+
+    // display message on screen!
+    public void msgbox(String s){
+        JOptionPane.showMessageDialog(null,s);
+    }
+
 }
