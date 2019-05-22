@@ -156,28 +156,26 @@ public class AuthenticationController {
 
     @RequestMapping(value = "/account/changePassword", method = RequestMethod.GET)
     public ModelAndView changePassword(final Model model, final HttpSession session) {
-        if (UserPrincipal.from(session) != null) {
-            return getHomeRedirect();
-        }
         model.addAttribute("changePassFail", false);
         model.addAttribute("changePassForm", new ChangePassForm());
-
         return new ModelAndView("account/changePassword");
     }
 
     @RequestMapping(value = "/account/changePassword", method = RequestMethod.POST)
-    public ModelAndView changePassword(final Model model, final HttpSession session,
+    public String changePassword(final Model model, final HttpSession session,
                                        @Valid final ChangePassForm form, final Errors errors) {
-        if (UserPrincipal.from(session) != null) {
-            return getHomeRedirect();
-        }
-
         if (errors.hasErrors()) {
-            return new ModelAndView("account/changePassword");
+            return "account/changePassword";
         }
         User user = (User) session.getAttribute("currentUser");
         try {
-            authenticationService.changePassword(user.getUsername(),form.getOldpass(),form.getNewpass());
+            authenticationService.changePassword(user.getUsername(), form.getOldpass(), form.getNewpass());
+
+        } catch (IllegalStateException e) {
+            model.addAttribute("errorMsg", e.getMessage());
+            model.addAttribute("changePassForm", new ChangePassForm());
+            return "account/changePassword";
+
         } catch (Throwable t) {
             if (t instanceof ConstraintViolationException) {
                 model.addAttribute("validationErrors",
@@ -185,12 +183,14 @@ public class AuthenticationController {
             } else if (t instanceof DataIntegrityViolationException) {
                 while (t.getCause() != null) {
                     t = t.getCause();
-               }
+                }
             }
+            form.setOldpass(null);
+            form.setNewpass(null);
             form.setRenewpass(null);
-            return new ModelAndView("account/changePassword");
-       }
-        return new ModelAndView("account/changePassword");
+            return "account/changePassword";
+        }
+        return "redirect:/logout";
     }
 
 
@@ -359,9 +359,5 @@ public class AuthenticationController {
             this.confirmedPassword = confirmedPassword;
         }
     }
-
-    /**********************
-     ***** Functions *****
-     **********************/
 
 }

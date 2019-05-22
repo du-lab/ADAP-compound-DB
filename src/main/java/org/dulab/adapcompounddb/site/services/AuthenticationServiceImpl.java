@@ -13,6 +13,7 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import javax.swing.*;
 
 @Service
@@ -68,25 +69,22 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public void changePassword(String username, String oldpass, String newpass) {
+    public void changePassword(String username, String oldpass, String newpass)
+            throws IllegalStateException {
+
         UserPrincipal principal = userPrincipalRepository.findUserPrincipalByUsername(username).orElse(null);
-        if(BCrypt.checkpw(oldpass, principal.getHashedPassword())){                     // check if the old password is equal to current password
+        if (BCrypt.checkpw(oldpass, principal.getHashedPassword())) {                     // check if the old password is equal to current password
             // check if the new password is the same as old password
-            if(BCrypt.checkpw(newpass, principal.getHashedPassword())) {                // then check if the new password is the same as current password,
-                String msg = "The new password cannot be the same as old password!!";   // alert user and do not change the password.
-                msgbox(msg);
-            } else {                                                              // then check if the new password is different from the current password,
+            if (BCrypt.checkpw(newpass, principal.getHashedPassword())) {                // then check if the new password is the same as current password,
+                throw new IllegalStateException("The new password cannot be the same as old password!!");
+            } else {
                 String salt = BCrypt.gensalt(HASHING_LOG_ROUNDS);                 // update new password as current password and alert update successfully.
                 principal.setHashedPassword(BCrypt.hashpw(newpass, salt));
                 userPrincipalRepository.save(principal);
-                String msg = "Changing password successfully";
-                msgbox(msg);
             }
-        }
-        else{
-            // did not change the password successfully, notice user about the information
-            String msg = "Changing password failed!";
-            msgbox(msg);
+        } else {
+            // the old password does not match the current password
+            throw new IllegalStateException("The old password does not match your current password, Please try again!");
         }
     }
 
@@ -96,9 +94,5 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return userPrincipalRepository.findById(id);
     }
 
-    // display message on screen!
-    public void msgbox(String s){
-        JOptionPane.showMessageDialog(null,s);
-    }
 
 }

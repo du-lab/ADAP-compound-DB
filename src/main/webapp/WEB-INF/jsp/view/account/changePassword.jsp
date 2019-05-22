@@ -67,7 +67,7 @@
                 </tr>
                 <tr>
                     <td></td>
-                    <td><input type="submit" value="RESET"/></td>
+                    <td><input type="submit" value="Change"/></td>
                 </tr>
             </table>
         </form:form>
