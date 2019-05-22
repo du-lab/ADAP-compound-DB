@@ -1,9 +1,6 @@
 package org.dulab.adapcompounddb.site.services;
 
 import java.util.Optional;
-
-import com.sun.tools.internal.xjc.reader.xmlschema.bindinfo.BIConversion;
-import org.apache.commons.collections.bag.SynchronizedSortedBag;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
@@ -13,8 +10,6 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.swing.*;
 
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {

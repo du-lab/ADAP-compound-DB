@@ -3,7 +3,6 @@ package org.dulab.adapcompounddb.site.services;
 import org.dulab.adapcompounddb.validation.Password;
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.springframework.validation.annotation.Validated;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
