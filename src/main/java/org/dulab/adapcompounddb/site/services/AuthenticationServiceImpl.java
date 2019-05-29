@@ -1,7 +1,6 @@
 package org.dulab.adapcompounddb.site.services;
 
 import java.util.Optional;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
@@ -65,8 +64,30 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
+    public void changePassword(String username, String oldpass, String newpass)
+            throws IllegalStateException {
+
+        UserPrincipal principal = userPrincipalRepository.findUserPrincipalByUsername(username).orElse(null);
+        if (BCrypt.checkpw(oldpass, principal.getHashedPassword())) {                     // check if the old password is equal to current password
+            // check if the new password is the same as old password
+            if (BCrypt.checkpw(newpass, principal.getHashedPassword())) {                // then check if the new password is the same as current password,
+                throw new IllegalStateException("The new password cannot be the same as old password!!");
+            } else {
+                String salt = BCrypt.gensalt(HASHING_LOG_ROUNDS);                 // update new password as current password and alert update successfully.
+                principal.setHashedPassword(BCrypt.hashpw(newpass, salt));
+                userPrincipalRepository.save(principal);
+            }
+        } else {
+            // the old password does not match the current password
+            throw new IllegalStateException("The old password does not match your current password, Please try again!");
+        }
+    }
+
+    @Override
     @Transactional
     public Optional<UserPrincipal> findUser(long id) {
         return userPrincipalRepository.findById(id);
     }
+
+
 }

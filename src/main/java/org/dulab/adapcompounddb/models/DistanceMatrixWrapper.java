@@ -17,7 +17,7 @@ import org.springframework.data.domain.Pageable;
 
 public class DistanceMatrixWrapper implements Matrix {
 
-    private static final int PAGE_SIZE = 1000;
+    private static final int PAGE_SIZE = 100000;
     private final Function<Pageable, Page<SpectrumMatch>> function;
     private final Map<Long, Integer> spectrumIndexMap;
 

@@ -14,6 +14,8 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.validation.Valid;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.FeedbackDTO;
 import org.dulab.adapcompounddb.models.entities.Feedback;
@@ -30,6 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class FeedbackServiceImpl implements FeedbackService {
+
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private static final String DESC = "DESC";
     private final FeedbackRepository feedbackRepository;
@@ -109,6 +113,11 @@ public class FeedbackServiceImpl implements FeedbackService {
                 return new PasswordAuthentication(properties.getProperty("username"), properties.getProperty("password"));
             }
         });
+
+        if (!properties.contains("email_from") || !properties.contains("email_to")) {
+            LOGGER.warn("Cannot send a feedback email from " + feedback.getName());
+            return;
+        }
 
         try {
             final MimeMessage message = new MimeMessage(session);

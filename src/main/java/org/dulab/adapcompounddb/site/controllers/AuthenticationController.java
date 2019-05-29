@@ -5,7 +5,6 @@ import javax.servlet.http.HttpSession;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
@@ -15,6 +14,7 @@ import org.dulab.adapcompounddb.validation.FieldMatch;
 import org.dulab.adapcompounddb.validation.Password;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
+
 
 @Controller
 public class AuthenticationController {
@@ -104,7 +105,7 @@ public class AuthenticationController {
 
     @RequestMapping(value = "/signup", method = RequestMethod.POST)
     public ModelAndView signup(final Model model, final HttpSession session, final HttpServletRequest request,
-            @Valid final SignUpForm form, final Errors errors) {
+                               @Valid final SignUpForm form, final Errors errors) {
         if (UserPrincipal.from(session) != null) {
             return getHomeRedirect();
         }
@@ -132,7 +133,7 @@ public class AuthenticationController {
                 }
                 model.addAttribute("errorMsg",
                         t.getMessage().contains("Duplicate")
-                        ? "Username is already used."
+                                ? "Username is already used."
                                 : t.getMessage());
             }
 
@@ -145,6 +146,50 @@ public class AuthenticationController {
         request.changeSessionId();*/
         return new ModelAndView("redirect:/login/");
     }
+
+    /*****************************
+     ***** Changing Password *****
+     ****************************/
+
+    @RequestMapping(value = "/account/changePassword", method = RequestMethod.GET)
+    public ModelAndView changePassword(final Model model, final HttpSession session) {
+        model.addAttribute("changePassFail", false);
+        model.addAttribute("changePassForm", new ChangePassForm());
+        return new ModelAndView("account/changePassword");
+    }
+
+    @RequestMapping(value = "/account/changePassword", method = RequestMethod.POST)
+    public String changePassword(final Model model, final HttpSession session,
+                                       @Valid final ChangePassForm form, final Errors errors) {
+        if (errors.hasErrors()) {
+            return "account/changePassword";
+        }
+        User user = (User) session.getAttribute("currentUser");
+        try {
+            authenticationService.changePassword(user.getUsername(), form.getOldpass(), form.getNewpass());
+
+        } catch (IllegalStateException e) {
+            model.addAttribute("errorMsg", e.getMessage());
+            model.addAttribute("changePassForm", new ChangePassForm());
+            return "account/changePassword";
+
+        } catch (Throwable t) {
+            if (t instanceof ConstraintViolationException) {
+                model.addAttribute("validationErrors",
+                        ((ConstraintViolationException) t).getConstraintViolations());
+            } else if (t instanceof DataIntegrityViolationException) {
+                while (t.getCause() != null) {
+                    t = t.getCause();
+                }
+            }
+            form.setOldpass(null);
+            form.setNewpass(null);
+            form.setRenewpass(null);
+            return "account/changePassword";
+        }
+        return "redirect:/logout";
+    }
+
 
     /*****************
      ***** Log Out *****
@@ -163,6 +208,65 @@ public class AuthenticationController {
     /**********************
      ***** SubmissionForm classes *****
      **********************/
+
+    @FieldMatch.List({
+            @FieldMatch(first = "newpass", second = "renewpass", message = "The New Password and ReEnter Password fields must match.")
+    })
+
+    public static class ChangePassForm {
+        private String username;
+        private String email;
+
+        @NotBlank(message = "The old password is required.")
+        private String oldpass;
+
+        @NotBlank(message = "The new password is required.")
+        @Password(message = "Please match your new password with the requested format.")
+        private String newpass;
+
+        @NotBlank(message = "The re-enter password is required.")
+        private String renewpass;
+
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(final String username) {
+            this.username = username;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(final String email) {
+            this.email = email;
+        }
+
+        public String getOldpass() {
+            return oldpass;
+        }
+
+        public void setOldpass(final String oldpass) {
+            this.oldpass = oldpass;
+        }
+
+        public String getNewpass() {
+            return newpass;
+        }
+
+        public void setNewpass(final String newpass) {
+            this.newpass = newpass;
+        }
+
+        public String getRenewpass() {
+            return renewpass;
+        }
+
+        public void setRenewpass(final String renewpass) {
+            this.renewpass = renewpass;
+        }
+    }
 
     public static class LogInForm {
 
@@ -190,10 +294,11 @@ public class AuthenticationController {
     }
 
     @FieldMatch.List({
-        @FieldMatch(first = "email", second = "confirmedEmail", message = "The E-mail fields must match."),
-        @FieldMatch(first = "password", second = "confirmedPassword",
-        message = "The Password fields must match.")
+            @FieldMatch(first = "email", second = "confirmedEmail", message = "The E-mail fields must match."),
+            @FieldMatch(first = "password", second = "confirmedPassword",
+                    message = "The Password fields must match.")
     })
+
     public static class SignUpForm {
 
         @NotBlank(message = "The username is required.")
@@ -251,4 +356,5 @@ public class AuthenticationController {
             this.confirmedPassword = confirmedPassword;
         }
     }
+
 }
