@@ -134,8 +134,6 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
                 for (final long label : uniqueLabels) {
 
-                    LOGGER.info(String.format("Creating Cluster %d", label));
-
                     count += 1F;
                     final Set<Long> spectrumIds = labelMap.entrySet()
                             .stream()
@@ -144,6 +142,8 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                             .map(index -> spectra.get(index).getId())
                             .collect(Collectors.toSet());
 
+                    LOGGER.info(String.format("Creating Cluster %d of size %d...", label, spectrumIds.size()));
+
                     if (spectrumIds.size() >= MIN_NUM_SPECTRA) {
 
                         final SpectrumCluster cluster = createCluster(spectrumIds, MZ_TOLERANCE);
@@ -151,8 +151,6 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
                         final List<Peak> peaks = new ArrayList<>(consensusSpectrum.getPeaks());
                         final List<SpectrumProperty> properties = new ArrayList<>(consensusSpectrum.getProperties());
-
-                        LOGGER.info(String.format("\tCluster %d is being saved...", label));
 
                         spectrumClusterRepository.save(cluster);
                         spectrumRepository.savePeaksAndProperties(consensusSpectrum.getId(), peaks, properties);
@@ -171,8 +169,6 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                     }
                     progress = step * count / total + step * i;
                 }
-
-                LOGGER.info(String.format("Clustering spectra of type \"%s\" is completed.", type));
             }
             progress = -0.1F;
         } catch (final Exception e) {
@@ -240,13 +236,9 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
             cluster.setAveDiversity(avgDiversity);
         }
 
-        LOGGER.info("\tConsensus spectrum is being constructed...");
-
         final Spectrum consensusSpectrum = createConsensusSpectrum(spectra, mzTolerance);
         consensusSpectrum.setCluster(cluster);
         cluster.setConsensusSpectrum(consensusSpectrum);
-
-        LOGGER.info("\tConsensus spectrum is created");
 
         return cluster;
     }
