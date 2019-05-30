@@ -198,6 +198,13 @@ public class Submission implements Serializable {
                 .stream()
                 .map(SubmissionTag::getId)
                 .map(SubmissionTagId::getName)
+                .map(s -> {
+                    int index = s.lastIndexOf(':');
+                    if (index < 0)
+                        return s;
+                    else
+                        return s.substring(index + 1).trim();
+                })
                 .collect(Collectors.joining(", "))
                 .trim();
     }
