@@ -18,18 +18,23 @@ services:
 
 #     web:
 #         image: tomcat:8.5-jdk8
+#         restart: always
 #         environment: 
 #             JDBC_URL: jdbc:mysql://db:3306/adapcompounddb?connectTimeout=0&amp;socketTimeout=0&amp;autoReconnect=true
 #             JDBC_USER: dulab
 #             JDBC_PASSWORD: 'Du&Lab1234'
+#             TOMCAT_USERNAME: dulab
+#             TOMCAT_PASSWORD: 'dulab'
+#             TOMCAT_ALLOW_REMOTE_MANAGEMENT: 1
 #         ports:
 #             - "8080:8080"
 #         volumes:
-#             - ./tomcat/webapps:/usr/local/tomcat/webapps
+#             - /tmp/tomcat:/usr/local/tomcat
 #         links:
 #             - db
-
-volumes:
-    db:
+# 
+# volumes:
+#     db:
+#     /usr/local/tomcat:
 
  
