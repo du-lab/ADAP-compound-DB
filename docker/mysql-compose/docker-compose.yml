@@ -7,8 +7,8 @@ services:
         environment:
             MYSQL_DATABASE: 'adapcompounddb'
             MYSQL_USER: 'dulab'
-            MYSQL_PASSWORD: 'Du&Lab1234'
-            MYSQL_ROOT_PASSWORD: 'Aay1XyUYfG6K0d3r'
+            MYSQL_PASSWORD: '$PASSWORD'
+            MYSQL_ROOT_PASSWORD: '$ROOT_PASSWORD'
         ports:
             - '3306:3306'
         command: --init-file /data/application/adapcompounddb_schema.sql
