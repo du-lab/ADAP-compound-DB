@@ -4,11 +4,13 @@ services:
     db:
         image: mysql:5.7
         restart: always
+        env_file:
+            - .env
         environment:
             MYSQL_DATABASE: 'adapcompounddb'
-            MYSQL_USER: 'dulab'
-            MYSQL_PASSWORD: '$PASSWORD'
-            MYSQL_ROOT_PASSWORD: '$ROOT_PASSWORD'
+#             MYSQL_USER:
+#             MYSQL_PASSWORD:
+#             MYSQL_ROOT_PASSWORD:
         ports:
             - '3306:3306'
         command: --init-file /data/application/adapcompounddb_schema.sql
