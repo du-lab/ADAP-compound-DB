@@ -1,0 +1,35 @@
+version: '0.1'
+
+services:
+    db:
+        image: mysql:5.7
+        restart: always
+        environment:
+            MYSQL_DATABASE: 'adapcompounddb'
+            MYSQL_USER: 'dulab'
+            MYSQL_PASSWORD: 'Du&Lab1234'
+            MYSQL_ROOT_PASSWORD: 'Aay1XyUYfG6K0d3r'
+        ports:
+            - '3306:3306'
+        command: --init-file /data/application/adapcompounddb_schema.sql
+        volumes:
+            - db:/var/lib/mysql
+            - ./adapcompounddb_schema.sql:/data/application/adapcompounddb_schema.sql
+
+#     web:
+#         image: tomcat:8.5-jdk8
+#         environment: 
+#             JDBC_URL: jdbc:mysql://db:3306/adapcompounddb?connectTimeout=0&amp;socketTimeout=0&amp;autoReconnect=true
+#             JDBC_USER: dulab
+#             JDBC_PASSWORD: 'Du&Lab1234'
+#         ports:
+#             - "8080:8080"
+#         volumes:
+#             - ./tomcat/webapps:/usr/local/tomcat/webapps
+#         links:
+#             - db
+
+volumes:
+    db:
+
+ 
