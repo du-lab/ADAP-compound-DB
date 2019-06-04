@@ -123,17 +123,19 @@ public class SpectrumQueryBuilder {
             query = "SELECT DISTINCT SpectrumId, 0 AS Score FROM Peak\n";
 
         else {
-            query = "SELECT SpectrumId, POWER(SUM(Product), 2) AS Score FROM (\n";  // 0 AS Id, NULL AS QuerySpectrumId, SpectrumId AS MatchSpectrumId
+            query = "WITH\n";
+            query += "\tCommonTable AS (SELECT SpectrumId, Mz, Intensity FROM Peak, Spectrum WHERE Peak.SpectrumId = Spectrum.Id AND ";
+            query += librarySelectionBuilder.toString() + ")\n";
+            query += "SELECT SpectrumId, POWER(SUM(Product), 2) AS Score FROM (\n";  // 0 AS Id, NULL AS QuerySpectrumId, SpectrumId AS MatchSpectrumId
 
             query += spectrum.getPeaks()
                     .stream()
                     .map(p -> String.format("\tSELECT SpectrumId, MAX(SQRT(Intensity * %f)) AS Product " +
-                                    "FROM Peak, Spectrum " +
-                                    "WHERE Peak.SpectrumId = Spectrum.Id AND Peak.Mz > %f AND Peak.Mz < %f AND %s GROUP BY SpectrumId\n",
+                                    "FROM CommonTable " +
+                                    "WHERE Mz > %f AND Mz < %f GROUP BY SpectrumId\n",
                             p.getIntensity(),
                             p.getMz() - mzTolerance,
-                            p.getMz() + mzTolerance,
-                            librarySelectionBuilder.toString()))
+                            p.getMz() + mzTolerance))
                     .collect(Collectors.joining("\tUNION ALL\n"));
 
             query += ") AS Result\n";
