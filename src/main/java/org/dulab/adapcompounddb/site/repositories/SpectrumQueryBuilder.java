@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.SearchType;
+import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 
 public class SpectrumQueryBuilder {
@@ -128,8 +129,15 @@ public class SpectrumQueryBuilder {
             query += librarySelectionBuilder.toString() + ")\n";
             query += "SELECT SpectrumId, POWER(SUM(Product), 2) AS Score FROM (\n";  // 0 AS Id, NULL AS QuerySpectrumId, SpectrumId AS MatchSpectrumId
 
+            double intensityThreshold = 0.05 * spectrum.getPeaks()
+                    .stream()
+                    .mapToDouble(Peak::getIntensity)
+                    .max()
+                    .orElse(0.0);
+
             query += spectrum.getPeaks()
                     .stream()
+                    .filter(p -> p.getIntensity() > intensityThreshold)
                     .map(p -> String.format("\tSELECT SpectrumId, MAX(SQRT(Intensity * %f)) AS Product " +
                                     "FROM CommonTable " +
                                     "WHERE Mz > %f AND Mz < %f GROUP BY SpectrumId\n",
