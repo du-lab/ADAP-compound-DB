@@ -446,9 +446,10 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
     private List<Peak> createConsensusPeaksWithIntegerMz(List<Spectrum> spectra) {
 
-        // Get all m/z values from all spectra
+        // Get all distinct m/z values from all spectra
         int[] mzValues = spectra.stream()
                 .flatMapToInt(s -> s.getPeaks().stream().mapToInt(p -> (int) p.getMz()))
+                .distinct()
                 .toArray();
 
         // Calculate average intensity for each m/z value
