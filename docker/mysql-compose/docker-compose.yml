@@ -3,6 +3,7 @@ version: '0.1'
 services:
     db:
         image: mysql:5.7
+        container_name: mysql_db
         restart: always
         env_file:
             - .env
@@ -17,14 +18,15 @@ services:
         volumes:
             - db:/var/lib/mysql
             - ./adapcompounddb_schema.sql:/data/application/adapcompounddb_schema.sql
+            - ./dump.mysql:/data/application/dump.mysql
 
 #     web:
 #         image: tomcat:8.5-jdk8
 #         restart: always
 #         environment: 
 #             JDBC_URL: jdbc:mysql://db:3306/adapcompounddb?connectTimeout=0&amp;socketTimeout=0&amp;autoReconnect=true
-#             JDBC_USER: dulab
-#             JDBC_PASSWORD: 'Du&Lab1234'
+#             JDBC_USER: $MYSQL_USER
+#             JDBC_PASSWORD: '$MYSQL_PASSWORD'
 #             TOMCAT_USERNAME: dulab
 #             TOMCAT_PASSWORD: 'dulab'
 #             TOMCAT_ALLOW_REMOTE_MANAGEMENT: 1
