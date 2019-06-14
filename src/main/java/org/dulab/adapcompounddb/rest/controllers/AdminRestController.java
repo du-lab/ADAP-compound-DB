@@ -3,6 +3,7 @@ package org.dulab.adapcompounddb.rest.controllers;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.dulab.adapcompounddb.site.services.DistributionServiceImpl;
 import org.dulab.adapcompounddb.site.services.SpectrumClusterer;
 import org.dulab.adapcompounddb.site.services.SpectrumMatchCalculator;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,11 +17,13 @@ public class AdminRestController {
     private final SpectrumMatchCalculator spectrumMatchCalculator;
     private final SpectrumClusterer spectrumClusterer;
     private final ExecutorService executor;
+    private final DistributionServiceImpl distribution;
 
     public AdminRestController(final SpectrumMatchCalculator spectrumMatchCalculator,
-            final SpectrumClusterer spectrumClusterer) {
+            final SpectrumClusterer spectrumClusterer, final DistributionServiceImpl distribution) {
         this.spectrumMatchCalculator = spectrumMatchCalculator;
         this.spectrumClusterer = spectrumClusterer;
+        this.distribution =  distribution;
         executor = Executors.newCachedThreadPool();
     }
 
@@ -47,6 +50,7 @@ public class AdminRestController {
     public String cluster() {
         try {
             final Runnable r = () -> {
+                distribution.findSubmissionTag();
                 spectrumClusterer.removeAll();
                 spectrumClusterer.cluster();
                 //                Arrays.stream(ChromatographyType.values())
