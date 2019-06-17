@@ -1,40 +1,56 @@
 package org.dulab.adapcompounddb.site.services;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.entities.SubmissionTag;
 import org.dulab.adapcompounddb.models.entities.TagDistribution;
 import org.dulab.adapcompounddb.site.repositories.DistributionRepository;
 import org.dulab.adapcompounddb.site.repositories.SubmissionTagRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class DistributionServiceImpl {
+public class DistributionServiceImpl implements DistributionService {
 
     private  SubmissionTagRepository submissionTagRepository;
     private  DistributionRepository distributionRepository;
+    private static final Logger LOGGER = LogManager.getLogger(DistributionService.class);
 
     public DistributionServiceImpl(SubmissionTagRepository submissionTagRepository,DistributionRepository distributionRepository) {
         this.submissionTagRepository = submissionTagRepository;
         this.distributionRepository = distributionRepository;
     }
 
+    @Transactional(propagation= Propagation.REQUIRES_NEW)
+    @Override
+    public void removeAll() {
+        LOGGER.info("Deleting old tagKey...");
+        try {
+            distributionRepository.deleteAllTagKey();
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+        LOGGER.info("Deleting old tagKey is completed");
+    }
+
+
     @Transactional
-    public Iterable<SubmissionTag> findSubmissionTag() {
+    @Override
+    public void calculateAllDistributions() {
 
         // Find all the tags has been submitted
         Iterable<SubmissionTag> tags = submissionTagRepository.findAll();
 
         // Store all the tags in a List
-        List<SubmissionTag> tagKey = new ArrayList<>();
-        tags.forEach(tagKey::add);
+        List<SubmissionTag> tagList = new ArrayList<>();
+        tags.forEach(tagList::add);
 
         // Find unique keys among all tags of all spectra
-        final List<String> keys = tagKey.stream()
+        final List<String> keys = tagList.stream()
                 .map(t -> t.getId().getName())
                 .map(a -> {
                     String[] values = a.split(":");
@@ -50,7 +66,7 @@ public class DistributionServiceImpl {
         // For each key, find its values and their count
         for (String key : keys) {
             Map<String, Integer> countMap = new HashMap<>();
-            List<String> tagValues = tagKey.stream()
+            List<String> tagValues = tagList.stream()
                     .map(t -> t.getId().getName())
                     .map(a -> {
                         String[] values = a.split(":");
@@ -64,22 +80,13 @@ public class DistributionServiceImpl {
                 for (String value : tagValues)
                     countMap.compute(value, (k, v) -> (v == null) ? 1 : v + 1);
 
-                // save distribution as Json format using Jackson ObjectMapper
-            try {
-                // Default constructor, which will construct the default JsonFactory as necessary, use SerializerProvider as its
-                // SerializerProvider, and BeanSerializerFactory as its SerializerFactory.
-                 String objectMapper = new ObjectMapper().writeValueAsString(countMap);
-
                 // Save values and their counts to TagDistribution
                 TagDistribution tagDistribution = new TagDistribution();
-                tagDistribution.setTagName(key);
-                tagDistribution.setTagDistribution(objectMapper);
+                tagDistribution.setTagDistributionMap(countMap);
+                tagDistribution.setTagKey(key);
+                tagDistribution.setTagDistribution(tagDistribution.setTagDistributionMap(countMap));
                 distributionRepository.save(tagDistribution);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
+
             }
         }
-        return null ;
     }
-
-}

@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`TagDistribution`
 (
     `Id`                  BIGINT(20)       UNSIGNED NOT NULL AUTO_INCREMENT,
     `ClusterId`           BIGINT(20)       UNSIGNED NULL DEFAULT NULL,
-    `TagName`             TEXT             NOT NULL,
+    `TagKey`              VARCHAR(256)     NOT NULL,
     `TagDistribution`     TEXT             NOT NULL,
     `PValue`              DOUBLE           NULL DEFAULT NULL,
     PRIMARY KEY (`Id`),
