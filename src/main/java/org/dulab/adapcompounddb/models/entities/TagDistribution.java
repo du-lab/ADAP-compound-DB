@@ -1,8 +1,13 @@
 package org.dulab.adapcompounddb.models.entities;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONException;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.io.Serializable;
 import java.util.Map;
 import javax.persistence.*;
@@ -58,12 +63,26 @@ public class TagDistribution implements Serializable{
         this.pValue = pValue;
     }
 
-   /*@Transient
-    public Map<String,Integer> getTagDistributionMap(){
 
+    // convert Json to Map
+  @Transient
+    public Map<String,Integer> getTagDistributionMap() throws JSONException {
 
-    }*/
+      ObjectMapper mapper = new ObjectMapper;
+      try{
+          Map<String, Integer> countMap = mapper.readValue(tagDistribution,Map.class);
+          return countMap;
+      } catch (JsonParseException e) {
+          e.printStackTrace();
+      } catch (JsonMappingException e) {
+          e.printStackTrace();
+      } catch (IOException e) {
+          e.printStackTrace();
+      }
 
+  }
+
+  // convert Map to Json
    @Transient
     public String setTagDistributionMap(Map<String,Integer> countMap){
         try {
