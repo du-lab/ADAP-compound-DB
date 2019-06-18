@@ -30,6 +30,7 @@ public class DistributionServiceImpl implements DistributionService {
     public void removeAll() {
         LOGGER.info("Deleting old tagKey...");
         try {
+            //TODO: change distributionRepository.deleteAllTagKey() to distributionRepository.deleteAll()
             distributionRepository.deleteAllTagKey();
         } catch (final Exception e) {
             e.printStackTrace();

@@ -1,13 +1,8 @@
 package org.dulab.adapcompounddb.models.entities;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.json.JSONException;
-
 import java.io.IOException;
-import java.util.HashMap;
 import java.io.Serializable;
 import java.util.Map;
 import javax.persistence.*;
@@ -64,31 +59,25 @@ public class TagDistribution implements Serializable{
     }
 
 
-    // convert Json to Map
+    // Convert Json-String to Map
   @Transient
-    public Map<String,Integer> getTagDistributionMap() throws JSONException {
+    public Map<String,Integer> getTagDistributionMap() throws IllegalStateException {
+        ObjectMapper mapper = new ObjectMapper();
+        try{
+          return (Map<String, Integer>) mapper.readValue(tagDistribution,Map.class);
+        } catch (IOException e) {
+         throw new IllegalStateException("It cannot be converted from Json-String to map!");
+        }
+    }
 
-      ObjectMapper mapper = new ObjectMapper();
-      try{
-          Map<String, Integer> countMap = mapper.readValue(tagDistribution,Map.class);
-      } catch (JsonParseException e) {
-          e.printStackTrace();
-      } catch (JsonMappingException e) {
-          e.printStackTrace();
-      } catch (IOException e) {
-          e.printStackTrace();
-      }
-      return null;
-  }
 
-  // convert Map to Json
+    // Convert Map to Json-String
    @Transient
     public String setTagDistributionMap(Map<String,Integer> countMap){
         try {
             // Default constructor, which will construct the default JsonFactory as necessary, use SerializerProvider as its
             // SerializerProvider, and BeanSerializerFactory as its SerializerFactory.
-            String objectMapper = new ObjectMapper().writeValueAsString(countMap);
-            this.tagDistribution = objectMapper;
+            this.tagDistribution = new ObjectMapper().writeValueAsString(countMap);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
