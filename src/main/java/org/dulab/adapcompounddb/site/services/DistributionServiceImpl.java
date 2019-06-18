@@ -30,8 +30,7 @@ public class DistributionServiceImpl implements DistributionService {
     public void removeAll() {
         LOGGER.info("Deleting old tagKey...");
         try {
-            //TODO: change distributionRepository.deleteAllTagKey() to distributionRepository.deleteAll()
-            distributionRepository.deleteAllTagKey();
+            distributionRepository.deleteAll();
         } catch (final Exception e) {
             e.printStackTrace();
         }
@@ -85,7 +84,6 @@ public class DistributionServiceImpl implements DistributionService {
                 TagDistribution tagDistribution = new TagDistribution();
                 tagDistribution.setTagDistributionMap(countMap);
                 tagDistribution.setTagKey(key);
-                tagDistribution.setTagDistribution(tagDistribution.setTagDistributionMap(countMap));
                 distributionRepository.save(tagDistribution);
 
             }

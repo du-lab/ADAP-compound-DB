@@ -7,9 +7,6 @@ import org.springframework.data.repository.CrudRepository;
 
 
 public interface DistributionRepository extends CrudRepository<TagDistribution, Long> {
-    @Modifying
-    @Query("DELETE FROM TagDistribution c WHERE 1 = 1")
-    void deleteAllTagKey();
 
 
 }
