@@ -68,10 +68,9 @@ public class TagDistribution implements Serializable{
   @Transient
     public Map<String,Integer> getTagDistributionMap() throws JSONException {
 
-      ObjectMapper mapper = new ObjectMapper;
+      ObjectMapper mapper = new ObjectMapper();
       try{
           Map<String, Integer> countMap = mapper.readValue(tagDistribution,Map.class);
-          return countMap;
       } catch (JsonParseException e) {
           e.printStackTrace();
       } catch (JsonMappingException e) {
@@ -79,7 +78,7 @@ public class TagDistribution implements Serializable{
       } catch (IOException e) {
           e.printStackTrace();
       }
-
+      return null;
   }
 
   // convert Map to Json
