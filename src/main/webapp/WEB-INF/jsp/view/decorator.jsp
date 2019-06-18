@@ -95,6 +95,9 @@
                             class="material-icons">cloud_upload</i>Upload Files</a></li>
                     <li><a href="<c:url value="/allClusters/" />"><i
                             class="material-icons">equalizer</i>Spectra</a></li>
+                    <li>
+                        <a href="<c:url value="/study_distributions/" />"><i class="material-icons">book</i>Distributions</a>
+                    </li>
                     <c:if test="${currentUser == null}">
                         <li><a href="<c:url value="/login/"/>"><i class="material-icons">person</i>Log-in / Sign-up</a>
                         </li>
@@ -113,6 +116,7 @@
                             out</a>
                         </li>
                     </c:if>
+
                     <%-- <li><a class="feedback" href="<c:url value="/feedback"/>">Leave Feedback</a></li> --%>
                 </ul>
             </nav>

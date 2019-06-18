@@ -1,16 +1,12 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: ericliao
-  Date: 2019-06-17
-  Time: 12:58
-  To change this template use File | Settings | File Templates.
---%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
-<head>
-    <title>Title</title>
-</head>
-<body>
 
-</body>
-</html>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="spring" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+
+<section>
+    <svg class="histogram">
+
+    </svg>
+
+</section>
