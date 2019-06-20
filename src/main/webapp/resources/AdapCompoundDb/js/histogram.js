@@ -1,51 +1,76 @@
-function addHistogram(idName, dataSet) {
+function addHistogram(tagKey, dataSet) {
 
-    var width = 500;
-    var height = 800;
+    var tag= d3.keys(JSON.parse(dataSet));
+    var tagDistribution = d3.values(JSON.parse(dataSet));
+    var histogramTag = tag + ":" + tagDistribution;
+    var width = 300;
+    var height = 500;
 
-    var widthScale = d3.scale.linear()
-        .domain([0,d3.max(dataSet) + 5])
+    var xScale = d3.scaleLinear()
+        .domain([0,d3.max(tagDistribution)*1.5])
         .range([0,width]);
 
-    var color = d3.scale.linear()
-        .domain([0,82])
-        .range(["yellow","teal"]);
+    var yScale = d3.scaleLinear()
+        .domain([0,tagDistribution.length * 60])
+        .range([(tagDistribution.length * 60),0]);
 
-    var axis = d3.svg.axis()
-    /*.ticks(5)*/
-        .scale(widthScale);
+    var color = d3.scaleLinear()
+        .domain([0,d3.max(tagDistribution)])
+        .range(["rgb(51,231,240)","rgb(51,231,240)"]);
+
+    var xAxis = d3.axisBottom()
+        .ticks(5)
+        .tickSize(2, 6)
+        .scale(xScale);
+
+    var yAxis = d3.axisRight()
+        .ticks(0)
+        .scale(yScale);
 
     var svg = d3.select("section")
         .append("svg")
         .attr("width", width)
         .attr("height", height)
         .append("g")
-        .attr("transform","translate(5, 10)");
+        .attr("transform","translate(5, 5)");
 
-    var bars = svg.selectAll("rect")
-        .data(dataSet)
+    svg.selectAll("rect")
+        .data(tagDistribution)
         .enter()
         .append("rect")
-        .attr("width",function (d) { return widthScale(d); })
+        .attr("width",function (d) { return xScale(d); })
         .attr("height",40)
         .attr("fill", function (d) { return color(d); })
         .attr("y", function(d,i){ return i * 60; });
 
     svg.selectAll("text")
-        .data(dataSet)
+        .data(tag)
         .enter()
         .append("text")
-        .attr("dx",function(d){return widthScale(d) / 2;})
+        .attr("dx","20")
         .attr("dy","1.5em")
         .attr("y",function(d,i){return i * 60;})
         .attr("stroke","black")
         .attr("stroke-width","2")
-        .attr("font-size",15)
         .text(function(d){return d;});
 
+    // x axis
     svg.append("g")
-        .attr("transform", "translate(0, "+ (dataSet.length) * 57 +")")
-        .call(axis);
+        .attr("transform", "translate(0, "+ (tagDistribution.length) * 60 +")")
+        .call(xAxis);
 
+    // text label for the x axis
+    svg.append("text")
+        .data(tagKey)
+        .attr("transform",
+            "translate(" + (width/2) + " ," +
+            ((tagDistribution.length * 60) + 35) + ")")
+        .style("text-anchor", "middle")
+        .text(tagKey);
+
+    //y axis
+    svg.append("g")
+        .attr("transform", "translate(0,0)")
+        .call(yAxis);
 
 }

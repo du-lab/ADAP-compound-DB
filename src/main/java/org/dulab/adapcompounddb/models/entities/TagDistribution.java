@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.io.Serializable;
 import java.util.Map;
 import javax.persistence.*;
