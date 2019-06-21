@@ -2,6 +2,7 @@ package org.dulab.adapcompounddb.site.services;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.entities.SubmissionTag;
 import org.dulab.adapcompounddb.models.entities.TagDistribution;
 import org.dulab.adapcompounddb.site.repositories.DistributionRepository;
@@ -9,7 +10,6 @@ import org.dulab.adapcompounddb.site.repositories.SubmissionTagRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -35,6 +35,19 @@ public class DistributionServiceImpl implements DistributionService {
             e.printStackTrace();
         }
         LOGGER.info("Deleting old tagKey is completed");
+    }
+
+    @Transactional
+    @Override
+    public List<TagDistribution> getAllDistributions() {
+        return ServiceUtils.toList(distributionRepository.findAll());
+    }
+
+    @Transactional
+    @Override
+    public TagDistribution getDistribution(final long id) {
+        return distributionRepository.findById(id)
+                .orElseThrow(() -> new EmptySearchResultException(id));
     }
 
 

@@ -36,6 +36,7 @@
     <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
     <script src="<c:url value="/resources/Select-1.2.5/js/dataTables.select.min.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/resources/AdapCompoundDb/js/tabs.js"/>"></script>
+    <script src="http://d3js.org/d3.v4.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
             $(document).click(function (e) {
@@ -95,6 +96,9 @@
                             class="material-icons">cloud_upload</i>Upload Files</a></li>
                     <li><a href="<c:url value="/allClusters/" />"><i
                             class="material-icons">equalizer</i>Spectra</a></li>
+                    <li>
+                        <a href="<c:url value="/study_distributions/" />"><i class="material-icons">book</i>Distributions</a>
+                    </li>
                     <c:if test="${currentUser == null}">
                         <li><a href="<c:url value="/login/"/>"><i class="material-icons">person</i>Log-in / Sign-up</a>
                         </li>
@@ -113,6 +117,7 @@
                             out</a>
                         </li>
                     </c:if>
+
                     <%-- <li><a class="feedback" href="<c:url value="/feedback"/>">Leave Feedback</a></li> --%>
                 </ul>
             </nav>
