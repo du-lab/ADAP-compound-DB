@@ -2,13 +2,13 @@ function addHistogram(tagKey, dataSet) {
 
     var tag= d3.keys(JSON.parse(dataSet));
     var tagDistribution = d3.values(JSON.parse(dataSet));
-    var histogramTag = tag + ":" + tagDistribution;
+   /* var histogramTag = tag + ":" + tagDistribution;  // to display tag value as "tagValue:numbers"*/
     var width = 300;
     var height = 500;
     var padding = {top: 20, right: 20, bottom: 20, left: 20};
 
     var xScale = d3.scaleLinear()
-        .domain([0,d3.max(tagDistribution)*1.5])
+        .domain([0,d3.max(tagDistribution)*1.2])
         .range([0,width]);
 
     var yScale = d3.scaleLinear()
@@ -21,7 +21,7 @@ function addHistogram(tagKey, dataSet) {
 
     var xAxis = d3.axisBottom()
         .ticks(5)
-        .tickSize(2, 6)
+        .tickSize(-(60 * tagDistribution.length) , 5)
         .scale(xScale);
 
     var yAxis = d3.axisRight()
@@ -45,16 +45,16 @@ function addHistogram(tagKey, dataSet) {
         .attr("x",function(d,i){return i + padding.right})
         .attr("y", function(d,i){ return i * 60 + padding.bottom });
 
-    svg.selectAll("line")
+    /*svg.selectAll("line")
         .data(tagDistribution)
         .enter()
         .append("line")
         .attr("x1",function (d) { return xScale(d)+20; })
         .attr("y1",60 * tagDistribution.length + padding.bottom)
         .attr("x2",function (d) { return xScale(d)+20; })
-        .attr("y2",0)
+        .attr("y2",padding.top)
         .attr("stroke","red")
-        .attr("stroke-width","2");
+        .attr("stroke-width","2");*/
 
     svg.selectAll("text")
         .data(tag)
