@@ -101,7 +101,6 @@ function addHistogram(tagKey, dataSet) {
     // plot grid
     grid.call(d3.axisBottom(xScale)
         .ticks(5)
-        .tickSize(-20,0)
+        .tickSize(-(tagDistribution.length * 60),0)
         .tickFormat(''));
-
 }
