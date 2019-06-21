@@ -6,8 +6,8 @@ function addHistogram(tagKey, dataSet) {
     // // to display tag value as "tagValue:numbers"
     // var histogramTag = tag + ":" + tagDistribution;
 
-    var width = 300;
-    var height = 500;
+    var width = 350;
+    var height = (tagDistribution.length * 60 + 150);
     var padding = {top: 20, right: 20, bottom: 20, left: 20};
 
     var xScale = d3.scaleLinear()
@@ -18,10 +18,10 @@ function addHistogram(tagKey, dataSet) {
         .domain([0,tagDistribution.length * 60])
         .range([(tagDistribution.length * 60),-5]);
 
-    // color of bar
-    var color = d3.scaleLinear()
-        .domain([0,d3.max(tagDistribution)])
-        .range(["rgb(51,231,240)","rgb(51,231,240)"]);
+    // color range of bar
+    // var color = d3.scaleLinear()
+    //     .domain([0,d3.max(tagDistribution)])
+    //     .range(["rgb(51,231,240)","rgb(51,231,240)"]);
 
     var xAxis = d3.axisBottom()
         .ticks(5)
@@ -35,7 +35,6 @@ function addHistogram(tagKey, dataSet) {
 
     var svg = d3.select("section")
         .append("svg")
-        .attr("width", width)
         .attr("height", height)
         .append("g")
         .attr("transform","translate(5, 5)");
@@ -52,8 +51,8 @@ function addHistogram(tagKey, dataSet) {
         .append("rect")
         .attr("width",function (d) { return xScale(d); })
         .attr("height",40)
-        .attr("fill", function (d) { return color(d); })
-        .attr("x",function(d,i){return i + padding.right})
+        .attr("fill", "#b47cff")
+        .attr("x",padding.right)
         .attr("y", function(d,i){ return i * 60 + padding.bottom });
 
     // // add vertical line to mark the value of each bar
@@ -85,9 +84,11 @@ function addHistogram(tagKey, dataSet) {
     svg.append("text")
         .data(tagKey)
         .attr("transform",
-            "translate(" + (width/2) + " ," +
+            "translate(" + (width/2.5) + " ," +
             ((tagDistribution.length * 60) + 35 +padding.bottom) + ")")
         .style("text-anchor", "middle")
+        .attr("stroke","rgb(14,12,16)")
+        .attr("stroke-width","1.5")
         .text(tagKey);
 
     // plot x axis
