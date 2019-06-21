@@ -1,4 +1,4 @@
-function addHistogram(tagKey, dataSet) {
+function addHistogram(idName,tagKey, dataSet) {
 
     var tag= d3.keys(JSON.parse(dataSet));
     var tagDistribution = d3.values(JSON.parse(dataSet));
@@ -6,7 +6,7 @@ function addHistogram(tagKey, dataSet) {
     // // to display tag value as "tagValue:numbers"
     // var histogramTag = tag + ":" + tagDistribution;
 
-    var width = 350;
+    var width = 400;
     var height = (tagDistribution.length * 60 + 150);
     var padding = {top: 20, right: 20, bottom: 20, left: 20};
 
@@ -33,8 +33,9 @@ function addHistogram(tagKey, dataSet) {
         .tickSize(0)
         .scale(yScale);
 
-    var svg = d3.select("section")
+    var svg = d3.select("#"+idName)
         .append("svg")
+        .attr("width", width)
         .attr("height", height)
         .append("g")
         .attr("transform","translate(5, 5)");
@@ -84,7 +85,7 @@ function addHistogram(tagKey, dataSet) {
     svg.append("text")
         .data(tagKey)
         .attr("transform",
-            "translate(" + (width/2.5) + " ," +
+            "translate(" + (width/2) + " ," +
             ((tagDistribution.length * 60) + 35 +padding.bottom) + ")")
         .style("text-anchor", "middle")
         .attr("stroke","rgb(14,12,16)")
