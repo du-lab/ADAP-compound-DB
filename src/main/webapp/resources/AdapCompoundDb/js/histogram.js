@@ -56,18 +56,6 @@ function addHistogram(idName,tagKey, dataSet) {
         .attr("x",padding.right)
         .attr("y", function(d,i){ return i * 60 + padding.bottom });
 
-    // // add vertical line to mark the value of each bar
-    // svg.selectAll("line")
-    //     .data(tagDistribution)
-    //     .enter()
-    //     .append("line")
-    //     .attr("x1",function (d) { return xScale(d)+20; })
-    //     .attr("y1",60 * tagDistribution.length + padding.bottom)
-    //     .attr("x2",function (d) { return xScale(d)+20; })
-    //     .attr("y2",padding.top + 40)
-    //     .attr("stroke","red")
-    //     .attr("stroke-width","2");
-
     // display tag value
     svg.selectAll("text")
         .data(tag)
@@ -77,7 +65,7 @@ function addHistogram(idName,tagKey, dataSet) {
         .attr("dy","1.5em")
         .attr("y",function(d,i){return i * 60 + padding.bottom;})
         .attr("x",padding.right)
-        .attr("stroke","rgb(14,12,16)")
+        .attr("stroke","#000000")
         .attr("stroke-width","1")
         .text(function(d){return d;});
 
@@ -88,7 +76,7 @@ function addHistogram(idName,tagKey, dataSet) {
             "translate(" + (width/2) + " ," +
             ((tagDistribution.length * 60) + 35 +padding.bottom) + ")")
         .style("text-anchor", "middle")
-        .attr("stroke","rgb(14,12,16)")
+        .attr("stroke","#000000")
         .attr("stroke-width","1.5")
         .text(tagKey);
 
