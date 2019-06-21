@@ -14,5 +14,4 @@
             addHistogram(tagKey,dataSet)
         </script>
 
-
 </section>

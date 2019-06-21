@@ -16,8 +16,9 @@ function addHistogram(tagKey, dataSet) {
 
     var yScale = d3.scaleLinear()
         .domain([0,tagDistribution.length * 60])
-        .range([(tagDistribution.length * 60),0]);
+        .range([(tagDistribution.length * 60),-5]);
 
+    // color of bar
     var color = d3.scaleLinear()
         .domain([0,d3.max(tagDistribution)])
         .range(["rgb(51,231,240)","rgb(51,231,240)"]);
@@ -29,6 +30,7 @@ function addHistogram(tagKey, dataSet) {
 
     var yAxis = d3.axisRight()
         .ticks(0)
+        .tickSize(0)
         .scale(yScale);
 
     var svg = d3.select("section")
@@ -62,7 +64,7 @@ function addHistogram(tagKey, dataSet) {
     //     .attr("x1",function (d) { return xScale(d)+20; })
     //     .attr("y1",60 * tagDistribution.length + padding.bottom)
     //     .attr("x2",function (d) { return xScale(d)+20; })
-    //     .attr("y2",padding.top)
+    //     .attr("y2",padding.top + 40)
     //     .attr("stroke","red")
     //     .attr("stroke-width","2");
 
@@ -75,8 +77,8 @@ function addHistogram(tagKey, dataSet) {
         .attr("dy","1.5em")
         .attr("y",function(d,i){return i * 60 + padding.bottom;})
         .attr("x",padding.right)
-        .attr("stroke","black")
-        .attr("stroke-width","2")
+        .attr("stroke","rgb(14,12,16)")
+        .attr("stroke-width","1")
         .text(function(d){return d;});
 
     // text label for the x axis
