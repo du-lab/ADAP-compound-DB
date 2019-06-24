@@ -9,12 +9,12 @@
         <span class="active">Tag Distributions</span>
     </div>
 
-    <c:forEach items="${distributions}" var="distribution">
-    <div style="display: inline-block; margin: 10px;text-align: left;">
+    <c:forEach items="${distributions}" var="distribution" varStatus="status">
+    <div id="div${status.index}" style="display: inline-block; margin: 10px;text-align: left;">
         <script>
             var tagKey ='${distribution.tagKey}';
             var dataSet= '${distribution.tagDistribution}';
-            addHistogram(tagKey,dataSet);
+            addHistogram('div'+${status.index},tagKey,dataSet);
         </script>
     </div>
     </c:forEach>

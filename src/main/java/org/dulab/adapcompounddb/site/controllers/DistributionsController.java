@@ -21,8 +21,8 @@ public class DistributionsController {
 
     @RequestMapping(value="/study_distributions", method=RequestMethod.GET)
     public String tagDistribution(final Model model) {
-        final List<TagDistribution> tagDistribution = distributionService.getAllDistributions();
-        model.addAttribute("distributions", tagDistribution);
+        final List<TagDistribution> allDistributions = distributionService.getAllDistributions();
+        model.addAttribute("distributions", allDistributions);
         return "/study_distributions";
     }
 }
