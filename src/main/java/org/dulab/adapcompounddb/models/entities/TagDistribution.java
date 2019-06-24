@@ -34,9 +34,9 @@ public class TagDistribution implements Serializable{
         this.id = id;
     }
 
-    public long getClusterId() { return clusterId; }
+    public Long getClusterId() { return clusterId; }
 
-    public void setClusterId(long clusterId) {
+    public void setClusterId(Long clusterId) {
         this.clusterId = clusterId;
     }
 
@@ -60,19 +60,19 @@ public class TagDistribution implements Serializable{
 
 
     // Convert Json-String to Map
-  @Transient
+    @Transient
     public Map<String,Integer> getTagDistributionMap() throws IllegalStateException {
         ObjectMapper mapper = new ObjectMapper();
         try{
-          return (Map<String, Integer>) mapper.readValue(tagDistribution,Map.class);
+            return (Map<String, Integer>) mapper.readValue(tagDistribution,Map.class);
         } catch (IOException e) {
-         throw new IllegalStateException("It cannot be converted from Json-String to map!");
+            throw new IllegalStateException("It cannot be converted from Json-String to map!");
         }
     }
 
 
     // Convert Map to Json-String
-   @Transient
+    @Transient
     public String setTagDistributionMap(Map<String,Integer> countMap){
         try {
             // Default constructor, which will construct the default JsonFactory as necessary, use SerializerProvider as its

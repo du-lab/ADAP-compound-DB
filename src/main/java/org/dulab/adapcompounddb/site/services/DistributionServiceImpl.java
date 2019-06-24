@@ -3,8 +3,7 @@ package org.dulab.adapcompounddb.site.services;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
-import org.dulab.adapcompounddb.models.entities.SubmissionTag;
-import org.dulab.adapcompounddb.models.entities.TagDistribution;
+import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.repositories.DistributionRepository;
 import org.dulab.adapcompounddb.site.repositories.SubmissionTagRepository;
 import org.springframework.stereotype.Service;
@@ -50,19 +49,45 @@ public class DistributionServiceImpl implements DistributionService {
                 .orElseThrow(() -> new EmptySearchResultException(id));
     }
 
-
     @Transactional
     @Override
     public void calculateAllDistributions() {
 
+        final Long clusterId = null;
+
         // Find all the tags has been submitted
         Iterable<SubmissionTag> tags = submissionTagRepository.findAll();
+
+        findAllTags(tags,clusterId);
+    }
+
+    @Transactional
+    @Override
+    public void calculateClusterDistributions(SpectrumCluster cluster){
+        List<Spectrum> spectra = (List<Spectrum>) cluster.getSpectra();
+
+        final long clusterId = cluster.getId();
+
+        //get cluster tags of unique submission
+        Iterable<SubmissionTag> clusterTags = spectra.stream()
+                .map(Spectrum::getFile).filter(Objects::nonNull)
+                .map(File::getSubmission).filter(Objects::nonNull)
+                .distinct()
+                .flatMap(s -> ((Submission) s).getTags().stream())
+                .collect(Collectors.toList());
+
+        // calculate tags unique submission distribution and save to the TagDistribution table
+        findAllTags(clusterTags,clusterId);
+    }
+
+
+    public void findAllTags(Iterable<SubmissionTag> tags, long clusterId){
 
         // Store all the tags in a List
         List<SubmissionTag> tagList = new ArrayList<>();
         tags.forEach(tagList::add);
 
-        // Find unique keys among all tags of all spectra
+        // Find unique keys among all tags of unique submission
         final List<String> keys = tagList.stream()
                 .map(t -> t.getId().getName())
                 .map(a -> {
@@ -75,7 +100,6 @@ public class DistributionServiceImpl implements DistributionService {
                 .filter(Objects::nonNull)
                 .distinct()
                 .collect(Collectors.toList());
-
         // For each key, find its values and their count
         for (String key : keys) {
             Map<String, Integer> countMap = new HashMap<>();
@@ -90,15 +114,14 @@ public class DistributionServiceImpl implements DistributionService {
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
 
-                for (String value : tagValues)
-                    countMap.compute(value, (k, v) -> (v == null) ? 1 : v + 1);
+            for (String value : tagValues)
+                countMap.compute(value, (k, v) -> (v == null) ? 1 : v + 1);
 
-                // Save values and their counts to TagDistribution
-                TagDistribution tagDistribution = new TagDistribution();
-                tagDistribution.setTagDistributionMap(countMap);
-                tagDistribution.setTagKey(key);
-                distributionRepository.save(tagDistribution);
-
-            }
+            TagDistribution tagDistribution = new TagDistribution();
+            tagDistribution.setTagDistributionMap(countMap);
+            tagDistribution.setClusterId(clusterId);
+            tagDistribution.setTagKey(key);
+            distributionRepository.save(tagDistribution);
         }
     }
+}
