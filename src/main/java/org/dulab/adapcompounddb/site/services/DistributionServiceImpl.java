@@ -66,7 +66,7 @@ public class DistributionServiceImpl implements DistributionService {
     public void calculateClusterDistributions(SpectrumCluster cluster){
         List<Spectrum> spectra = (List<Spectrum>) cluster.getSpectra();
 
-        final long clusterId = cluster.getId();
+        final Long clusterId = cluster.getId();
 
         //get cluster tags of unique submission
         Iterable<SubmissionTag> clusterTags = spectra.stream()
@@ -81,7 +81,7 @@ public class DistributionServiceImpl implements DistributionService {
     }
 
 
-    public void findAllTags(Iterable<SubmissionTag> tags, long clusterId){
+    public void findAllTags(Iterable<SubmissionTag> tags, Long clusterId){
 
         // Store all the tags in a List
         List<SubmissionTag> tagList = new ArrayList<>();
