@@ -117,6 +117,7 @@ public class DistributionServiceImpl implements DistributionService {
             for (String value : tagValues)
                 countMap.compute(value, (k, v) -> (v == null) ? 1 : v + 1);
 
+         //store tagDistributions
             TagDistribution tagDistribution = new TagDistribution();
             tagDistribution.setTagDistributionMap(countMap);
             tagDistribution.setClusterId(clusterId);
