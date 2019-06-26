@@ -52,10 +52,14 @@ public class AdminRestController {
     public String cluster() {
         try {
             final Runnable r = () -> {
+
                 distributionService.removeAll();
+                //calculate all tags distributions
                 distributionService.calculateAllDistributions();
                 spectrumClusterer.removeAll();
                 spectrumClusterer.cluster();
+                //calculate all cluster tag distributions
+                distributionService.calculateClusterDistributions();
                 //                Arrays.stream(ChromatographyType.values())
                 //                .parallel()
                 //                .forEach(t -> spectrumClusterer

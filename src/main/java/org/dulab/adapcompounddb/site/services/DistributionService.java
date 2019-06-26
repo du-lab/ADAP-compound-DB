@@ -11,9 +11,12 @@ public interface DistributionService {
 
     void calculateAllDistributions();
 
-    void calculateClusterDistributions(SpectrumCluster cluster);
+    void calculateClusterDistributions();
 
     List<TagDistribution> getAllDistributions();
+
+    //get all the tag distribution of which the Cluster ID is null
+    List<TagDistribution> getAllClusterIdNullDistributions();
 
     TagDistribution getDistribution(long id);
 

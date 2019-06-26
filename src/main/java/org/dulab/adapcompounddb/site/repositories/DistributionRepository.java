@@ -8,5 +8,6 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface DistributionRepository extends CrudRepository<TagDistribution, Long> {
 
-
+    // get all the tag distributions from TagDistribution table where cluster ID is null
+    Iterable<TagDistribution>getAllByClusterIdIsNull();
 }

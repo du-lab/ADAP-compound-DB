@@ -57,9 +57,6 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
     private float progress = -0.1F;
 
     @Autowired
-    private DistributionService distributionService;
-
-    @Autowired
     public SpectrumClustererImpl(final SpectrumRepository spectrumRepository,
                                  final SpectrumMatchRepository spectrumMatchRepository,
                                  final SpectrumClusterRepository spectrumClusterRepository) {
@@ -156,7 +153,6 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                         final List<SpectrumProperty> properties = new ArrayList<>(consensusSpectrum.getProperties());
 
                         spectrumClusterRepository.save(cluster);
-                        distributionService.calculateClusterDistributions(cluster);
                         spectrumRepository.savePeaksAndProperties(consensusSpectrum.getId(), peaks, properties);
                         spectrumRepository.updateSpectraInCluster(cluster.getId(), spectrumIds);
 

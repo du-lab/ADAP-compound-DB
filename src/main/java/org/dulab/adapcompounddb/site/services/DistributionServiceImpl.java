@@ -5,7 +5,9 @@ import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.repositories.DistributionRepository;
+import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
 import org.dulab.adapcompounddb.site.repositories.SubmissionTagRepository;
+import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,11 +19,13 @@ public class DistributionServiceImpl implements DistributionService {
 
     private  SubmissionTagRepository submissionTagRepository;
     private  DistributionRepository distributionRepository;
+    private SpectrumClusterRepository spectrumClusterRepository;
     private static final Logger LOGGER = LogManager.getLogger(DistributionService.class);
 
-    public DistributionServiceImpl(SubmissionTagRepository submissionTagRepository,DistributionRepository distributionRepository) {
+    public DistributionServiceImpl(SubmissionTagRepository submissionTagRepository,DistributionRepository distributionRepository, SpectrumClusterRepository spectrumClusterRepository) {
         this.submissionTagRepository = submissionTagRepository;
         this.distributionRepository = distributionRepository;
+        this.spectrumClusterRepository=spectrumClusterRepository;
     }
 
     @Transactional(propagation= Propagation.REQUIRES_NEW)
@@ -44,6 +48,12 @@ public class DistributionServiceImpl implements DistributionService {
 
     @Transactional
     @Override
+    public List<TagDistribution> getAllClusterIdNullDistributions() {
+        return ServiceUtils.toList(distributionRepository.getAllByClusterIdIsNull());
+    }
+
+    @Transactional
+    @Override
     public TagDistribution getDistribution(final long id) {
         return distributionRepository.findById(id)
                 .orElseThrow(() -> new EmptySearchResultException(id));
@@ -56,20 +66,22 @@ public class DistributionServiceImpl implements DistributionService {
         final Long clusterId = null;
 
         // Find all the tags has been submitted
-        Iterable<SubmissionTag> tags = submissionTagRepository.findAll();
+        List<SubmissionTag> tags = ServiceUtils.toList(submissionTagRepository.findAll());
 
         findAllTags(tags,clusterId);
     }
 
     @Transactional
     @Override
-    public void calculateClusterDistributions(SpectrumCluster cluster){
-        List<Spectrum> spectra = (List<Spectrum>) cluster.getSpectra();
+    public void calculateClusterDistributions(){
+        SpectrumCluster cluster = spectrumClusterRepository.getAllClusters();
+
+        List<Spectrum> spectra = cluster.getSpectra();
 
         final Long clusterId = cluster.getId();
 
         //get cluster tags of unique submission
-        Iterable<SubmissionTag> clusterTags = spectra.stream()
+        List<SubmissionTag> clusterTags = spectra.stream()
                 .map(Spectrum::getFile).filter(Objects::nonNull)
                 .map(File::getSubmission).filter(Objects::nonNull)
                 .distinct()
@@ -81,11 +93,7 @@ public class DistributionServiceImpl implements DistributionService {
     }
 
 
-    public void findAllTags(Iterable<SubmissionTag> tags, Long clusterId){
-
-        // Store all the tags in a List
-        List<SubmissionTag> tagList = new ArrayList<>();
-        tags.forEach(tagList::add);
+    public void findAllTags(List<SubmissionTag> tagList, Long clusterId){
 
         // Find unique keys among all tags of unique submission
         final List<String> keys = tagList.stream()

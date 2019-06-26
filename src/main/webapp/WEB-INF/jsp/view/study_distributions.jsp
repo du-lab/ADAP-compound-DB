@@ -11,8 +11,6 @@
 
 
     <c:forEach items="${distributions}" var="distribution" varStatus="status">
-        <c:choose>
-            <c:when test='${distribution.clusterId == null}'>
                 <div id="div${status.index}" style="display: inline-block; margin: 10px;text-align: left;">
                     <script>
                         var tagKey ='${distribution.tagKey}';
@@ -20,8 +18,6 @@
                         addHistogram('div'+${status.index},tagKey,dataSet);
                     </script>
                 </div>
-            </c:when>
-        </c:choose>
     </c:forEach>
 
 </section>

@@ -20,8 +20,8 @@ public class DistributionsController {
     private final DistributionService distributionService;
 
     @RequestMapping(value="/study_distributions", method=RequestMethod.GET)
-    public String tagDistribution(final Model model) {
-        final List<TagDistribution> allDistributions = distributionService.getAllDistributions();
+    public String tagDistributionNullClusterId(final Model model) {
+        final List<TagDistribution> allDistributions = distributionService.getAllClusterIdNullDistributions();
         model.addAttribute("distributions", allDistributions);
         return "/study_distributions";
     }

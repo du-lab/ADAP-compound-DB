@@ -15,6 +15,10 @@ public interface SpectrumClusterRepository extends JpaRepository<SpectrumCluster
     void deleteByIdNotIn(List<Long> ids);
 
     @Modifying
+    @Query("select c FROM SpectrumCluster c WHERE 1 = 1")
+   SpectrumCluster getAllClusters();
+
+    @Modifying
     @Query("DELETE FROM SpectrumCluster c WHERE 1 = 1")
     void deleteAllEmptyClusters();
 
