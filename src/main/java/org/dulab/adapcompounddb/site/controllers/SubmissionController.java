@@ -248,7 +248,7 @@ public class SubmissionController extends BaseController {
         if (errors.hasErrors()) {
             model.addAttribute("authenticated", isAuthenticated());
             model.addAttribute("submissionForm", submissionForm);
-            return "file/view";
+            return "submission/view";
         }
 
         if (submission == null) {
