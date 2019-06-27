@@ -11,24 +11,25 @@ import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class DistributionServiceImpl implements DistributionService {
 
-    private  SubmissionTagRepository submissionTagRepository;
-    private  DistributionRepository distributionRepository;
+    private SubmissionTagRepository submissionTagRepository;
+    private DistributionRepository distributionRepository;
     private SpectrumClusterRepository spectrumClusterRepository;
     private static final Logger LOGGER = LogManager.getLogger(DistributionService.class);
 
-    public DistributionServiceImpl(SubmissionTagRepository submissionTagRepository,DistributionRepository distributionRepository, SpectrumClusterRepository spectrumClusterRepository) {
+    public DistributionServiceImpl(SubmissionTagRepository submissionTagRepository, DistributionRepository distributionRepository, SpectrumClusterRepository spectrumClusterRepository) {
         this.submissionTagRepository = submissionTagRepository;
         this.distributionRepository = distributionRepository;
-        this.spectrumClusterRepository=spectrumClusterRepository;
+        this.spectrumClusterRepository = spectrumClusterRepository;
     }
 
-    @Transactional(propagation= Propagation.REQUIRES_NEW)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Override
     public void removeAll() {
         LOGGER.info("Deleting old tagKey...");
@@ -63,17 +64,16 @@ public class DistributionServiceImpl implements DistributionService {
     @Override
     public void calculateAllDistributions() {
 
-        final Long clusterId = null;
-
         // Find all the tags has been submitted
         List<SubmissionTag> tags = ServiceUtils.toList(submissionTagRepository.findAll());
 
-        findAllTags(tags,clusterId);
+        findAllTags(tags, null);
     }
 
     @Transactional
     @Override
-    public void calculateClusterDistributions(){
+    public void calculateClusterDistributions() {
+
         SpectrumCluster cluster = spectrumClusterRepository.getAllClusters();
 
         List<Spectrum> spectra = cluster.getSpectra();
@@ -85,15 +85,15 @@ public class DistributionServiceImpl implements DistributionService {
                 .map(Spectrum::getFile).filter(Objects::nonNull)
                 .map(File::getSubmission).filter(Objects::nonNull)
                 .distinct()
-                .flatMap(s -> ((Submission) s).getTags().stream())
+                .flatMap(s -> s.getTags().stream())
                 .collect(Collectors.toList());
 
         // calculate tags unique submission distribution and save to the TagDistribution table
-        findAllTags(clusterTags,clusterId);
+        findAllTags(clusterTags, clusterId);
     }
 
 
-    public void findAllTags(List<SubmissionTag> tagList, Long clusterId){
+    private void findAllTags(List<SubmissionTag> tagList, Long clusterId) {
 
         // Find unique keys among all tags of unique submission
         final List<String> keys = tagList.stream()
@@ -125,7 +125,7 @@ public class DistributionServiceImpl implements DistributionService {
             for (String value : tagValues)
                 countMap.compute(value, (k, v) -> (v == null) ? 1 : v + 1);
 
-         //store tagDistributions
+            //store tagDistributions
             TagDistribution tagDistribution = new TagDistribution();
             tagDistribution.setTagDistributionMap(countMap);
             tagDistribution.setClusterId(clusterId);
