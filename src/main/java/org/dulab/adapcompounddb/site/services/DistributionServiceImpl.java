@@ -8,6 +8,7 @@ import org.dulab.adapcompounddb.site.repositories.DistributionRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
 import org.dulab.adapcompounddb.site.repositories.SubmissionTagRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
+import org.dulab.adapcompounddb.validation.FieldMatch;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,24 +75,25 @@ public class DistributionServiceImpl implements DistributionService {
     @Override
     public void calculateClusterDistributions() {
 
-        SpectrumCluster cluster = spectrumClusterRepository.getAllClusters();
+        List<SpectrumCluster> cluster = ServiceUtils.toList(spectrumClusterRepository.getAllClusters());
 
-        List<Spectrum> spectra = cluster.getSpectra();
+        for(SpectrumCluster c : cluster){
+            Long clusterId = c.getId();
 
-        final Long clusterId = cluster.getId();
+            List<Spectrum> spectra = c.getSpectra();
 
-        //get cluster tags of unique submission
-        List<SubmissionTag> clusterTags = spectra.stream()
-                .map(Spectrum::getFile).filter(Objects::nonNull)
-                .map(File::getSubmission).filter(Objects::nonNull)
-                .distinct()
-                .flatMap(s -> s.getTags().stream())
-                .collect(Collectors.toList());
+            //get cluster tags of unique submission
+            List<SubmissionTag> clusterTags = spectra.stream()
+                    .map(Spectrum::getFile).filter(Objects::nonNull)
+                    .map(File::getSubmission).filter(Objects::nonNull)
+                    .distinct()
+                    .flatMap(s -> s.getTags().stream())
+                    .collect(Collectors.toList());
 
-        // calculate tags unique submission distribution and save to the TagDistribution table
-        findAllTags(clusterTags, clusterId);
+            // calculate tags unique submission distribution and save to the TagDistribution table
+            findAllTags(clusterTags, clusterId);
+        }
     }
-
 
     private void findAllTags(List<SubmissionTag> tagList, Long clusterId) {
 
