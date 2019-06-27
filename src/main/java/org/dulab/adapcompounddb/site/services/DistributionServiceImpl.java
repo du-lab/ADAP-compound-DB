@@ -7,8 +7,6 @@ import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.repositories.DistributionRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
 import org.dulab.adapcompounddb.site.repositories.SubmissionTagRepository;
-import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
-import org.dulab.adapcompounddb.validation.FieldMatch;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
