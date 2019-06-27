@@ -16,7 +16,7 @@ public interface SpectrumClusterRepository extends JpaRepository<SpectrumCluster
 
     @Modifying
     @Query("select c FROM SpectrumCluster c WHERE 1 = 1")
-   SpectrumCluster getAllClusters();
+    SpectrumCluster getAllClusters();
 
     @Modifying
     @Query("DELETE FROM SpectrumCluster c WHERE 1 = 1")
@@ -26,9 +26,9 @@ public interface SpectrumClusterRepository extends JpaRepository<SpectrumCluster
     @Query("DELETE FROM Spectrum c WHERE consensus = 1")
     void deleteAllConsensusSpectra();
 
-    @Query(value="select s from SpectrumCluster s "
+    @Query(value = "select s from SpectrumCluster s "
             + "where "
             + "s.consensusSpectrum.name like %:search% "
-            + "OR s.consensusSpectrum.chromatographyType like %:search%" )
+            + "OR s.consensusSpectrum.chromatographyType like %:search%")
     Page<SpectrumCluster> findClusters(@Param("search") String searchStr, Pageable pageable);
 }
