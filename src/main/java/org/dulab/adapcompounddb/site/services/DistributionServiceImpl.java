@@ -75,7 +75,7 @@ public class DistributionServiceImpl implements DistributionService {
 
         List<SpectrumCluster> clusters = ServiceUtils.toList(spectrumClusterRepository.getAllClusters());
 
-        for(SpectrumCluster cluster : clusters){
+        for (SpectrumCluster cluster : clusters) {
 
             List<Spectrum> spectra = cluster.getSpectra();
 

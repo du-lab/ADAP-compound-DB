@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.site.services;
 
 import org.dulab.adapcompounddb.models.entities.TagDistribution;
+
 import java.util.List;
 
 public interface DistributionService {
