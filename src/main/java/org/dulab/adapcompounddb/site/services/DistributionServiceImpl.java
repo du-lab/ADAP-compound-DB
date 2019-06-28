@@ -73,12 +73,11 @@ public class DistributionServiceImpl implements DistributionService {
     @Override
     public void calculateClusterDistributions() {
 
-        List<SpectrumCluster> cluster = ServiceUtils.toList(spectrumClusterRepository.getAllClusters());
+        List<SpectrumCluster> clusters = ServiceUtils.toList(spectrumClusterRepository.getAllClusters());
 
-        for(SpectrumCluster c : cluster){
-            Long clusterId = c.getId();
+        for(SpectrumCluster cluster : clusters){
 
-            List<Spectrum> spectra = c.getSpectra();
+            List<Spectrum> spectra = cluster.getSpectra();
 
             //get cluster tags of unique submission
             List<SubmissionTag> clusterTags = spectra.stream()
@@ -89,11 +88,11 @@ public class DistributionServiceImpl implements DistributionService {
                     .collect(Collectors.toList());
 
             // calculate tags unique submission distribution and save to the TagDistribution table
-            findAllTags(clusterTags, clusterId);
+            findAllTags(clusterTags, cluster);
         }
     }
 
-    private void findAllTags(List<SubmissionTag> tagList, Long clusterId) {
+    private void findAllTags(List<SubmissionTag> tagList, SpectrumCluster cluster) {
 
         // Find unique keys among all tags of unique submission
         final List<String> keys = tagList.stream()
@@ -128,7 +127,7 @@ public class DistributionServiceImpl implements DistributionService {
             //store tagDistributions
             TagDistribution tagDistribution = new TagDistribution();
             tagDistribution.setTagDistributionMap(countMap);
-            tagDistribution.setClusterId(clusterId);
+            tagDistribution.setCluster(cluster);
             tagDistribution.setTagKey(key);
             distributionRepository.save(tagDistribution);
         }

@@ -16,8 +16,6 @@ public class TagDistribution implements Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private Long clusterId;
-
     @NotBlank
     private String tagKey;
 
@@ -27,17 +25,15 @@ public class TagDistribution implements Serializable{
 
     private Double pValue;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "ClusterId")
+    private SpectrumCluster cluster;
+
 
     public long getId() { return id; }
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public Long getClusterId() { return clusterId; }
-
-    public void setClusterId(Long clusterId) {
-        this.clusterId = clusterId;
     }
 
     public String getTagKey() { return tagKey; }
@@ -58,6 +54,12 @@ public class TagDistribution implements Serializable{
         this.pValue = pValue;
     }
 
+
+    public SpectrumCluster getCluster(){return cluster;}
+
+    public void setCluster(final SpectrumCluster cluster) {
+        this.cluster = cluster;
+    }
 
     // Convert Json-String to Map
     @Transient
