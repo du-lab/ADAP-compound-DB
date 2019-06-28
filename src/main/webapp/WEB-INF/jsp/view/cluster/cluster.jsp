@@ -18,6 +18,7 @@
     <div class="tabbed-pane">
         <span class="active" data-tab="consensus_spectrum">Consensus Spectrum</span>
         <span data-tab="spectrum_plot">Spectrum Plot</span>
+        <span data-tab="tag_distributions">Distributions</span>
         <span data-tab="pie_chart">Pie Chart</span>
         <span data-tab="spectrum_list">Spectrum List</span>
     </div>

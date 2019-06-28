@@ -106,9 +106,9 @@ public class SpectrumCluster implements Serializable {
     @OneToMany(
             mappedBy ="cluster",
             fetch = FetchType.LAZY)
-    public List<TagDistribution> getTagDistribution(){ return tagDistribution;}
+    public List<TagDistribution> getTagDistributions(){ return tagDistribution;}
 
-    public void setTagDistribution(final List<TagDistribution> tagDistribution){ this.tagDistribution = tagDistribution;}
+    public void setTagDistributions(final List<TagDistribution> tagDistribution){ this.tagDistribution = tagDistribution;}
 
 
     @OneToMany(
