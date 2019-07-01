@@ -61,6 +61,29 @@ public class DistributionServiceImpl implements DistributionService {
 
     @Transactional
     @Override
+    public  List<String> getClusterTagDistributions(final SpectrumCluster cluster){
+
+        final List<TagDistribution> clusterTagDistributions = cluster.getTagDistributions();
+
+        final List<String> tagKeys = clusterTagDistributions.stream()
+                .map(s -> s.getTagKey())
+                .distinct()
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        List<String> allTagDistributions = new ArrayList<String>();
+
+        for (String tagKey: tagKeys) {
+            String tagDistribution = distributionRepository.findTagDistributionByTagKey(tagKey);
+            allTagDistributions.add(tagDistribution);
+        }
+        return allTagDistributions;
+    }
+
+
+
+    @Transactional
+    @Override
     public void calculateAllDistributions() {
 
         // Find all the tags has been submitted

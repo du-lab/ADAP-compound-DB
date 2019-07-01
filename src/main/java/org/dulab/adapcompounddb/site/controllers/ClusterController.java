@@ -1,13 +1,13 @@
 package org.dulab.adapcompounddb.site.controllers;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
 import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
 import org.dulab.adapcompounddb.models.entities.TagDistribution;
 import org.dulab.adapcompounddb.site.repositories.DistributionRepository;
+import org.dulab.adapcompounddb.site.services.DistributionService;
 import org.dulab.adapcompounddb.site.services.SpectrumMatchService;
 import org.dulab.adapcompounddb.site.services.StatisticsService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
@@ -24,15 +24,15 @@ public class ClusterController {
     private final SpectrumMatchService spectrumMatchService;
     private final SubmissionService submissionService;
     private final StatisticsService statisticsService;
-    private final DistributionRepository distributionRepository;
+    private final DistributionService distributionService;
 
     public ClusterController(final SpectrumMatchService spectrumMatchService,
-            final SubmissionService submissionService, final StatisticsService statisticsService, final DistributionRepository distributionRepository) {
+                             final SubmissionService submissionService, final StatisticsService statisticsService, final DistributionService distributionService) {
 
         this.spectrumMatchService = spectrumMatchService;
         this.statisticsService = statisticsService;
         this.submissionService = submissionService;
-        this.distributionRepository = distributionRepository;
+        this.distributionService = distributionService;
     }
 
     @ModelAttribute
@@ -63,18 +63,7 @@ public class ClusterController {
 
         final List<TagDistribution> clusterTagDistributions = cluster.getTagDistributions();
 
-        final List<String> tagKeys = clusterTagDistributions.stream()
-                .map(s -> s.getTagKey())
-                .distinct()
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-
-        List<String> allTagDistributions = null;
-
-        for (String tagKey: tagKeys) {
-            String tagDistribution = distributionRepository.findTagDistributionByTagKey(tagKey);
-            allTagDistributions.add(tagDistribution);
-        }
+        final List<String> allTagDistributions = distributionService.getClusterTagDistributions(cluster);
 
         spectrumMatchService.loadTagsofCluster(cluster);
         model.addAttribute("cluster", cluster);
