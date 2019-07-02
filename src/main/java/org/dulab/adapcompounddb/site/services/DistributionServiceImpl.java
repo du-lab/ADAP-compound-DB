@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
@@ -7,10 +8,14 @@ import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.repositories.DistributionRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
 import org.dulab.adapcompounddb.site.repositories.SubmissionTagRepository;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -20,12 +25,15 @@ public class DistributionServiceImpl implements DistributionService {
     private SubmissionTagRepository submissionTagRepository;
     private DistributionRepository distributionRepository;
     private SpectrumClusterRepository spectrumClusterRepository;
+    private final DistributionService distributionService;
     private static final Logger LOGGER = LogManager.getLogger(DistributionService.class);
 
-    public DistributionServiceImpl(SubmissionTagRepository submissionTagRepository, DistributionRepository distributionRepository, SpectrumClusterRepository spectrumClusterRepository) {
+    @Autowired
+    public DistributionServiceImpl(@Lazy final SubmissionTagRepository submissionTagRepository, @Lazy final DistributionRepository distributionRepository, @Lazy final SpectrumClusterRepository spectrumClusterRepository, @Lazy final DistributionService distributionService) {
         this.submissionTagRepository = submissionTagRepository;
         this.distributionRepository = distributionRepository;
         this.spectrumClusterRepository = spectrumClusterRepository;
+        this.distributionService = distributionService;
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -61,7 +69,7 @@ public class DistributionServiceImpl implements DistributionService {
 
     @Transactional
     @Override
-    public  List<String> getClusterTagDistributions(final SpectrumCluster cluster){
+    public List<String> getClusterTagDistributions(final SpectrumCluster cluster) {
 
         final List<TagDistribution> clusterTagDistributions = cluster.getTagDistributions();
 
@@ -71,16 +79,14 @@ public class DistributionServiceImpl implements DistributionService {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
-        List<String> allTagDistributions = new ArrayList<String>();
+        List<String> allTagDistributions = new ArrayList<>();
 
-        for (String tagKey: tagKeys) {
+        for (String tagKey : tagKeys) {
             String tagDistribution = distributionRepository.findTagDistributionByTagKey(tagKey);
             allTagDistributions.add(tagDistribution);
         }
         return allTagDistributions;
     }
-
-
 
     @Transactional
     @Override
@@ -113,6 +119,62 @@ public class DistributionServiceImpl implements DistributionService {
             // calculate tags unique submission distribution and save to the TagDistribution table
             findAllTags(clusterTags, cluster);
         }
+    }
+
+    @Transactional
+    @Override
+    public JSONObject integrationAllTagsAndClusterDistribution(SpectrumCluster cluster) {
+
+        final List<TagDistribution> clusterDistributions = cluster.getTagDistributions();
+
+        // get cluster tag distributions count map
+        final List<Map<String, Integer>> clusterTagDistributionsMap = new ArrayList<>();
+
+        for (TagDistribution x : clusterDistributions) {
+            clusterTagDistributionsMap.add(x.getTagDistributionMap());
+        }
+
+        // get all tag distributions count map
+        final List<String> allTagDistributions = distributionService.getClusterTagDistributions(cluster);
+
+        final List<Map<String, Integer>> allTagDistributionsMap = new ArrayList<>();
+
+        for (String at : allTagDistributions) {
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                allTagDistributionsMap.add((Map<String, Integer>) mapper.readValue(at, Map.class));
+            } catch (IOException e) {
+                throw new IllegalStateException("It cannot be converted from Json-String to map!");
+            }
+        }
+
+        //put tag distributions with the same tagKey and Tag values
+        JSONObject integrationDistributionObject = new JSONObject();
+
+        // iterate all cluster tag distributions map
+        for (int i = 0; i < clusterTagDistributionsMap.size(); i++) {
+
+            TagDistribution tagDistribution = new TagDistribution();
+            //convert map into Json array (for individual cluster tags distributions)
+            JSONObject jsonObject1 = new JSONObject(tagDistribution.setTagDistributionMap(clusterTagDistributionsMap.get(i)));
+
+            for (String key1 : jsonObject1.keySet()) {
+                Integer value1 = jsonObject1.getInt(key1);
+
+                for (int m = 0; m < allTagDistributionsMap.size(); m++) {
+                    JSONObject jsonObject2 = new JSONObject(tagDistribution.setTagDistributionMap(allTagDistributionsMap.get(m)));
+
+                    for (String key2 : jsonObject2.keySet()) {
+                        Integer value2 = jsonObject2.getInt(key2);
+                        if (key2.equals(key1)) {
+                            Integer[] value = {value1, value2};
+                            integrationDistributionObject.put(key1, value);
+                        }
+                    }
+                }
+            }
+        }
+        return integrationDistributionObject;
     }
 
     private void findAllTags(List<SubmissionTag> tagList, SpectrumCluster cluster) {
