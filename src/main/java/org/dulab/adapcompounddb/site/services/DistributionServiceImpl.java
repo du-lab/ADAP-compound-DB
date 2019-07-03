@@ -1,6 +1,5 @@
 package org.dulab.adapcompounddb.site.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -123,58 +121,45 @@ public class DistributionServiceImpl implements DistributionService {
 
     @Transactional
     @Override
-    public JSONObject integrationAllTagsAndClusterDistribution(SpectrumCluster cluster) {
+    public Map<String, JSONObject> integrationAllTagsAndClusterDistribution(SpectrumCluster cluster) {
 
         final List<TagDistribution> clusterDistributions = cluster.getTagDistributions();
 
-        // get cluster tag distributions count map
-        final List<Map<String, Integer>> clusterTagDistributionsMap = new ArrayList<>();
-
-        for (TagDistribution x : clusterDistributions) {
-            clusterTagDistributionsMap.add(x.getTagDistributionMap());
-        }
-
         // get all tag distributions count map
-        final List<String> allTagDistributions = distributionService.getClusterTagDistributions(cluster);
+        final List<TagDistribution> allTagDistributions = distributionService.getAllClusterIdNullDistributions();
 
-        final List<Map<String, Integer>> allTagDistributionsMap = new ArrayList<>();
-
-        for (String at : allTagDistributions) {
-            ObjectMapper mapper = new ObjectMapper();
-            try {
-                allTagDistributionsMap.add((Map<String, Integer>) mapper.readValue(at, Map.class));
-            } catch (IOException e) {
-                throw new IllegalStateException("It cannot be converted from Json-String to map!");
-            }
-        }
-
-        //put tag distributions with the same tagKey and Tag values
-        JSONObject integrationDistributionObject = new JSONObject();
-
-        // iterate all cluster tag distributions map
-        for (int i = 0; i < clusterTagDistributionsMap.size(); i++) {
-
-            TagDistribution tagDistribution = new TagDistribution();
-            //convert map into Json array (for individual cluster tags distributions)
-            JSONObject jsonObject1 = new JSONObject(tagDistribution.setTagDistributionMap(clusterTagDistributionsMap.get(i)));
-
-            for (String key1 : jsonObject1.keySet()) {
-                Integer value1 = jsonObject1.getInt(key1);
-
-                for (int m = 0; m < allTagDistributionsMap.size(); m++) {
-                    JSONObject jsonObject2 = new JSONObject(tagDistribution.setTagDistributionMap(allTagDistributionsMap.get(m)));
-
-                    for (String key2 : jsonObject2.keySet()) {
-                        Integer value2 = jsonObject2.getInt(key2);
-                        if (key2.equals(key1)) {
-                            Integer[] value = {value1, value2};
-                            integrationDistributionObject.put(key1, value);
-                        }
-                    }
+        Map<String, JSONObject> integrationDistributionsMap = new HashMap<>();
+        for (TagDistribution clusterTagDistribution : clusterDistributions) {
+            String clusterTagKey = clusterTagDistribution.getTagKey();
+            for (TagDistribution dbTagDistribution : allTagDistributions) {
+                String dbTagKey = dbTagDistribution.getTagKey();
+                if (dbTagKey.equalsIgnoreCase(clusterTagKey)) {
+                    integrationDistributionsMap.put(
+                            clusterTagKey,
+                            getIntegratedDistribution(clusterTagDistribution, dbTagDistribution));
+                    break;
                 }
             }
         }
-        return integrationDistributionObject;
+        return integrationDistributionsMap;
+    }
+
+    private JSONObject getIntegratedDistribution(TagDistribution clusterTagDistribution, TagDistribution dbTagDistribution) {
+
+        JSONObject jsonObject = new JSONObject();
+
+        for (Map.Entry<String, Integer> e : clusterTagDistribution.getTagDistributionMap().entrySet()) {
+            String key = e.getKey();
+            Integer clusterValue = e.getValue();
+            Integer dbValue = dbTagDistribution.getTagDistributionMap().get(key);
+
+            Map<String, Integer> values = new HashMap<>();
+            values.put("alldb", dbValue);
+            values.put("cluster", clusterValue);
+            jsonObject.put(key, values);
+        }
+
+        return jsonObject;
     }
 
     private void findAllTags(List<SubmissionTag> tagList, SpectrumCluster cluster) {
