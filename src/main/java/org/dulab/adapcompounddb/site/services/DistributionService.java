@@ -13,7 +13,7 @@ public interface DistributionService {
 
     List<String> getClusterTagDistributions(final SpectrumCluster cluster);
 
-    Map<String,JSONObject> integrationDbTagsAndClusterDistribution(SpectrumCluster cluster);
+    Map<String,JSONObject> integrateDbAndClusterDistributions(SpectrumCluster cluster);
 
     void removeAll();
 

@@ -119,12 +119,9 @@ public class DistributionServiceImpl implements DistributionService {
         }
     }
 
-    //TODO: Rename "integrationDbTagsAndClusterDistribution" to "integrateDbAndClusterDistributions".
-    // Please, take a look at https://docs.google.com/document/d/1-XakJtQyFH0V70vLqPUdw0-wb-gi9FkHvA9Cex9OoSU/edit?usp=sharing
-    
     @Transactional
     @Override
-    public Map<String, JSONObject> integrationDbTagsAndClusterDistribution(SpectrumCluster cluster) {
+    public Map<String, JSONObject> integrateDbAndClusterDistributions(SpectrumCluster cluster) {
 
         final List<TagDistribution> clusterDistributions = cluster.getTagDistributions();
 

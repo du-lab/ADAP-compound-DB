@@ -105,9 +105,12 @@
 
     <div id="tag_distributions" align="center" class="hide" >
         <script src="/resources/AdapCompoundDb/js/tag_distributions.js"></script>
-
+        <p> <div id="rectangle" style=" display:inline-block; width:20px; height:20px; background-color:#b47cff"></div> is the tag distributions of all database.</p>
+        <p> <div id="rectangle" style=" display:inline-block; width:20px; height:20px; background-color:#ffb47c"></div> is the tag distributions of individual cluster.</p>
         <c:forEach items="${integration_Db_and_Cluster_distributions.entrySet()}" var="distribution" varStatus="status">
+
             <div id="div${status.index}" style="display: inline-block; margin: 10px;text-align: left;">
+
                 <script>
                     var tag ='${distribution.getKey()}';
                     var dataSet= '${distribution.getValue().toString()}';
