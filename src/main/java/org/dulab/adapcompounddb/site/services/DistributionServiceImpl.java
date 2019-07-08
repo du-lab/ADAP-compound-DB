@@ -121,7 +121,7 @@ public class DistributionServiceImpl implements DistributionService {
 
     @Transactional
     @Override
-    public Map<String, JSONObject> integrationAllTagsAndClusterDistribution(SpectrumCluster cluster) {
+    public Map<String, JSONObject> integrationDbTagsAndClusterDistribution(SpectrumCluster cluster) {
 
         final List<TagDistribution> clusterDistributions = cluster.getTagDistributions();
 

@@ -103,6 +103,20 @@
         </div>
     </div>
 
+    <div id="tag_distributions" align="center" class="hide" >
+        <script src="/resources/AdapCompoundDb/js/tag_distributions.js"></script>
+
+        <c:forEach items="${integration_Db_and_Cluster_distributions.entrySet()}" var="distribution" varStatus="status">
+            <div id="div${status.index}" style="display: inline-block; margin: 10px;text-align: left;">
+                <script>
+                    var tag ='${distribution.getKey()}';
+                    var dataSet= '${distribution.getValue().toString()}';
+                    addClusterTagsHistogram('div'+${status.index},tag,dataSet);
+                </script>
+            </div>
+        </c:forEach>
+    </div>
+
     <div id="pie_chart" align="center" class="hide">
         <div id='charts'></div>
     </div>
@@ -191,7 +205,9 @@
 <script src="<c:url value="/resources/d3/d3.min.js"/>"></script>
 <script src="<c:url value="/resources/AdapCompoundDb/js/twospectraplot.js"/>"></script>
 <script src="<c:url value="/resources/AdapCompoundDb/js/piechart.js"/>"></script>
+<script src="<c:url value="/resources/AdapCompoundDb/js/tag_distributions.js"/>"></script>
 <script type="text/javascript" src="<c:url value="/resources/AdapCompoundDb/js/tabs.js"/>"></script>
+
 <script>
     // Add Spectrum Plot
     var plot = new TwoSpectraPlot('plot', JSON.parse('${dulab:spectrumToJson(cluster.consensusSpectrum)}'));

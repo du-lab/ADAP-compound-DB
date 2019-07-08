@@ -2,12 +2,19 @@ package org.dulab.adapcompounddb.site.services;
 
 import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
 import org.dulab.adapcompounddb.models.entities.TagDistribution;
+import org.json.JSONObject;
 
+import javax.json.JsonObject;
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 public interface DistributionService {
 
     List<String> getClusterTagDistributions(final SpectrumCluster cluster);
+
+    Map<String,JSONObject> integrationDbTagsAndClusterDistribution(SpectrumCluster cluster);
+
     void removeAll();
 
     void calculateAllDistributions();

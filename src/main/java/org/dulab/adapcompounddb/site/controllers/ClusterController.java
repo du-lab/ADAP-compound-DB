@@ -1,12 +1,9 @@
 package org.dulab.adapcompounddb.site.controllers;
 
-import java.util.*;
-
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
 import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
 import org.dulab.adapcompounddb.models.entities.TagDistribution;
-import org.dulab.adapcompounddb.site.repositories.DistributionRepository;
 import org.dulab.adapcompounddb.site.services.DistributionService;
 import org.dulab.adapcompounddb.site.services.SpectrumMatchService;
 import org.dulab.adapcompounddb.site.services.StatisticsService;
@@ -17,6 +14,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 public class ClusterController {
@@ -42,14 +45,14 @@ public class ClusterController {
         final Map<SubmissionCategoryType, List<SubmissionCategory>> submissionCategoryMap = new HashMap<>();
         for (final SubmissionCategory category : submissionService.findAllCategories()) {
             submissionCategoryMap
-            .computeIfAbsent(category.getCategoryType(), c -> new ArrayList<>())
-            .add(category);
+                    .computeIfAbsent(category.getCategoryType(), c -> new ArrayList<>())
+                    .add(category);
         }
 
         model.addAttribute("submissionCategoryMap", submissionCategoryMap);
     }
 
-    @RequestMapping(value="/allClusters/", method=RequestMethod.GET)
+    @RequestMapping(value = "/allClusters/", method = RequestMethod.GET)
     public String clusters(final Model model) {
         final List<SpectrumCluster> allClusters = spectrumMatchService.getAllClusters();
         model.addAttribute("clusters", allClusters);
@@ -61,14 +64,13 @@ public class ClusterController {
 
         final SpectrumCluster cluster = spectrumMatchService.getCluster(id);
 
-        final List<TagDistribution> clusterTagDistributions = cluster.getTagDistributions();
 
-        final List<String> allTagDistributions = distributionService.getClusterTagDistributions(cluster);
+        final Map<String,JSONObject> integrationDbTagsAndClusterDistribution =  distributionService.integrationDbTagsAndClusterDistribution(cluster);
 
         spectrumMatchService.loadTagsofCluster(cluster);
         model.addAttribute("cluster", cluster);
-        model.addAttribute("cluster_tagDistributions",clusterTagDistributions);
-        model.addAttribute("all_tagDistributions",allTagDistributions);
+        model.addAttribute("integration_Db_and_Cluster_distributions",integrationDbTagsAndClusterDistribution);
+        System.out.println(integrationDbTagsAndClusterDistribution);
 
         return "cluster/cluster";
     }
