@@ -64,12 +64,11 @@ public class ClusterController {
 
         final SpectrumCluster cluster = spectrumMatchService.getCluster(id);
 
-
-        final Map<String,JSONObject> integrationDbTagsAndClusterDistribution =  distributionService.integrationDbTagsAndClusterDistribution(cluster);
+        final Map<String, JSONObject> integrationDbTagsAndClusterDistribution = distributionService.integrationDbTagsAndClusterDistribution(cluster);
 
         spectrumMatchService.loadTagsofCluster(cluster);
         model.addAttribute("cluster", cluster);
-        model.addAttribute("integration_Db_and_Cluster_distributions",integrationDbTagsAndClusterDistribution);
+        model.addAttribute("integration_Db_and_Cluster_distributions", integrationDbTagsAndClusterDistribution);
         System.out.println(integrationDbTagsAndClusterDistribution);
 
         return "cluster/cluster";
