@@ -1,3 +1,6 @@
+//TODO: Give consistent names to histogram.js and tag_distributions.js
+// For example: histogram.js and twohistograms.js
+
 function addClusterTagsHistogram(idName, tag, dataSet) {
     var integrationValues = JSON.parse( dataSet );
     var tagKeys = d3.keys( integrationValues );
@@ -57,6 +60,7 @@ function addClusterTagsHistogram(idName, tag, dataSet) {
 
     var grid2 = svg.append( 'g' )
         .attr( 'class', 'grid' )
+        //TODO: too long line. See Du-Lab's Source Code Standards
         .attr( "transform", "translate("+ xScaleToAlldb(-d3.max(alldbValuesList)) * 1.2 +", " + ((tagKeys.length) * 60 + padding.left) + ")" );
 
     // plot cluster bar chart
@@ -126,6 +130,7 @@ function addClusterTagsHistogram(idName, tag, dataSet) {
 
     // plot x axis to alldb
     svg.append( "g" )
+    //TODO: too long line. See Du-Lab's Source Code Standards
         .attr( "transform", "translate(" + xScaleToAlldb(-d3.max(alldbValuesList)) * 1.2  +", " + ((tagKeys.length) * 60 + padding.left) + ")" )
         .call( xAxisToAlldb );
 

@@ -28,8 +28,9 @@ public class ClusterController {
     private final StatisticsService statisticsService;
     private final DistributionService distributionService;
 
-    public ClusterController(final SpectrumMatchService spectrumMatchService,final SubmissionService submissionService,
-                             final StatisticsService statisticsService, final DistributionService distributionService) {
+    public ClusterController(final SpectrumMatchService spectrumMatchService,
+                             final SubmissionService submissionService, final StatisticsService statisticsService,
+                             final DistributionService distributionService) {
 
         this.spectrumMatchService = spectrumMatchService;
         this.statisticsService = statisticsService;
@@ -63,8 +64,7 @@ public class ClusterController {
 
         final SpectrumCluster cluster = spectrumMatchService.getCluster(id);
 
-        final Map<String, JSONObject> integrationDbTagsAndClusterDistribution =
-                distributionService.integrateDbAndClusterDistributions(cluster);
+        final Map<String, JSONObject> integrationDbTagsAndClusterDistribution = distributionService.integrateDbAndClusterDistributions(cluster);
 
         spectrumMatchService.loadTagsofCluster(cluster);
         model.addAttribute("cluster", cluster);
