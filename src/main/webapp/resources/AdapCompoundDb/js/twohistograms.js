@@ -67,7 +67,6 @@ function addClusterTagsHistogram(idName, tag, dataSet) {
         .append( "rect" )
         .attr( "width", function (d) {
             return (xScaleToCluster(d) - xScaleToCluster(0));
-            // return (xScaleToCluster(d)/2);
         } )
         .attr( "height", 40 )
         .attr( "fill", "#ffb47c" )
@@ -97,14 +96,15 @@ function addClusterTagsHistogram(idName, tag, dataSet) {
         .data( tagKeys )
         .enter()
         .append( "text" )
-        .attr( "dx", "20" )
+        .attr( "dx", 0)
         .attr( "dy", "1.5em" )
         .attr( "y", function (d, i) {
             return i * 60 + padding.bottom;
         } )
-        .attr( "x", width/2-padding.right *2 )
+        .attr( "x", width/2)
         .attr( "stroke", "#000000" )
         .attr( "stroke-width", "1" )
+        .style( "text-anchor", "middle" )
         .text( function (d) {
             return d;
         } );

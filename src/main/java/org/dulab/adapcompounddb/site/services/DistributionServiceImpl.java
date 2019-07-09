@@ -155,17 +155,19 @@ public class DistributionServiceImpl implements DistributionService {
         //TODO: We should loop of dbTagDistributions instead of clusterTagDistributions
         // Then, use clusterTagDistribution.getTagDistributionMap().get(key) and handle the case when this function
         // returns null
-        for (Map.Entry<String, Integer> e : clusterTagDistribution.getTagDistributionMap().entrySet()) {
+        for (Map.Entry<String, Integer> e : dbTagDistribution.getTagDistributionMap().entrySet()) {
             String key = e.getKey();
-            Integer clusterValue = e.getValue();
-            Integer dbValue = dbTagDistribution.getTagDistributionMap().get(key);
-
+            Integer dbValue = e.getValue();
+            Integer clusterValue = clusterTagDistribution.getTagDistributionMap().get(key);
             Map<String, Integer> values = new HashMap<>();
             values.put("alldb", dbValue);
-            values.put("cluster", clusterValue);
+            if (clusterValue == null) {
+                values.put("cluster", 0);
+            } else {
+                values.put("cluster", clusterValue);
+            }
             jsonObject.put(key, values);
         }
-
         return jsonObject;
     }
 
