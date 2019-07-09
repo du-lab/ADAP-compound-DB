@@ -29,6 +29,7 @@ public class ClusterController {
     private final StatisticsService statisticsService;
     private final DistributionService distributionService;
 
+    //TODO: too long line. See Du-Lab's Source Code Standards
     public ClusterController(final SpectrumMatchService spectrumMatchService,
                              final SubmissionService submissionService, final StatisticsService statisticsService, final DistributionService distributionService) {
 
@@ -64,6 +65,7 @@ public class ClusterController {
 
         final SpectrumCluster cluster = spectrumMatchService.getCluster(id);
 
+        //TODO: too long line. See Du-Lab's Source Code Standards
         final Map<String, JSONObject> integrationDbTagsAndClusterDistribution = distributionService.integrateDbAndClusterDistributions(cluster);
 
         spectrumMatchService.loadTagsofCluster(cluster);

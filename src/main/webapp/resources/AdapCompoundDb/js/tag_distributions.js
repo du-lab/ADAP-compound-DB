@@ -1,3 +1,6 @@
+//TODO: Give consistent names to histogram.js and tag_distributions.js
+// For example: histogram.js and twohistograms.js
+
 function addClusterTagsHistogram(idName, tag, dataSet) {
     var integrationValues = JSON.parse( dataSet );
     var tagKeys = d3.keys( integrationValues );
