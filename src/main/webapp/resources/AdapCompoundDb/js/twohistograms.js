@@ -31,11 +31,13 @@ function addClusterTagsHistogram(idName, tag, dataSet) {
     var xAxisToCluster = d3.axisBottom()
         .ticks( 5 )
         .tickSize( 2 )
+        .tickFormat(d3.format(".1f"))
         .scale( xScaleToCluster );
 
     var xAxisToAlldb = d3.axisBottom()
         .ticks( 5 )
         .tickSize( 2 )
+        .tickFormat(d3.format(".1f"))
         .scale(xScaleToAlldb );
 
     var yAxis = d3.axisRight()
