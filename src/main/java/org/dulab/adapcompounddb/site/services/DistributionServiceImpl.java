@@ -152,6 +152,9 @@ public class DistributionServiceImpl implements DistributionService {
 
         JSONObject jsonObject = new JSONObject();
 
+        //TODO: We should loop of dbTagDistributions instead of clusterTagDistributions
+        // Then, use clusterTagDistribution.getTagDistributionMap().get(key) and handle the case when this function
+        // returns null
         for (Map.Entry<String, Integer> e : clusterTagDistribution.getTagDistributionMap().entrySet()) {
             String key = e.getKey();
             Integer clusterValue = e.getValue();
