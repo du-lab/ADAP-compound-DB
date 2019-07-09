@@ -27,7 +27,10 @@ public class DistributionServiceImpl implements DistributionService {
     private static final Logger LOGGER = LogManager.getLogger(DistributionService.class);
 
     @Autowired
-    public DistributionServiceImpl(@Lazy final SubmissionTagRepository submissionTagRepository, @Lazy final DistributionRepository distributionRepository, @Lazy final SpectrumClusterRepository spectrumClusterRepository, @Lazy final DistributionService distributionService) {
+    public DistributionServiceImpl(@Lazy final SubmissionTagRepository submissionTagRepository,
+                                   @Lazy final DistributionRepository distributionRepository,
+                                   @Lazy final SpectrumClusterRepository spectrumClusterRepository,
+                                   @Lazy final DistributionService distributionService) {
         this.submissionTagRepository = submissionTagRepository;
         this.distributionRepository = distributionRepository;
         this.spectrumClusterRepository = spectrumClusterRepository;
@@ -144,7 +147,8 @@ public class DistributionServiceImpl implements DistributionService {
         return integrationDistributionsMap;
     }
 
-    private JSONObject getIntegratedDistribution(TagDistribution clusterTagDistribution, TagDistribution dbTagDistribution) {
+    private JSONObject getIntegratedDistribution(TagDistribution clusterTagDistribution,
+                                                 TagDistribution dbTagDistribution) {
 
         JSONObject jsonObject = new JSONObject();
 
