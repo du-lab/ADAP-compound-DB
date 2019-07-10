@@ -224,6 +224,7 @@ public class DistributionServiceImpl implements DistributionService {
         final List<TagDistribution> allTagDistributions = distributionService.getAllClusterIdNullDistributions();
         Map<String, Double> chiSquareStatisticMap = new HashMap<>();
         for (TagDistribution clusterTagDistribution : clusterDistributions) {
+            //TODO: rename k to something meaningful
             int k = 0;
             Double chiSquareStatistics = 0.0;
             String clusterTagKey = clusterTagDistribution.getTagKey();
@@ -233,12 +234,15 @@ public class DistributionServiceImpl implements DistributionService {
                     for (Map.Entry<String, Integer> x : clusterTagDistribution.getTagDistributionMap().entrySet()) {
                         Integer m = x.getValue();
                         for (Map.Entry<String, Integer> y : dbTagDistribution.getTagDistributionMap().entrySet()) {
+                            //TODO: You can replace x.getKey().equalsIgnoreCase(y.getKey()) with clusterTagDistribution.getTagDistributionMap().get(y.getKey())
+                            // and remove the loop for "for (Map.Entry<String, Integer> x : clusterTagDistribution.getTagDistributionMap().entrySet())"
                             if (m != null && x.getKey().equalsIgnoreCase(y.getKey())) {
                                 double n = m;
                                 k++;
                                 Double z = (n - y.getValue()) * (n - y.getValue()) / (y.getValue());
                                 chiSquareStatistics = chiSquareStatistics + z;
                             } else {
+                                //TODO: Do we want to raise an exception here? I don't understand the meaning of this.
                                 System.out.println(chiSquareStatistics);
                             }
                         }
@@ -257,7 +261,6 @@ public class DistributionServiceImpl implements DistributionService {
     // calculate all clusters' pValue
     @Transactional
     @Override
-
     public void calculateAllClustersPvalue() {
         List<SpectrumCluster> clusters = ServiceUtils.toList(spectrumClusterRepository.getAllClusters());
 
