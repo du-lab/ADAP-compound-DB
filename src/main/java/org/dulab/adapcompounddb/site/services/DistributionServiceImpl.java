@@ -231,19 +231,18 @@ public class DistributionServiceImpl implements DistributionService {
                 if (dbTagKey.equalsIgnoreCase(clusterTagKey)) {
                     for (Map.Entry<String, Integer> x : clusterTagDistribution.getTagDistributionMap().entrySet()) {
                         Integer m = x.getValue();
-                        for (Map.Entry<String, Integer> y : dbTagDistribution.getTagDistributionMap().entrySet()) {
                             //TODO: You can replace x.getKey().equalsIgnoreCase(y.getKey()) with clusterTagDistribution.getTagDistributionMap().get(y.getKey())
                             // and remove the loop for "for (Map.Entry<String, Integer> x : clusterTagDistribution.getTagDistributionMap().entrySet())"
-                            if (m != null && x.getKey().equalsIgnoreCase(y.getKey())) {
-                                double n = m;
+                            if (m != null) {
+                                double alldbValue = dbTagDistribution.getTagDistributionMap().get(x.getKey());
+                                double clusterValue = m;
                                 freedomDegrees++;
-                                Double z = (n - y.getValue()) * (n - y.getValue()) / (y.getValue());
-                                chiSquareStatistics = chiSquareStatistics + z;
-                            } else {
-                                //TODO: Do we want to raise an exception here? I don't understand the meaning of this.
-                                System.out.println(chiSquareStatistics);
+                                Double sum = (clusterValue - alldbValue) * (clusterValue - alldbValue) / (alldbValue);
+                                chiSquareStatistics = chiSquareStatistics + sum;
                             }
-                        }
+                        //TODO: Do we want to raise an exception here? I don't understand the meaning of this.
+                        // i deleted the else part
+
                     }
                 }
             }
