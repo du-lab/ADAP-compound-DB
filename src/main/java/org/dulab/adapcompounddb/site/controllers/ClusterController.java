@@ -3,6 +3,7 @@ package org.dulab.adapcompounddb.site.controllers;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
 import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
+import org.dulab.adapcompounddb.models.entities.TagDistribution;
 import org.dulab.adapcompounddb.site.services.DistributionService;
 import org.dulab.adapcompounddb.site.services.SpectrumMatchService;
 import org.dulab.adapcompounddb.site.services.StatisticsService;
@@ -63,13 +64,10 @@ public class ClusterController {
     public String cluster(@PathVariable("id") final long id, final Model model) {
 
         final SpectrumCluster cluster = spectrumMatchService.getCluster(id);
-        final Map<String, JSONObject> integrationDbTagsAndClusterDistribution = distributionService.integrateDbAndClusterDistributions(cluster);
-
+        final Map<JSONObject, JSONObject> integrationDbTagsAndClusterDistribution = distributionService.integrateDbAndClusterDistributions(cluster);
         spectrumMatchService.loadTagsofCluster(cluster);
         model.addAttribute("cluster", cluster);
         model.addAttribute("integration_Db_and_Cluster_distributions",integrationDbTagsAndClusterDistribution);
-        System.out.println(integrationDbTagsAndClusterDistribution);
-
         return "cluster/cluster";
     }
 }

@@ -1,4 +1,8 @@
-function addClusterTagsHistogram(idName, tag, dataSet) {
+function addClusterTagsHistogram(idName, keysAndPvalues, dataSet) {
+
+    var keyAndPvalues = JSON.parse(keysAndPvalues);
+    var tag = d3.keys(keyAndPvalues);
+    var pValue = d3.values(keyAndPvalues);
     var integrationValues = JSON.parse( dataSet );
     var tagKeys = d3.keys( integrationValues );
     var values = d3.values( integrationValues );
@@ -121,6 +125,18 @@ function addClusterTagsHistogram(idName, tag, dataSet) {
         .attr( "stroke", "#000000" )
         .attr( "stroke-width", "1.5" )
         .text( tag );
+
+    // text label for the pValue
+    svg.append( "text" )
+        .data( pValue )
+        .attr( "transform",
+            "translate(" + (width / 2) + " ," +
+            10 + " )")
+        .style( "text-anchor", "middle" )
+        .attr( "stroke", "#000000" )
+        .attr( "stroke-width", "1.5" )
+        .text( "Pvalue: " + pValue );
+
 
     // plot x axis to cluster
     svg.append( "g" )

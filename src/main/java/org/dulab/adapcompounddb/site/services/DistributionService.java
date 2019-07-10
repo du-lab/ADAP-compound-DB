@@ -15,11 +15,11 @@ public interface DistributionService {
 
     void calculateAllClustersPvalue();
 
-    Double getClusterPvalue(long id);
+    Double getClusterPvalue(String tagKey,long id);
 
     List<String> getClusterTagDistributions(final SpectrumCluster cluster);
 
-    Map<String,JSONObject> integrateDbAndClusterDistributions(SpectrumCluster cluster);
+    Map<JSONObject,JSONObject> integrateDbAndClusterDistributions(SpectrumCluster cluster);
 
     void removeAll();
 

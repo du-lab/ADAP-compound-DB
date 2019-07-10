@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import java.text.DecimalFormat;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 @Service
 public class DistributionServiceImpl implements DistributionService {
 
+    private static DecimalFormat decimalFormat = new DecimalFormat("0.00");
     private SubmissionTagRepository submissionTagRepository;
     private DistributionRepository distributionRepository;
     private SpectrumClusterRepository spectrumClusterRepository;
@@ -126,21 +128,30 @@ public class DistributionServiceImpl implements DistributionService {
 
     @Transactional
     @Override
-    public Map<String, JSONObject> integrateDbAndClusterDistributions(SpectrumCluster cluster) {
+    public Map<JSONObject, JSONObject> integrateDbAndClusterDistributions(SpectrumCluster cluster) {
 
         final List<TagDistribution> clusterDistributions = cluster.getTagDistributions();
 
         // get all tag distributions count map
         final List<TagDistribution> allTagDistributions = distributionService.getAllClusterIdNullDistributions();
 
-        Map<String, JSONObject> integrationDistributionsMap = new HashMap<>();
+        Map<JSONObject, JSONObject> integrationDistributionsMap = new HashMap<>();
+
         for (TagDistribution clusterTagDistribution : clusterDistributions) {
             String clusterTagKey = clusterTagDistribution.getTagKey();
+                final String pValue = decimalFormat.format(distributionService.getClusterPvalue(clusterTagKey,
+                        clusterTagDistribution.getCluster().getId()));
+
             for (TagDistribution dbTagDistribution : allTagDistributions) {
                 String dbTagKey = dbTagDistribution.getTagKey();
+
+                JSONObject ClusterTagKeyAndPvalue = new JSONObject();
+
+                ClusterTagKeyAndPvalue.put(clusterTagKey, pValue);
+
                 if (dbTagKey.equalsIgnoreCase(clusterTagKey)) {
                     integrationDistributionsMap.put(
-                            clusterTagKey,
+                            ClusterTagKeyAndPvalue,
                             getIntegratedDistribution(clusterTagDistribution, dbTagDistribution));
                     break;
                 }
@@ -222,7 +233,6 @@ public class DistributionServiceImpl implements DistributionService {
         final List<TagDistribution> allTagDistributions = distributionService.getAllClusterIdNullDistributions();
         Map<String, Double> chiSquareStatisticMap = new HashMap<>();
         for (TagDistribution clusterTagDistribution : clusterDistributions) {
-            //TODO: rename k to something meaningful
             int freedomDegrees = 0;
             Double chiSquareStatistics = 0.0;
             String clusterTagKey = clusterTagDistribution.getTagKey();
@@ -231,8 +241,6 @@ public class DistributionServiceImpl implements DistributionService {
                 if (dbTagKey.equalsIgnoreCase(clusterTagKey)) {
                     for (Map.Entry<String, Integer> x : clusterTagDistribution.getTagDistributionMap().entrySet()) {
                         Integer m = x.getValue();
-                            //TODO: You can replace x.getKey().equalsIgnoreCase(y.getKey()) with clusterTagDistribution.getTagDistributionMap().get(y.getKey())
-                            // and remove the loop for "for (Map.Entry<String, Integer> x : clusterTagDistribution.getTagDistributionMap().entrySet())"
                             if (m != null) {
                                 double alldbValue = dbTagDistribution.getTagDistributionMap().get(x.getKey());
                                 double clusterValue = m;
@@ -240,14 +248,12 @@ public class DistributionServiceImpl implements DistributionService {
                                 Double sum = (clusterValue - alldbValue) * (clusterValue - alldbValue) / (alldbValue);
                                 chiSquareStatistics = chiSquareStatistics + sum;
                             }
-                        //TODO: Do we want to raise an exception here? I don't understand the meaning of this.
-                        // i deleted the else part
-
                     }
                 }
             }
             if (freedomDegrees > 1) {
-                chiSquareStatisticMap.put(clusterTagKey, 1 - new ChiSquaredDistribution(freedomDegrees - 1).cumulativeProbability(chiSquareStatistics));
+                chiSquareStatisticMap.put(clusterTagKey, 1 - new ChiSquaredDistribution(freedomDegrees - 1)
+                                .cumulativeProbability(chiSquareStatistics));
             } else {
                 chiSquareStatisticMap.put(clusterTagKey, 1.0);
             }
@@ -280,8 +286,8 @@ public class DistributionServiceImpl implements DistributionService {
         }
     }
 
-    public Double getClusterPvalue(long id){
-        Double pvalue = distributionRepository.getClusterPvalue(id);
+    public Double getClusterPvalue(String tagKey, long id){
+        Double pvalue = distributionRepository.getClusterPvalue(tagKey,id);
         return pvalue;
     }
 }

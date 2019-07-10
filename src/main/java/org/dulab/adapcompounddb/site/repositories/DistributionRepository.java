@@ -26,4 +26,8 @@ public interface DistributionRepository extends CrudRepository<TagDistribution, 
             + " AND t.cluster.id = ?2")
     TagDistribution findClusterTagDistributionByTagKey(String tagKey, long id);
 
+    @Query("SELECT t.pValue FROM TagDistribution t"
+            + " where t.tagKey = ?1"
+            + " and t.cluster.id = ?2")
+    Double getClusterPvalue(String tagKey, long id);
 }
