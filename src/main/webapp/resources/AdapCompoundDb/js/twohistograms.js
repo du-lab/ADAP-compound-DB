@@ -135,7 +135,7 @@ function addClusterTagsHistogram(idName, keysAndPvalues, dataSet) {
         .style( "text-anchor", "middle" )
         .attr( "stroke", "#000000" )
         .attr( "stroke-width", "1.5" )
-        .text( "Pvalue: " + pValue );
+        .text( "Chi-squared test p-value: " + pValue );
 
 
     // plot x axis to cluster
