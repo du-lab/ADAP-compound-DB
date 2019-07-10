@@ -222,7 +222,7 @@ public class DistributionServiceImpl implements DistributionService {
         final List<TagDistribution> allTagDistributions = distributionService.getAllClusterIdNullDistributions();
         Map<String, Double> chiSquareStatisticMap = new HashMap<>();
         for (TagDistribution clusterTagDistribution : clusterDistributions) {
-            int k = 0;
+            int freedomDegrees = 0;
             Double chiSquareStatistics = 0.0;
             String clusterTagKey = clusterTagDistribution.getTagKey();
             for (TagDistribution dbTagDistribution : allTagDistributions) {
@@ -233,7 +233,7 @@ public class DistributionServiceImpl implements DistributionService {
                         for (Map.Entry<String, Integer> y : dbTagDistribution.getTagDistributionMap().entrySet()) {
                             if (m != null && x.getKey().equalsIgnoreCase(y.getKey())) {
                                 double n = m;
-                                k++;
+                                freedomDegrees++;
                                 Double z = (n - y.getValue()) * (n - y.getValue()) / (y.getValue());
                                 chiSquareStatistics = chiSquareStatistics + z;
                             } else {
@@ -243,8 +243,8 @@ public class DistributionServiceImpl implements DistributionService {
                     }
                 }
             }
-            if (k > 1) {
-                chiSquareStatisticMap.put(clusterTagKey, 1 - new ChiSquaredDistribution(k - 1).cumulativeProbability(chiSquareStatistics));
+            if (freedomDegrees > 1) {
+                chiSquareStatisticMap.put(clusterTagKey, 1 - new ChiSquaredDistribution(freedomDegrees - 1).cumulativeProbability(chiSquareStatistics));
             } else {
                 chiSquareStatisticMap.put(clusterTagKey, 1.0);
             }
@@ -255,7 +255,6 @@ public class DistributionServiceImpl implements DistributionService {
     // calculate all clusters' pValue
     @Transactional
     @Override
-
     public void calculateAllClustersPvalue() {
         List<SpectrumCluster> clusters = ServiceUtils.toList(spectrumClusterRepository.getAllClusters());
 
@@ -276,5 +275,10 @@ public class DistributionServiceImpl implements DistributionService {
                 }
             }
         }
+    }
+
+    public Double getClusterPvalue(long id){
+        Double pvalue = distributionRepository.getClusterPvalue(id);
+        return pvalue;
     }
 }

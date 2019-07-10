@@ -15,6 +15,8 @@ public interface DistributionService {
 
     void calculateAllClustersPvalue();
 
+    Double getClusterPvalue(long id);
+
     List<String> getClusterTagDistributions(final SpectrumCluster cluster);
 
     Map<String,JSONObject> integrateDbAndClusterDistributions(SpectrumCluster cluster);
