@@ -2,6 +2,8 @@ package org.dulab.adapcompounddb.models.entities;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.dulab.adapcompounddb.models.DbAndClusterValuePair;
+import sun.security.pkcs11.Secmod;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -74,10 +76,10 @@ public class TagDistribution implements Serializable {
 
     // Convert Json-String to Map
     @Transient
-    public Map<String, Integer> getTagDistributionMap() throws IllegalStateException {
+    public Map<String, DbAndClusterValuePair> getTagDistributionMap() throws IllegalStateException {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            return (Map<String, Integer>) mapper.readValue(tagDistribution, Map.class);
+            return (Map<String, DbAndClusterValuePair>) mapper.readValue(tagDistribution, Map.class);
         } catch (IOException e) {
             throw new IllegalStateException("It cannot be converted from Json-String to map!");
         }
@@ -85,15 +87,14 @@ public class TagDistribution implements Serializable {
 
     // Convert Map to Json-String
     @Transient
-    public String setTagDistributionMap(Map<String, Integer> countMap) {
+    public void setTagDistributionMap(Map<String, DbAndClusterValuePair> countMap) throws IllegalStateException {
         try {
             // Default constructor, which will construct the default JsonFactory as necessary, use SerializerProvider as its
             // SerializerProvider, and BeanSerializerFactory as its SerializerFactory.
             this.tagDistribution = new ObjectMapper().writeValueAsString(countMap);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            throw new IllegalStateException("It cannot be converted to Json-String!");
         }
-        return tagDistribution;
     }
 
 

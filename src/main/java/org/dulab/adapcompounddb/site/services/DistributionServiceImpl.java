@@ -4,6 +4,7 @@ import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
+import org.dulab.adapcompounddb.models.DbAndClusterValuePair;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.repositories.DistributionRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
@@ -181,6 +182,7 @@ public class DistributionServiceImpl implements DistributionService {
         return jsonObject;
     }
 
+    //TODO: rewrite to use DbAndClusterValuePair
     private void findAllTags(List<SubmissionTag> tagList, SpectrumCluster cluster) {
 
         // Find unique keys among all tags of unique submission
@@ -198,7 +200,7 @@ public class DistributionServiceImpl implements DistributionService {
                 .collect(Collectors.toList());
         // For each key, find its values and their count
         for (String key : keys) {
-            Map<String, Integer> countMap = new HashMap<>();
+            Map<String, DbAndClusterValuePair> countMap = new HashMap<>();
             List<String> tagValues = tagList.stream()
                     .map(t -> t.getId().getName())
                     .map(a -> {
