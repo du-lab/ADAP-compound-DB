@@ -11,6 +11,10 @@ import java.util.Map;
 
 public interface DistributionService {
 
+    Map<String,Double> calculateClusterPvalue(SpectrumCluster cluster);
+
+    void calculateAllClustersPvalue();
+
     List<String> getClusterTagDistributions(final SpectrumCluster cluster);
 
     Map<String,JSONObject> integrateDbAndClusterDistributions(SpectrumCluster cluster);

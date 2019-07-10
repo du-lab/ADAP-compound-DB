@@ -60,6 +60,7 @@ public class AdminRestController {
                 spectrumClusterer.cluster();
                 //calculate all cluster tag distributions
                 distributionService.calculateClusterDistributions();
+                distributionService.calculateAllClustersPvalue();
                 //                Arrays.stream(ChromatographyType.values())
                 //                .parallel()
                 //                .forEach(t -> spectrumClusterer

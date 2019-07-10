@@ -63,7 +63,6 @@ public class ClusterController {
     public String cluster(@PathVariable("id") final long id, final Model model) {
 
         final SpectrumCluster cluster = spectrumMatchService.getCluster(id);
-
         final Map<String, JSONObject> integrationDbTagsAndClusterDistribution = distributionService.integrateDbAndClusterDistributions(cluster);
 
         spectrumMatchService.loadTagsofCluster(cluster);
