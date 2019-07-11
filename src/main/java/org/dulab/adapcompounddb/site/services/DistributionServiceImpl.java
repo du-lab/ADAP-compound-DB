@@ -124,10 +124,12 @@ public class DistributionServiceImpl implements DistributionService {
     @Override
     public void calculateClusterDistributions() {
 
+        // Get All-Db tag distributions and save them to map for a quick search
         List<TagDistribution> dbTagDistributions = ServiceUtils.toList(distributionRepository.getAllByClusterIdIsNull());
         Map<String, Map<String, DbAndClusterValuePair>> keyToCountPairMap = dbTagDistributions.stream()
                 .collect(Collectors.toMap(TagDistribution::getTagKey, TagDistribution::getTagDistributionMap));
 
+        // Get all clusters
         List<SpectrumCluster> clusters = ServiceUtils.toList(spectrumClusterRepository.getAllClusters());
 
         for (SpectrumCluster cluster : clusters) {
@@ -144,6 +146,7 @@ public class DistributionServiceImpl implements DistributionService {
 
             List<String> uniqueKeys = findUniqueKeys(clusterTags);
 
+            // For each key, create a cluster tag distribution
             for (String key : uniqueKeys) {
 
                 Map<String, Integer> clusterCountMap = getCountMap(clusterTags, key);
