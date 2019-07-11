@@ -19,7 +19,7 @@ public interface DistributionService {
 
     List<String> getClusterTagDistributions(final SpectrumCluster cluster);
 
-    Map<JSONObject,JSONObject> integrateDbAndClusterDistributions(SpectrumCluster cluster);
+//    Map<JSONObject,JSONObject> integrateDbAndClusterDistributions(SpectrumCluster cluster);
 
     void removeAll();
 

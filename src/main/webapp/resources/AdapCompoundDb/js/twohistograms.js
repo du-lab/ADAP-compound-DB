@@ -9,8 +9,8 @@ function addClusterTagsHistogram(idName, keysAndPvalues, dataSet) {
     var clusterValuesList = [];
     var alldbValuesList =[];
     for (var m = 0; m < tagKeys.length; m++) {
-            var clusterValue = values[m]["cluster"];
-            var alldbValue = values[m]["alldb"];
+            var clusterValue = values[m]["clusterValue"];
+            var alldbValue = values[m]["dbValue"];
             clusterValuesList.push(clusterValue);
             alldbValuesList.push(alldbValue);
     }

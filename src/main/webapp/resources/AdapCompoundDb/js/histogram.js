@@ -8,7 +8,7 @@ function addHistogram(idName, tagKey, dataSet) {
     var padding = {top: 20, right: 20, bottom: 20, left: 20};
 
     var xScale = d3.scaleLinear()
-        .domain([0, d3.max(tagDistribution) * 1.2])
+        .domain([0, d3.max(tagDistribution.map(function(d) {return d["dbValue"]})) * 1.2])
         .range([0, width]);
 
     var yScale = d3.scaleLinear()
@@ -43,7 +43,7 @@ function addHistogram(idName, tagKey, dataSet) {
         .enter()
         .append("rect")
         .attr("width", function (d) {
-            return xScale(d);
+            return xScale(d["dbValue"]);
         })
         .attr("height", 40)
         .attr("fill", "#b47cff")
@@ -96,3 +96,4 @@ function addHistogram(idName, tagKey, dataSet) {
         .tickSize(-(tagDistribution.length * 60), 0)
         .tickFormat(''));
 }
+
