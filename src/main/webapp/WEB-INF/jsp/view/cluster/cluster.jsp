@@ -8,9 +8,11 @@
 
 <div align="center" class="desktop">
     <strong>
-        ${cluster.consensusSpectrum.name} | 
-        <img src="${pageContext.request.contextPath}/${cluster.consensusSpectrum.chromatographyType.iconPath}" class="icon"/> |
-        ${cluster.size} total spectra | ${dulab:toIntegerScore(cluster.diameter)} similarity score | ${cluster.aveSignificance} significance
+        ${cluster.consensusSpectrum.name} |
+        <img src="${pageContext.request.contextPath}/${cluster.consensusSpectrum.chromatographyType.iconPath}"
+             class="icon"/> |
+        ${cluster.size} total spectra | ${dulab:toIntegerScore(cluster.diameter)} similarity score
+        | ${cluster.aveSignificance} significance
     </strong>
 </div>
 
@@ -103,18 +105,23 @@
         </div>
     </div>
 
-    <div id="tag_distributions" align="center" class="hide" >
+    <div id="tag_distributions" align="center" class="hide">
         <script src="/resources/AdapCompoundDb/js/twohistograms.js"></script>
-        <p> <div id="rectangle" style=" display:inline-block; width:20px; height:20px; background-color:#b47cff"></div> is the tag distributions of all database.</p>
-        <p> <div id="rectangle" style=" display:inline-block; width:20px; height:20px; background-color:#ffb47c"></div> is the tag distributions of individual cluster.</p>
-        <c:forEach items="${integration_Db_and_Cluster_distributions.entrySet()}" var="distribution" varStatus="status">
+        <p>
+        <div id="rectangle" style=" display:inline-block; width:20px; height:20px; background-color:#b47cff"></div>
+        is the tag distributions of all database.</p>
+        <p>
+        <div id="rectangle" style=" display:inline-block; width:20px; height:20px; background-color:#ffb47c"></div>
+        is the tag distributions of individual cluster.</p>
+        <c:forEach items="${tag_Distribution_List}" var="tagDistribution" varStatus="status">
 
             <div id="div${status.index}" style="display: inline-block; margin: 10px;text-align: left;">
 
                 <script>
-                    var tag ='${distribution.getKey()}';
-                    var dataSet= '${distribution.getValue().toString()}';
-                    addClusterTagsHistogram('div'+${status.index},tag,dataSet);
+                    var tag = '${tagDistribution.getTagKey()}';
+                    var dataSet = '${tagDistribution.getTagDistribution()}';
+                    var pValue = '${tagDistribution.getPValue()}';
+                    addClusterTagsHistogram( 'div' +${status.index}, tag, dataSet, pValue );
                 </script>
             </div>
         </c:forEach>
@@ -139,13 +146,16 @@
             <c:forEach items="${cluster.spectra}" var="spectrum">
                 <tr>
                     <td><a href="${pageContext.request.contextPath}/spectrum/${spectrum.id}/">${spectrum.name}</a><br/>
-                        <small><a href="${pageContext.request.contextPath}/submission/${spectrum.file.submission.id}/">${spectrum.file.submission.name}</a>
+                        <small><a
+                                href="${pageContext.request.contextPath}/submission/${spectrum.file.submission.id}/">${spectrum.file.submission.name}</a>
                         </small>
                     </td>
                     <td><fmt:formatNumber type="number" maxFractionDigits="3" value="${spectrum.retentionTime}"/></td>
                     <td><fmt:formatNumber type="number" maxFractionDigits="3" value="${spectrum.precursor}"/></td>
                     <td><fmt:formatNumber type="number" maxFractionDigits="3" value="${spectrum.significance}"/></td>
-                    <td><a href="${pageContext.request.contextPath}/spectrum/${spectrum.id}/"><i class="material-icons" title="View">&#xE5D3;</i></a></td>
+                    <td><a href="${pageContext.request.contextPath}/spectrum/${spectrum.id}/"><i class="material-icons"
+                                                                                                 title="View">&#xE5D3;</i></a>
+                    </td>
                 </tr>
             </c:forEach>
             </tbody>
@@ -159,9 +169,9 @@
 <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
 <script src="<c:url value="/resources/Select-1.2.5/js/dataTables.select.min.js"/>"></script>
 <script>
-    $(document).ready(function () {
+    $( document ).ready( function () {
 
-        $('#property_table').DataTable({
+        $( '#property_table' ).DataTable( {
             info: false,
             ordering: false,
             paging: false,
@@ -169,9 +179,9 @@
             responsive: true,
             scrollX: true,
             scroller: true
-        });
+        } );
 
-        var table = $('#spectrum_table').DataTable({
+        var table = $( '#spectrum_table' ).DataTable( {
             bLengthChange: false,
             scrollX: true,
             select: {style: 'single'},
@@ -179,27 +189,27 @@
             scrollX: true,
             scroller: true,
             "fnInitComplete": function (oSettings, json) {
-                $('#spectrum_plot').addClass("hide");
+                $( '#spectrum_plot' ).addClass( "hide" );
             }
-        });
+        } );
 
-        table.on('select', function (e, dt, type, indexes) {
-            var row = table.row(indexes).node();
-            var spectrum = JSON.parse($(row).attr('data-spectrum'));
-            plot.update(spectrum);
-        });
+        table.on( 'select', function (e, dt, type, indexes) {
+            var row = table.row( indexes ).node();
+            var spectrum = JSON.parse( $( row ).attr( 'data-spectrum' ) );
+            plot.update( spectrum );
+        } );
 
-        table.rows(':eq(0)').select();
+        table.rows( ':eq(0)' ).select();
 
-        $('#big_spectrum_table').DataTable({
-        	responsive: true,
+        $( '#big_spectrum_table' ).DataTable( {
+            responsive: true,
             scrollX: true,
             scroller: true,
             "fnInitComplete": function (oSettings, json) {
-                $('#spectrum_list').addClass("hide");
+                $( '#spectrum_list' ).addClass( "hide" );
             }
-        });
-    });
+        } );
+    } );
 </script>
 <script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
 <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
@@ -213,24 +223,24 @@
 
 <script>
     // Add Spectrum Plot
-    var plot = new TwoSpectraPlot('plot', JSON.parse('${dulab:spectrumToJson(cluster.consensusSpectrum)}'));
+    var plot = new TwoSpectraPlot( 'plot', JSON.parse( '${dulab:spectrumToJson(cluster.consensusSpectrum)}' ) );
 
-    $(".tabbed-pane").each(function() {
-        $(this).tabbedPane();
-    });
+    $( ".tabbed-pane" ).each( function () {
+        $( this ).tabbedPane();
+    } );
 
     var pieChartVal = '${dulab:clusterTagsToJson(cluster.spectra)}';
-    var jsonVal = JSON.parse(pieChartVal);
+    var jsonVal = JSON.parse( pieChartVal );
 
-    $pieDiv = $("#charts");
-    $.each(jsonVal, function(k, v) {
-        $pieDiv.append('<div style="display: inline-block; margin: 10px;">' +
-                           '<div>diversity: ' + parseFloat(v.diversity).toFixed(2) + '</div>' +
-                           '<div id="PieChart-' + k + '"></div>' +
-                           '<div>' + v.name + '</div>' +
-                       '</div>');
-        addPieChart('PieChart-' + k, v.values);
-    });
+    $pieDiv = $( "#charts" );
+    $.each( jsonVal, function (k, v) {
+        $pieDiv.append( '<div style="display: inline-block; margin: 10px;">' +
+            '<div>diversity: ' + parseFloat( v.diversity ).toFixed( 2 ) + '</div>' +
+            '<div id="PieChart-' + k + '"></div>' +
+            '<div>' + v.name + '</div>' +
+            '</div>' );
+        addPieChart( 'PieChart-' + k, v.values );
+    } );
 </script>
 <style>
     .selection {
@@ -241,6 +251,7 @@
         stroke-width: 2;
         stroke-dasharray: 5, 5;
     }
+
     .charts div {
         display: inline-block;
     }

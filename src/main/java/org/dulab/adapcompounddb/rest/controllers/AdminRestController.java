@@ -1,8 +1,5 @@
 package org.dulab.adapcompounddb.rest.controllers;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import org.dulab.adapcompounddb.site.repositories.DistributionRepository;
 import org.dulab.adapcompounddb.site.services.DistributionService;
 import org.dulab.adapcompounddb.site.services.SpectrumClusterer;
@@ -10,6 +7,10 @@ import org.dulab.adapcompounddb.site.services.SpectrumMatchCalculator;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @RestController
 @RequestMapping("/admin")
@@ -29,12 +30,12 @@ public class AdminRestController {
         executor = Executors.newCachedThreadPool();
     }
 
-    @RequestMapping(value = "/calculatescores/progress", produces="application/json")
+    @RequestMapping(value = "/calculatescores/progress", produces = "application/json")
     public int calculateScoresProgress() {
         return Math.round(100 * spectrumMatchCalculator.getProgress());
     }
 
-    @RequestMapping(value = "/cluster/progress", produces="application/json")
+    @RequestMapping(value = "/cluster/progress", produces = "application/json")
     public int calculateClustersProgress() {
         return Math.round(100 * spectrumClusterer.getProgress());
     }
@@ -55,11 +56,19 @@ public class AdminRestController {
 
                 distributionService.removeAll();
                 //calculate all tags distributions
-                distributionService.calculateAllDistributions();
+                try {
+                    distributionService.calculateAllDistributions();
+                } catch (IOException e) {
+                    throw new IllegalStateException("Calculating AllDistributions failed!");
+                }
                 spectrumClusterer.removeAll();
                 spectrumClusterer.cluster();
                 //calculate all cluster tag distributions
-                distributionService.calculateClusterDistributions();
+                try {
+                    distributionService.calculateClusterDistributions();
+                } catch (IOException e) {
+                    throw new IllegalStateException("Calculating ClusterDistributions failed!");
+                }
                 distributionService.calculateAllClustersPvalue();
                 //                Arrays.stream(ChromatographyType.values())
                 //                .parallel()

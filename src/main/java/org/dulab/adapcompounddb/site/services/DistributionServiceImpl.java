@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,14 +10,14 @@ import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.repositories.DistributionRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
 import org.dulab.adapcompounddb.site.repositories.SubmissionTagRepository;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import java.text.DecimalFormat;
 
+import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,6 +30,7 @@ public class DistributionServiceImpl implements DistributionService {
     private SpectrumClusterRepository spectrumClusterRepository;
     private final DistributionService distributionService;
     private static final Logger LOGGER = LogManager.getLogger(DistributionService.class);
+    private DbAndClusterValuePair dbAndClusterValuePair;
 
     @Autowired
     public DistributionServiceImpl(@Lazy final SubmissionTagRepository submissionTagRepository,
@@ -67,6 +69,19 @@ public class DistributionServiceImpl implements DistributionService {
 
     @Transactional
     @Override
+    public List<TagDistribution> getClusterDistributions(long clusterId) {
+        return ServiceUtils.toList(distributionRepository.findClusterTagDistributionsByClusterId(clusterId));
+    }
+
+    @Transactional
+    @Override
+    public Double getClusterPvalue(String tagKey, long id) {
+        Double pvalue = distributionRepository.getClusterPvalue(tagKey, id);
+        return pvalue;
+    }
+
+    @Transactional
+    @Override
     public TagDistribution getDistribution(final long id) {
         return distributionRepository.findById(id)
                 .orElseThrow(() -> new EmptySearchResultException(id));
@@ -95,17 +110,18 @@ public class DistributionServiceImpl implements DistributionService {
 
     @Transactional
     @Override
-    public void calculateAllDistributions() {
+    public void calculateAllDistributions() throws IOException {
 
         // Find all the tags has been submitted
         List<SubmissionTag> tags = ServiceUtils.toList(submissionTagRepository.findAll());
 
         findAllTags(tags, null);
+
     }
 
     @Transactional
     @Override
-    public void calculateClusterDistributions() {
+    public void calculateClusterDistributions() throws IOException {
 
         List<SpectrumCluster> clusters = ServiceUtils.toList(spectrumClusterRepository.getAllClusters());
 
@@ -126,64 +142,8 @@ public class DistributionServiceImpl implements DistributionService {
         }
     }
 
-
-    @Transactional
-    @Override
-    public Map<JSONObject, JSONObject> integrateDbAndClusterDistributions(SpectrumCluster cluster) {
-
-        final List<TagDistribution> clusterDistributions = cluster.getTagDistributions();
-
-        // get all tag distributions count map
-        final List<TagDistribution> allTagDistributions = distributionService.getAllClusterIdNullDistributions();
-
-        Map<JSONObject, JSONObject> integrationDistributionsMap = new HashMap<>();
-
-        for (TagDistribution clusterTagDistribution : clusterDistributions) {
-            String clusterTagKey = clusterTagDistribution.getTagKey();
-                final String pValue = decimalFormat.format(distributionService.getClusterPvalue(clusterTagKey,
-                        clusterTagDistribution.getCluster().getId()));
-
-            for (TagDistribution dbTagDistribution : allTagDistributions) {
-                String dbTagKey = dbTagDistribution.getTagKey();
-
-                JSONObject ClusterTagKeyAndPvalue = new JSONObject();
-
-                ClusterTagKeyAndPvalue.put(clusterTagKey, pValue);
-
-                if (dbTagKey.equalsIgnoreCase(clusterTagKey)) {
-                    integrationDistributionsMap.put(
-                            ClusterTagKeyAndPvalue,
-                            getIntegratedDistribution(clusterTagDistribution, dbTagDistribution));
-                    break;
-                }
-            }
-        }
-        return integrationDistributionsMap;
-    }
-
-    private JSONObject getIntegratedDistribution(TagDistribution clusterTagDistribution,
-                                                 TagDistribution dbTagDistribution) {
-
-        JSONObject jsonObject = new JSONObject();
-
-        for (Map.Entry<String, Integer> e : dbTagDistribution.getTagDistributionMap().entrySet()) {
-            String key = e.getKey();
-            Integer dbValue = e.getValue();
-            Integer clusterValue = clusterTagDistribution.getTagDistributionMap().get(key);
-            Map<String, Integer> values = new HashMap<>();
-            values.put("alldb", dbValue);
-            if (clusterValue == null) {
-                values.put("cluster", 0);
-            } else {
-                values.put("cluster", clusterValue);
-            }
-            jsonObject.put(key, values);
-        }
-        return jsonObject;
-    }
-
     //TODO: rewrite to use DbAndClusterValuePair
-    private void findAllTags(List<SubmissionTag> tagList, SpectrumCluster cluster) {
+    private void findAllTags(List<SubmissionTag> tagList, SpectrumCluster cluster) throws IOException {
 
         // Find unique keys among all tags of unique submission
         final List<String> keys = tagList.stream()
@@ -200,7 +160,7 @@ public class DistributionServiceImpl implements DistributionService {
                 .collect(Collectors.toList());
         // For each key, find its values and their count
         for (String key : keys) {
-            Map<String, DbAndClusterValuePair> countMap = new HashMap<>();
+
             List<String> tagValues = tagList.stream()
                     .map(t -> t.getId().getName())
                     .map(a -> {
@@ -212,84 +172,82 @@ public class DistributionServiceImpl implements DistributionService {
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
 
+            Map<String, Integer> countMap = new HashMap<>();
             for (String value : tagValues)
                 countMap.compute(value, (k, v) -> (v == null) ? 1 : v + 1);
 
-            //store tagDistributions
-            TagDistribution tagDistribution = new TagDistribution();
-            tagDistribution.setTagDistributionMap(countMap);
-            tagDistribution.setCluster(cluster);
-            tagDistribution.setTagKey(key);
-            distributionRepository.save(tagDistribution);
-        }
-    }
+            if (cluster == null) {
+                Map<String, DbAndClusterValuePair> countPairMap = new HashMap<>();
+                for (Map.Entry<String, Integer> e : countMap.entrySet()) {
+                    countPairMap.put(e.getKey(), new DbAndClusterValuePair(e.getValue(), 0));
+                }
+                //store tagDistributions
+                TagDistribution tagDistribution = new TagDistribution();
+                tagDistribution.setTagDistributionMap(countPairMap);
+                tagDistribution.setCluster(cluster);
+                tagDistribution.setTagKey(key);
+                distributionRepository.save(tagDistribution);
+            } else {
+                Map<String, DbAndClusterValuePair> countPairMap = new HashMap<>();
+                for (Map.Entry<String, Integer> e : countMap.entrySet()) {
 
-    // calculate each cluster's pValue
-    @Transactional
-    @Override
-    public Map<String, Double> calculateClusterPvalue(SpectrumCluster cluster) {
+                    ObjectMapper mapper = new ObjectMapper();
 
-        List<TagDistribution> clusterDistributions = cluster.getTagDistributions();
+                    Map<String, Map> map1 = mapper.readValue(distributionRepository.findTagDistributionByTagKey(key), Map.class);
 
-        // get all tag distributions count map
-        final List<TagDistribution> allTagDistributions = distributionService.getAllClusterIdNullDistributions();
-        Map<String, Double> chiSquareStatisticMap = new HashMap<>();
-        for (TagDistribution clusterTagDistribution : clusterDistributions) {
-            int freedomDegrees = 0;
-            Double chiSquareStatistics = 0.0;
-            String clusterTagKey = clusterTagDistribution.getTagKey();
-            for (TagDistribution dbTagDistribution : allTagDistributions) {
-                String dbTagKey = dbTagDistribution.getTagKey();
-                if (dbTagKey.equalsIgnoreCase(clusterTagKey)) {
-                    for (Map.Entry<String, Integer> x : clusterTagDistribution.getTagDistributionMap().entrySet()) {
-                        Integer m = x.getValue();
-                            if (m != null) {
-                                double alldbValue = dbTagDistribution.getTagDistributionMap().get(x.getKey());
-                                double clusterValue = m;
-                                freedomDegrees++;
-                                Double sum = (clusterValue - alldbValue) * (clusterValue - alldbValue) / (alldbValue);
-                                chiSquareStatistics = chiSquareStatistics + sum;
-                            }
+
+                    for (Map.Entry<String, Map> m : map1.entrySet()) {
+                        Map<String, Integer> valuePair = m.getValue();
+                        Integer dbValue = valuePair.get("dbValue");
+                        countPairMap.put(e.getKey(), new DbAndClusterValuePair(dbValue, e.getValue()));
                     }
                 }
-            }
-            if (freedomDegrees > 1) {
-                chiSquareStatisticMap.put(clusterTagKey, 1 - new ChiSquaredDistribution(freedomDegrees - 1)
-                                .cumulativeProbability(chiSquareStatistics));
-            } else {
-                chiSquareStatisticMap.put(clusterTagKey, 1.0);
+                //store tagDistributions
+                TagDistribution tagDistribution = new TagDistribution();
+                tagDistribution.setTagDistributionMap(countPairMap);
+                tagDistribution.setCluster(cluster);
+                tagDistribution.setTagKey(key);
+                distributionRepository.save(tagDistribution);
             }
         }
-        return chiSquareStatisticMap;
     }
-
+    
     // calculate all clusters' pValue
     @Transactional
     @Override
     public void calculateAllClustersPvalue() {
         List<SpectrumCluster> clusters = ServiceUtils.toList(spectrumClusterRepository.getAllClusters());
-
         for (SpectrumCluster cluster : clusters) {
-
-            List<TagDistribution> tagDistribution = cluster.getTagDistributions();
-
-            for (TagDistribution t : tagDistribution) {
-
+            List<TagDistribution> clusterDistributions = cluster.getTagDistributions();
+            for (TagDistribution t : clusterDistributions) {
                 String key = t.getTagKey();
+                int freedomDegrees = 0;
+                Double chiSquareStatistics = 0.0;
 
-                for (Map.Entry<String, Double> x : calculateClusterPvalue(cluster).entrySet()) {
+                for (Map.Entry<String, DbAndClusterValuePair> e : t.getTagDistributionMap().entrySet()) {
+                    int clusterValue = e.getValue().getClusterValue();
+                    int alldbValue = e.getValue().getDbValue();
 
-                    if (x.getKey().equalsIgnoreCase(t.getTagKey())) {
-
-                        distributionRepository.findClusterTagDistributionByTagKey(key,cluster.getId()).setPValue(x.getValue());
-                    }
+                    Double c = new Double(clusterValue);
+                    Double a = new Double(alldbValue);
+                    // calculate chi-squared statistics
+                    Double sum = (c - a) * (c - a) / (a);
+                    chiSquareStatistics = chiSquareStatistics + sum;
+                    freedomDegrees++;
+                }
+                if (freedomDegrees > 1) {
+                    Double pValue = 1 - new ChiSquaredDistribution(freedomDegrees - 1)
+                            .cumulativeProbability(chiSquareStatistics);
+                    distributionRepository.findClusterTagDistributionByTagKey(key, cluster.getId()).setPValue(pValue);
+                } else {
+                    Double pValue = 1.0;
+                    distributionRepository.findClusterTagDistributionByTagKey(key, cluster.getId()).setPValue(pValue);
                 }
             }
+
         }
+
     }
 
-    public Double getClusterPvalue(String tagKey, long id){
-        Double pvalue = distributionRepository.getClusterPvalue(tagKey,id);
-        return pvalue;
-    }
+
 }

@@ -1,18 +1,14 @@
-function addClusterTagsHistogram(idName, keysAndPvalues, dataSet) {
-
-    var keyAndPvalues = JSON.parse(keysAndPvalues);
-    var tag = d3.keys(keyAndPvalues);
-    var pValue = d3.values(keyAndPvalues);
-    var integrationValues = JSON.parse( dataSet );
-    var tagKeys = d3.keys( integrationValues );
-    var values = d3.values( integrationValues );
+function addClusterTagsHistogram(idName, tag, dataSet, pValue) {
+    var tagKeys = d3.keys( JSON.parse( dataSet ) );
+    var values = d3.values( JSON.parse( dataSet ) );
     var clusterValuesList = [];
-    var alldbValuesList =[];
+    var alldbValuesList = [];
+    var roundPValue = Math.round( pValue * 100 ) / 100;
     for (var m = 0; m < tagKeys.length; m++) {
-            var clusterValue = values[m]["cluster"];
-            var alldbValue = values[m]["alldb"];
-            clusterValuesList.push(clusterValue);
-            alldbValuesList.push(alldbValue);
+        var clusterValue = values[m]["clusterValue"];
+        var alldbValue = values[m]["dbValue"];
+        clusterValuesList.push( clusterValue );
+        alldbValuesList.push( alldbValue );
     }
 
     var padding = {top: 20, right: 20, bottom: 20, left: 20};
@@ -20,12 +16,12 @@ function addClusterTagsHistogram(idName, keysAndPvalues, dataSet) {
     var height = (tagKeys.length * 60 + 100);
 
     var xScaleToAlldb = d3.scaleLinear()
-        .domain([ d3.max(alldbValuesList)*1.2,0])
-        .range( [-width/2,0] );
+        .domain( [d3.max( alldbValuesList ) * 1.2, 0] )
+        .range( [-width / 2, 0] );
 
     var xScaleToCluster = d3.scaleLinear()
-        .domain( [0, d3.max(clusterValuesList)*1.2])
-        .range( [ width/2,width] );
+        .domain( [0, d3.max( clusterValuesList ) * 1.2] )
+        .range( [width / 2, width] );
 
     var yScale = d3.scaleLinear()
         .domain( [0, tagKeys.length * 60] )
@@ -35,14 +31,14 @@ function addClusterTagsHistogram(idName, keysAndPvalues, dataSet) {
     var xAxisToCluster = d3.axisBottom()
         .ticks( 5 )
         .tickSize( 2 )
-        .tickFormat(d3.format(".1f"))
+        .tickFormat( d3.format( ".1f" ) )
         .scale( xScaleToCluster );
 
     var xAxisToAlldb = d3.axisBottom()
         .ticks( 5 )
         .tickSize( 2 )
-        .tickFormat(d3.format(".1f"))
-        .scale(xScaleToAlldb );
+        .tickFormat( d3.format( ".1f" ) )
+        .scale( xScaleToAlldb );
 
     var yAxis = d3.axisRight()
         .ticks( 0 )
@@ -59,40 +55,41 @@ function addClusterTagsHistogram(idName, keysAndPvalues, dataSet) {
     // for grid in x axis
     var grid1 = svg.append( 'g' )
         .attr( 'class', 'grid' )
-        .attr( "transform", "translate("+ 0 +", " + ((tagKeys.length) * 60 + padding.left) + ")" );
+        .attr( "transform", "translate(" + 0 + ", " + ((tagKeys.length) * 60 + padding.left) + ")" );
 
     var grid2 = svg.append( 'g' )
         .attr( 'class', 'grid' )
-        .attr( "transform", "translate(" + xScaleToAlldb(-d3.max(alldbValuesList)) * 1.2
+        .attr( "transform", "translate(" + xScaleToAlldb( -d3.max( alldbValuesList ) ) * 1.2
             + ", " + ((tagKeys.length) * 60 + padding.left) + ")" );
 
     // plot cluster bar chart
     svg.selectAll( "rect.right" )
-        .data(clusterValuesList)
+        .data( clusterValuesList )
         .enter()
         .append( "rect" )
         .attr( "width", function (d) {
-            return (xScaleToCluster(d) - xScaleToCluster(0));
+            return (xScaleToCluster( d ) - xScaleToCluster( 0 ));
         } )
         .attr( "height", 40 )
         .attr( "fill", "#ffb47c" )
-        .attr( "x", width/2 )
+        .attr( "x", width / 2 )
         .attr( "y", function (d, i) {
             return i * 60 + padding.bottom
         } );
 
     // plot Alldb bar chart
     svg.selectAll( "rect.left" )
-        .data(alldbValuesList)
+        .data( alldbValuesList )
         .enter()
         .append( "rect" )
         .attr( "width", function (d) {
-            return (xScaleToAlldb(-d)) ;
+            return (xScaleToAlldb( -d ));
         } )
         .attr( "height", 40 )
         .attr( "fill", "#b47cff" )
-        .attr( "x",function (d) { return (xScaleToAlldb(d-d3.max(alldbValuesList)*1.2));
-        })
+        .attr( "x", function (d) {
+            return (xScaleToAlldb( d - d3.max( alldbValuesList ) * 1.2 ));
+        } )
         .attr( "y", function (d, i) {
             return i * 60 + padding.bottom;
         } );
@@ -102,12 +99,12 @@ function addClusterTagsHistogram(idName, keysAndPvalues, dataSet) {
         .data( tagKeys )
         .enter()
         .append( "text" )
-        .attr( "dx", 0)
+        .attr( "dx", 0 )
         .attr( "dy", "1.5em" )
         .attr( "y", function (d, i) {
             return i * 60 + padding.bottom;
         } )
-        .attr( "x", width/2)
+        .attr( "x", width / 2 )
         .attr( "stroke", "#000000" )
         .attr( "stroke-width", "1" )
         .style( "text-anchor", "middle" )
@@ -131,27 +128,27 @@ function addClusterTagsHistogram(idName, keysAndPvalues, dataSet) {
         .data( pValue )
         .attr( "transform",
             "translate(" + (width / 2) + " ," +
-            10 + " )")
+            10 + " )" )
         .style( "text-anchor", "middle" )
         .attr( "stroke", "#000000" )
         .attr( "stroke-width", "1.5" )
-        .text( "Chi-squared test p-value: " + pValue );
+        .text( "Chi-squared test p-value: " + roundPValue );
 
 
     // plot x axis to cluster
     svg.append( "g" )
-        .attr( "transform", "translate("+ 0 +" , " + ((tagKeys.length) * 60 + padding.left) + ")" )
+        .attr( "transform", "translate(" + 0 + " , " + ((tagKeys.length) * 60 + padding.left) + ")" )
         .call( xAxisToCluster );
 
     // plot x axis to alldb
     svg.append( "g" )
-        .attr( "transform", "translate(" + xScaleToAlldb(-d3.max(alldbValuesList)) * 1.2
+        .attr( "transform", "translate(" + xScaleToAlldb( -d3.max( alldbValuesList ) ) * 1.2
             + ", " + ((tagKeys.length) * 60 + padding.left) + ")" )
         .call( xAxisToAlldb );
 
     // plot y axis
     svg.append( "g" )
-        .attr( "transform", "translate(  "+ width/2  +", " + padding.bottom +")" )
+        .attr( "transform", "translate(  " + width / 2 + ", " + padding.bottom + ")" )
         .call( yAxis );
 
     // plot grid

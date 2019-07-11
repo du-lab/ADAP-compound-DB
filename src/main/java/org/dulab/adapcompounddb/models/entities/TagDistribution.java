@@ -1,10 +1,10 @@
 package org.dulab.adapcompounddb.models.entities;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.dulab.adapcompounddb.models.DbAndClusterValuePair;
-import sun.security.pkcs11.Secmod;
 
+import org.dulab.adapcompounddb.models.DbAndClusterValuePair;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.io.IOException;
@@ -79,7 +79,7 @@ public class TagDistribution implements Serializable {
     public Map<String, DbAndClusterValuePair> getTagDistributionMap() throws IllegalStateException {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            return (Map<String, DbAndClusterValuePair>) mapper.readValue(tagDistribution, Map.class);
+            return mapper.readValue(tagDistribution, new TypeReference<Map<String, DbAndClusterValuePair>>(){});
         } catch (IOException e) {
             throw new IllegalStateException("It cannot be converted from Json-String to map!");
         }

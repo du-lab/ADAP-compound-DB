@@ -2,30 +2,29 @@ package org.dulab.adapcompounddb.site.services;
 
 import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
 import org.dulab.adapcompounddb.models.entities.TagDistribution;
-import org.json.JSONObject;
 
-import javax.json.JsonObject;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 public interface DistributionService {
 
-    Map<String,Double> calculateClusterPvalue(SpectrumCluster cluster);
+//    Map<String,Double> calculateClusterPvalue(SpectrumCluster cluster);
 
     void calculateAllClustersPvalue();
 
-    Double getClusterPvalue(String tagKey,long id);
+    Double getClusterPvalue(String tagKey, long id);
+
+    List<TagDistribution> getClusterDistributions(long clusterId);
 
     List<String> getClusterTagDistributions(final SpectrumCluster cluster);
 
-    Map<JSONObject,JSONObject> integrateDbAndClusterDistributions(SpectrumCluster cluster);
+//    Map<JSONObject,JSONObject> integrateDbAndClusterDistributions(SpectrumCluster cluster);
 
     void removeAll();
 
-    void calculateAllDistributions();
+    void calculateAllDistributions() throws IOException;
 
-    void calculateClusterDistributions();
+    void calculateClusterDistributions() throws IOException;
 
     List<TagDistribution> getAllDistributions();
 
@@ -33,5 +32,6 @@ public interface DistributionService {
     List<TagDistribution> getAllClusterIdNullDistributions();
 
     TagDistribution getDistribution(long id);
+
 
 }
