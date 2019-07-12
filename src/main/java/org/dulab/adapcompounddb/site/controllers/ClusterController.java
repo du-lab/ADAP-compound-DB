@@ -62,17 +62,11 @@ public class ClusterController {
 
     @RequestMapping(value = "/cluster/{id:\\d+}/", method = RequestMethod.GET)
     public String cluster(@PathVariable("id") final long id, final Model model) {
-
         final SpectrumCluster cluster = spectrumMatchService.getCluster(id);
-        final List<TagDistribution> tagDistributionList = distributionService.getClusterDistributions(id);
-
-
         spectrumMatchService.loadTagsofCluster(cluster);
         model.addAttribute("cluster", cluster);
-
         //TODO: you don't need to add this tagDistributionList to the model.
         // Instead, you can use `cluster.tagDistributions` in cluster.jsp file
-        model.addAttribute("tag_Distribution_List",tagDistributionList);
         return "cluster/cluster";
     }
 }
