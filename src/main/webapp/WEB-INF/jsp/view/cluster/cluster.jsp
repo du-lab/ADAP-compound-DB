@@ -114,9 +114,7 @@
         <div id="rectangle" style=" display:inline-block; width:20px; height:20px; background-color:#ffb47c"></div>
         is the tag distributions of individual cluster.</p>
         <c:forEach items="${cluster.getTagDistributions()}" var="tagDistribution" varStatus="status">
-
             <div id="div${status.index}" style="display: inline-block; margin: 10px;text-align: left;">
-
                 <script>
                     var tag = '${tagDistribution.getTagKey()}';
                     var dataSet = '${tagDistribution.getTagDistribution()}';

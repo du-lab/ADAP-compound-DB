@@ -1,12 +1,7 @@
 function addHistogram(idName, tagKey, dataSet) {
-
     var tag = d3.keys( JSON.parse( dataSet ) );
     var tagDistributions = d3.values( JSON.parse( dataSet ) );
     var tagDistribution = tagDistributions.map(function(d) {return d["dbValue"]});
-    /*for (var m = 0; m < tag.length; m++) {
-        var tagDistribution = tagDistributions[m]["dbValue"];
-    }*/
-
     var width = 400;
     var height = (tagDistribution.length * 60 + 100);
     var padding = {top: 20, right: 20, bottom: 20, left: 20};

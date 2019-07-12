@@ -4,6 +4,7 @@ function addClusterTagsHistogram(idName, tag, dataSet, pValue) {
     var clusterValuesList = [];
     var alldbValuesList = [];
     var roundPValue = Math.round( pValue * 100 ) / 100;
+
     for (var m = 0; m < tagKeys.length; m++) {
         var clusterValue = values[m]["clusterValue"];
         var alldbValue = values[m]["dbValue"];
@@ -26,7 +27,6 @@ function addClusterTagsHistogram(idName, tag, dataSet, pValue) {
     var yScale = d3.scaleLinear()
         .domain( [0, tagKeys.length * 60] )
         .range( [(tagKeys.length * 60), -5] );
-
 
     var xAxisToCluster = d3.axisBottom()
         .ticks( 5 )
@@ -134,7 +134,6 @@ function addClusterTagsHistogram(idName, tag, dataSet, pValue) {
         .attr( "stroke-width", "1.5" )
         .text( "Chi-squared test p-value: " + roundPValue );
 
-
     // plot x axis to cluster
     svg.append( "g" )
         .attr( "transform", "translate(" + 0 + " , " + ((tagKeys.length) * 60 + padding.left) + ")" )
@@ -151,7 +150,7 @@ function addClusterTagsHistogram(idName, tag, dataSet, pValue) {
         .attr( "transform", "translate(  " + width / 2 + ", " + padding.bottom + ")" )
         .call( yAxis );
 
-    // plot grid
+    // plot grids
     grid1.call( d3.axisBottom( xScaleToCluster )
         .ticks( 5 )
         .tickSize( -(tagKeys.length * 60), 0 )

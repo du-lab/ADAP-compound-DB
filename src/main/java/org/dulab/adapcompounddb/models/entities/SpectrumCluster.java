@@ -1,21 +1,12 @@
 package org.dulab.adapcompounddb.models.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.validation.constraints.NotNull;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class SpectrumCluster implements Serializable {
@@ -43,6 +34,8 @@ public class SpectrumCluster implements Serializable {
     private Double aveDiversity;
     private Double minDiversity;
     private Double maxDiversity;
+
+    private Double minPValue;
 
     private List<Spectrum> spectra;
 
@@ -150,6 +143,10 @@ public class SpectrumCluster implements Serializable {
     public void setMaxSignificance(final Double maxSignificance) {
         this.maxSignificance = maxSignificance;
     }
+
+    public Double getMinPValue() { return minPValue; }
+
+    public void setMinPValue(final Double minPValue) { this.minPValue = minPValue; }
 
     // ****************************
     // ***** Standard methods *****

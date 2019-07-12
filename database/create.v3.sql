@@ -155,6 +155,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SpectrumCluster`
     `AveDiversity`        DOUBLE              NULL DEFAULT NULL,
     `MinDiversity`        DOUBLE              NULL DEFAULT NULL,
     `MaxDiversity`        DOUBLE              NULL DEFAULT NULL,
+    `MinPValue`           DOUBLE              NULL DEFAULT NULL,
     PRIMARY KEY (`Id`),
     UNIQUE INDEX `SpectrumCluster_ConsensusSpectrumId_uindex` (`ConsensusSpectrumId` ASC),
     CONSTRAINT `SpectrumCluster_Spectrum_Id_fk`
