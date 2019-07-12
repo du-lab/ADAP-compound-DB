@@ -181,24 +181,23 @@ public class DistributionServiceImpl implements DistributionService {
                 for (Map.Entry<String, Integer> e : countMap.entrySet()) {
                     countPairMap.put(e.getKey(), new DbAndClusterValuePair(e.getValue(), 0));
                 }
-                //TODO: if you move the next 5 lines outside the if-else-statement, then you won't need to repeat them twice
+
             } else {
+
                 for (Map.Entry<String, Integer> e : countMap.entrySet()) {
                     ObjectMapper mapper = new ObjectMapper();
-                    //TODO: either
-                    // - replace generic class Map with Map<String, DbAndClusterValuePair>
-                    // or
-                    // - use distributionRepository.findByClusterIsNullAndTagKey(key).getTagDistributionMap()
-                    // Also, rename map1 to something meaningful
-                    Map<String, DbAndClusterValuePair> clusterDistributionMap = mapper.readValue(distributionRepository.findTagDistributionByTagKey(key), new TypeReference<Map<String, DbAndClusterValuePair>>(){});
-                    //TODO: replace generic class Map with DbAndClusterValuePair
+                    Map<String, DbAndClusterValuePair> clusterDistributionMap = mapper.readValue(
+                            distributionRepository.findTagDistributionByTagKey(key),
+                            new TypeReference<Map<String, DbAndClusterValuePair>>(){});
+
                     for (Map.Entry<String, DbAndClusterValuePair> m : clusterDistributionMap.entrySet()) {
-                        DbAndClusterValuePair valuePair = m.getValue();  //TODO: Pay attention to these highlights!
+                        DbAndClusterValuePair valuePair = m.getValue();
                         int dbValue = valuePair.getDbValue();
                         countPairMap.put(e.getKey(), new DbAndClusterValuePair(dbValue, e.getValue()));
                     }
                 }
             }
+
             //store tagDistributions
             TagDistribution tagDistribution = new TagDistribution();
             tagDistribution.setTagDistributionMap(countPairMap);
@@ -217,23 +216,25 @@ public class DistributionServiceImpl implements DistributionService {
             List<TagDistribution> clusterDistributions = cluster.getTagDistributions();
             for (TagDistribution t : clusterDistributions) {
                 String key = t.getTagKey();
-                //TODO: put calculating Chi-squared into a separate function, and we'll write a unit test for it
-                distributionRepository.findClusterTagDistributionByTagKey(key, cluster.getId()).setPValue(calculateChiSquaredStatistics(t.getTagDistributionMap()));
+                distributionRepository.findClusterTagDistributionByTagKey(key, cluster.getId())
+                        .setPValue(calculateChiSquaredStatistics(t.getTagDistributionMap()));
 
             }
         }
     }
 
     private double calculateChiSquaredStatistics(Map<String, DbAndClusterValuePair> DbAndClusterValuePairMap) {
+
         int freedomDegrees = 0;
         double chiSquareStatistics = 0.0;
         double pValue;
+
         //TODO: here I would loop over the map values only as follows:
         // for (DbAndClusterValuePair pair : t.getTagDistributionMap().values())
         for (Map.Entry<String, DbAndClusterValuePair> dbAndClusterValuePairMap : DbAndClusterValuePairMap.entrySet()) {
             int clusterValue = dbAndClusterValuePairMap.getValue().getClusterValue();
             int alldbValue = dbAndClusterValuePairMap.getValue().getDbValue();
-            double c = (double) clusterValue;  //TODO: use double c = (double) clusterValue
+            double c = (double) clusterValue;
             double a = (double) alldbValue;
             // calculate chi-squared statistics
             double sum = (c - a) * (c - a) / (a);  //TODO: we need to fix this formula
