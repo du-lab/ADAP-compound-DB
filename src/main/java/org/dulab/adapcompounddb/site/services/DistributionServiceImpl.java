@@ -217,36 +217,9 @@ public class DistributionServiceImpl implements DistributionService {
             for (TagDistribution t : clusterDistributions) {
                 String key = t.getTagKey();
                 distributionRepository.findClusterTagDistributionByTagKey(key, cluster.getId())
-                        .setPValue(calculateChiSquaredStatistics(t.getTagDistributionMap()));
+                        .setPValue(ServiceUtils.calculateChiSquaredStatistics(t.getTagDistributionMap().values()));
 
             }
         }
-    }
-
-    private double calculateChiSquaredStatistics(Map<String, DbAndClusterValuePair> DbAndClusterValuePairMap) {
-
-        int freedomDegrees = 0;
-        double chiSquareStatistics = 0.0;
-        double pValue;
-
-        //TODO: here I would loop over the map values only as follows:
-        // for (DbAndClusterValuePair pair : t.getTagDistributionMap().values())
-        for (Map.Entry<String, DbAndClusterValuePair> dbAndClusterValuePairMap : DbAndClusterValuePairMap.entrySet()) {
-            int clusterValue = dbAndClusterValuePairMap.getValue().getClusterValue();
-            int alldbValue = dbAndClusterValuePairMap.getValue().getDbValue();
-            double c = (double) clusterValue;
-            double a = (double) alldbValue;
-            // calculate chi-squared statistics
-            double sum = (c - a) * (c - a) / (a);  //TODO: we need to fix this formula
-            chiSquareStatistics = chiSquareStatistics + sum;
-            freedomDegrees++;
-        }
-        if (freedomDegrees > 1) {
-            pValue = 1 - new ChiSquaredDistribution(freedomDegrees - 1)
-                    .cumulativeProbability(chiSquareStatistics);
-        } else {
-            pValue = 1.0;
-        }
-        return pValue;
     }
 }
