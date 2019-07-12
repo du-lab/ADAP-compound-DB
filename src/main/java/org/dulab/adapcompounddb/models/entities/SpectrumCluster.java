@@ -46,7 +46,7 @@ public class SpectrumCluster implements Serializable {
 
     private List<Spectrum> spectra;
 
-    private List<TagDistribution> tagDistribution;
+    private List<TagDistribution> tagDistributions;
 
     private Set<DiversityIndex> diversityIndices;
 
@@ -104,11 +104,15 @@ public class SpectrumCluster implements Serializable {
 
 
     @OneToMany(
-            mappedBy ="cluster",
+            mappedBy = "cluster",
             fetch = FetchType.LAZY)
-    public List<TagDistribution> getTagDistributions(){ return tagDistribution;}
+    public List<TagDistribution> getTagDistributions() {
+        return tagDistributions;
+    }
 
-    public void setTagDistributions(final List<TagDistribution> tagDistribution){ this.tagDistribution = tagDistribution;}
+    public void setTagDistributions(final List<TagDistribution> tagDistributions) {
+        this.tagDistributions = tagDistributions;
+    }
 
 
     @OneToMany(
