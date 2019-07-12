@@ -230,6 +230,8 @@ public class DistributionServiceImpl implements DistributionService {
             List<TagDistribution> clusterDistributions = cluster.getTagDistributions();
             for (TagDistribution t : clusterDistributions) {
                 String key = t.getTagKey();
+
+                //TODO: put calculating Chi-squared into a separate function, and we'll write a unit test for it
                 int freedomDegrees = 0;
                 Double chiSquareStatistics = 0.0;
 
