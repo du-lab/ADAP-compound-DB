@@ -65,8 +65,6 @@ public class ClusterController {
         final SpectrumCluster cluster = spectrumMatchService.getCluster(id);
         spectrumMatchService.loadTagsofCluster(cluster);
         model.addAttribute("cluster", cluster);
-        //TODO: you don't need to add this tagDistributionList to the model.
-        // Instead, you can use `cluster.tagDistributions` in cluster.jsp file
         return "cluster/cluster";
     }
 }
