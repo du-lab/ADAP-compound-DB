@@ -142,7 +142,6 @@ public class DistributionServiceImpl implements DistributionService {
         }
     }
 
-    //TODO: rewrite to use DbAndClusterValuePair
     private void findAllTags(List<SubmissionTag> tagList, SpectrumCluster cluster) throws IOException {
 
         // Find unique keys among all tags of unique submission
@@ -158,6 +157,7 @@ public class DistributionServiceImpl implements DistributionService {
                 .filter(Objects::nonNull)
                 .distinct()
                 .collect(Collectors.toList());
+
         // For each key, find its values and their count
         for (String key : keys) {
 
@@ -182,22 +182,31 @@ public class DistributionServiceImpl implements DistributionService {
                     countPairMap.put(e.getKey(), new DbAndClusterValuePair(e.getValue(), 0));
                 }
                 //store tagDistributions
+
+                //TODO: if you move the next 5 lines outside the if-else-statement, then you won't need to repeat them twice
                 TagDistribution tagDistribution = new TagDistribution();
                 tagDistribution.setTagDistributionMap(countPairMap);
                 tagDistribution.setCluster(cluster);
                 tagDistribution.setTagKey(key);
                 distributionRepository.save(tagDistribution);
+
             } else {
                 Map<String, DbAndClusterValuePair> countPairMap = new HashMap<>();
                 for (Map.Entry<String, Integer> e : countMap.entrySet()) {
 
                     ObjectMapper mapper = new ObjectMapper();
 
+                    //TODO: either
+                    // - replace generic class Map with Map<String, DbAndClusterValuePair>
+                    // or
+                    // - use distributionRepository.findByClusterIsNullAndTagKey(key).getTagDistributionMap()
+                    // Also, rename map1 to something meaningful
                     Map<String, Map> map1 = mapper.readValue(distributionRepository.findTagDistributionByTagKey(key), Map.class);
 
 
+                    //TODO: replace generic class Map with DbAndClusterValuePair
                     for (Map.Entry<String, Map> m : map1.entrySet()) {
-                        Map<String, Integer> valuePair = m.getValue();
+                        Map<String, Integer> valuePair = m.getValue();  //TODO: Pay attention to these highlights!
                         Integer dbValue = valuePair.get("dbValue");
                         countPairMap.put(e.getKey(), new DbAndClusterValuePair(dbValue, e.getValue()));
                     }
@@ -224,14 +233,16 @@ public class DistributionServiceImpl implements DistributionService {
                 int freedomDegrees = 0;
                 Double chiSquareStatistics = 0.0;
 
+                //TODO: here I would loop over the map values only as follows:
+                // for (DbAndClusterValuePair pair : t.getTagDistributionMap().values())
                 for (Map.Entry<String, DbAndClusterValuePair> e : t.getTagDistributionMap().entrySet()) {
                     int clusterValue = e.getValue().getClusterValue();
                     int alldbValue = e.getValue().getDbValue();
 
-                    Double c = new Double(clusterValue);
+                    Double c = new Double(clusterValue);  //TODO: use double c = (double) clusterValue
                     Double a = new Double(alldbValue);
                     // calculate chi-squared statistics
-                    Double sum = (c - a) * (c - a) / (a);
+                    Double sum = (c - a) * (c - a) / (a);  //TODO: we need to fix this formula
                     chiSquareStatistics = chiSquareStatistics + sum;
                     freedomDegrees++;
                 }
