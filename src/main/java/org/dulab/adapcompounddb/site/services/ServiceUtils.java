@@ -20,14 +20,24 @@ class ServiceUtils {
         int freedomDegrees = 0;
         double chiSquareStatistics = 0.0;
         double pValue;
+        double clusterSum = 0.0;
+        double alldbSum = 0.0;
+
+        for (DbAndClusterValuePair pair : dbAndClusterValuePairs) {
+
+            clusterSum = clusterSum + (double) pair.getClusterValue();
+            alldbSum = alldbSum + (double) pair.getDbValue();
+        }
+
 
         for (DbAndClusterValuePair pair : dbAndClusterValuePairs) {
 
             double c = (double) pair.getClusterValue();
-            double a = (double) pair.getDbValue();
+            double d = (double) pair.getDbValue();
 
             // calculate chi-squared statistics
-            double sum = (c - a) * (c - a) / (a);  //TODO: we need to fix this formula
+           /* double sum = (c - d) * (c - d) / (d); */ //TODO: we need to fix this formula
+            double sum = (c/clusterSum - d/alldbSum) * (c/clusterSum - d/alldbSum) / (d/alldbSum);
             chiSquareStatistics = chiSquareStatistics + sum;
             freedomDegrees++;
         }

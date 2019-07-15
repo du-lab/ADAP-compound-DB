@@ -45,6 +45,6 @@ public class ServiceUtilsTest {
 
         double pValue = ServiceUtils.calculateChiSquaredStatistics(pairs);
 
-        assertEquals(0.969975, pValue, EPS);
+        assertEquals(0.999885, pValue, EPS);
     }
 }
