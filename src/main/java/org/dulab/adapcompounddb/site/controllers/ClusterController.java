@@ -16,10 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 public class ClusterController {
@@ -64,6 +61,11 @@ public class ClusterController {
     public String cluster(@PathVariable("id") final long id, final Model model) {
         final SpectrumCluster cluster = spectrumMatchService.getCluster(id);
         spectrumMatchService.loadTagsofCluster(cluster);
+
+        // sort Tag distributions by its Pvalue
+        cluster.getTagDistributions()
+                .sort(Comparator.comparingDouble(TagDistribution::getPValue));
+
         model.addAttribute("cluster", cluster);
         return "cluster/cluster";
     }
