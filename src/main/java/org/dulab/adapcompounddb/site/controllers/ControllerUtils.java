@@ -270,8 +270,8 @@ public class ControllerUtils {
                 .map(c -> (c / total) * (c / total))
                 .sum();
 
-        double giniIndex = 1 - proportionSum;
-        return giniIndex;
+        double giniSimpsonIndex = 1 - proportionSum;
+        return giniSimpsonIndex;
     }
 
     private static TagInfo stringToTagInfoWithName(String tag) {
