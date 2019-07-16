@@ -1,29 +1,20 @@
 package org.dulab.adapcompounddb.site.controllers;
 
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.validation.constraints.NotBlank;
-
-import org.apache.commons.collections.CollectionUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.google.gson.Gson;
 import org.dulab.adapcompounddb.models.UserRole;
 import org.dulab.adapcompounddb.models.dto.TagInfo;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.services.SpectrumClusterer;
-import org.dulab.adapcompounddb.utils.MathUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.google.gson.Gson;
+import javax.json.*;
+import javax.validation.constraints.NotBlank;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ControllerUtils {
 
@@ -79,8 +70,8 @@ public class ControllerUtils {
         for (final Peak peak : peaks) {
             builder.add(
                     Json.createArrayBuilder()
-                    .add(peak.getMz())
-                    .add(100 * peak.getIntensity() / maxIntensity));
+                            .add(peak.getMz())
+                            .add(100 * peak.getIntensity() / maxIntensity));
         }
 
         return builder.build();
@@ -100,11 +91,11 @@ public class ControllerUtils {
 
         if (maxIntensity > 0.0) {
             spectrum.getPeaks()
-            .forEach(p -> jsonArrayBuilder.add(
-                    Json.createObjectBuilder()
-                    .add("mz", p.getMz())
-                    .add("intensity", 100 * p.getIntensity() / maxIntensity)
-                    .build()
+                    .forEach(p -> jsonArrayBuilder.add(
+                            Json.createObjectBuilder()
+                                    .add("mz", p.getMz())
+                                    .add("intensity", 100 * p.getIntensity() / maxIntensity)
+                                    .build()
                     ));
         }
 
@@ -114,7 +105,7 @@ public class ControllerUtils {
     }
 
     public static JsonArray clusterDistributionToJson(final List<Spectrum> spectra,
-            final List<SubmissionCategory> categories) {
+                                                      final List<SubmissionCategory> categories) {
 
         final JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
 
@@ -145,15 +136,15 @@ public class ControllerUtils {
 
             jsonArrayBuilder.add(
                     Json.createObjectBuilder()
-                    .add("label", category.getName())
-                    .add("count", (double) numSpectraInCluster / numSpectraInTotal)
-                    .build());
+                            .add("label", category.getName())
+                            .add("count", (double) numSpectraInCluster / numSpectraInTotal)
+                            .build());
 
             jsonArrayBuilder.add(
                     Json.createObjectBuilder()
-                    .add("label", category.getName() + numSpectraInCluster)
-                    .add("count", (double) numSpectraInCluster / numSpectraInTotal)
-                    .build());
+                            .add("label", category.getName() + numSpectraInCluster)
+                            .add("count", (double) numSpectraInCluster / numSpectraInTotal)
+                            .build());
         }
 
         return jsonArrayBuilder.build();
@@ -267,13 +258,20 @@ public class ControllerUtils {
                 .mapToInt(Integer::intValue)
                 .sum();
 
-        double enthropy = -1 * counts.stream()
+
+//        double enthropy = -1 * counts.stream()
+//                .mapToDouble(Integer::doubleValue)
+//                .map(c -> c / total)
+//                .map(p -> p * Math.log(p))
+//                .sum();
+
+        double proportionSum = counts.stream()
                 .mapToDouble(Integer::doubleValue)
-                .map(c -> c / total)
-                .map(p -> p * Math.log(p))
+                .map(c -> (c / total) * (c / total))
                 .sum();
 
-        return Math.exp(enthropy);
+        double giniIndex = 1 - proportionSum;
+        return giniIndex;
     }
 
     private static TagInfo stringToTagInfoWithName(String tag) {
