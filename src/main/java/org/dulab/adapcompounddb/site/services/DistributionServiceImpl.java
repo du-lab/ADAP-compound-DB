@@ -25,23 +25,20 @@ import java.util.stream.Collectors;
 @Service
 public class DistributionServiceImpl implements DistributionService {
 
-    private static DecimalFormat decimalFormat = new DecimalFormat("0.00");
     private SubmissionTagRepository submissionTagRepository;
     private DistributionRepository distributionRepository;
     private SpectrumClusterRepository spectrumClusterRepository;
-    private final DistributionService distributionService;
+
     private static final Logger LOGGER = LogManager.getLogger(DistributionService.class);
-    private DbAndClusterValuePair dbAndClusterValuePair;
 
     @Autowired
     public DistributionServiceImpl(@Lazy final SubmissionTagRepository submissionTagRepository,
                                    @Lazy final DistributionRepository distributionRepository,
-                                   @Lazy final SpectrumClusterRepository spectrumClusterRepository,
-                                   @Lazy final DistributionService distributionService) {
+                                   @Lazy final SpectrumClusterRepository spectrumClusterRepository) {
+
         this.submissionTagRepository = submissionTagRepository;
         this.distributionRepository = distributionRepository;
         this.spectrumClusterRepository = spectrumClusterRepository;
-        this.distributionService = distributionService;
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -95,7 +92,7 @@ public class DistributionServiceImpl implements DistributionService {
         final List<TagDistribution> clusterTagDistributions = cluster.getTagDistributions();
 
         final List<String> tagKeys = clusterTagDistributions.stream()
-                .map(s -> s.getTagKey())
+                .map(TagDistribution::getTagKey)
                 .distinct()
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());

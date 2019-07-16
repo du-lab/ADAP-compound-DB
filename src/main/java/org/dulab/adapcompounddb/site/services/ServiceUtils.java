@@ -35,8 +35,6 @@ class ServiceUtils {
             double c = (double) pair.getClusterValue();
             double d = (double) pair.getDbValue();
 
-            // calculate chi-squared statistics
-           /* double sum = (c - d) * (c - d) / (d); */ //TODO: we need to fix this formula
             double sum = (c/clusterSum - d/alldbSum) * (c/clusterSum - d/alldbSum) / (d/alldbSum);
             chiSquareStatistics = chiSquareStatistics + sum;
             freedomDegrees++;
