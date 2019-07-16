@@ -215,8 +215,23 @@ public class DistributionServiceImpl implements DistributionService {
                 String key = t.getTagKey();
                 distributionRepository.findClusterTagDistributionByTagKey(key, cluster.getId())
                         .setPValue(ServiceUtils.calculateChiSquaredStatistics(t.getTagDistributionMap().values()));
-
             }
+        }
+    }
+
+    // calculate the minimum pvalue of each cluster
+    @Transactional
+    @Override
+    public void calculateClusterMinPvalue(){
+        List<SpectrumCluster> clusters = ServiceUtils.toList(spectrumClusterRepository.getAllClusters());
+        for (SpectrumCluster cluster : clusters){
+            List<TagDistribution> clusterDistributions = cluster.getTagDistributions();
+            List<Double> clusterPvalue = new ArrayList<>();
+            for (TagDistribution t : clusterDistributions) {
+                clusterPvalue.add(t.getPValue());
+            }
+            Collections.sort(clusterPvalue);
+            cluster.setMinPValue(clusterPvalue.get(0));
         }
     }
 }

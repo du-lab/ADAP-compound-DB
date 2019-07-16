@@ -31,6 +31,7 @@ public class SpectrumClusterDTO implements Serializable {
     private Double aveDiversity;
     private Double minDiversity;
     private Double maxDiversity;
+    private Double minPValue;
 
     // *******************************
     // ***** Getters and setters *****
@@ -146,6 +147,10 @@ public class SpectrumClusterDTO implements Serializable {
     public void setMaxDiversity(final Double maxDiversity) {
         this.maxDiversity = maxDiversity;
     }
+
+    public Double getMinPValue() { return minPValue; }
+
+    public void setMinPValue(final Double minPValue) { this.minPValue = minPValue; }
 
     @Override
     public int hashCode() {

@@ -53,7 +53,6 @@ public class AdminRestController {
     public String cluster() {
         try {
             final Runnable r = () -> {
-
                 distributionService.removeAll();
                 //calculate all tags distributions
                 try {
@@ -70,6 +69,7 @@ public class AdminRestController {
                     throw new IllegalStateException("Calculating ClusterDistributions failed!");
                 }
                 distributionService.calculateAllClustersPvalue();
+                distributionService.calculateClusterMinPvalue();
                 //                Arrays.stream(ChromatographyType.values())
                 //                .parallel()
                 //                .forEach(t -> spectrumClusterer

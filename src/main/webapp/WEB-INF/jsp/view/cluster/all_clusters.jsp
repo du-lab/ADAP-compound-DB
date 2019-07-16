@@ -18,6 +18,7 @@
                 <th>Maximum Diversity</th>
                 <th>Average Diversity</th>
                 <th title="Chromatography type">Type</th>
+                <th>Minimum PValue</th>
                 <th></th>
             </tr>
             </thead>
@@ -31,8 +32,8 @@
 <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
 <script src="<c:url value="/resources/Select-1.2.5/js/dataTables.select.min.js"/>"></script>
 <script>
-    $(document).ready(function () {
-        $('#cluster_table').DataTable({
+    $( document ).ready( function () {
+        $( '#cluster_table' ).DataTable( {
             serverSide: true,
             processing: true,
             responsive: true,
@@ -124,7 +125,7 @@
                     "orderable": true,
                     "render": function (data, type, row, meta) {
                         var content = '';
-                        if(row.aveDiversity != undefined) {
+                        if(row.aveDiversity  ) {
                             content = row.aveDiversity.toFixed(3);
                         }
                         return content;
@@ -145,14 +146,26 @@
                 },
                 {
                     "targets": 9,
+                    "orderable": true,
+                    "render": function (data, type, row, meta) {
+                        var content = '';
+                        if (row.minPValue ) {
+                            content = row.minPValue;
+                            console.log("content");
+                        }
+                        return content;
+                    }
+                },
+                {
+                    "targets": 10,
                     "orderable": false,
                     "render": function (data, type, row, meta) {
                         var content = '<a href="${pageContext.request.contextPath}/cluster/'
-                        + row.id + '/"><i class="material-icons" title="View">&#xE5D3;</i></a>';
+                            + row.id + '/"><i class="material-icons" title="View">&#xE5D3;</i></a>';
                         return content;
                     }
                 }
             ]
-        });
-    });
+        } );
+    } );
 </script>
