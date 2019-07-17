@@ -179,7 +179,7 @@ public class DistributionServiceImpl implements DistributionService {
                     countPairMap.put(e.getKey(), new DbAndClusterValuePair(e.getValue(), 0));
                 }
             } else {
-                //TODO: Use ServiceUtils.calculateDbAndClusterDistribution() here
+
                 ObjectMapper mapper = new ObjectMapper();
                 Map<String, DbAndClusterValuePair> dbDistributionMap = mapper.readValue(
                         distributionRepository.findTagDistributionByTagKey(key),
