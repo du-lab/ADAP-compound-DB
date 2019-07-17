@@ -12,8 +12,6 @@ public interface DistributionService {
 
     void calculateAllClustersPvalue();
 
-    void calculateClusterMinPvalue();
-
     Double getClusterPvalue(String tagKey, long id);
 
     List<TagDistribution> getClusterDistributions(long clusterId);

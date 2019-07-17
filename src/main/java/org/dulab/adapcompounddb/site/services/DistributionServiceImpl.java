@@ -2,7 +2,6 @@ package org.dulab.adapcompounddb.site.services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
@@ -18,7 +17,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -158,7 +156,6 @@ public class DistributionServiceImpl implements DistributionService {
 
         // For each key, find its values and their count
         for (String key : keys) {
-
             List<String> tagValues = tagList.stream()
                     .map(t -> t.getId().getName())
                     .map(a -> {
@@ -169,34 +166,31 @@ public class DistributionServiceImpl implements DistributionService {
                     })
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
+
             Map<String, Integer> countMap = new HashMap<>();
-            for (String value : tagValues)
+
+            for (String value : tagValues) {
                 countMap.compute(value, (k, v) -> (v == null) ? 1 : v + 1);
+            }
+
             Map<String, DbAndClusterValuePair> countPairMap = new HashMap<>();
             if (cluster == null) {
-
                 for (Map.Entry<String, Integer> e : countMap.entrySet()) {
                     countPairMap.put(e.getKey(), new DbAndClusterValuePair(e.getValue(), 0));
                 }
-
             } else {
-
                 //TODO: Use ServiceUtils.calculateDbAndClusterDistribution() here
-
-                for (Map.Entry<String, Integer> e : countMap.entrySet()) {
-                    ObjectMapper mapper = new ObjectMapper();
-                    Map<String, DbAndClusterValuePair> clusterDistributionMap = mapper.readValue(
-                            distributionRepository.findTagDistributionByTagKey(key),
-                            new TypeReference<Map<String, DbAndClusterValuePair>>(){});
-
-                    for (Map.Entry<String, DbAndClusterValuePair> m : clusterDistributionMap.entrySet()) {
-                        DbAndClusterValuePair valuePair = m.getValue();
-                        int dbValue = valuePair.getDbValue();
-                        countPairMap.put(e.getKey(), new DbAndClusterValuePair(dbValue, e.getValue()));
-                    }
+                ObjectMapper mapper = new ObjectMapper();
+                Map<String, DbAndClusterValuePair> dbDistributionMap = mapper.readValue(
+                        distributionRepository.findTagDistributionByTagKey(key),
+                        new TypeReference<Map<String, DbAndClusterValuePair>>() {
+                        });
+                Map<String, Integer> dbCountMap = new HashMap<>();
+                for (Map.Entry<String, DbAndClusterValuePair> m : dbDistributionMap.entrySet()) {
+                    dbCountMap.put(m.getKey(), m.getValue().getDbValue());
                 }
+                countPairMap = ServiceUtils.calculateDbAndClusterDistribution(dbCountMap, countMap);
             }
-
             //store tagDistributions
             TagDistribution tagDistribution = new TagDistribution();
             tagDistribution.setTagDistributionMap(countPairMap);
@@ -213,27 +207,16 @@ public class DistributionServiceImpl implements DistributionService {
         List<SpectrumCluster> clusters = ServiceUtils.toList(spectrumClusterRepository.getAllClusters());
         for (SpectrumCluster cluster : clusters) {
             List<TagDistribution> clusterDistributions = cluster.getTagDistributions();
+            List<Double> clusterPvalue = new ArrayList<>();
             for (TagDistribution t : clusterDistributions) {
                 String key = t.getTagKey();
                 distributionRepository.findClusterTagDistributionByTagKey(key, cluster.getId())
                         .setPValue(ServiceUtils.calculateChiSquaredStatistics(t.getTagDistributionMap().values()));
-            }
-        }
-    }
-
-    // calculate the minimum pvalue of each cluster
-    @Transactional
-    @Override
-    public void calculateClusterMinPvalue(){
-        List<SpectrumCluster> clusters = ServiceUtils.toList(spectrumClusterRepository.getAllClusters());
-        for (SpectrumCluster cluster : clusters){
-            List<TagDistribution> clusterDistributions = cluster.getTagDistributions();
-            List<Double> clusterPvalue = new ArrayList<>();
-            for (TagDistribution t : clusterDistributions) {
                 clusterPvalue.add(t.getPValue());
             }
             Collections.sort(clusterPvalue);
             cluster.setMinPValue(clusterPvalue.get(0));
         }
     }
+
 }

@@ -3,10 +3,7 @@ package org.dulab.adapcompounddb.site.services;
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 import org.dulab.adapcompounddb.models.DbAndClusterValuePair;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 class ServiceUtils {
 
@@ -36,7 +33,7 @@ class ServiceUtils {
             double c = (double) pair.getClusterValue();
             double d = (double) pair.getDbValue();
 
-            double sum = (c/clusterSum - d/alldbSum) * (c/clusterSum - d/alldbSum) / (d/alldbSum);
+            double sum = (c / clusterSum - d / alldbSum) * (c / clusterSum - d / alldbSum) / (d / alldbSum);
             chiSquareStatistics = chiSquareStatistics + sum;
             freedomDegrees++;
         }
@@ -54,6 +51,24 @@ class ServiceUtils {
     static Map<String, DbAndClusterValuePair> calculateDbAndClusterDistribution(
             Map<String, Integer> dbCountMap, Map<String, Integer> clusterCountMap) {
 
-        return null;
+        Map<String, DbAndClusterValuePair> countPairMap = new HashMap<>();
+
+        for (Map.Entry<String, Integer> c : clusterCountMap.entrySet()) {
+
+            for (Map.Entry<String, Integer> d : dbCountMap.entrySet()) {
+                if (clusterCountMap.containsKey(d.getKey()) & d.getKey().equalsIgnoreCase(c.getKey())) {
+
+                    int dbValue = d.getValue();
+                    countPairMap.put(c.getKey(), new DbAndClusterValuePair(dbValue, c.getValue()));
+                } else {
+                    if ( countPairMap.get(d.getKey()) == null ){
+                    countPairMap.put(d.getKey(), new DbAndClusterValuePair(d.getValue(), 0));}
+                    else if(countPairMap.get(d.getKey()).getClusterValue() == 0){
+                        countPairMap.put(d.getKey(), new DbAndClusterValuePair(d.getValue(), 0));
+                    }
+                }
+            }
+        }
+        return countPairMap;
     }
 }

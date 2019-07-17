@@ -150,7 +150,7 @@
                     "render": function (data, type, row, meta) {
                         var content = '';
                         if (row.minPValue ) {
-                            content = row.minPValue;
+                            content = row.minPValue.toFixed(3);
                             console.log("content");
                         }
                         return content;

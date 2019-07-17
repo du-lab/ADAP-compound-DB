@@ -67,19 +67,19 @@ public class ServiceUtilsTest {
                 ServiceUtils.calculateDbAndClusterDistribution(dbCountMap, clusterCountMap);
 
         DbAndClusterValuePair pair1 = distribution.get("value1");
-        assertEquals(pair1.getDbValue(), 1);
-        assertEquals(pair1.getClusterValue(), 10);
+        assertEquals(1, pair1.getDbValue());
+        assertEquals(10, pair1.getClusterValue());
 
         DbAndClusterValuePair pair2 = distribution.get("value2");
-        assertEquals(pair2.getDbValue(), 2);
-        assertEquals(pair2.getClusterValue(), 0);
+        assertEquals(2, pair2.getDbValue());
+        assertEquals(0, pair2.getClusterValue());
 
         DbAndClusterValuePair pair3 = distribution.get("value3");
-        assertEquals(pair3.getDbValue(), 3);
-        assertEquals(pair3.getClusterValue(), 30);
+        assertEquals(3, pair3.getDbValue());
+        assertEquals(30, pair3.getClusterValue());
 
         DbAndClusterValuePair pair4 = distribution.get("value4");
-        assertEquals(pair4.getDbValue(), 4);
-        assertEquals(pair4.getClusterValue(), 0);
+        assertEquals(4, pair4.getDbValue());
+        assertEquals(0, pair4.getClusterValue());
     }
 }

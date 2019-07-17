@@ -69,7 +69,6 @@ public class AdminRestController {
                     throw new IllegalStateException("Calculating ClusterDistributions failed!");
                 }
                 distributionService.calculateAllClustersPvalue();
-                distributionService.calculateClusterMinPvalue();
                 //                Arrays.stream(ChromatographyType.values())
                 //                .parallel()
                 //                .forEach(t -> spectrumClusterer
