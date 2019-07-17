@@ -6,6 +6,7 @@ import org.dulab.adapcompounddb.models.DbAndClusterValuePair;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 class ServiceUtils {
 
@@ -47,5 +48,12 @@ class ServiceUtils {
         }
 
         return pValue;
+    }
+
+
+    static Map<String, DbAndClusterValuePair> calculateDbAndClusterDistribution(
+            Map<String, Integer> dbCountMap, Map<String, Integer> clusterCountMap) {
+
+        return null;
     }
 }

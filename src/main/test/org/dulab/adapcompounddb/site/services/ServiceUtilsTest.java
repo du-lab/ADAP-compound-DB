@@ -4,7 +4,9 @@ import org.dulab.adapcompounddb.models.DbAndClusterValuePair;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -46,5 +48,38 @@ public class ServiceUtilsTest {
         double pValue = ServiceUtils.calculateChiSquaredStatistics(pairs);
 
         assertEquals(0.999885, pValue, EPS);
+    }
+
+    @Test
+    public void calculateDbAndClusterDistribution() {
+
+        Map<String, Integer> dbCountMap = new HashMap<>();
+        dbCountMap.put("value1", 1);
+        dbCountMap.put("value2", 2);
+        dbCountMap.put("value3", 3);
+        dbCountMap.put("value4", 4);
+
+        Map<String, Integer> clusterCountMap = new HashMap<>();
+        clusterCountMap.put("value1", 10);
+        clusterCountMap.put("value3", 30);
+
+        Map<String, DbAndClusterValuePair> distribution =
+                ServiceUtils.calculateDbAndClusterDistribution(dbCountMap, clusterCountMap);
+
+        DbAndClusterValuePair pair1 = distribution.get("value1");
+        assertEquals(pair1.getDbValue(), 1);
+        assertEquals(pair1.getClusterValue(), 10);
+
+        DbAndClusterValuePair pair2 = distribution.get("value2");
+        assertEquals(pair2.getDbValue(), 2);
+        assertEquals(pair2.getClusterValue(), 0);
+
+        DbAndClusterValuePair pair3 = distribution.get("value3");
+        assertEquals(pair3.getDbValue(), 3);
+        assertEquals(pair3.getClusterValue(), 30);
+
+        DbAndClusterValuePair pair4 = distribution.get("value4");
+        assertEquals(pair4.getDbValue(), 4);
+        assertEquals(pair4.getClusterValue(), 0);
     }
 }

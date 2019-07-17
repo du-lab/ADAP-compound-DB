@@ -181,6 +181,8 @@ public class DistributionServiceImpl implements DistributionService {
 
             } else {
 
+                //TODO: Use ServiceUtils.calculateDbAndClusterDistribution() here
+
                 for (Map.Entry<String, Integer> e : countMap.entrySet()) {
                     ObjectMapper mapper = new ObjectMapper();
                     Map<String, DbAndClusterValuePair> clusterDistributionMap = mapper.readValue(
