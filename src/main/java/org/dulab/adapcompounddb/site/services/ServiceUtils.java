@@ -61,9 +61,9 @@ class ServiceUtils {
                     int dbValue = d.getValue();
                     countPairMap.put(c.getKey(), new DbAndClusterValuePair(dbValue, c.getValue()));
                 } else {
-                    if ( countPairMap.get(d.getKey()) == null ){
-                    countPairMap.put(d.getKey(), new DbAndClusterValuePair(d.getValue(), 0));}
-                    else if(countPairMap.get(d.getKey()).getClusterValue() == 0){
+                    if (countPairMap.get(d.getKey()) == null) {
+                        countPairMap.put(d.getKey(), new DbAndClusterValuePair(d.getValue(), 0));
+                    } else if (countPairMap.get(d.getKey()).getClusterValue() == 0) {
                         countPairMap.put(d.getKey(), new DbAndClusterValuePair(d.getValue(), 0));
                     }
                 }
