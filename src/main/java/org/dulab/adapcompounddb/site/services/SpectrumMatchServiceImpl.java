@@ -1,17 +1,5 @@
 package org.dulab.adapcompounddb.site.services;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.DoubleSummaryStatistics;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
@@ -19,14 +7,7 @@ import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.SpectrumClusterDTO;
-import org.dulab.adapcompounddb.models.entities.DiversityIndex;
-import org.dulab.adapcompounddb.models.entities.DiversityIndexId;
-import org.dulab.adapcompounddb.models.entities.File;
-import org.dulab.adapcompounddb.models.entities.Peak;
-import org.dulab.adapcompounddb.models.entities.Spectrum;
-import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
-import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
-import org.dulab.adapcompounddb.models.entities.Submission;
+import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
@@ -39,10 +20,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import smile.clustering.HierarchicalClustering;
 import smile.clustering.linkage.CompleteLinkage;
 import smile.clustering.linkage.Linkage;
+
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 public class SpectrumMatchServiceImpl implements SpectrumMatchService {
@@ -56,8 +40,8 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     private static enum ColumnInformation {
         ID(0, "id"), NAME(1, "consensusSpectrum.name"),
         COUNT(2, "size"), SCORE(3, "diameter"), SIGNIFICANCE(4, "aveSignificance"),
-        MIN_DIVERSITY(5,"minDiversity"), MAX_DIVERSITY(6,"maxDiversity"), AVE_DIVERSITY(7,"aveDiversity"),
-        CHROMATOGRAPHYTYPE(8, "consensusSpectrum.chromatographyType");
+        MIN_DIVERSITY(5, "minDiversity"), MAX_DIVERSITY(6, "maxDiversity"), AVE_DIVERSITY(7, "aveDiversity"),
+        CHROMATOGRAPHYTYPE(8, "consensusSpectrum.chromatographyType"), MIN_PVALUE(9, "minPValue");
 
         private int position;
         private String sortColumnName;
@@ -88,8 +72,8 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
     @Autowired
     public SpectrumMatchServiceImpl(final SpectrumRepository spectrumRepository,
-            final SpectrumMatchRepository spectrumMatchRepository,
-            final SpectrumClusterRepository spectrumClusterRepository) {
+                                    final SpectrumMatchRepository spectrumMatchRepository,
+                                    final SpectrumClusterRepository spectrumClusterRepository) {
 
         this.spectrumRepository = spectrumRepository;
         this.spectrumMatchRepository = spectrumMatchRepository;
@@ -122,7 +106,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
             final double[][] distanceMatrix = new double[count][count];
             Arrays.stream(distanceMatrix)
-            .forEach(a -> Arrays.fill(a, 1.0));
+                    .forEach(a -> Arrays.fill(a, 1.0));
 
             LOGGER.info(String.format("Retrieving matches of %s...", type));
             for (final SpectrumMatch spectrumMatch : spectrumMatchRepository
@@ -180,7 +164,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
                         .collect(Collectors.toList()));
 
                 cluster.getSpectra()
-                .forEach(s -> s.setCluster(cluster));
+                        .forEach(s -> s.setCluster(cluster));
 
                 addConsensusSpectrum(type, cluster, mzTolerance);
 
@@ -191,11 +175,11 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
                     final double diversity = MathUtils.diversityIndex(
                             cluster.getSpectra()
-                            .stream()
-                            .map(Spectrum::getFile).filter(Objects::nonNull)
-                            .map(File::getSubmission).filter(Objects::nonNull)
-                            .map(s -> s.getCategory(categoryType))
-                            .collect(Collectors.toList()));
+                                    .stream()
+                                    .map(Spectrum::getFile).filter(Objects::nonNull)
+                                    .map(File::getSubmission).filter(Objects::nonNull)
+                                    .map(s -> s.getCategory(categoryType))
+                                    .collect(Collectors.toList()));
 
                     if (diversity > 0.0) {
                         final DiversityIndex diversityIndex = new DiversityIndex();
@@ -327,6 +311,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
     /**
      * Selects the most frequent name in the cluster
+     *
      * @param cluster instance of SpectrumCluster
      * @return the most frequent name
      */
@@ -350,7 +335,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
     @Override
     public DataTableResponse findAllClusters(final String searchStr, final Integer start, final Integer length, final Integer column,
-            final String sortDirection) {
+                                             final String sortDirection) {
         final ObjectMapperUtils objectMapper = new ObjectMapperUtils();
         Pageable pageable = null;
 
@@ -372,22 +357,22 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         return response;
     }
 
-	@Override
-	public void loadTagsofCluster(SpectrumCluster cluster) {
-		try {
-			for(Spectrum s : cluster.getSpectra()) {
-				if(s != null) {
-					File f = s.getFile();
-					if(f != null) {
-						Submission sub = f.getSubmission();
-						if(sub != null) {
-							sub.getTags();
-						}
-					}
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    @Override
+    public void loadTagsofCluster(SpectrumCluster cluster) {
+        try {
+            for (Spectrum s : cluster.getSpectra()) {
+                if (s != null) {
+                    File f = s.getFile();
+                    if (f != null) {
+                        Submission sub = f.getSubmission();
+                        if (sub != null) {
+                            sub.getTags();
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

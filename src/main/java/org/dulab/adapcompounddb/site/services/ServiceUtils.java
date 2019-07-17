@@ -47,27 +47,16 @@ class ServiceUtils {
         return pValue;
     }
 
-
     static Map<String, DbAndClusterValuePair> calculateDbAndClusterDistribution(
             Map<String, Integer> dbCountMap, Map<String, Integer> clusterCountMap) {
 
         Map<String, DbAndClusterValuePair> countPairMap = new HashMap<>();
 
-        for (Map.Entry<String, Integer> c : clusterCountMap.entrySet()) {
-
-            for (Map.Entry<String, Integer> d : dbCountMap.entrySet()) {
-                if (clusterCountMap.containsKey(d.getKey()) & d.getKey().equalsIgnoreCase(c.getKey())) {
-
-                    int dbValue = d.getValue();
-                    countPairMap.put(c.getKey(), new DbAndClusterValuePair(dbValue, c.getValue()));
-                } else {
-                    if ( countPairMap.get(d.getKey()) == null ){
-                    countPairMap.put(d.getKey(), new DbAndClusterValuePair(d.getValue(), 0));}
-                    else if(countPairMap.get(d.getKey()).getClusterValue() == 0){
-                        countPairMap.put(d.getKey(), new DbAndClusterValuePair(d.getValue(), 0));
-                    }
-                }
-            }
+        for (Map.Entry<String, Integer> d : dbCountMap.entrySet()) {
+            int dbValue = d.getValue();
+            String key = d.getKey();
+            Integer clusterValue = clusterCountMap.getOrDefault(key, 0);
+            countPairMap.put(d.getKey(), new DbAndClusterValuePair(dbValue, clusterValue));
         }
         return countPairMap;
     }
