@@ -3,7 +3,7 @@ function addClusterTagsHistogram(idName, tag, dataSet, pValue) {
     var values = d3.values( JSON.parse( dataSet ) );
     var clusterValuesList = [];
     var alldbValuesList = [];
-    var roundPValue = Math.round( pValue * 100 ) / 100;
+    var roundPValue =  Math.round( pValue * 1000 ) / 1000;
 
     for (var m = 0; m < tagKeys.length; m++) {
         var clusterValue = values[m]["clusterValue"];
