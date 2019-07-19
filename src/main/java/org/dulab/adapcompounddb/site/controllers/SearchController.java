@@ -194,7 +194,7 @@ public class SearchController {
         return searchPost(spectrum, UserPrincipal.from(session), form, model, errors);
     }
 
-    @RequestMapping(value = "/group_search_results/", method = RequestMethod.GET)
+    @RequestMapping(value = "/file/group_search_results/", method = RequestMethod.GET)
     public String groupSearch(final HttpSession session, final Model model, @Valid final SearchForm form) {
         final Submission submission = Submission.from(session);
         if (submission == null) {
@@ -212,7 +212,7 @@ public class SearchController {
         return "/group_search_results";
     }
 
-    @RequestMapping(value = "/group_search_results/", method = RequestMethod.POST)
+    @RequestMapping(value = "/file/group_search_results/", method = RequestMethod.POST)
     public ModelAndView groupSearch(final HttpSession session, final Model model, @Valid final SearchForm form,
                                     final Errors errors) {
         final Submission submission = Submission.from(session);
