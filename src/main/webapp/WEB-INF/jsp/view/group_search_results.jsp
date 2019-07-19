@@ -33,7 +33,7 @@
                     <tbody>
                     <c:forEach items="${best_matches}" var="match" varStatus="theCount">
                     <tr data-spectrum='${dulab:spectrumToJson(match.querySpectrum)}'>
-                        <td>
+                        <td style="text-align:center">
                             ${dulab:abbreviate(match.querySpectrum.name, 80)}<br/>
                             <small>
                                 <c:if test="${match.querySpectrum.precursor != null}">Precursor: ${match.querySpectrum.precursor};</c:if>
@@ -50,22 +50,22 @@
                                               value="${match.score * 1000}"
                                               var="score"/>
 
-                        <td>
+                        <td style="text-align:center">
                             <a href="/cluster/${match.matchSpectrum.cluster.id}/">${dulab:abbreviate(match.matchSpectrum.name, 80)}</a>
                             <small>
                                 <c:if test="${match.matchSpectrum.precursor != null}">Precursor: ${match.matchSpectrum.precursor};</c:if>
                                 <c:if test="${match.matchSpectrum.retentionTime != null}">Ret Time: ${match.matchSpectrum.retentionTime};</c:if>
                             </small>
                         </td>
-                        <td>${score}</td>
+                        <td style="text-align:center">${score}</td>
                         </c:when>
 
                         <c:otherwise>
-                        <td></td>
-                        <td></td>
+                        <td style="text-align:center"></td>
+                        <td style="text-align:center"></td>
                         </c:otherwise>
                         </c:choose>
-                        <td><a href="/spectrum/${match.querySpectrum.id}/search" class="button">Search</a></td>
+                        <td style="text-align:center"><a href="/spectrum/${match.querySpectrum.id}/search" class="button">Search</a></td>
                         </c:forEach>
                     </tbody>
                 </table>
