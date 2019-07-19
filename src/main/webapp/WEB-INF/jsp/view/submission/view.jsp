@@ -17,51 +17,52 @@
         <c:choose>
             <c:when test="${(edit && submissionForm.authorized) || submissionForm.id == 0}">
                 <jsp:include page="../../includes/submission_form.jsp">
-                    <jsp:param value="${submissionForm}" name="submissionForm" />
+                    <jsp:param value="${submissionForm}" name="submissionForm"/>
                 </jsp:include>
             </c:when>
             <c:otherwise>
                 <div align="center">
                     <table id="info_table" class="display"
-                        style="max-width: 800px; clear: none;">
+                           style="max-width: 800px; clear: none;">
                         <thead>
-                            <tr>
-                                <th>Property</th>
-                                <th>Value</th>
-                            </tr>
+                        <tr>
+                            <th>Property</th>
+                            <th>Value</th>
+                        </tr>
                         </thead>
                         <tbody>
+                        <tr>
+                            <td><strong>Name:</strong></td>
+                            <td>${submission.name}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Description:</strong></td>
+                            <td>
+                                <pre>${submission.description}</pre>
+                            </td>
+                        </tr>
+                        <c:if test="${submission.reference != null}">
                             <tr>
-                                <td><strong>Name:</strong></td>
-                                <td>${submission.name}</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Description:</strong></td>
-                                <td><pre>${submission.description}</pre>
+                                <td><strong>URL:</strong></td>
+                                <td><a href="${submission.reference}"
+                                       title="${submission.reference}"
+                                       target="_blank">${dulab:abbreviate(submission.reference, 80)}</a>
                                 </td>
                             </tr>
-                            <c:if test="${submission.reference != null}">
-                                <tr>
-                                    <td><strong>URL:</strong></td>
-                                    <td><a href="${submission.reference}"
-                                        title="${submission.reference}"
-                                        target="_blank">${dulab:abbreviate(submission.reference, 80)}</a>
-                                    </td>
-                                </tr>
-                            </c:if>
-                            <c:if
+                        </c:if>
+                        <c:if
                                 test="${submission.tagsAsString.length() > 0}">
-                                <tr>
-                                    <td><strong>Equipment:</strong></td>
-                                    <td>${submission.tagsAsString}</td>
-                                </tr>
-                            </c:if>
-                            <c:forEach items="${submissionCategoryTypes}" var="type">
-                                <tr>
-                                    <td><strong>${type.label}:</strong></td>
-                                    <td>${submission.getCategory(type)}</td>
-                                </tr>
-                            </c:forEach>
+                            <tr>
+                                <td><strong>Equipment:</strong></td>
+                                <td>${submission.tagsAsString}</td>
+                            </tr>
+                        </c:if>
+                        <c:forEach items="${submissionCategoryTypes}" var="type">
+                            <tr>
+                                <td><strong>${type.label}:</strong></td>
+                                <td>${submission.getCategory(type)}</td>
+                            </tr>
+                        </c:forEach>
                         </tbody>
                     </table>
                 </div>
@@ -71,7 +72,7 @@
             </c:otherwise>
         </c:choose>
     </div>
-    
+
     <!-- List of submitted files -->
     <div id="files" class="hide">
         <table id="file_table" class="display responsive" style="width: 100%;">
@@ -84,21 +85,21 @@
             </tr>
             </thead>
             <tbody>
-                <c:forEach items="${submission.files}" var="file" varStatus="loop">
-                    <tr>
-                        <td><a href="${loop.index}/view/" target="_blank">${file.name}</a></td>
-                        <td>${file.fileType.label}</td>
-                        <td>${file.spectra.size()} spectra</td>
-                        <td>
-                            <a href="${loop.index}/view/" target="_blank">
-                                <i class="material-icons" title="View">attach_file</i>
-                            </a>
-                            <a href="${loop.index}/download/" target="_blank">
-                                <i class="material-icons" title="Download">save_alt</i>
-                            </a>
-                        </td>
-                    </tr>
-                </c:forEach>
+            <c:forEach items="${submission.files}" var="file" varStatus="loop">
+                <tr>
+                    <td><a href="${loop.index}/view/" target="_blank">${file.name}</a></td>
+                    <td>${file.fileType.label}</td>
+                    <td>${file.spectra.size()} spectra</td>
+                    <td>
+                        <a href="${loop.index}/view/" target="_blank">
+                            <i class="material-icons" title="View">attach_file</i>
+                        </a>
+                        <a href="${loop.index}/download/" target="_blank">
+                            <i class="material-icons" title="Download">save_alt</i>
+                        </a>
+                    </td>
+                </tr>
+            </c:forEach>
             </tbody>
         </table>
     </div>
@@ -119,13 +120,14 @@
                 </thead>
                 <tbody></tbody>
             </table>
+            <a href="<c:url value="group_search_results/"/>" class="button">Search all spectrum</a>
         </div>
     </div>
 </section>
 
 <c:if test="${submissionForm.id == 0}">
     <div align="center">
-    <!-- <div style="text-align: right; margin-right: 40px;"> -->
+        <!-- <div style="text-align: right; margin-right: 40px;"> -->
         <a href="clear/" class="button">Clear</a>
     </div>
 </c:if>
@@ -136,9 +138,9 @@
 <script src="<c:url value="/resources/tag-it-6ccd2de/js/tag-it.min.js"/>"></script>
 <script type="text/javascript" src="<c:url value="/resources/AdapCompoundDb/js/tabs.js"/>"></script>
 <script>
-    $(document).ready(function () {
+    $( document ).ready( function () {
         // Table with a list of spectra
-        $('#spectrum_table').DataTable({
+        $( '#spectrum_table' ).DataTable( {
             serverSide: true,
             processing: true,
             responsive: true,
@@ -165,11 +167,11 @@
                     "orderable": true,
                     "targets": 1,
                     "render": function (data, type, row, meta) {
-                    	var content = '';
-                        if(row.id > 0) {
+                        var content = '';
+                        if (row.id > 0) {
                             content = '<a href="spectrum/' + row.id + '/">';
                         } else {
-                            content = '<a href="' + row.fileIndex +'/' + row.spectrumIndex + '/">'
+                            content = '<a href="' + row.fileIndex + '/' + row.spectrumIndex + '/">'
                         }
                         content = content + row.name + '</a>' +
                             '<br/><small>' + row.fileName + '</small>';
@@ -180,8 +182,8 @@
                     "targets": 2,
                     "render": function (data, type, row, meta) {
                         var value = row.retentionTime;
-                        if (value != null && !isNaN(value)) {
-                            value = value.toFixed(3);
+                        if (value != null && !isNaN( value )) {
+                            value = value.toFixed( 3 );
                         }
                         return value;
                     }
@@ -190,8 +192,8 @@
                     "targets": 3,
                     "render": function (data, type, row, meta) {
                         var value = row.precursor;
-                        if (value != null && !isNaN(value)) {
-                            value = value.toFixed(3);
+                        if (value != null && !isNaN( value )) {
+                            value = value.toFixed( 3 );
                         }
                         return value;
                     }
@@ -200,8 +202,8 @@
                     "targets": 4,
                     "render": function (data, type, row, meta) {
                         var value = row.significance;
-                        if (value != null && !isNaN(value)) {
-                            value = value.toFixed(3);
+                        if (value != null && !isNaN( value )) {
+                            value = value.toFixed( 3 );
                         }
                         return value;
                     }
@@ -224,21 +226,21 @@
                     "targets": 6,
                     "render": function (data, type, row, meta) {
                         var content = '';
-                        if(row.id > 0) {
+                        if (row.id > 0) {
                             content = '<a href="spectrum/' + row.id + '/">';
                         } else {
-                            content = '<a href="' + row.fileIndex +'/' + row.spectrumIndex + '/">'
+                            content = '<a href="' + row.fileIndex + '/' + row.spectrumIndex + '/">'
                         }
                         content = content +
                             '<i class="material-icons" title="View spectrum">&#xE5D3;</i>' +
                             '</a>';
-                        if(row.id > 0) {
-                        	content = content + '<a href="spectrum/' + row.id + '/search/">';
+                        if (row.id > 0) {
+                            content = content + '<a href="spectrum/' + row.id + '/search/">';
                         } else {
-                        	content = content + '<a href="' + row.fileIndex +'/' + row.spectrumIndex + '/search/">';
+                            content = content + '<a href="' + row.fileIndex + '/' + row.spectrumIndex + '/search/">';
                         }
                         content = content + '<i class="material-icons" title="Search spectrum">&#xE8B6;</i></a>';
-                        if (JSON.parse("${submissionForm.authorized && edit}")) {
+                        if (JSON.parse( "${submissionForm.authorized && edit}" )) {
                             content += '<a href="spectrum/' + row.id + '/delete">' +
                                 '<i class="material-icons" title="Delete spectrum">&#xE872;</i>' +
                                 '</a>';
@@ -247,29 +249,29 @@
                     }
                 }
             ]
-        });
+        } );
 
-        $(".tabbed-pane").each(function() {
-            $(this).tabbedPane();
-        });
+        $( ".tabbed-pane" ).each( function () {
+            $( this ).tabbedPane();
+        } );
 
         // Table with submissionForm information
-        $('#info_table').DataTable({
+        $( '#info_table' ).DataTable( {
             bLengthChange: false,
             info: false,
             ordering: false,
             paging: false,
             searching: false
-        });
+        } );
 
         // Table with a list of files
-        $('#file_table').DataTable();
+        $( '#file_table' ).DataTable();
 
         // Selector with autocomplete
-        $('#tags').tagit({
+        $( '#tags' ).tagit( {
             autocomplete: {
                 source: ${dulab:stringsToJson(availableTags)}
             }
-        });
-    });
+        } );
+    } );
 </script>
