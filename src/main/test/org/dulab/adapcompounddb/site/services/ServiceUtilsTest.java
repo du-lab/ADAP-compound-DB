@@ -47,7 +47,9 @@ public class ServiceUtilsTest {
 
         double pValue = ServiceUtils.calculateChiSquaredStatistics(pairs);
 
-        assertEquals(0.999885, pValue, EPS);
+        // The expected value is calculated by calculating Chi-squared Two Sample test described at
+        // https://www.itl.nist.gov/div898/software/dataplot/refman1/auxillar/chi2samp.htm
+        assertEquals(0.99077, pValue, EPS);
     }
 
     @Test

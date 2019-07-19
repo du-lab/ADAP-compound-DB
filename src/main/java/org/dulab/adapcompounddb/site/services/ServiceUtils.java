@@ -15,30 +15,29 @@ class ServiceUtils {
 
     static double calculateChiSquaredStatistics(Collection<DbAndClusterValuePair> dbAndClusterValuePairs) {
 
-        int freedomDegrees = 0;
-        double chiSquareStatistics = 0.0;
-        double pValue;
         double clusterSum = 0.0;
         double alldbSum = 0.0;
-
         for (DbAndClusterValuePair pair : dbAndClusterValuePairs) {
-
-            clusterSum = clusterSum + (double) pair.getClusterValue();
-            alldbSum = alldbSum + (double) pair.getDbValue();
+            clusterSum += pair.getClusterValue();
+            alldbSum += pair.getDbValue();
         }
 
+        double k1 = Math.sqrt(alldbSum / clusterSum);
+        double k2 = Math.sqrt(clusterSum / alldbSum);
 
+        int freedomDegrees = 0;
+        double chiSquareStatistics = 0.0;
         for (DbAndClusterValuePair pair : dbAndClusterValuePairs) {
 
-            double c = (double) pair.getClusterValue();
-            double d = (double) pair.getDbValue();
+            double d = k1 * pair.getClusterValue() - k2 * pair.getDbValue();
 
-            double sum = (c / clusterSum - d / alldbSum) * (c / clusterSum - d / alldbSum) / (d / alldbSum);
-            chiSquareStatistics = chiSquareStatistics + sum;
+            chiSquareStatistics += d * d / (pair.getClusterValue() + pair.getDbValue());
             freedomDegrees++;
         }
-        if (freedomDegrees > 1) {
-            pValue = 1 - new ChiSquaredDistribution(freedomDegrees - 1)
+
+        double pValue;
+        if (freedomDegrees > 0) {
+            pValue = 1 - new ChiSquaredDistribution(freedomDegrees)
                     .cumulativeProbability(chiSquareStatistics);
         } else {
             pValue = 1.0;
