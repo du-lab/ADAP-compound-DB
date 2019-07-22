@@ -51,12 +51,14 @@
 
                             <fmt:formatNumber type="number"
                                               maxFractionDigits="3"
+                                              minFractionDigits="3"
                                               groupingUsed="false"
                                               value="${match.matchSpectrum.cluster.minPValue}"
                                               var="minPValue"/>
 
                             <fmt:formatNumber type="number"
                                               maxFractionDigits="3"
+                                              minFractionDigits="3"
                                               groupingUsed="false"
                                               value="${match.matchSpectrum.cluster.maxDiversity}"
                                               var="maxDiversity"/>
