@@ -24,7 +24,8 @@
                         <th>Compound from the Search List</th>
                         <th>Best Match</th>
                         <th>Score</th>
-                        <th>Minimum PValue</th>
+                        <th>P-Value</th>
+                        <th>Diversity</th>
                         <th>Search Button</th>
                     </tr>
                     </thead>
@@ -63,9 +64,11 @@
                         </td>
                         <td style="text-align:center">${score}</td>
                         <td style="text-align:center">${minPValue}</td>
+                        <td style="text-align:center">${match.matchSpectrum.cluster.maxDiversity}</td>
                         </c:when>
 
                         <c:otherwise>
+                        <td style="text-align:center"></td>
                         <td style="text-align:center"></td>
                         <td style="text-align:center"></td>
                         <td style="text-align:center"></td>
