@@ -16,8 +16,7 @@ class ServiceUtils {
     static double calculateChiSquaredStatistics(Collection<DbAndClusterValuePair> dbAndClusterValuePairs) {
 
         int freedomDegrees = 0;
-        double chiSquareStatistics = 0.0;
-        double pValue;
+        double chiSquareStatistics = 0.0;        double pValue;
         double clusterSum = 0.0;
         double alldbSum = 0.0;
 
@@ -40,6 +39,9 @@ class ServiceUtils {
         if (freedomDegrees > 1) {
             pValue = 1 - new ChiSquaredDistribution(freedomDegrees - 1)
                     .cumulativeProbability(chiSquareStatistics);
+
+
+
         } else {
             pValue = 1.0;
         }

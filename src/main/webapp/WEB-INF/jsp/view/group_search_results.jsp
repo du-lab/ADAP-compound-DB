@@ -13,11 +13,8 @@
 
 <section>
     <div class="tabbed-pane" style="text-align: center">
-        <span data-tab="files">Group Search</span>
+        <span data-tab="files">Group Search Results</span>
     </div>
-</section>
-
-<section>
     <div align="center">
         <c:choose>
             <c:when test="${best_matches != null && best_matches.size() > 0}">
@@ -27,6 +24,7 @@
                         <th>Compound from the Search List</th>
                         <th>Best Match</th>
                         <th>Score</th>
+                        <th>Minimum PValue</th>
                         <th>Search Button</th>
                     </tr>
                     </thead>
@@ -34,7 +32,7 @@
                     <c:forEach items="${best_matches}" var="match" varStatus="theCount">
                     <tr data-spectrum='${dulab:spectrumToJson(match.querySpectrum)}'>
                         <td style="text-align:center">
-                            ${dulab:abbreviate(match.querySpectrum.name, 80)}<br/>
+                                ${dulab:abbreviate(match.querySpectrum.name, 80)}<br/>
                             <small>
                                 <c:if test="${match.querySpectrum.precursor != null}">Precursor: ${match.querySpectrum.precursor};</c:if>
                                 <c:if test="${match.querySpectrum.retentionTime != null}">Ret Time: ${match.querySpectrum.retentionTime};</c:if>
@@ -50,6 +48,12 @@
                                               value="${match.score * 1000}"
                                               var="score"/>
 
+                            <fmt:formatNumber type="number"
+                                              maxFractionDigits="3"
+                                              groupingUsed="false"
+                                              value="${match.matchSpectrum.cluster.minPValue}"
+                                              var="minPValue"/>
+
                         <td style="text-align:center">
                             <a href="/cluster/${match.matchSpectrum.cluster.id}/">${dulab:abbreviate(match.matchSpectrum.name, 80)}</a>
                             <small>
@@ -58,9 +62,11 @@
                             </small>
                         </td>
                         <td style="text-align:center">${score}</td>
+                        <td style="text-align:center">${minPValue}</td>
                         </c:when>
 
                         <c:otherwise>
+                        <td style="text-align:center"></td>
                         <td style="text-align:center"></td>
                         <td style="text-align:center"></td>
                         </c:otherwise>
@@ -155,11 +161,13 @@
     $( document ).ready( function () {
 
         var table = $( '#match_table' ).DataTable( {
-            order: [[0, 'desc']],
+
             select: {style: 'single'},
             responsive: true,
             scrollX: true,
-            scroller: true
+            scroller: true,
+            order: [[0, 'desc']]
+
         } );
 
         table.on( 'select', function (e, dt, type, indexes) {
@@ -185,18 +193,6 @@
 
     $( ".tabbed-pane" ).each( function () {
         $( this ).tabbedPane();
-    } );
-
-    $( '#match_table' ).DataTable( {
-        responsive: true,
-        scrollX: true,
-        scroller: true,
-        responsive: true,
-        scrollX: true,
-        scroller: true,
-        "fnInitComplete": function (oSettings, json) {
-            $( '#peaks' ).addClass( "hide" );
-        }
     } );
 
 </script>

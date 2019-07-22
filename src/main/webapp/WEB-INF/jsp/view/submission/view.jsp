@@ -120,7 +120,7 @@
                 </thead>
                 <tbody></tbody>
             </table>
-            <a href="<c:url value="group_search_results/"/>" class="button">Search all spectrum</a>
+            <a href="<c:url value="group_search_results/"/>" class="button">Search all spectra</a>
         </div>
     </div>
 </section>
