@@ -55,6 +55,12 @@
                                               value="${match.matchSpectrum.cluster.minPValue}"
                                               var="minPValue"/>
 
+                            <fmt:formatNumber type="number"
+                                              maxFractionDigits="3"
+                                              groupingUsed="false"
+                                              value="${match.matchSpectrum.cluster.maxDiversity}"
+                                              var="maxDiversity"/>
+
                         <td style="text-align:center">
                             <a href="/cluster/${match.matchSpectrum.cluster.id}/">${dulab:abbreviate(match.matchSpectrum.name, 80)}</a>
                             <small>
@@ -64,7 +70,7 @@
                         </td>
                         <td style="text-align:center">${score}</td>
                         <td style="text-align:center">${minPValue}</td>
-                        <td style="text-align:center">${match.matchSpectrum.cluster.maxDiversity}</td>
+                        <td style="text-align:center">${maxDiversity}</td>
                         </c:when>
 
                         <c:otherwise>
