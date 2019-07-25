@@ -395,10 +395,10 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     public DataTableResponse groupSearchSort(final String searchStr, final Integer start, final Integer length, final Integer column,
                                              final String sortDirection, List<FileIndexAndSpectrumIndexBestMatchPair> fileIndexAndSpectrumIndexBestMatchPairList) {
 
-        List<SpectrumMatch> SpectrumMatchList = new ArrayList<>();
+        List<SpectrumMatch> spectrumMatchList = new ArrayList<>();
 
         for (FileIndexAndSpectrumIndexBestMatchPair f : fileIndexAndSpectrumIndexBestMatchPairList) {
-            SpectrumMatchList.add(f.getSpectrumIndexAndBestMatchPair().getBestMatch());
+            spectrumMatchList.add(f.getSpectrumIndexAndBestMatchPair().getBestMatch());
         }
 //        Pageable pageable = null;
         String sortColumn = GroupSearchColumnInformation.getColumnNameFromPosition(column);
@@ -409,12 +409,12 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
                     Comparator<SpectrumMatch> compareByQuerySpectrum = Comparator.comparing((SpectrumMatch s)
                             -> s.getQuerySpectrum().getName());
 
-                    Collections.sort(SpectrumMatchList, compareByQuerySpectrum);
+                    Collections.sort(spectrumMatchList, compareByQuerySpectrum);
                     break;
 
                 case "matchSpectrumName":
 
-                    Collections.sort(SpectrumMatchList, (o1, o2) -> {
+                    Collections.sort(spectrumMatchList, (o1, o2) -> {
                         if (o1.getMatchSpectrum() == null) {
                             return (o2.getMatchSpectrum() == null) ? 0 : -1;
                         }
@@ -427,7 +427,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
                 case "score":
 
-                    Collections.sort(SpectrumMatchList, (o1, o2) -> {
+                    Collections.sort(spectrumMatchList, (o1, o2) -> {
                         if (o1.getMatchSpectrum() == null) {
                             return (o2.getMatchSpectrum() == null) ? 0 : -1;
                         }
@@ -440,7 +440,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
                 case "minPValue":
 
-                    Collections.sort(SpectrumMatchList, (o1, o2) -> {
+                    Collections.sort(spectrumMatchList, (o1, o2) -> {
                         if (o1.getMatchSpectrum() == null) {
                             return (o2.getMatchSpectrum() == null) ? 0 : -1;
                         }
@@ -453,7 +453,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
                 case "maxDiversity":
 
-                    Collections.sort(SpectrumMatchList, (o1, o2) -> {
+                    Collections.sort(spectrumMatchList, (o1, o2) -> {
                         if (o1.getMatchSpectrum() == null) {
                             return (o2.getMatchSpectrum() == null) ? 0 : -1;
                         }
@@ -470,12 +470,12 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         final List<GroupSearchDTO> spectrumList = new ArrayList<>();
 
 
-        for (int i = 0; i < SpectrumMatchList.size(); i++) {
+        for (int i = 0; i < spectrumMatchList.size(); i++) {
 
             if (i < start || spectrumList.size() > length)
                 continue;
 
-            SpectrumMatch p = fileIndexAndSpectrumIndexBestMatchPairList.get(i).getSpectrumIndexAndBestMatchPair().getBestMatch();
+            SpectrumMatch p = spectrumMatchList.get(i);
             GroupSearchDTO groupSearchDTO = new GroupSearchDTO();
             if (p.getMatchSpectrum() != null) {
                 double pValue = p.getMatchSpectrum().getCluster().getMinPValue();
@@ -502,8 +502,8 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         }
 
         DataTableResponse response = new DataTableResponse(spectrumList);
-        response.setRecordsTotal((long) SpectrumMatchList.size());
-        response.setRecordsFiltered((long) SpectrumMatchList.size());
+        response.setRecordsTotal((long) spectrumMatchList.size());
+        response.setRecordsFiltered((long) spectrumMatchList.size());
 
         return response;
     }
