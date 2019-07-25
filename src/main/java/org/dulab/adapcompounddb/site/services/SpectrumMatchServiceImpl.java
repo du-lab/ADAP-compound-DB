@@ -4,8 +4,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.ChromatographyType;
+import org.dulab.adapcompounddb.models.FileIndexAndSpectrumIndexBestMatchPair;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
+import org.dulab.adapcompounddb.models.dto.GroupSearchDTO;
 import org.dulab.adapcompounddb.models.dto.SpectrumClusterDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
@@ -69,6 +71,38 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
             return columnName;
         }
     }
+
+
+    private static enum GroupSearchColumnInformation {
+        ID(0, "id"), QUERY_SPECTRUM(1, "querySpectrumName"), MATCH_SPECTRUM(2, "matchSpectrumName"),
+        SCORE(3, "score"), PVALUE(4, "minPValue"), DIVERSITY(5, "maxDiversity"), MATCH_SPECTRUM_CLUSTER_ID(6, "querySpectrumId");
+        private int position;
+        private String sortColumnName;
+
+        private GroupSearchColumnInformation(final int position, final String sortColumnName) {
+            this.position = position;
+            this.sortColumnName = sortColumnName;
+        }
+
+        public int getPosition() {
+            return position;
+        }
+
+        public String getSortColumnName() {
+            return sortColumnName;
+        }
+
+        public static String getColumnNameFromPosition(final int position) {
+            String columnName = null;
+            for (final GroupSearchColumnInformation groupSearchColumnInformation : GroupSearchColumnInformation.values()) {
+                if (position == groupSearchColumnInformation.getPosition()) {
+                    columnName = groupSearchColumnInformation.getSortColumnName();
+                }
+            }
+            return columnName;
+        }
+    }
+
 
     @Autowired
     public SpectrumMatchServiceImpl(final SpectrumRepository spectrumRepository,
@@ -353,6 +387,123 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         final DataTableResponse response = new DataTableResponse(spectrumList);
         response.setRecordsTotal(spectrumPage.getTotalElements());
         response.setRecordsFiltered(spectrumPage.getTotalElements());
+
+        return response;
+    }
+
+    @Override
+    public DataTableResponse groupSearchSort(final String searchStr, final Integer start, final Integer length, final Integer column,
+                                             final String sortDirection, List<FileIndexAndSpectrumIndexBestMatchPair> fileIndexAndSpectrumIndexBestMatchPairList) {
+
+        List<SpectrumMatch> SpectrumMatchList = new ArrayList<>();
+
+        for (FileIndexAndSpectrumIndexBestMatchPair f : fileIndexAndSpectrumIndexBestMatchPairList) {
+            SpectrumMatchList.add(f.getSpectrumIndexAndBestMatchPair().getBestMatch());
+        }
+//        Pageable pageable = null;
+        String sortColumn = GroupSearchColumnInformation.getColumnNameFromPosition(column);
+
+        if (sortColumn != null) {
+            switch (sortColumn) {
+                case "querySpectrumName":
+                    Comparator<SpectrumMatch> compareByQuerySpectrum = Comparator.comparing((SpectrumMatch s)
+                            -> s.getQuerySpectrum().getName());
+
+                    Collections.sort(SpectrumMatchList, compareByQuerySpectrum);
+                    break;
+
+                case "matchSpectrumName":
+
+                    Collections.sort(SpectrumMatchList, (o1, o2) -> {
+                        if (o1.getMatchSpectrum() == null) {
+                            return (o2.getMatchSpectrum() == null) ? 0 : -1;
+                        }
+                        if (o2.getMatchSpectrum() == null) {
+                            return 1;
+                        }
+                        return o2.getMatchSpectrum().getName().compareTo(o1.getMatchSpectrum().getName());
+                    });
+                    break;
+
+                case "score":
+
+                    Collections.sort(SpectrumMatchList, (o1, o2) -> {
+                        if (o1.getMatchSpectrum() == null) {
+                            return (o2.getMatchSpectrum() == null) ? 0 : -1;
+                        }
+                        if (o2.getMatchSpectrum() == null) {
+                            return 1;
+                        }
+                        return o2.getMatchSpectrum().getCluster().getDiameter().compareTo(o1.getMatchSpectrum().getCluster().getDiameter());
+                    });
+                    break;
+
+                case "minPValue":
+
+                    Collections.sort(SpectrumMatchList, (o1, o2) -> {
+                        if (o1.getMatchSpectrum() == null) {
+                            return (o2.getMatchSpectrum() == null) ? 0 : -1;
+                        }
+                        if (o2.getMatchSpectrum() == null) {
+                            return 1;
+                        }
+                        return o2.getMatchSpectrum().getCluster().getMinPValue().compareTo(o1.getMatchSpectrum().getCluster().getMinPValue());
+                    });
+                    break;
+
+                case "maxDiversity":
+
+                    Collections.sort(SpectrumMatchList, (o1, o2) -> {
+                        if (o1.getMatchSpectrum() == null) {
+                            return (o2.getMatchSpectrum() == null) ? 0 : -1;
+                        }
+                        if (o2.getMatchSpectrum() == null) {
+                            return 1;
+                        }
+                        return o2.getMatchSpectrum().getCluster().getMaxDiversity().compareTo(o1.getMatchSpectrum().getCluster().getMaxDiversity());
+                    });
+                    break;
+
+            }
+        }
+
+        final List<GroupSearchDTO> spectrumList = new ArrayList<>();
+
+
+        for (int i = 0; i < SpectrumMatchList.size(); i++) {
+
+            if (i < start || spectrumList.size() > length)
+                continue;
+
+            SpectrumMatch p = fileIndexAndSpectrumIndexBestMatchPairList.get(i).getSpectrumIndexAndBestMatchPair().getBestMatch();
+            GroupSearchDTO groupSearchDTO = new GroupSearchDTO();
+            if (p.getMatchSpectrum() != null) {
+                double pValue = p.getMatchSpectrum().getCluster().getMinPValue();
+                double maxDiversity = p.getMatchSpectrum().getCluster().getMaxDiversity();
+                long matchSpectrumClusterId = p.getMatchSpectrum().getCluster().getId();
+                String matchSpectrumName = p.getMatchSpectrum().getName();
+
+                groupSearchDTO.setMinPValue(pValue);
+                groupSearchDTO.setMaxDiversity(maxDiversity);
+                groupSearchDTO.setMatchSpectrumClusterId(matchSpectrumClusterId);
+                groupSearchDTO.setMatchSpectrumName(matchSpectrumName);
+            }
+            long id = p.getId();
+            double score = p.getScore();
+            String querySpectrumName = p.getQuerySpectrum().getName();
+
+            groupSearchDTO.setFileIndex(fileIndexAndSpectrumIndexBestMatchPairList.get(i).getFileIndex());
+            groupSearchDTO.setSpectrumIndex(fileIndexAndSpectrumIndexBestMatchPairList.get(i).getSpectrumIndexAndBestMatchPair().getSpectrumIndex());
+            groupSearchDTO.setId(id);
+            groupSearchDTO.setScore(score);
+            groupSearchDTO.setQuerySpectrumName(querySpectrumName);
+
+            spectrumList.add(groupSearchDTO);
+        }
+
+        DataTableResponse response = new DataTableResponse(spectrumList);
+        response.setRecordsTotal((long) SpectrumMatchList.size());
+        response.setRecordsFiltered((long) SpectrumMatchList.size());
 
         return response;
     }

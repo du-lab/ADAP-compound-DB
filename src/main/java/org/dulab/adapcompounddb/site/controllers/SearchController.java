@@ -220,13 +220,7 @@ public class SearchController {
             return new ModelAndView(new RedirectView("/file/upload/"));
         }
 
-        final List<File> spectrumFiles = submission.getFiles();
-        final List<Spectrum> spectrumList = new ArrayList<>();
-        for (File f : spectrumFiles) {
-            spectrumList.addAll(f.getSpectra());
-        }
-
-        return groupSearchPost(spectrumList, UserPrincipal.from(session), form, model, errors);
+        return new ModelAndView("group_search_results");
     }
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/group_search_results/", method = RequestMethod.POST)

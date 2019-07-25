@@ -16,81 +16,21 @@
         <span data-tab="files">Group Search Results</span>
     </div>
     <div align="center">
-        <c:choose>
-            <c:when test="${best_matches != null && best_matches.size() > 0}">
-                <table id="match_table" class="display responsive" style="width: 100%; clear:none;">
-                    <thead>
-                    <tr>
-                        <th>Compound from the Search List</th>
-                        <th>Best Match</th>
-                        <th>Score</th>
-                        <th>P-Value</th>
-                        <th>Diversity</th>
-                        <th>Search Button</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <c:forEach items="${best_matches}" var="match" varStatus="theCount">
-                    <tr data-spectrum='${dulab:spectrumToJson(match.querySpectrum)}'>
-                        <td style="text-align:center">
-                                ${dulab:abbreviate(match.querySpectrum.name, 80)}<br/>
-                            <small>
-                                <c:if test="${match.querySpectrum.precursor != null}">Precursor: ${match.querySpectrum.precursor};</c:if>
-                                <c:if test="${match.querySpectrum.retentionTime != null}">Ret Time: ${match.querySpectrum.retentionTime};</c:if>
-                            </small>
-                        </td>
-
-                        <c:choose>
-                        <c:when test="${match.matchSpectrum != null}">
-
-                            <fmt:formatNumber type="number"
-                                              maxFractionDigits="0"
-                                              groupingUsed="false"
-                                              value="${match.score * 1000}"
-                                              var="score"/>
-
-                            <fmt:formatNumber type="number"
-                                              maxFractionDigits="3"
-                                              minFractionDigits="3"
-                                              groupingUsed="false"
-                                              value="${match.matchSpectrum.cluster.minPValue}"
-                                              var="minPValue"/>
-
-                            <fmt:formatNumber type="number"
-                                              maxFractionDigits="3"
-                                              minFractionDigits="3"
-                                              groupingUsed="false"
-                                              value="${match.matchSpectrum.cluster.maxDiversity}"
-                                              var="maxDiversity"/>
-
-                        <td style="text-align:center">
-                            <a href="/cluster/${match.matchSpectrum.cluster.id}/">${dulab:abbreviate(match.matchSpectrum.name, 80)}</a>
-                            <small>
-                                <c:if test="${match.matchSpectrum.precursor != null}">Precursor: ${match.matchSpectrum.precursor};</c:if>
-                                <c:if test="${match.matchSpectrum.retentionTime != null}">Ret Time: ${match.matchSpectrum.retentionTime};</c:if>
-                            </small>
-                        </td>
-                        <td style="text-align:center">${score}</td>
-                        <td style="text-align:center">${minPValue}</td>
-                        <td style="text-align:center">${maxDiversity}</td>
-                        </c:when>
-
-                        <c:otherwise>
-                        <td style="text-align:center"></td>
-                        <td style="text-align:center"></td>
-                        <td style="text-align:center"></td>
-                        <td style="text-align:center"></td>
-                        </c:otherwise>
-                        </c:choose>
-                        <td style="text-align:center"><a href="/spectrum/${match.querySpectrum.id}/search" class="button">Search</a></td>
-                        </c:forEach>
-                    </tbody>
-                </table>
-            </c:when>
-            <c:otherwise>
-                <p>There is no mass spectra to display.</p>
-            </c:otherwise>
-        </c:choose>
+        <table id="match_table" class="display responsive" style="width: 100%; clear:none;">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Compound from the Search List</th>
+                <th>Best Match</th>
+                <th>Score</th>
+                <th>P-Value</th>
+                <th>Diversity</th>
+                <th>Search Button</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
     </div>
 </section>
 
@@ -174,20 +114,97 @@
         var table = $( '#match_table' ).DataTable( {
 
             select: {style: 'single'},
+            serverSide: true,
+            processing: true,
             responsive: true,
             scrollX: true,
             scroller: true,
-            order: [[0, 'desc']]
+            order: [[0, "desc"]],
+            ajax: {
+                url: "${pageContext.request.contextPath}/file/group_search_results/data.json",
 
+                data: function (data) {
+                    data.column = data.order[0].column;
+                    data.sortDirection = data.order[0].dir;
+                    data.search = data.search["value"];
+                }
+            },
+            "columnDefs": [
+                {
+                    "targets": 0,
+                    "orderable": false,
+                    "searchable": false,
+                    "render": function (data, type, row, meta) {
+                        return meta.settings.oAjaxData.start + meta.row + 1;
+                    }
+                },
+                {
+                    "targets": 1,
+                    "orderable": true,
+                    "render": function (data, type, row, meta) {
+                        content = row.querySpectrumName;
+                        return content;
+                    }
+                },
+                {
+                    "targets": 2,
+                    "orderable": true,
+                    "render": function (data, type, row, meta) {
+                        var content = '';
+                        if (row.matchSpectrumName != null) {
+                            content = '<a href="${pageContext.request.contextPath}/cluster/' + row.matchSpectrumClusterId + '/">' +
+                                row.matchSpectrumName +
+                                '</a>';
+                        }
+                        return content;
+                    }
+                },
+                {
+                    "targets": 3,
+                    "orderable": true,
+                    "render": function (data, type, row, meta) {
+                        return row.score.toFixed( 3 ) * 1000;
+                    }
+                },
+                {
+                    "targets": 4,
+                    "orderable": true,
+                    "render": function (data, type, row, meta) {
+                        if (row.matchSpectrumName != null) {
+                            return row.minPValue.toFixed( 3 );
+                        } else {
+                            return row.minPValue;
+                        }
+                    }
+                },
+                {
+                    "targets": 5,
+                    "orderable": true,
+                    "render": function (data, type, row, meta) {
+                        if (row.matchSpectrumName != null) {
+                            return row.maxDiversity.toFixed( 3 );
+                        } else {
+                            return row.maxDiversity;
+                        }
+                    }
+                },
+                {
+                    "targets": 6,
+                    "orderable": false,
+                    "render": function (data, type, row, meta) {
+                        var content = '<a href="${pageContext.request.contextPath}/file/'
+                            + row.fileIndex + '/' + row.spectrumIndex + '/" class="button"> Search</a>';
+
+                        return content;
+                    }
+                },
+                {"className": "dt-center", "targets": "_all"}
+            ]
         } );
 
-        table.on( 'select', function (e, dt, type, indexes) {
-            var row = table.row( indexes ).node();
-            var spectrum = JSON.parse( $( row ).attr( 'data-spectrum' ) );
-            plot.update( spectrum );
-        } );
 
         table.rows( ':eq(0)' ).select();
+
 
         $( '#scoreThreshold' ).prop( 'disabled', !$( '#scoreThresholdCheck1' ).prop( 'checked' ) );
         $( '#mzTolerance' ).prop( 'disabled', !$( '#scoreThresholdCheck1' ).prop( 'checked' ) );
@@ -195,15 +212,15 @@
         $( '#retTimeTolerance' ).prop( 'disabled', !$( '#retTimeToleranceCheck1' ).prop( 'checked' ) );
 
         $( '#accordion' ).accordion();
-        $( '#tags' ).tagit( {
-            autocomplete: {
-                source: '${dulab:stringsToJson(searchForm.availableTags)}'
-            }
-        } )
+        <%--$( '#tags' ).tagit( {--%>
+        <%--    autocomplete: {--%>
+        <%--        source: '${dulab:stringsToJson(searchForm.availableTags)}'--%>
+        <%--    }--%>
+        <%--} )--%>
     } );
 
-    $( ".tabbed-pane" ).each( function () {
-        $( this ).tabbedPane();
-    } );
+    // $( ".tabbed-pane" ).each( function () {
+    //     $( this ).tabbedPane();
+    // } );
 
 </script>
