@@ -497,7 +497,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         return response;
     }
 
-    // sorting the column
+    // function for sorting the column
     private <T extends Comparable> Comparator<SpectrumMatch> getComparator(
             Function<SpectrumMatch, T> function, String sortDirection) {
 
@@ -539,6 +539,4 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
             e.printStackTrace();
         }
     }
-
-
 }
