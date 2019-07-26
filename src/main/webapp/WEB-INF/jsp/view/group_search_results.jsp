@@ -17,45 +17,21 @@
     </div>
     <div align="center">
 
-<%--        <c:choose>--%>
-<%--            <c:when test="${best_matches != null && best_matches.size() > 0}">--%>
-                <table id="match_table" class="display responsive" style="width: 100%; clear:none;">
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Compound from the Search List</th>
-                        <th>Best Match</th>
-                        <th>Score</th>
-                        <th>P-Value</th>
-                        <th>Diversity</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-
-
-<%--            </c:when>--%>
-<%--            <c:otherwise>--%>
-<%--                <table id="match" class="display responsive" style="width: 100%; clear:none;">--%>
-<%--                    <thead>--%>
-<%--                    <tr>--%>
-<%--                        <th>ID</th>--%>
-<%--                        <th>Compound from the Search List</th>--%>
-<%--                        <th>Best Match</th>--%>
-<%--                        <th>Score</th>--%>
-<%--                        <th>P-Value</th>--%>
-<%--                        <th>Diversity</th>--%>
-<%--                        <th>Search Button</th>--%>
-<%--                    </tr>--%>
-<%--                    </thead>--%>
-<%--                    <tbody>--%>
-<%--                    </tbody>--%>
-<%--                </table>--%>
-<%--                <p>There is no mass spectra to display.</p>--%>
-<%--            </c:otherwise>--%>
-<%--        </c:choose>--%>
+        <table id="match_table" class="display responsive" style="width: 100%; clear:none;">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Compound from the Search List</th>
+                <th>Best Match</th>
+                <th>Score</th>
+                <th>P-Value</th>
+                <th>Diversity</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
 
     </div>
 </section>
@@ -251,12 +227,12 @@
                     <input id="demo" type="submit" value="Group Match" onclick="myFunction()"/>
                 </div>
 
-<%--                <script>--%>
-<%--                    function myFunction(){--%>
-<%--                        document.getElementById("demo").id = "match_table";--%>
-<%--                    }--%>
+                <%--                <script>--%>
+                <%--                    function myFunction(){--%>
+                <%--                        document.getElementById("demo").id = "match_table";--%>
+                <%--                    }--%>
 
-<%--                </script>--%>
+                <%--                </script>--%>
             </form:form>
         </div>
     </div>
