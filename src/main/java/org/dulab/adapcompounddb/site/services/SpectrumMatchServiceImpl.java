@@ -436,57 +436,17 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
                 case "score":
 
-                    Collections.sort(spectrumMatchList, (o1, o2) -> {
-                        if (o1.getMatchSpectrum() == null) {
-                            return (o2.getMatchSpectrum() == null) ? 0 : 1;
-                        }
-                        if (o2.getMatchSpectrum() == null) {
-                            return -1;
-                        }
-                        if (sortDirection.equalsIgnoreCase("asc")) {
-                            return Double.compare(o2.getScore(), o1.getScore());
-                        } else {
-                            return -Double.compare(o2.getScore(), o1.getScore());
-                        }
-                    });
+                    spectrumMatchList.sort(getComparator(s -> s.getScore(), sortDirection));
                     break;
 
                 case "minPValue":
 
-                    Collections.sort(spectrumMatchList, (o1, o2) -> {
-                        if (o1.getMatchSpectrum() == null) {
-                            return (o2.getMatchSpectrum() == null) ? 0 : 1;
-                        }
-                        if (o2.getMatchSpectrum() == null) {
-                            return -1;
-                        }
-                        if (sortDirection.equalsIgnoreCase("asc")) {
-                            return o2.getMatchSpectrum().getCluster().getMinPValue().compareTo(o1.getMatchSpectrum()
-                                    .getCluster().getMinPValue());
-                        } else {
-                            return -o2.getMatchSpectrum().getCluster().getMinPValue().compareTo(o1.getMatchSpectrum()
-                                    .getCluster().getMinPValue());
-                        }
-                    });
+                    spectrumMatchList.sort(getComparator(s -> s.getMatchSpectrum().getCluster().getMinPValue(), sortDirection));
                     break;
 
                 case "maxDiversity":
 
-                    Collections.sort(spectrumMatchList, (o1, o2) -> {
-                        if (o1.getMatchSpectrum() == null) {
-                            return (o2.getMatchSpectrum() == null) ? 0 : 1;
-                        }
-                        if (o2.getMatchSpectrum() == null) {
-                            return -1;
-                        }
-                        if (sortDirection.equalsIgnoreCase("asc")) {
-                            return o2.getMatchSpectrum().getCluster().getMaxDiversity().compareTo(o1.getMatchSpectrum()
-                                    .getCluster().getMaxDiversity());
-                        } else {
-                            return -o2.getMatchSpectrum().getCluster().getMaxDiversity().compareTo(o1.getMatchSpectrum()
-                                    .getCluster().getMaxDiversity());
-                        }
-                    });
+                    spectrumMatchList.sort(getComparator(s -> s.getMatchSpectrum().getCluster().getMaxDiversity(), sortDirection));
                     break;
 
             }
@@ -497,7 +457,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
         for (int i = 0; i < spectrumMatchList.size(); i++) {
 
-            if (i < start || spectrumList.size() > length)
+            if (i < start || spectrumList.size() >= length)
                 continue;
 
             SpectrumMatch p = spectrumMatchList.get(i);
@@ -537,6 +497,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         return response;
     }
 
+    // sorting the column
     private <T extends Comparable> Comparator<SpectrumMatch> getComparator(
             Function<SpectrumMatch, T> function, String sortDirection) {
 
