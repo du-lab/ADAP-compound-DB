@@ -84,7 +84,8 @@ public class GroupSearchController {
     }
 
 
-    private List<FileIndexAndSpectrumIndexBestMatchPair> groupSearchPost(final Submission submission, final SearchController.SearchForm form) {
+    private List<FileIndexAndSpectrumIndexBestMatchPair> groupSearchPost(final HttpSession session,
+            final Submission submission, final SearchController.SearchForm form) {
         final List<File> spectrumFiles = submission.getFiles();
         final Map<Integer, List<Spectrum>> spectrumListAndIndexMap = new HashMap<>();
         final List<FileIndexAndSpectrumIndexBestMatchPair> fileIndexAndSpectrumIndexBestMatchPairList = new ArrayList<>();
@@ -93,6 +94,9 @@ public class GroupSearchController {
         parameters.setMzTolerance(form.isScoreThresholdCheck() ? form.getMzTolerance() : null);
         parameters.setPrecursorTolerance(form.isMassToleranceCheck() ? form.getMassTolerance() : null);
         parameters.setRetTimeTolerance(form.isRetTimeToleranceCheck() ? form.getRetTimeTolerance() : null);
+
+
+        //TODO: Instead of using for-loop and service.search(), we can use session.getAttribute("group_search_results") to get List<SpectrumMatch>
 
 
         for (int i = 0; i < spectrumFiles.size(); i++) {

@@ -207,7 +207,7 @@ public class SearchController {
     @RequestMapping(value = "/submission/{submissionId:\\d+}/group_search_results/", method = RequestMethod.GET)
     public String groupSearch(@PathVariable("submissionId") final long submissionId,
                               final Model model, @Valid final SearchForm form) {
-        final Submission submission =submissionService.findSubmission(submissionId);
+        final Submission submission = submissionService.findSubmission(submissionId);
         model.addAttribute("searchForm", form);
         return "/group_search_results";
     }
@@ -220,11 +220,13 @@ public class SearchController {
             return new ModelAndView(new RedirectView("/file/upload/"));
         }
 
-        return new ModelAndView("group_search_results");
+        //TODO: Call groupSearchPost()
+
+//        return new ModelAndView("group_search_results");
     }
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/group_search_results/", method = RequestMethod.POST)
-    public ModelAndView groupSearch(@PathVariable("submissionId") final long submissionId,final HttpSession session,
+    public ModelAndView groupSearch(@PathVariable("submissionId") final long submissionId, final HttpSession session,
                                     final Model model, @Valid final SearchForm form, final Errors errors) {
         final Submission submission = submissionService.findSubmission(submissionId);
         final List<File> spectrumFiles = submission.getFiles();
@@ -237,15 +239,18 @@ public class SearchController {
     }
 
 
-    private ModelAndView groupSearchPost(final List<Spectrum> querySpectrum, final UserPrincipal user,
+    private ModelAndView groupSearchPost(final HttpSession session,
+                                         final List<Spectrum> querySpectrum, final UserPrincipal user,
                                          final SearchForm form, @Valid final Model model, final Errors errors) {
 
         if (errors.hasErrors()) {
             model.addAttribute("querySpectrum", querySpectrum);
             return new ModelAndView("file/match");
         }
+
+
         List<SpectrumMatch> bestMatches = new ArrayList<>();
-        List<Spectrum> querySpectrumoreder = new ArrayList<>();
+//        List<Spectrum> querySpectrumoreder = new ArrayList<>();
         for (Spectrum s : querySpectrum) {
             final SpectrumSearchService service =
                     spectrumSearchServiceMap.get(s.getChromatographyType());
@@ -263,15 +268,19 @@ public class SearchController {
             final List<SpectrumMatch> matches = service.search(s, parameters);
 
             // get the best match if the match is not null
-            if(matches.size() > 0){
-            bestMatches.add(matches.get(0));}
-            else{
+            if (matches.size() > 0) {
+                bestMatches.add(matches.get(0));
+            } else {
                 SpectrumMatch noneMatch = new SpectrumMatch();
                 noneMatch.setQuerySpectrum(s);
-                bestMatches.add(noneMatch);}
+                bestMatches.add(noneMatch);
+            }
+
+            session.setAttribute("group_search_results", bestMatches);
         }
-        model.addAttribute("best_matches", bestMatches);
-        model.addAttribute("querySpectrum", querySpectrumoreder);
+
+//        model.addAttribute("best_matches", bestMatches);
+//        model.addAttribute("querySpectrum", querySpectrumoreder);
         model.addAttribute("form", form);
 
         return new ModelAndView("group_search_results");
