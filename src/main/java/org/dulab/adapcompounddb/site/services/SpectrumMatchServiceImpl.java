@@ -27,6 +27,7 @@ import smile.clustering.linkage.CompleteLinkage;
 import smile.clustering.linkage.Linkage;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -418,29 +419,18 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
                 case "matchSpectrumName":
 
-                    Collections.sort(spectrumMatchList, (o1, o2) -> {
-                        if (o1.getMatchSpectrum() == null) {
-                            return (o2.getMatchSpectrum() == null) ? 0 : -1;
-                        }
-                        if (o2.getMatchSpectrum() == null) {
-                            return 1;
-                        }
-                        if (sortDirection.equalsIgnoreCase("asc")) {
-                            return o2.getMatchSpectrum().getName().compareTo(o1.getMatchSpectrum().getName());
-                        } else {
-                            return - o2.getMatchSpectrum().getName().compareTo(o1.getMatchSpectrum().getName());
-                        }
-                    });
+                    // Update cases "score", "minValues", etc. accordingly
+                    spectrumMatchList.sort(getComparator(s -> s.getMatchSpectrum().getName(), sortDirection));
                     break;
 
                 case "score":
 
                     Collections.sort(spectrumMatchList, (o1, o2) -> {
                         if (o1.getMatchSpectrum() == null) {
-                            return (o2.getMatchSpectrum() == null) ? 0 : -1;
+                            return (o2.getMatchSpectrum() == null) ? 0 : 1;
                         }
                         if (o2.getMatchSpectrum() == null) {
-                            return 1;
+                            return -1;
                         }
                         if (sortDirection.equalsIgnoreCase("asc")) {
                             return Double.compare(o2.getScore(),o1.getScore());
@@ -529,6 +519,29 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         response.setRecordsFiltered((long) spectrumMatchList.size());
 
         return response;
+    }
+
+    private <T extends Comparable> Comparator<SpectrumMatch> getComparator(
+            Function<SpectrumMatch, T> function, String sortDirection) {
+
+        return (o1, o2) -> {
+
+            if (o1.getMatchSpectrum() == null) {
+                return (o2.getMatchSpectrum() == null) ? 0 : 1;
+            }
+            if (o2.getMatchSpectrum() == null) {
+                return -1;
+            }
+
+            @SuppressWarnings("unchecked")
+            int comparison = function.apply(o2).compareTo(function.apply(o1));
+
+            if (sortDirection.equalsIgnoreCase("asc")) {
+                return comparison;
+            } else {
+                return -comparison;
+            }
+        };
     }
 
     @Override
