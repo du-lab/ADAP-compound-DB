@@ -1,7 +1,5 @@
 package org.dulab.adapcompounddb.models.dto;
 
-import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
-
 import java.io.Serializable;
 
 

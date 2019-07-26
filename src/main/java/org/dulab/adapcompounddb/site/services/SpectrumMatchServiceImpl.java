@@ -406,10 +406,14 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         if (sortColumn != null) {
             switch (sortColumn) {
                 case "querySpectrumName":
-                    Comparator<SpectrumMatch> compareByQuerySpectrum = Comparator.comparing((SpectrumMatch s)
-                            -> s.getQuerySpectrum().getName());
+                    Comparator<SpectrumMatch> compareByQuerySpectrum =
+                            Comparator.comparing((SpectrumMatch s) -> s.getQuerySpectrum().getName());
 
-                    Collections.sort(spectrumMatchList, compareByQuerySpectrum);
+                    if (sortDirection.equalsIgnoreCase("asc")) {
+                        Collections.sort(spectrumMatchList, compareByQuerySpectrum);
+                    } else if (sortDirection.equalsIgnoreCase("desc")) {
+                        Collections.sort(spectrumMatchList, compareByQuerySpectrum.reversed());
+                    }
                     break;
 
                 case "matchSpectrumName":
@@ -421,7 +425,11 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
                         if (o2.getMatchSpectrum() == null) {
                             return 1;
                         }
-                        return o2.getMatchSpectrum().getName().compareTo(o1.getMatchSpectrum().getName());
+                        if (sortDirection.equalsIgnoreCase("asc")) {
+                            return o2.getMatchSpectrum().getName().compareTo(o1.getMatchSpectrum().getName());
+                        } else {
+                            return - o2.getMatchSpectrum().getName().compareTo(o1.getMatchSpectrum().getName());
+                        }
                     });
                     break;
 
@@ -434,7 +442,11 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
                         if (o2.getMatchSpectrum() == null) {
                             return 1;
                         }
-                        return o2.getMatchSpectrum().getCluster().getDiameter().compareTo(o1.getMatchSpectrum().getCluster().getDiameter());
+                        if (sortDirection.equalsIgnoreCase("asc")) {
+                            return Double.compare(o2.getScore(),o1.getScore());
+                        } else {
+                            return - Double.compare(o2.getScore(),o1.getScore());
+                        }
                     });
                     break;
 
@@ -447,7 +459,11 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
                         if (o2.getMatchSpectrum() == null) {
                             return 1;
                         }
-                        return o2.getMatchSpectrum().getCluster().getMinPValue().compareTo(o1.getMatchSpectrum().getCluster().getMinPValue());
+                        if (sortDirection.equalsIgnoreCase("asc")) {
+                            return o2.getMatchSpectrum().getCluster().getMinPValue().compareTo(o1.getMatchSpectrum().getCluster().getMinPValue());
+                        } else {
+                            return - o2.getMatchSpectrum().getCluster().getMinPValue().compareTo(o1.getMatchSpectrum().getCluster().getMinPValue());
+                        }
                     });
                     break;
 
@@ -460,7 +476,11 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
                         if (o2.getMatchSpectrum() == null) {
                             return 1;
                         }
-                        return o2.getMatchSpectrum().getCluster().getMaxDiversity().compareTo(o1.getMatchSpectrum().getCluster().getMaxDiversity());
+                        if (sortDirection.equalsIgnoreCase("asc")) {
+                            return o2.getMatchSpectrum().getCluster().getMaxDiversity().compareTo(o1.getMatchSpectrum().getCluster().getMaxDiversity());
+                        } else {
+                            return - o2.getMatchSpectrum().getCluster().getMaxDiversity().compareTo(o1.getMatchSpectrum().getCluster().getMaxDiversity());
+                        }
                     });
                     break;
 
@@ -476,26 +496,29 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
                 continue;
 
             SpectrumMatch p = spectrumMatchList.get(i);
+            // fileIndexAndSpectrumIndexBestMatchPairList.get(i).getSpectrumIndexAndBestMatchPair().getBestMatch();
             GroupSearchDTO groupSearchDTO = new GroupSearchDTO();
             if (p.getMatchSpectrum() != null) {
                 double pValue = p.getMatchSpectrum().getCluster().getMinPValue();
                 double maxDiversity = p.getMatchSpectrum().getCluster().getMaxDiversity();
                 long matchSpectrumClusterId = p.getMatchSpectrum().getCluster().getId();
+                double score = p.getScore();
                 String matchSpectrumName = p.getMatchSpectrum().getName();
 
                 groupSearchDTO.setMinPValue(pValue);
                 groupSearchDTO.setMaxDiversity(maxDiversity);
                 groupSearchDTO.setMatchSpectrumClusterId(matchSpectrumClusterId);
                 groupSearchDTO.setMatchSpectrumName(matchSpectrumName);
+                groupSearchDTO.setScore(score);
+            } else {
+                groupSearchDTO.setScore(null);
             }
             long id = p.getId();
-            double score = p.getScore();
             String querySpectrumName = p.getQuerySpectrum().getName();
-
             groupSearchDTO.setFileIndex(fileIndexAndSpectrumIndexBestMatchPairList.get(i).getFileIndex());
             groupSearchDTO.setSpectrumIndex(fileIndexAndSpectrumIndexBestMatchPairList.get(i).getSpectrumIndexAndBestMatchPair().getSpectrumIndex());
             groupSearchDTO.setId(id);
-            groupSearchDTO.setScore(score);
+
             groupSearchDTO.setQuerySpectrumName(querySpectrumName);
 
             spectrumList.add(groupSearchDTO);
@@ -526,4 +549,6 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
             e.printStackTrace();
         }
     }
+
+
 }
