@@ -399,8 +399,19 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
     private List<Peak> createConsensusPeaksWithFractionalMz(List<Spectrum> spectra, float mzTolerance) {
 
-        if (spectra.size() == 1)
-            return spectra.get(0).getPeaks();
+        if (spectra.size() == 1) {
+
+            // Return copy of the spectrum peaks
+            List<Peak> peaks = spectra.get(0).getPeaks();
+            return peaks.stream()
+                    .map(p -> {
+                        Peak peak = new Peak();
+                        peak.setMz(p.getMz());
+                        peak.setIntensity(p.getIntensity());
+                        return peak;
+                    })
+                    .collect(Collectors.toList());
+        }
 
         Matrix distanceMatrix = getMzDistanceMatrix(spectra, mzTolerance);
 
