@@ -63,10 +63,10 @@ public class GroupSearchController {
          */
 
         // 1.
-        final Submission submission = Submission.from(session);
-        if (submission == null) {
-            return "redirect:/file/upload/";
-        }
+//        final Submission submission = Submission.from(session);
+//        if (submission == null) {
+//            return "redirect:/file/upload/";
+//        }
 
         List<GroupSearchDTO> matches;
         if (session.getAttribute("group_search_results") != null) {
@@ -75,8 +75,7 @@ public class GroupSearchController {
             matches = new ArrayList<>();
         }
 
-        final DataTableResponse response = spectrumMatchService.groupSearchSort(searchStr, start,
-                length, column, sortDirection, matches);
+        final DataTableResponse response = spectrumMatchService.groupSearchSort(searchStr, start, length, column, sortDirection, matches);
         final ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         final String jsonString = mapper.writeValueAsString(response);

@@ -308,14 +308,19 @@ public class SearchController {
 
         GroupSearchDTO groupSearchDTO = new GroupSearchDTO();
         if (spectrumMatch.getMatchSpectrum() != null) {
-            double pValue = spectrumMatch.getMatchSpectrum().getCluster().getMinPValue();
-            double maxDiversity = spectrumMatch.getMatchSpectrum().getCluster().getMaxDiversity();
+            if (spectrumMatch.getMatchSpectrum().getCluster().getMinPValue() != null) {
+                double pValue = spectrumMatch.getMatchSpectrum().getCluster().getMinPValue();
+                groupSearchDTO.setMinPValue(pValue);
+            }
+            if(spectrumMatch.getMatchSpectrum().getCluster().getMaxDiversity()!= null){
+                double maxDiversity = spectrumMatch.getMatchSpectrum().getCluster().getMaxDiversity();
+                groupSearchDTO.setMaxDiversity(maxDiversity);
+            }
+
             long matchSpectrumClusterId = spectrumMatch.getMatchSpectrum().getCluster().getId();
             double score = spectrumMatch.getScore();
             String matchSpectrumName = spectrumMatch.getMatchSpectrum().getName();
 
-            groupSearchDTO.setMinPValue(pValue);
-            groupSearchDTO.setMaxDiversity(maxDiversity);
             groupSearchDTO.setMatchSpectrumClusterId(matchSpectrumClusterId);
             groupSearchDTO.setMatchSpectrumName(matchSpectrumName);
             groupSearchDTO.setScore(score);

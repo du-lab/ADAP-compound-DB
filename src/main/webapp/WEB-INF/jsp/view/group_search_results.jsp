@@ -132,7 +132,7 @@
                     "targets": 4,
                     "orderable": true,
                     "render": function (data, type, row, meta) {
-                        if (row.matchSpectrumName != null) {
+                        if (row.matchSpectrumName != null && row.minPValue !=null) {
                             return row.minPValue.toFixed( 3 );
                         } else {
                             return row.minPValue;
@@ -143,7 +143,7 @@
                     "targets": 5,
                     "orderable": true,
                     "render": function (data, type, row, meta) {
-                        if (row.matchSpectrumName != null) {
+                        if (row.matchSpectrumName != null && row.maxDiversity !=null) {
                             return row.maxDiversity.toFixed( 3 );
                         } else {
                             return row.maxDiversity;

@@ -461,15 +461,15 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
         return (o1, o2) -> {
 
-            if (o1.getMatchSpectrumName() == null) {
-                return (o2.getMatchSpectrumName() == null) ? 0 : 1;
+            if (function.apply(o1) == null) {
+                return (function.apply(o2) == null) ? 0 : 1;
             }
             if (o2.getMatchSpectrumName() == null) {
                 return -1;
             }
 
             @SuppressWarnings("unchecked")
-            int comparison = function.apply(o2).compareTo(function.apply(o1));
+            Integer comparison = function.apply(o2).compareTo(function.apply(o1));
 
             if (sortDirection.equalsIgnoreCase("asc")) {
                 return comparison;
