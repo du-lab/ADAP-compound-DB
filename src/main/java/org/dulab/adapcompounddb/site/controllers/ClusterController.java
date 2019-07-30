@@ -64,7 +64,7 @@ public class ClusterController {
 
         // sort Tag distributions by its Pvalue
         cluster.getTagDistributions()
-                .sort(Comparator.comparingDouble(TagDistribution::getPValue));
+                .sort(Comparator.comparingDouble(t -> t != null ? t.getPValue() : 1.0));
 
         model.addAttribute("cluster", cluster);
         return "cluster/cluster";
