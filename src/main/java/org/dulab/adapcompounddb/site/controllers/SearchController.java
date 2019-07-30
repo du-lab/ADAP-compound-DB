@@ -1,7 +1,9 @@
 package org.dulab.adapcompounddb.site.controllers;
 
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
-import org.dulab.adapcompounddb.models.*;
+import org.dulab.adapcompounddb.models.ChromatographyType;
+import org.dulab.adapcompounddb.models.QueryParameters;
+import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.dto.GroupSearchDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.services.SpectrumSearchService;
@@ -13,7 +15,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -212,15 +217,18 @@ public class SearchController {
         final Submission submission = Submission.from(session);
         final List<File> spectrumFiles = submission.getFiles();
         final List<Spectrum> spectrumList = new ArrayList<>();
-        for (File f : spectrumFiles) {
-            spectrumList.addAll(f.getSpectra());
+        Map<Integer, List<Spectrum>> fileIndexAndSpectrumMap = new HashMap<>();
+        for (int i = 0; i < spectrumFiles.size(); i++) {
+            spectrumList.addAll(spectrumFiles.get(i).getSpectra());
+            int fileIndex = i;
+            fileIndexAndSpectrumMap.put(i, spectrumFiles.get(i).getSpectra());
         }
         if (submission == null) {
             return new ModelAndView(new RedirectView("/file/upload/"));
         }
 
         //TODO: Call groupSearchPost()
-       return groupSearchPost(session, spectrumList, UserPrincipal.from(session), form, model, errors);
+        return groupSearchPost(session, fileIndexAndSpectrumMap, UserPrincipal.from(session), form, model, errors);
     }
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/group_search_results/", method = RequestMethod.POST)
@@ -229,50 +237,61 @@ public class SearchController {
         final Submission submission = submissionService.findSubmission(submissionId);
         final List<File> spectrumFiles = submission.getFiles();
         final List<Spectrum> spectrumList = new ArrayList<>();
-        for (File f : spectrumFiles) {
-            spectrumList.addAll(f.getSpectra());
+        Map<Integer, List<Spectrum>> fileIndexAndSpectrumMap = new HashMap<>();
+        for (int i = 0; i < spectrumFiles.size(); i++) {
+            spectrumList.addAll(spectrumFiles.get(i).getSpectra());
+            int fileIndex = i;
+            fileIndexAndSpectrumMap.put(i, spectrumFiles.get(i).getSpectra());
         }
 
-        return groupSearchPost(session,spectrumList, UserPrincipal.from(session), form, model, errors);
+        return groupSearchPost(session, fileIndexAndSpectrumMap, UserPrincipal.from(session), form, model, errors);
     }
 
 
     private ModelAndView groupSearchPost(final HttpSession session,
-                                         final List<Spectrum> querySpectrum, final UserPrincipal user,
+                                         Map<Integer, List<Spectrum>> fileIndexAndSpectrumMap, final UserPrincipal user,
                                          final SearchForm form, @Valid final Model model, final Errors errors) {
 
         if (errors.hasErrors()) {
-            model.addAttribute("querySpectrum", querySpectrum);
             return new ModelAndView("file/match");
         }
 
         final List<GroupSearchDTO> groupSearchDTOList = new ArrayList<>();
 
-        for (Spectrum s : querySpectrum) {
-            final SpectrumSearchService service =
-                    spectrumSearchServiceMap.get(s.getChromatographyType());
-            final QueryParameters parameters = new QueryParameters();
-            parameters.setScoreThreshold(form.isScoreThresholdCheck() ? form.getFloatScoreThreshold() : null);
-            parameters.setMzTolerance(form.isScoreThresholdCheck() ? form.getMzTolerance() : null);
-            parameters.setPrecursorTolerance(form.isMassToleranceCheck() ? form.getMassTolerance() : null);
-            parameters.setRetTimeTolerance(form.isRetTimeToleranceCheck() ? form.getRetTimeTolerance() : null);
+        for (Map.Entry<Integer, List<Spectrum>> entry : fileIndexAndSpectrumMap.entrySet()) {
 
-            final String tags = form.getTags();
-            parameters.setTags(
-                    tags != null && tags.length() > 0
-                            ? new HashSet<>(Arrays.asList(tags.split(",")))
-                            : null);
-            final List<SpectrumMatch> matches = service.search(s, parameters);
+            int fileIndex = entry.getKey();
+            List<Spectrum> querySpectrum = entry.getValue();
 
-            // get the best match if the match is not null
-            if (matches.size() > 0) {
 
-                groupSearchDTOList.add(saveDTO(matches.get(0)));
-            } else {
+            for (int i = 0; i < querySpectrum.size(); i++) {
+                int spectrumIndex = i;
 
-                SpectrumMatch noneMatch = new SpectrumMatch();
-                noneMatch.setQuerySpectrum(s);
-                groupSearchDTOList.add(saveDTO(noneMatch));
+                final SpectrumSearchService service =
+                        spectrumSearchServiceMap.get(querySpectrum.get(i).getChromatographyType());
+                final QueryParameters parameters = new QueryParameters();
+                parameters.setScoreThreshold(form.isScoreThresholdCheck() ? form.getFloatScoreThreshold() : null);
+                parameters.setMzTolerance(form.isScoreThresholdCheck() ? form.getMzTolerance() : null);
+                parameters.setPrecursorTolerance(form.isMassToleranceCheck() ? form.getMassTolerance() : null);
+                parameters.setRetTimeTolerance(form.isRetTimeToleranceCheck() ? form.getRetTimeTolerance() : null);
+
+                final String tags = form.getTags();
+                parameters.setTags(
+                        tags != null && tags.length() > 0
+                                ? new HashSet<>(Arrays.asList(tags.split(",")))
+                                : null);
+                final List<SpectrumMatch> matches = service.search(querySpectrum.get(i), parameters);
+
+                // get the best match if the match is not null
+                if (matches.size() > 0) {
+
+                    groupSearchDTOList.add(saveDTO(matches.get(0),fileIndex, spectrumIndex));
+                } else {
+
+                    SpectrumMatch noneMatch = new SpectrumMatch();
+                    noneMatch.setQuerySpectrum(querySpectrum.get(i));
+                    groupSearchDTOList.add(saveDTO(noneMatch,fileIndex, spectrumIndex));
+                }
             }
 
             // Save List<GroupdSearchDTIO> to the session
@@ -282,7 +301,7 @@ public class SearchController {
         return new ModelAndView("group_search_results");
     }
 
-    public GroupSearchDTO saveDTO(SpectrumMatch spectrumMatch){
+    public GroupSearchDTO saveDTO(SpectrumMatch spectrumMatch,int fileIndex, int spectrumIndex) {
 
         GroupSearchDTO groupSearchDTO = new GroupSearchDTO();
         if (spectrumMatch.getMatchSpectrum() != null) {
@@ -302,10 +321,10 @@ public class SearchController {
         }
         long id = spectrumMatch.getId();
         String querySpectrumName = spectrumMatch.getQuerySpectrum().getName();
-        groupSearchDTO.setFileIndex(0);
-        groupSearchDTO.setSpectrumIndex(0);
+        groupSearchDTO.setFileIndex(fileIndex);
         groupSearchDTO.setId(id);
         groupSearchDTO.setQuerySpectrumName(querySpectrumName);
+        groupSearchDTO.setSpectrumIndex(spectrumIndex);
         return groupSearchDTO;
     }
 

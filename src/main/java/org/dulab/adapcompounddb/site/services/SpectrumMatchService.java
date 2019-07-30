@@ -1,11 +1,9 @@
 package org.dulab.adapcompounddb.site.services;
 
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
-import org.dulab.adapcompounddb.models.FileIndexAndSpectrumIndexBestMatchPair;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.GroupSearchDTO;
 import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
-import org.dulab.adapcompounddb.site.controllers.SearchController;
 
 import java.util.List;
 
