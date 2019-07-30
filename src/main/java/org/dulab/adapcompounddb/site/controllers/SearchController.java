@@ -231,7 +231,7 @@ public class SearchController {
         }
 
         //TODO: Call groupSearchPost()
-        return groupSearchPost(session, fileIndexAndSpectrumMap, UserPrincipal.from(session), form, model, errors);
+        return groupSearchPost(session, fileIndexAndSpectrumMap, form, model, errors);
     }
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/group_search_results/", method = RequestMethod.POST)
@@ -247,12 +247,12 @@ public class SearchController {
             fileIndexAndSpectrumMap.put(i, spectrumFiles.get(i).getSpectra());
         }
 
-        return groupSearchPost(session, fileIndexAndSpectrumMap, UserPrincipal.from(session), form, model, errors);
+        return groupSearchPost(session, fileIndexAndSpectrumMap, form, model, errors);
     }
 
 
     private ModelAndView groupSearchPost(final HttpSession session,
-                                         Map<Integer, List<Spectrum>> fileIndexAndSpectrumMap, final UserPrincipal user,
+                                         Map<Integer, List<Spectrum>> fileIndexAndSpectrumMap,
                                          final SearchForm form, @Valid final Model model, final Errors errors) {
 
         if (errors.hasErrors()) {
