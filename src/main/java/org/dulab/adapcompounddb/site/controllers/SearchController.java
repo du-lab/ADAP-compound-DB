@@ -200,6 +200,7 @@ public class SearchController {
 
     @RequestMapping(value = "/file/group_search_results/", method = RequestMethod.GET)
     public String groupSearch(final HttpSession session, final Model model, @Valid final SearchForm form) {
+        session.removeAttribute("group_search_results");
         final Submission submission = Submission.from(session);
         if (submission == null) {
             return "/file/upload/";
@@ -209,7 +210,8 @@ public class SearchController {
     }
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/group_search_results/", method = RequestMethod.GET)
-    public String groupSearch(final Model model, @Valid final SearchForm form) {
+    public String groupSearch(final Model model, @Valid final SearchForm form, final HttpSession session) {
+        session.removeAttribute("group_search_results");
         model.addAttribute("searchForm", form);
         return "/group_search_results";
     }
