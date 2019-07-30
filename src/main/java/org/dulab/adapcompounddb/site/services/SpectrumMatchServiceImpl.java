@@ -80,7 +80,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         MATCH_SPECTRUM(2, "matchSpectrumName"),
         SCORE(3, "score"), PVALUE(4, "minPValue"),
         DIVERSITY(5, "maxDiversity"),
-        MATCH_SPECTRUM_CLUSTER_ID(6, "querySpectrumId");
+        QUERY_SPECTRUM_ID(6, "querySpectrumId");
         private int position;
         private String sortColumnName;
 

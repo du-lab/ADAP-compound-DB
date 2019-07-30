@@ -19,6 +19,7 @@ public class GroupSearchDTO implements Serializable {
     private long matchSpectrumClusterId;
     private int fileIndex;
     private int spectrumIndex;
+    private long querySpectrumId;
 
 
 // *******************************
@@ -107,6 +108,14 @@ public class GroupSearchDTO implements Serializable {
 
     public void setSpectrumIndex(int spectrumIndex) {
         this.spectrumIndex = spectrumIndex;
+    }
+
+    public long getQuerySpectrumId() {
+        return querySpectrumId;
+    }
+
+    public void setQuerySpectrumId(long querySpectrumId) {
+        this.querySpectrumId = querySpectrumId;
     }
 
     @Override

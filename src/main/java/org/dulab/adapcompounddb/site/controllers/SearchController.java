@@ -269,6 +269,7 @@ public class SearchController {
 
             for (int i = 0; i < querySpectrum.size(); i++) {
                 int spectrumIndex = i;
+                long querySpectrumId = querySpectrum.get(i).getId();
 
                 final SpectrumSearchService service =
                         spectrumSearchServiceMap.get(querySpectrum.get(i).getChromatographyType());
@@ -288,12 +289,12 @@ public class SearchController {
                 // get the best match if the match is not null
                 if (matches.size() > 0) {
 
-                    groupSearchDTOList.add(saveDTO(matches.get(0), fileIndex, spectrumIndex));
+                    groupSearchDTOList.add(saveDTO(matches.get(0), fileIndex, spectrumIndex,querySpectrumId));
                 } else {
 
                     SpectrumMatch noneMatch = new SpectrumMatch();
                     noneMatch.setQuerySpectrum(querySpectrum.get(i));
-                    groupSearchDTOList.add(saveDTO(noneMatch, fileIndex, spectrumIndex));
+                    groupSearchDTOList.add(saveDTO(noneMatch, fileIndex, spectrumIndex,querySpectrumId));
                 }
             }
 
@@ -304,7 +305,7 @@ public class SearchController {
         return new ModelAndView("group_search_results");
     }
 
-    public GroupSearchDTO saveDTO(SpectrumMatch spectrumMatch, int fileIndex, int spectrumIndex) {
+    public GroupSearchDTO saveDTO(SpectrumMatch spectrumMatch, int fileIndex, int spectrumIndex,long querySpectrumId) {
 
         GroupSearchDTO groupSearchDTO = new GroupSearchDTO();
         if (spectrumMatch.getMatchSpectrum() != null) {
@@ -333,6 +334,7 @@ public class SearchController {
         groupSearchDTO.setId(id);
         groupSearchDTO.setQuerySpectrumName(querySpectrumName);
         groupSearchDTO.setSpectrumIndex(spectrumIndex);
+        groupSearchDTO.setQuerySpectrumId(querySpectrumId);
         return groupSearchDTO;
     }
 

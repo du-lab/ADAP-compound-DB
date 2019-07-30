@@ -17,45 +17,45 @@
     </div>
     <div align="center">
 
-<%--        <c:choose>--%>
-<%--            <c:when test="${best_matches != null && best_matches.size() > 0}">--%>
-                <table id="match_table" class="display responsive" style="width: 100%; clear:none;">
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Compound from the Search List</th>
-                        <th>Best Match</th>
-                        <th>Score</th>
-                        <th>P-Value</th>
-                        <th>Diversity</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
+        <%--        <c:choose>--%>
+        <%--            <c:when test="${best_matches != null && best_matches.size() > 0}">--%>
+        <table id="match_table" class="display responsive" style="width: 100%; clear:none;">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Compound from the Search List</th>
+                <th>Best Match</th>
+                <th>Score</th>
+                <th>P-Value</th>
+                <th>Diversity</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
 
 
-<%--            </c:when>--%>
-<%--            <c:otherwise>--%>
-<%--                <table id="match" class="display responsive" style="width: 100%; clear:none;">--%>
-<%--                    <thead>--%>
-<%--                    <tr>--%>
-<%--                        <th>ID</th>--%>
-<%--                        <th>Compound from the Search List</th>--%>
-<%--                        <th>Best Match</th>--%>
-<%--                        <th>Score</th>--%>
-<%--                        <th>P-Value</th>--%>
-<%--                        <th>Diversity</th>--%>
-<%--                        <th>Search Button</th>--%>
-<%--                    </tr>--%>
-<%--                    </thead>--%>
-<%--                    <tbody>--%>
-<%--                    </tbody>--%>
-<%--                </table>--%>
-<%--                <p>There is no mass spectra to display.</p>--%>
-<%--            </c:otherwise>--%>
-<%--        </c:choose>--%>
+        <%--            </c:when>--%>
+        <%--            <c:otherwise>--%>
+        <%--                <table id="match" class="display responsive" style="width: 100%; clear:none;">--%>
+        <%--                    <thead>--%>
+        <%--                    <tr>--%>
+        <%--                        <th>ID</th>--%>
+        <%--                        <th>Compound from the Search List</th>--%>
+        <%--                        <th>Best Match</th>--%>
+        <%--                        <th>Score</th>--%>
+        <%--                        <th>P-Value</th>--%>
+        <%--                        <th>Diversity</th>--%>
+        <%--                        <th>Search Button</th>--%>
+        <%--                    </tr>--%>
+        <%--                    </thead>--%>
+        <%--                    <tbody>--%>
+        <%--                    </tbody>--%>
+        <%--                </table>--%>
+        <%--                <p>There is no mass spectra to display.</p>--%>
+        <%--            </c:otherwise>--%>
+        <%--        </c:choose>--%>
 
     </div>
 </section>
@@ -132,7 +132,7 @@
                     "targets": 4,
                     "orderable": true,
                     "render": function (data, type, row, meta) {
-                        if (row.matchSpectrumName != null && row.minPValue !=null) {
+                        if (row.matchSpectrumName != null && row.minPValue != null) {
                             return row.minPValue.toFixed( 3 );
                         } else {
                             return row.minPValue;
@@ -143,7 +143,7 @@
                     "targets": 5,
                     "orderable": true,
                     "render": function (data, type, row, meta) {
-                        if (row.matchSpectrumName != null && row.maxDiversity !=null) {
+                        if (row.matchSpectrumName != null && row.maxDiversity != null) {
                             return row.maxDiversity.toFixed( 3 );
                         } else {
                             return row.maxDiversity;
@@ -154,8 +154,13 @@
                     "targets": 6,
                     "orderable": false,
                     "render": function (data, type, row, meta) {
-                        var content = '<a href="${pageContext.request.contextPath}/file/'
-                            + row.fileIndex + '/' + row.spectrumIndex + '/" class="button"> Search</a>';
+                        if (row.querySpectrumId != 0) {
+                            var content = '<a href="${pageContext.request.contextPath}/spectrum/'
+                                + row.querySpectrumId + '/search/" class="button"> Search</a>';
+                        } else {
+                            var content = '<a href="${pageContext.request.contextPath}/file/'
+                                + row.fileIndex + '/' + row.spectrumIndex + '/" class="button"> Search</a>';
+                        }
 
                         return content;
                     }
@@ -251,12 +256,12 @@
                     <input id="demo" type="submit" value="Group Match"/>
                 </div>
 
-<%--                <script>--%>
-<%--                    function myFunction(){--%>
-<%--                        document.getElementById("demo").id = "match_table";--%>
-<%--                    }--%>
+                <%--                <script>--%>
+                <%--                    function myFunction(){--%>
+                <%--                        document.getElementById("demo").id = "match_table";--%>
+                <%--                    }--%>
 
-<%--                </script>--%>
+                <%--                </script>--%>
             </form:form>
         </div>
     </div>

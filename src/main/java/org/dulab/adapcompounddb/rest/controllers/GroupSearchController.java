@@ -82,4 +82,17 @@ public class GroupSearchController {
         System.out.println(jsonString);
         return jsonString;
     }
+
+//    @RequestMapping(value = "/submission//group_search_results/data", produces = "application/json")
+//    public String submissionGroupSearchResults(
+//            @RequestParam("submissionId") final Long submissionId,
+//            @RequestParam("start") final Integer start,
+//            @RequestParam("length") final Integer length,
+//            @RequestParam("column") final Integer column,
+//            @RequestParam("sortDirection") final String sortDirection,
+//            @RequestParam("search") final String searchStr,
+//            final HttpSession session, final SearchController.SearchForm form) throws JsonProcessingException {
+//
+//    }
+
 }
