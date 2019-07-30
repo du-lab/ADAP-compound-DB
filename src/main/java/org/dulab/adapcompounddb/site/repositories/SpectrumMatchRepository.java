@@ -21,7 +21,7 @@ public interface SpectrumMatchRepository extends JpaRepository<SpectrumMatch, Lo
     long countByQuerySpectrumChromatographyType(ChromatographyType type);
 
     @Query("SELECT sm FROM SpectrumMatch sm " +
-            "WHERE NOT sm.matchSpectrum.id = sm.querySpectrum.id AND sm.querySpectrum.chromatographyType = ?1 " +
+            "WHERE sm.querySpectrum.chromatographyType = ?1 " +  // NOT sm.matchSpectrum.id = sm.querySpectrum.id AND
             "ORDER BY sm.score DESC, sm.querySpectrum.id ASC, sm.matchSpectrum.id ASC")
     Page<SpectrumMatch> findByChromatographyType(ChromatographyType type, Pageable pageable);
 }

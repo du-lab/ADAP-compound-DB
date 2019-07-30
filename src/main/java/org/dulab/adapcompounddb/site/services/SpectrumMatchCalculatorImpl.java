@@ -40,7 +40,7 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
 
         final QueryParameters gcQueryParameters = new QueryParameters()
                 .setScoreThreshold(0.75)
-                .setMzTolerance(0.5);
+                .setMzTolerance(0.01);
 
         final QueryParameters lcQueryParameters = new QueryParameters()
                 .setScoreThreshold(0.75)

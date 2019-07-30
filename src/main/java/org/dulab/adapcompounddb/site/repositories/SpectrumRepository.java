@@ -25,7 +25,7 @@ public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, Spec
             ChromatographyType chromatographyType);
 
     @Query("SELECT s FROM Spectrum s WHERE " +
-            "(SIZE(s.matches) > 1 OR SIZE(s.matches2) > 1) " +
+            "(SIZE(s.matches) > 0 OR SIZE(s.matches2) > 0) " +  // 1
             "AND s.consensus=FALSE " +
             "AND s.reference=FALSE " +
             "AND s.chromatographyType=?1")
