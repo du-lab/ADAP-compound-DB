@@ -248,7 +248,7 @@
 
 
                 <div align="center">
-                    <input id="demo" type="submit" value="Group Match" onclick="myFunction()"/>
+                    <input id="demo" type="submit" value="Group Match"/>
                 </div>
 
 <%--                <script>--%>

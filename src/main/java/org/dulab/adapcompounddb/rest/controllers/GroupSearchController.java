@@ -8,7 +8,7 @@ import org.dulab.adapcompounddb.models.FileIndexAndSpectrumIndexBestMatchPair;
 import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.SpectrumIndexAndBestMatchPair;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
-import org.dulab.adapcompounddb.models.entities.File;
+import org.dulab.adapcompounddb.models.dto.GroupSearchDTO;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 import org.dulab.adapcompounddb.models.entities.Submission;
@@ -35,7 +35,7 @@ public class GroupSearchController {
     private final SpectrumMatchService spectrumMatchService;
 
     @Autowired
-    public GroupSearchController(final SpectrumMatchService spectrumMatchService,
+    public GroupSearchController(final SpectrumMatchService spectrumMatchService, final HttpSession session,
                                  @Qualifier("spectrumSearchServiceGCImpl") final SpectrumSearchService gcSpectrumSearchService,
                                  @Qualifier("spectrumSearchServiceLCImpl") final SpectrumSearchService lcSpectrumSearchService) {
 
@@ -73,80 +73,20 @@ public class GroupSearchController {
             return "redirect:/file/upload/";
         }
 
-        final DataTableResponse response = spectrumMatchService.groupSearchSort(searchStr, start,
-                length, column, sortDirection, groupSearchPost(submission, form));
+        List<GroupSearchDTO> matches;
+        if(session.getAttribute("group_search_results") != null) {
+            matches = (List<GroupSearchDTO>) session.getAttribute("group_search_results");
+        }
+        else{
+            matches = new ArrayList<>();
+        }
 
+        final DataTableResponse response = spectrumMatchService.groupSearchSort(searchStr, start,
+                length, column, sortDirection, matches);
         final ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         final String jsonString = mapper.writeValueAsString(response);
         System.out.println(jsonString);
         return jsonString;
-    }
-
-
-    private List<FileIndexAndSpectrumIndexBestMatchPair> groupSearchPost(final HttpSession session,
-            final Submission submission, final SearchController.SearchForm form) {
-        final List<File> spectrumFiles = submission.getFiles();
-        final Map<Integer, List<Spectrum>> spectrumListAndIndexMap = new HashMap<>();
-        final List<FileIndexAndSpectrumIndexBestMatchPair> fileIndexAndSpectrumIndexBestMatchPairList = new ArrayList<>();
-        QueryParameters parameters = new QueryParameters();
-        parameters.setScoreThreshold(form.isScoreThresholdCheck() ? form.getFloatScoreThreshold() : null);
-        parameters.setMzTolerance(form.isScoreThresholdCheck() ? form.getMzTolerance() : null);
-        parameters.setPrecursorTolerance(form.isMassToleranceCheck() ? form.getMassTolerance() : null);
-        parameters.setRetTimeTolerance(form.isRetTimeToleranceCheck() ? form.getRetTimeTolerance() : null);
-
-
-        //TODO: Instead of using for-loop and service.search(), we can use session.getAttribute("group_search_results") to get List<SpectrumMatch>
-
-
-        for (int i = 0; i < spectrumFiles.size(); i++) {
-            spectrumListAndIndexMap.put(i, spectrumFiles.get(i).getSpectra());
-        }
-
-        for (Map.Entry<Integer, List<Spectrum>> entry : spectrumListAndIndexMap.entrySet()) {
-
-            int fileIndex = entry.getKey();
-            List<Spectrum> querySpectrumList = entry.getValue();
-
-            for (int n = 0; n < querySpectrumList.size(); n++) {
-                int spectrumIndex = n;
-                SpectrumSearchService service =
-                        spectrumSearchServiceMap.get(querySpectrumList.get(n).getChromatographyType());
-
-                List<SpectrumMatch> matches = service.search(querySpectrumList.get(n), parameters);
-
-
-                FileIndexAndSpectrumIndexBestMatchPair fileIndexAndSpectrumIndexBestMatchPair = new FileIndexAndSpectrumIndexBestMatchPair();
-                SpectrumIndexAndBestMatchPair spectrumIndexAndBestMatchPair = new SpectrumIndexAndBestMatchPair();
-
-/*            final String tags = form.getTags();
-            parameters.setTags(
-                    tags != null && tags.length() > 0
-                            ? new HashSet<>(Arrays.asList(tags.split(",")))
-                            : null);*/
-
-                // get the best match if the match is not null
-                if (matches.size() > 0) {
-                    spectrumIndexAndBestMatchPair.setSpectrumIndex(spectrumIndex);
-                    spectrumIndexAndBestMatchPair.setBestMatch(matches.get(0));
-                    fileIndexAndSpectrumIndexBestMatchPair.setFileIndex(fileIndex);
-                    fileIndexAndSpectrumIndexBestMatchPair.setSpectrumIndexAndBestMatchPair(spectrumIndexAndBestMatchPair);
-                    fileIndexAndSpectrumIndexBestMatchPairList.add(fileIndexAndSpectrumIndexBestMatchPair);
-
-                } else {
-                    SpectrumMatch noneMatch = new SpectrumMatch();
-
-                    noneMatch.setQuerySpectrum(querySpectrumList.get(n));
-                    spectrumIndexAndBestMatchPair.setSpectrumIndex(spectrumIndex);
-                    spectrumIndexAndBestMatchPair.setBestMatch(noneMatch);
-                    fileIndexAndSpectrumIndexBestMatchPair.setFileIndex(fileIndex);
-                    fileIndexAndSpectrumIndexBestMatchPair.setSpectrumIndexAndBestMatchPair(spectrumIndexAndBestMatchPair);
-                    fileIndexAndSpectrumIndexBestMatchPairList.add(fileIndexAndSpectrumIndexBestMatchPair);
-
-                }
-            }
-
-        }
-        return fileIndexAndSpectrumIndexBestMatchPairList;
     }
 }

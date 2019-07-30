@@ -5,11 +5,13 @@ import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.FileIndexAndSpectrumIndexBestMatchPair;
+import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.GroupSearchDTO;
 import org.dulab.adapcompounddb.models.dto.SpectrumClusterDTO;
 import org.dulab.adapcompounddb.models.entities.*;
+import org.dulab.adapcompounddb.site.controllers.SearchController;
 import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
@@ -403,14 +405,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     @Override
     public DataTableResponse groupSearchSort(final String searchStr, final Integer start, final Integer length,
                                              final Integer column, final String sortDirection,
-                                             List<FileIndexAndSpectrumIndexBestMatchPair>
-                                                         fileIndexAndSpectrumIndexBestMatchPairList) {
-
-        List<SpectrumMatch> spectrumMatchList = new ArrayList<>();
-
-        for (FileIndexAndSpectrumIndexBestMatchPair f : fileIndexAndSpectrumIndexBestMatchPairList) {
-            spectrumMatchList.add(f.getSpectrumIndexAndBestMatchPair().getBestMatch());
-        }
+                                             List<GroupSearchDTO> spectrumList) {
 
         String sortColumn = GroupSearchColumnInformation.getColumnNameFromPosition(column);
 
@@ -418,95 +413,61 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         if (sortColumn != null) {
             switch (sortColumn) {
                 case "querySpectrumName":
-                    Comparator<SpectrumMatch> compareByQuerySpectrum =
-                            Comparator.comparing((SpectrumMatch s) -> s.getQuerySpectrum().getName());
 
-                    if (sortDirection.equalsIgnoreCase("asc")) {
-                        Collections.sort(spectrumMatchList, compareByQuerySpectrum);
-                    } else if (sortDirection.equalsIgnoreCase("desc")) {
-                        Collections.sort(spectrumMatchList, compareByQuerySpectrum.reversed());
-                    }
+                    spectrumList.sort(getComparator(s -> s.getQuerySpectrumName(), sortDirection));
                     break;
 
                 case "matchSpectrumName":
 
                     // Update cases "score", "minValues", etc. accordingly
-                    spectrumMatchList.sort(getComparator(s -> s.getMatchSpectrum().getName(), sortDirection));
+                    spectrumList.sort(getComparator(s -> s.getMatchSpectrumName(), sortDirection));
                     break;
 
                 case "score":
 
-                    spectrumMatchList.sort(getComparator(s -> s.getScore(), sortDirection));
+                    spectrumList.sort(getComparator(s -> s.getScore(), sortDirection));
                     break;
 
                 case "minPValue":
 
-                    spectrumMatchList.sort(getComparator(s -> s.getMatchSpectrum().getCluster().getMinPValue(), sortDirection));
+                    spectrumList.sort(getComparator(s -> s.getMinPValue(), sortDirection));
                     break;
 
                 case "maxDiversity":
 
-                    spectrumMatchList.sort(getComparator(s -> s.getMatchSpectrum().getCluster().getMaxDiversity(), sortDirection));
+                    spectrumList.sort(getComparator(s -> s.getMaxDiversity(), sortDirection));
                     break;
 
             }
         }
 
-        // Manually mapping values from spectrumMatch to groupSearchDTO
-        final List<GroupSearchDTO> spectrumList = new ArrayList<>();
+        final List<GroupSearchDTO> spectrumMatchList = new ArrayList<>();
+        for (int i = 0; i < spectrumList.size(); i++) {
 
-        for (int i = 0; i < spectrumMatchList.size(); i++) {
-
-            if (i < start || spectrumList.size() >= length)
+            if (i < start || spectrumMatchList.size() >= length)
                 continue;
+            spectrumMatchList.add(spectrumList.get(i));
 
-            SpectrumMatch p = spectrumMatchList.get(i);
-
-            GroupSearchDTO groupSearchDTO = new GroupSearchDTO();
-            if (p.getMatchSpectrum() != null) {
-                double pValue = p.getMatchSpectrum().getCluster().getMinPValue();
-                double maxDiversity = p.getMatchSpectrum().getCluster().getMaxDiversity();
-                long matchSpectrumClusterId = p.getMatchSpectrum().getCluster().getId();
-                double score = p.getScore();
-                String matchSpectrumName = p.getMatchSpectrum().getName();
-
-                groupSearchDTO.setMinPValue(pValue);
-                groupSearchDTO.setMaxDiversity(maxDiversity);
-                groupSearchDTO.setMatchSpectrumClusterId(matchSpectrumClusterId);
-                groupSearchDTO.setMatchSpectrumName(matchSpectrumName);
-                groupSearchDTO.setScore(score);
-            } else {
-                groupSearchDTO.setScore(null);
-            }
-            long id = p.getId();
-            String querySpectrumName = p.getQuerySpectrum().getName();
-            groupSearchDTO.setFileIndex(fileIndexAndSpectrumIndexBestMatchPairList.get(i).getFileIndex());
-            groupSearchDTO.setSpectrumIndex(fileIndexAndSpectrumIndexBestMatchPairList.get(i)
-                    .getSpectrumIndexAndBestMatchPair().getSpectrumIndex());
-            groupSearchDTO.setId(id);
-
-            groupSearchDTO.setQuerySpectrumName(querySpectrumName);
-
-            spectrumList.add(groupSearchDTO);
         }
 
-        DataTableResponse response = new DataTableResponse(spectrumList);
-        response.setRecordsTotal((long) spectrumMatchList.size());
-        response.setRecordsFiltered((long) spectrumMatchList.size());
+        DataTableResponse response = new DataTableResponse(spectrumMatchList);
+        response.setRecordsTotal((long) spectrumList.size());
+        response.setRecordsFiltered((long) spectrumList.size());
 
         return response;
     }
 
     // function for sorting the column
-    private <T extends Comparable> Comparator<SpectrumMatch> getComparator(
-            Function<SpectrumMatch, T> function, String sortDirection) {
+
+        private <T extends Comparable> Comparator<GroupSearchDTO> getComparator(
+            Function<GroupSearchDTO, T> function, String sortDirection) {
 
         return (o1, o2) -> {
 
-            if (o1.getMatchSpectrum() == null) {
-                return (o2.getMatchSpectrum() == null) ? 0 : 1;
+            if (o1.getMatchSpectrumName() == null) {
+                return (o2.getMatchSpectrumName() == null) ? 0 : 1;
             }
-            if (o2.getMatchSpectrum() == null) {
+            if (o2.getMatchSpectrumName() == null) {
                 return -1;
             }
 
