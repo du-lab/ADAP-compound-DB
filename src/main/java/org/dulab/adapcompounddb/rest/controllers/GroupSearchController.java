@@ -30,7 +30,7 @@ public class GroupSearchController {
     private final SpectrumMatchService spectrumMatchService;
 
     @Autowired
-    public GroupSearchController(final SpectrumMatchService spectrumMatchService, final HttpSession session,
+    public GroupSearchController(final SpectrumMatchService spectrumMatchService,
                                  @Qualifier("spectrumSearchServiceGCImpl") final SpectrumSearchService gcSpectrumSearchService,
                                  @Qualifier("spectrumSearchServiceLCImpl") final SpectrumSearchService lcSpectrumSearchService) {
 
@@ -69,10 +69,9 @@ public class GroupSearchController {
         }
 
         List<GroupSearchDTO> matches;
-        if(session.getAttribute("group_search_results") != null) {
+        if (session.getAttribute("group_search_results") != null) {
             matches = (List<GroupSearchDTO>) session.getAttribute("group_search_results");
-        }
-        else{
+        } else {
             matches = new ArrayList<>();
         }
 

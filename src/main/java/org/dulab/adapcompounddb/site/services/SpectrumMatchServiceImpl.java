@@ -456,7 +456,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
     // function for sorting the column
 
-        private <T extends Comparable> Comparator<GroupSearchDTO> getComparator(
+    private <T extends Comparable> Comparator<GroupSearchDTO> getComparator(
             Function<GroupSearchDTO, T> function, String sortDirection) {
 
         return (o1, o2) -> {

@@ -142,7 +142,8 @@ public class SearchController {
             method = RequestMethod.POST)
     public ModelAndView search(@PathVariable("submissionId") final long submissionId,
                                @PathVariable("spectrumId") final int spectrumId,
-                               final HttpSession session, final Model model, @Valid final SearchForm searchForm, final Errors errors) {
+                               final HttpSession session, final Model model, @Valid final SearchForm searchForm,
+                               final Errors errors) {
 
         Spectrum spectrum;
         try {
@@ -159,7 +160,8 @@ public class SearchController {
     @RequestMapping(value = "/file/{fileIndex:\\d+}/{spectrumIndex:\\d+}/search/", method = RequestMethod.POST)
     public ModelAndView search(@PathVariable("fileIndex") final int fileIndex,
                                @PathVariable("spectrumIndex") final int spectrumIndex,
-                               final HttpSession session, final Model model, @Valid final SearchForm form, final Errors errors) {
+                               final HttpSession session, final Model model, @Valid final SearchForm form,
+                               final Errors errors) {
 
         final Submission submission = Submission.from(session);
         if (submission == null) {
@@ -177,7 +179,8 @@ public class SearchController {
 
     @RequestMapping(value = "/spectrum/{spectrumId:\\d+}/search/", method = RequestMethod.POST)
     public ModelAndView search(@PathVariable("spectrumId") final long spectrumId,
-                               final HttpSession session, final Model model, @Valid final SearchForm form, final Errors errors) {
+                               final HttpSession session, final Model model, @Valid final SearchForm form,
+                               final Errors errors) {
 
         if (errors.hasErrors()) {
             return new ModelAndView("file/match");
@@ -285,12 +288,12 @@ public class SearchController {
                 // get the best match if the match is not null
                 if (matches.size() > 0) {
 
-                    groupSearchDTOList.add(saveDTO(matches.get(0),fileIndex, spectrumIndex));
+                    groupSearchDTOList.add(saveDTO(matches.get(0), fileIndex, spectrumIndex));
                 } else {
 
                     SpectrumMatch noneMatch = new SpectrumMatch();
                     noneMatch.setQuerySpectrum(querySpectrum.get(i));
-                    groupSearchDTOList.add(saveDTO(noneMatch,fileIndex, spectrumIndex));
+                    groupSearchDTOList.add(saveDTO(noneMatch, fileIndex, spectrumIndex));
                 }
             }
 
@@ -301,7 +304,7 @@ public class SearchController {
         return new ModelAndView("group_search_results");
     }
 
-    public GroupSearchDTO saveDTO(SpectrumMatch spectrumMatch,int fileIndex, int spectrumIndex) {
+    public GroupSearchDTO saveDTO(SpectrumMatch spectrumMatch, int fileIndex, int spectrumIndex) {
 
         GroupSearchDTO groupSearchDTO = new GroupSearchDTO();
         if (spectrumMatch.getMatchSpectrum() != null) {
