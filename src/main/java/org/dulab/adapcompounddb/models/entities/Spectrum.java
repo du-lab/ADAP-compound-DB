@@ -32,7 +32,7 @@ public class Spectrum implements Serializable {
     private static final String NAME_PROPERTY_NAME = "Name";
     private static final String PRECURSOR_MASS_PROPERTY_NAME = "PrecursorMZ";
     private static final String RETENTION_TIME_PROPERTY_NAME = "RT";
-    private static final String SIGNIFICANCE_PROPERTY_NAME = "SIGNIFICANCE";
+    private static final String SIGNIFICANCE_PROPERTY_NAME = "ANOVA_P_VALUE";
 
     // *************************
     // ***** Entity fields *****
