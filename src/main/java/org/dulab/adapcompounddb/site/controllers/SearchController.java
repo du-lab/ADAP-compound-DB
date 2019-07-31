@@ -200,7 +200,7 @@ public class SearchController {
 
     @RequestMapping(value = "/file/group_search_results/", method = RequestMethod.GET)
     public String groupSearch(final HttpSession session, final Model model, @Valid final SearchForm form) {
-        session.removeAttribute("group_search_results");
+        session.removeAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
         final Submission submission = Submission.from(session);
         if (submission == null) {
             return "/file/upload/";
@@ -211,7 +211,7 @@ public class SearchController {
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/group_search_results/", method = RequestMethod.GET)
     public String groupSearch(final Model model, @Valid final SearchForm form, final HttpSession session) {
-        session.removeAttribute("group_search_results");
+        session.removeAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
         model.addAttribute("searchForm", form);
         return "/group_search_results";
     }
@@ -220,35 +220,13 @@ public class SearchController {
     public ModelAndView groupSearch(final HttpSession session, final Model model, @Valid final SearchForm form,
                                     final Errors errors) {
         final Submission submission = Submission.from(session);
-        final List<File> spectrumFiles = submission.getFiles();
-        final List<Spectrum> spectrumList = new ArrayList<>();
-        Map<Integer, List<Spectrum>> fileIndexAndSpectrumMap = new HashMap<>();
-        for (int i = 0; i < spectrumFiles.size(); i++) {
-            spectrumList.addAll(spectrumFiles.get(i).getSpectra());
-            int fileIndex = i;
-            fileIndexAndSpectrumMap.put(i, spectrumFiles.get(i).getSpectra());
-        }
-        if (submission == null) {
-            return new ModelAndView(new RedirectView("/file/upload/"));
-        }
-
-        //TODO: Call groupSearchPost()
-        return groupSearchPost(session, fileIndexAndSpectrumMap, form, model, errors);
+        return groupSearchPost(session, submission, form, model, errors);
     }
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/group_search_results/", method = RequestMethod.POST)
     public ModelAndView groupSearch(@PathVariable("submissionId") final long submissionId, final HttpSession session,
                                     final Model model, @Valid final SearchForm form, final Errors errors) {
         final Submission submission = submissionService.findSubmission(submissionId);
-//        final List<File> spectrumFiles = submission.getFiles();
-//        final List<Spectrum> spectrumList = new ArrayList<>();
-//        Map<Integer, List<Spectrum>> fileIndexAndSpectrumMap = new HashMap<>();
-//        for (int i = 0; i < spectrumFiles.size(); i++) {
-//            spectrumList.addAll(spectrumFiles.get(i).getSpectra());
-//            int fileIndex = i;
-//            fileIndexAndSpectrumMap.put(i, spectrumFiles.get(i).getSpectra());
-//        }
-
         return groupSearchPost(session, submission, form, model, errors);
     }
 
@@ -261,19 +239,19 @@ public class SearchController {
             return new ModelAndView("file/match");
         }
 
-
         final QueryParameters parameters = new QueryParameters();
+        final String tags = form.getTags();
         parameters.setScoreThreshold(form.isScoreThresholdCheck() ? form.getFloatScoreThreshold() : null);
         parameters.setMzTolerance(form.isScoreThresholdCheck() ? form.getMzTolerance() : null);
         parameters.setPrecursorTolerance(form.isMassToleranceCheck() ? form.getMassTolerance() : null);
         parameters.setRetTimeTolerance(form.isRetTimeToleranceCheck() ? form.getRetTimeTolerance() : null);
+        parameters.setTags(tags != null && tags.length() > 0 ? new HashSet<>(Arrays.asList(tags.split(","))) : null);
 
         new Thread(() -> {
 
             for (int fileIndex = 0; fileIndex < submission.getFiles().size(); fileIndex++) {
                 final List<GroupSearchDTO> groupSearchDTOList = new ArrayList<>();
-//                int fileIndex = entry.getKey();
-//                List<Spectrum> querySpectrum = entry.getValue();
+
                 List<Spectrum> querySpectrum = submission.getFiles().get(fileIndex).getSpectra();
 
 
@@ -284,52 +262,39 @@ public class SearchController {
                     final SpectrumSearchService service =
                             spectrumSearchServiceMap.get(querySpectrum.get(i).getChromatographyType());
 
-                    final String tags = form.getTags();
-                    parameters.setTags(
-                            tags != null && tags.length() > 0
-                                    ? new HashSet<>(Arrays.asList(tags.split(",")))
-                                    : null);
                     final List<SpectrumMatch> matches = service.search(querySpectrum.get(i), parameters);
 
                     // get the best match if the match is not null
                     if (matches.size() > 0) {
-
-                        groupSearchDTOList.add(saveDTO(matches.get(0), fileIndex, spectrumIndex,querySpectrumId));
+                        groupSearchDTOList.add(saveDTO(matches.get(0), fileIndex, spectrumIndex, querySpectrumId));
                     } else {
-
                         SpectrumMatch noneMatch = new SpectrumMatch();
                         noneMatch.setQuerySpectrum(querySpectrum.get(i));
-                        groupSearchDTOList.add(saveDTO(noneMatch, fileIndex, spectrumIndex,querySpectrumId));
+                        groupSearchDTOList.add(saveDTO(noneMatch, fileIndex, spectrumIndex, querySpectrumId));
                     }
                     session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
-
                 }
-
             }
-
         }).start();
 
         model.addAttribute("form", form);
         return new ModelAndView("group_search_results");
     }
 
-    private GroupSearchDTO saveDTO(SpectrumMatch spectrumMatch, int fileIndex, int spectrumIndex,long querySpectrumId) {
-
+    private GroupSearchDTO saveDTO(SpectrumMatch spectrumMatch, int fileIndex, int spectrumIndex, long querySpectrumId) {
         GroupSearchDTO groupSearchDTO = new GroupSearchDTO();
         if (spectrumMatch.getMatchSpectrum() != null) {
             if (spectrumMatch.getMatchSpectrum().getCluster().getMinPValue() != null) {
                 double pValue = spectrumMatch.getMatchSpectrum().getCluster().getMinPValue();
                 groupSearchDTO.setMinPValue(pValue);
             }
-            if(spectrumMatch.getMatchSpectrum().getCluster().getMaxDiversity()!= null){
+            if (spectrumMatch.getMatchSpectrum().getCluster().getMaxDiversity() != null) {
                 double maxDiversity = spectrumMatch.getMatchSpectrum().getCluster().getMaxDiversity();
                 groupSearchDTO.setMaxDiversity(maxDiversity);
             }
-
             long matchSpectrumClusterId = spectrumMatch.getMatchSpectrum().getCluster().getId();
             double score = spectrumMatch.getScore();
             String matchSpectrumName = spectrumMatch.getMatchSpectrum().getName();
-
             groupSearchDTO.setMatchSpectrumClusterId(matchSpectrumClusterId);
             groupSearchDTO.setMatchSpectrumName(matchSpectrumName);
             groupSearchDTO.setScore(score);

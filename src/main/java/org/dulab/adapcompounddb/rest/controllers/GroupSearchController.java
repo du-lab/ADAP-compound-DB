@@ -79,7 +79,6 @@ public class GroupSearchController {
         final ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         final String jsonString = mapper.writeValueAsString(response);
-        System.out.println(jsonString);
         return jsonString;
     }
 
