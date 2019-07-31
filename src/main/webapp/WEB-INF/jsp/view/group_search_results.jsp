@@ -35,28 +35,6 @@
             </tbody>
         </table>
 
-
-        <%--            </c:when>--%>
-        <%--            <c:otherwise>--%>
-        <%--                <table id="match" class="display responsive" style="width: 100%; clear:none;">--%>
-        <%--                    <thead>--%>
-        <%--                    <tr>--%>
-        <%--                        <th>ID</th>--%>
-        <%--                        <th>Compound from the Search List</th>--%>
-        <%--                        <th>Best Match</th>--%>
-        <%--                        <th>Score</th>--%>
-        <%--                        <th>P-Value</th>--%>
-        <%--                        <th>Diversity</th>--%>
-        <%--                        <th>Search Button</th>--%>
-        <%--                    </tr>--%>
-        <%--                    </thead>--%>
-        <%--                    <tbody>--%>
-        <%--                    </tbody>--%>
-        <%--                </table>--%>
-        <%--                <p>There is no mass spectra to display.</p>--%>
-        <%--            </c:otherwise>--%>
-        <%--        </c:choose>--%>
-
     </div>
 </section>
 
@@ -65,7 +43,7 @@
 <%--    function myRefresh(){--%>
 <%--        window.location.reload();--%>
 <%--    }--%>
-<%--    setTimeout('myRefresh()',10000);--%>
+<%--    setTimeout('myRefresh()',5000);--%>
 <%--</script>--%>
 
 <script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
@@ -182,13 +160,15 @@
 
         table.rows( ':eq(0)' ).select();
 
-
         $( '#scoreThreshold' ).prop( 'disabled', !$( '#scoreThresholdCheck1' ).prop( 'checked' ) );
         $( '#mzTolerance' ).prop( 'disabled', !$( '#scoreThresholdCheck1' ).prop( 'checked' ) );
         $( '#massTolerance' ).prop( 'disabled', !$( '#massToleranceCheck1' ).prop( 'checked' ) );
         $( '#retTimeTolerance' ).prop( 'disabled', !$( '#retTimeToleranceCheck1' ).prop( 'checked' ) );
-
         $( '#accordion' ).accordion();
+
+        setInterval(function(){
+            table.ajax.reload(null,false);
+        },5000);
 
 
         <%--$( '#tags' ).tagit( {--%>
@@ -197,10 +177,6 @@
         <%--    }--%>
         <%--} )--%>
     } );
-
-    // $( ".tabbed-pane" ).each( function () {
-    // $( this ).tabbedPane();
-    // } );
 
 </script>
 
