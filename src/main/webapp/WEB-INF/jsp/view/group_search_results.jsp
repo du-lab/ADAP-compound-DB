@@ -166,9 +166,10 @@
         $( '#retTimeTolerance' ).prop( 'disabled', !$( '#retTimeToleranceCheck1' ).prop( 'checked' ) );
         $( '#accordion' ).accordion();
 
+        // refresh the datatable every 1 second
         setInterval(function(){
             table.ajax.reload(null,false);
-        },5000);
+        },1000);
 
 
         <%--$( '#tags' ).tagit( {--%>

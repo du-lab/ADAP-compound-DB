@@ -281,11 +281,11 @@ public class SearchController {
                     parameters.setPrecursorTolerance(form.isMassToleranceCheck() ? form.getMassTolerance() : null);
                     parameters.setRetTimeTolerance(form.isRetTimeToleranceCheck() ? form.getRetTimeTolerance() : null);
 
-//                    final String tags = form.getTags();
-//                    parameters.setTags(
-//                            tags != null && tags.length() > 0
-//                                    ? new HashSet<>(Arrays.asList(tags.split(",")))
-//                                    : null);
+                    final String tags = form.getTags();
+                    parameters.setTags(
+                            tags != null && tags.length() > 0
+                                    ? new HashSet<>(Arrays.asList(tags.split(",")))
+                                    : null);
                     final List<SpectrumMatch> matches = service.search(querySpectrum.get(i), parameters);
 
                     // get the best match if the match is not null
