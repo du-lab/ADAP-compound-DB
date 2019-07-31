@@ -18,6 +18,9 @@ import java.util.stream.Collectors;
 
 public class ControllerUtils {
 
+    public static final String GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME = "group_search_results";
+
+
     @Autowired
     SpectrumClusterer spectrumClusterer;
 
