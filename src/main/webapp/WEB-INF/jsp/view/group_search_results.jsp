@@ -60,6 +60,14 @@
     </div>
 </section>
 
+<%--&lt;%&ndash;reload jsp page in 10 seconds!&ndash;%&gt;--%>
+<%--<script>--%>
+<%--    function myRefresh(){--%>
+<%--        window.location.reload();--%>
+<%--    }--%>
+<%--    setTimeout('myRefresh()',10000);--%>
+<%--</script>--%>
+
 <script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
 <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
 <script src="<c:url value="/resources/Select-1.2.5/js/dataTables.select.min.js"/>"></script>
@@ -167,6 +175,9 @@
                 },
                 {"className": "dt-center", "targets": "_all"}
             ]
+            // initComplete: function(){
+            //     $("DOM element").click();
+            // }
         } );
 
         table.rows( ':eq(0)' ).select();

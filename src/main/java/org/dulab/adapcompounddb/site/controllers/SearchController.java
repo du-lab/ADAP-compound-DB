@@ -261,48 +261,51 @@ public class SearchController {
             return new ModelAndView("file/match");
         }
 
-        final List<GroupSearchDTO> groupSearchDTOList = new ArrayList<>();
+        new Thread(() -> {
 
-        for (Map.Entry<Integer, List<Spectrum>> entry : fileIndexAndSpectrumMap.entrySet()) {
+            for (Map.Entry<Integer, List<Spectrum>> entry : fileIndexAndSpectrumMap.entrySet()) {
+                final List<GroupSearchDTO> groupSearchDTOList = new ArrayList<>();
+                int fileIndex = entry.getKey();
+                List<Spectrum> querySpectrum = entry.getValue();
 
-            int fileIndex = entry.getKey();
-            List<Spectrum> querySpectrum = entry.getValue();
 
+                for (int i = 0; i < querySpectrum.size(); i++) {
+                    int spectrumIndex = i;
+                    long querySpectrumId = querySpectrum.get(i).getId();
 
-            for (int i = 0; i < querySpectrum.size(); i++) {
-                int spectrumIndex = i;
-                long querySpectrumId = querySpectrum.get(i).getId();
+                    final SpectrumSearchService service =
+                            spectrumSearchServiceMap.get(querySpectrum.get(i).getChromatographyType());
+                    final QueryParameters parameters = new QueryParameters();
+                    parameters.setScoreThreshold(form.isScoreThresholdCheck() ? form.getFloatScoreThreshold() : null);
+                    parameters.setMzTolerance(form.isScoreThresholdCheck() ? form.getMzTolerance() : null);
+                    parameters.setPrecursorTolerance(form.isMassToleranceCheck() ? form.getMassTolerance() : null);
+                    parameters.setRetTimeTolerance(form.isRetTimeToleranceCheck() ? form.getRetTimeTolerance() : null);
 
-                final SpectrumSearchService service =
-                        spectrumSearchServiceMap.get(querySpectrum.get(i).getChromatographyType());
-                final QueryParameters parameters = new QueryParameters();
-                parameters.setScoreThreshold(form.isScoreThresholdCheck() ? form.getFloatScoreThreshold() : null);
-                parameters.setMzTolerance(form.isScoreThresholdCheck() ? form.getMzTolerance() : null);
-                parameters.setPrecursorTolerance(form.isMassToleranceCheck() ? form.getMassTolerance() : null);
-                parameters.setRetTimeTolerance(form.isRetTimeToleranceCheck() ? form.getRetTimeTolerance() : null);
+//                    final String tags = form.getTags();
+//                    parameters.setTags(
+//                            tags != null && tags.length() > 0
+//                                    ? new HashSet<>(Arrays.asList(tags.split(",")))
+//                                    : null);
+                    final List<SpectrumMatch> matches = service.search(querySpectrum.get(i), parameters);
 
-                final String tags = form.getTags();
-                parameters.setTags(
-                        tags != null && tags.length() > 0
-                                ? new HashSet<>(Arrays.asList(tags.split(",")))
-                                : null);
-                final List<SpectrumMatch> matches = service.search(querySpectrum.get(i), parameters);
+                    // get the best match if the match is not null
+                    if (matches.size() > 0) {
 
-                // get the best match if the match is not null
-                if (matches.size() > 0) {
+                        groupSearchDTOList.add(saveDTO(matches.get(0), fileIndex, spectrumIndex,querySpectrumId));
+                    } else {
 
-                    groupSearchDTOList.add(saveDTO(matches.get(0), fileIndex, spectrumIndex,querySpectrumId));
-                } else {
+                        SpectrumMatch noneMatch = new SpectrumMatch();
+                        noneMatch.setQuerySpectrum(querySpectrum.get(i));
+                        groupSearchDTOList.add(saveDTO(noneMatch, fileIndex, spectrumIndex,querySpectrumId));
+                    }
+                    session.setAttribute("group_search_results", groupSearchDTOList);
 
-                    SpectrumMatch noneMatch = new SpectrumMatch();
-                    noneMatch.setQuerySpectrum(querySpectrum.get(i));
-                    groupSearchDTOList.add(saveDTO(noneMatch, fileIndex, spectrumIndex,querySpectrumId));
                 }
+
             }
 
-            // Save List<GroupdSearchDTIO> to the session
-            session.setAttribute("group_search_results", groupSearchDTOList);
-        }
+        }).start();
+
         model.addAttribute("form", form);
         return new ModelAndView("group_search_results");
     }
