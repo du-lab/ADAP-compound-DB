@@ -229,6 +229,7 @@ public class SearchController {
     }
 
 
+    //TODO: Remove this funciton and put the code into the corresponding groupSearcg()
     private ModelAndView nonSubmittedGroupSearch(final HttpSession session,
                                                  final SearchForm form, @Valid final Model model, final Errors errors) {
         final Submission submission = Submission.from(session);
@@ -245,6 +246,7 @@ public class SearchController {
         return new ModelAndView("group_search_results");
     }
 
+    //TODO: Remove this funciton and put the code into the corresponding groupSearcg()
     private ModelAndView groupSearchPost(final HttpSession session,
                                          Submission submission,
                                          final SearchForm form, @Valid final Model model, final Errors errors) {

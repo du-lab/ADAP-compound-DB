@@ -26,6 +26,7 @@ import java.util.Map;
 @RestController
 public class GroupSearchController {
 
+    //TODO: remove spectrumSearchServiceMap
     private final Map<ChromatographyType, SpectrumSearchService> spectrumSearchServiceMap;
     private final SpectrumMatchService spectrumMatchService;
 
@@ -35,6 +36,8 @@ public class GroupSearchController {
                                  @Qualifier("spectrumSearchServiceLCImpl") final SpectrumSearchService lcSpectrumSearchService) {
 
         this.spectrumMatchService = spectrumMatchService;
+
+        //TODO: remove spectrumSearchServiceMap
         this.spectrumSearchServiceMap = new HashMap<>();
         this.spectrumSearchServiceMap.put(ChromatographyType.GAS, gcSpectrumSearchService);
         this.spectrumSearchServiceMap.put(ChromatographyType.LIQUID_POSITIVE, lcSpectrumSearchService);
@@ -50,28 +53,14 @@ public class GroupSearchController {
             @RequestParam("column") final Integer column,
             @RequestParam("sortDirection") final String sortDirection,
             @RequestParam("search") final String searchStr,
-            final HttpSession session, final SearchController.SearchForm form) throws JsonProcessingException {
-
-        // Assume scoreThreshold = 0.75
-        // mzTolerance = 0.01
-
-        /*
-        1. Match all spectra from the session to the library and get a list of SpectrumMatch
-        2. Sort the List<SpectrumMatch> based on the `column` and `sortDirection` parameters.
-        3. Based on "start", "length", return only the required results
-        4. Return json-string of DataTableResponse with the matching results
-         */
-
-        // 1.
-//        final Submission submission = Submission.from(session);
-//        if (submission == null) {
-//            return "redirect:/file/upload/";
-//        }
+            final HttpSession session) throws JsonProcessingException {
 
         List<GroupSearchDTO> matches;
         if (session.getAttribute("group_search_results") != null) {
+            //TODO: change "group_search_results" to GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME
             matches = (List<GroupSearchDTO>) session.getAttribute("group_search_results");
         } else {
+            //TODO: Create a static variable List<GroupSearchDTO> EMPTY_LIST and use it here
             matches = new ArrayList<>();
         }
 
@@ -81,17 +70,5 @@ public class GroupSearchController {
         final String jsonString = mapper.writeValueAsString(response);
         return jsonString;
     }
-
-//    @RequestMapping(value = "/submission//group_search_results/data", produces = "application/json")
-//    public String submissionGroupSearchResults(
-//            @RequestParam("submissionId") final Long submissionId,
-//            @RequestParam("start") final Integer start,
-//            @RequestParam("length") final Integer length,
-//            @RequestParam("column") final Integer column,
-//            @RequestParam("sortDirection") final String sortDirection,
-//            @RequestParam("search") final String searchStr,
-//            final HttpSession session, final SearchController.SearchForm form) throws JsonProcessingException {
-//
-//    }
 
 }

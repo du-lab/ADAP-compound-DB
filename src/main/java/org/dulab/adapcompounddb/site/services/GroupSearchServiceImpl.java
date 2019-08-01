@@ -48,9 +48,11 @@ public class GroupSearchServiceImpl implements GroupSearchService {
         for (int fileIndex = 0; fileIndex < submission.getFiles().size(); fileIndex++) {
             final List<GroupSearchDTO> groupSearchDTOList = new ArrayList<>();
 
+            //TODO: rename querySpectrum to querySpectra
             List<Spectrum> querySpectrum = submission.getFiles().get(fileIndex).getSpectra();
 
             for (int i = 0; i < querySpectrum.size(); i++) {
+                //TODO: Variable spectrumIndex is redundant
                 int spectrumIndex = i;
                 long querySpectrumId = querySpectrum.get(i).getId();
                 final List<SpectrumMatch> matches = spectrumRepository.spectrumSearch(SearchType.SIMILARITY_SEARCH, querySpectrum.get(i), parameters);
