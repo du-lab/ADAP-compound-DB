@@ -4,12 +4,8 @@ import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
-import org.dulab.adapcompounddb.models.dto.GroupSearchDTO;
 import org.dulab.adapcompounddb.models.entities.*;
-import org.dulab.adapcompounddb.site.services.SpectrumSearchService;
-import org.dulab.adapcompounddb.site.services.SpectrumService;
-import org.dulab.adapcompounddb.site.services.SubmissionService;
-import org.dulab.adapcompounddb.site.services.UserPrincipalService;
+import org.dulab.adapcompounddb.site.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -34,12 +30,14 @@ public class SearchController {
     private final UserPrincipalService userPrincipalService;
     private final SubmissionService submissionService;
     private final SpectrumService spectrumService;
+    private final GroupSearchService groupSearchService;
 
     private final Map<ChromatographyType, SpectrumSearchService> spectrumSearchServiceMap;
 
     @Autowired
     public SearchController(final UserPrincipalService userPrincipalService,
                             final SubmissionService submissionService,
+                            final GroupSearchService groupSearchService,
                             @Qualifier("spectrumServiceImpl") final SpectrumService spectrumService,
                             @Qualifier("spectrumSearchServiceGCImpl") final SpectrumSearchService gcSpectrumSearchService,
                             @Qualifier("spectrumSearchServiceLCImpl") final SpectrumSearchService lcSpectrumSearchService) {
@@ -47,6 +45,7 @@ public class SearchController {
         this.userPrincipalService = userPrincipalService;
         this.submissionService = submissionService;
         this.spectrumService = spectrumService;
+        this.groupSearchService = groupSearchService;
 
         this.spectrumSearchServiceMap = new HashMap<>();
         this.spectrumSearchServiceMap.put(ChromatographyType.GAS, gcSpectrumSearchService);
@@ -219,8 +218,7 @@ public class SearchController {
     @RequestMapping(value = "/file/group_search_results/", method = RequestMethod.POST)
     public ModelAndView groupSearch(final HttpSession session, final Model model, @Valid final SearchForm form,
                                     final Errors errors) {
-        final Submission submission = Submission.from(session);
-        return groupSearchPost(session, submission, form, model, errors);
+        return nonSubmittedGroupSearch(session, form, model, errors);
     }
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/group_search_results/", method = RequestMethod.POST)
@@ -231,14 +229,38 @@ public class SearchController {
     }
 
 
-    private ModelAndView groupSearchPost(final HttpSession session,
-                                         Submission submission,
-                                         final SearchForm form, @Valid final Model model, final Errors errors) {
+    private ModelAndView nonSubmittedGroupSearch(final HttpSession session,
+                                                 final SearchForm form, @Valid final Model model, final Errors errors) {
+        final Submission submission = Submission.from(session);
 
         if (errors.hasErrors()) {
             return new ModelAndView("file/match");
         }
 
+        final QueryParameters parameters = getParameters(form);
+
+        new Thread(() -> groupSearchService.nonSubmittedGroupSearch(submission, session, parameters)).start();
+
+        model.addAttribute("form", form);
+        return new ModelAndView("group_search_results");
+    }
+
+    private ModelAndView groupSearchPost(final HttpSession session,
+                                         Submission submission,
+                                         final SearchForm form, @Valid final Model model, final Errors errors) {
+        if (errors.hasErrors()) {
+            return new ModelAndView("file/match");
+        }
+
+        final QueryParameters parameters = getParameters(form);
+
+        new Thread(() -> groupSearchService.groupSearch(submission.getId(), session, parameters)).start();
+
+        model.addAttribute("form", form);
+        return new ModelAndView("group_search_results");
+    }
+
+    private QueryParameters getParameters(final SearchForm form) {
         final QueryParameters parameters = new QueryParameters();
         final String tags = form.getTags();
         parameters.setScoreThreshold(form.isScoreThresholdCheck() ? form.getFloatScoreThreshold() : null);
@@ -246,71 +268,7 @@ public class SearchController {
         parameters.setPrecursorTolerance(form.isMassToleranceCheck() ? form.getMassTolerance() : null);
         parameters.setRetTimeTolerance(form.isRetTimeToleranceCheck() ? form.getRetTimeTolerance() : null);
         parameters.setTags(tags != null && tags.length() > 0 ? new HashSet<>(Arrays.asList(tags.split(","))) : null);
-
-        int x = submission.getFiles().size();
-
-        new Thread(() -> {
-
-            for (int fileIndex = 0; fileIndex < x; fileIndex++) {
-                final List<GroupSearchDTO> groupSearchDTOList = new ArrayList<>();
-
-                List<Spectrum> querySpectrum = submission.getFiles().get(fileIndex).getSpectra();
-
-
-                for (int i = 0; i < querySpectrum.size(); i++) {
-                    int spectrumIndex = i;
-                    long querySpectrumId = querySpectrum.get(i).getId();
-
-                    final SpectrumSearchService service =
-                            spectrumSearchServiceMap.get(querySpectrum.get(i).getChromatographyType());
-
-                    final List<SpectrumMatch> matches = service.search(querySpectrum.get(i), parameters);
-
-                    // get the best match if the match is not null
-                    if (matches.size() > 0) {
-                        groupSearchDTOList.add(saveDTO(matches.get(0), fileIndex, spectrumIndex, querySpectrumId));
-                    } else {
-                        SpectrumMatch noneMatch = new SpectrumMatch();
-                        noneMatch.setQuerySpectrum(querySpectrum.get(i));
-                        groupSearchDTOList.add(saveDTO(noneMatch, fileIndex, spectrumIndex, querySpectrumId));
-                    }
-                    session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
-                }
-            }
-        }).start();
-
-        model.addAttribute("form", form);
-        return new ModelAndView("group_search_results");
-    }
-
-    private GroupSearchDTO saveDTO(SpectrumMatch spectrumMatch, int fileIndex, int spectrumIndex, long querySpectrumId) {
-        GroupSearchDTO groupSearchDTO = new GroupSearchDTO();
-        if (spectrumMatch.getMatchSpectrum() != null) {
-            if (spectrumMatch.getMatchSpectrum().getCluster().getMinPValue() != null) {
-                double pValue = spectrumMatch.getMatchSpectrum().getCluster().getMinPValue();
-                groupSearchDTO.setMinPValue(pValue);
-            }
-            if (spectrumMatch.getMatchSpectrum().getCluster().getMaxDiversity() != null) {
-                double maxDiversity = spectrumMatch.getMatchSpectrum().getCluster().getMaxDiversity();
-                groupSearchDTO.setMaxDiversity(maxDiversity);
-            }
-            long matchSpectrumClusterId = spectrumMatch.getMatchSpectrum().getCluster().getId();
-            double score = spectrumMatch.getScore();
-            String matchSpectrumName = spectrumMatch.getMatchSpectrum().getName();
-            groupSearchDTO.setMatchSpectrumClusterId(matchSpectrumClusterId);
-            groupSearchDTO.setMatchSpectrumName(matchSpectrumName);
-            groupSearchDTO.setScore(score);
-        } else {
-            groupSearchDTO.setScore(null);
-        }
-        long id = spectrumMatch.getId();
-        String querySpectrumName = spectrumMatch.getQuerySpectrum().getName();
-        groupSearchDTO.setFileIndex(fileIndex);
-        groupSearchDTO.setId(id);
-        groupSearchDTO.setQuerySpectrumName(querySpectrumName);
-        groupSearchDTO.setSpectrumIndex(spectrumIndex);
-        groupSearchDTO.setQuerySpectrumId(querySpectrumId);
-        return groupSearchDTO;
+        return parameters;
     }
 
     private ModelAndView searchPost(final Spectrum querySpectrum,
@@ -324,17 +282,7 @@ public class SearchController {
         final SpectrumSearchService service =
                 spectrumSearchServiceMap.get(querySpectrum.getChromatographyType());
 
-        final QueryParameters parameters = new QueryParameters();
-        parameters.setScoreThreshold(form.isScoreThresholdCheck() ? form.getFloatScoreThreshold() : null);
-        parameters.setMzTolerance(form.isScoreThresholdCheck() ? form.getMzTolerance() : null);
-        parameters.setPrecursorTolerance(form.isMassToleranceCheck() ? form.getMassTolerance() : null);
-        parameters.setRetTimeTolerance(form.isRetTimeToleranceCheck() ? form.getRetTimeTolerance() : null);
-
-        final String tags = form.getTags();
-        parameters.setTags(
-                tags != null && tags.length() > 0
-                        ? new HashSet<>(Arrays.asList(tags.split(",")))
-                        : null);
+        final QueryParameters parameters = getParameters(form);
 
         final List<SpectrumMatch> matches = service.search(querySpectrum, parameters);
 
