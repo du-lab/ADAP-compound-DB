@@ -247,9 +247,11 @@ public class SearchController {
         parameters.setRetTimeTolerance(form.isRetTimeToleranceCheck() ? form.getRetTimeTolerance() : null);
         parameters.setTags(tags != null && tags.length() > 0 ? new HashSet<>(Arrays.asList(tags.split(","))) : null);
 
+        int x = submission.getFiles().size();
+
         new Thread(() -> {
 
-            for (int fileIndex = 0; fileIndex < submission.getFiles().size(); fileIndex++) {
+            for (int fileIndex = 0; fileIndex < x; fileIndex++) {
                 final List<GroupSearchDTO> groupSearchDTOList = new ArrayList<>();
 
                 List<Spectrum> querySpectrum = submission.getFiles().get(fileIndex).getSpectra();
