@@ -40,9 +40,7 @@ public class GroupSearchServiceImpl implements GroupSearchService {
     @Override
     @Transactional
     public void nonSubmittedGroupSearch(Submission submission, HttpSession session, QueryParameters parameters) {
-
         setSeesion(submission, parameters, session);
-
     }
 
     private void setSeesion(Submission submission, QueryParameters parameters, HttpSession session) {
@@ -51,7 +49,6 @@ public class GroupSearchServiceImpl implements GroupSearchService {
             final List<GroupSearchDTO> groupSearchDTOList = new ArrayList<>();
 
             List<Spectrum> querySpectrum = submission.getFiles().get(fileIndex).getSpectra();
-
 
             for (int i = 0; i < querySpectrum.size(); i++) {
                 int spectrumIndex = i;
