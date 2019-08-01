@@ -1,7 +1,9 @@
 package org.dulab.adapcompounddb.site.services;
 
+import org.dulab.adapcompounddb.models.ProgressBarTest;
 import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
+import org.dulab.adapcompounddb.models.SwingWorkerProgress;
 import org.dulab.adapcompounddb.models.dto.GroupSearchDTO;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.List;
@@ -47,23 +50,21 @@ public class GroupSearchServiceImpl implements GroupSearchService {
 
         for (int fileIndex = 0; fileIndex < submission.getFiles().size(); fileIndex++) {
             final List<GroupSearchDTO> groupSearchDTOList = new ArrayList<>();
-
             //TODO: rename querySpectrum to querySpectra
-            List<Spectrum> querySpectrum = submission.getFiles().get(fileIndex).getSpectra();
+            List<Spectrum> querySpectra = submission.getFiles().get(fileIndex).getSpectra();
 
-            for (int i = 0; i < querySpectrum.size(); i++) {
+            for (int i = 0; i < querySpectra.size(); i++) {
                 //TODO: Variable spectrumIndex is redundant
-                int spectrumIndex = i;
-                long querySpectrumId = querySpectrum.get(i).getId();
-                final List<SpectrumMatch> matches = spectrumRepository.spectrumSearch(SearchType.SIMILARITY_SEARCH, querySpectrum.get(i), parameters);
+                long querySpectrumId = querySpectra.get(i).getId();
+                final List<SpectrumMatch> matches = spectrumRepository.spectrumSearch(SearchType.SIMILARITY_SEARCH, querySpectra.get(i), parameters);
 
                 // get the best match if the match is not null
                 if (matches.size() > 0) {
-                    groupSearchDTOList.add(saveDTO(matches.get(0), fileIndex, spectrumIndex, querySpectrumId));
+                    groupSearchDTOList.add(saveDTO(matches.get(0), fileIndex, i, querySpectrumId));
                 } else {
                     SpectrumMatch noneMatch = new SpectrumMatch();
-                    noneMatch.setQuerySpectrum(querySpectrum.get(i));
-                    groupSearchDTOList.add(saveDTO(noneMatch, fileIndex, spectrumIndex, querySpectrumId));
+                    noneMatch.setQuerySpectrum(querySpectra.get(i));
+                    groupSearchDTOList.add(saveDTO(noneMatch, fileIndex, i, querySpectrumId));
                 }
                 session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
             }

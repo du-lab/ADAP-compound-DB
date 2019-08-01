@@ -218,20 +218,6 @@ public class SearchController {
     @RequestMapping(value = "/file/group_search_results/", method = RequestMethod.POST)
     public ModelAndView groupSearch(final HttpSession session, final Model model, @Valid final SearchForm form,
                                     final Errors errors) {
-        return nonSubmittedGroupSearch(session, form, model, errors);
-    }
-
-    @RequestMapping(value = "/submission/{submissionId:\\d+}/group_search_results/", method = RequestMethod.POST)
-    public ModelAndView groupSearch(@PathVariable("submissionId") final long submissionId, final HttpSession session,
-                                    final Model model, @Valid final SearchForm form, final Errors errors) {
-        final Submission submission = submissionService.findSubmission(submissionId);
-        return groupSearchPost(session, submission, form, model, errors);
-    }
-
-
-    //TODO: Remove this funciton and put the code into the corresponding groupSearcg()
-    private ModelAndView nonSubmittedGroupSearch(final HttpSession session,
-                                                 final SearchForm form, @Valid final Model model, final Errors errors) {
         final Submission submission = Submission.from(session);
 
         if (errors.hasErrors()) {
@@ -246,10 +232,10 @@ public class SearchController {
         return new ModelAndView("group_search_results");
     }
 
-    //TODO: Remove this funciton and put the code into the corresponding groupSearcg()
-    private ModelAndView groupSearchPost(final HttpSession session,
-                                         Submission submission,
-                                         final SearchForm form, @Valid final Model model, final Errors errors) {
+    @RequestMapping(value = "/submission/{submissionId:\\d+}/group_search_results/", method = RequestMethod.POST)
+    public ModelAndView groupSearch(@PathVariable("submissionId") final long submissionId, final HttpSession session,
+                                    final Model model, @Valid final SearchForm form, final Errors errors) {
+        final Submission submission = submissionService.findSubmission(submissionId);
         if (errors.hasErrors()) {
             return new ModelAndView("file/match");
         }
@@ -262,6 +248,8 @@ public class SearchController {
         return new ModelAndView("group_search_results");
     }
 
+    //TODO: Remove this funciton and put the code into the corresponding groupSearcg()
+    //TODO: Remove this funciton and put the code into the corresponding groupSearcg()
     private QueryParameters getParameters(final SearchForm form) {
         final QueryParameters parameters = new QueryParameters();
         final String tags = form.getTags();
