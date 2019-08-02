@@ -6,6 +6,7 @@ import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
+import org.dulab.adapcompounddb.models.dto.GroupSearchDTO;
 import org.dulab.adapcompounddb.models.dto.SpectrumClusterDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
@@ -25,6 +26,7 @@ import smile.clustering.linkage.CompleteLinkage;
 import smile.clustering.linkage.Linkage;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -39,9 +41,11 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
     private static enum ColumnInformation {
         ID(0, "id"), NAME(1, "consensusSpectrum.name"),
-        COUNT(2, "size"), SCORE(3, "diameter"), SIGNIFICANCE(4, "aveSignificance"),
-        MIN_DIVERSITY(5, "minDiversity"), MAX_DIVERSITY(6, "maxDiversity"), AVE_DIVERSITY(7, "aveDiversity"),
-        CHROMATOGRAPHYTYPE(8, "consensusSpectrum.chromatographyType"), MIN_PVALUE(9, "minPValue");
+        COUNT(2, "size"), SCORE(3, "diameter"),
+        SIGNIFICANCE(4, "aveSignificance"), MIN_DIVERSITY(5, "minDiversity"),
+        MAX_DIVERSITY(6, "maxDiversity"), AVE_DIVERSITY(7, "aveDiversity"),
+        CHROMATOGRAPHYTYPE(8, "consensusSpectrum.chromatographyType"),
+        MIN_PVALUE(9, "minPValue");
 
         private int position;
         private String sortColumnName;
@@ -69,6 +73,41 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
             return columnName;
         }
     }
+
+
+    private static enum GroupSearchColumnInformation {
+        ID(0, "id"), QUERY_SPECTRUM(1, "querySpectrumName"),
+        MATCH_SPECTRUM(2, "matchSpectrumName"),
+        SCORE(3, "score"), PVALUE(4, "minPValue"),
+        DIVERSITY(5, "maxDiversity"),
+        QUERY_SPECTRUM_ID(6, "querySpectrumId");
+        private int position;
+        private String sortColumnName;
+
+        private GroupSearchColumnInformation(final int position, final String sortColumnName) {
+            this.position = position;
+            this.sortColumnName = sortColumnName;
+        }
+
+        public int getPosition() {
+            return position;
+        }
+
+        public String getSortColumnName() {
+            return sortColumnName;
+        }
+
+        public static String getColumnNameFromPosition(final int position) {
+            String columnName = null;
+            for (final GroupSearchColumnInformation groupSearchColumnInformation : GroupSearchColumnInformation.values()) {
+                if (position == groupSearchColumnInformation.getPosition()) {
+                    columnName = groupSearchColumnInformation.getSortColumnName();
+                }
+            }
+            return columnName;
+        }
+    }
+
 
     @Autowired
     public SpectrumMatchServiceImpl(final SpectrumRepository spectrumRepository,
@@ -225,7 +264,8 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
                 .orElseThrow(() -> new EmptySearchResultException(id));
     }
 
-    private void addConsensusSpectrum(final ChromatographyType type, final SpectrumCluster cluster, final float mzTolerance) {
+    private void addConsensusSpectrum(final ChromatographyType type, final SpectrumCluster cluster,
+                                      final float mzTolerance) {
 
         final Peak[] peaks = cluster.getSpectra()
                 .stream()
@@ -334,8 +374,8 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     }
 
     @Override
-    public DataTableResponse findAllClusters(final String searchStr, final Integer start, final Integer length, final Integer column,
-                                             final String sortDirection) {
+    public DataTableResponse findAllClusters(final String searchStr, final Integer start, final Integer length,
+                                             final Integer column, final String sortDirection) {
         final ObjectMapperUtils objectMapper = new ObjectMapperUtils();
         Pageable pageable = null;
 
@@ -349,12 +389,94 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
         final Page<SpectrumCluster> spectrumPage = spectrumClusterRepository.findClusters(searchStr, pageable);
 
-        final List<SpectrumClusterDTO> spectrumList = objectMapper.map(spectrumPage.getContent(), SpectrumClusterDTO.class);
+        final List<SpectrumClusterDTO> spectrumList = objectMapper.map(spectrumPage.getContent(),
+                SpectrumClusterDTO.class);
         final DataTableResponse response = new DataTableResponse(spectrumList);
+
         response.setRecordsTotal(spectrumPage.getTotalElements());
         response.setRecordsFiltered(spectrumPage.getTotalElements());
 
         return response;
+    }
+
+    @Override
+    public DataTableResponse groupSearchSort(final String searchStr, final Integer start, final Integer length,
+                                             final Integer column, final String sortDirection,
+                                             List<GroupSearchDTO> spectrumList) {
+
+        String sortColumn = GroupSearchColumnInformation.getColumnNameFromPosition(column);
+
+        // sorting each column
+        if (sortColumn != null) {
+            switch (sortColumn) {
+                case "querySpectrumName":
+
+                    spectrumList.sort(getComparator(s -> s.getQuerySpectrumName(), sortDirection));
+                    break;
+
+                case "matchSpectrumName":
+
+                    // Update cases "score", "minValues", etc. accordingly
+                    spectrumList.sort(getComparator(s -> s.getMatchSpectrumName(), sortDirection));
+                    break;
+
+                case "score":
+
+                    spectrumList.sort(getComparator(s -> s.getScore(), sortDirection));
+                    break;
+
+                case "minPValue":
+
+                    spectrumList.sort(getComparator(s -> s.getMinPValue(), sortDirection));
+                    break;
+
+                case "maxDiversity":
+
+                    spectrumList.sort(getComparator(s -> s.getMaxDiversity(), sortDirection));
+                    break;
+
+            }
+        }
+
+        final List<GroupSearchDTO> spectrumMatchList = new ArrayList<>();
+        for (int i = 0; i < spectrumList.size(); i++) {
+
+            if (i < start || spectrumMatchList.size() >= length)
+                continue;
+            spectrumMatchList.add(spectrumList.get(i));
+
+        }
+
+        DataTableResponse response = new DataTableResponse(spectrumMatchList);
+        response.setRecordsTotal((long) spectrumList.size());
+        response.setRecordsFiltered((long) spectrumList.size());
+
+        return response;
+    }
+
+    // function for sorting the column
+
+    private <T extends Comparable> Comparator<GroupSearchDTO> getComparator(
+            Function<GroupSearchDTO, T> function, String sortDirection) {
+
+        return (o1, o2) -> {
+
+            if (function.apply(o1) == null) {
+                return (function.apply(o2) == null) ? 0 : 1;
+            }
+            if (function.apply(o2) == null) {
+                return -1;
+            }
+
+            @SuppressWarnings("unchecked")
+            Integer comparison = function.apply(o2).compareTo(function.apply(o1));
+
+            if (sortDirection.equalsIgnoreCase("asc")) {
+                return comparison;
+            } else {
+                return -comparison;
+            }
+        };
     }
 
     @Override

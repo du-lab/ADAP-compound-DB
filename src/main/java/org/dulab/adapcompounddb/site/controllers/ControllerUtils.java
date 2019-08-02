@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.gson.Gson;
 import org.dulab.adapcompounddb.models.UserRole;
+import org.dulab.adapcompounddb.models.dto.GroupSearchDTO;
 import org.dulab.adapcompounddb.models.dto.TagInfo;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.services.SpectrumClusterer;
@@ -17,6 +18,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ControllerUtils {
+
+    public static final String GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME = "group_search_results";
+
 
     @Autowired
     SpectrumClusterer spectrumClusterer;

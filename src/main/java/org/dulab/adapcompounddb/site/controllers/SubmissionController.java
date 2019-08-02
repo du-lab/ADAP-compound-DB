@@ -160,6 +160,7 @@ public class SubmissionController extends BaseController {
     @RequestMapping(value = "/file/clear/", method = RequestMethod.GET)
     public String clear(final HttpSession session) {
         Submission.clear(session);
+        session.removeAttribute("group_search_results");
         return "redirect:/file/upload/";
     }
 

@@ -86,7 +86,7 @@ public class File implements Serializable {
         this.content = content;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "SubmissionId", referencedColumnName = "Id")
     public Submission getSubmission() {
         return submission;
