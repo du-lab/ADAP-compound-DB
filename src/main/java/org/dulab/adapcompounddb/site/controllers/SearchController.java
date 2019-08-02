@@ -218,6 +218,7 @@ public class SearchController {
     @RequestMapping(value = "/file/group_search_results/", method = RequestMethod.POST)
     public ModelAndView groupSearch(final HttpSession session, final Model model, @Valid final SearchForm form,
                                     final Errors errors) {
+
         final Submission submission = Submission.from(session);
 
         if (errors.hasErrors()) {
@@ -235,21 +236,19 @@ public class SearchController {
     @RequestMapping(value = "/submission/{submissionId:\\d+}/group_search_results/", method = RequestMethod.POST)
     public ModelAndView groupSearch(@PathVariable("submissionId") final long submissionId, final HttpSession session,
                                     final Model model, @Valid final SearchForm form, final Errors errors) {
-        final Submission submission = submissionService.findSubmission(submissionId);
+
         if (errors.hasErrors()) {
             return new ModelAndView("file/match");
         }
 
         final QueryParameters parameters = getParameters(form);
 
-        new Thread(() -> groupSearchService.groupSearch(submission.getId(), session, parameters)).start();
+        new Thread(() -> groupSearchService.groupSearch(submissionId, session, parameters)).start();
 
         model.addAttribute("form", form);
         return new ModelAndView("group_search_results");
     }
 
-    //TODO: Remove this funciton and put the code into the corresponding groupSearcg()
-    //TODO: Remove this funciton and put the code into the corresponding groupSearcg()
     private QueryParameters getParameters(final SearchForm form) {
         final QueryParameters parameters = new QueryParameters();
         final String tags = form.getTags();
