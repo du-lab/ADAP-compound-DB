@@ -58,4 +58,10 @@ public class GroupSearchController {
         return jsonString;
     }
 
+    //TODO: catch URL /file/group_search_results/progress
+    @RequestMapping(value = "/file/group_search_results/progress", produces = "application/json")
+    public String fileGroupSearchProgress() {
+        // Return json-string containing a number between 0 and 100.
+    }
+
 }
