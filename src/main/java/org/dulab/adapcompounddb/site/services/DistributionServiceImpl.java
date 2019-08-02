@@ -87,6 +87,8 @@ public class DistributionServiceImpl implements DistributionService {
     @Override
     public List<String> getClusterTagDistributions(final SpectrumCluster cluster) {
 
+        LOGGER.info("Start calculating cluster distributions...");
+
         final List<TagDistribution> clusterTagDistributions = cluster.getTagDistributions();
 
         final List<String> tagKeys = clusterTagDistributions.stream()
@@ -101,6 +103,9 @@ public class DistributionServiceImpl implements DistributionService {
             String tagDistribution = distributionRepository.findTagDistributionByTagKey(tagKey);
             allTagDistributions.add(tagDistribution);
         }
+
+        LOGGER.info("Calculating cluster distributions is complete");
+
         return allTagDistributions;
     }
 
