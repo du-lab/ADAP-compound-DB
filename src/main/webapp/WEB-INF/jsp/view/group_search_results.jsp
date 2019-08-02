@@ -14,11 +14,13 @@
 <section>
     <div class="tabbed-pane" style="text-align: center">
         <span data-tab="files">Group Search Results</span>
+
+        <td>
+            <progress id="match_progress" value="0" max="100" style="width:100%; height: 1.4em;"></progress>
+        </td>
+
     </div>
     <div align="center">
-
-        <%--        <c:choose>--%>
-        <%--            <c:when test="${best_matches != null && best_matches.size() > 0}">--%>
         <table id="match_table" class="display responsive" style="width: 100%; clear:none;">
             <thead>
             <tr>
@@ -34,7 +36,6 @@
             <tbody>
             </tbody>
         </table>
-
     </div>
 </section>
 
