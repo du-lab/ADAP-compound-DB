@@ -15,35 +15,30 @@ class ServiceUtils {
 
     static double calculateChiSquaredStatistics(Collection<DbAndClusterValuePair> dbAndClusterValuePairs) {
 
-        double clusterSum = 0.0;
-        double alldbSum = 0.0;
-        for (DbAndClusterValuePair pair : dbAndClusterValuePairs) {
-            clusterSum += pair.getClusterValue();
-            alldbSum += pair.getDbValue();
-        }
+        int freedomDegrees = dbAndClusterValuePairs.size() - 1;
+        if (freedomDegrees == 0)
+            return 1.0;
 
-        double k1 = Math.sqrt(alldbSum / clusterSum);
-        double k2 = Math.sqrt(clusterSum / alldbSum);
+        int allDbSum = dbAndClusterValuePairs.stream()
+                .mapToInt(DbAndClusterValuePair::getDbValue)
+                .sum();
 
-        int freedomDegrees = 0;
-        double chiSquareStatistics = 0.0;
-        for (DbAndClusterValuePair pair : dbAndClusterValuePairs) {
+        int clusterSum = dbAndClusterValuePairs.stream()
+                .mapToInt(DbAndClusterValuePair::getClusterValue)
+                .sum();
 
-            double d = k1 * pair.getClusterValue() - k2 * pair.getDbValue();
+        if (allDbSum == 0 || clusterSum == 0)
+            throw new IllegalStateException("Sum of distribution values cannot be zero");
 
-            chiSquareStatistics += d * d / (pair.getClusterValue() + pair.getDbValue());
-            freedomDegrees++;
-        }
+        double chiSquared = dbAndClusterValuePairs.stream()
+                .mapToDouble(pair -> {
+                    double p = (double) pair.getDbValue() / allDbSum;
+                    double d = pair.getClusterValue() - p * clusterSum;
+                    return d * d / (p * clusterSum);
+                })
+                .sum();
 
-        double pValue;
-        if (freedomDegrees > 0) {
-            pValue = 1 - new ChiSquaredDistribution(freedomDegrees)
-                    .cumulativeProbability(chiSquareStatistics);
-        } else {
-            pValue = 1.0;
-        }
-
-        return pValue;
+        return 1.0 - new ChiSquaredDistribution(freedomDegrees).cumulativeProbability(chiSquared);
     }
 
     static Map<String, DbAndClusterValuePair> calculateDbAndClusterDistribution(
