@@ -19,14 +19,14 @@ import java.util.List;
 
 @RestController
 public class GroupSearchController {
-    //TODO: remove spectrumSearchServiceMap
+
+    public static final List<GroupSearchDTO> EMPTY_LIST = new ArrayList<>(0);
+
     private final SpectrumMatchService spectrumMatchService;
 
     @Autowired
     public GroupSearchController(final SpectrumMatchService spectrumMatchService) {
-
         this.spectrumMatchService = spectrumMatchService;
-        //TODO: remove spectrumSearchServiceMap
     }
 
     @RequestMapping(value = "/file/group_search_results/data", produces = "application/json")
@@ -39,22 +39,19 @@ public class GroupSearchController {
             final HttpSession session) throws JsonProcessingException {
 
         List<GroupSearchDTO> matches;
-        List<GroupSearchDTO> matchesCopy;
         if (session.getAttribute("group_search_results") != null) {
-            //TODO: change "group_search_results" to GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME
-            matches = (List<GroupSearchDTO>) session.getAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
+
+            List<GroupSearchDTO> sessionMatches =
+                    (List<GroupSearchDTO>) session.getAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
 
             //Avoid ConcurrentModificationException by make a copy for sorting
-            matchesCopy = new ArrayList<>(matches);
+            matches = new ArrayList<>(sessionMatches);
+
         } else {
-            //TODO: Create a static variable List<GroupSearchDTO> EMPTY_LIST and use it here
-            matches = ControllerUtils.EMPTY_LIST;
-
-            //Avoid ConcurrentModificationException by make a copy for sorting
-            matchesCopy = new ArrayList<>(matches);
+            matches = new ArrayList<>(EMPTY_LIST);
         }
 
-        final DataTableResponse response = spectrumMatchService.groupSearchSort(searchStr, start, length, column, sortDirection, matchesCopy);
+        final DataTableResponse response = spectrumMatchService.groupSearchSort(searchStr, start, length, column, sortDirection, matches);
         final ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         final String jsonString = mapper.writeValueAsString(response);

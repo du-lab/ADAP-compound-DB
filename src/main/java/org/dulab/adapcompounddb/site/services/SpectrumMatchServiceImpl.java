@@ -464,7 +464,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
             if (function.apply(o1) == null) {
                 return (function.apply(o2) == null) ? 0 : 1;
             }
-            if (o2.getMatchSpectrumName() == null) {
+            if (function.apply(o2) == null) {
                 return -1;
             }
 

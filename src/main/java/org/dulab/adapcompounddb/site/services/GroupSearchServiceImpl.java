@@ -1,9 +1,7 @@
 package org.dulab.adapcompounddb.site.services;
 
-import org.dulab.adapcompounddb.models.ProgressBarTest;
 import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
-import org.dulab.adapcompounddb.models.SwingWorkerProgress;
 import org.dulab.adapcompounddb.models.dto.GroupSearchDTO;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
@@ -16,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.List;
@@ -37,26 +34,28 @@ public class GroupSearchServiceImpl implements GroupSearchService {
     @Transactional
     public void groupSearch(long submissionId, HttpSession session, QueryParameters parameters) {
         Submission submission = submissionRepository.findById(submissionId).orElseThrow(EmptyStackException::new);
-        setSeesion(submission, parameters, session);
+        setSession(submission, parameters, session);
     }
 
     @Override
     @Transactional
     public void nonSubmittedGroupSearch(Submission submission, HttpSession session, QueryParameters parameters) {
-        setSeesion(submission, parameters, session);
+        setSession(submission, parameters, session);
     }
 
-    private void setSeesion(Submission submission, QueryParameters parameters, HttpSession session) {
+    private void setSession(Submission submission, QueryParameters parameters, HttpSession session) {
+
+        final List<GroupSearchDTO> groupSearchDTOList = new ArrayList<>();
 
         for (int fileIndex = 0; fileIndex < submission.getFiles().size(); fileIndex++) {
-            final List<GroupSearchDTO> groupSearchDTOList = new ArrayList<>();
-            //TODO: rename querySpectrum to querySpectra
+
             List<Spectrum> querySpectra = submission.getFiles().get(fileIndex).getSpectra();
 
             for (int i = 0; i < querySpectra.size(); i++) {
-                //TODO: Variable spectrumIndex is redundant
+
                 long querySpectrumId = querySpectra.get(i).getId();
-                final List<SpectrumMatch> matches = spectrumRepository.spectrumSearch(SearchType.SIMILARITY_SEARCH, querySpectra.get(i), parameters);
+                final List<SpectrumMatch> matches = spectrumRepository.spectrumSearch(
+                        SearchType.SIMILARITY_SEARCH, querySpectra.get(i), parameters);
 
                 // get the best match if the match is not null
                 if (matches.size() > 0) {
