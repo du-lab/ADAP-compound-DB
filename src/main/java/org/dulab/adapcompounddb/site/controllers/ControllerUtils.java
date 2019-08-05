@@ -3,8 +3,9 @@ package org.dulab.adapcompounddb.site.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.gson.Gson;
+import org.dulab.adapcompounddb.models.QueryParameters;
+import org.dulab.adapcompounddb.models.SearchForm;
 import org.dulab.adapcompounddb.models.UserRole;
-import org.dulab.adapcompounddb.models.dto.GroupSearchDTO;
 import org.dulab.adapcompounddb.models.dto.TagInfo;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.services.SpectrumClusterer;
@@ -35,6 +36,17 @@ public class ControllerUtils {
         final String color = colors.substring(index, index + colorStringLength);
 
         return String.format("#%s;", color);
+    }
+
+    public static QueryParameters getParameters(final SearchForm form) {
+        final QueryParameters parameters = new QueryParameters();
+        final String tags = form.getTags();
+        parameters.setScoreThreshold(form.isScoreThresholdCheck() ? form.getFloatScoreThreshold() : null);
+        parameters.setMzTolerance(form.isScoreThresholdCheck() ? form.getMzTolerance() : null);
+        parameters.setPrecursorTolerance(form.isMassToleranceCheck() ? form.getMassTolerance() : null);
+        parameters.setRetTimeTolerance(form.isRetTimeToleranceCheck() ? form.getRetTimeTolerance() : null);
+        parameters.setTags(tags != null && tags.length() > 0 ? new HashSet<>(Arrays.asList(tags.split(","))) : null);
+        return parameters;
     }
 
     public static JsonArray stringsToJson(final List<String> strings) {

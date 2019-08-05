@@ -2,7 +2,7 @@
 <%--@elvariable id="matches" type="java.util.List<org.dulab.adapcompounddb.models.entities.SpectrumMatch>"--%>
 <%--@elvariable id="submissionCategoryTypes" type="org.dulab.adapcompounddb.models.SubmissionCategoryType[]"--%>
 <%--@elvariable id="submissionCategoryMap" type="java.util.Map<org.dulab.adapcompounddb.models.SubmissionCategoryType, org.dulab.adapcompounddb.models.entities.SubmissionCategory>"--%>
-<%--@elvariable id="searchForm" type="org.dulab.adapcompounddb.site.controllers.SearchController.SearchForm"--%>
+<%--@elvariable id="searchForm" type="org.dulab.adapcompounddb.site.controllers.IndividualSearchController.SearchForm"--%>
 
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -10,15 +10,14 @@
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-
 <section>
+    <div>
+        <progress id="group_search_progress" value="0" max="100" style="width: 100%; height: 1.4em;"></progress>
+    </div>
     <div class="tabbed-pane" style="text-align: center">
         <span data-tab="files">Group Search Results</span>
     </div>
     <div align="center">
-
-        <%--        <c:choose>--%>
-        <%--            <c:when test="${best_matches != null && best_matches.size() > 0}">--%>
         <table id="match_table" class="display responsive" style="width: 100%; clear:none;">
             <thead>
             <tr>
@@ -34,29 +33,19 @@
             <tbody>
             </tbody>
         </table>
-
     </div>
 </section>
-
-<%--&lt;%&ndash;reload jsp page in 10 seconds!&ndash;%&gt;--%>
-<%--<script>--%>
-<%--    function myRefresh(){--%>
-<%--        window.location.reload();--%>
-<%--    }--%>
-<%--    setTimeout('myRefresh()',5000);--%>
-<%--</script>--%>
 
 <script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
 <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
 <script src="<c:url value="/resources/Select-1.2.5/js/dataTables.select.min.js"/>"></script>
 <script src="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.js"/>"></script>
 <script src="<c:url value="/resources/tag-it-6ccd2de/js/tag-it.min.js"/>"></script>
+<script src="<c:url value="/resources/AdapCompoundDb/js/groupSearchProgressBar.js"/>"></script>
 
 <script>
     $( document ).ready( function () {
-
         var table = $( '#match_table' ).DataTable( {
-
             select: {style: 'single'},
             serverSide: true,
             processing: true,
@@ -65,7 +54,6 @@
             scroller: true,
             ajax: {
                 url: "${pageContext.request.contextPath}/file/group_search_results/data.json",
-
                 data: function (data) {
                     data.column = data.order[0].column;
                     data.sortDirection = data.order[0].dir;
@@ -153,13 +141,7 @@
                 },
                 {"className": "dt-center", "targets": "_all"}
             ]
-            // initComplete: function(){
-            //     $("DOM element").click();
-            // }
         } );
-
-        table.rows( ':eq(0)' ).select();
-
         $( '#scoreThreshold' ).prop( 'disabled', !$( '#scoreThresholdCheck1' ).prop( 'checked' ) );
         $( '#mzTolerance' ).prop( 'disabled', !$( '#scoreThresholdCheck1' ).prop( 'checked' ) );
         $( '#massTolerance' ).prop( 'disabled', !$( '#massToleranceCheck1' ).prop( 'checked' ) );
@@ -167,10 +149,9 @@
         $( '#accordion' ).accordion();
 
         // refresh the datatable every 1 second
-        setInterval(function(){
-            table.ajax.reload(null,false);
-        },1000);
-
+        setInterval( function () {
+            table.ajax.reload( null, false );
+        }, 1000 );
 
         <%--$( '#tags' ).tagit( {--%>
         <%--    autocomplete: {--%>
@@ -178,7 +159,8 @@
         <%--    }--%>
         <%--} )--%>
     } );
-
+    var groupSearchProgressBar = new groupSearchProgressBar( 'progress', 'group_search_progress', 1000 );
+    groupSearchProgressBar.start();
 </script>
 
 <section>
@@ -197,7 +179,6 @@
             </c:if>
             <form:form method="post" modelAttribute="searchForm">
                 <form:errors path="" cssClass="errors"/>
-
                 <div id="accordion">
                     <h3>Search Parameters</h3>
                     <div>
@@ -231,25 +212,15 @@
                             <%--                            <form:errors path="retTimeTolerance" cssClass="errors"/><br/>--%>
                             <%--                        </c:if>--%>
                     </div>
-
                     <h3>Equipment Selector</h3>
                     <div>
                         <form:input path="tags"/><br/>
                         <form:errors path="tags" cssClass="errors"/><br/>
                     </div>
                 </div>
-
-
                 <div align="center">
                     <input id="demo" type="submit" value="Group Match"/>
                 </div>
-
-                <%--                <script>--%>
-                <%--                    function myFunction(){--%>
-                <%--                        document.getElementById("demo").id = "match_table";--%>
-                <%--                    }--%>
-
-                <%--                </script>--%>
             </form:form>
         </div>
     </div>
