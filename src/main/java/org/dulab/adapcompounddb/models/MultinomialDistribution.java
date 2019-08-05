@@ -2,11 +2,8 @@ package org.dulab.adapcompounddb.models;
 
 import org.apache.commons.math3.util.CombinatoricsUtils;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static org.dulab.adapcompounddb.models.Combinatorics.findCombinations;
 
 public class MultinomialDistribution {
 
@@ -47,7 +44,14 @@ public class MultinomialDistribution {
 
         List<int[]> combinations = Combinatorics.findCombinations(probabilities.length, numTrials);
 
-        return 0.0;
+        double sum = 0.0;
+        for (int[] combination : combinations) {
+            double p = getPMF(combination);
+            if (p <= thresholdP)
+                sum += p;
+        }
+
+        return sum;
     }
 
 

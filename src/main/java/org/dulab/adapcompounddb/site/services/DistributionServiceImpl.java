@@ -216,7 +216,7 @@ public class DistributionServiceImpl implements DistributionService {
             for (TagDistribution t : clusterDistributions) {
                 String key = t.getTagKey();
                 distributionRepository.findClusterTagDistributionByTagKey(key, cluster.getId())
-                        .setPValue(ServiceUtils.calculateChiSquaredStatistics(t.getTagDistributionMap().values()));
+                        .setPValue(ServiceUtils.calculateExactTestStatistics(t.getTagDistributionMap().values()));
                 clusterPvalue.add(t.getPValue());
             }
             Collections.sort(clusterPvalue);

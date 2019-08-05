@@ -53,6 +53,23 @@ public class ServiceUtilsTest {
     }
 
     @Test
+    public void calculateExactTestStatistics() {
+
+        List<DbAndClusterValuePair> pairs = new ArrayList<>(5);
+        pairs.add(new DbAndClusterValuePair(12, 1));
+        pairs.add(new DbAndClusterValuePair(19, 2));
+        pairs.add(new DbAndClusterValuePair(57, 5));
+        pairs.add(new DbAndClusterValuePair(30, 3));
+        pairs.add(new DbAndClusterValuePair(5, 1));
+
+        double pValue = ServiceUtils.calculateExactTestStatistics(pairs);
+
+        // The expected value is calculated by calculating Chi-squared Goodness-of-fit test described at
+        // https://www.stat.berkeley.edu/~stark/SticiGui/Text/chiSquare.htm
+        assertEquals(	0.80727, pValue, EPS);
+    }
+
+    @Test
     public void calculateDbAndClusterDistribution() {
 
         Map<String, Integer> dbCountMap = new HashMap<>();

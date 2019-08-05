@@ -2,6 +2,7 @@ package org.dulab.adapcompounddb.site.services;
 
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 import org.dulab.adapcompounddb.models.DbAndClusterValuePair;
+import org.dulab.adapcompounddb.models.MultinomialDistribution;
 
 import java.util.*;
 
@@ -39,6 +40,32 @@ class ServiceUtils {
                 .sum();
 
         return 1.0 - new ChiSquaredDistribution(freedomDegrees).cumulativeProbability(chiSquared);
+    }
+
+    /**
+     * Calculates p-value of the Exact Goodness-of-fit test
+     */
+    static double calculateExactTestStatistics(Collection<DbAndClusterValuePair> dbAndClusterValuePairs) {
+
+        int allDbSum = dbAndClusterValuePairs.stream()
+                .mapToInt(DbAndClusterValuePair::getDbValue)
+                .sum();
+
+        int clusterSum = dbAndClusterValuePairs.stream()
+                .mapToInt(DbAndClusterValuePair::getClusterValue)
+                .sum();
+
+        double[] probabilities = dbAndClusterValuePairs.stream()
+                .mapToDouble(DbAndClusterValuePair::getDbValue)
+                .map(x -> x / allDbSum)
+                .toArray();
+
+        int[] counts = dbAndClusterValuePairs.stream()
+                .mapToInt(DbAndClusterValuePair::getClusterValue)
+                .toArray();
+
+        MultinomialDistribution distribution = new MultinomialDistribution(probabilities, clusterSum);
+        return distribution.getPValue(counts);
     }
 
     static Map<String, DbAndClusterValuePair> calculateDbAndClusterDistribution(
