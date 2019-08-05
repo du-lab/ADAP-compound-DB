@@ -22,6 +22,7 @@ import java.util.List;
 @Service
 public class GroupSearchServiceImpl implements GroupSearchService {
 
+    //TODO: I think three global variables (progress, progressStep, and fullSteps) are too many to calculate the progress
     private float progressStep = 0F;
     private long fullSteps = 0l;
     private final SubmissionRepository submissionRepository;
@@ -43,6 +44,7 @@ public class GroupSearchServiceImpl implements GroupSearchService {
         this.progress = progress;
     }
 
+    //TODO: move this definition to the top. It's very hard to find it here
     private float progress = -1F;
 
     @Override
@@ -94,6 +96,8 @@ public class GroupSearchServiceImpl implements GroupSearchService {
                 session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
                 progress = progressStep / fullSteps;
                 progressStep = progressStep + 1F;
+
+                //TODO: What's the purpose of count?
                 count++;
                 if (count == 100) {
                     count = 0;
