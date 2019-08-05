@@ -10,10 +10,9 @@
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-
 <section>
     <div>
-        <progress id="group_search_progress" value="0" max="100" style="width: 100%; height: 1.4em; "></progress>
+        <progress id="group_search_progress" value="0" max="100" style="width: 100%; height: 1.4em;"></progress>
     </div>
     <div class="tabbed-pane" style="text-align: center">
         <span data-tab="files">Group Search Results</span>

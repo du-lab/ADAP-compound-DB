@@ -21,7 +21,11 @@ function groupSearchProgressBar(url, progressBarId, interval) {
                         clearInterval( id );
                         $( progress ).attr( "value", width );
                         $( progress ).addClass( "hide" );
-                    } else {
+                    }else if(width == 0){
+                        $( progress ).attr( "value", width );
+                        $( progress ).addClass( "hide" );
+                    }
+                    else {
                         $( progress ).removeClass( "hide" );
                         $( progress ).attr( "value", width );
                         active = true;
