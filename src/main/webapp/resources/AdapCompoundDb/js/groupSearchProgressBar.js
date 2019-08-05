@@ -7,6 +7,8 @@ function groupSearchProgressBar(url, progressBarId, interval) {
         var id = setInterval( frame, interval );
         var active = false;
 
+        frame();
+
         function frame() {
             if (width >= 100) {
                 console.log( "complete" );
@@ -27,7 +29,5 @@ function groupSearchProgressBar(url, progressBarId, interval) {
                 } );
             }
         };
-
-        frame();
     };
 }
