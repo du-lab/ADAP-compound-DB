@@ -64,8 +64,6 @@ public class ServiceUtilsTest {
 
         double pValue = ServiceUtils.calculateExactTestStatistics(pairs);
 
-        // The expected value is calculated by calculating Chi-squared Goodness-of-fit test described at
-        // https://www.stat.berkeley.edu/~stark/SticiGui/Text/chiSquare.htm
         assertEquals(	0.80727, pValue, EPS);
     }
 
