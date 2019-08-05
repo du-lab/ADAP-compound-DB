@@ -5,7 +5,6 @@ function groupSearchProgressBar(url, progressBarId, interval) {
     this.start = function () {
         var width = 0;
         var id = setInterval( frame, interval );
-        var active = false;
 
         frame();
 
@@ -28,7 +27,6 @@ function groupSearchProgressBar(url, progressBarId, interval) {
                     else {
                         $( progress ).removeClass( "hide" );
                         $( progress ).attr( "value", width );
-                        active = true;
                     }
                 } );
             }

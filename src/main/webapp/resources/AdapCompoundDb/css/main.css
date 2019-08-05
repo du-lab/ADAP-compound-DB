@@ -563,21 +563,21 @@ progress:after {
     content: attr(value) '%';
 }
 
-#group_search_progress {
-    /* Reset the default appearance */
-    -webkit-appearance: none;
-    appearance: none;
-}
+/*#group_search_progress {*/
+/*    !* Reset the default appearance *!*/
+/*    -webkit-appearance: none;*/
+/*    appearance: none;*/
+/*}*/
 
-#group_search_progress::-webkit-progress-bar {
-    height: 15px;
-    border-radius: 3px;
-}
+/*#group_search_progress::-webkit-progress-bar {*/
+/*    height: 15px;*/
+/*    border-radius: 3px;*/
+/*}*/
 
-#group_search_progress::-webkit-progress-value {
-    background-color: #7c4dff;
-    text-align: center;
-}
+/*#group_search_progress::-webkit-progress-value {*/
+/*    background-color: #7c4dff;*/
+/*    text-align: center;*/
+/*}*/
 
 .mobile {
     display: none !important;

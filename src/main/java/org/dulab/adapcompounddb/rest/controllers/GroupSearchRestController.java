@@ -20,15 +20,14 @@ import java.util.List;
 
 //TODO: GroupSearchRestController
 @RestController
-public class GroupSearchController {
+public class GroupSearchRestController {
 
     public static final List<GroupSearchDTO> EMPTY_LIST = new ArrayList<>(0);
-
     private final SpectrumMatchService spectrumMatchService;
     private final GroupSearchService groupSearchService;
 
     @Autowired
-    public GroupSearchController(final SpectrumMatchService spectrumMatchService, final GroupSearchService groupSearchService) {
+    public GroupSearchRestController(final SpectrumMatchService spectrumMatchService, final GroupSearchService groupSearchService) {
         this.spectrumMatchService = spectrumMatchService;
         this.groupSearchService = groupSearchService;
     }
@@ -41,20 +40,16 @@ public class GroupSearchController {
             @RequestParam("sortDirection") final String sortDirection,
             @RequestParam("search") final String searchStr,
             final HttpSession session) throws JsonProcessingException {
-
         List<GroupSearchDTO> matches;
         if (session.getAttribute("group_search_results") != null) {
-
             List<GroupSearchDTO> sessionMatches =
                     (List<GroupSearchDTO>) session.getAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
-
             //Avoid ConcurrentModificationException by make a copy for sorting
             matches = new ArrayList<>(sessionMatches);
 
         } else {
             matches = new ArrayList<>(EMPTY_LIST);
         }
-
         final DataTableResponse response = spectrumMatchService.groupSearchSort(searchStr, start, length, column, sortDirection, matches);
         final ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
