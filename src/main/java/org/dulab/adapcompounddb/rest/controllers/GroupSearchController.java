@@ -18,7 +18,7 @@ import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
-
+//TODO: GroupSearchRestController
 @RestController
 public class GroupSearchController {
 

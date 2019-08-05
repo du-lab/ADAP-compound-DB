@@ -24,6 +24,8 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import java.util.*;
 
+//TODO: Split this into IndividualSearchController and GroupSearchController
+
 @Controller
 public class SearchController {
 
@@ -294,6 +296,7 @@ public class SearchController {
                 .get(spectrumIndex);
     }
 
+    //TODO: Create a separate file with SearchForm and put it into models
     public static class SearchForm {
 
         private boolean scoreThresholdCheck = true;
