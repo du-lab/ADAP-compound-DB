@@ -13,7 +13,10 @@ public interface GroupSearchService {
 
     /**
      * Calculates the fraction of processed query spectra
+     *
      * @return an integer between 0 and 100
      */
-    int getProgress();
+    float getProgress();
+
+    void setProgress(float progress);
 }

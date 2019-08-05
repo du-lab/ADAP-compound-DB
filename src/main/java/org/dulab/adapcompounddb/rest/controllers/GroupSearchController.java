@@ -6,8 +6,10 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.GroupSearchDTO;
 import org.dulab.adapcompounddb.site.controllers.ControllerUtils;
+import org.dulab.adapcompounddb.site.services.GroupSearchService;
 import org.dulab.adapcompounddb.site.services.SpectrumMatchService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,10 +25,12 @@ public class GroupSearchController {
     public static final List<GroupSearchDTO> EMPTY_LIST = new ArrayList<>(0);
 
     private final SpectrumMatchService spectrumMatchService;
+    private final GroupSearchService groupSearchService;
 
     @Autowired
-    public GroupSearchController(final SpectrumMatchService spectrumMatchService) {
+    public GroupSearchController(final SpectrumMatchService spectrumMatchService, final GroupSearchService groupSearchService) {
         this.spectrumMatchService = spectrumMatchService;
+        this.groupSearchService = groupSearchService;
     }
 
     @RequestMapping(value = "/file/group_search_results/data", produces = "application/json")
@@ -60,8 +64,15 @@ public class GroupSearchController {
 
     //TODO: catch URL /file/group_search_results/progress
     @RequestMapping(value = "/file/group_search_results/progress", produces = "application/json")
-    public String fileGroupSearchProgress() {
+    public int fileGroupSearchProgress() {
         // Return json-string containing a number between 0 and 100.
+        return Math.round(100 * groupSearchService.getProgress());
+    }
+
+    @RequestMapping(value = "/submission/{submissionId:\\d+}/group_search_results/progress", produces = "application/json")
+    public int submissionGroupSearchProgress(@PathVariable("submissionId") final long submissionId) {
+        // Return json-string containing a number between 0 and 100.
+        return Math.round(100 * groupSearchService.getProgress());
     }
 
 }

@@ -3,6 +3,7 @@ package org.dulab.adapcompounddb.site.services;
 import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.dto.GroupSearchDTO;
+import org.dulab.adapcompounddb.models.entities.File;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 import org.dulab.adapcompounddb.models.entities.Submission;
@@ -21,6 +22,8 @@ import java.util.List;
 @Service
 public class GroupSearchServiceImpl implements GroupSearchService {
 
+    private float progressStep = 0F;
+    private long fullSteps = 0l;
     private final SubmissionRepository submissionRepository;
     private final SpectrumRepository spectrumRepository;
 
@@ -29,6 +32,18 @@ public class GroupSearchServiceImpl implements GroupSearchService {
         this.submissionRepository = submissionRepository;
         this.spectrumRepository = spectrumRepository;
     }
+
+    @Override
+    public float getProgress() {
+        return progress;
+    }
+
+    @Override
+    public void setProgress(final float progress) {
+        this.progress = progress;
+    }
+
+    private float progress = -1F;
 
     @Override
     @Transactional
@@ -44,6 +59,17 @@ public class GroupSearchServiceImpl implements GroupSearchService {
     }
 
     private void setSession(Submission submission, QueryParameters parameters, HttpSession session) {
+
+        progress = 0F;
+        long count = 0;
+        // Calculate total number of submissions
+
+        for (File f : submission.getFiles()) {
+            List<Spectrum> querySpectra = f.getSpectra();
+            for (Spectrum s : querySpectra) {
+                fullSteps++;
+            }
+        }
 
         final List<GroupSearchDTO> groupSearchDTOList = new ArrayList<>();
 
@@ -66,8 +92,15 @@ public class GroupSearchServiceImpl implements GroupSearchService {
                     groupSearchDTOList.add(saveDTO(noneMatch, fileIndex, i, querySpectrumId));
                 }
                 session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
+                progress = progressStep / fullSteps;
+                progressStep = progressStep + 1F;
+                count++;
+                if (count == 100) {
+                    count = 0;
+                }
             }
         }
+        progress = -1F;
     }
 
     private GroupSearchDTO saveDTO(SpectrumMatch spectrumMatch, int fileIndex, int spectrumIndex, long querySpectrumId) {
@@ -99,4 +132,6 @@ public class GroupSearchServiceImpl implements GroupSearchService {
         groupSearchDTO.setQuerySpectrumId(querySpectrumId);
         return groupSearchDTO;
     }
+
+
 }
