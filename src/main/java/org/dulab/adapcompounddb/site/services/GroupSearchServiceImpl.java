@@ -23,8 +23,8 @@ import java.util.List;
 public class GroupSearchServiceImpl implements GroupSearchService {
 
     //TODO: I think three global variables (progress, progressStep, and fullSteps) are too many to calculate the progress
-    private float progressStep = 0F;
-    private long fullSteps = 0l;
+    //TODO: move this definition to the top. It's very hard to find it here
+    private float progress = -1F;
     private final SubmissionRepository submissionRepository;
     private final SpectrumRepository spectrumRepository;
 
@@ -44,9 +44,6 @@ public class GroupSearchServiceImpl implements GroupSearchService {
         this.progress = progress;
     }
 
-    //TODO: move this definition to the top. It's very hard to find it here
-    private float progress = -1F;
-
     @Override
     @Transactional
     public void groupSearch(long submissionId, HttpSession session, QueryParameters parameters) {
@@ -62,8 +59,9 @@ public class GroupSearchServiceImpl implements GroupSearchService {
 
     private void setSession(Submission submission, QueryParameters parameters, HttpSession session) {
 
+        long fullSteps = 0l;
+        float progressStep = 0F;
         progress = 0F;
-        long count = 0;
         // Calculate total number of submissions
 
         for (File f : submission.getFiles()) {
@@ -96,12 +94,7 @@ public class GroupSearchServiceImpl implements GroupSearchService {
                 session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
                 progress = progressStep / fullSteps;
                 progressStep = progressStep + 1F;
-
                 //TODO: What's the purpose of count?
-                count++;
-                if (count == 100) {
-                    count = 0;
-                }
             }
         }
         progress = -1F;
@@ -136,6 +129,4 @@ public class GroupSearchServiceImpl implements GroupSearchService {
         groupSearchDTO.setQuerySpectrumId(querySpectrumId);
         return groupSearchDTO;
     }
-
-
 }

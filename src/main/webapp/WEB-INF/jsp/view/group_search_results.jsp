@@ -13,7 +13,7 @@
 
 <section>
     <div>
-        <progress id="group_search_progress" value="0" max="100" style="width:100%; height: 1.4em;"></progress>
+        <progress id="group_search_progress" value="0" max="100" style="width: 100%; height: 1.4em; "></progress>
     </div>
     <div class="tabbed-pane" style="text-align: center">
         <span data-tab="files">Group Search Results</span>
@@ -34,7 +34,6 @@
             <tbody>
             </tbody>
         </table>
-
     </div>
 </section>
 
@@ -47,9 +46,7 @@
 
 <script>
     $( document ).ready( function () {
-
         var table = $( '#match_table' ).DataTable( {
-
             select: {style: 'single'},
             serverSide: true,
             processing: true,
@@ -58,7 +55,6 @@
             scroller: true,
             ajax: {
                 url: "${pageContext.request.contextPath}/file/group_search_results/data.json",
-
                 data: function (data) {
                     data.column = data.order[0].column;
                     data.sortDirection = data.order[0].dir;
@@ -147,9 +143,6 @@
                 {"className": "dt-center", "targets": "_all"}
             ]
         } );
-
-        table.rows( ':eq(0)' ).select();
-
         $( '#scoreThreshold' ).prop( 'disabled', !$( '#scoreThresholdCheck1' ).prop( 'checked' ) );
         $( '#mzTolerance' ).prop( 'disabled', !$( '#scoreThresholdCheck1' ).prop( 'checked' ) );
         $( '#massTolerance' ).prop( 'disabled', !$( '#massToleranceCheck1' ).prop( 'checked' ) );
@@ -157,10 +150,9 @@
         $( '#accordion' ).accordion();
 
         // refresh the datatable every 1 second
-        setInterval(function(){
-            table.ajax.reload(null,false);
-        },1000);
-
+        setInterval( function () {
+            table.ajax.reload( null, false );
+        }, 1000 );
 
         <%--$( '#tags' ).tagit( {--%>
         <%--    autocomplete: {--%>
@@ -168,10 +160,8 @@
         <%--    }--%>
         <%--} )--%>
     } );
-
-    var groupSearchProgressBar = new groupSearchProgressBar('progress', 'group_search_progress', 1000);
+    var groupSearchProgressBar = new groupSearchProgressBar( 'progress', 'group_search_progress', 1000 );
     groupSearchProgressBar.start();
-
 </script>
 
 <section>
@@ -190,7 +180,6 @@
             </c:if>
             <form:form method="post" modelAttribute="searchForm">
                 <form:errors path="" cssClass="errors"/>
-
                 <div id="accordion">
                     <h3>Search Parameters</h3>
                     <div>
@@ -224,19 +213,15 @@
                             <%--                            <form:errors path="retTimeTolerance" cssClass="errors"/><br/>--%>
                             <%--                        </c:if>--%>
                     </div>
-
                     <h3>Equipment Selector</h3>
                     <div>
                         <form:input path="tags"/><br/>
                         <form:errors path="tags" cssClass="errors"/><br/>
                     </div>
                 </div>
-
-
                 <div align="center">
                     <input id="demo" type="submit" value="Group Match"/>
                 </div>
-
             </form:form>
         </div>
     </div>
