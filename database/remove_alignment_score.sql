@@ -1,0 +1,1 @@
+UPDATE Spectrum SET Name = SUBSTRING(Name, 1, INSTR(Name, " (Alignment Score")) WHERE INSTR(Name, " (Alignment Score") > 0
