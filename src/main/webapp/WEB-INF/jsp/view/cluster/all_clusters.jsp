@@ -11,14 +11,12 @@
             <tr>
                 <th>ID</th>
                 <th title="Consensus spectrum">Spectrum</th>
-                <th title="Number of spectra in a cluster">Count</th>
+                <th title="Number of studies">Count</th>
                 <th title="Minimum matching score between all spectra in a cluster">Score</th>
-                <th title="Average, minimum, and maximum values of the statistical significance">Significance</th>
-                <th>Minimum Diversity</th>
-                <th>Maximum Diversity</th>
-                <th>Average Diversity</th>
+                <th title="P-value of the In-study ANOVA test">In-study P-value</th>
+                <th title="Gini-Simpson Index">Maximum Diversity</th>
+                <th title="P-value of the Cross-study Goodness-of-fit test">Cross-study P-value</th>
                 <th title="Chromatography type">Type</th>
-                <th>Minimum PValue</th>
                 <th></th>
             </tr>
             </thead>
@@ -103,17 +101,6 @@
                     "orderable": true,
                     "render": function (data, type, row, meta) {
                         var content = '';
-                        if(row.minDiversity != undefined) {
-                            content = row.minDiversity.toFixed(3);
-                        }
-                        return content;
-                    }
-                },
-                {
-                    "targets": 6,
-                    "orderable": true,
-                    "render": function (data, type, row, meta) {
-                        var content = '';
                         if(row.maxDiversity != undefined) {
                             content = row.maxDiversity.toFixed(3);
                         }
@@ -121,31 +108,7 @@
                     }
                 },
                 {
-                    "targets": 7,
-                    "orderable": true,
-                    "render": function (data, type, row, meta) {
-                        var content = '';
-                        if(row.aveDiversity  ) {
-                            content = row.aveDiversity.toFixed(3);
-                        }
-                        return content;
-                    }
-                },
-                {
-                    "targets": 8,
-                    "orderable": true,
-                    "render": function (data, type, row, meta) {
-                        var content = '<img' +
-                        ' src="${pageContext.request.contextPath}/' + row.consensusSpectrum.chromatographyTypeIconPath + '"'
-                        + ' alt="' + row.consensusSpectrum.chromatographyTypeLabel + '"'
-                        + ' title="' + row.consensusSpectrum.chromatographyTypeLabel + '"'
-                        + ' class="icon"/>';
-
-                        return content;
-                    }
-                },
-                {
-                    "targets": 9,
+                    "targets": 6,
                     "orderable": true,
                     "render": function (data, type, row, meta) {
                         var content = '';
@@ -157,7 +120,20 @@
                     }
                 },
                 {
-                    "targets": 10,
+                    "targets": 7,
+                    "orderable": true,
+                    "render": function (data, type, row, meta) {
+                        var content = '<img' +
+                            ' src="${pageContext.request.contextPath}/' + row.consensusSpectrum.chromatographyTypeIconPath + '"'
+                            + ' alt="' + row.consensusSpectrum.chromatographyTypeLabel + '"'
+                            + ' title="' + row.consensusSpectrum.chromatographyTypeLabel + '"'
+                            + ' class="icon"/>';
+
+                        return content;
+                    }
+                },
+                {
+                    "targets": 8,
                     "orderable": false,
                     "render": function (data, type, row, meta) {
                         var content = '<a href="${pageContext.request.contextPath}/cluster/'

@@ -1,16 +1,5 @@
 package org.dulab.adapcompounddb.site.services;
 
-import java.util.ArrayList;
-import java.util.DoubleSummaryStatistics;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,12 +7,7 @@ import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.DistanceMatrixWrapper;
 import org.dulab.adapcompounddb.models.dto.TagInfo;
-import org.dulab.adapcompounddb.models.entities.Peak;
-import org.dulab.adapcompounddb.models.entities.Spectrum;
-import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
-import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
-import org.dulab.adapcompounddb.models.entities.SpectrumProperty;
-import org.dulab.adapcompounddb.models.entities.SubmissionTag;
+import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.controllers.ControllerUtils;
 import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
@@ -36,6 +20,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 public class SpectrumClustererImpl implements SpectrumClusterer {
@@ -147,6 +136,8 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                     if (spectrumIds.size() >= MIN_NUM_SPECTRA) {
 
                         final SpectrumCluster cluster = createCluster(spectrumIds, MZ_TOLERANCE);
+
+
                         final Spectrum consensusSpectrum = cluster.getConsensusSpectrum();
 
                         final List<Peak> peaks = new ArrayList<>(consensusSpectrum.getPeaks());
@@ -185,8 +176,16 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 //                .peek(s -> s.setCluster(cluster))
                 .collect(Collectors.toList());
 
+        //set size of study
+        List<Submission> submissionList = spectra.stream()
+                .map(Spectrum::getFile).filter(Objects::nonNull)
+                .map(File::getSubmission).filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+        cluster.setSize(submissionList.size());
+
 //        cluster.setSpectra(spectra);
-        cluster.setSize(spectra.size());
+//        cluster.setSize(spectra.size());
 
         // Calculate diameter
         cluster.setDiameter(spectra

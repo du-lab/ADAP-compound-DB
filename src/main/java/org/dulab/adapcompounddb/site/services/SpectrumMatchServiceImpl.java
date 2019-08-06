@@ -185,7 +185,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
                 }
 
                 final SpectrumCluster cluster = new SpectrumCluster();
-                cluster.setSize(indices.length);
+//                cluster.setSize(indices.length);
 
                 cluster.setDiameter(distanceToSimilarity(Arrays
                         .stream(indices)

@@ -219,6 +219,7 @@ section a {
     color: #542410;
     font-weight: normal;
     text-decoration: none;
+    font-size: 12px;
 }
 
 section a:hover {
