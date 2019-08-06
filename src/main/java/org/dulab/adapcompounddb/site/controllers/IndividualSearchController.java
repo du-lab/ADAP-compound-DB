@@ -26,8 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-//TODO: Split this into IndividualSearchController and GroupSearchController
-
 @Controller
 public class IndividualSearchController {
     private final SubmissionService submissionService;
