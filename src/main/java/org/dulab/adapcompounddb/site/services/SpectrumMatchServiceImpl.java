@@ -42,10 +42,10 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     private static enum ColumnInformation {
         ID(0, "id"), NAME(1, "consensusSpectrum.name"),
         COUNT(2, "size"), SCORE(3, "diameter"),
-        SIGNIFICANCE(4, "aveSignificance"), MIN_DIVERSITY(5, "minDiversity"),
-        MAX_DIVERSITY(6, "maxDiversity"), AVE_DIVERSITY(7, "aveDiversity"),
-        CHROMATOGRAPHYTYPE(8, "consensusSpectrum.chromatographyType"),
-        MIN_PVALUE(9, "minPValue");
+        SIGNIFICANCE(4, "aveSignificance"),
+        MAX_DIVERSITY(5, "maxDiversity"),
+        MIN_PVALUE(6, "minPValue"),
+        CHROMATOGRAPHYTYPE(7, "consensusSpectrum.chromatographyType");
 
         private int position;
         private String sortColumnName;
@@ -381,7 +381,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
         final String sortColumn = ColumnInformation.getColumnNameFromPosition(column);
         if (sortColumn != null) {
-            final Sort sort = new Sort(Sort.Direction.fromString(sortDirection), sortColumn);
+            final Sort sort = new Sort(new Sort.Order(Sort.Direction.fromString(sortDirection), sortColumn).nullsLast());
             pageable = PageRequest.of(start / length, length, sort);
         } else {
             pageable = PageRequest.of(start / length, length);
