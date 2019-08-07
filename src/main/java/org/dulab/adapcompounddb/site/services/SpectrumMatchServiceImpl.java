@@ -389,12 +389,18 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         }
 
         if (column == 4) {
-            spectrumPage = sortDirection.equalsIgnoreCase("desc") ? spectrumClusterRepository.findClusters(searchStr, pageable) : spectrumClusterRepository.findClustersSortedByAveSignificanceDesc(searchStr, pageable);
+            spectrumPage = sortDirection.equalsIgnoreCase("desc")
+                    ? spectrumClusterRepository.findClusters(searchStr, pageable)
+                    : spectrumClusterRepository.findClustersSortedByAveSignificanceDesc(searchStr, pageable);
         } else if (column == 5) {
-            spectrumPage = sortDirection.equalsIgnoreCase("desc") ? spectrumClusterRepository.findClusters(searchStr, pageable) : spectrumClusterRepository.findClustersSortedByMaxDiversityDesc(searchStr, pageable);
+            spectrumPage = sortDirection.equalsIgnoreCase("desc")
+                    ? spectrumClusterRepository.findClusters(searchStr, pageable)
+                    : spectrumClusterRepository.findClustersSortedByMaxDiversityDesc(searchStr, pageable);
 
         } else if (column == 6) {
-            spectrumPage = sortDirection.equalsIgnoreCase("desc") ? spectrumClusterRepository.findClusters(searchStr, pageable) : spectrumClusterRepository.findClustersSortedByMinPValueDesc(searchStr, pageable);
+            spectrumPage = sortDirection.equalsIgnoreCase("desc")
+                    ? spectrumClusterRepository.findClusters(searchStr, pageable)
+                    : spectrumClusterRepository.findClustersSortedByMinPValueDesc(searchStr, pageable);
         } else {
             spectrumPage = spectrumClusterRepository.findClusters(searchStr, pageable);
         }
