@@ -377,9 +377,10 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     public DataTableResponse findAllClusters(final String searchStr, final Integer start, final Integer length,
                                              final Integer column, final String sortDirection) {
         final ObjectMapperUtils objectMapper = new ObjectMapperUtils();
-        Pageable pageable = null;
-
+        Pageable pageable;
+        Page<SpectrumCluster> spectrumPage;
         final String sortColumn = ColumnInformation.getColumnNameFromPosition(column);
+
         if (sortColumn != null) {
             final Sort sort = new Sort(new Sort.Order(Sort.Direction.fromString(sortDirection), sortColumn).nullsLast());
             pageable = PageRequest.of(start / length, length, sort);
@@ -387,15 +388,21 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
             pageable = PageRequest.of(start / length, length);
         }
 
-        final Page<SpectrumCluster> spectrumPage = spectrumClusterRepository.findClusters(searchStr, pageable);
+        if (column == 4) {
+            spectrumPage = sortDirection.equalsIgnoreCase("desc") ? spectrumClusterRepository.findClusters(searchStr, pageable) : spectrumClusterRepository.findClustersSortedByAveSignificanceDesc(searchStr, pageable);
+        } else if (column == 5) {
+            spectrumPage = sortDirection.equalsIgnoreCase("desc") ? spectrumClusterRepository.findClusters(searchStr, pageable) : spectrumClusterRepository.findClustersSortedByMaxDiversityDesc(searchStr, pageable);
 
-        final List<SpectrumClusterDTO> spectrumList = objectMapper.map(spectrumPage.getContent(),
-                SpectrumClusterDTO.class);
+        } else if (column == 6) {
+            spectrumPage = sortDirection.equalsIgnoreCase("desc") ? spectrumClusterRepository.findClusters(searchStr, pageable) : spectrumClusterRepository.findClustersSortedByMinPValueDesc(searchStr, pageable);
+        } else {
+            spectrumPage = spectrumClusterRepository.findClusters(searchStr, pageable);
+        }
+
+        final List<SpectrumClusterDTO> spectrumList = objectMapper.map(spectrumPage.getContent(), SpectrumClusterDTO.class);
         final DataTableResponse response = new DataTableResponse(spectrumList);
-
         response.setRecordsTotal(spectrumPage.getTotalElements());
         response.setRecordsFiltered(spectrumPage.getTotalElements());
-
         return response;
     }
 

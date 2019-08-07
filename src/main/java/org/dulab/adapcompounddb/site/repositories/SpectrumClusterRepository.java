@@ -1,7 +1,5 @@
 package org.dulab.adapcompounddb.site.repositories;
 
-import java.util.List;
-
 import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,7 +8,11 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface SpectrumClusterRepository extends JpaRepository<SpectrumCluster, Long> {
+import java.util.List;
+
+public interface
+
+SpectrumClusterRepository extends JpaRepository<SpectrumCluster, Long> {
 
     void deleteByIdNotIn(List<Long> ids);
 
@@ -29,7 +31,27 @@ public interface SpectrumClusterRepository extends JpaRepository<SpectrumCluster
     @Query(value = "select s from SpectrumCluster s "
             + "where "
             + "s.consensusSpectrum.name like %:search% "
-            + "OR s.consensusSpectrum.chromatographyType like %:search%" )
+            + "OR s.consensusSpectrum.chromatographyType like %:search% ")
     Page<SpectrumCluster> findClusters(@Param("search") String searchStr, Pageable pageable);
 
+    @Query(value = "select s from SpectrumCluster s "
+            + "where "
+            + "s.consensusSpectrum.name like %:search% "
+            + "OR s.consensusSpectrum.chromatographyType like %:search% "
+            + "order by -s.maxDiversity desc")
+    Page<SpectrumCluster> findClustersSortedByMaxDiversityDesc(@Param("search") String searchStr,Pageable pageable);
+
+    @Query(value = "select s from SpectrumCluster s "
+            + "where "
+            + "s.consensusSpectrum.name like %:search% "
+            + "OR s.consensusSpectrum.chromatographyType like %:search% "
+            + "order by -s.aveSignificance desc")
+    Page<SpectrumCluster> findClustersSortedByAveSignificanceDesc(@Param("search") String searchStr,Pageable pageable);
+
+    @Query(value = "select s from SpectrumCluster s "
+            + "where "
+            + "s.consensusSpectrum.name like %:search% "
+            + "OR s.consensusSpectrum.chromatographyType like %:search% "
+            + "order by -s.minPValue desc")
+    Page<SpectrumCluster> findClustersSortedByMinPValueDesc(@Param("search") String searchStr,Pageable pageable);
 }
