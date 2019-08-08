@@ -388,22 +388,6 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
             pageable = PageRequest.of(start / length, length);
         }
 
-//        if (column == 10) {
-//            spectrumPage = sortDirection.equalsIgnoreCase("desc")
-//                    ? spectrumClusterRepository.findClusters(searchStr, pageable)
-//                    : spectrumClusterRepository.findClustersSortedByAveSignificanceDesc(searchStr, pageable);
-//        } else if (column == 5) {
-//            spectrumPage = sortDirection.equalsIgnoreCase("desc")
-//                    ? spectrumClusterRepository.findClusters(searchStr, pageable)
-//                    : spectrumClusterRepository.findClustersSortedByMaxDiversityDesc(searchStr, pageable);
-//
-//        } else if (column == 6) {
-//            spectrumPage = sortDirection.equalsIgnoreCase("desc")
-//                    ? spectrumClusterRepository.findClusters(searchStr, pageable)
-//                    : spectrumClusterRepository.findClustersSortedByMinPValueDesc(searchStr, pageable);
-//        } else {
-//            spectrumPage = spectrumClusterRepository.findClusters(searchStr, pageable);
-//        }
         spectrumPage = spectrumClusterRepository.findClusters(searchStr, pageable);
 
         final List<SpectrumClusterDTO> spectrumList = objectMapper.map(spectrumPage.getContent(), SpectrumClusterDTO.class);

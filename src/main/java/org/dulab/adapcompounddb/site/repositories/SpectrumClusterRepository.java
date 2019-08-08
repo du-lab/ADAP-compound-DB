@@ -31,27 +31,6 @@ SpectrumClusterRepository extends JpaRepository<SpectrumCluster, Long> {
     @Query(value = "select s from SpectrumCluster s "
             + "where "
             + "s.consensusSpectrum.name like %:search% "
-            + "OR s.consensusSpectrum.chromatographyType like %:search% ")
+            + "OR s.consensusSpectrum.chromatographyType like %:search%")
     Page<SpectrumCluster> findClusters(@Param("search") String searchStr, Pageable pageable);
-
-    @Query(value = "select s from SpectrumCluster s "
-            + "where "
-            + "s.consensusSpectrum.name like %:search% "
-            + "OR s.consensusSpectrum.chromatographyType like %:search% "
-            + "order by -s.maxDiversity desc")
-    Page<SpectrumCluster> findClustersSortedByMaxDiversityDesc(@Param("search") String searchStr,Pageable pageable);
-
-    @Query(value = "select s from SpectrumCluster s "
-            + "where "
-            + "s.consensusSpectrum.name like %:search% "
-            + "OR s.consensusSpectrum.chromatographyType like %:search% "
-            + "order by -s.aveSignificance desc")
-    Page<SpectrumCluster> findClustersSortedByAveSignificanceDesc(@Param("search") String searchStr,Pageable pageable);
-
-    @Query(value = "select s from SpectrumCluster s "
-            + "where "
-            + "s.consensusSpectrum.name like %:search% "
-            + "OR s.consensusSpectrum.chromatographyType like %:search% "
-            + "order by -s.minPValue desc")
-    Page<SpectrumCluster> findClustersSortedByMinPValueDesc(@Param("search") String searchStr,Pageable pageable);
 }
