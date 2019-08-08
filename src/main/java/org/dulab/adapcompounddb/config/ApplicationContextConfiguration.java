@@ -87,6 +87,7 @@ public class ApplicationContextConfiguration {
 
         final Map<String, Object> jpaPropertyMap = new HashMap<>();
         jpaPropertyMap.put("javax.persistence.schema-generation.database.action", "none");
+        jpaPropertyMap.put("hibernate.order_by.default_null_ordering", "last");
 //                jpaPropertyMap.put("hibernate.format_sql", true);
 //                jpaPropertyMap.put("hibernate.use_sql_comments", true);
 //                jpaPropertyMap.put("hibernate.show_sql", true);
