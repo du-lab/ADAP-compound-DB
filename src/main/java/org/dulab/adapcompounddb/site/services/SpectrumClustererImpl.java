@@ -177,12 +177,12 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                 .collect(Collectors.toList());
 
         //set size of study
-        List<Submission> submissionList = spectra.stream()
+        long submissionCount = spectra.stream()
                 .map(Spectrum::getFile).filter(Objects::nonNull)
                 .map(File::getSubmission).filter(Objects::nonNull)
                 .distinct()
-                .collect(Collectors.toList());
-        cluster.setSize(submissionList.size());
+                .count();
+        cluster.setSize((int) submissionCount);
 
 //        cluster.setSpectra(spectra);
 //        cluster.setSize(spectra.size());
