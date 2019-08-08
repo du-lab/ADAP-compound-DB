@@ -33,8 +33,8 @@
         type="javax.sql.DataSource"
         maxTotal="20" maxIdle="5" maxWaitMillis="10000"
         username="root" password="sesame"
-        driverClassName="com.mysql.jdbc.Driver"
-        url="jdbc:mysql://localhost:3306/adapcompounddb?autoReconnect=true&amp;useSSL=false"/>
+        driverClassName="com.mysql.cj.jdbc.Driver"
+        url="jdbc:mysql://localhost:3306/adapcompounddb?autoReconnect=true&amp;useSSL=false&amp;serverTimezone=UTC"/>
 
 
     <!-- SMTP server parameters
