@@ -16,6 +16,9 @@
                 <th title="P-value of the In-study ANOVA test">In-study P-value</th>
                 <th title="Gini-Simpson Index">Maximum Diversity</th>
                 <th title="P-value of the Cross-study Goodness-of-fit test">Cross-study P-value</th>
+                <th title="P-value of disease">Cross-study P-value (disease)</th>
+                <th title="P-value of species">Cross-study P-value (species)</th>
+                <th title="P-value of sample source">Cross-study P-value (sample source)</th>
                 <th title="Chromatography type">Type</th>
                 <th></th>
             </tr>
@@ -123,6 +126,42 @@
                     "targets": 7,
                     "orderable": true,
                     "render": function (data, type, row, meta) {
+                        var content = '';
+                        if (row.diseasePValue ) {
+                            content = row.diseasePValue.toFixed(3);
+                            console.log("content");
+                        }
+                        return content;
+                    }
+                },
+                {
+                    "targets": 8,
+                    "orderable": true,
+                    "render": function (data, type, row, meta) {
+                        var content = '';
+                        if (row.speciesPValue) {
+                            content = row.speciesPValue.toFixed(3);
+                            console.log("content");
+                        }
+                        return content;
+                    }
+                },
+                {
+                    "targets": 9,
+                    "orderable": true,
+                    "render": function (data, type, row, meta) {
+                        var content = '';
+                        if (row.sampleSourcePValue ) {
+                            content = row.sampleSourcePValue.toFixed(3);
+                            console.log("content");
+                        }
+                        return content;
+                    }
+                },
+                {
+                    "targets": 10,
+                    "orderable": true,
+                    "render": function (data, type, row, meta) {
                         var content = '<img' +
                             ' src="${pageContext.request.contextPath}/' + row.consensusSpectrum.chromatographyTypeIconPath + '"'
                             + ' alt="' + row.consensusSpectrum.chromatographyTypeLabel + '"'
@@ -133,7 +172,7 @@
                     }
                 },
                 {
-                    "targets": 8,
+                    "targets": 11,
                     "orderable": false,
                     "render": function (data, type, row, meta) {
                         var content = '<a href="${pageContext.request.contextPath}/cluster/'

@@ -1,9 +1,9 @@
 package org.dulab.adapcompounddb.models.dto;
 
+import org.dulab.adapcompounddb.models.ChromatographyType;
+
 import java.io.Serializable;
 import java.util.Set;
-
-import org.dulab.adapcompounddb.models.ChromatographyType;
 
 public class SpectrumClusterDTO implements Serializable {
 
@@ -27,11 +27,13 @@ public class SpectrumClusterDTO implements Serializable {
     private Set<DiversityIndexDTO> diversityIndices;
 
 
-
     private Double aveDiversity;
     private Double minDiversity;
     private Double maxDiversity;
     private Double minPValue;
+    private Double diseasePValue;
+    private Double speciesPValue;
+    private Double sampleSourcePValue;
 
     // *******************************
     // ***** Getters and setters *****
@@ -148,9 +150,37 @@ public class SpectrumClusterDTO implements Serializable {
         this.maxDiversity = maxDiversity;
     }
 
-    public Double getMinPValue() { return minPValue; }
+    public Double getMinPValue() {
+        return minPValue;
+    }
 
-    public void setMinPValue(final Double minPValue) { this.minPValue = minPValue; }
+    public void setMinPValue(final Double minPValue) {
+        this.minPValue = minPValue;
+    }
+
+    public Double getDiseasePValue() {
+        return diseasePValue;
+    }
+
+    public void setDiseasePValue(Double diseasePValue) {
+        this.diseasePValue = diseasePValue;
+    }
+
+    public Double getSpeciesPValue() {
+        return speciesPValue;
+    }
+
+    public void setSpeciesPValue(Double speciesPValue) {
+        this.speciesPValue = speciesPValue;
+    }
+
+    public Double getSampleSourcePValue() {
+        return sampleSourcePValue;
+    }
+
+    public void setSampleSourcePValue(Double sampleSourcePValue) {
+        this.sampleSourcePValue = sampleSourcePValue;
+    }
 
     @Override
     public int hashCode() {
