@@ -42,10 +42,10 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     private static enum ColumnInformation {
         ID(0, "id"), NAME(1, "consensusSpectrum.name"),
         COUNT(2, "size"), SCORE(3, "diameter"),
-        SIGNIFICANCE(4, "aveSignificance"), MIN_DIVERSITY(5, "minDiversity"),
-        MAX_DIVERSITY(6, "maxDiversity"), AVE_DIVERSITY(7, "aveDiversity"),
-        CHROMATOGRAPHYTYPE(8, "consensusSpectrum.chromatographyType"),
-        MIN_PVALUE(9, "minPValue");
+        SIGNIFICANCE(4, "aveSignificance"),
+        MAX_DIVERSITY(5, "maxDiversity"),
+        MIN_PVALUE(6, "minPValue"),
+        CHROMATOGRAPHYTYPE(7, "consensusSpectrum.chromatographyType");
 
         private int position;
         private String sortColumnName;
@@ -185,7 +185,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
                 }
 
                 final SpectrumCluster cluster = new SpectrumCluster();
-                cluster.setSize(indices.length);
+//                cluster.setSize(indices.length);
 
                 cluster.setDiameter(distanceToSimilarity(Arrays
                         .stream(indices)
@@ -377,9 +377,10 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     public DataTableResponse findAllClusters(final String searchStr, final Integer start, final Integer length,
                                              final Integer column, final String sortDirection) {
         final ObjectMapperUtils objectMapper = new ObjectMapperUtils();
-        Pageable pageable = null;
-
+        Pageable pageable;
+        Page<SpectrumCluster> spectrumPage;
         final String sortColumn = ColumnInformation.getColumnNameFromPosition(column);
+
         if (sortColumn != null) {
             final Sort sort = new Sort(Sort.Direction.fromString(sortDirection), sortColumn);
             pageable = PageRequest.of(start / length, length, sort);
@@ -387,15 +388,12 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
             pageable = PageRequest.of(start / length, length);
         }
 
-        final Page<SpectrumCluster> spectrumPage = spectrumClusterRepository.findClusters(searchStr, pageable);
+        spectrumPage = spectrumClusterRepository.findClusters(searchStr, pageable);
 
-        final List<SpectrumClusterDTO> spectrumList = objectMapper.map(spectrumPage.getContent(),
-                SpectrumClusterDTO.class);
+        final List<SpectrumClusterDTO> spectrumList = objectMapper.map(spectrumPage.getContent(), SpectrumClusterDTO.class);
         final DataTableResponse response = new DataTableResponse(spectrumList);
-
         response.setRecordsTotal(spectrumPage.getTotalElements());
         response.setRecordsFiltered(spectrumPage.getTotalElements());
-
         return response;
     }
 
