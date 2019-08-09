@@ -40,7 +40,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     private final SpectrumClusterRepository spectrumClusterRepository;
 
     private static enum ColumnInformation {
-        ID(0, "id"), NAME(1, "consensusSpectrum.name"),
+        ID(0, "id"), NAME(1, "consensusSpectrumName"),
         COUNT(2, "size"), SCORE(3, "diameter"),
         SIGNIFICANCE(4, "aveSignificance"),
         MAX_DIVERSITY(5, "maxDiversity"),
@@ -389,8 +389,24 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         }
 
         spectrumPage = spectrumClusterRepository.findClusters(searchStr, pageable);
+        List<SpectrumClusterDTO> spectrumList = new ArrayList<>();
 
-        final List<SpectrumClusterDTO> spectrumList = objectMapper.map(spectrumPage.getContent(), SpectrumClusterDTO.class);
+        for(SpectrumCluster sc:spectrumPage.getContent()){
+            List<TagDistribution> clusterDistributions = sc.getTagDistributions();
+            SpectrumClusterDTO spectrumClusterDTO = new SpectrumClusterDTO().spectrumClusterDTO(sc);
+
+            for (TagDistribution t : clusterDistributions) {
+                if(t.getTagKey().equalsIgnoreCase("disease")){
+                    spectrumClusterDTO.setDiseasePValue(t.getPValue());
+                }else if(t.getTagKey().equalsIgnoreCase("species")){
+                    spectrumClusterDTO.setSpeciesPValue(t.getPValue());
+                }else if(t.getTagKey().equalsIgnoreCase("sample source")){
+                    spectrumClusterDTO.setSampleSourcePValue(t.getPValue());
+                }
+            }
+            spectrumList.add(spectrumClusterDTO);
+        }
+
         final DataTableResponse response = new DataTableResponse(spectrumList);
         response.setRecordsTotal(spectrumPage.getTotalElements());
         response.setRecordsFiltered(spectrumPage.getTotalElements());

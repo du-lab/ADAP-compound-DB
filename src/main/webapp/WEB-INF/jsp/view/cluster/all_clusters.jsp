@@ -5,10 +5,8 @@
 
 <section>
     <h1>Consensus spectra</h1>
-    <%--    <a class="toggle-vis cursorPointer" data-column="0">ID</a> ---%>
-    <%--    <a class="toggle-vis cursorPointer" data-column="1">Spectrum</a> ---%>
     <div>
-        <input type="checkbox" id="checkbox" data-column="2" checked="true"/>Count --
+        <input type="checkbox" id="checkbox" data-column="2" checked/>Count --
         <input type="checkbox" data-column="3" checked/>Score --
         <input type="checkbox" data-column="4" checked/>In-study P-value --
         <input type="checkbox" data-column="5" checked/>Maximum Diversity --
@@ -76,7 +74,7 @@
                     "orderable": true,
                     "render": function (data, type, row, meta) {
                         content = '<a href="${pageContext.request.contextPath}/cluster/' + row.id + '/">' +
-                            row.consensusSpectrum.name +
+                            row.consensusSpectrumName +
                             '</a>';
                         return content
                     }
@@ -176,9 +174,9 @@
                     "orderable": true,
                     "render": function (data, type, row, meta) {
                         var content = '<img' +
-                            ' src="${pageContext.request.contextPath}/' + row.consensusSpectrum.chromatographyTypeIconPath + '"'
-                            + ' alt="' + row.consensusSpectrum.chromatographyTypeLabel + '"'
-                            + ' title="' + row.consensusSpectrum.chromatographyTypeLabel + '"'
+                            ' src="${pageContext.request.contextPath}/' + row.chromatographyTypeIconPath + '"'
+                            + ' alt="' + row.chromatographyTypeLabel + '"'
+                            + ' title="' + row.chromatographyTypeLabel + '"'
                             + ' class="icon"/>';
 
                         return content;

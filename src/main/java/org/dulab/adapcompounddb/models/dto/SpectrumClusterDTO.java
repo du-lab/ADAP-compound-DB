@@ -1,6 +1,6 @@
 package org.dulab.adapcompounddb.models.dto;
 
-import org.dulab.adapcompounddb.models.ChromatographyType;
+import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -21,12 +21,11 @@ public class SpectrumClusterDTO implements Serializable {
     private Double minSignificance;
     private Double maxSignificance;
 
-    ChromatographyType chromatographyType;
+    String chromatographyTypeIconPath;
+    String chromatographyTypeLabel;
 
     SpectrumDTO consensusSpectrum;
     private Set<DiversityIndexDTO> diversityIndices;
-
-
     private Double aveDiversity;
     private Double minDiversity;
     private Double maxDiversity;
@@ -34,6 +33,29 @@ public class SpectrumClusterDTO implements Serializable {
     private Double diseasePValue;
     private Double speciesPValue;
     private Double sampleSourcePValue;
+    private String consensusSpectrumName;
+
+    public SpectrumClusterDTO() {
+
+    }
+
+    public SpectrumClusterDTO spectrumClusterDTO(SpectrumCluster cluster) {
+        this.id = cluster.getId();
+        this.consensusSpectrumName = cluster.getConsensusSpectrum().getName();
+        this.size = cluster.getSize();
+        this.diameter = cluster.getDiameter();
+        this.aveSignificance = cluster.getAveSignificance();
+        this.minPValue = cluster.getMinPValue();
+        this.minSignificance = cluster.getMinSignificance();
+        this.maxSignificance = cluster.getMaxSignificance();
+        this.minDiversity = cluster.getMinDiversity();
+        this.maxDiversity = cluster.getMaxDiversity();
+        this.aveDiversity = cluster.getAveDiversity();
+        this.chromatographyTypeIconPath = cluster.getConsensusSpectrum().getChromatographyType().getIconPath();
+        this.chromatographyTypeLabel = cluster.getConsensusSpectrum().getChromatographyType().getLabel();
+        return this;
+    }
+
 
     // *******************************
     // ***** Getters and setters *****
@@ -106,12 +128,20 @@ public class SpectrumClusterDTO implements Serializable {
         this.maxSignificance = maxSignificance;
     }
 
-    public ChromatographyType getChromatographyType() {
-        return chromatographyType;
+    public String getChromatographyTypeIconPath() {
+        return chromatographyTypeIconPath;
     }
 
-    public void setChromatographyType(final ChromatographyType chromatographyType) {
-        this.chromatographyType = chromatographyType;
+    public void setChromatographyTypeIconPath(String chromatographyTypeIconPath) {
+        this.chromatographyTypeIconPath = chromatographyTypeIconPath;
+    }
+
+    public String getChromatographyTypeLabel() {
+        return chromatographyTypeLabel;
+    }
+
+    public void setChromatographyTypeLabel(String chromatographyTypeLabel) {
+        this.chromatographyTypeLabel = chromatographyTypeLabel;
     }
 
     public Set<DiversityIndexDTO> getDiversityIndices() {
@@ -180,6 +210,14 @@ public class SpectrumClusterDTO implements Serializable {
 
     public void setSampleSourcePValue(Double sampleSourcePValue) {
         this.sampleSourcePValue = sampleSourcePValue;
+    }
+
+    public String getConsensusSpectrumName() {
+        return consensusSpectrumName;
+    }
+
+    public void setConsensusSpectrumName(String consensusSpectrumName) {
+        this.consensusSpectrumName = consensusSpectrumName;
     }
 
     @Override
