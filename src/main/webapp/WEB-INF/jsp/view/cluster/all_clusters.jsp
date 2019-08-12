@@ -5,6 +5,19 @@
 
 <section>
     <h1>Consensus spectra</h1>
+    
+    <div>
+        <input type="checkbox" id="checkbox" data-column="2" checked/>Count --
+        <input type="checkbox" data-column="3" checked/>Score --
+        <input type="checkbox" data-column="4" checked/>In-study P-value --
+        <input type="checkbox" data-column="5" checked/>Maximum Diversity --
+        <input type="checkbox" data-column="6" checked/>Cross-study P-value --
+        <input type="checkbox" data-column="7" />Cross-study P-value (disease) --
+        <input type="checkbox" data-column="8" />Cross-study P-value (species) --
+        <input type="checkbox" data-column="9" />Cross-study P-value (sample source) --
+        <input type="checkbox" data-column="10" checked/>Type
+    </div>
+
     <div align="center">
         <table id="cluster_table" class="display responsive" style="width: 100%;">
             <thead>
@@ -182,5 +195,37 @@
                 }
             ]
         } );
+
+        $( "input:checkbox" ).click( function () {
+
+
+                if($("#checkbox").is(':checked')) {
+                    // table
+                    var table = $( '#cluster_table' ).dataTable();
+
+                    // column
+                    var colNum = $( this ).attr( 'data-column' );
+
+                    // Define
+                    var bVis = table.fnSettings().aoColumns[colNum].bVisible;
+
+                    // Toggle
+                    table.fnSetColumnVis( colNum, bVis ? false : true );
+                }
+            }
+        );
+
+        $( "input:checkbox" ).ready( function () {
+            var table = $( '#cluster_table' ).dataTable();
+
+            for (i = 7; i < 10; i++) {
+                // Define
+                var bVis = table.fnSettings().aoColumns[i].bVisible;
+
+                // Toggle
+                table.fnSetColumnVis( i, bVis ? false : true );
+            }
+        })
+
     } );
 </script>

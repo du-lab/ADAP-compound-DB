@@ -40,12 +40,15 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     private final SpectrumClusterRepository spectrumClusterRepository;
 
     private static enum ColumnInformation {
-        ID(0, "id"), NAME(1, "consensusSpectrumName"),
+        ID(0, "id"), NAME(1, "consensusSpectrum.name"),
         COUNT(2, "size"), SCORE(3, "diameter"),
         SIGNIFICANCE(4, "aveSignificance"),
         MAX_DIVERSITY(5, "maxDiversity"),
         MIN_PVALUE(6, "minPValue"),
-        CHROMATOGRAPHYTYPE(7, "consensusSpectrum.chromatographyType");
+        DISEASE_PVALUE(7, "diseasePValue"),
+        SPECIES_PVALUE(8, "speciesPValue"),
+        SAMPLE_SOURCE_PVALUE(9, "sampleSourcePValue"),
+        CHROMATOGRAPHYTYPE(10, "consensusSpectrum.chromatographyType");
 
         private int position;
         private String sortColumnName;
@@ -389,24 +392,8 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         }
 
         spectrumPage = spectrumClusterRepository.findClusters(searchStr, pageable);
-        List<SpectrumClusterDTO> spectrumList = new ArrayList<>();
 
-        for(SpectrumCluster sc:spectrumPage.getContent()){
-            List<TagDistribution> clusterDistributions = sc.getTagDistributions();
-            SpectrumClusterDTO spectrumClusterDTO = new SpectrumClusterDTO();
-
-            for (TagDistribution t : clusterDistributions) {
-                if(t.getTagKey().equalsIgnoreCase("disease")){
-                    spectrumClusterDTO.setDiseasePValue(t.getPValue());
-                }else if(t.getTagKey().equalsIgnoreCase("species")){
-                    spectrumClusterDTO.setSpeciesPValue(t.getPValue());
-                }else if(t.getTagKey().equalsIgnoreCase("sample source")){
-                    spectrumClusterDTO.setSampleSourcePValue(t.getPValue());
-                }
-            }
-            spectrumList.add(spectrumClusterDTO);
-        }
-
+        final List<SpectrumClusterDTO> spectrumList = objectMapper.map(spectrumPage.getContent(), SpectrumClusterDTO.class);
         final DataTableResponse response = new DataTableResponse(spectrumList);
         response.setRecordsTotal(spectrumPage.getTotalElements());
         response.setRecordsFiltered(spectrumPage.getTotalElements());
