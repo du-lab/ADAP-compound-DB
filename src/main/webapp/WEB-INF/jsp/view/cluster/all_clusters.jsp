@@ -5,17 +5,18 @@
 
 <section>
     <h1>Consensus spectra</h1>
-    
+
     <div>
-        <input type="checkbox" id="checkbox" data-column="2" checked/>Count --
-        <input type="checkbox" data-column="3" checked/>Score --
-        <input type="checkbox" data-column="4" checked/>In-study P-value --
-        <input type="checkbox" data-column="5" checked/>Maximum Diversity --
-        <input type="checkbox" data-column="6" checked/>Cross-study P-value --
-        <input type="checkbox" data-column="7" />Cross-study P-value (disease) --
-        <input type="checkbox" data-column="8" />Cross-study P-value (species) --
-        <input type="checkbox" data-column="9" />Cross-study P-value (sample source) --
-        <input type="checkbox" data-column="10" checked/>Type
+        Click to hide/show columns:
+        <input type="checkbox" id="checkbox" data-column="2" checked/><strong>Count</strong> --
+        <input type="checkbox" data-column="3" checked/><strong>Score</strong> --
+        <input type="checkbox" data-column="4" checked/><strong>In-study P-value</strong> --
+        <input type="checkbox" data-column="5" checked/><strong>Maximum Diversity</strong> --
+        <input type="checkbox" data-column="6" checked/><strong>Cross-study P-value</strong> --
+        <input type="checkbox" data-column="7"/><strong>Cross-study P-value (disease)</strong> --
+        <input type="checkbox" data-column="8"/><strong>Cross-study P-value (species)</strong> --
+        <input type="checkbox" data-column="9"/><strong>Cross-study P-value (sample source)</strong> --
+        <input type="checkbox" data-column="10" checked/><strong>Type</strong>
     </div>
 
     <div align="center">
@@ -90,7 +91,7 @@
                     "targets": 3,
                     "orderable": true,
                     "render": function (data, type, row, meta) {
-                        return row.diameter.toFixed(3) * 1000;
+                        return row.diameter.toFixed( 3 ) * 1000;
                     }
                 },
                 {
@@ -98,14 +99,14 @@
                     "orderable": true,
                     "render": function (data, type, row, meta) {
                         var content = '';
-                        if(row.aveSignificance) {
-                            var avgSignificance = row.aveSignificance.toFixed(3);
+                        if (row.aveSignificance) {
+                            var avgSignificance = row.aveSignificance.toFixed( 3 );
                             content += '<span title="{Average: ' + row.aveSignificance;
-                            if(row.minSignificance) {
-                                content += '; Min: ' + row.minSignificance.toFixed(3);
+                            if (row.minSignificance) {
+                                content += '; Min: ' + row.minSignificance.toFixed( 3 );
                             }
-                            if(row.maxSignificance) {
-                                content += '; Max: ' + row.maxSignificance.toFixed(3);
+                            if (row.maxSignificance) {
+                                content += '; Max: ' + row.maxSignificance.toFixed( 3 );
                             }
                             content += '}">' + avgSignificance + '</span>';
                         }
@@ -117,8 +118,8 @@
                     "orderable": true,
                     "render": function (data, type, row, meta) {
                         var content = '';
-                        if(row.maxDiversity != undefined) {
-                            content = row.maxDiversity.toFixed(3);
+                        if (row.maxDiversity != undefined) {
+                            content = row.maxDiversity.toFixed( 3 );
                         }
                         return content;
                     }
@@ -128,9 +129,9 @@
                     "orderable": true,
                     "render": function (data, type, row, meta) {
                         var content = '';
-                        if (row.minPValue ) {
-                            content = row.minPValue.toFixed(3);
-                            console.log("content");
+                        if (row.minPValue) {
+                            content = row.minPValue.toFixed( 3 );
+                            console.log( "content" );
                         }
                         return content;
                     }
@@ -140,9 +141,9 @@
                     "orderable": true,
                     "render": function (data, type, row, meta) {
                         var content = '';
-                        if (row.diseasePValue ) {
-                            content = row.diseasePValue.toFixed(3);
-                            console.log("content");
+                        if (row.diseasePValue) {
+                            content = row.diseasePValue.toFixed( 3 );
+                            console.log( "content" );
                         }
                         return content;
                     }
@@ -153,8 +154,8 @@
                     "render": function (data, type, row, meta) {
                         var content = '';
                         if (row.speciesPValue) {
-                            content = row.speciesPValue.toFixed(3);
-                            console.log("content");
+                            content = row.speciesPValue.toFixed( 3 );
+                            console.log( "content" );
                         }
                         return content;
                     }
@@ -164,9 +165,9 @@
                     "orderable": true,
                     "render": function (data, type, row, meta) {
                         var content = '';
-                        if (row.sampleSourcePValue ) {
-                            content = row.sampleSourcePValue.toFixed(3);
-                            console.log("content");
+                        if (row.sampleSourcePValue) {
+                            content = row.sampleSourcePValue.toFixed( 3 );
+                            console.log( "content" );
                         }
                         return content;
                     }
@@ -199,7 +200,7 @@
         $( "input:checkbox" ).click( function () {
 
 
-                if($("#checkbox").is(':checked')) {
+                if ($( "#checkbox" ).is( ':checked' )) {
                     // table
                     var table = $( '#cluster_table' ).dataTable();
 
@@ -225,7 +226,7 @@
                 // Toggle
                 table.fnSetColumnVis( i, bVis ? false : true );
             }
-        })
+        } )
 
     } );
 </script>
