@@ -393,7 +393,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
         for(SpectrumCluster sc:spectrumPage.getContent()){
             List<TagDistribution> clusterDistributions = sc.getTagDistributions();
-            SpectrumClusterDTO spectrumClusterDTO = new SpectrumClusterDTO().spectrumClusterDTO(sc);
+            SpectrumClusterDTO spectrumClusterDTO = new SpectrumClusterDTO();
 
             for (TagDistribution t : clusterDistributions) {
                 if(t.getTagKey().equalsIgnoreCase("disease")){
