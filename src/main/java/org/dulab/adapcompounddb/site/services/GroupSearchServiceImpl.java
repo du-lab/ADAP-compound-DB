@@ -138,10 +138,8 @@ public class GroupSearchServiceImpl implements GroupSearchService {
         } else {
             spectrumClusterDTO.setDiameter(null);
         }
-        long id = spectrumMatch.getId();
         String querySpectrumName = spectrumMatch.getQuerySpectrum().getName();
         spectrumClusterDTO.setFileIndex(fileIndex);
-        spectrumClusterDTO.setMatchSpectrumClusterId(id);
         spectrumClusterDTO.setQuerySpectrumName(querySpectrumName);
         spectrumClusterDTO.setSpectrumIndex(spectrumIndex);
         spectrumClusterDTO.setQuerySpectrumId(querySpectrumId);

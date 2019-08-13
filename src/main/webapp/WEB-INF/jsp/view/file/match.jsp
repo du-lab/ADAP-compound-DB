@@ -77,19 +77,16 @@
                                           groupingUsed="false"
                                           value="${match.score * 1000}"
                                           var="score"/>
-
                         <fmt:formatNumber type="number"
                                           maxFractionDigits="0"
                                           groupingUsed="false"
                                           value="${match.matchSpectrum.cluster.aveSignificance}"
                                           var="aveSignificance"/>
-
                         <fmt:formatNumber type="number"
                                           maxFractionDigits="0"
                                           groupingUsed="false"
                                           value="${match.matchSpectrum.cluster.maxDiversity}"
                                           var="maxDiversity"/>
-
                         <fmt:formatNumber type="number"
                                           maxFractionDigits="0"
                                           groupingUsed="false"
