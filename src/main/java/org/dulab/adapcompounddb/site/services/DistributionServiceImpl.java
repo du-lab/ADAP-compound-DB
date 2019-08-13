@@ -218,6 +218,13 @@ public class DistributionServiceImpl implements DistributionService {
                 distributionRepository.findClusterTagDistributionByTagKey(key, cluster.getId())
                         .setPValue(ServiceUtils.calculateExactTestStatistics(t.getTagDistributionMap().values()));
                 clusterPvalue.add(t.getPValue());
+                if(t.getTagKey().equalsIgnoreCase("disease")){
+                    cluster.setDiseasePValue(t.getPValue());
+                }else if(t.getTagKey().equalsIgnoreCase("species (common)")){
+                    cluster.setSpeciesPValue(t.getPValue());
+                }else if(t.getTagKey().equalsIgnoreCase("sample source")){
+                    cluster.setSampleSourcePValue(t.getPValue());
+                }
             }
             Collections.sort(clusterPvalue);
             cluster.setMinPValue(clusterPvalue.get(0));

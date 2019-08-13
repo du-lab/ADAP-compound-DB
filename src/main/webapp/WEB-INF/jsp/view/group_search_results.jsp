@@ -17,14 +17,23 @@
     <div class="tabbed-pane" style="text-align: center">
         <span data-tab="files">Group Search Results</span>
     </div>
+
+    <div>
+        Click to hide/show columns:
+        <input type="checkbox" data-column="2" checked/><strong>Best Match</strong> --
+        <input type="checkbox" data-column="3" checked/><strong>Score</strong> --
+        <input type="checkbox" data-column="4" checked/><strong>P-value</strong> --
+        <input type="checkbox" data-column="5" checked/><strong>Diversity</strong>
+    </div>
+
     <div align="center">
         <table id="match_table" class="display responsive" style="width: 100%; clear:none;">
             <thead>
             <tr>
                 <th>ID</th>
                 <th>Compound from the Search List</th>
-                <th>Best Match</th>
-                <th>Score</th>
+                <th title="Top Matched Consensus spectrum">Best Match</th>
+                <th title="Minimum matching score between all spectra in a cluster">Score</th>
                 <th>P-Value</th>
                 <th>Diversity</th>
                 <th></th>
@@ -153,11 +162,36 @@
             table.ajax.reload( null, false );
         }, 1000 );
 
-        <%--$( '#tags' ).tagit( {--%>
-        <%--    autocomplete: {--%>
-        <%--        source: '${dulab:stringsToJson(searchForm.availableTags)}'--%>
-        <%--    }--%>
-        <%--} )--%>
+        $( "input:checkbox" ).click( function () {
+
+                if ($( "#checkbox" ).is( ':checked' )) {
+                    // table
+                    var table = $( '#match_table' ).dataTable();
+
+                    // column
+                    var colNum = $( this ).attr( 'data-column' );
+
+                    // Define
+                    var bVis = table.fnSettings().aoColumns[colNum].bVisible;
+
+                    // Toggle
+                    table.fnSetColumnVis( colNum, bVis ? false : true );
+                }
+            }
+        );
+
+        // $( "input:checkbox" ).ready( function () {
+        //     var table = $( '#match_table' ).dataTable();
+        //
+        //     for (i = 7; i < 10; i++) {
+        //         // Define
+        //         var bVis = table.fnSettings().aoColumns[i].bVisible;
+        //
+        //         // Toggle
+        //         table.fnSetColumnVis( i, bVis ? false : true );
+        //     }
+        // } )
+
     } );
     var groupSearchProgressBar = new groupSearchProgressBar( 'progress', 'group_search_progress', 1000 );
     groupSearchProgressBar.start();

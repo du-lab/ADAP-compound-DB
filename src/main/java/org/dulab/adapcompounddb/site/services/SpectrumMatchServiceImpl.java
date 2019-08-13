@@ -45,7 +45,10 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         SIGNIFICANCE(4, "aveSignificance"),
         MAX_DIVERSITY(5, "maxDiversity"),
         MIN_PVALUE(6, "minPValue"),
-        CHROMATOGRAPHYTYPE(7, "consensusSpectrum.chromatographyType");
+        DISEASE_PVALUE(7, "diseasePValue"),
+        SPECIES_PVALUE(8, "speciesPValue"),
+        SAMPLE_SOURCE_PVALUE(9, "sampleSourcePValue"),
+        CHROMATOGRAPHYTYPE(10, "consensusSpectrum.chromatographyType");
 
         private int position;
         private String sortColumnName;
