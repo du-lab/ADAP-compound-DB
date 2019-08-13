@@ -47,14 +47,10 @@
                     <label><input type="checkbox" data-column="2" checked/><strong>Score</strong></label> -
                     <label><input type="checkbox" data-column="3" checked/><strong>In-study P-value</strong></label> -
                     <label><input type="checkbox" data-column="4" checked/><strong>Maximum Diversity</strong></label> -
-                    <label><input type="checkbox" data-column="5" checked/><strong>Cross-study P-value</strong></label>
-                    -
-                    <label><input type="checkbox" data-column="6"/><strong>Cross-study P-value
-                        (disease)</strong></label> -
-                    <label><input type="checkbox" data-column="7"/><strong>Cross-study P-value
-                        (species)</strong></label> -
-                    <label><input type="checkbox" data-column="8"/><strong>Cross-study P-value (sample source)</strong></label>
-                    -
+                    <label><input type="checkbox" data-column="5" checked/><strong>Cross-study P-value</strong></label> -
+                    <label><input type="checkbox" data-column="6"/><strong>Cross-study P-value (disease)</strong></label> -
+                    <label><input type="checkbox" data-column="7"/><strong>Cross-study P-value (species)</strong></label> -
+                    <label><input type="checkbox" data-column="8"/><strong>Cross-study P-value (sample source)</strong></label> -
                     <label><input type="checkbox" data-column="9" checked/><strong>Type</strong></label>
                 </div>
 
@@ -118,10 +114,15 @@
                         <tr data-spectrum='${dulab:spectrumToJson(match.matchSpectrum)}'>
                             <c:if test="${match.matchSpectrum.consensus}">
                                 <td>
-                                    <a href="/cluster/${match.matchSpectrum.cluster.id}/">${dulab:abbreviate(match.matchSpectrum.name, 80)}</a><br/>
+                                    <a href="/cluster/${match.matchSpectrum.cluster.id}/">
+                                            ${dulab:abbreviate(match.matchSpectrum.name, 80)}</a><br/>
                                     <small>
-                                        <c:if test="${match.matchSpectrum.precursor != null}">Precursor: ${match.matchSpectrum.precursor};</c:if>
-                                        <c:if test="${match.matchSpectrum.retentionTime != null}">Ret Time: ${match.matchSpectrum.retentionTime};</c:if>
+                                        <c:if test="${match.matchSpectrum.precursor != null}">Precursor:
+                                            ${match.matchSpectrum.precursor};
+                                        </c:if>
+                                        <c:if test="${match.matchSpectrum.retentionTime != null}">Ret Time:
+                                            ${match.matchSpectrum.retentionTime};
+                                        </c:if>
                                     </small>
                                 </td>
                                 <td>${match.matchSpectrum.cluster.size}</td>
@@ -273,6 +274,7 @@
         $( "input:checkbox" ).ready( function () {
             var table = $( '#match_table' ).dataTable();
             for (i = 6; i < 9; i++) {
+
                 // Define
                 if(table.fnSettings() != null) {
                     var bVis = table.fnSettings().aoColumns[i].bVisible;

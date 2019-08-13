@@ -26,9 +26,9 @@
         <label><input type="checkbox" data-column="5" checked/><strong>In-study P-value</strong></label> -
         <label><input type="checkbox" data-column="6" checked/><strong>Maximum Diversity</strong></label> -
         <label><input type="checkbox" data-column="7" checked/><strong>Cross-study P-value</strong></label> -
-        <label><input type="checkbox" data-column="8" /><strong>Cross-study P-value (disease)</strong></label> -
-        <label><input type="checkbox" data-column="9" /><strong>Cross-study P-value (species)</strong></label> -
-        <label><input type="checkbox" data-column="10" /><strong>Cross-study P-value (sample source)</strong></label> -
+        <label><input type="checkbox" data-column="8"/><strong>Cross-study P-value (disease)</strong></label> -
+        <label><input type="checkbox" data-column="9"/><strong>Cross-study P-value (species)</strong></label> -
+        <label><input type="checkbox" data-column="10"/><strong>Cross-study P-value (sample source)</strong></label> -
         <label><input type="checkbox" data-column="11" checked/><strong>Type</strong></label>
     </div>
 
@@ -104,9 +104,8 @@
                     "render": function (data, type, row, meta) {
                         var content = '';
                         if (row.consensusSpectrumName != null) {
-                            content = '<a href="${pageContext.request.contextPath}/cluster/' + row.matchSpectrumClusterId + '/">' +
-                                row.consensusSpectrumName +
-                                '</a>';
+                            content = '<a href="${pageContext.request.contextPath}/cluster/'
+                                + row.matchSpectrumClusterId + '/">' + row.consensusSpectrumName + '</a>';
                         }
                         return content;
                     }
@@ -198,12 +197,12 @@
                     "orderable": true,
                     "render": function (data, type, row, meta) {
                         var content = '';
-                        if(row.consensusSpectrumName != null){
-                         content = '<img' +
-                            ' src="${pageContext.request.contextPath}/' + row.chromatographyTypeIconPath + '"'
-                            + ' alt="' + row.chromatographyTypeLabel + '"'
-                            + ' title="' + row.chromatographyTypeLabel + '"'
-                            + ' class="icon"/>';
+                        if (row.consensusSpectrumName != null) {
+                            content = '<img' +
+                                ' src="${pageContext.request.contextPath}/' + row.chromatographyTypeIconPath + '"'
+                                + ' alt="' + row.chromatographyTypeLabel + '"'
+                                + ' title="' + row.chromatographyTypeLabel + '"'
+                                + ' class="icon"/>';
                         }
                         return content;
                     }
@@ -219,7 +218,6 @@
                             var content = '<a href="${pageContext.request.contextPath}/file/'
                                 + row.fileIndex + '/' + row.spectrumIndex + '/" class="button"> Search</a>';
                         }
-
                         return content;
                     }
                 },
@@ -258,8 +256,9 @@
 
             for (i = 8; i < 11; i++) {
                 // Define
-                var bVis = table.fnSettings().aoColumns[i].bVisible;
-
+                if (table.fnSettings() != null) {
+                    var bVis = table.fnSettings().aoColumns[i].bVisible;
+                }
                 // Toggle
                 table.fnSetColumnVis( i, bVis ? false : true );
             }
