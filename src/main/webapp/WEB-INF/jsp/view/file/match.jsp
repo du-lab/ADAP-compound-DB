@@ -38,19 +38,37 @@
 <section>
     <h1>Matching Hits</h1>
 
+    <div>
+        Click to hide/show columns:
+        <label><input type="checkbox" data-column="2" checked/><strong>Match Spectrum</strong></label> -
+        <label><input type="checkbox" data-column="3" checked/><strong>Count</strong></label> -
+        <label><input type="checkbox" data-column="4" checked/><strong>Score</strong></label> -
+        <label><input type="checkbox" data-column="5" checked/><strong>In-study P-value</strong></label> -
+        <label><input type="checkbox" data-column="6" checked/><strong>Maximum Diversity</strong></label> -
+        <label><input type="checkbox" data-column="7" checked/><strong>Cross-study P-value</strong></label> -
+        <label><input type="checkbox" data-column="8" /><strong>Cross-study P-value (disease)</strong></label> -
+        <label><input type="checkbox" data-column="9" /><strong>Cross-study P-value (species)</strong></label> -
+        <label><input type="checkbox" data-column="10" /><strong>Cross-study P-value (sample source)</strong></label> -
+        <label><input type="checkbox" data-column="11" checked/><strong>Type</strong></label>
+    </div>
+
     <div align="center">
         <c:choose>
             <c:when test="${matches != null && matches.size() > 0}">
                 <table id="match_table" class="display responsive" style="max-width: 100%;">
                     <thead>
                     <tr>
-                        <th>Score</th>
-                        <th>Spectrum</th>
-                        <th>Size</th>
-                        <th>Minimum diversity</th>
-                        <th>Maximum diversity</th>
-                        <th>Average diversity</th>
-                        <th>View</th>
+                        <th title="Match spectra">Match Spectrum</th>
+                        <th title="Number of studies">Count</th>
+                        <th title="Minimum matching score between all spectra in a cluster">Score</th>
+                        <th title="P-value of the In-study ANOVA test">In-study P-value</th>
+                        <th title="Gini-Simpson Index">Maximum Diversity</th>
+                        <th title="P-value of the Cross-study Goodness-of-fit test">Cross-study P-value</th>
+                        <th title="P-value of disease">Cross-study P-value (disease)</th>
+                        <th title="P-value of species">Cross-study P-value (species)</th>
+                        <th title="P-value of sample source">Cross-study P-value (sample source)</th>
+                        <th title="Chromatography type">Type</th>
+                        <th></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -61,8 +79,40 @@
                                           value="${match.score * 1000}"
                                           var="score"/>
 
+                        <fmt:formatNumber type="number"
+                                          maxFractionDigits="0"
+                                          groupingUsed="false"
+                                          value="${match.matchSpectrum.cluster.aveSignificance}"
+                                          var="aveSignificance"/>
+
+                        <fmt:formatNumber type="number"
+                                          maxFractionDigits="0"
+                                          groupingUsed="false"
+                                          value="${match.matchSpectrum.cluster.maxDiversity}"
+                                          var="maxDiversity"/>
+
+                        <fmt:formatNumber type="number"
+                                          maxFractionDigits="0"
+                                          groupingUsed="false"
+                                          value="${match.matchSpectrum.cluster.minPValue}"
+                                          var="minPValue"/>
+                        <fmt:formatNumber type="number"
+                                          maxFractionDigits="0"
+                                          groupingUsed="false"
+                                          value="${match.matchSpectrum.cluster.diseasePValue}"
+                                          var="diseasePValue"/>
+                        <fmt:formatNumber type="number"
+                                          maxFractionDigits="0"
+                                          groupingUsed="false"
+                                          value="${match.matchSpectrum.cluster.speciesPValue}"
+                                          var="speciesPValue"/>
+                        <fmt:formatNumber type="number"
+                                          maxFractionDigits="0"
+                                          groupingUsed="false"
+                                          value="${match.matchSpectrum.cluster.sampleSourcePValue}"
+                                          var="sampleSourcePValue"/>
+
                         <tr data-spectrum='${dulab:spectrumToJson(match.matchSpectrum)}'>
-                            <td>${score}</td>
                             <c:if test="${match.matchSpectrum.consensus}">
                                 <td>
                                     <a href="/cluster/${match.matchSpectrum.cluster.id}/">${dulab:abbreviate(match.matchSpectrum.name, 80)}</a><br/>
@@ -72,26 +122,14 @@
                                     </small>
                                 </td>
                                 <td>${match.matchSpectrum.cluster.size}</td>
-                                <c:forEach items="${submissionCategoryTypes}" var="type">
-                                    <td>${dulab:jsonToHtml(dulab:clusterDistributionToJson(match.matchSpectrum.cluster.spectra, submissionCategoryMap.get(type)))}</td>
-                                </c:forEach>
-                                <!--more horiz-->
-                                <td><a href="/cluster/${match.matchSpectrum.cluster.id}/"><i class="material-icons">&#xE5D3;</i></a>
-                                </td>
-                            </c:if>
-                            <c:if test="${match.matchSpectrum.reference}">
-                                <td>
-                                    <a href="/spectrum/${match.matchSpectrum.id}/">${dulab:abbreviate(match.matchSpectrum.name, 80)}</a><br/>
-                                    <small>
-                                        <c:if test="${match.matchSpectrum.precursor != null}">Precursor: ${match.matchSpectrum.precursor};</c:if>
-                                        <c:if test="${match.matchSpectrum.retentionTime != null}">Ret Time: ${match.matchSpectrum.retentionTime};</c:if>
-                                    </small>
-                                </td>
-                                <td></td>
-                                <c:forEach items="${submissionCategoryTypes}" var="type">
-                                    <td>${dulab:jsonToHtml(dulab:clusterDistributionToJson([match.matchSpectrum], submissionCategoryMap.get(type)))}</td>
-                                </c:forEach>
-                                <!--more horiz-->
+                                <td>${score}</td>
+                                <td>${aveSignificance}</td>
+                                <td>${maxDiversity}</td>
+                                <td>${minPValue}</td>
+                                <td>${diseasePValue}</td>
+                                <td>${speciesPValue}</td>
+                                <td>${sampleSourcePValue}</td>
+                                <td><img src="${pageContext.request.contextPath}/${match.matchSpectrum.chromatographyType.iconPath}" alt="${match.matchSpectrum.chromatographyType.label}" title="${match.matchSpectrum.chromatographyType.label}" class="icon"/></td>
                                 <td><a href="/spectrum/${match.matchSpectrum.id}/"><i
                                         class="material-icons">&#xE5D3;</i></a></td>
                             </c:if>
@@ -209,6 +247,35 @@
                 source: '${dulab:stringsToJson(searchForm.availableTags)}'
             }
         })
+
+        $( "input:checkbox" ).click( function () {
+
+                // table
+                var table = $( '#match_table' ).dataTable();
+
+                // column
+                var colNum = $( this ).attr( 'data-column' );
+
+                // Define
+                var bVis = table.fnSettings().aoColumns[colNum].bVisible;
+
+                // Toggle
+                table.fnSetColumnVis( colNum, bVis ? false : true );
+            }
+        );
+
+        $( "input:checkbox" ).ready( function () {
+            var table = $( '#match_table' ).dataTable();
+
+            for (i = 8; i < 11; i++) {
+                // Define
+                var bVis = table.fnSettings().aoColumns[i].bVisible;
+
+                // Toggle
+                table.fnSetColumnVis( i, bVis ? false : true );
+            }
+        } )
+
     });
 </script>
 
