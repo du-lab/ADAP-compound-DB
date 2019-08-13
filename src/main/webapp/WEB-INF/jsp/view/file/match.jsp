@@ -42,16 +42,20 @@
             <c:when test="${matches != null && matches.size() > 0}">
                 <div>
                     Click to hide/show columns:
-                    <label><input type="checkbox" data-column="2" checked/><strong>Match Spectrum</strong></label> -
-                    <label><input type="checkbox" data-column="3" checked/><strong>Count</strong></label> -
-                    <label><input type="checkbox" data-column="4" checked/><strong>Score</strong></label> -
-                    <label><input type="checkbox" data-column="5" checked/><strong>In-study P-value</strong></label> -
-                    <label><input type="checkbox" data-column="6" checked/><strong>Maximum Diversity</strong></label> -
-                    <label><input type="checkbox" data-column="7" checked/><strong>Cross-study P-value</strong></label> -
-                    <label><input type="checkbox" data-column="8" /><strong>Cross-study P-value (disease)</strong></label> -
-                    <label><input type="checkbox" data-column="9" /><strong>Cross-study P-value (species)</strong></label> -
-                    <label><input type="checkbox" data-column="10" /><strong>Cross-study P-value (sample source)</strong></label> -
-                    <label><input type="checkbox" data-column="11" checked/><strong>Type</strong></label>
+                    <label><input type="checkbox" data-column="0" checked/><strong>Match Spectrum</strong></label> -
+                    <label><input type="checkbox" data-column="1" checked/><strong>Count</strong></label> -
+                    <label><input type="checkbox" data-column="2" checked/><strong>Score</strong></label> -
+                    <label><input type="checkbox" data-column="3" checked/><strong>In-study P-value</strong></label> -
+                    <label><input type="checkbox" data-column="4" checked/><strong>Maximum Diversity</strong></label> -
+                    <label><input type="checkbox" data-column="5" checked/><strong>Cross-study P-value</strong></label>
+                    -
+                    <label><input type="checkbox" data-column="6"/><strong>Cross-study P-value
+                        (disease)</strong></label> -
+                    <label><input type="checkbox" data-column="7"/><strong>Cross-study P-value
+                        (species)</strong></label> -
+                    <label><input type="checkbox" data-column="8"/><strong>Cross-study P-value (sample source)</strong></label>
+                    -
+                    <label><input type="checkbox" data-column="9" checked/><strong>Type</strong></label>
                 </div>
 
                 <table id="match_table" class="display responsive" style="max-width: 100%;">
@@ -128,7 +132,10 @@
                                 <td>${diseasePValue}</td>
                                 <td>${speciesPValue}</td>
                                 <td>${sampleSourcePValue}</td>
-                                <td><img src="${pageContext.request.contextPath}/${match.matchSpectrum.chromatographyType.iconPath}" alt="${match.matchSpectrum.chromatographyType.label}" title="${match.matchSpectrum.chromatographyType.label}" class="icon"/></td>
+                                <td><img
+                                        src="${pageContext.request.contextPath}/${match.matchSpectrum.chromatographyType.iconPath}"
+                                        alt="${match.matchSpectrum.chromatographyType.label}"
+                                        title="${match.matchSpectrum.chromatographyType.label}" class="icon"/></td>
                                 <td><a href="/spectrum/${match.matchSpectrum.id}/"><i
                                         class="material-icons">&#xE5D3;</i></a></td>
                             </c:if>
@@ -204,7 +211,7 @@
 
 
                 <div align="center">
-                    <input type="submit" value="Search" />
+                    <input type="submit" value="Search"/>
                 </div>
             </form:form>
         </div>
@@ -217,35 +224,35 @@
 <script src="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.js"/>"></script>
 <script src="<c:url value="/resources/tag-it-6ccd2de/js/tag-it.min.js"/>"></script>
 <script>
-    $(document).ready(function () {
+    $( document ).ready( function () {
 
-        var table = $('#match_table').DataTable({
+        var table = $( '#match_table' ).DataTable( {
             order: [[0, 'desc']],
             select: {style: 'single'},
             responsive: true,
             scrollX: true,
             scroller: true
-        });
+        } );
 
-        table.on('select', function (e, dt, type, indexes) {
-            var row = table.row(indexes).node();
-            var spectrum = JSON.parse($(row).attr('data-spectrum'));
-            plot.update(spectrum);
-        });
+        table.on( 'select', function (e, dt, type, indexes) {
+            var row = table.row( indexes ).node();
+            var spectrum = JSON.parse( $( row ).attr( 'data-spectrum' ) );
+            plot.update( spectrum );
+        } );
 
-        table.rows(':eq(0)').select();
+        table.rows( ':eq(0)' ).select();
 
-        $('#scoreThreshold').prop('disabled', !$('#scoreThresholdCheck1').prop('checked'));
-        $('#mzTolerance').prop('disabled', !$('#scoreThresholdCheck1').prop('checked'));
-        $('#massTolerance').prop('disabled', !$('#massToleranceCheck1').prop('checked'));
-        $('#retTimeTolerance').prop('disabled', !$('#retTimeToleranceCheck1').prop('checked'));
+        $( '#scoreThreshold' ).prop( 'disabled', !$( '#scoreThresholdCheck1' ).prop( 'checked' ) );
+        $( '#mzTolerance' ).prop( 'disabled', !$( '#scoreThresholdCheck1' ).prop( 'checked' ) );
+        $( '#massTolerance' ).prop( 'disabled', !$( '#massToleranceCheck1' ).prop( 'checked' ) );
+        $( '#retTimeTolerance' ).prop( 'disabled', !$( '#retTimeToleranceCheck1' ).prop( 'checked' ) );
 
-        $('#accordion').accordion();
-        $('#tags').tagit({
+        $( '#accordion' ).accordion();
+        $( '#tags' ).tagit( {
             autocomplete: {
                 source: '${dulab:stringsToJson(searchForm.availableTags)}'
             }
-        })
+        } )
 
         $( "input:checkbox" ).click( function () {
 
@@ -265,23 +272,23 @@
 
         $( "input:checkbox" ).ready( function () {
             var table = $( '#match_table' ).dataTable();
-
-            for (i = 8; i < 11; i++) {
+            for (i = 6; i < 9; i++) {
                 // Define
-                var bVis = table.fnSettings().aoColumns[i].bVisible;
-
+                if(table.fnSettings() != null) {
+                    var bVis = table.fnSettings().aoColumns[i].bVisible;
+                }
                 // Toggle
                 table.fnSetColumnVis( i, bVis ? false : true );
             }
         } )
 
-    });
+    } );
 </script>
 
 <script src="<c:url value="/resources/d3/d3.min.js"/>"></script>
 <script src="<c:url value="/resources/AdapCompoundDb/js/twospectraplot.js"/>"></script>
 <script>
-    var plot = new TwoSpectraPlot('plot', JSON.parse('${dulab:spectrumToJson(querySpectrum)}'))
+    var plot = new TwoSpectraPlot( 'plot', JSON.parse( '${dulab:spectrumToJson(querySpectrum)}' ) )
 </script>
 <style>
     .selection {
