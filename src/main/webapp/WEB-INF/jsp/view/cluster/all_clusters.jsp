@@ -8,15 +8,15 @@
 
     <div>
         Click to hide/show columns:
-        <input type="checkbox" id="checkbox" data-column="2" checked/><strong>Count</strong> --
-        <input type="checkbox" data-column="3" checked/><strong>Score</strong> --
-        <input type="checkbox" data-column="4" checked/><strong>In-study P-value</strong> --
-        <input type="checkbox" data-column="5" checked/><strong>Maximum Diversity</strong> --
-        <input type="checkbox" data-column="6" checked/><strong>Cross-study P-value</strong> --
-        <input type="checkbox" data-column="7"/><strong>Cross-study P-value (disease)</strong> --
-        <input type="checkbox" data-column="8"/><strong>Cross-study P-value (species)</strong> --
-        <input type="checkbox" data-column="9"/><strong>Cross-study P-value (sample source)</strong> --
-        <input type="checkbox" data-column="10" checked/><strong>Type</strong>
+        <label><input type="checkbox" data-column="2" checked/><strong>Count</strong></label> --
+        <label><input type="checkbox" data-column="3" checked/><strong>Score</strong></label> --
+        <label><input type="checkbox" data-column="4" checked/><strong>In-study P-value</strong></label> --
+        <label><input type="checkbox" data-column="5" checked/><strong>Maximum Diversity</strong></label> --
+        <label><input type="checkbox" data-column="6" checked/><strong>Cross-study P-value</strong></label> --
+        <label><input type="checkbox" data-column="7"/><strong>Cross-study P-value (disease)</strong></label> --
+        <label><input type="checkbox" data-column="8"/><strong>Cross-study P-value (species)</strong></label> --
+        <label><input type="checkbox" data-column="9"/><strong>Cross-study P-value (sample source)</strong></label> --
+        <label> <input type="checkbox" data-column="10" checked/><strong>Type</strong></label>
     </div>
 
     <div align="center">
@@ -199,20 +199,18 @@
 
         $( "input:checkbox" ).click( function () {
 
+                // table
+                var table = $( '#cluster_table' ).dataTable();
 
-                if ($( "#checkbox" ).is( ':checked' )) {
-                    // table
-                    var table = $( '#cluster_table' ).dataTable();
+                // column
+                var colNum = $( this ).attr( 'data-column' );
 
-                    // column
-                    var colNum = $( this ).attr( 'data-column' );
+                // Define
+                var bVis = table.fnSettings().aoColumns[colNum].bVisible;
 
-                    // Define
-                    var bVis = table.fnSettings().aoColumns[colNum].bVisible;
+                // Toggle
+                table.fnSetColumnVis( colNum, bVis ? false : true );
 
-                    // Toggle
-                    table.fnSetColumnVis( colNum, bVis ? false : true );
-                }
             }
         );
 

@@ -220,7 +220,7 @@ public class DistributionServiceImpl implements DistributionService {
                 clusterPvalue.add(t.getPValue());
                 if(t.getTagKey().equalsIgnoreCase("disease")){
                     cluster.setDiseasePValue(t.getPValue());
-                }else if(t.getTagKey().equalsIgnoreCase("species")){
+                }else if(t.getTagKey().equalsIgnoreCase("species (common)")){
                     cluster.setSpeciesPValue(t.getPValue());
                 }else if(t.getTagKey().equalsIgnoreCase("sample source")){
                     cluster.setSampleSourcePValue(t.getPValue());
