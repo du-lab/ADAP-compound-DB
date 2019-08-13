@@ -37,24 +37,23 @@
 
 <section>
     <h1>Matching Hits</h1>
-
-    <div>
-        Click to hide/show columns:
-        <label><input type="checkbox" data-column="2" checked/><strong>Match Spectrum</strong></label> -
-        <label><input type="checkbox" data-column="3" checked/><strong>Count</strong></label> -
-        <label><input type="checkbox" data-column="4" checked/><strong>Score</strong></label> -
-        <label><input type="checkbox" data-column="5" checked/><strong>In-study P-value</strong></label> -
-        <label><input type="checkbox" data-column="6" checked/><strong>Maximum Diversity</strong></label> -
-        <label><input type="checkbox" data-column="7" checked/><strong>Cross-study P-value</strong></label> -
-        <label><input type="checkbox" data-column="8" /><strong>Cross-study P-value (disease)</strong></label> -
-        <label><input type="checkbox" data-column="9" /><strong>Cross-study P-value (species)</strong></label> -
-        <label><input type="checkbox" data-column="10" /><strong>Cross-study P-value (sample source)</strong></label> -
-        <label><input type="checkbox" data-column="11" checked/><strong>Type</strong></label>
-    </div>
-
     <div align="center">
         <c:choose>
             <c:when test="${matches != null && matches.size() > 0}">
+                <div>
+                    Click to hide/show columns:
+                    <label><input type="checkbox" data-column="2" checked/><strong>Match Spectrum</strong></label> -
+                    <label><input type="checkbox" data-column="3" checked/><strong>Count</strong></label> -
+                    <label><input type="checkbox" data-column="4" checked/><strong>Score</strong></label> -
+                    <label><input type="checkbox" data-column="5" checked/><strong>In-study P-value</strong></label> -
+                    <label><input type="checkbox" data-column="6" checked/><strong>Maximum Diversity</strong></label> -
+                    <label><input type="checkbox" data-column="7" checked/><strong>Cross-study P-value</strong></label> -
+                    <label><input type="checkbox" data-column="8" /><strong>Cross-study P-value (disease)</strong></label> -
+                    <label><input type="checkbox" data-column="9" /><strong>Cross-study P-value (species)</strong></label> -
+                    <label><input type="checkbox" data-column="10" /><strong>Cross-study P-value (sample source)</strong></label> -
+                    <label><input type="checkbox" data-column="11" checked/><strong>Type</strong></label>
+                </div>
+
                 <table id="match_table" class="display responsive" style="max-width: 100%;">
                     <thead>
                     <tr>
