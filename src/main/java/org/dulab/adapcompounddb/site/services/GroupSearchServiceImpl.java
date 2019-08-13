@@ -2,7 +2,7 @@ package org.dulab.adapcompounddb.site.services;
 
 import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
-import org.dulab.adapcompounddb.models.dto.GroupSearchDTO;
+import org.dulab.adapcompounddb.models.dto.SpectrumClusterDTO;
 import org.dulab.adapcompounddb.models.entities.File;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
@@ -69,7 +69,7 @@ public class GroupSearchServiceImpl implements GroupSearchService {
             }
         }
 
-        final List<GroupSearchDTO> groupSearchDTOList = new ArrayList<>();
+        final List<SpectrumClusterDTO> groupSearchDTOList = new ArrayList<>();
 
         for (int fileIndex = 0; fileIndex < submission.getFiles().size(); fileIndex++) {
 
@@ -97,33 +97,54 @@ public class GroupSearchServiceImpl implements GroupSearchService {
         progress = -1F;
     }
 
-    private GroupSearchDTO saveDTO(SpectrumMatch spectrumMatch, int fileIndex, int spectrumIndex, long querySpectrumId) {
-        GroupSearchDTO groupSearchDTO = new GroupSearchDTO();
+    private SpectrumClusterDTO saveDTO(SpectrumMatch spectrumMatch, int fileIndex, int spectrumIndex, long querySpectrumId) {
+        SpectrumClusterDTO spectrumClusterDTO = new SpectrumClusterDTO();
         if (spectrumMatch.getMatchSpectrum() != null) {
             if (spectrumMatch.getMatchSpectrum().getCluster().getMinPValue() != null) {
                 double pValue = spectrumMatch.getMatchSpectrum().getCluster().getMinPValue();
-                groupSearchDTO.setMinPValue(pValue);
+                spectrumClusterDTO.setMinPValue(pValue);
             }
             if (spectrumMatch.getMatchSpectrum().getCluster().getMaxDiversity() != null) {
                 double maxDiversity = spectrumMatch.getMatchSpectrum().getCluster().getMaxDiversity();
-                groupSearchDTO.setMaxDiversity(maxDiversity);
+                spectrumClusterDTO.setMaxDiversity(maxDiversity);
             }
+            if (spectrumMatch.getMatchSpectrum().getCluster().getDiseasePValue() != null) {
+                double diseasePValue = spectrumMatch.getMatchSpectrum().getCluster().getDiseasePValue();
+                spectrumClusterDTO.setDiseasePValue(diseasePValue);
+            }
+            if (spectrumMatch.getMatchSpectrum().getCluster().getSpeciesPValue() != null) {
+                double speciesPValue = spectrumMatch.getMatchSpectrum().getCluster().getSpeciesPValue();
+                spectrumClusterDTO.setSpeciesPValue(speciesPValue);
+            }
+            if (spectrumMatch.getMatchSpectrum().getCluster().getSampleSourcePValue() != null) {
+                double sampleSourcePValue = spectrumMatch.getMatchSpectrum().getCluster().getSampleSourcePValue();
+                spectrumClusterDTO.setSampleSourcePValue(sampleSourcePValue);
+            }
+
             long matchSpectrumClusterId = spectrumMatch.getMatchSpectrum().getCluster().getId();
             double score = spectrumMatch.getScore();
+            int size = spectrumMatch.getMatchSpectrum().getCluster().getSize();
             String matchSpectrumName = spectrumMatch.getMatchSpectrum().getName();
-            groupSearchDTO.setMatchSpectrumClusterId(matchSpectrumClusterId);
-            groupSearchDTO.setMatchSpectrumName(matchSpectrumName);
-            groupSearchDTO.setScore(score);
+            String chromatographyTypeIconPath = spectrumMatch.getMatchSpectrum().getChromatographyType().getIconPath();
+            String chromatographyTypeLabel = spectrumMatch.getMatchSpectrum().getChromatographyType().getLabel();
+
+            spectrumClusterDTO.setMatchSpectrumClusterId(matchSpectrumClusterId);
+            spectrumClusterDTO.setConsensusSpectrumName(matchSpectrumName);
+            spectrumClusterDTO.setDiameter(score);
+            spectrumClusterDTO.setSize(size);
+            spectrumClusterDTO.setChromatographyTypeIconPath(chromatographyTypeIconPath);
+            spectrumClusterDTO.setChromatographyTypeLabel(chromatographyTypeLabel);
+
         } else {
-            groupSearchDTO.setScore(null);
+            spectrumClusterDTO.setDiameter(null);
         }
         long id = spectrumMatch.getId();
         String querySpectrumName = spectrumMatch.getQuerySpectrum().getName();
-        groupSearchDTO.setFileIndex(fileIndex);
-        groupSearchDTO.setId(id);
-        groupSearchDTO.setQuerySpectrumName(querySpectrumName);
-        groupSearchDTO.setSpectrumIndex(spectrumIndex);
-        groupSearchDTO.setQuerySpectrumId(querySpectrumId);
-        return groupSearchDTO;
+        spectrumClusterDTO.setFileIndex(fileIndex);
+        spectrumClusterDTO.setMatchSpectrumClusterId(id);
+        spectrumClusterDTO.setQuerySpectrumName(querySpectrumName);
+        spectrumClusterDTO.setSpectrumIndex(spectrumIndex);
+        spectrumClusterDTO.setQuerySpectrumId(querySpectrumId);
+        return spectrumClusterDTO;
     }
 }
