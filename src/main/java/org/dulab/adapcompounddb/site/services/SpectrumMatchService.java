@@ -2,7 +2,6 @@ package org.dulab.adapcompounddb.site.services;
 
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
-import org.dulab.adapcompounddb.models.dto.GroupSearchDTO;
 import org.dulab.adapcompounddb.models.dto.SpectrumClusterDTO;
 import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
 

@@ -40,7 +40,6 @@ public class SpectrumClusterDTO implements Serializable {
     String chromatographyTypeIconPath;
     String chromatographyTypeLabel;
 
-    SpectrumDTO consensusSpectrum;
     private Set<DiversityIndexDTO> diversityIndices;
 
     public SpectrumClusterDTO() {
@@ -85,14 +84,6 @@ public class SpectrumClusterDTO implements Serializable {
 
     public void setId(final long id) {
         this.id = id;
-    }
-
-    public SpectrumDTO getConsensusSpectrum() {
-        return consensusSpectrum;
-    }
-
-    public void setConsensusSpectrum(final SpectrumDTO consensusSpectrum) {
-        this.consensusSpectrum = consensusSpectrum;
     }
 
     public Integer getSize() {
