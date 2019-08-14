@@ -199,9 +199,9 @@
                         var content = '';
                         if (row.consensusSpectrumName != null) {
                             content = '<img' +
-                                ' src="${pageContext.request.contextPath}/' + row.chromatographyType.chromatographyTypeIconPath + '"'
-                                + ' alt="' + row.chromatographyType.chromatographyTypeLabel + '"'
-                                + ' title="' + row.chromatographyType.chromatographyTypeLabel + '"'
+                                ' src="${pageContext.request.contextPath}/' + row.chromatographyTypeIconPath + '"'
+                                + ' alt="' + row.chromatographyTypeLabel + '"'
+                                + ' title="' + row.chromatographyTypeLabel + '"'
                                 + ' class="icon"/>';
                         }
                         return content;
