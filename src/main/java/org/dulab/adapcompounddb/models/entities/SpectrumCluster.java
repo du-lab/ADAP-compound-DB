@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.models.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.dulab.adapcompounddb.models.ChromatographyType;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -45,6 +46,10 @@ public class SpectrumCluster implements Serializable {
     private List<TagDistribution> tagDistributions;
 
     private Set<DiversityIndex> diversityIndices;
+
+    @NotNull(message = "Spectrum: the field Chromatography Type is required.")
+    @Enumerated(EnumType.STRING)
+    private ChromatographyType chromatographyType;
 
     // *******************************
     // ***** Getters and setters *****
@@ -201,6 +206,14 @@ public class SpectrumCluster implements Serializable {
 
     public void setMaxDiversity(final Double maxDiversity) {
         this.maxDiversity = maxDiversity;
+    }
+
+    public ChromatographyType getChromatographyType() {
+        return chromatographyType;
+    }
+
+    public void setChromatographyType(final ChromatographyType chromatographyType) {
+        this.chromatographyType = chromatographyType;
     }
 
     @Override

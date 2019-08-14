@@ -396,7 +396,13 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
         spectrumPage = spectrumClusterRepository.findClusters(searchStr, pageable);
 
+        // give chromatographyType value to cluster
+        for(SpectrumCluster sc:spectrumPage.getContent()){
+            sc.setChromatographyType(sc.getConsensusSpectrum().getChromatographyType());
+        }
+
         final List<SpectrumClusterDTO> spectrumList = objectMapper.map(spectrumPage.getContent(), SpectrumClusterDTO.class);
+
         final DataTableResponse response = new DataTableResponse(spectrumList);
         response.setRecordsTotal(spectrumPage.getTotalElements());
         response.setRecordsFiltered(spectrumPage.getTotalElements());
