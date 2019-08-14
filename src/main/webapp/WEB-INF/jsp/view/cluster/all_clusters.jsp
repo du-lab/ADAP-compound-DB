@@ -177,9 +177,9 @@
                     "orderable": true,
                     "render": function (data, type, row, meta) {
                         var content = '<img' +
-                            ' src="${pageContext.request.contextPath}/' + row.chromatographyType.chromatographyTypeIconPath + '"'
-                            + ' alt="' + row.chromatographyType.chromatographyTypeLabel + '"'
-                            + ' title="' + row.chromatographyType.chromatographyTypeLabel + '"'
+                            ' src="${pageContext.request.contextPath}/' + row.chromatographyTypeIconPath + '"'
+                            + ' alt="' + row.chromatographyTypeLabel + '"'
+                            + ' title="' + row.chromatographyTypeLabel + '"'
                             + ' class="icon"/>';
 
                         return content;
