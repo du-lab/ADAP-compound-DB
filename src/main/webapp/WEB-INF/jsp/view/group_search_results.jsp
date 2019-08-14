@@ -26,9 +26,9 @@
         <label><input type="checkbox" data-column="5" checked/><strong>In-study P-value</strong></label> -
         <label><input type="checkbox" data-column="6" checked/><strong>Maximum Diversity</strong></label> -
         <label><input type="checkbox" data-column="7" checked/><strong>Cross-study P-value</strong></label> -
-        <label><input type="checkbox" data-column="8"/><strong>Cross-study P-value (disease)</strong></label> -
-        <label><input type="checkbox" data-column="9"/><strong>Cross-study P-value (species)</strong></label> -
-        <label><input type="checkbox" data-column="10"/><strong>Cross-study P-value (sample source)</strong></label> -
+        <label><input type="checkbox" data-column="8" class="checkboxHide"/><strong>Cross-study P-value (disease)</strong></label> -
+        <label><input type="checkbox" data-column="9" class="checkboxHide"/><strong>Cross-study P-value (species)</strong></label> -
+        <label><input type="checkbox" data-column="10" class="checkboxHide"/><strong>Cross-study P-value (sample source)</strong></label> -
         <label><input type="checkbox" data-column="11" checked/><strong>Type</strong></label>
     </div>
 
@@ -253,6 +253,8 @@
 
         $( "input:checkbox" ).ready( function () {
             var table = $( '#match_table' ).dataTable();
+
+            $(".checkboxHide").prop("checked",false);
 
             for (i = 8; i < 11; i++) {
                 // Define
