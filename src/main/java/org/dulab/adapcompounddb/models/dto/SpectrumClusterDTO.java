@@ -40,6 +40,8 @@ public class SpectrumClusterDTO implements Serializable {
     String chromatographyTypeIconPath;
     String chromatographyTypeLabel;
 
+//    private SpectrumDTO consensusSpectrum;
+//    private Set<DiversityIndexDTO> diversityIndices;
     private Set<DiversityIndexDTO> diversityIndices;
 
     public SpectrumClusterDTO() {
