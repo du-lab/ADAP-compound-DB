@@ -9,6 +9,7 @@ import javax.persistence.Enumerated;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 
 @Entity
+@Deprecated
 public class SubmissionCategoryDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;

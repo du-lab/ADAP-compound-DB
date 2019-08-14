@@ -2,6 +2,7 @@ package org.dulab.adapcompounddb.models.dto;
 
 import java.io.Serializable;
 
+@Deprecated
 public class SpectrumDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;

@@ -2,7 +2,7 @@ package org.dulab.adapcompounddb.models.dto;
 
 import java.io.Serializable;
 
-
+@Deprecated
 public class GroupSearchDTO implements Serializable {
     private static final long serialVersionUID = -5138706034768474324L;
 

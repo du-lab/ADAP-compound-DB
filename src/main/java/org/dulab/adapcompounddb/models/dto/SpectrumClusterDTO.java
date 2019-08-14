@@ -36,12 +36,12 @@ public class SpectrumClusterDTO implements Serializable {
     private int spectrumIndex;
     private long matchSpectrumClusterId;
 
-    ChromatographyType chromatographyType;
-    String chromatographyTypeIconPath;
-    String chromatographyTypeLabel;
+    private ChromatographyType chromatographyType;
+    private String chromatographyTypeIconPath;
+    private String chromatographyTypeLabel;
 
-    SpectrumDTO consensusSpectrum;
-    private Set<DiversityIndexDTO> diversityIndices;
+//    private SpectrumDTO consensusSpectrum;
+//    private Set<DiversityIndexDTO> diversityIndices;
 
     public SpectrumClusterDTO() {
 
@@ -87,13 +87,13 @@ public class SpectrumClusterDTO implements Serializable {
         this.id = id;
     }
 
-    public SpectrumDTO getConsensusSpectrum() {
-        return consensusSpectrum;
-    }
-
-    public void setConsensusSpectrum(final SpectrumDTO consensusSpectrum) {
-        this.consensusSpectrum = consensusSpectrum;
-    }
+//    public SpectrumDTO getConsensusSpectrum() {
+//        return consensusSpectrum;
+//    }
+//
+//    public void setConsensusSpectrum(final SpectrumDTO consensusSpectrum) {
+//        this.consensusSpectrum = consensusSpectrum;
+//    }
 
     public Integer getSize() {
         return size;
@@ -151,13 +151,13 @@ public class SpectrumClusterDTO implements Serializable {
         this.chromatographyTypeLabel = chromatographyTypeLabel;
     }
 
-    public Set<DiversityIndexDTO> getDiversityIndices() {
-        return diversityIndices;
-    }
-
-    public void setDiversityIndices(final Set<DiversityIndexDTO> diversityIndices) {
-        this.diversityIndices = diversityIndices;
-    }
+//    public Set<DiversityIndexDTO> getDiversityIndices() {
+//        return diversityIndices;
+//    }
+//
+//    public void setDiversityIndices(final Set<DiversityIndexDTO> diversityIndices) {
+//        this.diversityIndices = diversityIndices;
+//    }
 
     public String getQuerySpectrumName() {
         return querySpectrumName;
