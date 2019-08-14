@@ -193,7 +193,8 @@
                             + row.id + '/"><i class="material-icons" title="View">&#xE5D3;</i></a>';
                         return content;
                     }
-                }
+                },
+                {"className": "dt-center", "targets": "_all"}
             ]
         } );
 
