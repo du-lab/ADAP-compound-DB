@@ -8,6 +8,7 @@
 
     <div>
         Click to hide/show columns:
+        <!--TODO: use name in data-column. E.g. data-column="count"-->
         <label><input type="checkbox" data-column="2" checked/><strong>Count</strong></label> -
         <label><input type="checkbox" data-column="3" checked/><strong>Score</strong></label> -
         <label><input type="checkbox" data-column="4" checked/><strong>In-study P-value</strong></label> -
@@ -65,6 +66,7 @@
             },
             "columnDefs": [
                 {
+                    <!--TODO: use column header if possible-->
                     "targets": 0,
                     "orderable": false,
                     "searchable": false,
@@ -92,7 +94,8 @@
                     "orderable": true,
                     "render": function (data, type, row, meta) {
                         return row.diameter.toFixed( 3 ) * 1000;
-                    }
+                    },
+                    "visible": false
                 },
                 {
                     "targets": 4,
@@ -207,9 +210,11 @@
                 var colNum = $( this ).attr( 'data-column' );
 
                 // Define
+                <!--TODO; Use aoColumnDefs[] with column names-->
                 var bVis = table.fnSettings().aoColumns[colNum].bVisible;
 
                 // Toggle
+                <!--TODO: Set show/hide property based on $(this).prop("checked")-->
                 table.fnSetColumnVis( colNum, bVis ? false : true );
 
             }
@@ -217,6 +222,14 @@
 
         $( "input:checkbox" ).ready( function () {
             var table = $( '#cluster_table' ).dataTable();
+
+            <!--TODO: Set prop("checked") based on bVisible of each column-->
+
+            <!--
+                1. Get data-column
+                2. Get Visible property of the corresponding column
+                3. Set prop("checked") to the correct value
+            -->
 
             $(".checkboxHide").prop("checked",false);
 
