@@ -132,6 +132,7 @@ public class GroupSearchServiceImpl implements GroupSearchService {
             spectrumClusterDTO.setConsensusSpectrumName(matchSpectrumName);
             spectrumClusterDTO.setDiameter(score);
             spectrumClusterDTO.setSize(size);
+            spectrumClusterDTO.setChromatographyType(spectrumMatch.getMatchSpectrum().getChromatographyType());
             spectrumClusterDTO.setChromatographyTypeIconPath(chromatographyTypeIconPath);
             spectrumClusterDTO.setChromatographyTypeLabel(chromatographyTypeLabel);
 
