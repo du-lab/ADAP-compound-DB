@@ -140,6 +140,9 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
                         final Spectrum consensusSpectrum = cluster.getConsensusSpectrum();
 
+                        //set chromatography for cluster
+                        cluster.setChromatographyType(type);
+
                         final List<Peak> peaks = new ArrayList<>(consensusSpectrum.getPeaks());
                         final List<SpectrumProperty> properties = new ArrayList<>(consensusSpectrum.getProperties());
 

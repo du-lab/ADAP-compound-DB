@@ -47,8 +47,7 @@ public class SpectrumCluster implements Serializable {
 
     private Set<DiversityIndex> diversityIndices;
 
-    @NotNull(message = "Spectrum: the field Chromatography Type is required.")
-    @Enumerated(EnumType.STRING)
+    @NotNull(message = "Cluster: the field Chromatography Type is required.")
     private ChromatographyType chromatographyType;
 
     // *******************************
@@ -208,8 +207,9 @@ public class SpectrumCluster implements Serializable {
         this.maxDiversity = maxDiversity;
     }
 
+    @Enumerated(EnumType.STRING)
     public ChromatographyType getChromatographyType() {
-        return chromatographyType;
+        return this.chromatographyType;
     }
 
     public void setChromatographyType(final ChromatographyType chromatographyType) {

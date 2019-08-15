@@ -54,7 +54,7 @@
                     <label><input type="checkbox" data-column="9" checked/><strong>Type</strong></label>
                 </div>
 
-                <table id="match_table" class="display responsive" style="max-width: 100%;">
+                <table id="match_table" class="display responsive" style="width: 100%;">
                     <thead>
                     <tr>
                         <th title="Match spectra">Match Spectrum</th>
@@ -227,6 +227,7 @@
         var table = $( '#match_table' ).DataTable( {
             order: [[0, 'desc']],
             select: {style: 'single'},
+            processing: true,
             responsive: true,
             scrollX: true,
             scroller: true
@@ -292,13 +293,3 @@
 <script>
     var plot = new TwoSpectraPlot( 'plot', JSON.parse( '${dulab:spectrumToJson(querySpectrum)}' ) )
 </script>
-<style>
-    .selection {
-        fill: #ADD8E6;
-        stroke: #ADD8E6;
-        fill-opacity: 0.3;
-        stroke-opacity: 0.7;
-        stroke-width: 2;
-        stroke-dasharray: 5, 5;
-    }
-</style>
