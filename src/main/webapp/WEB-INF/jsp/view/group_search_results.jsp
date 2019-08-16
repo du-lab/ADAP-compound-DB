@@ -84,15 +84,17 @@
             "columnDefs": [
                 {
                     "targets": 0,
-                    "orderable": false,
+                    "bSortable": false,
                     "searchable": false,
+                    "bVisible": true,
                     "render": function (data, type, row, meta) {
                         return meta.settings.oAjaxData.start + meta.row + 1;
                     }
                 },
                 {
                     "targets": 1,
-                    "orderable": true,
+                    "bSortable": true,
+                    "bVisible": true,
                     "render": function (data, type, row, meta) {
                         content = row.querySpectrumName;
                         return content;
@@ -100,7 +102,8 @@
                 },
                 {
                     "targets": 2,
-                    "orderable": true,
+                    "bSortable": true,
+                    "bVisible": true,
                     "render": function (data, type, row, meta) {
                         var content = '';
                         if (row.consensusSpectrumName != null) {
@@ -112,12 +115,14 @@
                 },
                 {
                     "targets": 3,
-                    "orderable": true,
+                    "bSortable": true,
+                    "bVisible": true,
                     "data": "size"
                 },
                 {
                     "targets": 4,
-                    "orderable": true,
+                    "bSortable": true,
+                    "bVisible": true,
                     "render": function (data, type, row, meta) {
                         if (row.consensusSpectrumName != null && row.diameter != null) {
                             return row.diameter.toFixed( 3 ) * 1000;
@@ -128,7 +133,8 @@
                 },
                 {
                     "targets": 5,
-                    "orderable": true,
+                    "bSortable": true,
+                    "bVisible": true,
                     "render": function (data, type, row, meta) {
                         if (row.consensusSpectrumName != null && row.aveSignificance != null) {
                             return row.aveSignificance.toFixed( 3 );
@@ -139,7 +145,8 @@
                 },
                 {
                     "targets": 6,
-                    "orderable": true,
+                    "bSortable": true,
+                    "bVisible": true,
                     "render": function (data, type, row, meta) {
                         if (row.consensusSpectrumName != null && row.maxDiversity != null) {
                             return row.maxDiversity.toFixed( 3 );
@@ -150,7 +157,8 @@
                 },
                 {
                     "targets": 7,
-                    "orderable": true,
+                    "bSortable": true,
+                    "bVisible": true,
                     "render": function (data, type, row, meta) {
                         if (row.consensusSpectrumName != null && row.minPValue != null) {
                             return row.minPValue.toFixed( 3 );
@@ -161,7 +169,8 @@
                 },
                 {
                     "targets": 8,
-                    "orderable": true,
+                    "bSortable": true,
+                    "bVisible": false,
                     "render": function (data, type, row, meta) {
                         if (row.consensusSpectrumName != null && row.diseasePValue != null) {
                             return row.diseasePValue.toFixed( 3 );
@@ -172,7 +181,8 @@
                 },
                 {
                     "targets": 9,
-                    "orderable": true,
+                    "bSortable": true,
+                    "bVisible": false,
                     "render": function (data, type, row, meta) {
                         if (row.consensusSpectrumName != null && row.speciesPValue != null) {
                             return row.speciesPValue.toFixed( 3 );
@@ -183,7 +193,8 @@
                 },
                 {
                     "targets": 10,
-                    "orderable": true,
+                    "bSortable": true,
+                    "bVisible": false,
                     "render": function (data, type, row, meta) {
                         if (row.consensusSpectrumName != null && row.sampleSourcePValue != null) {
                             return row.sampleSourcePValue.toFixed( 3 );
@@ -194,7 +205,8 @@
                 },
                 {
                     "targets": 11,
-                    "orderable": true,
+                    "bSortable": true,
+                    "bVisible": true,
                     "render": function (data, type, row, meta) {
                         var content = '';
                         if (row.consensusSpectrumName != null) {
@@ -209,7 +221,8 @@
                 },
                 {
                     "targets": 12,
-                    "orderable": false,
+                    "bSortable": false,
+                    "bVisible": true,
                     "render": function (data, type, row, meta) {
                         if (row.querySpectrumId != 0) {
                             var content = '<a href="${pageContext.request.contextPath}/spectrum/'
@@ -235,6 +248,7 @@
             table.ajax.reload( null, false );
         }, 1000 );
 
+        //checkbox control data column display
         $( "input:checkbox" ).click( function () {
 
                 // table
@@ -244,27 +258,23 @@
                 var colNum = $( this ).attr( 'data-column' );
 
                 // Define
-                var bVis = table.fnSettings().aoColumns[colNum].bVisible;
+                //TODO; Use aoColumnDefs[] with column names
+                // var bVis = table.fnSettings().aoColumns[colNum].bVisible;
+                var bVis = $( this ).prop( 'checked' );
 
                 // Toggle
-                table.fnSetColumnVis( colNum, bVis ? false : true );
+                //TODO: Set show/hide property based on $(this).prop("checked")
+                table.fnSetColumnVis( colNum, bVis ? true : false );
+
+
             }
         );
 
+        // initialize checkbox mark to unchecked for column not showing at the beginning
         $( "input:checkbox" ).ready( function () {
-            var table = $( '#match_table' ).dataTable();
+            $( ".checkboxHide" ).prop( "checked", false );
+        } );
 
-            $(".checkboxHide").prop("checked",false);
-
-            for (i = 8; i < 11; i++) {
-                // Define
-                if (table.fnSettings() != null) {
-                    var bVis = table.fnSettings().aoColumns[i].bVisible;
-                }
-                // Toggle
-                table.fnSetColumnVis( i, bVis ? false : true );
-            }
-        } )
 
     } );
     var groupSearchProgressBar = new groupSearchProgressBar( 'progress', 'group_search_progress', 1000 );

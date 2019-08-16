@@ -8,15 +8,18 @@
 
     <div>
         Click to hide/show columns:
-        <!--TODO: use name in data-column. E.g. data-column="count"-->
+        <%--        TODO: use name in data-column. E.g. data-column="count"--%>
         <label><input type="checkbox" data-column="2" checked/><strong>Count</strong></label> -
         <label><input type="checkbox" data-column="3" checked/><strong>Score</strong></label> -
         <label><input type="checkbox" data-column="4" checked/><strong>In-study P-value</strong></label> -
         <label><input type="checkbox" data-column="5" checked/><strong>Maximum Diversity</strong></label> -
         <label><input type="checkbox" data-column="6" checked/><strong>Cross-study P-value</strong></label> -
-        <label><input type="checkbox" data-column="7" class="checkboxHide"/><strong>Cross-study P-value (disease)</strong></label> -
-        <label><input type="checkbox" data-column="8" class="checkboxHide"/><strong>Cross-study P-value (species)</strong></label> -
-        <label><input type="checkbox" data-column="9" class="checkboxHide"/><strong>Cross-study P-value (sample source)</strong></label> -
+        <label><input type="checkbox" data-column="7" class="checkboxHide"/><strong>Cross-study P-value
+            (disease)</strong></label> -
+        <label><input type="checkbox" data-column="8" class="checkboxHide"/><strong>Cross-study P-value
+            (species)</strong></label> -
+        <label><input type="checkbox" data-column="9" class="checkboxHide"/><strong>Cross-study P-value (sample
+            source)</strong></label> -
         <label> <input type="checkbox" data-column="10" checked/><strong>Type</strong></label>
     </div>
 
@@ -64,19 +67,21 @@
                     data.search = data.search["value"];
                 }
             },
-            "columnDefs": [
+            "aoColumnDefs": [
                 {
-                    <!--TODO: use column header if possible-->
-                    "targets": 0,
-                    "orderable": false,
+                    //TODO: use column header if possible
+                    "aTargets": [0],
+                    "bSortable": false,
                     "searchable": false,
+                    "bVisible": true,
                     "render": function (data, type, row, meta) {
                         return meta.settings.oAjaxData.start + meta.row + 1;
                     }
                 },
                 {
-                    "targets": 1,
-                    "orderable": true,
+                    "aTargets": [1],
+                    "bSortable": true,
+                    "bVisible": true,
                     "render": function (data, type, row, meta) {
                         content = '<a href="${pageContext.request.contextPath}/cluster/' + row.id + '/">' +
                             row.consensusSpectrumName +
@@ -85,21 +90,23 @@
                     }
                 },
                 {
-                    "targets": 2,
-                    "orderable": true,
+                    "aTargets": [2],
+                    "bSortable": true,
+                    "bVisible": true,
                     "data": "size"
                 },
                 {
-                    "targets": 3,
-                    "orderable": true,
+                    "aTargets": [3],
+                    "bSortable": true,
+                    "bVisible": true,
                     "render": function (data, type, row, meta) {
                         return row.diameter.toFixed( 3 ) * 1000;
-                    },
-                    "visible": false
+                    }
                 },
                 {
-                    "targets": 4,
-                    "orderable": true,
+                    "aTargets": [4],
+                    "bSortable": true,
+                    "bVisible": true,
                     "render": function (data, type, row, meta) {
                         var content = '';
                         if (row.aveSignificance) {
@@ -117,8 +124,9 @@
                     }
                 },
                 {
-                    "targets": 5,
-                    "orderable": true,
+                    "aTargets": [5],
+                    "bSortable": true,
+                    "bVisible": true,
                     "render": function (data, type, row, meta) {
                         var content = '';
                         if (row.maxDiversity != undefined) {
@@ -128,8 +136,9 @@
                     }
                 },
                 {
-                    "targets": 6,
-                    "orderable": true,
+                    "aTargets": [6],
+                    "bSortable": true,
+                    "bVisible": true,
                     "render": function (data, type, row, meta) {
                         var content = '';
                         if (row.minPValue) {
@@ -140,8 +149,9 @@
                     }
                 },
                 {
-                    "targets": 7,
-                    "orderable": true,
+                    "aTargets": [7],
+                    "bSortable": true,
+                    "bVisible": true,
                     "render": function (data, type, row, meta) {
                         var content = '';
                         if (row.diseasePValue) {
@@ -149,11 +159,13 @@
                             console.log( "content" );
                         }
                         return content;
-                    }
+                    },
+                    "bVisible": false
                 },
                 {
-                    "targets": 8,
-                    "orderable": true,
+                    "aTargets": [8],
+                    "bSortable": true,
+                    "bVisible": false,
                     "render": function (data, type, row, meta) {
                         var content = '';
                         if (row.speciesPValue) {
@@ -164,8 +176,9 @@
                     }
                 },
                 {
-                    "targets": 9,
-                    "orderable": true,
+                    "aTargets": [9],
+                    "bSortable": true,
+                    "bVisible": false,
                     "render": function (data, type, row, meta) {
                         var content = '';
                         if (row.sampleSourcePValue) {
@@ -176,8 +189,9 @@
                     }
                 },
                 {
-                    "targets": 10,
-                    "orderable": true,
+                    "aTargets": [10],
+                    "bSortable": true,
+                    "bVisible": true,
                     "render": function (data, type, row, meta) {
                         var content = '<img' +
                             ' src="${pageContext.request.contextPath}/' + row.chromatographyTypeIconPath + '"'
@@ -189,8 +203,9 @@
                     }
                 },
                 {
-                    "targets": 11,
-                    "orderable": false,
+                    "aTargets": [11],
+                    "bSortable": false,
+                    "bVisible": true,
                     "render": function (data, type, row, meta) {
                         var content = '<a href="${pageContext.request.contextPath}/cluster/'
                             + row.id + '/"><i class="material-icons" title="View">&#xE5D3;</i></a>';
@@ -201,6 +216,7 @@
             ]
         } );
 
+        //checkbox control data column display
         $( "input:checkbox" ).click( function () {
 
                 // table
@@ -210,37 +226,22 @@
                 var colNum = $( this ).attr( 'data-column' );
 
                 // Define
-                <!--TODO; Use aoColumnDefs[] with column names-->
-                var bVis = table.fnSettings().aoColumns[colNum].bVisible;
+                //TODO; Use aoColumnDefs[] with column names
+                // var bVis = table.fnSettings().aoColumns[colNum].bVisible;
+                var bVis = $( this ).prop( 'checked' );
 
                 // Toggle
-                <!--TODO: Set show/hide property based on $(this).prop("checked")-->
-                table.fnSetColumnVis( colNum, bVis ? false : true );
+                //TODO: Set show/hide property based on $(this).prop("checked")
+                table.fnSetColumnVis( colNum, bVis ? true : false );
+
 
             }
         );
 
+        // initialize checkbox mark to unchecked for column not showing at the beginning
         $( "input:checkbox" ).ready( function () {
-            var table = $( '#cluster_table' ).dataTable();
-
-            <!--TODO: Set prop("checked") based on bVisible of each column-->
-
-            <!--
-                1. Get data-column
-                2. Get Visible property of the corresponding column
-                3. Set prop("checked") to the correct value
-            -->
-
-            $(".checkboxHide").prop("checked",false);
-
-            for (i = 7; i < 10; i++) {
-                // Define
-                var bVis = table.fnSettings().aoColumns[i].bVisible;
-
-                // Toggle
-                table.fnSetColumnVis( i, bVis ? false : true );
-            }
-        } )
+            $( ".checkboxHide" ).prop( "checked", false );
+        } );
 
     } );
 </script>

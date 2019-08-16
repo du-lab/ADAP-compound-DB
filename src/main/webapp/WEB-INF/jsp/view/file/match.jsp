@@ -47,10 +47,14 @@
                     <label><input type="checkbox" data-column="2" checked/><strong>Score</strong></label> -
                     <label><input type="checkbox" data-column="3" checked/><strong>In-study P-value</strong></label> -
                     <label><input type="checkbox" data-column="4" checked/><strong>Maximum Diversity</strong></label> -
-                    <label><input type="checkbox" data-column="5" checked/><strong>Cross-study P-value</strong></label> -
-                    <label><input type="checkbox" data-column="6" class="checkboxHide"/><strong>Cross-study P-value (disease)</strong></label> -
-                    <label><input type="checkbox" data-column="7" class="checkboxHide"/><strong>Cross-study P-value (species)</strong></label> -
-                    <label><input type="checkbox" data-column="8" class="checkboxHide"/><strong>Cross-study P-value (sample source)</strong></label> -
+                    <label><input type="checkbox" data-column="5" checked/><strong>Cross-study P-value</strong></label>
+                    -
+                    <label><input type="checkbox" data-column="6" class="checkboxHide"/><strong>Cross-study P-value
+                        (disease)</strong></label> -
+                    <label><input type="checkbox" data-column="7" class="checkboxHide"/><strong>Cross-study P-value
+                        (species)</strong></label> -
+                    <label><input type="checkbox" data-column="8" class="checkboxHide"/><strong>Cross-study P-value
+                        (sample source)</strong></label> -
                     <label><input type="checkbox" data-column="9" checked/><strong>Type</strong></label>
                 </div>
 
@@ -225,7 +229,7 @@
     $( document ).ready( function () {
 
         var table = $( '#match_table' ).DataTable( {
-            order: [[0, 'desc']],
+            order: [[2, 'asc']],
             select: {style: 'single'},
             processing: true,
             responsive: true,
@@ -251,8 +255,9 @@
             autocomplete: {
                 source: '${dulab:stringsToJson(searchForm.availableTags)}'
             }
-        } )
+        } );
 
+        //checkbox control data column display
         $( "input:checkbox" ).click( function () {
 
                 // table
@@ -262,29 +267,33 @@
                 var colNum = $( this ).attr( 'data-column' );
 
                 // Define
-                var bVis = table.fnSettings().aoColumns[colNum].bVisible;
+                //TODO; Use aoColumnDefs[] with column names
+                // var bVis = table.fnSettings().aoColumns[colNum].bVisible;
+                var bVis = $( this ).prop( 'checked' );
 
                 // Toggle
-                table.fnSetColumnVis( colNum, bVis ? false : true );
+                //TODO: Set show/hide property based on $(this).prop("checked")
+                table.fnSetColumnVis( colNum, bVis ? true : false );
             }
         );
 
+        // initialize checkbox mark to unchecked for column not showing at the beginning
         $( "input:checkbox" ).ready( function () {
-            var table = $( '#match_table' ).dataTable();
-
-            $(".checkboxHide").prop("checked",false);
+            $( ".checkboxHide" ).prop( "checked", false );
 
             for (i = 6; i < 9; i++) {
 
+                // table
+                var table = $( '#match_table' ).dataTable();
+
                 // Define
-                if(table.fnSettings() != null) {
-                    var bVis = table.fnSettings().aoColumns[i].bVisible;
+                if (table.fnSettings() != null) {
+                    var bVis = $( this ).prop( 'checked' );
                 }
                 // Toggle
-                table.fnSetColumnVis( i, bVis ? false : true );
+                table.fnSetColumnVis( i, bVis ? true : false );
             }
-        } )
-
+        } );
     } );
 </script>
 
