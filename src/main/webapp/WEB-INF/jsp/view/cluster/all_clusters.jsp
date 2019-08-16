@@ -70,7 +70,7 @@
             "aoColumnDefs": [
                 {
                     //TODO: use column header if possible
-                    "aTargets": [0],
+                    "targets": 0,
                     "bSortable": false,
                     "searchable": false,
                     "bVisible": true,
@@ -79,7 +79,7 @@
                     }
                 },
                 {
-                    "aTargets": [1],
+                    "targets": 1,
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
@@ -90,13 +90,13 @@
                     }
                 },
                 {
-                    "aTargets": [2],
+                    "targets": 2,
                     "bSortable": true,
                     "bVisible": true,
                     "data": "size"
                 },
                 {
-                    "aTargets": [3],
+                    "targets": 3,
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
@@ -104,7 +104,7 @@
                     }
                 },
                 {
-                    "aTargets": [4],
+                    "targets": 4,
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
@@ -124,7 +124,7 @@
                     }
                 },
                 {
-                    "aTargets": [5],
+                    "targets": 5,
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
@@ -136,7 +136,7 @@
                     }
                 },
                 {
-                    "aTargets": [6],
+                    "targets": 6,
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
@@ -149,7 +149,7 @@
                     }
                 },
                 {
-                    "aTargets": [7],
+                    "targets": 7,
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
@@ -163,7 +163,7 @@
                     "bVisible": false
                 },
                 {
-                    "aTargets": [8],
+                    "targets": 8,
                     "bSortable": true,
                     "bVisible": false,
                     "render": function (data, type, row, meta) {
@@ -176,7 +176,7 @@
                     }
                 },
                 {
-                    "aTargets": [9],
+                    "targets": 9,
                     "bSortable": true,
                     "bVisible": false,
                     "render": function (data, type, row, meta) {
@@ -189,7 +189,7 @@
                     }
                 },
                 {
-                    "aTargets": [10],
+                    "targets": 10,
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
@@ -203,7 +203,7 @@
                     }
                 },
                 {
-                    "aTargets": [11],
+                    "targets": 11,
                     "bSortable": false,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
@@ -227,7 +227,7 @@
 
                 // Define
                 //TODO; Use aoColumnDefs[] with column names
-                // var bVis = table.fnSettings().aoColumns[colNum].bVisible;
+                // var bVis = table.fnSettings().aoColumns['Count'].bVisible;
                 var bVis = $( this ).prop( 'checked' );
 
                 // Toggle

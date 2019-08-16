@@ -52,7 +52,6 @@ public class ClusterController {
 
     @RequestMapping(value = "/allClusters/", method = RequestMethod.GET)
     public String clusters() {
-        //TODO: Remove allClusters?
         return "cluster/all_clusters";
     }
 

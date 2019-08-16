@@ -234,7 +234,11 @@
             processing: true,
             responsive: true,
             scrollX: true,
-            scroller: true
+            scroller: true,
+            "columnDefs":[{
+                "targets":10,
+                "orderable":false
+            }]
         } );
 
         table.on( 'select', function (e, dt, type, indexes) {
@@ -267,12 +271,10 @@
                 var colNum = $( this ).attr( 'data-column' );
 
                 // Define
-                //TODO; Use aoColumnDefs[] with column names
                 // var bVis = table.fnSettings().aoColumns[colNum].bVisible;
                 var bVis = $( this ).prop( 'checked' );
 
                 // Toggle
-                //TODO: Set show/hide property based on $(this).prop("checked")
                 table.fnSetColumnVis( colNum, bVis ? true : false );
             }
         );
@@ -281,6 +283,8 @@
         $( "input:checkbox" ).ready( function () {
             $( ".checkboxHide" ).prop( "checked", false );
 
+
+            //hiding column index from 6 to 8 initially
             for (i = 6; i < 9; i++) {
 
                 // table
