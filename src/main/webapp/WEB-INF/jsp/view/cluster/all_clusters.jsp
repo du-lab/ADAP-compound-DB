@@ -9,18 +9,15 @@
     <div>
         Click to hide/show columns:
         <%--        TODO: use name in data-column. E.g. data-column="count"--%>
-        <label><input type="checkbox" data-column="2" checked/><strong>Count</strong></label> -
-        <label><input type="checkbox" data-column="3" checked/><strong>Score</strong></label> -
-        <label><input type="checkbox" data-column="4" checked/><strong>In-study P-value</strong></label> -
-        <label><input type="checkbox" data-column="5" checked/><strong>Maximum Diversity</strong></label> -
-        <label><input type="checkbox" data-column="6" checked/><strong>Cross-study P-value</strong></label> -
-        <label><input type="checkbox" data-column="7" class="checkboxHide"/><strong>Cross-study P-value
-            (disease)</strong></label> -
-        <label><input type="checkbox" data-column="8" class="checkboxHide"/><strong>Cross-study P-value
-            (species)</strong></label> -
-        <label><input type="checkbox" data-column="9" class="checkboxHide"/><strong>Cross-study P-value (sample
-            source)</strong></label> -
-        <label> <input type="checkbox" data-column="10" checked/><strong>Type</strong></label>
+        <label><input type="checkbox" data-column="2"/><strong>Count</strong></label> -
+        <label><input type="checkbox" data-column="3"/><strong>Score</strong></label> -
+        <label><input type="checkbox" data-column="4"/><strong>In-study P-value</strong></label> -
+        <label><input type="checkbox" data-column="5"/><strong>Maximum Diversity</strong></label> -
+        <label><input type="checkbox" data-column="6"/><strong>Cross-study P-value</strong></label> -
+        <label><input type="checkbox" data-column="7"/><strong>Cross-study P-value (disease)</strong></label> -
+        <label><input type="checkbox" data-column="8"/><strong>Cross-study P-value (species)</strong></label> -
+        <label><input type="checkbox" data-column="9"/><strong>Cross-study P-value (sample source)</strong></label> -
+        <label> <input type="checkbox" data-column="10"/><strong>Type</strong></label>
     </div>
 
     <div align="center">
@@ -227,21 +224,23 @@
 
                 // Define
                 //TODO; Use aoColumnDefs[] with column names
-                // var bVis = table.fnSettings().aoColumns['Count'].bVisible;
+                // var bVis = table.fnSettings().aoColumns[colNum].bVisible;
                 var bVis = $( this ).prop( 'checked' );
 
                 // Toggle
                 //TODO: Set show/hide property based on $(this).prop("checked")
-                table.fnSetColumnVis( colNum, bVis ? true : false );
-
-
+                table.fnSetColumnVis( colNum, bVis );
             }
         );
 
         // initialize checkbox mark to unchecked for column not showing at the beginning
         $( "input:checkbox" ).ready( function () {
-            $( ".checkboxHide" ).prop( "checked", false );
+            $( "input:checkbox" ).each( function () {
+                var table = $( '#cluster_table' ).dataTable();
+                var colNum = $( this ).attr( 'data-column' );
+                var bVis = table.fnSettings().aoColumns[colNum].bVisible;
+                $( this ).prop( "checked", bVis ? true : false );
+            } )
         } );
-
     } );
 </script>

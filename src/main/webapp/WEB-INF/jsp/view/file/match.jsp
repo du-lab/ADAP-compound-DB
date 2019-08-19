@@ -62,7 +62,7 @@
                     <thead>
                     <tr>
                         <th title="Match spectra">Match Spectrum</th>
-                        <th title="Number of studies">Count</th>
+                        <th title="Number of studies" class="Count">Count</th>
                         <th title="Minimum matching score between all spectra in a cluster">Score</th>
                         <th title="P-value of the In-study ANOVA test">In-study P-value</th>
                         <th title="Gini-Simpson Index">Maximum Diversity</th>
@@ -235,10 +235,12 @@
             responsive: true,
             scrollX: true,
             scroller: true,
-            "columnDefs":[{
-                "targets":10,
-                "orderable":false
-            }]
+            "columnDefs": [
+                {
+                    "targets": 10,
+                    "orderable": false
+                },
+            ]
         } );
 
         table.on( 'select', function (e, dt, type, indexes) {
@@ -248,6 +250,7 @@
         } );
 
         table.rows( ':eq(0)' ).select();
+
 
         $( '#scoreThreshold' ).prop( 'disabled', !$( '#scoreThresholdCheck1' ).prop( 'checked' ) );
         $( '#mzTolerance' ).prop( 'disabled', !$( '#scoreThresholdCheck1' ).prop( 'checked' ) );
@@ -260,7 +263,6 @@
                 source: '${dulab:stringsToJson(searchForm.availableTags)}'
             }
         } );
-
         //checkbox control data column display
         $( "input:checkbox" ).click( function () {
 

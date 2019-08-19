@@ -20,16 +20,16 @@
 
     <div>
         Click to hide/show columns:
-        <label><input type="checkbox" data-column="2" checked/><strong>Best Match</strong></label> -
-        <label><input type="checkbox" data-column="3" checked/><strong>Count</strong></label> -
-        <label><input type="checkbox" data-column="4" checked/><strong>Score</strong></label> -
-        <label><input type="checkbox" data-column="5" checked/><strong>In-study P-value</strong></label> -
-        <label><input type="checkbox" data-column="6" checked/><strong>Maximum Diversity</strong></label> -
-        <label><input type="checkbox" data-column="7" checked/><strong>Cross-study P-value</strong></label> -
-        <label><input type="checkbox" data-column="8" class="checkboxHide"/><strong>Cross-study P-value (disease)</strong></label> -
-        <label><input type="checkbox" data-column="9" class="checkboxHide"/><strong>Cross-study P-value (species)</strong></label> -
-        <label><input type="checkbox" data-column="10" class="checkboxHide"/><strong>Cross-study P-value (sample source)</strong></label> -
-        <label><input type="checkbox" data-column="11" checked/><strong>Type</strong></label>
+        <label><input type="checkbox" data-column="2" /><strong>Best Match</strong></label> -
+        <label><input type="checkbox" data-column="3" /><strong>Count</strong></label> -
+        <label><input type="checkbox" data-column="4" /><strong>Score</strong></label> -
+        <label><input type="checkbox" data-column="5" /><strong>In-study P-value</strong></label> -
+        <label><input type="checkbox" data-column="6" /><strong>Maximum Diversity</strong></label> -
+        <label><input type="checkbox" data-column="7" /><strong>Cross-study P-value</strong></label> -
+        <label><input type="checkbox" data-column="8" /><strong>Cross-study P-value (disease)</strong></label> -
+        <label><input type="checkbox" data-column="9" /><strong>Cross-study P-value (species)</strong></label> -
+        <label><input type="checkbox" data-column="10" /><strong>Cross-study P-value (sample source)</strong></label> -
+        <label><input type="checkbox" data-column="11" /><strong>Type</strong></label>
     </div>
 
     <div align="center">
@@ -67,21 +67,21 @@
 <script>
     $( document ).ready( function () {
         var table = $( '#match_table' ).DataTable( {
-            select: {style: 'single'},
             serverSide: true,
             processing: true,
             responsive: true,
             scrollX: true,
-            scroller: true,
+            // scroller: true,
             ajax: {
                 url: "${pageContext.request.contextPath}/file/group_search_results/data.json",
+
                 data: function (data) {
                     data.column = data.order[0].column;
                     data.sortDirection = data.order[0].dir;
                     data.search = data.search["value"];
                 }
             },
-            "columnDefs": [
+            "aoColumnDefs": [
                 {
                     "targets": 0,
                     "bSortable": false,
@@ -259,20 +259,22 @@
 
                 // Define
                 //TODO; Use aoColumnDefs[] with column names
-                // var bVis = table.fnSettings().aoColumns[colNum].bVisible;
                 var bVis = $( this ).prop( 'checked' );
 
                 // Toggle
                 //TODO: Set show/hide property based on $(this).prop("checked")
-                table.fnSetColumnVis( colNum, bVis ? true : false );
-
-
+                table.fnSetColumnVis( colNum, bVis );
             }
         );
 
         // initialize checkbox mark to unchecked for column not showing at the beginning
         $( "input:checkbox" ).ready( function () {
-            $( ".checkboxHide" ).prop( "checked", false );
+            $( "input:checkbox" ).each(function(){
+                var table = $( '#match_table' ).dataTable();
+                var colNum = $( this ).attr( 'data-column' );
+                var bVis = table.fnSettings().aoColumns[colNum].bVisible;
+                $(this).prop( "checked", bVis ? true : false);
+            })
         } );
 
 
