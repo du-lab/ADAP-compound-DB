@@ -8,7 +8,6 @@
 
     <div>
         Click to hide/show columns:
-        <%--        TODO: use name in data-column. E.g. data-column="count"--%>
         <label><input type="checkbox" data-column="2"/><strong>Count</strong></label> -
         <label><input type="checkbox" data-column="3"/><strong>Score</strong></label> -
         <label><input type="checkbox" data-column="4"/><strong>In-study P-value</strong></label> -
@@ -48,8 +47,8 @@
 <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
 <script src="<c:url value="/resources/Select-1.2.5/js/dataTables.select.min.js"/>"></script>
 <script>
-    $( document ).ready( function () {
-        $( '#cluster_table' ).DataTable( {
+    $(document).ready(function () {
+        var dataTable = $('#cluster_table').DataTable({
             serverSide: true,
             processing: true,
             responsive: true,
@@ -66,7 +65,6 @@
             },
             "aoColumnDefs": [
                 {
-                    //TODO: use column header if possible
                     "targets": 0,
                     "bSortable": false,
                     "searchable": false,
@@ -97,7 +95,7 @@
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
-                        return row.diameter.toFixed( 3 ) * 1000;
+                        return row.diameter.toFixed(3) * 1000;
                     }
                 },
                 {
@@ -107,13 +105,13 @@
                     "render": function (data, type, row, meta) {
                         var content = '';
                         if (row.aveSignificance) {
-                            var avgSignificance = row.aveSignificance.toFixed( 3 );
+                            var avgSignificance = row.aveSignificance.toFixed(3);
                             content += '<span title="{Average: ' + row.aveSignificance;
                             if (row.minSignificance) {
-                                content += '; Min: ' + row.minSignificance.toFixed( 3 );
+                                content += '; Min: ' + row.minSignificance.toFixed(3);
                             }
                             if (row.maxSignificance) {
-                                content += '; Max: ' + row.maxSignificance.toFixed( 3 );
+                                content += '; Max: ' + row.maxSignificance.toFixed(3);
                             }
                             content += '}">' + avgSignificance + '</span>';
                         }
@@ -127,7 +125,7 @@
                     "render": function (data, type, row, meta) {
                         var content = '';
                         if (row.maxDiversity != undefined) {
-                            content = row.maxDiversity.toFixed( 3 );
+                            content = row.maxDiversity.toFixed(3);
                         }
                         return content;
                     }
@@ -139,8 +137,9 @@
                     "render": function (data, type, row, meta) {
                         var content = '';
                         if (row.minPValue) {
-                            content = row.minPValue.toFixed( 3 );
-                            console.log( "content" );
+                            content = row.minPValue.toFixed(3);
+                            //TODO: remove console.log()?
+                            console.log("content");
                         }
                         return content;
                     }
@@ -148,16 +147,15 @@
                 {
                     "targets": 7,
                     "bSortable": true,
-                    "bVisible": true,
+                    "bVisible": false,
                     "render": function (data, type, row, meta) {
                         var content = '';
                         if (row.diseasePValue) {
-                            content = row.diseasePValue.toFixed( 3 );
-                            console.log( "content" );
+                            content = row.diseasePValue.toFixed(3);
+                            console.log("content");
                         }
                         return content;
                     },
-                    "bVisible": false
                 },
                 {
                     "targets": 8,
@@ -166,8 +164,8 @@
                     "render": function (data, type, row, meta) {
                         var content = '';
                         if (row.speciesPValue) {
-                            content = row.speciesPValue.toFixed( 3 );
-                            console.log( "content" );
+                            content = row.speciesPValue.toFixed(3);
+                            console.log("content");
                         }
                         return content;
                     }
@@ -179,8 +177,8 @@
                     "render": function (data, type, row, meta) {
                         var content = '';
                         if (row.sampleSourcePValue) {
-                            content = row.sampleSourcePValue.toFixed( 3 );
-                            console.log( "content" );
+                            content = row.sampleSourcePValue.toFixed(3);
+                            console.log("content");
                         }
                         return content;
                     }
@@ -211,36 +209,33 @@
                 },
                 {"className": "dt-center", "targets": "_all"}
             ]
-        } );
+        });
 
         //checkbox control data column display
-        $( "input:checkbox" ).click( function () {
+        var checkBoxes = $("input:checkbox").click(function () {
 
                 // table
-                var table = $( '#cluster_table' ).dataTable();
+                var table = $('#cluster_table').dataTable();
 
                 // column
-                var colNum = $( this ).attr( 'data-column' );
+                var colNum = $(this).attr('data-column');
 
                 // Define
-                //TODO; Use aoColumnDefs[] with column names
-                // var bVis = table.fnSettings().aoColumns[colNum].bVisible;
-                var bVis = $( this ).prop( 'checked' );
+                var bVis = $(this).prop('checked');
 
                 // Toggle
-                //TODO: Set show/hide property based on $(this).prop("checked")
-                table.fnSetColumnVis( colNum, bVis );
+                table.fnSetColumnVis(colNum, bVis);
             }
         );
 
         // initialize checkbox mark to unchecked for column not showing at the beginning
-        $( "input:checkbox" ).ready( function () {
-            $( "input:checkbox" ).each( function () {
-                var table = $( '#cluster_table' ).dataTable();
-                var colNum = $( this ).attr( 'data-column' );
-                var bVis = table.fnSettings().aoColumns[colNum].bVisible;
-                $( this ).prop( "checked", bVis ? true : false );
-            } )
-        } );
-    } );
+        checkBoxes.each(function () {
+            var table = $('#cluster_table').dataTable();
+            var colNum = $(this).attr('data-column');
+            var bVis = table.fnSettings().aoColumns[colNum].bVisible;
+            //TODO: remove "? true : false"
+            $(this).prop("checked", bVis ? true : false);
+        });
+        // } );
+    });
 </script>
