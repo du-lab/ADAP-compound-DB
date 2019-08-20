@@ -269,11 +269,13 @@
 
         // initialize checkbox mark to unchecked for column not showing at the beginning
         $( "input:checkbox" ).ready( function () {
-            $( "input:checkbox" ).each(function(){
+            $( "input:checkbox" ).each(function() {
                 var table = $( '#match_table' ).dataTable();
                 var colNum = $( this ).attr( 'data-column' );
+                if (colNum != null) {
                 var bVis = table.fnSettings().aoColumns[colNum].bVisible;
-                $(this).prop( "checked", bVis ? true : false);
+                $( this ).prop( "checked", bVis );
+            }
             })
         } );
 
