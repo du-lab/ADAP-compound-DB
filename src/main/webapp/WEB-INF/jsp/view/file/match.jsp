@@ -229,7 +229,7 @@
     $( document ).ready( function () {
 
         var table = $( '#match_table' ).DataTable( {
-            order: [[2, 'asc']],
+            order: [[2, 'desc']],
             select: {style: 'single'},
             processing: true,
             responsive: true,
@@ -277,7 +277,7 @@
                 var bVis = $( this ).prop( 'checked' );
 
                 // Toggle
-                table.fnSetColumnVis( colNum, bVis ? true : false );
+                table.fnSetColumnVis( colNum, bVis);
             }
         );
 
@@ -297,7 +297,7 @@
                     var bVis = $( this ).prop( 'checked' );
                 }
                 // Toggle
-                table.fnSetColumnVis( i, bVis ? true : false );
+                table.fnSetColumnVis( i, bVis );
             }
         } );
     } );

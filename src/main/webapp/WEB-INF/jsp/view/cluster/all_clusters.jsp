@@ -139,7 +139,6 @@
                         if (row.minPValue) {
                             content = row.minPValue.toFixed(3);
                             //TODO: remove console.log()?
-                            console.log("content");
                         }
                         return content;
                     }
@@ -234,7 +233,7 @@
             var colNum = $(this).attr('data-column');
             var bVis = table.fnSettings().aoColumns[colNum].bVisible;
             //TODO: remove "? true : false"
-            $(this).prop("checked", bVis ? true : false);
+            $(this).prop("checked", bVis);
         });
         // } );
     });

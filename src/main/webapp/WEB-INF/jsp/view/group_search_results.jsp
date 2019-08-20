@@ -258,11 +258,9 @@
                 var colNum = $( this ).attr( 'data-column' );
 
                 // Define
-                //TODO; Use aoColumnDefs[] with column names
                 var bVis = $( this ).prop( 'checked' );
 
                 // Toggle
-                //TODO: Set show/hide property based on $(this).prop("checked")
                 table.fnSetColumnVis( colNum, bVis );
             }
         );
