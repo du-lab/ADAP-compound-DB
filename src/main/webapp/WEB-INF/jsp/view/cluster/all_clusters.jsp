@@ -138,7 +138,6 @@
                         var content = '';
                         if (row.minPValue) {
                             content = row.minPValue.toFixed(3);
-                            //TODO: remove console.log()?
                         }
                         return content;
                     }
@@ -151,7 +150,6 @@
                         var content = '';
                         if (row.diseasePValue) {
                             content = row.diseasePValue.toFixed(3);
-                            console.log("content");
                         }
                         return content;
                     },
@@ -164,7 +162,6 @@
                         var content = '';
                         if (row.speciesPValue) {
                             content = row.speciesPValue.toFixed(3);
-                            console.log("content");
                         }
                         return content;
                     }
@@ -177,7 +174,6 @@
                         var content = '';
                         if (row.sampleSourcePValue) {
                             content = row.sampleSourcePValue.toFixed(3);
-                            console.log("content");
                         }
                         return content;
                     }
@@ -232,7 +228,6 @@
             var table = $('#cluster_table').dataTable();
             var colNum = $(this).attr('data-column');
             var bVis = table.fnSettings().aoColumns[colNum].bVisible;
-            //TODO: remove "? true : false"
             $(this).prop("checked", bVis);
         });
         // } );
