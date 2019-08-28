@@ -20,10 +20,16 @@
 
     <div>
         Click to hide/show columns:
-        <input type="checkbox" data-column="2" checked/><strong>Best Match</strong> --
-        <input type="checkbox" data-column="3" checked/><strong>Score</strong> --
-        <input type="checkbox" data-column="4" checked/><strong>P-value</strong> --
-        <input type="checkbox" data-column="5" checked/><strong>Diversity</strong>
+        <label><input type="checkbox" data-column="2"/><strong>Best Match</strong></label> -
+        <label><input type="checkbox" data-column="3"/><strong>Count</strong></label> -
+        <label><input type="checkbox" data-column="4"/><strong>Score</strong></label> -
+        <label><input type="checkbox" data-column="5"/><strong>In-study P-value</strong></label> -
+        <label><input type="checkbox" data-column="6"/><strong>Maximum Diversity</strong></label> -
+        <label><input type="checkbox" data-column="7"/><strong>Cross-study P-value</strong></label> -
+        <label><input type="checkbox" data-column="8"/><strong>Cross-study P-value (disease)</strong></label> -
+        <label><input type="checkbox" data-column="9"/><strong>Cross-study P-value (species)</strong></label> -
+        <label><input type="checkbox" data-column="10"/><strong>Cross-study P-value (sample source)</strong></label> -
+        <label><input type="checkbox" data-column="11"/><strong>Type</strong></label>
     </div>
 
     <div align="center">
@@ -33,9 +39,15 @@
                 <th>ID</th>
                 <th>Compound from the Search List</th>
                 <th title="Top Matched Consensus spectrum">Best Match</th>
+                <th title="Number of studies">Count</th>
                 <th title="Minimum matching score between all spectra in a cluster">Score</th>
-                <th>P-Value</th>
-                <th>Diversity</th>
+                <th title="P-value of the In-study ANOVA test">In-study P-value</th>
+                <th title="Gini-Simpson Index">Maximum Diversity</th>
+                <th title="P-value of the Cross-study Goodness-of-fit test">Cross-study P-value</th>
+                <th title="P-value of disease">Cross-study P-value (disease)</th>
+                <th title="P-value of species">Cross-study P-value (species)</th>
+                <th title="P-value of sample source">Cross-study P-value (sample source)</th>
+                <th title="Chromatography type">Type</th>
                 <th></th>
             </tr>
             </thead>
@@ -53,34 +65,36 @@
 <script src="<c:url value="/resources/AdapCompoundDb/js/groupSearchProgressBar.js"/>"></script>
 
 <script>
-    $( document ).ready( function () {
-        var table = $( '#match_table' ).DataTable( {
-            select: {style: 'single'},
+    $(document).ready(function () {
+        var table = $('#match_table').DataTable({
             serverSide: true,
             processing: true,
             responsive: true,
             scrollX: true,
-            scroller: true,
+            // scroller: true,
             ajax: {
                 url: "${pageContext.request.contextPath}/file/group_search_results/data.json",
+
                 data: function (data) {
                     data.column = data.order[0].column;
                     data.sortDirection = data.order[0].dir;
                     data.search = data.search["value"];
                 }
             },
-            "columnDefs": [
+            "aoColumnDefs": [
                 {
                     "targets": 0,
-                    "orderable": false,
+                    "bSortable": false,
                     "searchable": false,
+                    "bVisible": true,
                     "render": function (data, type, row, meta) {
                         return meta.settings.oAjaxData.start + meta.row + 1;
                     }
                 },
                 {
                     "targets": 1,
-                    "orderable": true,
+                    "bSortable": true,
+                    "bVisible": true,
                     "render": function (data, type, row, meta) {
                         content = row.querySpectrumName;
                         return content;
@@ -88,112 +102,184 @@
                 },
                 {
                     "targets": 2,
-                    "orderable": true,
+                    "bSortable": true,
+                    "bVisible": true,
                     "render": function (data, type, row, meta) {
                         var content = '';
-                        if (row.matchSpectrumName != null) {
-                            content = '<a href="${pageContext.request.contextPath}/cluster/' + row.matchSpectrumClusterId + '/">' +
-                                row.matchSpectrumName +
-                                '</a>';
+                        if (row.consensusSpectrumName != null) {
+                            content = '<a href="${pageContext.request.contextPath}/cluster/'
+                                + row.matchSpectrumClusterId + '/">' + row.consensusSpectrumName + '</a>';
                         }
                         return content;
                     }
                 },
                 {
                     "targets": 3,
-                    "orderable": true,
-                    "render": function (data, type, row, meta) {
-                        if (row.matchSpectrumName != null) {
-                            return row.score.toFixed( 3 ) * 1000;
-                        } else {
-                            return row.score;
-                        }
-
-                    }
+                    "bSortable": true,
+                    "bVisible": true,
+                    "data": "size"
                 },
                 {
                     "targets": 4,
-                    "orderable": true,
+                    "bSortable": true,
+                    "bVisible": true,
                     "render": function (data, type, row, meta) {
-                        if (row.matchSpectrumName != null && row.minPValue != null) {
-                            return row.minPValue.toFixed( 3 );
+                        if (row.consensusSpectrumName != null && row.diameter != null) {
+                            return row.diameter.toFixed(3) * 1000;
                         } else {
-                            return row.minPValue;
+                            return row.diameter;
                         }
                     }
                 },
                 {
                     "targets": 5,
-                    "orderable": true,
+                    "bSortable": true,
+                    "bVisible": true,
                     "render": function (data, type, row, meta) {
-                        if (row.matchSpectrumName != null && row.maxDiversity != null) {
-                            return row.maxDiversity.toFixed( 3 );
+                        if (row.consensusSpectrumName != null && row.aveSignificance != null) {
+                            return row.aveSignificance.toFixed(3);
+                        } else {
+                            return row.aveSignificance;
+                        }
+                    }
+                },
+                {
+                    "targets": 6,
+                    "bSortable": true,
+                    "bVisible": true,
+                    "render": function (data, type, row, meta) {
+                        if (row.consensusSpectrumName != null && row.maxDiversity != null) {
+                            return row.maxDiversity.toFixed(3);
                         } else {
                             return row.maxDiversity;
                         }
                     }
                 },
                 {
-                    "targets": 6,
-                    "orderable": false,
+                    "targets": 7,
+                    "bSortable": true,
+                    "bVisible": true,
+                    "render": function (data, type, row, meta) {
+                        if (row.consensusSpectrumName != null && row.minPValue != null) {
+                            return row.minPValue.toFixed(3);
+                        } else {
+                            return row.minPValue;
+                        }
+                    }
+                },
+                {
+                    "targets": 8,
+                    "bSortable": true,
+                    "bVisible": false,
+                    "render": function (data, type, row, meta) {
+                        if (row.consensusSpectrumName != null && row.diseasePValue != null) {
+                            return row.diseasePValue.toFixed(3);
+                        } else {
+                            return row.diseasePValue;
+                        }
+                    }
+                },
+                {
+                    "targets": 9,
+                    "bSortable": true,
+                    "bVisible": false,
+                    "render": function (data, type, row, meta) {
+                        if (row.consensusSpectrumName != null && row.speciesPValue != null) {
+                            return row.speciesPValue.toFixed(3);
+                        } else {
+                            return row.speciesPValue;
+                        }
+                    }
+                },
+                {
+                    "targets": 10,
+                    "bSortable": true,
+                    "bVisible": false,
+                    "render": function (data, type, row, meta) {
+                        if (row.consensusSpectrumName != null && row.sampleSourcePValue != null) {
+                            return row.sampleSourcePValue.toFixed(3);
+                        } else {
+                            return row.sampleSourcePValue;
+                        }
+                    }
+                },
+                {
+                    "targets": 11,
+                    "bSortable": true,
+                    "bVisible": true,
+                    "render": function (data, type, row, meta) {
+                        var content = '';
+                        if (row.consensusSpectrumName != null) {
+                            content = '<img' +
+                                ' src="${pageContext.request.contextPath}/' + row.chromatographyTypeIconPath + '"'
+                                + ' alt="' + row.chromatographyTypeLabel + '"'
+                                + ' title="' + row.chromatographyTypeLabel + '"'
+                                + ' class="icon"/>';
+                        }
+                        return content;
+                    }
+                },
+                {
+                    "targets": 12,
+                    "bSortable": false,
+                    "bVisible": true,
                     "render": function (data, type, row, meta) {
                         if (row.querySpectrumId != 0) {
                             var content = '<a href="${pageContext.request.contextPath}/spectrum/'
                                 + row.querySpectrumId + '/search/" class="button"> Search</a>';
                         } else {
                             var content = '<a href="${pageContext.request.contextPath}/file/'
-                                + row.fileIndex + '/' + row.spectrumIndex + '/" class="button"> Search</a>';
+                                + row.fileIndex + '/' + row.spectrumIndex + '/search/" class="button"> Search</a>';
                         }
-
                         return content;
                     }
                 },
                 {"className": "dt-center", "targets": "_all"}
             ]
-        } );
-        $( '#scoreThreshold' ).prop( 'disabled', !$( '#scoreThresholdCheck1' ).prop( 'checked' ) );
-        $( '#mzTolerance' ).prop( 'disabled', !$( '#scoreThresholdCheck1' ).prop( 'checked' ) );
-        $( '#massTolerance' ).prop( 'disabled', !$( '#massToleranceCheck1' ).prop( 'checked' ) );
-        $( '#retTimeTolerance' ).prop( 'disabled', !$( '#retTimeToleranceCheck1' ).prop( 'checked' ) );
-        $( '#accordion' ).accordion();
+        });
+        $('#scoreThreshold').prop('disabled', !$('#scoreThresholdCheck1').prop('checked'));
+        $('#mzTolerance').prop('disabled', !$('#scoreThresholdCheck1').prop('checked'));
+        $('#massTolerance').prop('disabled', !$('#massToleranceCheck1').prop('checked'));
+        $('#retTimeTolerance').prop('disabled', !$('#retTimeToleranceCheck1').prop('checked'));
+        $('#accordion').accordion();
 
         // refresh the datatable every 1 second
-        setInterval( function () {
-            table.ajax.reload( null, false );
-        }, 1000 );
+        setInterval(function () {
+            table.ajax.reload(null, false);
+        }, 1000);
 
-        $( "input:checkbox" ).click( function () {
+        //checkbox control data column display
+        $("input:checkbox").click(function () {
 
-                if ($( "#checkbox" ).is( ':checked' )) {
-                    // table
-                    var table = $( '#match_table' ).dataTable();
+                // table
+                var table = $('#match_table').dataTable();
 
-                    // column
-                    var colNum = $( this ).attr( 'data-column' );
+                // column
+                var colNum = $(this).attr('data-column');
 
-                    // Define
-                    var bVis = table.fnSettings().aoColumns[colNum].bVisible;
+                // Define
+                var bVis = $(this).prop('checked');
 
-                    // Toggle
-                    table.fnSetColumnVis( colNum, bVis ? false : true );
-                }
+                // Toggle
+                table.fnSetColumnVis(colNum, bVis);
             }
         );
 
-        // $( "input:checkbox" ).ready( function () {
-        //     var table = $( '#match_table' ).dataTable();
-        //
-        //     for (i = 7; i < 10; i++) {
-        //         // Define
-        //         var bVis = table.fnSettings().aoColumns[i].bVisible;
-        //
-        //         // Toggle
-        //         table.fnSetColumnVis( i, bVis ? false : true );
-        //     }
-        // } )
+        // initialize checkbox mark to unchecked for column not showing at the beginning
+        $("input:checkbox").ready(function () {
+            $("input:checkbox").each(function () {
+                var table = $('#match_table').dataTable();
+                var colNum = $(this).attr('data-column');
+                if (colNum != null) {
+                    var bVis = table.fnSettings().aoColumns[colNum].bVisible;
+                    $(this).prop("checked", bVis);
+                }
+            })
+        });
 
-    } );
-    var groupSearchProgressBar = new groupSearchProgressBar( 'progress', 'group_search_progress', 1000 );
+
+    });
+    var groupSearchProgressBar = new groupSearchProgressBar('progress', 'group_search_progress', 1000);
     groupSearchProgressBar.start();
 </script>
 

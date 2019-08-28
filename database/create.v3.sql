@@ -159,6 +159,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`SpectrumCluster`
     `DiseasePValue`       DOUBLE              NULL DEFAULT NULL,
     `SpeciesPValue`       DOUBLE              NULL DEFAULT NULL,
     `SampleSourcePValue`  DOUBLE              NULL DEFAULT NULL,
+    `ChromatographyType`  VARCHAR(30)         NOT NULL,
     PRIMARY KEY (`Id`),
     UNIQUE INDEX `SpectrumCluster_ConsensusSpectrumId_uindex` (`ConsensusSpectrumId` ASC),
     CONSTRAINT `SpectrumCluster_Spectrum_Id_fk`
