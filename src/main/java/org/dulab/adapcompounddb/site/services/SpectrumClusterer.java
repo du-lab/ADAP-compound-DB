@@ -1,6 +1,13 @@
 package org.dulab.adapcompounddb.site.services;
 
+import org.dulab.adapcompounddb.models.entities.Spectrum;
+import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
+import org.dulab.adapcompounddb.models.entities.TagDistribution;
 import org.springframework.validation.annotation.Validated;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 @Validated
 public interface SpectrumClusterer {
@@ -12,4 +19,7 @@ public interface SpectrumClusterer {
     float getProgress();
 
     void setProgress(float progress);
+
+    void calculateAllDistributions() throws IOException;
+
 }

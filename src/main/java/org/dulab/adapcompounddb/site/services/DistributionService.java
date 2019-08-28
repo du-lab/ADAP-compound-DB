@@ -8,23 +8,14 @@ import java.util.List;
 
 public interface DistributionService {
 
-//    Map<String,Double> calculateClusterPvalue(SpectrumCluster cluster);
-
-    void calculateAllClustersPvalue();
-
     Double getClusterPvalue(String tagKey, long id);
 
     List<TagDistribution> getClusterDistributions(long clusterId);
 
     List<String> getClusterTagDistributions(final SpectrumCluster cluster);
 
-//    Map<JSONObject,JSONObject> integrateDbAndClusterDistributions(SpectrumCluster cluster);
 
     void removeAll();
-
-    void calculateAllDistributions() throws IOException;
-
-    void calculateClusterDistributions() throws IOException;
 
     List<TagDistribution> getAllDistributions();
 
@@ -33,5 +24,5 @@ public interface DistributionService {
 
     TagDistribution getDistribution(long id);
 
-
+    void calculateAllClustersPvalue();
 }

@@ -56,23 +56,13 @@ public class AdminRestController {
                 distributionService.removeAll();
                 //calculate all tags distributions
                 try {
-                    distributionService.calculateAllDistributions();
+                    spectrumClusterer.calculateAllDistributions();
                 } catch (IOException e) {
                     throw new IllegalStateException("Calculating AllDistributions failed!");
                 }
                 spectrumClusterer.removeAll();
                 spectrumClusterer.cluster();
-                //calculate all cluster tag distributions
-                try {
-                    distributionService.calculateClusterDistributions();
-                } catch (IOException e) {
-                    throw new IllegalStateException("Calculating ClusterDistributions failed!");
-                }
                 distributionService.calculateAllClustersPvalue();
-                //                Arrays.stream(ChromatographyType.values())
-                //                .parallel()
-                //                .forEach(t -> spectrumClusterer
-                //                        .cluster(t, 2, 0.25F, 0.01F));
             };
             spectrumClusterer.setProgress(0F);
             executor.submit(r);
