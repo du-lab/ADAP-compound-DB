@@ -229,7 +229,7 @@
                                 + row.querySpectrumId + '/search/" class="button"> Search</a>';
                         } else {
                             var content = '<a href="${pageContext.request.contextPath}/file/'
-                                + row.fileIndex + '/' + row.spectrumIndex + '/" class="button"> Search</a>';
+                                + row.fileIndex + '/' + row.spectrumIndex + '/search/" class="button"> Search</a>';
                         }
                         return content;
                     }
