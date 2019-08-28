@@ -116,7 +116,7 @@ public class DistributionServiceImpl implements DistributionService {
         // Find all the tags has been submitted
         List<SubmissionTag> tags = ServiceUtils.toList(submissionTagRepository.findAll());
 
-        findAllTags(tags, null);
+        findAllTags(tags, null,null);
 
     }
 
@@ -125,6 +125,15 @@ public class DistributionServiceImpl implements DistributionService {
     public void calculateClusterDistributions() throws IOException {
 
         List<SpectrumCluster> clusters = ServiceUtils.toList(spectrumClusterRepository.getAllClusters());
+
+        // TODO: get all-db tag distributions, and put them into a map with tagName as a key
+        Map<String, TagDistribution> dbDistributionMaps = new HashMap<>();
+
+        List<TagDistribution> tagDistribution = ServiceUtils.toList(distributionRepository.findAllTagDistribution());
+
+        for (TagDistribution t : tagDistribution) {
+            dbDistributionMaps.put(t.getTagKey(), t);
+        }
 
         for (SpectrumCluster cluster : clusters) {
 
@@ -139,11 +148,11 @@ public class DistributionServiceImpl implements DistributionService {
                     .collect(Collectors.toList());
 
             // calculate tags unique submission distribution and save to the TagDistribution table
-            findAllTags(clusterTags, cluster);
+            findAllTags(clusterTags, cluster,dbDistributionMaps);
         }
     }
 
-    private void findAllTags(List<SubmissionTag> tagList, SpectrumCluster cluster) throws IOException {
+    private void findAllTags(List<SubmissionTag> tagList, SpectrumCluster cluster,Map<String, TagDistribution> dbDistributionMaps) throws IOException {
 
         // Find unique keys among all tags of unique submission
         final List<String> keys = tagList.stream()
@@ -159,6 +168,7 @@ public class DistributionServiceImpl implements DistributionService {
                 .distinct()
                 .collect(Collectors.toList());
 
+        List<TagDistribution> tagDistributionList = new ArrayList<>();
         // For each key, find its values and their count
         for (String key : keys) {
             List<String> tagValues = tagList.stream()
@@ -184,11 +194,10 @@ public class DistributionServiceImpl implements DistributionService {
                     countPairMap.put(e.getKey(), new DbAndClusterValuePair(e.getValue(), 0));
                 }
             } else {
-
                 ObjectMapper mapper = new ObjectMapper();
                 Map<String, DbAndClusterValuePair> dbDistributionMap = mapper.readValue(
-                        distributionRepository.findTagDistributionByTagKey(key),
-                        new TypeReference<Map<String, DbAndClusterValuePair>>() {
+                        // TODO: use dbDitributionMap.get(key)
+                        dbDistributionMaps.get(key).getTagDistribution(), new TypeReference<Map<String, DbAndClusterValuePair>>() {
                         });
                 Map<String, Integer> dbCountMap = new HashMap<>();
                 for (Map.Entry<String, DbAndClusterValuePair> m : dbDistributionMap.entrySet()) {
@@ -201,7 +210,8 @@ public class DistributionServiceImpl implements DistributionService {
             tagDistribution.setTagDistributionMap(countPairMap);
             tagDistribution.setCluster(cluster);
             tagDistribution.setTagKey(key);
-            distributionRepository.save(tagDistribution);
+            tagDistributionList.add(tagDistribution);
+            distributionRepository.saveAll(tagDistributionList);
         }
     }
 
@@ -210,6 +220,7 @@ public class DistributionServiceImpl implements DistributionService {
     @Override
     public void calculateAllClustersPvalue() {
         List<SpectrumCluster> clusters = ServiceUtils.toList(spectrumClusterRepository.getAllClusters());
+
         for (SpectrumCluster cluster : clusters) {
             List<TagDistribution> clusterDistributions = cluster.getTagDistributions();
             List<Double> clusterPvalue = new ArrayList<>();

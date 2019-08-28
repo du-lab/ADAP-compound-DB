@@ -20,6 +20,9 @@ public interface DistributionRepository extends CrudRepository<TagDistribution, 
             + "AND t.tagKey = ?1")
     String findTagDistributionByTagKey(String tagKey);
 
+    @Query("SELECT t FROM TagDistribution t WHERE t.cluster IS null ")
+    Iterable<TagDistribution> findAllTagDistribution();
+
     @Query("SELECT t FROM TagDistribution t"
             + " WHERE t.cluster is not null"
             + " AND t.tagKey = ?1"

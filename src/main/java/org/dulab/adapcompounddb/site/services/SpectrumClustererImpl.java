@@ -24,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Service
 public class SpectrumClustererImpl implements SpectrumClusterer {
@@ -459,17 +458,51 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
     private List<Peak> createConsensusPeaksWithIntegerMz(List<Spectrum> spectra) {
 
-        // Get all distinct m/z values from all spectra
-        int[] mzValues = spectra.stream()
+
+        //TODO modify IT TO USING FOR LOOP
+/*        int[] mzValues = spectra.stream()
                 .flatMapToInt(s -> s.getPeaks().stream().mapToInt(p -> (int) p.getMz()))
                 .distinct()
-                .toArray();
+                .toArray();*/
+
+        // Get all distinct m/z values from all spectra
+        Set<Double> mzValues = new HashSet<>();
+
+        for (Spectrum s : spectra) {
+            for (Peak p : s.getPeaks()) {
+                mzValues.add(p.getMz());
+            }
+        }
 
         // Calculate average intensity for each m/z value
-        double[] intensities = new double[mzValues.length];
-        for (int i = 0; i < mzValues.length; ++i) {
+        double[] intensities = new double[mzValues.size()];
 
-            int mz = mzValues[i];
+        List<Peak> peakList = new ArrayList<>();
+        int number = 0;
+        while (number < mzValues.size()) {
+            double sum = 0.0;
+            double mz = mzValues.iterator().next();
+
+            for (Spectrum spectrum : spectra) {
+                for (Peak peak : spectrum.getPeaks()) {
+                    if ((int) peak.getMz() == mz) {
+                        sum += peak.getIntensity();
+                        break;
+                    }
+                }
+            }
+            intensities[number] = sum / spectra.size();
+            Peak peak = new Peak();
+            peak.setIntensity(intensities[number]);
+            peak.setMz(mz);
+            peakList.add(peak);
+
+            number++;
+        }
+
+        /*for (int i = 0; i < mzValues.size(); ++i) {
+
+            double mz = mzValues.iterator().next();
 
             double sum = 0.0;
             for (Spectrum spectrum : spectra) {
@@ -481,17 +514,18 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                 }
             }
             intensities[i] = sum / spectra.size();
-        }
+        }*/
 
         // Return a list of peak with calculated m/z values and intensities
-        return IntStream.range(0, mzValues.length)
+        /*return IntStream.range(0, mzValues.size())
                 .mapToObj(i -> {
                     Peak peak = new Peak();
                     peak.setMz(mzValues[i]);
                     peak.setIntensity(intensities[i]);
                     return peak;
                 })
-                .collect(Collectors.toList());
+                .collect(Collectors.toList());*/
+        return peakList;
     }
 
     /**
