@@ -47,17 +47,28 @@ class ServiceUtils {
      */
     static double calculateExactTestStatistics(Collection<DbAndClusterValuePair> dbAndClusterValuePairs) {
 
-        int allDbSum = dbAndClusterValuePairs.stream()
-                .mapToInt(DbAndClusterValuePair::getDbValue)
-                .sum();
+//        int allDbSum = dbAndClusterValuePairs.stream()
+//                .mapToInt(DbAndClusterValuePair::getDbValue)
+//                .sum();
 
-        int clusterSum = dbAndClusterValuePairs.stream()
-                .mapToInt(DbAndClusterValuePair::getClusterValue)
-                .sum();
+//        int clusterSum = dbAndClusterValuePairs.stream()
+//                .mapToInt(DbAndClusterValuePair::getClusterValue)
+//                .sum();
 
+        int allDbSum = 0;
+        int clusterSum = 0;
+        for (Iterator<DbAndClusterValuePair> iterator = dbAndClusterValuePairs.iterator(); iterator.hasNext(); ) {
+            DbAndClusterValuePair dbAndClusterValuePair = iterator.next();
+            int dbValue = dbAndClusterValuePair.getDbValue();
+            int clusterValue = dbAndClusterValuePair.getClusterValue();
+            allDbSum = allDbSum + dbValue;
+            clusterSum = clusterSum + clusterValue;
+        }
+
+        int finalAllDbSum = allDbSum;
         double[] probabilities = dbAndClusterValuePairs.stream()
                 .mapToDouble(DbAndClusterValuePair::getDbValue)
-                .map(x -> x / allDbSum)
+                .map(x -> x / finalAllDbSum)
                 .toArray();
 
         int[] counts = dbAndClusterValuePairs.stream()
