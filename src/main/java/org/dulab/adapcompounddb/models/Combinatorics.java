@@ -21,7 +21,12 @@ public class Combinatorics {
     private static void findCombinations(List<int[]> allCombinations, int[] currentCombination,
                                         int index, int num) {
 
-        if (Arrays.stream(currentCombination).sum() == num) {
+        int sum = 0;
+        for(int i = 0; i < currentCombination.length; i++){
+            sum = sum + currentCombination[i];
+        }
+
+        if (sum == num) {
             allCombinations.add(currentCombination.clone());
             return;
         }
