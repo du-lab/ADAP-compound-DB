@@ -15,6 +15,12 @@ public class MultinomialDistribution {
         this.numTrials = numTrials;
     }
 
+    /**
+     * Calculates the probability mass function of given distribution
+     *
+     * @param counts array of non-negative integers whose sum is numTrials
+     * @return probability
+     */
     public double getPMF(int[] counts) {
 
         if (counts.length != probabilities.length)
