@@ -23,6 +23,4 @@ public interface DistributionService {
     List<TagDistribution> getAllClusterIdNullDistributions();
 
     TagDistribution getDistribution(long id);
-
-    void calculateAllClustersPvalue();
 }

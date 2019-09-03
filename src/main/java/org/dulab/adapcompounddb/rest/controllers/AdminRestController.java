@@ -62,7 +62,6 @@ public class AdminRestController {
                 }
                 spectrumClusterer.removeAll();
                 spectrumClusterer.cluster();
-                distributionService.calculateAllClustersPvalue();
             };
             spectrumClusterer.setProgress(0F);
             executor.submit(r);

@@ -109,23 +109,4 @@ public class DistributionServiceImpl implements DistributionService {
         return allTagDistributions;
     }
 
-    // calculate all clusters' pValue
-    @Transactional
-    @Override
-    public void calculateAllClustersPvalue() {
-        List<SpectrumCluster> clusters = ServiceUtils.toList(spectrumClusterRepository.getAllClusters());
-        for (SpectrumCluster cluster : clusters) {
-            List<TagDistribution> clusterDistributions = cluster.getTagDistributions();
-            List<Double> clusterPvalue = new ArrayList<>();
-            for (TagDistribution t : clusterDistributions) {
-                String key = t.getTagKey();
-                distributionRepository.findClusterTagDistributionByTagKey(key, cluster.getId())
-                        .setPValue(ServiceUtils.calculateExactTestStatistics(t.getTagDistributionMap().values()));
-                clusterPvalue.add(t.getPValue());
-            }
-            Collections.sort(clusterPvalue);
-            cluster.setMinPValue(clusterPvalue.get(0));
-        }
-    }
-
 }
