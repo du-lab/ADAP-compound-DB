@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.site.repositories;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -185,10 +186,24 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
         StringBuilder sqlBuilder = new StringBuilder("UPDATE Spectrum ");
         sqlBuilder.append(String.format("SET ClusterId = %d WHERE Id IN (", clusterId));
-        sqlBuilder.append(spectrumIds
-                .stream()
-                .map(String::valueOf)
-                .collect(Collectors.joining(", ")));
+//        sqlBuilder.append(spectrumIds
+//                .stream()
+//                .map(String::valueOf)
+//                .collect(Collectors.joining(", ")));
+
+        Iterator<Long> iterator = spectrumIds.iterator();
+        int num = 0;
+        while(num < spectrumIds.size() && iterator.hasNext()){
+            String a = iterator.next().toString();
+            if(num != (spectrumIds.size()-1)){
+                sqlBuilder.append(a);
+                sqlBuilder.append(", ");
+            }else {
+                sqlBuilder.append(a);
+            }
+            num++;
+        }
+
         sqlBuilder.append(")");
 
         String sqlQuery = sqlBuilder.toString();
