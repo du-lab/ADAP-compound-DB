@@ -8,23 +8,19 @@ public class Combinatorics {
 
     /**
      * Finds all combinations of k non-negative integers whose sum equals n
+     *
      * @param k number of elements in a combination
      * @param n sum of all integers in a combination
      * @return list of combinations
      */
     public static List<int[]> findCombinations(int k, int n) {
         List<int[]> combinations = new ArrayList<>();
-        findCombinations(combinations, new int[k], 0, n);
+        findCombinations(combinations, new int[k], 0, 0, n);
         return combinations;
     }
 
     private static void findCombinations(List<int[]> allCombinations, int[] currentCombination,
-                                        int index, int num) {
-
-        int sum = 0;
-        for(int i = 0; i < currentCombination.length; i++){
-            sum = sum + currentCombination[i];
-        }
+                                         int index, int sum, int num) {
 
         if (sum == num) {
             allCombinations.add(currentCombination.clone());
@@ -35,7 +31,9 @@ public class Combinatorics {
 
         for (int i = 0; i <= num; ++i) {
             currentCombination[index] = i;
-            findCombinations(allCombinations, currentCombination, index + 1, num);
+            findCombinations(allCombinations, currentCombination, index + 1, sum + i, num);
         }
+
+        currentCombination[index] = 0;
     }
 }

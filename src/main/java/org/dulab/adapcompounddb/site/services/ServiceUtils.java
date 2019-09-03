@@ -51,45 +51,22 @@ class ServiceUtils {
      */
     static double calculateExactTestStatistics(Collection<DbAndClusterValuePair> dbAndClusterValuePairs) {
 
-//        int allDbSum = dbAndClusterValuePairs.stream()
-//                .mapToInt(DbAndClusterValuePair::getDbValue)
-//                .sum();
-
-//        int clusterSum = dbAndClusterValuePairs.stream()
-//                .mapToInt(DbAndClusterValuePair::getClusterValue)
-//                .sum();
-
-//        int finalAllDbSum = allDbSum;
-//        double[] probabilities = dbAndClusterValuePairs.stream()
-//                .mapToDouble(DbAndClusterValuePair::getDbValue)
-//                .map(x -> x / finalAllDbSum)
-//                .toArray();
-//
-//        int[] counts = dbAndClusterValuePairs.stream()
-//                .mapToInt(DbAndClusterValuePair::getClusterValue)
-//                .toArray();
-
         LOGGER.info("Calculating Exact Goodness-of-fit test...");
+
         int allDbSum = 0;
         int clusterSum = 0;
-        int n = 0;
-        for (Iterator<DbAndClusterValuePair> iterator = dbAndClusterValuePairs.iterator(); iterator.hasNext(); ) {
-            DbAndClusterValuePair dbAndClusterValuePair = iterator.next();
-            int dbValue = dbAndClusterValuePair.getDbValue();
-            int clusterValue = dbAndClusterValuePair.getClusterValue();
-            allDbSum = allDbSum + dbValue;
-            clusterSum = clusterSum + clusterValue;
-            n++;
+        for (DbAndClusterValuePair dbAndClusterValuePair : dbAndClusterValuePairs) {
+            allDbSum += dbAndClusterValuePair.getDbValue();
+            clusterSum += dbAndClusterValuePair.getClusterValue();
         }
 
-        double[] probabilities = new double[n];
-        int[] counts = new int[n];
-        int m = 0;
-        for (Iterator<DbAndClusterValuePair> iterator = dbAndClusterValuePairs.iterator(); iterator.hasNext(); ) {
+        double[] probabilities = new double[dbAndClusterValuePairs.size()];
+        int[] counts = new int[dbAndClusterValuePairs.size()];
+        Iterator<DbAndClusterValuePair> iterator = dbAndClusterValuePairs.iterator();
+        for (int i = 0; iterator.hasNext(); ++i) {
             DbAndClusterValuePair dbAndClusterValuePair = iterator.next();
-            probabilities[m] = dbAndClusterValuePair.getDbValue() / allDbSum;
-            counts[m] = dbAndClusterValuePair.getClusterValue();
-            m++;
+            probabilities[i] = (double) dbAndClusterValuePair.getDbValue() / allDbSum;
+            counts[i] = dbAndClusterValuePair.getClusterValue();
         }
 
         MultinomialDistribution distribution = new MultinomialDistribution(probabilities, clusterSum);
