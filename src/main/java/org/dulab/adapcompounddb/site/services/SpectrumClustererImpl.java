@@ -285,6 +285,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
 
     // TODO: Add a comment about what this method does
+    //calculating both db tagDistribution and cluster distribution
     private double findAllTags(List<SubmissionTag> tagList,
                                Map<String, TagDistribution> dbDistributions,
                                SpectrumCluster cluster) throws IOException {
