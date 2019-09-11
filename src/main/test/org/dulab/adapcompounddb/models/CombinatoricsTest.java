@@ -12,7 +12,7 @@ public class CombinatoricsTest {
     @Test
     public void findCombinations() {
 
-        List<int[]> combinations = Combinatorics.findCombinations(3, 5);
+        List<int[]> combinations = new Combinatorics().findCombinations(3, 5);
 
         assertEquals(21, combinations.size());
         combinations.forEach(c -> assertEquals(5, Arrays.stream(c).sum()));

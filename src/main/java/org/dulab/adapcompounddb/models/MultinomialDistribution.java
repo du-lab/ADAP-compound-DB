@@ -7,10 +7,13 @@ import java.util.List;
 
 public class MultinomialDistribution {
 
+    private final Combinatorics combinatorics;
+
     private final double[] probabilities;
     private final int numTrials;
 
     public MultinomialDistribution(double[] probabilities, int numTrials) {
+        this.combinatorics = new Combinatorics();
         this.probabilities = probabilities;
         this.numTrials = numTrials;
     }
@@ -48,7 +51,7 @@ public class MultinomialDistribution {
 
         double thresholdP = getPMF(counts);
 
-        List<int[]> combinations = Combinatorics.findCombinations(probabilities.length, numTrials);
+        List<int[]> combinations = combinatorics.findCombinations(probabilities.length, numTrials);
 
         double sum = 0.0;
         for (int[] combination : combinations) {
