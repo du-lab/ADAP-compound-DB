@@ -12,8 +12,8 @@ public class MultinomialDistribution {
     private final double[] probabilities;
     private final int numTrials;
 
-    public MultinomialDistribution(double[] probabilities, int numTrials) {
-        this.combinatorics = new Combinatorics();
+    public MultinomialDistribution(double[] probabilities, int numTrials, Combinatorics combinatorics) {
+        this.combinatorics = combinatorics;
         this.probabilities = probabilities;
         this.numTrials = numTrials;
     }

@@ -15,7 +15,8 @@ public class MultinomialDistributionTest {
         double[] probabilities = {0.75, 0.25};
         int[] counts = {7, 5};
 
-        MultinomialDistribution distribution = new MultinomialDistribution(probabilities, 12);
+        MultinomialDistribution distribution =
+                new MultinomialDistribution(probabilities, 12, new Combinatorics());
 
         assertEquals(0.103, distribution.getPMF(counts), EPS);
         assertEquals(0.189, distribution.getPValue(counts), EPS);
