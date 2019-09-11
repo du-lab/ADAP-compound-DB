@@ -1,9 +1,10 @@
 package org.dulab.adapcompounddb.models.dto;
 
+import org.dulab.adapcompounddb.models.ChromatographyType;
+import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
+
 import java.io.Serializable;
 import java.util.Set;
-
-import org.dulab.adapcompounddb.models.ChromatographyType;
 
 public class SpectrumClusterDTO implements Serializable {
 
@@ -14,24 +15,55 @@ public class SpectrumClusterDTO implements Serializable {
     // *************************
 
     private long id;
+    private String consensusSpectrumName;
     private Integer size;
-
     private Double diameter;
     private Double aveSignificance;
     private Double minSignificance;
     private Double maxSignificance;
-
-    ChromatographyType chromatographyType;
-
-    SpectrumDTO consensusSpectrum;
-    private Set<DiversityIndexDTO> diversityIndices;
-
-
-
     private Double aveDiversity;
     private Double minDiversity;
     private Double maxDiversity;
     private Double minPValue;
+    private Double diseasePValue;
+    private Double speciesPValue;
+    private Double sampleSourcePValue;
+
+    //group search
+    private String querySpectrumName;
+    private long querySpectrumId;
+    private int fileIndex;
+    private int spectrumIndex;
+    private long matchSpectrumClusterId;
+
+    ChromatographyType chromatographyType;
+    String chromatographyTypeIconPath;
+    String chromatographyTypeLabel;
+
+//    private SpectrumDTO consensusSpectrum;
+//    private Set<DiversityIndexDTO> diversityIndices;
+    private Set<DiversityIndexDTO> diversityIndices;
+
+    public SpectrumClusterDTO() {
+
+    }
+
+    public SpectrumClusterDTO spectrumClusterDTO(SpectrumCluster cluster) {
+        this.id = cluster.getId();
+        this.consensusSpectrumName = cluster.getConsensusSpectrum().getName();
+        this.size = cluster.getSize();
+        this.diameter = cluster.getDiameter();
+        this.aveSignificance = cluster.getAveSignificance();
+        this.minPValue = cluster.getMinPValue();
+        this.minSignificance = cluster.getMinSignificance();
+        this.maxSignificance = cluster.getMaxSignificance();
+        this.minDiversity = cluster.getMinDiversity();
+        this.maxDiversity = cluster.getMaxDiversity();
+        this.aveDiversity = cluster.getAveDiversity();
+        this.chromatographyTypeIconPath = cluster.getConsensusSpectrum().getChromatographyType().getIconPath();
+        this.chromatographyTypeLabel = cluster.getConsensusSpectrum().getChromatographyType().getLabel();
+        return this;
+    }
 
     // *******************************
     // ***** Getters and setters *****
@@ -54,14 +86,6 @@ public class SpectrumClusterDTO implements Serializable {
 
     public void setId(final long id) {
         this.id = id;
-    }
-
-    public SpectrumDTO getConsensusSpectrum() {
-        return consensusSpectrum;
-    }
-
-    public void setConsensusSpectrum(final SpectrumDTO consensusSpectrum) {
-        this.consensusSpectrum = consensusSpectrum;
     }
 
     public Integer getSize() {
@@ -104,12 +128,20 @@ public class SpectrumClusterDTO implements Serializable {
         this.maxSignificance = maxSignificance;
     }
 
-    public ChromatographyType getChromatographyType() {
-        return chromatographyType;
+    public String getChromatographyTypeIconPath() {
+        return chromatographyTypeIconPath;
     }
 
-    public void setChromatographyType(final ChromatographyType chromatographyType) {
-        this.chromatographyType = chromatographyType;
+    public void setChromatographyTypeIconPath(String chromatographyTypeIconPath) {
+        this.chromatographyTypeIconPath = chromatographyTypeIconPath;
+    }
+
+    public String getChromatographyTypeLabel() {
+        return chromatographyTypeLabel;
+    }
+
+    public void setChromatographyTypeLabel(String chromatographyTypeLabel) {
+        this.chromatographyTypeLabel = chromatographyTypeLabel;
     }
 
     public Set<DiversityIndexDTO> getDiversityIndices() {
@@ -118,6 +150,46 @@ public class SpectrumClusterDTO implements Serializable {
 
     public void setDiversityIndices(final Set<DiversityIndexDTO> diversityIndices) {
         this.diversityIndices = diversityIndices;
+    }
+
+    public String getQuerySpectrumName() {
+        return querySpectrumName;
+    }
+
+    public void setQuerySpectrumName(String querySpectrumName) {
+        this.querySpectrumName = querySpectrumName;
+    }
+
+    public long getQuerySpectrumId() {
+        return querySpectrumId;
+    }
+
+    public void setQuerySpectrumId(long querySpectrumId) {
+        this.querySpectrumId = querySpectrumId;
+    }
+
+    public int getFileIndex() {
+        return fileIndex;
+    }
+
+    public void setFileIndex(int fileIndex) {
+        this.fileIndex = fileIndex;
+    }
+
+    public int getSpectrumIndex() {
+        return spectrumIndex;
+    }
+
+    public void setSpectrumIndex(int spectrumIndex) {
+        this.spectrumIndex = spectrumIndex;
+    }
+
+    public long getMatchSpectrumClusterId() {
+        return matchSpectrumClusterId;
+    }
+
+    public void setMatchSpectrumClusterId(Long matchSpectrumClusterId) {
+        this.matchSpectrumClusterId = matchSpectrumClusterId;
     }
 
     // ****************************
@@ -140,6 +212,14 @@ public class SpectrumClusterDTO implements Serializable {
         this.minDiversity = minDiversity;
     }
 
+    public ChromatographyType getChromatographyType() {
+        return chromatographyType;
+    }
+
+    public void setChromatographyType(ChromatographyType chromatographyType) {
+        this.chromatographyType = chromatographyType;
+    }
+
     public Double getMaxDiversity() {
         return maxDiversity;
     }
@@ -148,9 +228,45 @@ public class SpectrumClusterDTO implements Serializable {
         this.maxDiversity = maxDiversity;
     }
 
-    public Double getMinPValue() { return minPValue; }
+    public Double getMinPValue() {
+        return minPValue;
+    }
 
-    public void setMinPValue(final Double minPValue) { this.minPValue = minPValue; }
+    public void setMinPValue(final Double minPValue) {
+        this.minPValue = minPValue;
+    }
+
+    public Double getDiseasePValue() {
+        return diseasePValue;
+    }
+
+    public void setDiseasePValue(Double diseasePValue) {
+        this.diseasePValue = diseasePValue;
+    }
+
+    public Double getSpeciesPValue() {
+        return speciesPValue;
+    }
+
+    public void setSpeciesPValue(Double speciesPValue) {
+        this.speciesPValue = speciesPValue;
+    }
+
+    public Double getSampleSourcePValue() {
+        return sampleSourcePValue;
+    }
+
+    public void setSampleSourcePValue(Double sampleSourcePValue) {
+        this.sampleSourcePValue = sampleSourcePValue;
+    }
+
+    public String getConsensusSpectrumName() {
+        return consensusSpectrumName;
+    }
+
+    public void setConsensusSpectrumName(String consensusSpectrumName) {
+        this.consensusSpectrumName = consensusSpectrumName;
+    }
 
     @Override
     public int hashCode() {

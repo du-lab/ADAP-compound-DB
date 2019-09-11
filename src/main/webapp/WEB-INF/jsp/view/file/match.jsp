@@ -37,20 +37,41 @@
 
 <section>
     <h1>Matching Hits</h1>
-
     <div align="center">
         <c:choose>
             <c:when test="${matches != null && matches.size() > 0}">
-                <table id="match_table" class="display responsive" style="max-width: 100%;">
+                <div>
+                    Click to hide/show columns:
+                    <label><input type="checkbox" data-column="0" checked/><strong>Match Spectrum</strong></label> -
+                    <label><input type="checkbox" data-column="1" checked/><strong>Count</strong></label> -
+                    <label><input type="checkbox" data-column="2" checked/><strong>Score</strong></label> -
+                    <label><input type="checkbox" data-column="3" checked/><strong>In-study P-value</strong></label> -
+                    <label><input type="checkbox" data-column="4" checked/><strong>Maximum Diversity</strong></label> -
+                    <label><input type="checkbox" data-column="5" checked/><strong>Cross-study P-value</strong></label>
+                    -
+                    <label><input type="checkbox" data-column="6" class="checkboxHide"/><strong>Cross-study P-value
+                        (disease)</strong></label> -
+                    <label><input type="checkbox" data-column="7" class="checkboxHide"/><strong>Cross-study P-value
+                        (species)</strong></label> -
+                    <label><input type="checkbox" data-column="8" class="checkboxHide"/><strong>Cross-study P-value
+                        (sample source)</strong></label> -
+                    <label><input type="checkbox" data-column="9" checked/><strong>Type</strong></label>
+                </div>
+
+                <table id="match_table" class="display responsive" style="width: 100%;">
                     <thead>
                     <tr>
-                        <th>Score</th>
-                        <th>Spectrum</th>
-                        <th>Size</th>
-                        <th>Minimum diversity</th>
-                        <th>Maximum diversity</th>
-                        <th>Average diversity</th>
-                        <th>View</th>
+                        <th title="Match spectra">Match Spectrum</th>
+                        <th title="Number of studies" class="Count">Count</th>
+                        <th title="Minimum matching score between all spectra in a cluster">Score</th>
+                        <th title="P-value of the In-study ANOVA test">In-study P-value</th>
+                        <th title="Gini-Simpson Index">Maximum Diversity</th>
+                        <th title="P-value of the Cross-study Goodness-of-fit test">Cross-study P-value</th>
+                        <th title="P-value of disease">Cross-study P-value (disease)</th>
+                        <th title="P-value of species">Cross-study P-value (species)</th>
+                        <th title="P-value of sample source">Cross-study P-value (sample source)</th>
+                        <th title="Chromatography type">Type</th>
+                        <th></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -60,38 +81,63 @@
                                           groupingUsed="false"
                                           value="${match.score * 1000}"
                                           var="score"/>
+                        <fmt:formatNumber type="number"
+                                          maxFractionDigits="0"
+                                          groupingUsed="false"
+                                          value="${match.matchSpectrum.cluster.aveSignificance}"
+                                          var="aveSignificance"/>
+                        <fmt:formatNumber type="number"
+                                          maxFractionDigits="0"
+                                          groupingUsed="false"
+                                          value="${match.matchSpectrum.cluster.maxDiversity}"
+                                          var="maxDiversity"/>
+                        <fmt:formatNumber type="number"
+                                          maxFractionDigits="0"
+                                          groupingUsed="false"
+                                          value="${match.matchSpectrum.cluster.minPValue}"
+                                          var="minPValue"/>
+                        <fmt:formatNumber type="number"
+                                          maxFractionDigits="0"
+                                          groupingUsed="false"
+                                          value="${match.matchSpectrum.cluster.diseasePValue}"
+                                          var="diseasePValue"/>
+                        <fmt:formatNumber type="number"
+                                          maxFractionDigits="0"
+                                          groupingUsed="false"
+                                          value="${match.matchSpectrum.cluster.speciesPValue}"
+                                          var="speciesPValue"/>
+                        <fmt:formatNumber type="number"
+                                          maxFractionDigits="0"
+                                          groupingUsed="false"
+                                          value="${match.matchSpectrum.cluster.sampleSourcePValue}"
+                                          var="sampleSourcePValue"/>
 
                         <tr data-spectrum='${dulab:spectrumToJson(match.matchSpectrum)}'>
-                            <td>${score}</td>
                             <c:if test="${match.matchSpectrum.consensus}">
                                 <td>
-                                    <a href="/cluster/${match.matchSpectrum.cluster.id}/">${dulab:abbreviate(match.matchSpectrum.name, 80)}</a><br/>
+                                    <a href="/cluster/${match.matchSpectrum.cluster.id}/">
+                                            ${dulab:abbreviate(match.matchSpectrum.name, 80)}</a><br/>
                                     <small>
-                                        <c:if test="${match.matchSpectrum.precursor != null}">Precursor: ${match.matchSpectrum.precursor};</c:if>
-                                        <c:if test="${match.matchSpectrum.retentionTime != null}">Ret Time: ${match.matchSpectrum.retentionTime};</c:if>
+                                        <c:if test="${match.matchSpectrum.precursor != null}">Precursor:
+                                            ${match.matchSpectrum.precursor};
+                                        </c:if>
+                                        <c:if test="${match.matchSpectrum.retentionTime != null}">Ret Time:
+                                            ${match.matchSpectrum.retentionTime};
+                                        </c:if>
                                     </small>
                                 </td>
                                 <td>${match.matchSpectrum.cluster.size}</td>
-                                <c:forEach items="${submissionCategoryTypes}" var="type">
-                                    <td>${dulab:jsonToHtml(dulab:clusterDistributionToJson(match.matchSpectrum.cluster.spectra, submissionCategoryMap.get(type)))}</td>
-                                </c:forEach>
-                                <!--more horiz-->
-                                <td><a href="/cluster/${match.matchSpectrum.cluster.id}/"><i class="material-icons">&#xE5D3;</i></a>
-                                </td>
-                            </c:if>
-                            <c:if test="${match.matchSpectrum.reference}">
-                                <td>
-                                    <a href="/spectrum/${match.matchSpectrum.id}/">${dulab:abbreviate(match.matchSpectrum.name, 80)}</a><br/>
-                                    <small>
-                                        <c:if test="${match.matchSpectrum.precursor != null}">Precursor: ${match.matchSpectrum.precursor};</c:if>
-                                        <c:if test="${match.matchSpectrum.retentionTime != null}">Ret Time: ${match.matchSpectrum.retentionTime};</c:if>
-                                    </small>
-                                </td>
-                                <td></td>
-                                <c:forEach items="${submissionCategoryTypes}" var="type">
-                                    <td>${dulab:jsonToHtml(dulab:clusterDistributionToJson([match.matchSpectrum], submissionCategoryMap.get(type)))}</td>
-                                </c:forEach>
-                                <!--more horiz-->
+                                <td>${score}</td>
+                                <td>${aveSignificance}</td>
+                                <td>${maxDiversity}</td>
+                                <td>${minPValue}</td>
+                                <td>${diseasePValue}</td>
+                                <td>${speciesPValue}</td>
+                                <td>${sampleSourcePValue}</td>
+                                <td><img
+                                        src="${pageContext.request.contextPath}/${match.matchSpectrum.chromatographyType.iconPath}"
+                                        alt="${match.matchSpectrum.chromatographyType.label}"
+                                        title="${match.matchSpectrum.chromatographyType.label}" class="icon"/></td>
                                 <td><a href="/spectrum/${match.matchSpectrum.id}/"><i
                                         class="material-icons">&#xE5D3;</i></a></td>
                             </c:if>
@@ -167,7 +213,7 @@
 
 
                 <div align="center">
-                    <input type="submit" value="Search" />
+                    <input type="submit" value="Search"/>
                 </div>
             </form:form>
         </div>
@@ -180,50 +226,85 @@
 <script src="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.js"/>"></script>
 <script src="<c:url value="/resources/tag-it-6ccd2de/js/tag-it.min.js"/>"></script>
 <script>
-    $(document).ready(function () {
+    $( document ).ready( function () {
 
-        var table = $('#match_table').DataTable({
-            order: [[0, 'desc']],
+        var table = $( '#match_table' ).DataTable( {
+            order: [[2, 'desc']],
             select: {style: 'single'},
+            processing: true,
             responsive: true,
             scrollX: true,
-            scroller: true
-        });
+            scroller: true,
+            "columnDefs": [
+                {
+                    "targets": 10,
+                    "orderable": false
+                },
+            ]
+        } );
 
-        table.on('select', function (e, dt, type, indexes) {
-            var row = table.row(indexes).node();
-            var spectrum = JSON.parse($(row).attr('data-spectrum'));
-            plot.update(spectrum);
-        });
+        table.on( 'select', function (e, dt, type, indexes) {
+            var row = table.row( indexes ).node();
+            var spectrum = JSON.parse( $( row ).attr( 'data-spectrum' ) );
+            plot.update( spectrum );
+        } );
 
-        table.rows(':eq(0)').select();
+        table.rows( ':eq(0)' ).select();
 
-        $('#scoreThreshold').prop('disabled', !$('#scoreThresholdCheck1').prop('checked'));
-        $('#mzTolerance').prop('disabled', !$('#scoreThresholdCheck1').prop('checked'));
-        $('#massTolerance').prop('disabled', !$('#massToleranceCheck1').prop('checked'));
-        $('#retTimeTolerance').prop('disabled', !$('#retTimeToleranceCheck1').prop('checked'));
 
-        $('#accordion').accordion();
-        $('#tags').tagit({
+        $( '#scoreThreshold' ).prop( 'disabled', !$( '#scoreThresholdCheck1' ).prop( 'checked' ) );
+        $( '#mzTolerance' ).prop( 'disabled', !$( '#scoreThresholdCheck1' ).prop( 'checked' ) );
+        $( '#massTolerance' ).prop( 'disabled', !$( '#massToleranceCheck1' ).prop( 'checked' ) );
+        $( '#retTimeTolerance' ).prop( 'disabled', !$( '#retTimeToleranceCheck1' ).prop( 'checked' ) );
+
+        $( '#accordion' ).accordion();
+        $( '#tags' ).tagit( {
             autocomplete: {
                 source: '${dulab:stringsToJson(searchForm.availableTags)}'
             }
-        })
-    });
+        } );
+        //checkbox control data column display
+        $( "input:checkbox" ).click( function () {
+
+                // table
+                var table = $( '#match_table' ).dataTable();
+
+                // column
+                var colNum = $( this ).attr( 'data-column' );
+
+                // Define
+                // var bVis = table.fnSettings().aoColumns[colNum].bVisible;
+                var bVis = $( this ).prop( 'checked' );
+
+                // Toggle
+                table.fnSetColumnVis( colNum, bVis);
+            }
+        );
+
+        // initialize checkbox mark to unchecked for column not showing at the beginning
+        $( "input:checkbox" ).ready( function () {
+            $( ".checkboxHide" ).prop( "checked", false );
+
+
+            //hiding column index from 6 to 8 initially
+            for (i = 6; i < 9; i++) {
+
+                // table
+                var table = $( '#match_table' ).dataTable();
+
+                // Define
+                if (table.fnSettings() != null) {
+                    var bVis = $( this ).prop( 'checked' );
+                }
+                // Toggle
+                table.fnSetColumnVis( i, bVis );
+            }
+        } );
+    } );
 </script>
 
 <script src="<c:url value="/resources/d3/d3.min.js"/>"></script>
 <script src="<c:url value="/resources/AdapCompoundDb/js/twospectraplot.js"/>"></script>
 <script>
-    var plot = new TwoSpectraPlot('plot', JSON.parse('${dulab:spectrumToJson(querySpectrum)}'))
+    var plot = new TwoSpectraPlot( 'plot', JSON.parse( '${dulab:spectrumToJson(querySpectrum)}' ) )
 </script>
-<style>
-    .selection {
-        fill: #ADD8E6;
-        stroke: #ADD8E6;
-        fill-opacity: 0.3;
-        stroke-opacity: 0.7;
-        stroke-width: 2;
-        stroke-dasharray: 5, 5;
-    }
-</style>
