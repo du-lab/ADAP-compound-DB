@@ -18,32 +18,68 @@ class ServiceUtils {
         return list;
     }
 
+    /**
+     * Calculates chi-squared statistics
+     */
     static double calculateChiSquaredStatistics(Collection<DbAndClusterValuePair> dbAndClusterValuePairs) {
 
         int freedomDegrees = dbAndClusterValuePairs.size() - 1;
         if (freedomDegrees == 0)
             return 1.0;
 
-        int allDbSum = dbAndClusterValuePairs.stream()
-                .mapToInt(DbAndClusterValuePair::getDbValue)
-                .sum();
-
-        int clusterSum = dbAndClusterValuePairs.stream()
-                .mapToInt(DbAndClusterValuePair::getClusterValue)
-                .sum();
+        int allDbSum = 0;
+        int clusterSum = 0;
+        for (DbAndClusterValuePair dbAndClusterValuePair : dbAndClusterValuePairs) {
+            allDbSum += dbAndClusterValuePair.getDbValue();
+            clusterSum += dbAndClusterValuePair.getClusterValue();
+        }
 
         if (allDbSum == 0 || clusterSum == 0)
             throw new IllegalStateException("Sum of distribution values cannot be zero");
 
-        double chiSquared = dbAndClusterValuePairs.stream()
-                .mapToDouble(pair -> {
-                    double p = (double) pair.getDbValue() / allDbSum;
-                    double d = pair.getClusterValue() - p * clusterSum;
-                    return d * d / (p * clusterSum);
-                })
-                .sum();
+        double chiSquared = 0.0;
+        for (DbAndClusterValuePair dbAndClusterValuePair : dbAndClusterValuePairs) {
+            double p = (double) dbAndClusterValuePair.getDbValue() / allDbSum;
+            double d = dbAndClusterValuePair.getClusterValue() - p * clusterSum;
+            chiSquared = chiSquared + (d * d / (p * clusterSum));
+        }
 
         return 1.0 - new ChiSquaredDistribution(freedomDegrees).cumulativeProbability(chiSquared);
+    }
+
+    /**
+     * small number in chi-squared statistics with William's corrections
+     */
+    static double calculateChiSquaredCorrection(Collection<DbAndClusterValuePair> dbAndClusterValuePairs) {
+
+        int freedomDegrees = dbAndClusterValuePairs.size() - 1;
+        if (freedomDegrees == 0)
+            return 1.0;
+
+        int allDbSum = 0;
+        int clusterSum = 0;
+        int categoryNums = 0;
+        for (DbAndClusterValuePair dbAndClusterValuePair : dbAndClusterValuePairs) {
+            allDbSum += dbAndClusterValuePair.getDbValue();
+            clusterSum += dbAndClusterValuePair.getClusterValue();
+            categoryNums++;
+        }
+
+        if (allDbSum == 0 || clusterSum == 0)
+            throw new IllegalStateException("Sum of distribution values cannot be zero");
+
+        double chiSquared = 0.0;
+        for (DbAndClusterValuePair dbAndClusterValuePair : dbAndClusterValuePairs) {
+            double p = (double) dbAndClusterValuePair.getDbValue() / allDbSum;
+            double d = dbAndClusterValuePair.getClusterValue() - p * clusterSum;
+            chiSquared = chiSquared + (d * d / (p * clusterSum));
+
+        }
+
+        // william's correction coefficient
+        double q = 1 + (categoryNums * categoryNums - 1) / (6 * clusterSum * freedomDegrees);
+
+        return 1.0 - new ChiSquaredDistribution(freedomDegrees).cumulativeProbability(chiSquared / q);
     }
 
     /**
