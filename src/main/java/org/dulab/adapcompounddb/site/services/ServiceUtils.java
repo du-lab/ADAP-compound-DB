@@ -80,6 +80,7 @@ class ServiceUtils {
         }
 
         // william's correction coefficient
+        //TODO: integer division in floating-point context
         double q = 1 + (categoryNums * categoryNums - 1) / (6 * clusterSum * freedomDegrees);
 
         return 1.0 - new ChiSquaredDistribution(freedomDegrees).cumulativeProbability(chiSquared / q);
