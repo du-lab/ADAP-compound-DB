@@ -3,6 +3,7 @@ package org.dulab.adapcompounddb.site.services;
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dulab.adapcompounddb.models.Combinatorics;
 import org.dulab.adapcompounddb.models.DbAndClusterValuePair;
 import org.dulab.adapcompounddb.models.MultinomialDistribution;
 
@@ -11,6 +12,8 @@ import java.util.*;
 class ServiceUtils {
 
     private static final Logger LOGGER = LogManager.getLogger(ServiceUtils.class);
+
+    private static Combinatorics combinatorics = new Combinatorics();
 
     static <E> List<E> toList(Iterable<E> iterable) {
         List<E> list = new ArrayList<>();
@@ -105,7 +108,7 @@ class ServiceUtils {
             counts[i] = dbAndClusterValuePair.getClusterValue();
         }
 
-        MultinomialDistribution distribution = new MultinomialDistribution(probabilities, clusterSum);
+        MultinomialDistribution distribution = new MultinomialDistribution(probabilities, clusterSum, combinatorics);
         return distribution.getPValue(counts);
     }
 

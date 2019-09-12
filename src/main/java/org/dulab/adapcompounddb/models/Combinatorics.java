@@ -1,10 +1,10 @@
 package org.dulab.adapcompounddb.models;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class Combinatorics {
+
+    private Map<Long, List<int[]>> savedCombinations = new HashMap<>();
 
     /**
      * Finds all combinations of k non-negative integers whose sum equals n
@@ -13,13 +13,20 @@ public class Combinatorics {
      * @param n sum of all integers in a combination
      * @return list of combinations
      */
-    public static List<int[]> findCombinations(int k, int n) {
-        List<int[]> combinations = new ArrayList<>();
+    public List<int[]> findCombinations(int k, int n) {
+
+        long cantorNumber = getCantorPairing(k, n);
+        List<int[]> combinations = savedCombinations.get(cantorNumber);
+        if (combinations != null)
+            return combinations;
+
+        combinations = new ArrayList<>();
         findCombinations(combinations, new int[k], 0, 0, n);
+        savedCombinations.put(cantorNumber, combinations);
         return combinations;
     }
 
-    private static void findCombinations(List<int[]> allCombinations, int[] currentCombination,
+    private void findCombinations(List<int[]> allCombinations, int[] currentCombination,
                                          int index, int sum, int num) {
 
         if (sum == num) {
@@ -35,5 +42,18 @@ public class Combinatorics {
         }
 
         currentCombination[index] = 0;
+    }
+
+    /**
+     * Mapping NxN -> N
+     *
+     * For two given integers, produces a new unique integer. See "Cantor pairing function"
+     *
+     * @param k1 integer
+     * @param k2 integer
+     * @return integer
+     */
+    private long getCantorPairing(long k1, long k2) {
+        return (k1 + k2) * (k1 + k2 + 1) / 2 + k2;
     }
 }
