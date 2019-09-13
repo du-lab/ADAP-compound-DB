@@ -591,12 +591,9 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
 
     private boolean checkForIntegerMzValues(List<Spectrum> spectra) {
-
-        for (int i = 0; i < spectra.size(); ++i) {
-            List<Peak> peaks = spectra.get(i).getPeaks();
-            for (int j = 0; j < peaks.size(); ++j)
-                if (peaks.get(j).getMz() % 1 != 0)
-                    return false;
+        for (Spectrum spectrum : spectra) {
+            if (!spectrum.isIntegerMz())
+                return false;
         }
         return true;
     }

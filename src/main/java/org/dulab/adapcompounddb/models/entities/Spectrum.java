@@ -70,6 +70,8 @@ public class Spectrum implements Serializable {
 
     private boolean reference;
 
+    private boolean integerMz;
+
     private Double precursor;
 
     private Double retentionTime;
@@ -136,8 +138,11 @@ public class Spectrum implements Serializable {
                     .mapToDouble(Peak::getIntensity)
                     .sum();
 
+            integerMz = true;
             for (final Peak peak : peaks) {
                 peak.setIntensity(peak.getIntensity() / totalIntensity);
+                if (peak.getMz() % 1 != 0)
+                    integerMz = false;
             }
         }
     }
@@ -211,6 +216,14 @@ public class Spectrum implements Serializable {
 
     public void setReference(final boolean reference) {
         this.reference = reference;
+    }
+
+    public boolean isIntegerMz() {
+        return integerMz;
+    }
+
+    public void setIntegerMz(boolean integerMz) {
+        this.integerMz = integerMz;
     }
 
     public Double getPrecursor() {
