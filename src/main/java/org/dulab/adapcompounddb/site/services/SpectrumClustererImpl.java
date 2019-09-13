@@ -498,9 +498,11 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
             clusterPeaks.clear();
             for (Spectrum spectrum : spectra)
-                for (Peak peak : spectrum.getPeaks())
-                    if (label == labels.get((int) peak.getId()))
+                for (Peak peak : spectrum.getPeaks()) {
+                    Integer l = labels.get((int) peak.getId());
+                    if (l != null && label == l)
                         clusterPeaks.add(peak);
+                }
 
             double averageMz = 0.0;
             double averageIntensity = 0.0;
