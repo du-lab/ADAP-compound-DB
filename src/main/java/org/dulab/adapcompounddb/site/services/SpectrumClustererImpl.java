@@ -524,42 +524,24 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
     private List<Peak> createConsensusPeaksWithIntegerMz(List<Spectrum> spectra) {
 
-        // Get all distinct m/z values from all spectra
-        Set<Double> mzValues = new HashSet<>();
-
-        for (Spectrum s : spectra) {
-            for (Peak p : s.getPeaks()) {
-                mzValues.add(p.getMz());
+        Map<Double, Double> totalIntensityMap = new HashMap<>();
+        for (Spectrum spectrum : spectra) {
+            for (Peak peak : spectrum.getPeaks()) {
+                double sum = totalIntensityMap.getOrDefault(peak.getMz(), 0.0);
+                totalIntensityMap.put(peak.getMz(), sum + peak.getIntensity());
             }
         }
 
-        // Calculate average intensity for each m/z value
-        double[] intensities = new double[mzValues.size()];
-
-        List<Peak> peakList = new ArrayList<>();
-        int number = 0;
-        while (number < mzValues.size()) {
-            double sum = 0.0;
-            double mz = mzValues.iterator().next();
-
-            for (Spectrum spectrum : spectra) {
-                for (Peak peak : spectrum.getPeaks()) {
-                    if ((int) peak.getMz() == mz) {
-                        sum += peak.getIntensity();
-                        break;
-                    }
-                }
-            }
-            intensities[number] = sum / spectra.size();
+        int numSpectra = spectra.size();
+        List<Peak> peaks = new ArrayList<>(totalIntensityMap.size());
+        for (Map.Entry<Double, Double> e : totalIntensityMap.entrySet()) {
             Peak peak = new Peak();
-            peak.setIntensity(intensities[number]);
-            peak.setMz(mz);
-            peakList.add(peak);
-
-            number++;
+            peak.setMz(e.getKey());
+            peak.setIntensity(e.getValue() / numSpectra);
+            peaks.add(peak);
         }
 
-        return peakList;
+        return peaks;
     }
 
     /**
