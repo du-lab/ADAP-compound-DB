@@ -34,7 +34,7 @@ public class Combinatorics {
             return;
         }
 
-        if (index >= currentCombination.length) return;
+        if (index >= currentCombination.length || sum > num) return;
 
         for (int i = 0; i <= num; ++i) {
             currentCombination[index] = i;

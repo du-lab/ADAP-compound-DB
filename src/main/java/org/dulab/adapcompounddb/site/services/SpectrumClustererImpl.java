@@ -470,14 +470,16 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
             // Return copy of the spectrum peaks
             List<Peak> peaks = spectra.get(0).getPeaks();
-            return peaks.stream()
-                    .map(p -> {
-                        Peak peak = new Peak();
-                        peak.setMz(p.getMz());
-                        peak.setIntensity(p.getIntensity());
-                        return peak;
-                    })
-                    .collect(Collectors.toList());
+
+            List<Peak> newPeaks = new ArrayList<>(peaks.size());
+            for (int i = 0; i < peaks.size(); ++i) {
+                Peak oldPeak = peaks.get(i);
+                Peak newPeak = new Peak();
+                newPeak.setMz(oldPeak.getMz());
+                newPeak.setIntensity(oldPeak.getIntensity());
+                newPeaks.add(newPeak);
+            }
+            return newPeaks;
         }
 
         Matrix distanceMatrix = getMzDistanceMatrix(spectra, mzTolerance);
@@ -489,36 +491,31 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
         clusterer.cluster(mzTolerance);
         Map<Integer, Integer> labels = clusterer.getLabels();
 
-        int[] uniqueLabels = labels.values()
-                .stream()
-                .mapToInt(Integer::intValue)
-                .distinct()
-                .toArray();
-
-        final List<Peak> consensusPeaks = new ArrayList<>(uniqueLabels.length);
-
+        Set<Integer> uniqueLabels = new HashSet<>(labels.values());
+        final List<Peak> consensusPeaks = new ArrayList<>(uniqueLabels.size());
+        List<Peak> clusterPeaks = new ArrayList<>();
         for (final int label : uniqueLabels) {
 
-            List<Peak> peaks = spectra.stream()
-                    .flatMap(s -> s.getPeaks().stream())
-                    .filter(p -> {
-                        Integer l = labels.get((int) p.getId());
-                        return l != null && l == label;
-                    })
-                    .collect(Collectors.toList());
+            clusterPeaks.clear();
+            for (Spectrum spectrum : spectra)
+                for (Peak peak : spectrum.getPeaks()) {
+                    Integer l = labels.get((int) peak.getId());
+                    if (l != null && label == l)
+                        clusterPeaks.add(peak);
+                }
 
-            double mz = peaks.stream()
-                    .mapToDouble(Peak::getMz)
-                    .average()
-                    .orElseThrow(() -> new IllegalStateException("Could not calculate average m/z value."));
-
-            double intensity = peaks.stream()
-                    .mapToDouble(Peak::getIntensity)
-                    .sum() / spectra.size();
+            double averageMz = 0.0;
+            double averageIntensity = 0.0;
+            for (Peak peak : clusterPeaks) {
+                averageMz += peak.getMz();
+                averageIntensity += peak.getIntensity();
+            }
+            averageMz /= clusterPeaks.size();
+            averageIntensity /= spectra.size();
 
             final Peak consensusPeak = new Peak();
-            consensusPeak.setMz(mz);
-            consensusPeak.setIntensity(intensity);
+            consensusPeak.setMz(averageMz);
+            consensusPeak.setIntensity(averageIntensity);
             consensusPeaks.add(consensusPeak);
         }
 
