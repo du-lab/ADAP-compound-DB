@@ -287,7 +287,6 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
     }
 
 
-    // TODO: Add a comment about what this method does
     //calculating both db tagDistribution and cluster distribution
     private double findAllTags(List<SubmissionTag> tagList,
                                Map<String, TagDistribution> dbDistributions,
@@ -362,8 +361,8 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
         // return the minimum PValue of this cluster
         Collections.sort(clusterPvalue);
-        double minPValue = clusterPvalue.get(0);
-        return minPValue;
+//        double minPValue = clusterPvalue.get(0);
+        return clusterPvalue.isEmpty() ? 1.0 : clusterPvalue.get(0);
     }
 
 
@@ -592,10 +591,13 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
 
     private boolean checkForIntegerMzValues(List<Spectrum> spectra) {
-        for (Spectrum spectrum : spectra)
-            for (Peak peak : spectrum.getPeaks())
-                if (peak.getMz() % 1 != 0)
+
+        for (int i = 0; i < spectra.size(); ++i) {
+            List<Peak> peaks = spectra.get(i).getPeaks();
+            for (int j = 0; j < peaks.size(); ++j)
+                if (peaks.get(j).getMz() % 1 != 0)
                     return false;
+        }
         return true;
     }
 }
