@@ -348,15 +348,23 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
             //store tagDistributions
             TagDistribution tagDistribution = new TagDistribution();
             tagDistribution.setTagDistributionMap(countPairMap);
-            if (cluster != null) {
-                tagDistribution.setCluster(cluster);
-            }
+
             tagDistribution.setTagKey(key);
             tagDistribution.setPValue(
-                    ServiceUtils.calculateExactTestStatistics(
+                    ServiceUtils.calculateChiSquaredCorrection(
                             tagDistribution.getTagDistributionMap().values()));
             clusterPvalue.add(tagDistribution.getPValue());
             tagDistributionList.add(tagDistribution);
+            if (cluster != null) {
+                if(tagDistribution.getTagKey().equalsIgnoreCase("disease")){
+                    cluster.setDiseasePValue(tagDistribution.getPValue());
+                }else if(tagDistribution.getTagKey().equalsIgnoreCase("species (common)")){
+                    cluster.setSpeciesPValue(tagDistribution.getPValue());
+                }else if(tagDistribution.getTagKey().equalsIgnoreCase("sample source")){
+                    cluster.setSampleSourcePValue(tagDistribution.getPValue());
+                }
+                tagDistribution.setCluster(cluster);
+            }
         }
         distributionRepository.saveAll(tagDistributionList);
 
