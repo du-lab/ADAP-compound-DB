@@ -264,8 +264,10 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
         LOGGER.info("Calculating distributions...");
         //calculate each cluster's Tag distribution and minimum PValue
-        cluster.setMinPValue(calculateClusterDistributions(spectra, dbDistributionMap, cluster));
-
+        Double minPValue = calculateClusterDistributions(spectra, dbDistributionMap, cluster);
+        if (minPValue != null) {
+            cluster.setMinPValue(minPValue);
+        }
         return cluster;
     }
 
@@ -305,7 +307,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                 .collect(Collectors.toList());
 
         List<TagDistribution> tagDistributionList = new ArrayList<>();
-        List<Double> clusterPvalue = new ArrayList<>();
+        List<Double> clusterPvalueList = new ArrayList<>();
         // For each key, find its values and their count
         for (String key : keys) {
             List<String> tagValues = tagList.stream()
@@ -347,10 +349,15 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
             tagDistribution.setTagDistributionMap(countPairMap);
 
             tagDistribution.setTagKey(key);
-
-            clusterPvalue.add(tagDistribution.getPValue());
+            if (cluster != null) {
+                tagDistribution.setPValue(
+                        ServiceUtils.calculateExactTestStatistics(
+                                tagDistribution.getTagDistributionMap().values()));
+            }
+            clusterPvalueList.add(tagDistribution.getPValue());
             tagDistributionList.add(tagDistribution);
             if (cluster != null) {
+
                 if (tagDistribution.getTagKey().equalsIgnoreCase("disease")) {
                     cluster.setDiseasePValue(tagDistribution.getPValue());
                 } else if (tagDistribution.getTagKey().equalsIgnoreCase("species (common)")) {
@@ -362,11 +369,15 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
             }
         }
         distributionRepository.saveAll(tagDistributionList);
-        if (cluster != null) {
-            // return the minimum PValue of this cluster
-            Collections.sort(clusterPvalue);
-            double minPValue = clusterPvalue.get(0);
-            return minPValue;
+        // return the minimum PValue of this cluster
+        if (cluster != null && dbDistributions != null) {
+            if (clusterPvalueList.size() != 0) {
+                Collections.sort(clusterPvalueList);
+                double minPValue = clusterPvalueList.get(0);
+                return minPValue;
+            } else {
+                return null;
+            }
         } else {
             return null;
         }
