@@ -2,7 +2,6 @@ package org.dulab.adapcompounddb.site.services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
@@ -13,7 +12,6 @@ import org.dulab.adapcompounddb.models.dto.TagInfo;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.controllers.ControllerUtils;
 import org.dulab.adapcompounddb.site.repositories.*;
-import org.dulab.adapcompounddb.utils.MathUtils;
 import org.dulab.jsparcehc.Matrix;
 import org.dulab.jsparcehc.MatrixImpl;
 import org.dulab.jsparcehc.SparseHierarchicalClusterer;
@@ -24,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 @Service
@@ -289,7 +286,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
     // TODO: Add a comment about what this method does
     //calculating both db tagDistribution and cluster distribution
-    private double findAllTags(List<SubmissionTag> tagList,
+    private Double findAllTags(List<SubmissionTag> tagList,
                                Map<String, TagDistribution> dbDistributions,
                                SpectrumCluster cluster) throws IOException {
 
@@ -350,28 +347,29 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
             tagDistribution.setTagDistributionMap(countPairMap);
 
             tagDistribution.setTagKey(key);
-            tagDistribution.setPValue(
-                    ServiceUtils.calculateChiSquaredCorrection(
-                            tagDistribution.getTagDistributionMap().values()));
+
             clusterPvalue.add(tagDistribution.getPValue());
             tagDistributionList.add(tagDistribution);
             if (cluster != null) {
-                if(tagDistribution.getTagKey().equalsIgnoreCase("disease")){
+                if (tagDistribution.getTagKey().equalsIgnoreCase("disease")) {
                     cluster.setDiseasePValue(tagDistribution.getPValue());
-                }else if(tagDistribution.getTagKey().equalsIgnoreCase("species (common)")){
+                } else if (tagDistribution.getTagKey().equalsIgnoreCase("species (common)")) {
                     cluster.setSpeciesPValue(tagDistribution.getPValue());
-                }else if(tagDistribution.getTagKey().equalsIgnoreCase("sample source")){
+                } else if (tagDistribution.getTagKey().equalsIgnoreCase("sample source")) {
                     cluster.setSampleSourcePValue(tagDistribution.getPValue());
                 }
                 tagDistribution.setCluster(cluster);
             }
         }
         distributionRepository.saveAll(tagDistributionList);
-
-        // return the minimum PValue of this cluster
-        Collections.sort(clusterPvalue);
-        double minPValue = clusterPvalue.get(0);
-        return minPValue;
+        if (cluster != null) {
+            // return the minimum PValue of this cluster
+            Collections.sort(clusterPvalue);
+            double minPValue = clusterPvalue.get(0);
+            return minPValue;
+        } else {
+            return null;
+        }
     }
 
 
