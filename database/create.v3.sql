@@ -117,6 +117,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Spectrum`
     `ClusterId`          BIGINT(20) UNSIGNED NULL     DEFAULT NULL,
     `Consensus`          TINYINT(1)          NOT NULL DEFAULT '0',
     `Reference`          TINYINT(1)          NOT NULL DEFAULT '0',
+    `IntegerMz`          TINYINT(1)          NOT NULL DEFAULT '0',
     `ChromatographyType` VARCHAR(30)         NOT NULL,
     `FileId`             BIGINT(20) UNSIGNED NULL     DEFAULT NULL,
     PRIMARY KEY (`Id`),
@@ -125,7 +126,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Spectrum`
     INDEX `Spectrum_File_Id_fk_idx` (`FileId` ASC),
     INDEX `Spectrum_CPR_index` (`ChromatographyType` ASC, `Precursor` ASC, `RetentionTime` ASC),
     CONSTRAINT `Spectrum_File_Id_fk`
-        FOREIGN KEY (`FileId`)DiseasePVa
+        FOREIGN KEY (`FileId`)
             REFERENCES `adapcompounddb`.`File` (`Id`)
             ON DELETE CASCADE
             ON UPDATE CASCADE,
