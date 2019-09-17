@@ -4,6 +4,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<script src="<c:url value="/resources/AdapCompoundDb/js/tagsColor.js"/>"></script>
 
 <section>
     <h1>Account</h1>
@@ -47,7 +48,6 @@
                         <a href="${pageContext.request.contextPath}/submission/${study.id}/">${study.name}</a><br/>
                         <small>${dulab:abbreviate(study.description, 80)}</small>
                     </td>
-                    <script src="<c:url value="/resources/AdapCompoundDb/js/tabsColor.js"/>"></script>
                     <td>
                             <%--                            ${study.tagsAsString}--%>
                         <c:forEach items="${study.tags}" var="tag" varStatus="status">
