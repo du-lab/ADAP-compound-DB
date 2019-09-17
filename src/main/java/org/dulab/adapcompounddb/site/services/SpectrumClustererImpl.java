@@ -92,12 +92,16 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
             progress = 0F;
             final ChromatographyType[] values = ChromatographyType.values();
             final float step = 1F / values.length;
+            ObjectMapper mapper = new ObjectMapper();
 
             List<TagDistribution> tagDistributions = ServiceUtils.toList(distributionRepository.findAllTagDistribution());
 
-            Map<String, TagDistribution> dbDistributionMap = new HashMap<>();
+            Map<String, Map<String, DbAndClusterValuePair>> dbDistributionMap = new HashMap<>();
             for (TagDistribution t : tagDistributions) {
-                dbDistributionMap.put(t.getTagKey(), t);
+                Map<String, DbAndClusterValuePair> dbDistributionMaps = mapper.readValue(
+                        t.getTagDistribution(), new TypeReference<Map<String, DbAndClusterValuePair>>() {
+                        });
+                dbDistributionMap.put(t.getTagKey(), dbDistributionMaps);
             }
 
             float count = 0F;
@@ -187,7 +191,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
     }
 
     private SpectrumCluster createCluster(final Set<Long> spectrumIds, final float mzTolerance,
-                                          Map<String, TagDistribution> dbDistributionMap)
+                                          Map<String, Map<String, DbAndClusterValuePair>> dbDistributionMap)
             throws EmptySearchResultException, IOException {
 
         LOGGER.info("Creating a cluster...");
@@ -271,7 +275,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
         return cluster;
     }
 
-    private double calculateClusterDistributions(List<Spectrum> spectra, Map<String, TagDistribution> dbDistributionMap, SpectrumCluster cluster) throws IOException {
+    private double calculateClusterDistributions(List<Spectrum> spectra, Map<String, Map<String, DbAndClusterValuePair>> dbDistributionMap, SpectrumCluster cluster) throws IOException {
 
         //get cluster tags of unique submission
         List<SubmissionTag> clusterTags = spectra.stream()
@@ -285,11 +289,10 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
         return findAllTags(clusterTags, dbDistributionMap, cluster);
     }
 
-
     // TODO: Add a comment about what this method does
-    //calculating both db tagDistribution and cluster distribution
+    //calculating  db tagDistribution & cluster distribution & Minimum PValue of each cluster
     private Double findAllTags(List<SubmissionTag> tagList,
-                               Map<String, TagDistribution> dbDistributions,
+                               Map<String, Map<String, DbAndClusterValuePair>> dbDistributionMap,
                                SpectrumCluster cluster) throws IOException {
 
         // Find unique keys among all tags of unique submission
@@ -307,7 +310,8 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                 .collect(Collectors.toList());
 
         List<TagDistribution> tagDistributionList = new ArrayList<>();
-        List<Double> clusterPvalueList = new ArrayList<>();
+        List<Double> clusterPValueList = new ArrayList<>();
+
         // For each key, find its values and their count
         for (String key : keys) {
             List<String> tagValues = tagList.stream()
@@ -334,16 +338,13 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                     countPairMap.put(e.getKey(), new DbAndClusterValuePair(e.getValue(), 0));
                 }
             } else {
-                ObjectMapper mapper = new ObjectMapper();
-                Map<String, DbAndClusterValuePair> dbDistributionMap = mapper.readValue(
-                        dbDistributions.get(key).getTagDistribution(), new TypeReference<Map<String, DbAndClusterValuePair>>() {
-                        });
                 Map<String, Integer> dbCountMap = new HashMap<>();
-                for (Map.Entry<String, DbAndClusterValuePair> m : dbDistributionMap.entrySet()) {
+                for (Map.Entry<String, DbAndClusterValuePair> m : dbDistributionMap.get(key).entrySet()) {
                     dbCountMap.put(m.getKey(), m.getValue().getDbValue());
                 }
                 countPairMap = ServiceUtils.calculateDbAndClusterDistribution(dbCountMap, countMap);
             }
+
             //store tagDistributions
             TagDistribution tagDistribution = new TagDistribution();
             tagDistribution.setTagDistributionMap(countPairMap);
@@ -351,10 +352,10 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
             tagDistribution.setTagKey(key);
             if (cluster != null) {
                 tagDistribution.setPValue(
-                        ServiceUtils.calculateExactTestStatistics(
+                        ServiceUtils.calculateChiSquaredCorrection(
                                 tagDistribution.getTagDistributionMap().values()));
             }
-            clusterPvalueList.add(tagDistribution.getPValue());
+            clusterPValueList.add(tagDistribution.getPValue());
             tagDistributionList.add(tagDistribution);
             if (cluster != null) {
 
@@ -368,12 +369,14 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                 tagDistribution.setCluster(cluster);
             }
         }
+
         distributionRepository.saveAll(tagDistributionList);
+
         // return the minimum PValue of this cluster
-        if (cluster != null && dbDistributions != null) {
-            if (clusterPvalueList.size() != 0) {
-                Collections.sort(clusterPvalueList);
-                double minPValue = clusterPvalueList.get(0);
+        if (cluster != null && dbDistributionMap != null) {
+            if (clusterPValueList.size() != 0) {
+                Collections.sort(clusterPValueList);
+                double minPValue = clusterPValueList.get(0);
                 return minPValue;
             } else {
                 return null;
@@ -382,7 +385,6 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
             return null;
         }
     }
-
 
     private Spectrum findSpectrum(final long id) throws EmptySearchResultException {
         return spectrumRepository.findById(id)

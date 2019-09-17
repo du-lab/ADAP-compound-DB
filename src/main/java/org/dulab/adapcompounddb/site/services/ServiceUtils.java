@@ -77,7 +77,7 @@ class ServiceUtils {
         }
 
         // william's correction coefficient
-        double q = 1.0 + (double)((categoryNums * categoryNums - 1) / (6 * clusterSum * freedomDegrees));
+        double q = 1.0 + (double) (categoryNums * categoryNums - 1) / (6 * clusterSum * freedomDegrees);
 
         return 1.0 - new ChiSquaredDistribution(freedomDegrees).cumulativeProbability(chiSquared / q);
     }
