@@ -352,7 +352,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
             tagDistribution.setTagKey(key);
             if (cluster != null) {
                 tagDistribution.setPValue(
-                        ServiceUtils.calculateChiSquaredCorrection(
+                        ServiceUtils.calculateExactTestStatistics(
                                 tagDistribution.getTagDistributionMap().values()));
             }
             clusterPValueList.add(tagDistribution.getPValue());
