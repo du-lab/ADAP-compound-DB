@@ -9,7 +9,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Set;
+
 public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, SpectrumRepositoryCustom {
+
+    @Query("SELECT DISTINCT s FROM Spectrum s LEFT OUTER JOIN FETCH s.peaks WHERE s.id IN (:ids)")
+    Iterable<Spectrum>  findSpectraWithPeaksById(@Param("ids") Set<Long> ids);
 
     @Query("SELECT s FROM Spectrum s WHERE s.matches IS EMPTY")
     Iterable<Spectrum> findAllByMatchesIsEmpty();
