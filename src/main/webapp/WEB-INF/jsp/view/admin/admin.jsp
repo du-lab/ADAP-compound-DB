@@ -12,7 +12,7 @@
     <div class="tabbed-pane">
         <span class="active" data-tab="tools">Tools</span>
         <span data-tab="users">All Users</span>
-        <span data-tab="submissions">All Submissions</span>
+        <span data-tab="submissions">All Studies</span>
         <span data-tab="feedback">Feedback</span>
     </div>
 
@@ -103,7 +103,7 @@
                                     </c:if></td>
                             </c:forEach>
                             <td><a onclick="confirmDeleteDialog.show(
-                                'User &quot;${user.name}&quot; and all user\'s submissions will be deleted. Are you sure?',
+                                'User &quot;${user.name}&quot; and all user\'s studies will be deleted. Are you sure?',
                                 '${pageContext.request.contextPath}/user/${user.id}/delete');">
                                     <i class="material-icons">delete</i>
                             </a></td>

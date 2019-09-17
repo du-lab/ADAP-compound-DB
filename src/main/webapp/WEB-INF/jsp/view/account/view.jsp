@@ -31,7 +31,7 @@
             <thead>
             <tr>
                 <th>ID</th>
-                <th>Date / Time</th>
+                <th>Date</th>
                 <th>Name</th>
                 <th>Properties</th>
                 <th></th>
