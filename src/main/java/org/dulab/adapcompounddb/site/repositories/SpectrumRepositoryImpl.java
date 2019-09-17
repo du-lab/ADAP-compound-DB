@@ -19,7 +19,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
     private static final String PEAK_VALUE_SQL_STRING = "(%f, %f, %d)";
     private static final String PROPERTY_VALUE_SQL_STRING = "(%d, %s, %s)";
-    private static final String SPECTRUM_VALUE_SQL_STRING = "(%s, %f, %f, %f, %s, %d)";
+    private static final String SPECTRUM_VALUE_SQL_STRING = "(%s, %f, %f, %f, %d, %b, %b, %b, %s, %d)";
 
     public static final String DOUBLE_QUOTE = "\"";
     public static final String COMMA = ",";
@@ -110,11 +110,10 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         final List<Spectrum> spectrumList = new ArrayList<>();
 
         final StringBuilder insertSql = new StringBuilder("INSERT INTO `Spectrum`(" +
-                "`Name`, `Precursor`, `RetentionTime`," +
-                "`Significance`, `ChromatographyType`, `FileId`" +
+                "`Name`, `Precursor`, `RetentionTime`, `Significance`, " +
+                "`ClusterId`, `Consensus`, `Reference`, `IntegerMz`, " +
+                "`ChromatographyType`, `FileId`" +
                 ") VALUES ");
-
-//        final String propertyValueString = "(%s, %f, %f, %f, %s, %d)";
 
         for (int i = 0; i < fileList.size(); i++) {
             final List<Spectrum> spectra = fileList.get(i).getSpectra();
@@ -130,6 +129,10 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                         spectrum.getPrecursor(),
                         spectrum.getRetentionTime(),
                         spectrum.getSignificance(),
+                        spectrum.getCluster() != null ? spectrum.getCluster().getId() : null,
+                        spectrum.isConsensus(),
+                        spectrum.isReference(),
+                        spectrum.isIntegerMz(),
                         DOUBLE_QUOTE + spectrum.getChromatographyType().name() + DOUBLE_QUOTE,
                         savedFileIdList.get(i)
                 ));
