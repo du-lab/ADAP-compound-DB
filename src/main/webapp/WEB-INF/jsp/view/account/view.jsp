@@ -3,6 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <section>
     <h1>Account</h1>
@@ -23,47 +24,59 @@
 </section>
 
 <section>
-    <h1>Submissions</h1>
+    <h1>Studies</h1>
     <div align="center">
-        <table id="submission_table" class="display" style="width: 100%;">
+        <table id="study_table" class="display" style="width: 100%;">
             <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Date / Time</th>
-                    <th>Name</th>
-                    <th>Properties</th>
-                    <th></th>
-                </tr>
+            <tr>
+                <th>ID</th>
+                <th>Date / Time</th>
+                <th>Name</th>
+                <th>Properties</th>
+                <th></th>
+            </tr>
             </thead>
             <tbody>
-                <c:forEach items="${submissionList}" var="submission">
-                    <tr>
-                        <td>${submission.id}</td>
-                        <td><fmt:formatDate value="${submission.dateTime}" type="DATE" pattern="yyyy-MM-dd"/><br/>
-                            <small><fmt:formatDate value="${submission.dateTime}" type="TIME"/></small>
-                        </td>
-                        <td>
-                            <a href="${pageContext.request.contextPath}/submission/${submission.id}/">${submission.name}</a><br/>
-                            <small>${dulab:abbreviate(submission.description, 80)}</small>
-                        </td>
-                        <td>
-                            ${submission.tagsAsString}
-                            <%--<c:forEach items="${submission.tags}" var="tag">${tag.id.name}&nbsp;</c:forEach>--%>
-                        </td>
-                        <td>
-                            <!-- more horiz -->
-                            <a href="${pageContext.request.contextPath}/submission/${submission.id}/"><i
-                                    class="material-icons" title="View">&#xE5D3;</i></a>
-    
-                            <!-- delete -->
-                            <a onclick="confirmDeleteDialog.show(
-                                    'Submission &quot;${submission.name}&quot; and all its spectra will be deleted. Are you sure?',
-                                    '${pageContext.request.contextPath}/submission/${submission.id}/delete/');">
-                                <i class="material-icons" title="Delete">&#xE872;</i>
-                            </a>
-                        </td>
-                    </tr>
-                </c:forEach>
+            <c:forEach items="${submissionList}" var="study" varStatus="loop">
+                <tr>
+                    <td>${loop.count}</td>
+                    <td><fmt:formatDate value="${study.dateTime}" type="DATE" pattern="yyyy-MM-dd"/><br/>
+                            <%--                            <small><fmt:formatDate value="${study.dateTime}" type="TIME"/></small>--%>
+                    </td>
+                    <td>
+                        <a href="${pageContext.request.contextPath}/submission/${study.id}/">${study.name}</a><br/>
+                        <small>${dulab:abbreviate(study.description, 80)}</small>
+                    </td>
+                    <script src="<c:url value="/resources/AdapCompoundDb/js/tabsColor.js"/>"></script>
+                    <td>
+                            <%--                            ${study.tagsAsString}--%>
+                        <c:forEach items="${study.tags}" var="tag" varStatus="status">
+                            <span id="${study.id}color${status.index}">${tag.id.name}&nbsp;</span>
+                            <script>
+                                var spanId = '${fn:length(study.tags)}';
+
+                            </script>
+                        </c:forEach>
+                        <script>
+                            spanColor( ${study.id},spanId );
+                        </script>
+
+                    </td>
+
+                    <td>
+                        <!-- more horiz -->
+                        <a href="${pageContext.request.contextPath}/submission/${study.id}/"><i
+                                class="material-icons" title="View">&#xE5D3;</i></a>
+
+                        <!-- delete -->
+                        <a onclick="confirmDeleteDialog.show(
+                                'Submission &quot;${study.name}&quot; and all its spectra will be deleted. Are you sure?',
+                                '${pageContext.request.contextPath}/submission/${study.id}/delete/');">
+                            <i class="material-icons" title="Delete">&#xE872;</i>
+                        </a>
+                    </td>
+                </tr>
+            </c:forEach>
             </tbody>
         </table>
     </div>
@@ -71,7 +84,7 @@
 
 <section class="no-background">
     <div align="center">
-        <a href="${pageContext.request.contextPath}/file/upload/" class="button">New Submission</a>
+        <a href="${pageContext.request.contextPath}/file/upload/" class="button">New Study</a>
     </div>
 </section>
 
@@ -82,10 +95,10 @@
 <script src="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.js"/>"></script>
 <script src="<c:url value="/resources/AdapCompoundDb/js/dialogs.js"/>"></script>
 <script>
-    var confirmDeleteDialog = $('#dialog-confirm').confirmDeleteDialog();
+    var confirmDeleteDialog = $( '#dialog-confirm' ).confirmDeleteDialog();
 
-    $(document).ready(function () {
-        $('#submission_table').DataTable({
+    $( document ).ready( function () {
+        $( '#study_table' ).DataTable( {
             order: [[1, 'DESC']],
             responsive: true,
             scrollX: true,
@@ -93,7 +106,10 @@
             columnDefs: [{
                 targets: [3, 4],
                 sortable: false
-            }]
-        });
-    });
+            }],
+            "columnDefs": [
+                {"className": "dt-center", "targets": "_all"}
+            ]
+        } );
+    } );
 </script>
