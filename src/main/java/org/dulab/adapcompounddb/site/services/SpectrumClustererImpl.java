@@ -2,7 +2,6 @@ package org.dulab.adapcompounddb.site.services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
@@ -13,7 +12,6 @@ import org.dulab.adapcompounddb.models.dto.TagInfo;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.controllers.ControllerUtils;
 import org.dulab.adapcompounddb.site.repositories.*;
-import org.dulab.adapcompounddb.utils.MathUtils;
 import org.dulab.jsparcehc.Matrix;
 import org.dulab.jsparcehc.MatrixImpl;
 import org.dulab.jsparcehc.SparseHierarchicalClusterer;
@@ -24,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 @Service
@@ -197,7 +194,8 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
         final SpectrumCluster cluster = new SpectrumCluster();
 
-        final List<Spectrum> spectra = ServiceUtils.toList(spectrumRepository.findSpectraWithPeaksById(spectrumIds));
+        final List<Spectrum> spectra = ServiceUtils.toList(
+                spectrumRepository.findSpectraWithPeaksById(spectrumIds));
 
         //set size of study
         long submissionCount = spectra.stream()

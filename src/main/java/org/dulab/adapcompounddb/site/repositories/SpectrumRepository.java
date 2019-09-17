@@ -13,8 +13,8 @@ import java.util.Set;
 
 public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, SpectrumRepositoryCustom {
 
-    @Query("SELECT DISTINCT s FROM Spectrum s LEFT OUTER JOIN FETCH s.peaks WHERE s.id IN (:ids)")
-    Iterable<Spectrum>  findSpectraWithPeaksById(@Param("ids") Set<Long> ids);
+    @Query("SELECT s FROM Spectrum s JOIN FETCH s.peaks WHERE s.id IN (:ids)")
+    Set<Spectrum> findSpectraWithPeaksById(@Param("ids") Set<Long> ids);
 
     @Query("SELECT s FROM Spectrum s WHERE s.matches IS EMPTY")
     Iterable<Spectrum> findAllByMatchesIsEmpty();
