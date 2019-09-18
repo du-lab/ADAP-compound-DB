@@ -95,7 +95,6 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
         progress = 0F;
         final ChromatographyType[] values = ChromatographyType.values();
         final float step = 1F / values.length;
-        ObjectMapper mapper = new ObjectMapper();
 
         List<TagDistribution> tagDistributions = ServiceUtils.toList(distributionRepository.findAllTagDistribution());
 
