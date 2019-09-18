@@ -3,3 +3,6 @@ max_allowed_packet = 33554432
 
 // Let MySQL to use multiple cores
 innodb_thread_concurrency = 0
+
+// Increase cache for multiple INSERTs
+bulk_insert_buffer_size = 33554432

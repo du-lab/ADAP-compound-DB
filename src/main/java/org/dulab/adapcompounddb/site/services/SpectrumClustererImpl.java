@@ -184,7 +184,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                                     "Average time to create a cluster: %.3f ms\n" +
                                     "Average time to save a cluster: %.3f ms\n" +
                                     "Average time to save consensus spectrum: %.3f ms\n" +
-                                    "Average time to update spectra: %.3f ms\n",
+                                    "Average time to update spectra: %.3f ms",
                             numClusters, (double) createClusterTotalTime / numClusters,
                             (double) saveClusterTotalTime / numClusters,
                             (double) savePeakTotalTime / numClusters,
