@@ -10,6 +10,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Root;
 
 import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
@@ -158,9 +161,6 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         final StringBuilder peakSql = new StringBuilder("INSERT INTO `Peak` (`Mz`, `Intensity`, `SpectrumId`) VALUES ");
         final StringBuilder propertySql = new StringBuilder("INSERT INTO `SpectrumProperty` (`SpectrumId`, `Name`, `Value`) VALUES ");
 
-//        final String peakValueString = "(%f, %f, %d)";
-//        final String propertyValueString = "(%d, %s, %s)";
-
         for (int j = 0; j < peaks.size(); j++) {
             if (j != 0) {
                 peakSql.append(COMMA);
@@ -182,36 +182,5 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         peakQuery.executeUpdate();
         final Query propertyQuery = entityManager.createNativeQuery(propertySql.toString());
         propertyQuery.executeUpdate();
-    }
-
-    @Override
-    public void updateSpectraInCluster(final long clusterId, final Set<Long> spectrumIds) {
-
-        StringBuilder sqlBuilder = new StringBuilder("UPDATE Spectrum ");
-        sqlBuilder.append(String.format("SET ClusterId = %d WHERE Id IN (", clusterId));
-//        sqlBuilder.append(spectrumIds
-//                .stream()
-//                .map(String::valueOf)
-//                .collect(Collectors.joining(", ")));
-
-        Iterator<Long> iterator = spectrumIds.iterator();
-        int num = 0;
-        while(num < spectrumIds.size() && iterator.hasNext()){
-            String a = iterator.next().toString();
-            if(num != (spectrumIds.size()-1)){
-                sqlBuilder.append(a);
-                sqlBuilder.append(", ");
-            }else {
-                sqlBuilder.append(a);
-            }
-            num++;
-        }
-
-        sqlBuilder.append(")");
-
-        String sqlQuery = sqlBuilder.toString();
-
-        Query nativeQuery = entityManager.createNativeQuery(sqlQuery);
-        nativeQuery.executeUpdate();
     }
 }

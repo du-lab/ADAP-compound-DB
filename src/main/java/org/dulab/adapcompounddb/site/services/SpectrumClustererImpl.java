@@ -167,7 +167,8 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                         spectrumClusterRepository.save(cluster);
 
                         spectrumRepository.savePeaksAndProperties(consensusSpectrum.getId(), peaks, properties);
-                        spectrumRepository.updateSpectraInCluster(cluster.getId(), spectrumIds);
+                        spectrumRepository.updateClusterForSpectra(cluster, spectrumIds);
+//                        spectrumRepository.updateSpectraInCluster(cluster.getId(), spectrumIds);
                     }
                     progress = count / total;
                 }

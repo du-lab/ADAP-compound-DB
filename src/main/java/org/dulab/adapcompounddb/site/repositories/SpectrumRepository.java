@@ -2,12 +2,15 @@ package org.dulab.adapcompounddb.site.repositories;
 
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
+import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
+
+import java.util.Set;
 
 public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, SpectrumRepositoryCustom {
 
@@ -67,4 +70,8 @@ public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, Spec
     @Query("UPDATE Spectrum s SET s.reference = :reference where s.file.id in (SELECT distinct f.id from File f where f.submission.id = :submissionId)")
     int updateReferenceOfAllSpectraOfSubmission(@Param("submissionId") Long submissionId,
             @Param("reference") Boolean value);
+
+    @Modifying
+    @Query("UPDATE Spectrum s SET s.cluster = :cluster WHERE s.id IN (:ids)")
+    void updateClusterForSpectra(@Param("cluster")SpectrumCluster cluster, @Param("ids") Set<Long> ids);
 }
