@@ -31,8 +31,8 @@
             <thead>
             <tr>
                 <th>ID</th>
-                <th>Date</th>
                 <th>Name</th>
+                <th>Date</th>
                 <th>Properties</th>
                 <th></th>
             </tr>
@@ -40,13 +40,13 @@
             <tbody>
             <c:forEach items="${submissionList}" var="study" varStatus="loop">
                 <tr>
-                    <td>${loop.count}</td>
-                    <td><fmt:formatDate value="${study.dateTime}" type="DATE" pattern="yyyy-MM-dd"/><br/>
-                            <%--                            <small><fmt:formatDate value="${study.dateTime}" type="TIME"/></small>--%>
-                    </td>
+                    <td></td>
                     <td>
                         <a href="${pageContext.request.contextPath}/submission/${study.id}/">${study.name}</a><br/>
                         <small>${dulab:abbreviate(study.description, 80)}</small>
+                    </td>
+                    <td><fmt:formatDate value="${study.dateTime}" type="DATE" pattern="yyyy-MM-dd"/><br/>
+                            <%--                            <small><fmt:formatDate value="${study.dateTime}" type="TIME"/></small>--%>
                     </td>
                     <td>
                             <%--                            ${study.tagsAsString}--%>
@@ -58,7 +58,7 @@
                             </script>
                         </c:forEach>
                         <script>
-                            spanColor( ${study.id},spanId );
+                            spanColor( ${study.id}, spanId );
                         </script>
 
                     </td>
@@ -98,18 +98,30 @@
     var confirmDeleteDialog = $( '#dialog-confirm' ).confirmDeleteDialog();
 
     $( document ).ready( function () {
-        $( '#study_table' ).DataTable( {
+        var t = $( '#study_table' ).DataTable( {
             order: [[1, 'DESC']],
             responsive: true,
             scrollX: true,
             scroller: true,
-            columnDefs: [{
+            columnDefs: [
+                {
+                    targets:0,
+                    sortable: false
+                },
+                {
                 targets: [3, 4],
                 sortable: false
-            }],
-            "columnDefs": [
-                {"className": "dt-center", "targets": "_all"}
-            ]
+
+            }/*,
+                {
+                    "className": "dt-center", "targets": "_all"
+                }*/],
         } );
+
+        t.on( 'order.dt search.dt', function () {
+            t.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
+                cell.innerHTML = i+1;
+            } );
+        } ).draw();
     } );
 </script>
