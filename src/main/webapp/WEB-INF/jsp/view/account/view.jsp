@@ -31,8 +31,8 @@
             <thead>
             <tr>
                 <th>ID</th>
-                <th>Name</th>
                 <th>Date</th>
+                <th>Name</th>
                 <th>Properties</th>
                 <th></th>
             </tr>
@@ -41,12 +41,12 @@
             <c:forEach items="${submissionList}" var="study" varStatus="loop">
                 <tr>
                     <td></td>
+                    <td><fmt:formatDate value="${study.dateTime}" type="DATE" pattern="yyyy-MM-dd"/><br/>
+                            <%--                            <small><fmt:formatDate value="${study.dateTime}" type="TIME"/></small>--%>
+                    </td>
                     <td>
                         <a href="${pageContext.request.contextPath}/submission/${study.id}/">${study.name}</a><br/>
                         <small>${dulab:abbreviate(study.description, 80)}</small>
-                    </td>
-                    <td><fmt:formatDate value="${study.dateTime}" type="DATE" pattern="yyyy-MM-dd"/><br/>
-                            <%--                            <small><fmt:formatDate value="${study.dateTime}" type="TIME"/></small>--%>
                     </td>
                     <td>
                             <%--                            ${study.tagsAsString}--%>
