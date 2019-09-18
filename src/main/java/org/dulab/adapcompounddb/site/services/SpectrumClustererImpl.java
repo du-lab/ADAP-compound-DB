@@ -228,7 +228,6 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
         cluster.setSize((int) submissionCount);
 
 //        cluster.setSpectra(spectra);
-//        cluster.setSize(spectra.size());
 
         // Calculate diameter
         cluster.setDiameter(spectra

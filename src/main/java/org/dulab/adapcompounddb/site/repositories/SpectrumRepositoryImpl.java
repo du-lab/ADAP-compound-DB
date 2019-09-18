@@ -20,7 +20,7 @@ import org.dulab.adapcompounddb.models.entities.*;
 
 public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
-    private static final String PEAK_VALUE_SQL_STRING = "(%f, %f, %d)";
+    private static final String PEAK_VALUE_SQL_STRING = "(%f,%f,%d)";
     private static final String PROPERTY_VALUE_SQL_STRING = "(%d, %s, %s)";
     private static final String SPECTRUM_VALUE_SQL_STRING = "(%s, %f, %f, %f, %d, %b, %b, %b, %s, %d)";
 
@@ -158,8 +158,8 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
     @Override
     public void savePeaksAndProperties(final Long spectrumId, final List<Peak> peaks, final List<SpectrumProperty> properties) {
-        final StringBuilder peakSql = new StringBuilder("INSERT INTO `Peak` (`Mz`, `Intensity`, `SpectrumId`) VALUES ");
-        final StringBuilder propertySql = new StringBuilder("INSERT INTO `SpectrumProperty` (`SpectrumId`, `Name`, `Value`) VALUES ");
+        final StringBuilder peakSql = new StringBuilder("INSERT INTO `Peak` (`Mz`,`Intensity`,`SpectrumId`) VALUES ");
+        final StringBuilder propertySql = new StringBuilder("INSERT INTO `SpectrumProperty` (`SpectrumId`,`Name`,`Value`) VALUES ");
 
         for (int j = 0; j < peaks.size(); j++) {
             if (j != 0) {
