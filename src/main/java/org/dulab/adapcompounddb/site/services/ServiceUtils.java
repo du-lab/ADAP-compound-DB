@@ -90,8 +90,6 @@ class ServiceUtils {
      */
     static double calculateExactTestStatistics(Collection<DbAndClusterValuePair> dbAndClusterValuePairs) {
 
-        LOGGER.info("Calculating Exact Goodness-of-fit test...");
-
         int allDbSum = 0;
         int clusterSum = 0;
         for (DbAndClusterValuePair dbAndClusterValuePair : dbAndClusterValuePairs) {

@@ -40,7 +40,7 @@ public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, Spec
 
     long countByChromatographyTypeAndConsensusTrue(ChromatographyType chromatographyType);
 
-    @Query(value="select s from Spectrum s " +
+    @Query(value = "select s from Spectrum s " +
             "inner join s.file f " +
             "inner join f.submission sub "
             + "where sub.id = ?1 "
@@ -51,11 +51,11 @@ public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, Spec
             + "AND s.consensus=FALSE AND s.chromatographyType = ?1")
     long countUnmatchedBySubmissionChromatographyType(ChromatographyType chromatographyType);
 
-    @Query(value="select temp.t from (select reference, "
+    @Query(value = "select temp.t from (select reference, "
             + "(select max(reference) from Spectrum s1 where s1.FileId in (SELECT distinct f.id from File f where f.SubmissionId = :submissionId)) as t "
             + "from Spectrum s2 where s2.FileId in (SELECT distinct f.id from File f where f.SubmissionId = :submissionId) group by reference) "
             + "as temp "
-            + "group by temp.t having count(temp.reference) = 1", nativeQuery=true)
+            + "group by temp.t having count(temp.reference) = 1", nativeQuery = true)
     Integer getSpectrumReferenceOfSubmissionIfSame(@Param("submissionId") Long submissionId);
 
     long countByConsensusTrue();
@@ -69,9 +69,9 @@ public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, Spec
     @Modifying(clearAutomatically = true)
     @Query("UPDATE Spectrum s SET s.reference = :reference where s.file.id in (SELECT distinct f.id from File f where f.submission.id = :submissionId)")
     int updateReferenceOfAllSpectraOfSubmission(@Param("submissionId") Long submissionId,
-            @Param("reference") Boolean value);
+                                                @Param("reference") Boolean value);
 
     @Modifying
     @Query("UPDATE Spectrum s SET s.cluster = :cluster WHERE s.id IN (:ids)")
-    void updateClusterForSpectra(@Param("cluster")SpectrumCluster cluster, @Param("ids") Set<Long> ids);
+    void updateClusterForSpectra(@Param("cluster") SpectrumCluster cluster, @Param("ids") Set<Long> ids);
 }
