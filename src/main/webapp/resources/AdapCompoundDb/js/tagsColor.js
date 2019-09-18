@@ -1,0 +1,12 @@
+function spanColor(studyId, spanId) {
+
+    const colors = ["#C2272D", "#009245", "#0193D9", "#0C04ED", "#612F90"];
+
+    for (var i = 0; i < spanId; i++) {
+        var n = i;
+        while (n > 4) {
+            n = n - 5;
+        }
+        document.getElementById( studyId + 'color' + i ).style.color = colors[n];
+    }
+}

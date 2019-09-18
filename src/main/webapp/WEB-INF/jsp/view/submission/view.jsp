@@ -9,7 +9,7 @@
 
 <section>
     <div class="tabbed-pane">
-        <span class="active" data-tab="submission">Submission Properties</span>
+        <span class="active" data-tab="submission">Study Properties</span>
         <span data-tab="mass_spectra">Mass Spectra</span>
         <span data-tab="files">Files</span>
     </div>

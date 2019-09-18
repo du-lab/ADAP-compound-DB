@@ -101,7 +101,7 @@ public class Submission implements Serializable {
     }
 
     public String getName() {
-        return name != null ? name : "New Submission";
+        return name != null ? name : "New Study";
     }
 
     public void setName(final String name) {
