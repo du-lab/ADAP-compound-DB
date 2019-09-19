@@ -199,7 +199,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
     @Transactional
     @Override
-    public void calculateAllDistributions() throws IOException {
+    public void calculateAllDistributions() {
 
         // Find all the tags has been submitted
         List<SubmissionTag> tags = ServiceUtils.toList(submissionTagRepository.findAll());
