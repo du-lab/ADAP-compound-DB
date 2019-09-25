@@ -14,6 +14,8 @@ public class SpectrumDTO implements Serializable {
 
     private boolean reference;
 
+    private boolean integerMz;
+
     private Double precursor;
 
     private Double retentionTime;
@@ -89,6 +91,14 @@ public class SpectrumDTO implements Serializable {
 
     public void setReference(final boolean reference) {
         this.reference = reference;
+    }
+
+    public boolean isIntegerMz() {
+        return integerMz;
+    }
+
+    public void setIntegerMz(boolean integerMz) {
+        this.integerMz = integerMz;
     }
 
     public Double getPrecursor() {
