@@ -54,12 +54,9 @@
                             <span id="${study.id}color${status.index}">${tag.id.name}&nbsp;</span>
                             <script>
                                 var spanId = '${fn:length(study.tags)}';
-
+                                spanColor( ${study.id}, spanId );
                             </script>
                         </c:forEach>
-                        <script>
-                            spanColor( ${study.id}, spanId );
-                        </script>
 
                     </td>
 
