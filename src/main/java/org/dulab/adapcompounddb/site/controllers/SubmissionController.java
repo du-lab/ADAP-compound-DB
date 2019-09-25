@@ -337,7 +337,10 @@ public class SubmissionController extends BaseController {
         UserPrincipal user = getCurrentUserPrincipal();
 
         model.addAttribute("user", user);
-        model.addAttribute("submissionList", submissionService.findSubmissionsWithTagsByUserId(user.getId()));
+        List<Submission> submissionList = submissionService.findSubmissionsWithTagsByUserId(user.getId());
+        if(submissionList != null){
+            model.addAttribute("submissionList", submissionService.findSubmissionsWithTagsByUserId(user.getId()));
+        }
         return "account/view";
 
 
