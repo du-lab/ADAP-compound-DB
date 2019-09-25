@@ -8,7 +8,7 @@
     <h1>Log-in</h1>
     <div align="center">
         <div class="subsection">
-            <p>You must log in to submit new mass spectra to the library.</p>
+            <p>You must log in to submit new mass spectra to the Knowledgebase.</p>
             <c:if test="${param['loginFailed']}">
                 <p class="errors">The username and password you entered are not correct. Please try again.</p><br/>
             </c:if>

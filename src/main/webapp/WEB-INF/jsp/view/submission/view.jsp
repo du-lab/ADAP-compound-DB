@@ -7,6 +7,8 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 
+<script src="<c:url value="/resources/AdapCompoundDb/js/tagsColor.js"/>"></script>
+
 <section>
     <div class="tabbed-pane">
         <span class="active" data-tab="submission">Study Properties</span>
@@ -26,8 +28,8 @@
                            style="max-width: 800px; clear: none;">
                         <thead>
                         <tr>
-                            <th>Property</th>
-                            <th>Value</th>
+                            <td>Property</td>
+                            <td>Value</td>
                         </tr>
                         </thead>
                         <tbody>
@@ -53,8 +55,20 @@
                         <c:if
                                 test="${submission.tagsAsString.length() > 0}">
                             <tr>
-                                <td><strong>Equipment:</strong></td>
-                                <td>${submission.tagsAsString}</td>
+                                <td><strong>Tags:</strong></td>
+                                <td>
+                                        <%--                                        ${submission.tagsAsString}--%>
+                                    <c:forEach items="${submission.tags}" var="tag" varStatus="status">
+                                        <span id="${submission.id}color${status.index}">${tag.id.name}&nbsp;</span>
+                                        <script>
+                                            var spanId = '${fn:length(submission.tags)}';
+                                        </script>
+                                    </c:forEach>
+
+                                    <script>
+                                        spanColor( ${submission.id}, spanId );
+                                    </script>
+                                </td>
                             </tr>
                         </c:if>
                         <c:forEach items="${submissionCategoryTypes}" var="type">
@@ -104,18 +118,19 @@
         </table>
     </div>
 
-    <div id="mass_spectra" class="hide center">
+    <div id="mass_spectra" class="hide">
         <div align="center">
             <table id="spectrum_table" class="display responsive" style="width: 100%;">
                 <thead>
                 <tr>
-                    <th></th>
-                    <th>Name</th>
-                    <th>Ret Time (min)</th>
-                    <th>Precursor mass</th>
-                    <th>Significance</th>
-                    <th>Type</th>
-                    <th></th>
+                    <td></td>
+                    <td>Name</td>
+                    <td>Ret Time (min)</td>
+                    <td>Precursor mass</td>
+                    <td>Significance</td>
+                    <td>IntegerMz</td>
+                    <td>Type</td>
+                    <td></td>
                 </tr>
                 </thead>
                 <tbody></tbody>
@@ -140,7 +155,7 @@
 <script>
     $( document ).ready( function () {
         // Table with a list of spectra
-        $( '#spectrum_table' ).DataTable( {
+        var table = $( '#spectrum_table' ).DataTable( {
             serverSide: true,
             processing: true,
             responsive: true,
@@ -209,8 +224,18 @@
                     }
                 },
                 {
-                    "orderable": true,
                     "targets": 5,
+                    "render": function (data, type, row, meta) {
+                        var value = row.integerMz;
+                        // if (value != null && !isNaN( value )) {
+                        //     value = value.toFixed( 3 );
+                        // }
+                        return value;
+                    }
+                },
+                {
+                    "orderable": true,
+                    "targets": 6,
                     "render": function (data, type, row, meta) {
                         content = '<img' +
                             ' src="${pageContext.request.contextPath}/' + row.chromatographyTypeIconPath + '"'
@@ -223,7 +248,7 @@
                 },
                 {
                     "orderable": false,
-                    "targets": 6,
+                    "targets": 7,
                     "render": function (data, type, row, meta) {
                         var content = '';
                         if (row.id > 0) {
@@ -250,6 +275,7 @@
                 }
             ]
         } );
+
 
         $( ".tabbed-pane" ).each( function () {
             $( this ).tabbedPane();

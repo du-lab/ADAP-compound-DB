@@ -20,7 +20,7 @@
         <div>
             <div id="progressBarDiv" class="progress_bar"></div>
         </div>
-        <h2>Number of Spectra in Library</h2>
+        <h2>Number of Spectra in Knowledgebase</h2>
         <div align="center">
             <table>
                 <tr>
@@ -50,7 +50,7 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td class="desktop">Calculates matching scores for all spectra in the library</td>
+                        <td class="desktop">Calculates matching scores for all spectra in the Knowledgebase</td>
                         <td>
                             <!-- <a href="calculatescores/" class="button"
                                 onclick="progressBar.start('calculatescores/progress')">Calculate Matching Scores...</a> -->

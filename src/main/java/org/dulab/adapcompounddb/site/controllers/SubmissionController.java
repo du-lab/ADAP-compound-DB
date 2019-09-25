@@ -16,11 +16,7 @@ import javax.validation.constraints.NotBlank;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dulab.adapcompounddb.models.entities.File;
-import org.dulab.adapcompounddb.models.entities.Submission;
-import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
-import org.dulab.adapcompounddb.models.entities.SubmissionTag;
-import org.dulab.adapcompounddb.models.entities.SubmissionTagId;
+import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.hibernate.validator.constraints.URL;
@@ -334,10 +330,17 @@ public class SubmissionController extends BaseController {
         return "redirect:/submission/" + submission.getId() + "/";
     }
 
-    @RequestMapping(value = "/submission/{submissionId:\\d+}/delete/")
-    public String delete(@PathVariable("submissionId") final long id, final HttpServletRequest request, @RequestHeader(value = "referer", required = false) final String referer) {
+    @RequestMapping(value = "/submission/{submissionId:\\d+}/delete")
+    public String delete(@PathVariable("submissionId") final long id, final HttpServletRequest request,Model model, @RequestHeader(value = "referer", required = false) final String referer) {
         submissionService.delete(id);
-        return "redirect:" + referer;
+
+        UserPrincipal user = getCurrentUserPrincipal();
+
+        model.addAttribute("user", user);
+        model.addAttribute("submissionList", submissionService.findSubmissionsWithTagsByUserId(user.getId()));
+        return "account/view";
+
+
     }
 
     private String redirectFileUpload() {

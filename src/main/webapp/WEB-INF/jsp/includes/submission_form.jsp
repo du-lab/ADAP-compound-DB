@@ -7,7 +7,7 @@
 <div align="center">
     <div>
         <p>
-            Please provide name and detailed description of the data when you submit mass spectra to the library.<br/>
+            Please provide name and detailed description of the data when you submit mass spectra to the knowledgebase.<br/>
             This information will be used for finding unknown compounds.
         </p>
     </div>
@@ -35,13 +35,13 @@
             <form:textarea path="description" /><br/>
             <form:errors path="description" cssClass="errors"/><br/>
 
-            <form:label path="reference">Reference:</form:label><br/>
+            <form:label path="reference">URL:</form:label><br/>
             <form:input path="reference"/><br/>
             <form:errors path="reference" cssClass="errors"/><br/>
 
             <form:errors path="submissionCategoryIds" cssClass="errors"/><br/>
 
-            <form:label path="tags">Equipment:</form:label><br/>
+            <form:label path="tags">Tags:</form:label><br/>
             <form:input path="tags"/><br/>
             <form:errors path="tags" cssClass="errors"/><br/>
 

@@ -7,6 +7,9 @@ function spanColor(studyId, spanId) {
         while (n > 4) {
             n = n - 5;
         }
-        document.getElementById( studyId + 'color' + i ).style.color = colors[n];
+        if (document.getElementById( studyId + 'color' + i ) != null) {
+            document.getElementById( studyId + 'color' + i ).style.color = colors[n];
+        }
+
     }
 }
