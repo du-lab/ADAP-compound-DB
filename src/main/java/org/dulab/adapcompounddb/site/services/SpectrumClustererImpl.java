@@ -1,6 +1,5 @@
 package org.dulab.adapcompounddb.site.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -199,7 +197,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
     @Transactional
     @Override
-    public void calculateAllDistributions() throws IOException {
+    public void calculateAllDistributions() {
 
         // Find all the tags has been submitted
         List<SubmissionTag> tags = ServiceUtils.toList(submissionTagRepository.findAll());

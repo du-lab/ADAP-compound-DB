@@ -178,6 +178,8 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
             propertySql.append(String.format(PROPERTY_VALUE_SQL_STRING, spectrumId, DOUBLE_QUOTE + sp.getName() + DOUBLE_QUOTE, DOUBLE_QUOTE + sp.getValue() + DOUBLE_QUOTE));
         }
 
+        entityManager.flush();
+        entityManager.clear();
         final Query peakQuery = entityManager.createNativeQuery(peakSql.toString());
         peakQuery.executeUpdate();
         final Query propertyQuery = entityManager.createNativeQuery(propertySql.toString());
