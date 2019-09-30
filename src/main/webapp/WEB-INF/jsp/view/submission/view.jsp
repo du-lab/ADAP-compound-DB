@@ -227,9 +227,6 @@
                     "targets": 5,
                     "render": function (data, type, row, meta) {
                         var value = row.integerMz;
-                        // if (value != null && !isNaN( value )) {
-                        //     value = value.toFixed( 3 );
-                        // }
                         return value;
                     }
                 },

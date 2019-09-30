@@ -27,6 +27,7 @@
                     });
                     $(this).addClass("active");
                     $("#" + $(this).data("tab")).removeClass("hide");
+                    $( '#spectrum_table' ).DataTable().columns.adjust().draw();
                 });
 	        });
         }
