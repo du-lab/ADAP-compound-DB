@@ -1,5 +1,5 @@
 (function ($) {
-    $.fn.tabbedPane = function () {
+    $.fn.tabbedPane = function (id) {
 
         var pane = $(this);
 
@@ -27,7 +27,7 @@
                     });
                     $(this).addClass("active");
                     $("#" + $(this).data("tab")).removeClass("hide");
-                    $( '#spectrum_table' ).DataTable().columns.adjust().draw();
+                    $( id ).DataTable().columns.adjust().draw();
                 });
 	        });
         }

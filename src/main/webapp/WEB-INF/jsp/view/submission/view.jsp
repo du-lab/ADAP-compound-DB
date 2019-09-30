@@ -155,7 +155,7 @@
 <script>
     $( document ).ready( function () {
         // Table with a list of spectra
-        var table = $( '#spectrum_table' ).DataTable( {
+        $( '#spectrum_table' ).DataTable( {
             serverSide: true,
             processing: true,
             responsive: true,
@@ -275,7 +275,7 @@
 
 
         $( ".tabbed-pane" ).each( function () {
-            $( this ).tabbedPane();
+            $( this ).tabbedPane('#spectrum_table');
         } );
 
         // Table with submissionForm information
