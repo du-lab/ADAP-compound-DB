@@ -227,9 +227,7 @@
                     "targets": 5,
                     "render": function (data, type, row, meta) {
                         var content = '';
-                        // TODO: Use "if (row.integerMz)" instead
                         if(row.integerMz){
-                            // TODO: Fix the type in "inter m/z"
                             content = 'Yes';
                         }else{
                             content = 'No';
