@@ -210,7 +210,8 @@ public class SubmissionController extends BaseController {
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/{fileIndex:\\d+}/download/", method = RequestMethod.GET)
     public String submissionRawDownload(@PathVariable("submissionId") final long id,
-                                        @PathVariable("fileIndex") final int fileIndex, final HttpServletResponse response, final Model model)
+                                        @PathVariable("fileIndex") final int fileIndex, final HttpServletResponse response,
+                                        final Model model)
             throws IOException {
 
         final Submission submission = submissionService.findSubmission(id);
@@ -325,7 +326,8 @@ public class SubmissionController extends BaseController {
     }
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/delete")
-    public String delete(@PathVariable("submissionId") final long id, final HttpServletRequest request, Model model, @RequestHeader(value = "referer", required = false) final String referer) {
+    public String delete(@PathVariable("submissionId") final long id,  @RequestHeader(value = "referer",
+            required = false) final String referer) {
         submissionService.delete(id);
         String newReferer;
         if (referer.contains("?")) {
