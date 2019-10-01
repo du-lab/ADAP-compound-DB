@@ -1,19 +1,5 @@
 package org.dulab.adapcompounddb.site.controllers;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.entities.*;
@@ -24,12 +10,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Controller
 @SessionAttributes({"availableTags"})
@@ -165,7 +159,7 @@ public class SubmissionController extends BaseController {
      ************************************/
     @RequestMapping(value = "/file/{fileIndex:\\d+}/view/", method = RequestMethod.GET)
     public String fileRawView(@PathVariable("fileIndex") final int fileIndex, final HttpSession session,
-            final HttpServletResponse response) throws IOException {
+                              final HttpServletResponse response) throws IOException {
 
         final Submission submission = Submission.from(session);
 
@@ -179,7 +173,7 @@ public class SubmissionController extends BaseController {
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/{fileIndex:\\d+}/view/", method = RequestMethod.GET)
     public String rawView(@PathVariable("submissionId") final long id, @PathVariable("fileIndex") final int fileIndex,
-            final HttpServletResponse response, final Model model) throws IOException {
+                          final HttpServletResponse response, final Model model) throws IOException {
 
         final Submission submission = submissionService.findSubmission(id);
 
@@ -203,7 +197,7 @@ public class SubmissionController extends BaseController {
 
     @RequestMapping(value = "/file/{fileIndex:\\d+}/download/", method = RequestMethod.GET)
     public String fileRawDownload(@PathVariable("fileIndex") final int fileIndex, final HttpSession session,
-            final HttpServletResponse response) throws IOException {
+                                  final HttpServletResponse response) throws IOException {
 
         final Submission submission = Submission.from(session);
         if (submission == null) {
@@ -216,8 +210,8 @@ public class SubmissionController extends BaseController {
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/{fileIndex:\\d+}/download/", method = RequestMethod.GET)
     public String submissionRawDownload(@PathVariable("submissionId") final long id,
-            @PathVariable("fileIndex") final int fileIndex, final HttpServletResponse response, final Model model)
-                    throws IOException {
+                                        @PathVariable("fileIndex") final int fileIndex, final HttpServletResponse response, final Model model)
+            throws IOException {
 
         final Submission submission = submissionService.findSubmission(id);
         if (submission == null) {
@@ -239,7 +233,7 @@ public class SubmissionController extends BaseController {
      **********************************/
     @RequestMapping(value = "/file/submit", method = RequestMethod.POST)
     public String fileView(final HttpSession session, final Model model, @Valid final SubmissionForm submissionForm,
-            final Errors errors) {
+                           final Errors errors) {
 
         final Submission submission = Submission.from(session);
         if (errors.hasErrors()) {
@@ -261,7 +255,7 @@ public class SubmissionController extends BaseController {
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/edit", method = RequestMethod.POST)
     public String submissionView(@PathVariable("submissionId") final long submissionId, final Model model,
-            final HttpSession session, @Valid final SubmissionForm submissionForm, final Errors errors) {
+                                 final HttpSession session, @Valid final SubmissionForm submissionForm, final Errors errors) {
 
         final Submission submission = submissionService.findSubmission(submissionId);
         if (errors.hasErrors()) {
@@ -331,19 +325,15 @@ public class SubmissionController extends BaseController {
     }
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/delete")
-    public String delete(@PathVariable("submissionId") final long id, final HttpServletRequest request,Model model, @RequestHeader(value = "referer", required = false) final String referer) {
+    public String delete(@PathVariable("submissionId") final long id, final HttpServletRequest request, Model model, @RequestHeader(value = "referer", required = false) final String referer) {
         submissionService.delete(id);
-
-        UserPrincipal user = getCurrentUserPrincipal();
-
-        model.addAttribute("user", user);
-        List<Submission> submissionList = submissionService.findSubmissionsWithTagsByUserId(user.getId());
-        if(submissionList != null){
-            model.addAttribute("submissionList", submissionService.findSubmissionsWithTagsByUserId(user.getId()));
+        String newReferer;
+        if (referer.contains("?")) {
+            newReferer = referer.split("\\?")[0];
+        } else {
+            newReferer = referer;
         }
-        return "account/view";
-
-
+        return "redirect:" + newReferer;
     }
 
     private String redirectFileUpload() {
