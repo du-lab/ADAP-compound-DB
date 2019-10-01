@@ -227,7 +227,9 @@
                     "targets": 5,
                     "render": function (data, type, row, meta) {
                         var content = '';
+                        // TODO: Use "if (row.integerMz)" instead
                         if(row.integerMz == 1){
+                            // TODO: Fix the type in "inter m/z"
                             content = '<i class="material-icons" title="inter m/z" style="color:#b47cff">check_box</i>';
                         }
                         return content;
