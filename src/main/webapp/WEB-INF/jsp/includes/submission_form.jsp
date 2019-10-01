@@ -28,15 +28,15 @@
             <form:hidden path="id" /><br/>
 
             <form:label path="name">Name:</form:label><br/>
-            <form:input path="name"/><br/>
+            <form:input class="width_input" path="name"/><br/>
             <form:errors path="name" cssClass="errors"/><br/>
 
             <form:label path="description">Description:</form:label><br/>
-            <form:textarea path="description" /><br/>
+            <form:textarea class="width_textarea" path="description" /><br/>
             <form:errors path="description" cssClass="errors"/><br/>
 
             <form:label path="reference">URL:</form:label><br/>
-            <form:input path="reference"/><br/>
+            <form:input class="width_input" path="reference"/><br/>
             <form:errors path="reference" cssClass="errors"/><br/>
 
             <form:errors path="submissionCategoryIds" cssClass="errors"/><br/>

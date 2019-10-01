@@ -28,8 +28,8 @@
                            style="max-width: 800px; clear: none;">
                         <thead>
                         <tr>
-                            <td>Property</td>
-                            <td>Value</td>
+                            <td></td>
+                            <td></td>
                         </tr>
                         </thead>
                         <tbody>
@@ -128,7 +128,7 @@
                     <td>Ret Time (min)</td>
                     <td>Precursor mass</td>
                     <td>Significance</td>
-                    <td>IntegerMz</td>
+                    <td>Integer m/z</td>
                     <td>Type</td>
                     <td></td>
                 </tr>
@@ -226,8 +226,11 @@
                 {
                     "targets": 5,
                     "render": function (data, type, row, meta) {
-                        var value = row.integerMz;
-                        return value;
+                        var content = '';
+                        if(row.integerMz == 1){
+                            content = '<i class="material-icons" title="inter m/z" style="color:#b47cff">check_box</i>';
+                        }
+                        return content;
                     }
                 },
                 {
