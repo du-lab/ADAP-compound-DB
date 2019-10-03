@@ -98,7 +98,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
         Map<String, Map<String, DbAndClusterValuePair>> dbDistributionMap = new HashMap<>();
         for (TagDistribution t : tagDistributions) {
-            dbDistributionMap.put(t.getTagKey(), t.getTagDistributionMap());
+            dbDistributionMap.put(t.getLabel(), t.getDistributionMap());
         }
 
         float count = 0F;
@@ -360,23 +360,23 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
             //store tagDistributions
             TagDistribution tagDistribution = new TagDistribution();
-            tagDistribution.setTagDistributionMap(countPairMap);
+            tagDistribution.setDistributionMap(countPairMap);
 
-            tagDistribution.setTagKey(key);
+            tagDistribution.setLabel(key);
             if (cluster != null) {
                 double pValue = ServiceUtils.calculateExactTestStatistics(
-                        tagDistribution.getTagDistributionMap().values());
+                        tagDistribution.getDistributionMap().values());
                 tagDistribution.setPValue(pValue);
                 clusterPValueList.add(pValue);
             }
 
             if (cluster != null) {
 
-                if (tagDistribution.getTagKey().equalsIgnoreCase("disease")) {
+                if (tagDistribution.getLabel().equalsIgnoreCase("disease")) {
                     cluster.setDiseasePValue(tagDistribution.getPValue());
-                } else if (tagDistribution.getTagKey().equalsIgnoreCase("species (common)")) {
+                } else if (tagDistribution.getLabel().equalsIgnoreCase("species (common)")) {
                     cluster.setSpeciesPValue(tagDistribution.getPValue());
-                } else if (tagDistribution.getTagKey().equalsIgnoreCase("sample source")) {
+                } else if (tagDistribution.getLabel().equalsIgnoreCase("sample source")) {
                     cluster.setSampleSourcePValue(tagDistribution.getPValue());
                 }
                 tagDistribution.setCluster(cluster);

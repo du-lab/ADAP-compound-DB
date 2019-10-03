@@ -5,20 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -26,6 +13,7 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
+import org.dulab.adapcompounddb.models.enums.MassSpectrometryType;
 import org.hibernate.validator.constraints.URL;
 
 @Entity
@@ -51,6 +39,9 @@ public class Submission implements Serializable {
     @NotNull(message = "Date/Time of submission is required.")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateTime;
+
+    @Enumerated(EnumType.STRING)
+    private MassSpectrometryType massSpectrometryType;
 
     @Valid
     @ManyToMany(fetch = FetchType.LAZY)
@@ -116,6 +107,14 @@ public class Submission implements Serializable {
         this.description = desription;
     }
 
+    public MassSpectrometryType getMassSpectrometryType() {
+        return massSpectrometryType;
+    }
+
+    public void setMassSpectrometryType(MassSpectrometryType massSpectrometryType) {
+        this.massSpectrometryType = massSpectrometryType;
+    }
+
     public List<SubmissionCategory> getCategories() {
         return categories;
     }
@@ -133,7 +132,6 @@ public class Submission implements Serializable {
         }
         return null;
     }
-
 
     public List<SubmissionTag> getTags() {
         return tags;

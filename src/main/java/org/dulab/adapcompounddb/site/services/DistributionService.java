@@ -23,4 +23,8 @@ public interface DistributionService {
     List<TagDistribution> getAllClusterIdNullDistributions();
 
     TagDistribution getDistribution(long id);
+
+    List<TagDistribution> calculateAllDbDistribution();
+
+    void saveAllDbDistributions();
 }

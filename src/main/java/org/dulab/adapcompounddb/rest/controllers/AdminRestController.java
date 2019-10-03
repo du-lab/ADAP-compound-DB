@@ -55,11 +55,13 @@ public class AdminRestController {
             final Runnable r = () -> {
                 distributionService.removeAll();
                 //calculate all tags distributions
-                try {
-                    spectrumClusterer.calculateAllDistributions();
-                } catch (IOException e) {
-                    throw new IllegalStateException("Calculating AllDistributions failed!");
-                }
+                distributionService.saveAllDbDistributions();
+//                try {
+//
+//                    spectrumClusterer.calculateAllDistributions();
+//                } catch (IOException e) {
+//                    throw new IllegalStateException("Calculating AllDistributions failed!");
+//                }
                 spectrumClusterer.removeAll();
                 spectrumClusterer.cluster();
             };

@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`TagDistribution`
     `TagKey`              VARCHAR(256)     NOT NULL,
     `TagDistribution`     TEXT             NOT NULL,
     `PValue`              DOUBLE           NULL DEFAULT NULL,
+    `MassSpectrometryType` VARCHAR(30)     NOT NULL,
     PRIMARY KEY (`Id`),
 	FOREIGN KEY (`ClusterId`)
             REFERENCES `adapcompounddb`.`SpectrumCluster` (`Id`)
@@ -37,7 +38,6 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`TagDistribution`
     ENGINE = InnoDB
     AUTO_INCREMENT = 11
     DEFAULT CHARACTER SET = utf8;
-
 
 -- -----------------------------------------------------
 -- Table `adapcompounddb`.`UserPrincipal`
@@ -67,6 +67,7 @@ CREATE TABLE IF NOT EXISTS `adapcompounddb`.`Submission`
     `DateTime`        TIMESTAMP           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `UserPrincipalId` BIGINT(20) UNSIGNED NOT NULL,
     `Reference`       TEXT                NULL     DEFAULT NULL,
+    `MassSpectrometryType` VARCHAR(30)    NOT NULL,
     PRIMARY KEY (`Id`),
     INDEX `Submission_DateTime_Id_index` (`DateTime` ASC, `Id` ASC),
     INDEX `Submission_UserPrincipalId_index` (`UserPrincipalId` ASC),
