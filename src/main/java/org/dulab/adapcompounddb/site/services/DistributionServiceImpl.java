@@ -113,9 +113,40 @@ public class DistributionServiceImpl implements DistributionService {
     @Transactional
     @Override
     public void saveAllDbDistributions() {
-        List<TagDistribution> distributions = calculateAllDbDistribution();
+        // Find all tags that has been submitted
+        List<SubmissionTag> tags = ServiceUtils.toList(submissionTagRepository.findAll());
+
+        List<TagDistribution> distributions = calculateAllDbDistributions(tags);
 
         distributionRepository.saveAll(distributions);
+    }
+
+    /**
+     * Searches the database for all distributions with null-cluster and a given mass spectrometry type.
+     * Then, computes a collection of countMaps from those distributions.
+     *
+     * @param massSpectrometryType type of mass spectrometry (high-res or low-res)
+     * @return collection of count maps
+     */
+    @Transactional
+    @Override
+    public Map<String, Map<String, Integer>> getAllDbCountMaps(MassSpectrometryType massSpectrometryType) {
+
+        Iterable<TagDistribution> tagDistributions =
+                distributionRepository.findAllDbTagDistributionsByMassSpectrometryType(massSpectrometryType);
+
+        Map<String, Map<String, Integer>> dbCountMaps = new HashMap<>();
+        for (TagDistribution t : tagDistributions) {
+
+            Map<String, Integer> dbCountMap = new HashMap<>();
+            for (Map.Entry<String, DbAndClusterValuePair> m : t.getDistributionMap().entrySet()) {
+                dbCountMap.put(m.getKey(), m.getValue().getDbValue());
+            }
+
+            dbCountMaps.put(t.getLabel(), dbCountMap);
+        }
+
+        return dbCountMaps;
     }
 
     /**
@@ -125,10 +156,7 @@ public class DistributionServiceImpl implements DistributionService {
      */
     @Transactional
     @Override
-    public List<TagDistribution> calculateAllDbDistribution() {
-
-        // Find all tags that has been submitted
-        List<SubmissionTag> tags = ServiceUtils.toList(submissionTagRepository.findAll());
+    public List<TagDistribution> calculateAllDbDistributions(List<SubmissionTag> tags) {
 
         List<TagDistribution> tagDistributionList = new ArrayList<>();
         for (MassSpectrometryType type : MassSpectrometryType.values()) {
@@ -157,6 +185,47 @@ public class DistributionServiceImpl implements DistributionService {
 
         return tagDistributionList;
     }
+
+    /**
+     * Calculates a list of distributions for a specific cluster
+     * @param tags list of tags for a cluster
+     * @param massSpectrometryType type of mass spectrometry
+     * @param dbCountMaps study counts for the whole database
+     * @return list of cluster distributions
+     */
+    @Transactional
+    @Override
+    public List<TagDistribution> calculateClusterDistributions(
+            List<SubmissionTag> tags,
+            MassSpectrometryType massSpectrometryType,
+            Map<String, Map<String, Integer>> dbCountMaps) {
+
+        // Find unique keys among all tags of unique submission
+        final Set<String> keys = getTagKeysByType(tags, massSpectrometryType);
+
+        // For each key, find its values and their count
+        List<TagDistribution> tagDistributionList = new ArrayList<>();
+        for (String key : keys) {
+
+            Map<String, Integer> countMap = getTagValuesByKeyAndType(tags, key, massSpectrometryType);
+
+            Map<String, DbAndClusterValuePair> clusterDistributionMap =
+                    ServiceUtils.calculateDbAndClusterDistribution(dbCountMaps.get(key), countMap);
+
+            //store tagDistributions
+            TagDistribution tagDistribution = new TagDistribution();
+            tagDistribution.setDistributionMap(clusterDistributionMap);
+            tagDistribution.setLabel(key);
+            tagDistribution.setPValue(
+                    ServiceUtils.calculateExactTestStatistics(clusterDistributionMap.values()));
+            tagDistribution.setMassSpectrometryType(massSpectrometryType);
+
+            tagDistributionList.add(tagDistribution);
+        }
+
+        return tagDistributionList;
+    }
+
 
     /**
      * Returns a set of keys, where each key is the first part of SubmissionTag.Name

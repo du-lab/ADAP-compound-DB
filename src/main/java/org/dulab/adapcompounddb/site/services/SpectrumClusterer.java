@@ -20,6 +20,4 @@ public interface SpectrumClusterer {
 
     void setProgress(float progress);
 
-    void calculateAllDistributions() throws IOException;
-
 }

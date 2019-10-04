@@ -9,6 +9,7 @@ import org.dulab.adapcompounddb.models.enums.MassSpectrometryType;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
@@ -27,6 +28,7 @@ public class TagDistribution implements Serializable {
     @NotBlank
     private String distribution;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     private MassSpectrometryType massSpectrometryType;
 

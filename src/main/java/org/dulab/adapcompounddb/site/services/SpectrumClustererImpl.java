@@ -4,10 +4,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.ChromatographyType;
-import org.dulab.adapcompounddb.models.DbAndClusterValuePair;
 import org.dulab.adapcompounddb.models.DistanceMatrixWrapper;
 import org.dulab.adapcompounddb.models.dto.TagInfo;
 import org.dulab.adapcompounddb.models.entities.*;
+import org.dulab.adapcompounddb.models.enums.MassSpectrometryType;
 import org.dulab.adapcompounddb.site.controllers.ControllerUtils;
 import org.dulab.adapcompounddb.site.repositories.*;
 import org.dulab.jsparcehc.Matrix;
@@ -38,23 +38,22 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
     private final SpectrumMatchRepository spectrumMatchRepository;
     private final SpectrumClusterRepository spectrumClusterRepository;
     private DistributionRepository distributionRepository;
-    private SubmissionTagRepository submissionTagRepository;
+    private DistributionService distributionService;
 
     private float progress = -0.1F;
 
     @Autowired
-    public SpectrumClustererImpl(final SubmissionTagRepository submissionTagRepository,
-                                 final SpectrumRepository spectrumRepository,
+    public SpectrumClustererImpl(final SpectrumRepository spectrumRepository,
                                  final SpectrumMatchRepository spectrumMatchRepository,
                                  final DistributionRepository distributionRepository,
-                                 final SpectrumClusterRepository spectrumClusterRepository) {
+                                 final SpectrumClusterRepository spectrumClusterRepository,
+                                 final DistributionService distributionService) {
 
-        this.submissionTagRepository = submissionTagRepository;
         this.spectrumRepository = spectrumRepository;
         this.spectrumMatchRepository = spectrumMatchRepository;
         this.spectrumClusterRepository = spectrumClusterRepository;
         this.distributionRepository = distributionRepository;
-
+        this.distributionService = distributionService;
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -94,12 +93,11 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
         final ChromatographyType[] values = ChromatographyType.values();
         final float step = 1F / values.length;
 
-        List<TagDistribution> tagDistributions = ServiceUtils.toList(distributionRepository.findAllTagDistribution());
+        Map<String, Map<String, Integer>> highResDbCountMaps =
+                distributionService.getAllDbCountMaps(MassSpectrometryType.HIGH_RESOLUTION);
 
-        Map<String, Map<String, DbAndClusterValuePair>> dbDistributionMap = new HashMap<>();
-        for (TagDistribution t : tagDistributions) {
-            dbDistributionMap.put(t.getLabel(), t.getDistributionMap());
-        }
+        Map<String, Map<String, Integer>> lowResDbCountMaps =
+                distributionService.getAllDbCountMaps(MassSpectrometryType.LOW_RESOLUTION);
 
         float count = 0F;
         long total = 0;
@@ -124,7 +122,10 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                 clusterer.cluster(SCORE_TOLERANCE);
             } catch (final Exception e) {
                 e.printStackTrace();
+                throw new IllegalStateException(
+                        "Something is wrong with the sparse hierarchical clustering: " + e.getMessage());
             }
+
             final Map<Integer, Integer> labelMap = clusterer.getLabels();
 
             final long[] uniqueLabels = labelMap.values()
@@ -152,7 +153,8 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                     numClusters += 1;
 
                     long time = System.currentTimeMillis();
-                    final SpectrumCluster cluster = createCluster(spectrumIds, MZ_TOLERANCE, dbDistributionMap);
+                    final SpectrumCluster cluster = createCluster(
+                            spectrumIds, highResDbCountMaps, lowResDbCountMaps);
                     createClusterTotalTime += System.currentTimeMillis() - time;
 
                     final Spectrum consensusSpectrum = cluster.getConsensusSpectrum();
@@ -165,6 +167,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
                     time = System.currentTimeMillis();
                     spectrumClusterRepository.save(cluster);
+                    distributionRepository.saveAll(cluster.getTagDistributions());
                     saveClusterTotalTime += System.currentTimeMillis() - time;
 
                     time = System.currentTimeMillis();
@@ -195,19 +198,9 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
         progress = -0.1F;
     }
 
-    @Transactional
-    @Override
-    public void calculateAllDistributions() {
-
-        // Find all the tags has been submitted
-        List<SubmissionTag> tags = ServiceUtils.toList(submissionTagRepository.findAll());
-
-        findAllTags(tags, null, null);
-
-    }
-
-    private SpectrumCluster createCluster(final Set<Long> spectrumIds, final float mzTolerance,
-                                          Map<String, Map<String, DbAndClusterValuePair>> dbDistributionMap)
+    private SpectrumCluster createCluster(final Set<Long> spectrumIds,
+                                          Map<String, Map<String, Integer>> highResDbCountMaps,
+                                          Map<String, Map<String, Integer>> lowResDbCountMaps)
             throws EmptySearchResultException {
 
         final SpectrumCluster cluster = new SpectrumCluster();
@@ -274,122 +267,27 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
             cluster.setAveDiversity(avgDiversity);
         }
 
-        final Spectrum consensusSpectrum = createConsensusSpectrum(spectra, mzTolerance);
+        final Spectrum consensusSpectrum = createConsensusSpectrum(spectra, MZ_TOLERANCE);
         consensusSpectrum.setCluster(cluster);
         cluster.setConsensusSpectrum(consensusSpectrum);
 
-        //calculate each cluster's Tag distribution and minimum PValue
-        Double minPValue = calculateClusterDistributions(spectra, dbDistributionMap, cluster);
-        if (minPValue != null) {
-            cluster.setMinPValue(minPValue);
-        }
-        return cluster;
-    }
-
-    private Double calculateClusterDistributions(
-            List<Spectrum> spectra,
-            Map<String, Map<String, DbAndClusterValuePair>> dbDistributionMap,
-            SpectrumCluster cluster) {
-
         //get cluster tags of unique submission
-        List<SubmissionTag> clusterTags = spectra.stream()
+        List<SubmissionTag> tags = spectra.stream()
                 .map(Spectrum::getFile).filter(Objects::nonNull)
                 .map(File::getSubmission).filter(Objects::nonNull)
                 .distinct()
                 .flatMap(s -> s.getTags().stream())
                 .collect(Collectors.toList());
 
-        // calculate tags unique submission distribution and save to the TagDistribution table
-        return findAllTags(clusterTags, dbDistributionMap, cluster);
-    }
+        // Calculate cluster distributions
+        List<TagDistribution> distributions = distributionService.calculateClusterDistributions(tags,
+                consensusSpectrum.isIntegerMz() ? MassSpectrometryType.LOW_RESOLUTION : MassSpectrometryType.HIGH_RESOLUTION,
+                consensusSpectrum.isIntegerMz() ? lowResDbCountMaps : highResDbCountMaps);
 
-    //calculating  db tagDistribution & cluster distribution & Minimum PValue of each cluster
-    private Double findAllTags(List<SubmissionTag> tagList,
-                               Map<String, Map<String, DbAndClusterValuePair>> dbDistributionMap,
-                               SpectrumCluster cluster) {
+        distributions.forEach(d -> d.setCluster(cluster));
+        cluster.setTagDistributions(distributions, true);
 
-        // Find unique keys among all tags of unique submission
-        final List<String> keys = tagList.stream()
-                .map(t -> t.getId().getName())
-                .map(a -> {
-                    String[] values = a.split(":");
-                    if (values.length >= 2)
-                        return values[0].trim();
-                    else
-                        return null;
-                })
-                .filter(Objects::nonNull)
-                .distinct()
-                .collect(Collectors.toList());
-
-        List<TagDistribution> tagDistributionList = new ArrayList<>();
-        List<Double> clusterPValueList = new ArrayList<>();
-
-        // For each key, find its values and their count
-        for (String key : keys) {
-            List<String> tagValues = tagList.stream()
-                    .map(t -> t.getId().getName())
-                    .map(a -> {
-                        String[] values = a.split(":");
-                        if (values.length < 2 || !values[0].trim().equalsIgnoreCase(key))
-                            return null;
-                        return values[1].trim();
-                    })
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
-
-            Map<String, Integer> countMap = new HashMap<>();
-
-            for (String value : tagValues) {
-                countMap.compute(value, (k, v) -> (v == null) ? 1 : v + 1);
-            }
-
-            Map<String, DbAndClusterValuePair> countPairMap = new HashMap<>();
-
-            if (cluster == null) {
-                for (Map.Entry<String, Integer> e : countMap.entrySet()) {
-                    countPairMap.put(e.getKey(), new DbAndClusterValuePair(e.getValue(), 0));
-                }
-            } else {
-                Map<String, Integer> dbCountMap = new HashMap<>();
-                for (Map.Entry<String, DbAndClusterValuePair> m : dbDistributionMap.get(key).entrySet()) {
-                    dbCountMap.put(m.getKey(), m.getValue().getDbValue());
-                }
-                countPairMap = ServiceUtils.calculateDbAndClusterDistribution(dbCountMap, countMap);
-            }
-
-            //store tagDistributions
-            TagDistribution tagDistribution = new TagDistribution();
-            tagDistribution.setDistributionMap(countPairMap);
-
-            tagDistribution.setLabel(key);
-            if (cluster != null) {
-                double pValue = ServiceUtils.calculateExactTestStatistics(
-                        tagDistribution.getDistributionMap().values());
-                tagDistribution.setPValue(pValue);
-                clusterPValueList.add(pValue);
-            }
-
-            if (cluster != null) {
-
-                if (tagDistribution.getLabel().equalsIgnoreCase("disease")) {
-                    cluster.setDiseasePValue(tagDistribution.getPValue());
-                } else if (tagDistribution.getLabel().equalsIgnoreCase("species (common)")) {
-                    cluster.setSpeciesPValue(tagDistribution.getPValue());
-                } else if (tagDistribution.getLabel().equalsIgnoreCase("sample source")) {
-                    cluster.setSampleSourcePValue(tagDistribution.getPValue());
-                }
-                tagDistribution.setCluster(cluster);
-            }
-
-            tagDistributionList.add(tagDistribution);
-        }
-
-        distributionRepository.saveAll(tagDistributionList);
-
-        // return the minimum PValue of this cluster
-        Collections.sort(clusterPValueList);
-        return clusterPValueList.isEmpty() ? 1.0 : clusterPValueList.get(0);
+        return cluster;
     }
 
     private Spectrum findSpectrum(final long id) throws EmptySearchResultException {

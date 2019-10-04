@@ -1,10 +1,14 @@
 package org.dulab.adapcompounddb.site.services;
 
+import org.dulab.adapcompounddb.models.DbAndClusterValuePair;
 import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
+import org.dulab.adapcompounddb.models.entities.SubmissionTag;
 import org.dulab.adapcompounddb.models.entities.TagDistribution;
+import org.dulab.adapcompounddb.models.enums.MassSpectrometryType;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 public interface DistributionService {
 
@@ -24,7 +28,13 @@ public interface DistributionService {
 
     TagDistribution getDistribution(long id);
 
-    List<TagDistribution> calculateAllDbDistribution();
+    List<TagDistribution> calculateAllDbDistributions(List<SubmissionTag> tags);
+
+    List<TagDistribution> calculateClusterDistributions(List<SubmissionTag> tags,
+                                                        MassSpectrometryType massSpectrometryType,
+                                                        Map<String, Map<String, Integer>> dbCountMaps);
+
+    Map<String, Map<String, Integer>> getAllDbCountMaps(MassSpectrometryType massSpectrometryType);
 
     void saveAllDbDistributions();
 }

@@ -3,6 +3,7 @@ package org.dulab.adapcompounddb.site.repositories;
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.TagDistribution;
+import org.dulab.adapcompounddb.models.enums.MassSpectrometryType;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -21,7 +22,10 @@ public interface DistributionRepository extends CrudRepository<TagDistribution, 
     String findTagDistributionByTagKey(String tagKey);
 
     @Query("SELECT t FROM TagDistribution t WHERE t.cluster IS null ")
-    Iterable<TagDistribution> findAllTagDistribution();
+    Iterable<TagDistribution> findAllDbTagDistribution();
+
+    @Query("SELECT t FROM TagDistribution t WHERE t.cluster IS NULL AND t.massSpectrometryType = ?1")
+    Iterable<TagDistribution> findAllDbTagDistributionsByMassSpectrometryType(MassSpectrometryType type);
 
     @Query("SELECT t FROM TagDistribution t"
             + " WHERE t.cluster is not null"
