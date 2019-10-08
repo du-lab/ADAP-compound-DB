@@ -6,13 +6,14 @@ import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.hibernate.validator.constraints.URL;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.ConstraintViolationException;
@@ -133,8 +134,11 @@ public class SubmissionController extends BaseController {
         form.setReference(submission.getReference());
 
         if (submission.getTags() != null) {
-            form.setTags(submission.getTags().stream().map(SubmissionTag::getId).map(SubmissionTagId::getName)
-                    .collect(Collectors.joining(",")));
+            JSONArray ja = new JSONArray();
+            for (SubmissionTag st : submission.getTags()) {
+                ja.put(st.getId().getName());
+            }
+            form.setTags(ja.toString());
         }
 
         if (submission.getCategories() != null) {
@@ -283,11 +287,16 @@ public class SubmissionController extends BaseController {
         List<SubmissionTag> tags = submission.getTags();
         if (tags == null) {
             tags = new ArrayList<>();
+
             submission.setTags(tags);
         }
         tags.clear();
-        for (final String name : submissionForm.getTags().split(",")) {
 
+        JSONArray tagArray = new JSONArray(submissionForm.getTags());
+
+        for (int i = 0; i < tagArray.length(); i++) {
+            JSONObject tagJsonObject = tagArray.getJSONObject(i);
+            String name = tagJsonObject.getString("value");
             if (name.trim().isEmpty()) {
                 continue;
             }
@@ -326,7 +335,7 @@ public class SubmissionController extends BaseController {
     }
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/delete")
-    public String delete(@PathVariable("submissionId") final long id,  @RequestHeader(value = "referer",
+    public String delete(@PathVariable("submissionId") final long id, @RequestHeader(value = "referer",
             required = false) final String referer) {
         submissionService.delete(id);
         String newReferer;

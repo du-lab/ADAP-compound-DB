@@ -152,6 +152,7 @@
 <script src="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.js"/>"></script>
 <script src="<c:url value="/resources/tag-it-6ccd2de/js/tag-it.min.js"/>"></script>
 <script type="text/javascript" src="<c:url value="/resources/AdapCompoundDb/js/tabs.js"/>"></script>
+<script src="<c:url value="/resources/tagify-master/jQuery.tagify.min.js"/>"></script>
 <script>
     $( document ).ready( function () {
         // Table with a list of spectra
@@ -227,9 +228,9 @@
                     "targets": 5,
                     "render": function (data, type, row, meta) {
                         var content = '';
-                        if(row.integerMz){
+                        if (row.integerMz) {
                             content = 'Yes';
-                        }else{
+                        } else {
                             content = 'No';
                         }
                         return content;
@@ -280,7 +281,7 @@
 
 
         $( ".tabbed-pane" ).each( function () {
-            $( this ).tabbedPane('#spectrum_table');
+            $( this ).tabbedPane( '#spectrum_table' );
         } );
 
         // Table with submissionForm information
@@ -295,11 +296,17 @@
         // Table with a list of files
         $( '#file_table' ).DataTable();
 
-        // Selector with autocomplete
-        $( '#tags' ).tagit( {
-            autocomplete: {
-                source: ${dulab:stringsToJson(availableTags)}
-            }
-        } );
+        <%--// Selector with autocomplete--%>
+        <%--$( '#tags' ).tagit( {--%>
+        <%--    autocomplete: {--%>
+        <%--        source: ${dulab:stringsToJson(availableTags)}--%>
+        <%--    }--%>
+        <%--} );--%>
+
     } );
+
+
+
 </script>
+
+

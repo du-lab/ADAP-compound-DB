@@ -1,5 +1,5 @@
-    <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
@@ -7,7 +7,8 @@
 <div align="center">
     <div>
         <p>
-            Please provide name and detailed description of the data when you submit mass spectra to the knowledgebase.<br/>
+            Please provide name and detailed description of the data when you submit mass spectra to the
+            knowledgebase.<br/>
             This information will be used for finding unknown compounds.
         </p>
     </div>
@@ -25,14 +26,14 @@
         </c:if>
         <form:form method="POST" modelAttribute="submissionForm">
             <form:errors path="" cssClass="errors"/><br/>
-            <form:hidden path="id" /><br/>
+            <form:hidden path="id"/><br/>
 
             <form:label path="name">Name:</form:label><br/>
             <form:input class="width_input" path="name"/><br/>
             <form:errors path="name" cssClass="errors"/><br/>
 
             <form:label path="description">Description:</form:label><br/>
-            <form:textarea class="width_textarea" path="description" /><br/>
+            <form:textarea class="width_textarea" path="description"/><br/>
             <form:errors path="description" cssClass="errors"/><br/>
 
             <form:label path="reference">URL:</form:label><br/>
@@ -42,7 +43,7 @@
             <form:errors path="submissionCategoryIds" cssClass="errors"/><br/>
 
             <form:label path="tags">Tags:</form:label><br/>
-            <form:input path="tags"/><br/>
+            <form:input placeholder="Add tags here!" path="tags"/><br/>
             <form:errors path="tags" cssClass="errors"/><br/>
 
             <div align="center">
@@ -64,10 +65,46 @@
 <script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
 <script src="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.js"/>"></script>
 <script src="<c:url value="/resources/AdapCompoundDb/js/dialogs.js"/>"></script>
+<script src="<c:url value="/resources/tagify-master/jQuery.tagify.min.js"/>"></script>
 <script>
-    var progressDialog = $('#progress-dialog').progressDialog();
+    var progressDialog = $( '#progress-dialog' ).progressDialog();
 
-    $('#button-submit').click(function () {
-        progressDialog.show('Submitting new spectra may take a while. Please wait...');
-    })
+    $( '#button-submit' ).click( function () {
+        progressDialog.show( 'Submitting new spectra may take a while. Please wait...' );
+    } )
 </script>
+<script>
+    $( '#tags' ).tagify( {
+            pattern: /^.{0,50}$/,  // Validate typed tag(s) by Regex. Here maximum chars length is defined as "20"
+            delimiters: ", ",         // add new tags when a comma or a space character is entered
+            // maxTags: 6,
+            keepInvalidTags: true,         // do not remove invalid tags (but keep them marked as invalid)
+            backspace: "edit",
+            dropdown: {
+                enabled: 1,
+            }
+        }
+    )
+        .on( 'add', function (e, tagName) {
+            console.log( 'JQEURY EVENT: ', 'added', tagName )
+        } )
+        .on( "invalid", function (e, tagName) {
+            console.log( 'JQEURY EVENT: ', "invalid", e, ' ', tagName );
+        } );
+
+
+    // generate a random color (in HSL format, which I like to use)
+    function getRandomColor() {
+        function rand(min, max) {
+            return min + Math.random() * (max - min);
+        };
+
+        var h = rand( 1, 360 ) | 0,
+            s = rand( 40, 70 ) | 0,
+            l = rand( 65, 72 ) | 0;
+
+        return 'hsl(' + h + ',' + s + '%,' + l + '%)';
+    }
+</script>
+
+
