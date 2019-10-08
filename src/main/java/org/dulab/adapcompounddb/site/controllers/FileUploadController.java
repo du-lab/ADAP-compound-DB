@@ -1,15 +1,5 @@
 package org.dulab.adapcompounddb.site.controllers;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.ChromatographyType;
@@ -28,6 +18,15 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 public class FileUploadController {
@@ -61,7 +60,7 @@ public class FileUploadController {
 
     @RequestMapping(value = "/file/upload/", method = RequestMethod.POST, consumes = "multipart/form-data")
     public String upload(final Model model, final HttpSession session, @Valid final FileUploadForm form,
-            final Errors errors) {
+                         final Errors errors) {
 
         if (Submission.from(session) != null) {
             return "redirect:/file/";
@@ -88,6 +87,13 @@ public class FileUploadController {
         final Submission submission = new Submission();
 
         final List<File> files = new ArrayList<>(form.getFiles().size());
+
+        /*create two integer x and y to calculate MassSpectrometryType,
+        x is the number of files a study contained,
+        y is the number of files that contain Interger M/Z value. */
+        int x = form.getFiles().size();
+        int y = 0;
+
         for (final MultipartFile multipartFile : form.getFiles()) {
             final File file = new File();
             file.setName(multipartFile.getOriginalFilename());
@@ -98,19 +104,26 @@ public class FileUploadController {
                 file.setSpectra(service.read(multipartFile.getInputStream(), form.getChromatographyType()));
                 file.getSpectra().forEach(s -> s.setFile(file));
 
-                // if spectra in this file exist integerMZ is true, then set massSpectrometryType is High_Resolution
-                for(Spectrum s: file.getSpectra()){
-                    if(s.isIntegerMz()){
-                        submission.setMassSpectrometryType(MassSpectrometryType.HIGH_RESOLUTION);
+
+
+                for (Spectrum s : file.getSpectra()) {
+                    if (s.isIntegerMz()) {
+                        y++;
+                        break;
                     }
                 }
                 files.add(file);
-
             } catch (final IOException e) {
                 LOG.warn(e);
                 model.addAttribute("message", "Cannot read this file: " + e.getMessage());
                 return "file/upload";
             }
+        }
+
+       /*  if x==y, it means every file of the study contains at least one spectrum that isIntegerMz is ture,
+         then set massSpectrometryType is LOW_Resolution*/
+        if (x == y) {
+            submission.setMassSpectrometryType(MassSpectrometryType.LOW_RESOLUTION);
         }
 
         if (files.isEmpty()) {
