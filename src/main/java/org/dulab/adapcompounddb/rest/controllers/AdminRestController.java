@@ -1,5 +1,7 @@
 package org.dulab.adapcompounddb.rest.controllers;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.site.repositories.DistributionRepository;
 import org.dulab.adapcompounddb.site.services.DistributionService;
 import org.dulab.adapcompounddb.site.services.SpectrumClusterer;
@@ -15,6 +17,8 @@ import java.util.concurrent.Executors;
 @RestController
 @RequestMapping("/admin")
 public class AdminRestController {
+
+    private static final Logger LOGGER = LogManager.getLogger(AdminRestController.class);
 
     private final SpectrumMatchCalculator spectrumMatchCalculator;
     private final SpectrumClusterer spectrumClusterer;
@@ -53,15 +57,16 @@ public class AdminRestController {
     public String cluster() {
         try {
             final Runnable r = () -> {
-                distributionService.removeAll();
-                //calculate all tags distributions
                 try {
-                    spectrumClusterer.calculateAllDistributions();
-                } catch (IOException e) {
-                    throw new IllegalStateException("Calculating AllDistributions failed!");
+                    distributionService.removeAll();
+                    distributionService.saveAllDbDistributions();
+                    spectrumClusterer.removeAll();
+                    spectrumClusterer.cluster();
+
+                } catch (Exception e) {
+                    LOGGER.error("Error during clustering: ", e);
+                    throw e;
                 }
-                spectrumClusterer.removeAll();
-                spectrumClusterer.cluster();
             };
             spectrumClusterer.setProgress(0F);
             executor.submit(r);

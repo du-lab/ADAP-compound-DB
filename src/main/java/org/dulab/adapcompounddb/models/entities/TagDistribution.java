@@ -5,8 +5,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.dulab.adapcompounddb.models.DbAndClusterValuePair;
+import org.dulab.adapcompounddb.models.enums.MassSpectrometryType;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
@@ -20,18 +23,20 @@ public class TagDistribution implements Serializable {
     private long id;
 
     @NotBlank
-    private String tagKey;
+    private String label;
 
     @NotBlank
-    private String tagDistribution;
+    private String distribution;
 
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private MassSpectrometryType massSpectrometryType;
 
     private Double pValue;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ClusterId")
     private SpectrumCluster cluster;
-
 
     public long getId() {
         return id;
@@ -41,20 +46,28 @@ public class TagDistribution implements Serializable {
         this.id = id;
     }
 
-    public String getTagKey() {
-        return tagKey;
+    public String getLabel() {
+        return label;
     }
 
-    public void setTagKey(String tagName) {
-        this.tagKey = tagName;
+    public void setLabel(String label) {
+        this.label = label;
     }
 
-    public String getTagDistribution() {
-        return tagDistribution;
+    public String getDistribution() {
+        return distribution;
     }
 
-    public void setTagDistribution(String tagDistribution) {
-        this.tagDistribution = tagDistribution;
+    public void setDistribution(String distribution) {
+        this.distribution = distribution;
+    }
+
+    public MassSpectrometryType getMassSpectrometryType() {
+        return massSpectrometryType;
+    }
+
+    public void setMassSpectrometryType(MassSpectrometryType type) {
+        this.massSpectrometryType = type;
     }
 
     public Double getPValue() {
@@ -76,10 +89,10 @@ public class TagDistribution implements Serializable {
 
     // Convert Json-String to Map
     @Transient
-    public Map<String, DbAndClusterValuePair> getTagDistributionMap() throws IllegalStateException {
+    public Map<String, DbAndClusterValuePair> getDistributionMap() throws IllegalStateException {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            return mapper.readValue(tagDistribution, new TypeReference<Map<String, DbAndClusterValuePair>>(){});
+            return mapper.readValue(distribution, new TypeReference<Map<String, DbAndClusterValuePair>>(){});
         } catch (IOException e) {
             throw new IllegalStateException("It cannot be converted from Json-String to map!");
         }
@@ -87,11 +100,11 @@ public class TagDistribution implements Serializable {
 
     // Convert Map to Json-String
     @Transient
-    public void setTagDistributionMap(Map<String, DbAndClusterValuePair> countMap) throws IllegalStateException {
+    public void setDistributionMap(Map<String, DbAndClusterValuePair> countMap) throws IllegalStateException {
         try {
             // Default constructor, which will construct the default JsonFactory as necessary, use SerializerProvider as its
             // SerializerProvider, and BeanSerializerFactory as its SerializerFactory.
-            this.tagDistribution = new ObjectMapper().writeValueAsString(countMap);
+            this.distribution = new ObjectMapper().writeValueAsString(countMap);
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("It cannot be converted to Json-String!");
         }

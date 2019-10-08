@@ -13,8 +13,8 @@
     <c:forEach items="${distributions}" var="distribution" varStatus="status">
                 <div id="div${status.index}" style="display: inline-block; margin: 10px;text-align: left;">
                     <script>
-                        var tagKey ='${distribution.tagKey}';
-                        var dataSet= '${distribution.tagDistribution}';
+                        var tagKey ='${distribution.label}';
+                        var dataSet= '${distribution.distribution}';
                         addHistogram('div'+${status.index},tagKey,dataSet);
                     </script>
                 </div>

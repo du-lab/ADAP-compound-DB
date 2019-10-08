@@ -111,7 +111,38 @@ public class SpectrumCluster implements Serializable {
     }
 
     public void setTagDistributions(final List<TagDistribution> tagDistributions) {
+        setTagDistributions(tagDistributions, false);
+    }
+
+    public void setTagDistributions(final List<TagDistribution> tagDistributions, boolean updatePValues) {
+
         this.tagDistributions = tagDistributions;
+
+        if (updatePValues) {
+            this.minPValue = null;
+            this.diseasePValue = null;
+            this.speciesPValue = null;
+            this.sampleSourcePValue = null;
+
+            // Assign p-values to the cluster
+            for (TagDistribution distribution : tagDistributions) {
+
+                Double pValue = distribution.getPValue();
+                if (pValue == null) continue;
+
+                // If the distribution label is one of desease, species, or sample source, save p-value to the cluster
+                if (distribution.getLabel().equalsIgnoreCase("disease")) {
+                    this.diseasePValue = pValue;
+                } else if (distribution.getLabel().equalsIgnoreCase("species (common)")) {
+                    this.speciesPValue = pValue;
+                } else if (distribution.getLabel().equalsIgnoreCase("sample source")) {
+                    this.sampleSourcePValue = pValue;
+                }
+
+                if (this.minPValue == null || pValue < this.minPValue)
+                    this.minPValue = pValue;
+            }
+        }
     }
 
 
