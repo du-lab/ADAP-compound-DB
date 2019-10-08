@@ -15,7 +15,9 @@ import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.FileType;
 import org.dulab.adapcompounddb.models.entities.File;
+import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.Submission;
+import org.dulab.adapcompounddb.models.enums.MassSpectrometryType;
 import org.dulab.adapcompounddb.site.services.FileReaderService;
 import org.dulab.adapcompounddb.site.services.MspFileReaderService;
 import org.dulab.adapcompounddb.validation.ContainsFiles;
@@ -95,6 +97,13 @@ public class FileUploadController {
                 file.setContent(multipartFile.getBytes());
                 file.setSpectra(service.read(multipartFile.getInputStream(), form.getChromatographyType()));
                 file.getSpectra().forEach(s -> s.setFile(file));
+
+                // if spectra in this file exist integerMZ is true, then set massSpectrometryType is High_Resolution
+                for(Spectrum s: file.getSpectra()){
+                    if(s.isIntegerMz()){
+                        submission.setMassSpectrometryType(MassSpectrometryType.HIGH_RESOLUTION);
+                    }
+                }
                 files.add(file);
 
             } catch (final IOException e) {
