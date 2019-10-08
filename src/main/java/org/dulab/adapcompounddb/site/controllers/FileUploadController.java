@@ -88,9 +88,9 @@ public class FileUploadController {
 
         final List<File> files = new ArrayList<>(form.getFiles().size());
 
-        /*create two integer totalNumberOfFiles and totalNumberOfIntFiles to calculate MassSpectrometryType,
-        totalNumberOfFiles is the number of files a study contained,
-        totalNumberOfIntFiles is the number of files that contain Intergered M/Z value. */
+        // create two integer totalNumberOfFiles and totalNumberOfIntFiles to calculate MassSpectrometryType,
+        // totalNumberOfFiles is the number of files a study contained,
+        // totalNumberOfIntFiles is the number of files that contain Intergered M/Z value.
         int totalNumberOfFiles = form.getFiles().size();
         int totalNumberOfIntFiles = 0;
 
@@ -104,7 +104,7 @@ public class FileUploadController {
                 file.setSpectra(service.read(multipartFile.getInputStream(), form.getChromatographyType()));
                 file.getSpectra().forEach(s -> s.setFile(file));
 
-
+                // check if the file exists spectrum has integral m/z value
                 for (Spectrum s : file.getSpectra()) {
                     if (s.isIntegerMz()) {
                         totalNumberOfIntFiles++;
@@ -119,9 +119,9 @@ public class FileUploadController {
             }
         }
 
-       /*  if totalNumberOfFiles == totalNumberOfIntFiles, it means every file of the study contains at least
-       one spectrum that isIntegerMz is true, then set massSpectrometryType is LOW_Resolution
-       else set massSpectrometryType is High_Resolution*/
+       // if totalNumberOfFiles == totalNumberOfIntFiles, it means every file of the study contains at least
+       // one spectrum that isIntegerMz is true, then set massSpectrometryType is LOW_Resolution
+       // else set massSpectrometryType is High_Resolution
         if (totalNumberOfFiles == totalNumberOfIntFiles) {
             submission.setMassSpectrometryType(MassSpectrometryType.LOW_RESOLUTION);
         } else {
