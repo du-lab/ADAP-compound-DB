@@ -88,11 +88,11 @@ public class FileUploadController {
 
         final List<File> files = new ArrayList<>(form.getFiles().size());
 
-        /*create two integer x and y to calculate MassSpectrometryType,
-        x is the number of files a study contained,
-        y is the number of files that contain Interger M/Z value. */
-        int x = form.getFiles().size();
-        int y = 0;
+        /*create two integer totalNumberOfFiles and totalNumberOfIntFiles to calculate MassSpectrometryType,
+        totalNumberOfFiles is the number of files a study contained,
+        totalNumberOfIntFiles is the number of files that contain Integral M/Z value. */
+        int totalNumberOfFiles = form.getFiles().size();
+        int totalNumberOfIntFiles = 0;
 
         for (final MultipartFile multipartFile : form.getFiles()) {
             final File file = new File();
@@ -104,11 +104,9 @@ public class FileUploadController {
                 file.setSpectra(service.read(multipartFile.getInputStream(), form.getChromatographyType()));
                 file.getSpectra().forEach(s -> s.setFile(file));
 
-
-
                 for (Spectrum s : file.getSpectra()) {
                     if (s.isIntegerMz()) {
-                        y++;
+                        totalNumberOfIntFiles++;
                         break;
                     }
                 }
@@ -120,10 +118,12 @@ public class FileUploadController {
             }
         }
 
-       /*  if x==y, it means every file of the study contains at least one spectrum that isIntegerMz is ture,
-         then set massSpectrometryType is LOW_Resolution*/
-        if (x == y) {
+       /*  if totalNumberOfFiles == totalNumberOfIntFiles, it means every file of the study contains at least
+       one spectrum that isIntegerMz is true, then set massSpectrometryType is LOW_Resolution*/
+        if (totalNumberOfFiles == totalNumberOfIntFiles) {
             submission.setMassSpectrometryType(MassSpectrometryType.LOW_RESOLUTION);
+        }else{
+            submission.setMassSpectrometryType(MassSpectrometryType.HIGH_RESOLUTION);
         }
 
         if (files.isEmpty()) {
