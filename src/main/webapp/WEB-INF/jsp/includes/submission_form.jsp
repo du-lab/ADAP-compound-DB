@@ -3,6 +3,8 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
+
 
 <div align="center">
     <div>
@@ -73,6 +75,8 @@
         progressDialog.show( 'Submitting new spectra may take a while. Please wait...' );
     } )
 </script>
+
+<%-- using tagify library to generate tags--%>
 <script>
     $( '#tags' ).tagify( {
             pattern: /^.{0,50}$/,  // Validate typed tag(s) by Regex. Here maximum chars length is defined as "20"
@@ -80,8 +84,11 @@
             // maxTags: 6,
             keepInvalidTags: true,         // do not remove invalid tags (but keep them marked as invalid)
             backspace: "edit",
+            whitelist:${dulab:stringsToJson(availableTags)},
             dropdown: {
-                enabled: 1,
+                classname:"color-blue",
+                enabled: 2,
+                maxItems:6
             }
         }
     )

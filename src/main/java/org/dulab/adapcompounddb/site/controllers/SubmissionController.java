@@ -126,14 +126,14 @@ public class SubmissionController extends BaseController {
 
     private SubmissionForm createSubmissionForm(final Submission submission) {
         final SubmissionForm form = new SubmissionForm();
-        //        form.setCategoryMap(submissionService.findAllCategories());
-
+//        form.setCategoryMap(submissionService.findAllCategories());
         form.setId(submission.getId());
         form.setName(submission.getName());
         form.setDescription(submission.getDescription());
         form.setReference(submission.getReference());
 
         if (submission.getTags() != null) {
+            //format tag into the same format created by tagify which is JsonArray
             JSONArray ja = new JSONArray();
             for (SubmissionTag st : submission.getTags()) {
                 ja.put(st.getId().getName());
