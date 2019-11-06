@@ -136,6 +136,7 @@ public class ControllerUtils {
                     .filter(Objects::nonNull)
                     .map(File::getSubmission)
                     .filter(Objects::nonNull)
+                    .distinct()
                     .map(s -> s.getCategory(category.getCategoryType()))
                     .filter(Objects::nonNull)
                     .filter(category::equals)
@@ -199,7 +200,13 @@ public class ControllerUtils {
 
         // Find unique keys among all tags of all spectra
         final List<String> keys = spectra.stream()
-                .flatMap(s -> getTags(s).stream())
+                .map(Spectrum::getFile).filter(Objects::nonNull)
+                .map(File::getSubmission).filter(Objects::nonNull)
+                .distinct()
+                .flatMap(s -> s.getTags().stream())
+                .map(SubmissionTag::getId)
+                .map(SubmissionTagId::getName)
+//                .flatMap(s -> getTags(s).stream())
                 .map(t -> {
                     String[] values = t.split(":");
                     if (values.length >= 2)
@@ -216,10 +223,18 @@ public class ControllerUtils {
         List<TagInfo> tagInfoList = new ArrayList<>(keys.size());
         for (String key : keys) {
 
-            Map<String, Integer> countMap = new HashMap<>();
-            for (Spectrum spectrum : spectra) {
+            Set<Submission> submissions = spectra.stream()
+                    .map(Spectrum::getFile).filter(Objects::nonNull)
+                    .map(File::getSubmission).filter(Objects::nonNull)
+                    .collect(Collectors.toSet());
 
-                List<String> tagValues = getTags(spectrum).stream()
+            Map<String, Integer> countMap = new HashMap<>();
+            for (Submission submission : submissions) {
+
+                List<String> tagValues = submission.getTags().stream()
+                        .map(SubmissionTag::getId)
+                        .map(SubmissionTagId::getName)
+//                        getTags(spectrum).stream()
                         .map(t -> {
                             String[] values = t.split(":");
                             if (values.length < 2 || !values[0].trim().equalsIgnoreCase(key))
