@@ -236,15 +236,8 @@ public class DistributionServiceImpl implements DistributionService {
      */
     private Set<String> getTagKeysByType(List<SubmissionTag> tags, MassSpectrometryType type) {
         return tags.stream()
-                .filter(t -> t.getId().getSubmission().getMassSpectrometryType() == type)
-                .map(t -> t.getId().getName())
-                .map(a -> {
-                    String[] values = a.split(":");
-                    if (values.length >= 2)
-                        return values[0].trim();
-                    else
-                        return null;
-                })
+                .filter(t -> t.getSubmission().getMassSpectrometryType() == type)
+                .map(SubmissionTag::getTagKey)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
     }
@@ -261,14 +254,8 @@ public class DistributionServiceImpl implements DistributionService {
             List<SubmissionTag> tags, String key, MassSpectrometryType type) {
 
         List<String> tagValues = tags.stream()
-                .filter(t -> t.getId().getSubmission().getMassSpectrometryType() == type)
-                .map(t -> t.getId().getName())
-                .map(a -> {
-                    String[] values = a.split(":");
-                    if (values.length < 2 || !values[0].trim().equalsIgnoreCase(key))
-                        return null;
-                    return values[1].trim();
-                })
+                .filter(t -> t.getSubmission().getMassSpectrometryType() == type)
+                .map(SubmissionTag::getTagValue)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 

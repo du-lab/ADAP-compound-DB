@@ -51,7 +51,7 @@
                     <td>
                             <%--                            ${study.tagsAsString}--%>
                         <c:forEach items="${study.tags}" var="tag" varStatus="status">
-                            <span id="${study.id}color${status.index}">${tag.id.name}&nbsp;</span>
+                            <span id="${study.id}color${status.index}">${tag.toString()}&nbsp;</span>
                             <script>
                                 var spanId = '${fn:length(study.tags)}';
                                 spanColor( ${study.id}, spanId );

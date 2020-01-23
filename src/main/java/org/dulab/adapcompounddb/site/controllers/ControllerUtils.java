@@ -204,16 +204,7 @@ public class ControllerUtils {
                 .map(File::getSubmission).filter(Objects::nonNull)
                 .distinct()
                 .flatMap(s -> s.getTags().stream())
-                .map(SubmissionTag::getId)
-                .map(SubmissionTagId::getName)
-//                .flatMap(s -> getTags(s).stream())
-                .map(t -> {
-                    String[] values = t.split(":");
-                    if (values.length >= 2)
-                        return values[0].trim();
-                    else
-                        return null;
-                })
+                .map(SubmissionTag::getTagKey)
                 .filter(Objects::nonNull)
                 .distinct()
                 .collect(Collectors.toList());
@@ -232,16 +223,7 @@ public class ControllerUtils {
             for (Submission submission : submissions) {
 
                 List<String> tagValues = submission.getTags().stream()
-                        .map(SubmissionTag::getId)
-                        .map(SubmissionTagId::getName)
-//                        getTags(spectrum).stream()
-                        .map(t -> {
-                            String[] values = t.split(":");
-                            if (values.length < 2 || !values[0].trim().equalsIgnoreCase(key))
-                                return null;
-
-                            return values[1].trim();
-                        })
+                        .map(SubmissionTag::getTagValue)
                         .filter(Objects::nonNull)
                         .collect(Collectors.toList());
 
@@ -273,8 +255,7 @@ public class ControllerUtils {
 
             List<SubmissionTag> tags = spectrum.getFile().getSubmission().getTags();
             return tags.stream()
-                    .map(SubmissionTag::getId)
-                    .map(SubmissionTagId::getName)
+                    .map(SubmissionTag::toString)
                     .collect(Collectors.toList());
         }
 

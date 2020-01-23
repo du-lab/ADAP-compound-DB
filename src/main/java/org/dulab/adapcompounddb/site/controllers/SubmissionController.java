@@ -43,7 +43,7 @@ public class SubmissionController extends BaseController {
 
     @ModelAttribute
     public void addAttributes(final Model model) {
-        model.addAttribute("availableTags", submissionService.findAllTags());
+        model.addAttribute("availableTags", submissionService.findUniqueTagStrings());
         /*model.addAttribute("submissionCategoryTypes", SubmissionCategoryType.values());
 
         final Map<SubmissionCategoryType, List<SubmissionCategory>> availableCategories = Arrays
@@ -134,11 +134,11 @@ public class SubmissionController extends BaseController {
 
         if (submission.getTags() != null) {
             //format tag into the same format created by tagify which is JsonArray
-            JSONArray ja = new JSONArray();
-            for (SubmissionTag st : submission.getTags()) {
-                ja.put(st.getId().getName());
+            JSONArray jsonArray = new JSONArray();
+            for (SubmissionTag submissionTag : submission.getTags()) {
+                jsonArray.put(submissionTag.toString());
             }
-            form.setTags(ja.toString());
+            form.setTags(jsonArray.toString());
         }
 
         if (submission.getCategories() != null) {
@@ -300,10 +300,7 @@ public class SubmissionController extends BaseController {
             if (name.trim().isEmpty()) {
                 continue;
             }
-
-            final SubmissionTag submissionTag = new SubmissionTag();
-            submissionTag.setId(new SubmissionTagId(submission, name.toLowerCase()));
-            tags.add(submissionTag);
+            tags.add(new SubmissionTag(submission, name));
         }
 
         //        final List<SubmissionCategory> categories = new ArrayList<>();

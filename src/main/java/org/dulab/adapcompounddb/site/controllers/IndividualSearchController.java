@@ -119,7 +119,7 @@ public class IndividualSearchController {
     private String searchGet(final Spectrum querySpectrum, final UserPrincipal user, final Model model) {
 
         final SearchForm form = new SearchForm();
-        form.setAvailableTags(submissionService.findAllTags());
+        form.setAvailableTags(submissionService.findUniqueTagStrings());
 
         model.addAttribute("querySpectrum", querySpectrum);
         model.addAttribute("searchForm", form);
