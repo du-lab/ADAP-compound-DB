@@ -14,7 +14,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <!--<spring.version>4.3.14.RELEASE</spring.version>-->
         <spring.version>5.2.1.RELEASE</spring.version>
         <spring-data.version>2.1.9.RELEASE</spring-data.version>
         <log4j.version>2.10.0</log4j.version>
@@ -43,11 +42,11 @@
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.json/json -->
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20180813</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.json</groupId>-->
+<!--            <artifactId>json</artifactId>-->
+<!--            <version>20180813</version>-->
+<!--        </dependency>-->
 
 
         <dependency>
