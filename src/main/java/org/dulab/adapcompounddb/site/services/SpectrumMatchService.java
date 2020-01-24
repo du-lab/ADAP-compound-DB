@@ -19,8 +19,8 @@ public interface SpectrumMatchService {
 
     SpectrumCluster getCluster(long id);
 
-    DataTableResponse findAllClusters(String searchStr, Integer start, Integer length, Integer column,
-                                      String sortDirection);
+    DataTableResponse findAllClusters(String searchStr, String species, String source, String disease,
+                                      Integer start, Integer length, Integer column, String sortDirection);
 
     DataTableResponse groupSearchSort(final String searchStr, final Integer start, final Integer length,
                                       final Integer column, final String sortDirection,

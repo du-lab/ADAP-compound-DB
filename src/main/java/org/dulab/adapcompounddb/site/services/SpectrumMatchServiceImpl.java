@@ -380,8 +380,9 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     }
 
     @Override
-    public DataTableResponse findAllClusters(final String searchStr, final Integer start, final Integer length,
-                                             final Integer column, final String sortDirection) {
+    public DataTableResponse findAllClusters(String searchStr, String species, String source, String disease,
+                                             Integer start, Integer length, Integer column, String sortDirection) {
+
         final ObjectMapperUtils objectMapper = new ObjectMapperUtils();
         Pageable pageable;
         Page<SpectrumCluster> spectrumPage;
@@ -394,7 +395,14 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
             pageable = PageRequest.of(start / length, length);
         }
 
-        spectrumPage = spectrumClusterRepository.findClusters(searchStr, pageable);
+        if (species != null && species.equalsIgnoreCase("all"))
+            species = null;
+        if (source != null && source.equalsIgnoreCase("all"))
+            source = null;
+        if (disease != null && disease.equalsIgnoreCase("all"))
+            disease = null;
+
+        spectrumPage = spectrumClusterRepository.findClusters(searchStr, species, source, disease, pageable);
 
         final List<SpectrumClusterDTO> spectrumList = objectMapper.map(spectrumPage.getContent(), SpectrumClusterDTO.class);
 

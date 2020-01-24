@@ -4,18 +4,18 @@ import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
 import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
 import org.dulab.adapcompounddb.models.entities.TagDistribution;
-import org.dulab.adapcompounddb.site.services.DistributionService;
-import org.dulab.adapcompounddb.site.services.SpectrumMatchService;
-import org.dulab.adapcompounddb.site.services.StatisticsService;
-import org.dulab.adapcompounddb.site.services.SubmissionService;
+import org.dulab.adapcompounddb.site.controllers.forms.FilterForm;
+import org.dulab.adapcompounddb.site.services.*;
 import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.validation.Valid;
 import java.util.*;
 
 @Controller
@@ -23,17 +23,20 @@ public class ClusterController {
 
     private final SpectrumMatchService spectrumMatchService;
     private final SubmissionService submissionService;
+    private final SubmissionTagService submissionTagService;
     private final StatisticsService statisticsService;
     private final DistributionService distributionService;
 
     public ClusterController(final SpectrumMatchService spectrumMatchService,
                              final SubmissionService submissionService, final StatisticsService statisticsService,
-                             final DistributionService distributionService) {
+                             final DistributionService distributionService,
+                             final SubmissionTagService submissionTagService) {
 
         this.spectrumMatchService = spectrumMatchService;
         this.statisticsService = statisticsService;
         this.submissionService = submissionService;
         this.distributionService = distributionService;
+        this.submissionTagService = submissionTagService;
     }
 
     @ModelAttribute
@@ -51,7 +54,13 @@ public class ClusterController {
     }
 
     @RequestMapping(value = "/allClusters/", method = RequestMethod.GET)
-    public String clusters() {
+    public String clusters(final Model model) {
+
+        List<String> speciesList = submissionTagService.findDistinctTagValuesByTagKey("species (common)");
+        List<String> sourceList = submissionTagService.findDistinctTagValuesByTagKey("sample source");
+        List<String> diseaseList = submissionTagService.findDistinctTagValuesByTagKey("disease");
+
+        model.addAttribute("filterForm", new FilterForm(speciesList, sourceList, diseaseList));
         return "cluster/all_clusters";
     }
 

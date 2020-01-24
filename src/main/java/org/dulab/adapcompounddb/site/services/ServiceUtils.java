@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.services;
 
+import org.apache.commons.collections.comparators.ComparableComparator;
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

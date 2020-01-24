@@ -2,21 +2,79 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <section>
     <h1>Consensus spectra</h1>
 
-    <div>
-        Click to hide/show columns:
-        <label><input type="checkbox" data-column="2"/><strong>Count</strong></label> -
-        <label><input type="checkbox" data-column="3"/><strong>Score</strong></label> -
-        <label><input type="checkbox" data-column="4"/><strong>In-study P-value</strong></label> -
-        <label><input type="checkbox" data-column="5"/><strong>Maximum Diversity</strong></label> -
-        <label><input type="checkbox" data-column="6"/><strong>Cross-study P-value</strong></label> -
-        <label><input type="checkbox" data-column="7"/><strong>Cross-study P-value (disease)</strong></label> -
-        <label><input type="checkbox" data-column="8"/><strong>Cross-study P-value (species)</strong></label> -
-        <label><input type="checkbox" data-column="9"/><strong>Cross-study P-value (sample source)</strong></label> -
-        <label> <input type="checkbox" data-column="10"/><strong>Type</strong></label>
+    <div style="display: flex; justify-content: space-evenly">
+        <div style="display: inline-block" class="frame">
+            <%--@elvariable id="filterForm" type="org.dulab.adapcompounddb.site.controllers.forms.FilterForm"--%>
+            <form:form method="post" modelAttribute="filterForm">
+                <div style="display: inline-block; text-align: left; vertical-align: middle">
+                    <form:errors path="" cssClass="errors"/>
+                    <table>
+                        <tbody>
+                        <tr>
+                            <td>
+                                <form:label path="species">Species:</form:label>
+                                <form:errors path="species" cssClass="errors"/>
+                            </td>
+                            <td>
+                                <form:select path="species">
+                                    <form:option value="All"/>
+                                    <form:options items="${filterForm.speciesList}"/>
+                                </form:select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <form:label path="source">Sample Source:</form:label>
+                                <form:label path="source" cssClass="errors"/>
+                            </td>
+                            <td>
+                                <form:select path="source">
+                                    <form:option value="All"/>
+                                    <form:options items="${filterForm.sourceList}"/>
+                                </form:select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <form:label path="disease">Sample Source:</form:label>
+                                <form:label path="disease" cssClass="errors"/>
+                            </td>
+                            <td>
+                                <form:select path="disease">
+                                    <form:option value="All"/>
+                                    <form:options items="${filterForm.diseaseList}"/>
+                                </form:select>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="display: inline-block; text-align: center; vertical-align: middle">
+                    <input type="submit" value="Filter"/>
+                </div>
+            </form:form>
+        </div>
+
+        <div style="display: inline-block; width: 500px" class="frame">
+            <p style="padding: 10px">
+                Click to hide/show columns:
+                <label><input type="checkbox" data-column="2"/><strong>Count</strong></label> -
+                <label><input type="checkbox" data-column="3"/><strong>Score</strong></label> -
+                <label><input type="checkbox" data-column="4"/><strong>In-study P-value</strong></label> -
+                <label><input type="checkbox" data-column="5"/><strong>Maximum Diversity</strong></label> -
+                <label><input type="checkbox" data-column="6"/><strong>Cross-study P-value</strong></label> -
+                <label><input type="checkbox" data-column="7"/><strong>Cross-study P-value (disease)</strong></label> -
+                <label><input type="checkbox" data-column="8"/><strong>Cross-study P-value (species)</strong></label> -
+                <label><input type="checkbox" data-column="9"/><strong>Cross-study P-value (sample
+                    source)</strong></label> -
+                <label> <input type="checkbox" data-column="10"/><strong>Type</strong></label>
+            </p>
+        </div>
     </div>
 
     <div align="center">
@@ -57,10 +115,13 @@
             ajax: {
                 url: "${pageContext.request.contextPath}/spectrum/findClusters.json",
 
-                data: function (data) {
-                    data.column = data.order[0].column;
-                    data.sortDirection = data.order[0].dir;
-                    data.search = data.search["value"];
+                data: function (d) {
+                    d.column = d.order[0].column;
+                    d.sortDirection = d.order[0].dir;
+                    d.search = d.search["value"];
+                    d.species = $('#species').val();
+                    d.source = $('#source').val();
+                    d.disease = $('#disease').val();
                 }
             },
             "aoColumnDefs": [
@@ -231,5 +292,10 @@
             $(this).prop("checked", bVis);
         });
         // } );
+        $("#species, #source, #disease").change(function () {
+            dataTable.ajax.reload();
+        });
     });
+
+
 </script>
