@@ -1,7 +1,6 @@
 package org.dulab.adapcompounddb.site.services;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,6 +10,7 @@ import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.site.repositories.UserParameterRepository;
 import org.dulab.adapcompounddb.models.UserParameterType;
 import org.dulab.adapcompounddb.site.repositories.UserPrincipalRepository;
+import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -115,7 +115,7 @@ public class UserPrincipalServiceImpl implements UserPrincipalService {
 
     @Override
     public List<UserPrincipal> findAllUsers() {
-        return ServiceUtils.toList(userPrincipalRepository.findAll());
+        return MappingUtils.toList(userPrincipalRepository.findAll());
     }
 
 

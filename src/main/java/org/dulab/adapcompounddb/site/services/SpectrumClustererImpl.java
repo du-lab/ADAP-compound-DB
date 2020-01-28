@@ -10,6 +10,7 @@ import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.enums.MassSpectrometryType;
 import org.dulab.adapcompounddb.site.controllers.ControllerUtils;
 import org.dulab.adapcompounddb.site.repositories.*;
+import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.dulab.jsparcehc.Matrix;
 import org.dulab.jsparcehc.MatrixImpl;
 import org.dulab.jsparcehc.SparseHierarchicalClusterer;
@@ -106,7 +107,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
             final ChromatographyType type = values[i];
             LOGGER.info(String.format("Clustering spectra of type \"%s\"...", type));
 
-            final List<Spectrum> spectra = ServiceUtils.toList(spectrumRepository.findSpectraForClustering(type));
+            final List<Spectrum> spectra = MappingUtils.toList(spectrumRepository.findSpectraForClustering(type));
 
             final Matrix matrix = new DistanceMatrixWrapper(pageable -> spectrumMatchRepository.findByChromatographyType(type, pageable), spectra);
 

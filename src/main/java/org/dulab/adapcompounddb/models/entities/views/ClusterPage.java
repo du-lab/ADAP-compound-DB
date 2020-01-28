@@ -17,6 +17,7 @@ import org.hibernate.annotations.Immutable;
 @Entity
 @Table(name="ClusterPage")
 @Immutable
+@Deprecated
 public class ClusterPage implements Serializable {
 
     /**

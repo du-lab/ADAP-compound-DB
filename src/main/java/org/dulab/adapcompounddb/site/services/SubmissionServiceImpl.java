@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
@@ -15,11 +14,11 @@ import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
 import org.dulab.adapcompounddb.models.entities.File;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
-import org.dulab.adapcompounddb.models.entities.SubmissionTag;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.repositories.SubmissionCategoryRepository;
 import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
 import org.dulab.adapcompounddb.site.repositories.SubmissionTagRepository;
+import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.dulab.adapcompounddb.utils.ObjectMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -94,7 +93,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     @Transactional
     public List<Submission> findSubmissionsByUserId(final long userId) {
-        return ServiceUtils.toList(submissionRepository.findByUserId(userId));
+        return MappingUtils.toList(submissionRepository.findByUserId(userId));
     }
 
     @Override
@@ -134,7 +133,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     @Transactional
     public List<Submission> findSubmissionsWithTagsByUserId(final long userId) {
-        return ServiceUtils.toList(submissionRepository.findByUserId(userId));
+        return MappingUtils.toList(submissionRepository.findByUserId(userId));
     }
 
     @Override
@@ -166,17 +165,17 @@ public class SubmissionServiceImpl implements SubmissionService {
     }
 
     public List<String> findUniqueTagStrings() {
-        return ServiceUtils.toList(submissionTagRepository.findUniqueTagStrings());
+        return MappingUtils.toList(submissionTagRepository.findUniqueTagStrings());
     }
 
     @Override
     public List<SubmissionCategory> findAllCategories() {
-        return ServiceUtils.toList(submissionCategoryRepository.findAll());
+        return MappingUtils.toList(submissionCategoryRepository.findAll());
     }
 
     @Override
     public List<SubmissionCategory> findAllCategories(final SubmissionCategoryType categoryType) {
-        return ServiceUtils.toList(submissionCategoryRepository.findAllByCategoryType(categoryType));
+        return MappingUtils.toList(submissionCategoryRepository.findAllByCategoryType(categoryType));
     }
 
     @Override

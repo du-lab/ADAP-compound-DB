@@ -51,7 +51,6 @@
                 </tr>
                 </tbody>
             </table>
-            <%--            </div>--%>
         </div>
 
         <div style="display: inline-block; width: 500px" class="frame">

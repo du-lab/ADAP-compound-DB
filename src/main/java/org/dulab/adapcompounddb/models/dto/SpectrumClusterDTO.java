@@ -2,6 +2,7 @@ package org.dulab.adapcompounddb.models.dto;
 
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
+import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -46,6 +47,16 @@ public class SpectrumClusterDTO implements Serializable {
 
     public SpectrumClusterDTO() {
 
+    }
+
+    public SpectrumClusterDTO(SpectrumClusterView view) {
+        this.id = view.getId();
+        this.consensusSpectrumName = view.getName();
+        this.size = view.getSize();
+        this.diameter = view.getScore();
+        this.aveSignificance = view.getAveragePValue();
+        this.chromatographyTypeIconPath = view.getChromatographyType().getIconPath();
+        this.chromatographyTypeLabel = view.getChromatographyType().getLabel();
     }
 
     public SpectrumClusterDTO spectrumClusterDTO(SpectrumCluster cluster) {
