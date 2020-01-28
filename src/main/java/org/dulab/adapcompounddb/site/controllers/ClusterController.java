@@ -3,19 +3,15 @@ package org.dulab.adapcompounddb.site.controllers;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
 import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
-import org.dulab.adapcompounddb.models.entities.TagDistribution;
-import org.dulab.adapcompounddb.site.controllers.forms.FilterForm;
+import org.dulab.adapcompounddb.site.controllers.forms.FilterOptions;
 import org.dulab.adapcompounddb.site.services.*;
-import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.validation.Valid;
 import java.util.*;
 
 @Controller
@@ -60,7 +56,7 @@ public class ClusterController {
         List<String> sourceList = submissionTagService.findDistinctTagValuesByTagKey("sample source");
         List<String> diseaseList = submissionTagService.findDistinctTagValuesByTagKey("disease");
 
-        model.addAttribute("filterForm", new FilterForm(speciesList, sourceList, diseaseList));
+        model.addAttribute("filterOptions", new FilterOptions(speciesList, sourceList, diseaseList));
         return "cluster/all_clusters";
     }
 

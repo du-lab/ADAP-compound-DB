@@ -8,56 +8,50 @@
     <h1>Consensus spectra</h1>
 
     <div style="display: flex; justify-content: space-evenly">
-        <div style="display: inline-block" class="frame">
-            <%--@elvariable id="filterForm" type="org.dulab.adapcompounddb.site.controllers.forms.FilterForm"--%>
-            <form:form method="post" modelAttribute="filterForm">
-                <div style="display: inline-block; text-align: left; vertical-align: middle">
-                    <form:errors path="" cssClass="errors"/>
-                    <table>
-                        <tbody>
-                        <tr>
-                            <td>
-                                <form:label path="species">Species:</form:label>
-                                <form:errors path="species" cssClass="errors"/>
-                            </td>
-                            <td>
-                                <form:select path="species">
-                                    <form:option value="All"/>
-                                    <form:options items="${filterForm.speciesList}"/>
-                                </form:select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <form:label path="source">Sample Source:</form:label>
-                                <form:label path="source" cssClass="errors"/>
-                            </td>
-                            <td>
-                                <form:select path="source">
-                                    <form:option value="All"/>
-                                    <form:options items="${filterForm.sourceList}"/>
-                                </form:select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <form:label path="disease">Sample Source:</form:label>
-                                <form:label path="disease" cssClass="errors"/>
-                            </td>
-                            <td>
-                                <form:select path="disease">
-                                    <form:option value="All"/>
-                                    <form:options items="${filterForm.diseaseList}"/>
-                                </form:select>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div style="display: inline-block; text-align: center; vertical-align: middle">
-                    <input type="submit" value="Filter"/>
-                </div>
-            </form:form>
+        <div style="display: inline-block; vertical-align: middle" class="frame">
+            <%--@elvariable id="filterOptions" type="org.dulab.adapcompounddb.site.controllers.forms.FilterOptions"--%>
+            <table style="padding: 10px">
+                <tbody>
+                <tr>
+                    <td><label for="species">Species</label></td>
+                    <td>
+                        <select id="species">
+                            <option value="all">All</option>
+                            <c:forEach items="${filterOptions.speciesList}" var="it">
+                                <option value="${it}">${it}</option>
+                            </c:forEach>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="source">Sample Source:</label>
+                    </td>
+                    <td>
+                        <select id="source">
+                            <option value="all">All</option>
+                            <c:forEach items="${filterOptions.sourceList}" var="it">
+                                <option value="${it}">${it}</option>
+                            </c:forEach>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="disease">Sample Source:</label>
+                    </td>
+                    <td>
+                        <select id="disease">
+                            <option value="all">All</option>
+                            <c:forEach items="${filterOptions.diseaseList}" var="it">
+                                <option value="${it}">${it}</option>
+                            </c:forEach>
+                        </select>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <%--            </div>--%>
         </div>
 
         <div style="display: inline-block; width: 500px" class="frame">
