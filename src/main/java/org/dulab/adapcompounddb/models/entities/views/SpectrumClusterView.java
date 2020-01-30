@@ -16,7 +16,9 @@ public class SpectrumClusterView {
     private String name;
     private int size;
     private double score;
-    private Double aveSignificance;
+    private Double averageSignificance;
+    private Double minimumSignificance;
+    private Double maximumSignificance;
 
     @Enumerated(EnumType.STRING)
     private ChromatographyType chromatographyType;
@@ -53,12 +55,28 @@ public class SpectrumClusterView {
         this.score = score;
     }
 
-    public Double getAveSignificance() {
-        return aveSignificance;
+    public Double getAverageSignificance() {
+        return averageSignificance;
     }
 
-    public void setAveSignificance(Double aveSignificance) {
-        this.aveSignificance = aveSignificance;
+    public void setAverageSignificance(Double averageSignificance) {
+        this.averageSignificance = averageSignificance;
+    }
+
+    public Double getMinimumSignificance() {
+        return minimumSignificance;
+    }
+
+    public void setMinimumSignificance(Double minimumSignificance) {
+        this.minimumSignificance = minimumSignificance;
+    }
+
+    public Double getMaximumSignificance() {
+        return maximumSignificance;
+    }
+
+    public void setMaximumSignificance(Double maximumSignificance) {
+        this.maximumSignificance = maximumSignificance;
     }
 
     public ChromatographyType getChromatographyType() {

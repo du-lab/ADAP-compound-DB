@@ -43,7 +43,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     private enum ColumnInformation {
         ID(0, "id"), NAME(1, "consensusSpectrum.name"),
         COUNT(2, "size"), SCORE(3, "diameter"),
-        SIGNIFICANCE(4, "aveSignificance"),
+        SIGNIFICANCE(4, "averageSignificance"),
         MAX_DIVERSITY(5, "maxDiversity"),
         MIN_PVALUE(6, "minPValue"),
         DISEASE_PVALUE(7, "diseasePValue"),
