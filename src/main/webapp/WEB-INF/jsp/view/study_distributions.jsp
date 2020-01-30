@@ -4,7 +4,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <section>
 
-    <script src="/resources/AdapCompoundDb/js/histogram.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/AdapCompoundDb/js/histogram.js"></script>
     <div class="tabbed-pane" align="center">
         <span class="active">Tag Distributions</span>
     </div>
