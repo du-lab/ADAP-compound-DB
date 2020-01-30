@@ -223,6 +223,7 @@ public class ControllerUtils {
             for (Submission submission : submissions) {
 
                 List<String> tagValues = submission.getTags().stream()
+                        .filter(t -> t.getTagKey().equalsIgnoreCase(key))
                         .map(SubmissionTag::getTagValue)
                         .filter(Objects::nonNull)
                         .collect(Collectors.toList());
