@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
 
 public class SpectrumClusterRepositoryImpl implements SpectrumClusterRepositoryCustom {
 
-    private static final String FIND_CLUSTERS_SQL_QUERY = "select SpectrumCluster.Id, ConsensusSpectrum.Name, " +
-            "SpectrumCluster.Size, SpectrumCluster.Diameter as Score, avg(Spectrum.Significance) as AveragePValue, " +
+    private static final String FIND_CLUSTERS_SQL_QUERY = "select SpectrumCluster.Id as Id, ConsensusSpectrum.Name, " +
+            "SpectrumCluster.Size, SpectrumCluster.Diameter as Score, avg(Spectrum.Significance) as AveSignificance, " +
             "SpectrumCluster.ChromatographyType from SpectrumCluster " +
             "join Spectrum on SpectrumCluster.Id=Spectrum.ClusterId " +
             "join Spectrum as ConsensusSpectrum on SpectrumCluster.ConsensusSpectrumId=ConsensusSpectrum.Id " +
@@ -24,7 +24,7 @@ public class SpectrumClusterRepositoryImpl implements SpectrumClusterRepositoryC
             "where :species is null or :species='all' or (TagKey='species (common)' and TagValue=:species)) as SpeciesTag " +
             "inner join (select SubmissionId from SubmissionTag " +
             "where :source is null or :source='all' or (TagKey='sample source' and TagValue=:source)) as SourceTag " +
-            "using (SubmissionId)" +
+            "using (SubmissionId) " +
             "inner join (select SubmissionId from SubmissionTag " +
             "where :disease is null or :disease='all' or (TagKey='disease' and TagValue=:disease)) as DiseaseTag " +
             "using (SubmissionId)) group by SpectrumCluster.Id";
@@ -56,15 +56,16 @@ public class SpectrumClusterRepositoryImpl implements SpectrumClusterRepositoryC
                 .setParameter("disease", disease)
                 .getSingleResult();
 
-        String sort = pageable.getSort().stream()
-                .map(order -> String.format(" order by (case when %s is null then 1 else 0 end), %s %s",
-                        order.getProperty(), order.getProperty(), order.getDirection()))
+        String findClusterSqlQueryWithSort = pageable.getSort().stream()
+                .map(order -> String.format(
+                        "select * from (%s) as DerivedTable order by (case when %s is null then 1 else 0 end), %s %s",
+                        FIND_CLUSTERS_SQL_QUERY, order.getProperty(), order.getProperty(), order.getDirection()))
                 .collect(Collectors.joining());
 
 
         @SuppressWarnings("unchecked")
         List<SpectrumClusterView> clusters = entityManager
-                .createNativeQuery(FIND_CLUSTERS_SQL_QUERY + sort, SpectrumClusterView.class)
+                .createNativeQuery(findClusterSqlQueryWithSort, SpectrumClusterView.class)
                 .setParameter("search", searchStr)
                 .setParameter("species", species)
                 .setParameter("source", source)

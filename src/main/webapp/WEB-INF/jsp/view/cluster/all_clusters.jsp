@@ -158,7 +158,7 @@
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
                         var content = '';
-                        if (row.aveSignificance) {
+                        if (row.aveSignificance != null) {
                             var avgSignificance = row.aveSignificance.toFixed(3);
                             content += '<span title="{Average: ' + row.aveSignificance;
                             if (row.minSignificance) {

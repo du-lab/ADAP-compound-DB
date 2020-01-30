@@ -41,7 +41,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     private final SpectrumClusterRepository spectrumClusterRepository;
 
     private enum ColumnInformation {
-        ID(0, "spectrumCluster.id"), NAME(1, "consensusSpectrum.name"),
+        ID(0, "id"), NAME(1, "consensusSpectrum.name"),
         COUNT(2, "size"), SCORE(3, "diameter"),
         SIGNIFICANCE(4, "aveSignificance"),
         MAX_DIVERSITY(5, "maxDiversity"),

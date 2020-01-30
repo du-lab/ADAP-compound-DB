@@ -54,7 +54,7 @@ public class SpectrumClusterDTO implements Serializable {
         this.consensusSpectrumName = view.getName();
         this.size = view.getSize();
         this.diameter = view.getScore();
-        this.aveSignificance = view.getAveragePValue();
+        this.aveSignificance = view.getAveSignificance();
         this.chromatographyTypeIconPath = view.getChromatographyType().getIconPath();
         this.chromatographyTypeLabel = view.getChromatographyType().getLabel();
     }

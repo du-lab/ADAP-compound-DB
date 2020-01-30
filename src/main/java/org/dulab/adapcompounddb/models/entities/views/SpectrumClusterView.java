@@ -16,7 +16,7 @@ public class SpectrumClusterView {
     private String name;
     private int size;
     private double score;
-    private Double averagePValue;
+    private Double aveSignificance;
 
     @Enumerated(EnumType.STRING)
     private ChromatographyType chromatographyType;
@@ -53,12 +53,12 @@ public class SpectrumClusterView {
         this.score = score;
     }
 
-    public Double getAveragePValue() {
-        return averagePValue;
+    public Double getAveSignificance() {
+        return aveSignificance;
     }
 
-    public void setAveragePValue(Double averagePValue) {
-        this.averagePValue = averagePValue;
+    public void setAveSignificance(Double aveSignificance) {
+        this.aveSignificance = aveSignificance;
     }
 
     public ChromatographyType getChromatographyType() {
