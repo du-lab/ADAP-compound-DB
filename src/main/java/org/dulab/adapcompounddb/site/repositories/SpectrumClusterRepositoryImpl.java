@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class SpectrumClusterRepositoryImpl implements SpectrumClusterRepositoryCustom {
 
     private static final String FIND_CLUSTERS_SQL_QUERY = "select SpectrumCluster.Id as Id, ConsensusSpectrum.Name, " +
-            "SpectrumCluster.Size, SpectrumCluster.Diameter as Score, avg(Spectrum.Significance) as AverageSignificance, " +
+            "count(distinct File.SubmissionId) as Size, SpectrumCluster.Diameter as Score, avg(Spectrum.Significance) as AverageSignificance, " +
             "min(Spectrum.Significance) as MinimumSignificance, max(Spectrum.Significance) as MaximumSignificance, " +
             "SpectrumCluster.ChromatographyType from SpectrumCluster " +
             "join Spectrum on SpectrumCluster.Id=Spectrum.ClusterId " +
