@@ -9,6 +9,8 @@ import org.dulab.adapcompounddb.models.enums.MassSpectrometryType;
 import org.dulab.adapcompounddb.site.repositories.DistributionRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
 import org.dulab.adapcompounddb.site.repositories.SubmissionTagRepository;
+import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
+import org.dulab.adapcompounddb.site.services.utils.StatisticsUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -52,19 +54,19 @@ public class DistributionServiceImpl implements DistributionService {
     @Transactional
     @Override
     public List<TagDistribution> getAllDistributions() {
-        return ServiceUtils.toList(distributionRepository.findAll());
+        return MappingUtils.toList(distributionRepository.findAll());
     }
 
     @Transactional
     @Override
     public List<TagDistribution> getAllClusterIdNullDistributions() {
-        return ServiceUtils.toList(distributionRepository.getAllByClusterIdIsNull());
+        return MappingUtils.toList(distributionRepository.getAllByClusterIdIsNull());
     }
 
     @Transactional
     @Override
     public List<TagDistribution> getClusterDistributions(long clusterId) {
-        return ServiceUtils.toList(distributionRepository.findClusterTagDistributionsByClusterId(clusterId));
+        return MappingUtils.toList(distributionRepository.findClusterTagDistributionsByClusterId(clusterId));
     }
 
     @Transactional
@@ -114,7 +116,7 @@ public class DistributionServiceImpl implements DistributionService {
     @Override
     public void saveAllDbDistributions() {
         // Find all tags that has been submitted
-        List<SubmissionTag> tags = ServiceUtils.toList(submissionTagRepository.findAll());
+        List<SubmissionTag> tags = MappingUtils.toList(submissionTagRepository.findAll());
 
         List<TagDistribution> distributions = calculateAllDbDistributions(tags);
 
@@ -210,14 +212,14 @@ public class DistributionServiceImpl implements DistributionService {
             Map<String, Integer> countMap = getTagValuesByKeyAndType(tags, key, massSpectrometryType);
 
             Map<String, DbAndClusterValuePair> clusterDistributionMap =
-                    ServiceUtils.calculateDbAndClusterDistribution(dbCountMaps.get(key), countMap);
+                    StatisticsUtils.calculateDbAndClusterDistribution(dbCountMaps.get(key), countMap);
 
             //store tagDistributions
             TagDistribution tagDistribution = new TagDistribution();
             tagDistribution.setDistributionMap(clusterDistributionMap);
             tagDistribution.setLabel(key);
             tagDistribution.setPValue(
-                    ServiceUtils.calculateExactTestStatistics(clusterDistributionMap.values()));
+                    StatisticsUtils.calculateExactTestStatistics(clusterDistributionMap.values()));
             tagDistribution.setMassSpectrometryType(massSpectrometryType);
 
             tagDistributionList.add(tagDistribution);
@@ -236,15 +238,8 @@ public class DistributionServiceImpl implements DistributionService {
      */
     private Set<String> getTagKeysByType(List<SubmissionTag> tags, MassSpectrometryType type) {
         return tags.stream()
-                .filter(t -> t.getId().getSubmission().getMassSpectrometryType() == type)
-                .map(t -> t.getId().getName())
-                .map(a -> {
-                    String[] values = a.split(":");
-                    if (values.length >= 2)
-                        return values[0].trim();
-                    else
-                        return null;
-                })
+                .filter(t -> t.getSubmission().getMassSpectrometryType() == type)
+                .map(SubmissionTag::getTagKey)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
     }
@@ -261,14 +256,8 @@ public class DistributionServiceImpl implements DistributionService {
             List<SubmissionTag> tags, String key, MassSpectrometryType type) {
 
         List<String> tagValues = tags.stream()
-                .filter(t -> t.getId().getSubmission().getMassSpectrometryType() == type)
-                .map(t -> t.getId().getName())
-                .map(a -> {
-                    String[] values = a.split(":");
-                    if (values.length < 2 || !values[0].trim().equalsIgnoreCase(key))
-                        return null;
-                    return values[1].trim();
-                })
+                .filter(t -> t.getSubmission().getMassSpectrometryType() == type)
+                .map(SubmissionTag::getTagValue)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 

@@ -27,7 +27,7 @@ public interface SubmissionService {
 
     void delete(long submissionId);
 
-    List<String> findAllTags();
+    List<String> findUniqueTagStrings();
 
     List<SubmissionCategory> findAllCategories();
 
@@ -44,7 +44,7 @@ public interface SubmissionService {
     DataTableResponse findAllSubmissionsForResponse(String searchStr, Integer start, Integer length, Integer column,
             String orderDirection);
 
-    List<String> findTagsFromACluster(Long clusterId);
+//    List<String> findTagsFromACluster(Long clusterId);
 
     Map<String, List<String>> groupTags(List<String> tags);
 }

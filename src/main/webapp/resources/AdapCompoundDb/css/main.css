@@ -607,3 +607,8 @@ progress:after {
 .no-bullet-list {
     list-style-type: none;
 }
+
+.frame {
+    border: thin solid #b67960;
+    border-radius: 10px;
+}

@@ -8,9 +8,11 @@ import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.SpectrumClusterDTO;
 import org.dulab.adapcompounddb.models.entities.*;
+import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
 import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
+import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.dulab.adapcompounddb.utils.MathUtils;
 import org.dulab.adapcompounddb.utils.ObjectMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,10 +40,10 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     private final SpectrumMatchRepository spectrumMatchRepository;
     private final SpectrumClusterRepository spectrumClusterRepository;
 
-    private static enum ColumnInformation {
+    private enum ColumnInformation {
         ID(0, "id"), NAME(1, "consensusSpectrum.name"),
         COUNT(2, "size"), SCORE(3, "diameter"),
-        SIGNIFICANCE(4, "aveSignificance"),
+        SIGNIFICANCE(4, "averageSignificance"),
         MAX_DIVERSITY(5, "maxDiversity"),
         MIN_PVALUE(6, "minPValue"),
         DISEASE_PVALUE(7, "diseasePValue"),
@@ -338,7 +340,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     @Transactional
     @Override
     public List<SpectrumCluster> getAllClusters() {
-        return ServiceUtils.toList(spectrumClusterRepository.findAll());
+        return MappingUtils.toList(spectrumClusterRepository.findAll());
     }
 
     @Transactional
@@ -380,13 +382,12 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     }
 
     @Override
-    public DataTableResponse findAllClusters(final String searchStr, final Integer start, final Integer length,
-                                             final Integer column, final String sortDirection) {
-        final ObjectMapperUtils objectMapper = new ObjectMapperUtils();
-        Pageable pageable;
-        Page<SpectrumCluster> spectrumPage;
+    public DataTableResponse findAllClusters(String searchStr, String species, String source, String disease,
+                                             Integer start, Integer length, Integer column, String sortDirection) {
+
         final String sortColumn = ColumnInformation.getColumnNameFromPosition(column);
 
+        Pageable pageable;
         if (sortColumn != null) {
             final Sort sort = new Sort(Sort.Direction.fromString(sortDirection), sortColumn);
             pageable = PageRequest.of(start / length, length, sort);
@@ -394,11 +395,13 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
             pageable = PageRequest.of(start / length, length);
         }
 
-        spectrumPage = spectrumClusterRepository.findClusters(searchStr, pageable);
+        Page<SpectrumClusterView> spectrumPage =
+                spectrumClusterRepository.findClusters(searchStr, species, source, disease, pageable);
+        List<SpectrumClusterDTO> dtoList = spectrumPage.stream()
+                .map(SpectrumClusterDTO::new)
+                .collect(Collectors.toList());
 
-        final List<SpectrumClusterDTO> spectrumList = objectMapper.map(spectrumPage.getContent(), SpectrumClusterDTO.class);
-
-        final DataTableResponse response = new DataTableResponse(spectrumList);
+        final DataTableResponse response = new DataTableResponse(dtoList);
         response.setRecordsTotal(spectrumPage.getTotalElements());
         response.setRecordsFiltered(spectrumPage.getTotalElements());
         return response;

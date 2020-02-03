@@ -59,7 +59,7 @@
                                 <td>
                                         <%--                                        ${submission.tagsAsString}--%>
                                     <c:forEach items="${submission.tags}" var="tag" varStatus="status">
-                                        <span id="${submission.id}color${status.index}">${tag.id.name}&nbsp;</span>
+                                        <span id="${submission.id}color${status.index}">${tag}&nbsp;</span>
                                         <script>
                                             var spanId = '${fn:length(submission.tags)}';
                                         </script>

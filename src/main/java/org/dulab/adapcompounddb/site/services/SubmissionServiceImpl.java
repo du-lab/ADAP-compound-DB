@@ -18,6 +18,7 @@ import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.repositories.SubmissionCategoryRepository;
 import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
 import org.dulab.adapcompounddb.site.repositories.SubmissionTagRepository;
+import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.dulab.adapcompounddb.utils.ObjectMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -92,7 +93,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     @Transactional
     public List<Submission> findSubmissionsByUserId(final long userId) {
-        return ServiceUtils.toList(submissionRepository.findByUserId(userId));
+        return MappingUtils.toList(submissionRepository.findByUserId(userId));
     }
 
     @Override
@@ -132,7 +133,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     @Transactional
     public List<Submission> findSubmissionsWithTagsByUserId(final long userId) {
-        return ServiceUtils.toList(submissionRepository.findByUserId(userId));
+        return MappingUtils.toList(submissionRepository.findByUserId(userId));
     }
 
     @Override
@@ -163,19 +164,18 @@ public class SubmissionServiceImpl implements SubmissionService {
         submissionRepository.deleteById(submissionId);
     }
 
-    @Override
-    public List<String> findAllTags() {
-        return ServiceUtils.toList(submissionTagRepository.findUniqueSubmissionTagNames());
+    public List<String> findUniqueTagStrings() {
+        return MappingUtils.toList(submissionTagRepository.findUniqueTagStrings());
     }
 
     @Override
     public List<SubmissionCategory> findAllCategories() {
-        return ServiceUtils.toList(submissionCategoryRepository.findAll());
+        return MappingUtils.toList(submissionCategoryRepository.findAll());
     }
 
     @Override
     public List<SubmissionCategory> findAllCategories(final SubmissionCategoryType categoryType) {
-        return ServiceUtils.toList(submissionCategoryRepository.findAllByCategoryType(categoryType));
+        return MappingUtils.toList(submissionCategoryRepository.findAllByCategoryType(categoryType));
     }
 
     @Override
@@ -199,38 +199,38 @@ public class SubmissionServiceImpl implements SubmissionService {
         submissionCategoryRepository.deleteById(submissionCategoryId);
     }
 
-    @Override
-    public List<String> findTagsFromACluster(final Long clusterId) {
-        final List<Object[]> tagArr = submissionTagRepository.findTagsFromACluster(clusterId);
-        final List<String> tagList = new ArrayList<>();
-        tagArr.forEach(arr -> {
-            tagList.add((String) arr[1]);
-        });
-        return tagList;
-    }
+//    @Override
+//    public List<String> findTagsFromACluster(final Long clusterId) {
+//        final List<Object[]> tagArr = submissionTagRepository.findTagsFromACluster(clusterId);
+//        final List<String> tagList = new ArrayList<>();
+//        tagArr.forEach(arr -> {
+//            tagList.add((String) arr[1]);
+//        });
+//        return tagList;
+//    }
 
-    public Map<String, List<String>> generateTagMapOfACluster(final Long clusterId) {
-        final List<String> tagList = findTagsFromACluster(clusterId)
-                ;
-        final Map<String, List<String>> tagMap = new HashMap<>(); // source:<src1, src2, src1, src2>
-
-        tagList.forEach(tag -> {
-            final String[] arr = tag.split(":", 2);
-            if(arr.length == 2) {
-                final String key = arr[0].trim();
-                final String value = arr[1].trim();
-
-                List<String> valueList = tagMap.get(key);
-                if(CollectionUtils.isEmpty(valueList)) {
-                    valueList = new ArrayList<>();
-                    tagMap.put(key, valueList);
-                }
-                valueList.add(value);
-            }
-        });
-
-        return tagMap;
-    }
+//    public Map<String, List<String>> generateTagMapOfACluster(final Long clusterId) {
+//        final List<String> tagList = findTagsFromACluster(clusterId)
+//                ;
+//        final Map<String, List<String>> tagMap = new HashMap<>(); // source:<src1, src2, src1, src2>
+//
+//        tagList.forEach(tag -> {
+//            final String[] arr = tag.split(":", 2);
+//            if(arr.length == 2) {
+//                final String key = arr[0].trim();
+//                final String value = arr[1].trim();
+//
+//                List<String> valueList = tagMap.get(key);
+//                if(CollectionUtils.isEmpty(valueList)) {
+//                    valueList = new ArrayList<>();
+//                    tagMap.put(key, valueList);
+//                }
+//                valueList.add(value);
+//            }
+//        });
+//
+//        return tagMap;
+//    }
 
     @Override
     public Map<String, List<String>> groupTags(final List<String> tags) {

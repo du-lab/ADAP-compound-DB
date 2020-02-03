@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/spectrum")
 public class SpectrumRestController {
 
     private final SpectrumService spectrumService;
-
     private final SpectrumMatchService spectrumMatchService;
 
     @Autowired
@@ -31,9 +31,9 @@ public class SpectrumRestController {
 
     @RequestMapping(value = "/findSpectrumBySubmissionId", produces = "application/json")
     public String findSpectrumBySubmissionId(@RequestParam("submissionId") final Long submissionId,
-             @RequestParam("start") final Integer start, @RequestParam("length") final Integer length,
-             @RequestParam("column") final Integer column, @RequestParam("sortDirection") final String sortDirection,
-             @RequestParam("search") final String searchStr, final HttpServletRequest request, final HttpSession session)
+                                             @RequestParam("start") final Integer start, @RequestParam("length") final Integer length,
+                                             @RequestParam("column") final Integer column, @RequestParam("sortDirection") final String sortDirection,
+                                             @RequestParam("search") final String searchStr, final HttpServletRequest request, final HttpSession session)
             throws JsonProcessingException {
 
         final ObjectMapper objectMapper = new ObjectMapper();
@@ -54,25 +54,30 @@ public class SpectrumRestController {
 
     @RequestMapping(value = "/updateReferenceOfAllSpectraOfSubmission", produces = "application/json")
     public Boolean updateReferenceOfAllSpectraOfSubmission(@RequestParam("submissionId") final Long submissionId,
-             @RequestParam("value") final boolean value) throws JsonProcessingException {
+                                                           @RequestParam("value") final boolean value) throws JsonProcessingException {
         return spectrumService.updateReferenceOfAllSpectraOfSubmission(submissionId, value);
     }
 
     @RequestMapping(value = "/findClusters", produces = "application/json")
-    public String findClusters(@RequestParam("start") final Integer start, @RequestParam("length") final Integer length,
-             @RequestParam("column") final Integer column, @RequestParam("sortDirection") final String sortDirection,
-             @RequestParam("search") final String searchStr, final HttpServletRequest request)
+    public String findClusters(@RequestParam("start") final Integer start,
+                               @RequestParam("length") final Integer length,
+                               @RequestParam("column") final Integer column,
+                               @RequestParam("sortDirection") final String sortDirection,
+                               @RequestParam("search") final String searchStr,
+                               @RequestParam("species") final String species,
+                               @RequestParam("source") final String source,
+                               @RequestParam("disease") final String disease)
             throws JsonProcessingException {
 
         /*final ObjectMapperUtils objectMapper = new ObjectMapperUtils();
         objectMapper.map(spectrumMatchService.getAllClusters(), SpectrumDTO.class);*/
-        final DataTableResponse response = spectrumMatchService.findAllClusters(searchStr, start,
-                length, column, sortDirection);
+        final DataTableResponse response = spectrumMatchService.findAllClusters(
+                searchStr, species, source, disease,
+                start, length, column, sortDirection);
 
         final ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         final String jsonString = mapper.writeValueAsString(response);
         return jsonString;
-
     }
 }

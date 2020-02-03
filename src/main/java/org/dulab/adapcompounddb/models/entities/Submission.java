@@ -53,11 +53,11 @@ public class Submission implements Serializable {
 
     @Valid
     @OneToMany(
-            mappedBy = "id.submission",
+            mappedBy = "submission",
             fetch = FetchType.LAZY,
             cascade = CascadeType.ALL,
             orphanRemoval = true
-            )
+    )
     private List<SubmissionTag> tags;
 
     @NotNull(message = "Submission: File list is required.")
@@ -67,7 +67,7 @@ public class Submission implements Serializable {
             fetch = FetchType.LAZY,
             cascade = {CascadeType.PERSIST, CascadeType.ALL},
             orphanRemoval = true
-            )
+    )
     private List<File> files;
 
     @NotNull(message = "You must log in to submit mass spectra to the library.")
@@ -124,7 +124,7 @@ public class Submission implements Serializable {
     }
 
     public SubmissionCategory getCategory(final SubmissionCategoryType type) {
-        if(categories != null) {
+        if (categories != null) {
             return getCategories().stream()
                     .filter(c -> c.getCategoryType() == type)
                     .findFirst()
@@ -194,15 +194,7 @@ public class Submission implements Serializable {
     public String getTagsAsString() {
         return tags == null ? "" : getTags()
                 .stream()
-                .map(SubmissionTag::getId)
-                .map(SubmissionTagId::getName)
-                .map(s -> {
-                    int index = s.lastIndexOf(':');
-                    if (index < 0)
-                        return s;
-                    else
-                        return s.substring(index + 1).trim();
-                })
+                .map(SubmissionTag::getTagValue)
                 .collect(Collectors.joining(", "))
                 .trim();
     }

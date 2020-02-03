@@ -106,7 +106,7 @@
     </div>
 
     <div id="tag_distributions" align="center" class="hide">
-        <script src="/resources/AdapCompoundDb/js/twohistograms.js"></script>
+        <script src="${pageContext.request.contextPath}/resources/AdapCompoundDb/js/twohistograms.js"></script>
         <p>
         <div id="rectangle" style=" display:inline-block; width:20px; height:20px; background-color:#b47cff"></div>
         is the tag distributions of all database.</p>
@@ -119,7 +119,7 @@
                     var tag = '${tagDistribution.label}';
                     var dataSet = '${tagDistribution.distribution}';
                     var pValue = '${tagDistribution.PValue}';
-                    addClusterTagsHistogram( 'div' +${status.index}, tag, dataSet, pValue );
+                    addClusterTagsHistogram('div' +${status.index}, tag, dataSet, pValue);
                 </script>
             </div>
         </c:forEach>
@@ -167,9 +167,9 @@
 <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
 <script src="<c:url value="/resources/Select-1.2.5/js/dataTables.select.min.js"/>"></script>
 <script>
-    $( document ).ready( function () {
+    $(document).ready(function () {
 
-        $( '#property_table' ).DataTable( {
+        $('#property_table').DataTable({
             info: false,
             ordering: false,
             paging: false,
@@ -177,9 +177,9 @@
             responsive: true,
             scrollX: true,
             scroller: true
-        } );
+        });
 
-        var table = $( '#spectrum_table' ).DataTable( {
+        var table = $('#spectrum_table').DataTable({
             bLengthChange: false,
             scrollX: true,
             select: {style: 'single'},
@@ -187,27 +187,27 @@
             scrollX: true,
             scroller: true,
             "fnInitComplete": function (oSettings, json) {
-                $( '#spectrum_plot' ).addClass( "hide" );
+                $('#spectrum_plot').addClass("hide");
             }
-        } );
+        });
 
-        table.on( 'select', function (e, dt, type, indexes) {
-            var row = table.row( indexes ).node();
-            var spectrum = JSON.parse( $( row ).attr( 'data-spectrum' ) );
-            plot.update( spectrum );
-        } );
+        table.on('select', function (e, dt, type, indexes) {
+            var row = table.row(indexes).node();
+            var spectrum = JSON.parse($(row).attr('data-spectrum'));
+            plot.update(spectrum);
+        });
 
-        table.rows( ':eq(0)' ).select();
+        table.rows(':eq(0)').select();
 
-        $( '#big_spectrum_table' ).DataTable( {
+        $('#big_spectrum_table').DataTable({
             responsive: true,
             scrollX: true,
             scroller: true,
             "fnInitComplete": function (oSettings, json) {
-                $( '#spectrum_list' ).addClass( "hide" );
+                $('#spectrum_list').addClass("hide");
             }
-        } );
-    } );
+        });
+    });
 </script>
 <script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
 <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
@@ -221,24 +221,24 @@
 
 <script>
     // Add Spectrum Plot
-    var plot = new TwoSpectraPlot( 'plot', JSON.parse( '${dulab:spectrumToJson(cluster.consensusSpectrum)}' ) );
+    var plot = new TwoSpectraPlot('plot', JSON.parse('${dulab:spectrumToJson(cluster.consensusSpectrum)}'));
 
-    $( ".tabbed-pane" ).each( function () {
-        $( this ).tabbedPane();
-    } );
+    $(".tabbed-pane").each(function () {
+        $(this).tabbedPane();
+    });
 
     var pieChartVal = '${dulab:clusterTagsToJson(cluster.spectra)}';
-    var jsonVal = JSON.parse( pieChartVal );
+    var jsonVal = JSON.parse(pieChartVal);
 
-    $pieDiv = $( "#charts" );
-    $.each( jsonVal, function (k, v) {
-        $pieDiv.append( '<div style="display: inline-block; margin: 10px;">' +
-            '<div>diversity: ' + parseFloat( v.diversity ).toFixed( 2 ) + '</div>' +
+    $pieDiv = $("#charts");
+    $.each(jsonVal, function (k, v) {
+        $pieDiv.append('<div style="display: inline-block; margin: 10px;">' +
+            '<div>diversity: ' + parseFloat(v.diversity).toFixed(2) + '</div>' +
             '<div id="PieChart-' + k + '"></div>' +
             '<div>' + v.name + '</div>' +
-            '</div>' );
-        addPieChart( 'PieChart-' + k, v.values );
-    } );
+            '</div>');
+        addPieChart('PieChart-' + k, v.values);
+    });
 </script>
 <style>
     .selection {

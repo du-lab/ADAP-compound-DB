@@ -2,21 +2,72 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <section>
     <h1>Consensus spectra</h1>
 
-    <div>
-        Click to hide/show columns:
-        <label><input type="checkbox" data-column="2"/><strong>Count</strong></label> -
-        <label><input type="checkbox" data-column="3"/><strong>Score</strong></label> -
-        <label><input type="checkbox" data-column="4"/><strong>In-study P-value</strong></label> -
-        <label><input type="checkbox" data-column="5"/><strong>Maximum Diversity</strong></label> -
-        <label><input type="checkbox" data-column="6"/><strong>Cross-study P-value</strong></label> -
-        <label><input type="checkbox" data-column="7"/><strong>Cross-study P-value (disease)</strong></label> -
-        <label><input type="checkbox" data-column="8"/><strong>Cross-study P-value (species)</strong></label> -
-        <label><input type="checkbox" data-column="9"/><strong>Cross-study P-value (sample source)</strong></label> -
-        <label> <input type="checkbox" data-column="10"/><strong>Type</strong></label>
+    <div style="display: flex; justify-content: space-evenly">
+        <div style="display: inline-block; vertical-align: middle" class="frame">
+            <%--@elvariable id="filterOptions" type="org.dulab.adapcompounddb.site.controllers.forms.FilterOptions"--%>
+            <table style="padding: 10px">
+                <tbody>
+                <tr>
+                    <td><label for="species">Species</label></td>
+                    <td>
+                        <select id="species">
+                            <option value="all">All</option>
+                            <c:forEach items="${filterOptions.speciesList}" var="it">
+                                <option value="${it}">${it}</option>
+                            </c:forEach>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="source">Sample Source:</label>
+                    </td>
+                    <td>
+                        <select id="source">
+                            <option value="all">All</option>
+                            <c:forEach items="${filterOptions.sourceList}" var="it">
+                                <option value="${it}">${it}</option>
+                            </c:forEach>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="disease">Sample Source:</label>
+                    </td>
+                    <td>
+                        <select id="disease">
+                            <option value="all">All</option>
+                            <c:forEach items="${filterOptions.diseaseList}" var="it">
+                                <option value="${it}">${it}</option>
+                            </c:forEach>
+                        </select>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div style="display: inline-block; width: 500px" class="frame">
+            <p style="padding: 10px">
+                Click to hide/show columns:
+                <label><input type="checkbox" data-column="2"/><strong>Count</strong></label> -
+                <label><input type="checkbox" data-column="3"/><strong>Score</strong></label> -
+                <label><input type="checkbox" data-column="4"/><strong>In-study P-value</strong></label> -
+                <label><input type="checkbox" data-column="5"/><strong>Maximum Diversity</strong></label> -
+                <label><input type="checkbox" data-column="6"/><strong>Cross-study P-value</strong></label> -
+                <label><input type="checkbox" data-column="7"/><strong>Cross-study P-value (disease)</strong></label> -
+                <label><input type="checkbox" data-column="8"/><strong>Cross-study P-value (species)</strong></label> -
+                <label><input type="checkbox" data-column="9"/><strong>Cross-study P-value (sample
+                    source)</strong></label> -
+                <label> <input type="checkbox" data-column="10"/><strong>Type</strong></label>
+            </p>
+        </div>
     </div>
 
     <div align="center">
@@ -57,10 +108,13 @@
             ajax: {
                 url: "${pageContext.request.contextPath}/spectrum/findClusters.json",
 
-                data: function (data) {
-                    data.column = data.order[0].column;
-                    data.sortDirection = data.order[0].dir;
-                    data.search = data.search["value"];
+                data: function (d) {
+                    d.column = d.order[0].column;
+                    d.sortDirection = d.order[0].dir;
+                    d.search = d.search["value"];
+                    d.species = $('#species').val();
+                    d.source = $('#source').val();
+                    d.disease = $('#disease').val();
                 }
             },
             "aoColumnDefs": [
@@ -104,7 +158,7 @@
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
                         var content = '';
-                        if (row.aveSignificance) {
+                        if (row.aveSignificance != null) {
                             var avgSignificance = row.aveSignificance.toFixed(3);
                             content += '<span title="{Average: ' + row.aveSignificance;
                             if (row.minSignificance) {
@@ -231,5 +285,10 @@
             $(this).prop("checked", bVis);
         });
         // } );
+        $("#species, #source, #disease").change(function () {
+            dataTable.ajax.reload();
+        });
     });
+
+
 </script>
