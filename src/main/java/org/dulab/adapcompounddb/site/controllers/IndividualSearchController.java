@@ -5,7 +5,9 @@ import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchForm;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
+import org.dulab.adapcompounddb.models.dto.ClusterDTO;
 import org.dulab.adapcompounddb.models.entities.*;
+import org.dulab.adapcompounddb.site.controllers.forms.FilterOptions;
 import org.dulab.adapcompounddb.site.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -25,21 +27,25 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 public class IndividualSearchController {
     private final SubmissionService submissionService;
     private final SpectrumService spectrumService;
+    private final SubmissionTagService submissionTagService;
 
     private final Map<ChromatographyType, SpectrumSearchService> spectrumSearchServiceMap;
 
     @Autowired
     public IndividualSearchController(final SubmissionService submissionService,
+                       final SubmissionTagService submissionTagService,
                        @Qualifier("spectrumServiceImpl") final SpectrumService spectrumService,
                        @Qualifier("spectrumSearchServiceGCImpl") final SpectrumSearchService gcSpectrumSearchService,
                        @Qualifier("spectrumSearchServiceLCImpl") final SpectrumSearchService lcSpectrumSearchService) {
         this.submissionService = submissionService;
         this.spectrumService = spectrumService;
+        this.submissionTagService = submissionTagService;
         this.spectrumSearchServiceMap = new HashMap<>();
         this.spectrumSearchServiceMap.put(ChromatographyType.GAS, gcSpectrumSearchService);
         this.spectrumSearchServiceMap.put(ChromatographyType.LIQUID_POSITIVE, lcSpectrumSearchService);
@@ -62,6 +68,12 @@ public class IndividualSearchController {
                     .add(category);
         }
         model.addAttribute("submissionCategoryMap", submissionCategoryMap);
+
+        List<String> speciesList = submissionTagService.findDistinctTagValuesByTagKey("species (common)");
+        List<String> sourceList = submissionTagService.findDistinctTagValuesByTagKey("sample source");
+        List<String> diseaseList = submissionTagService.findDistinctTagValuesByTagKey("disease");
+
+        model.addAttribute("filterOptions", new FilterOptions(speciesList, sourceList, diseaseList));
     }
 
     @RequestMapping(
@@ -124,7 +136,7 @@ public class IndividualSearchController {
         model.addAttribute("querySpectrum", querySpectrum);
         model.addAttribute("searchForm", form);
 
-        return "file/match";
+        return "submission/spectrum/search";
     }
 
     @RequestMapping(
@@ -144,7 +156,7 @@ public class IndividualSearchController {
             return new ModelAndView(new RedirectView("/notfound/"));
         }
 
-        return searchPost(spectrum, searchForm, model, errors);
+        return searchPost(spectrum, searchForm, model, errors, session);
     }
 
     @RequestMapping(value = "/file/{fileIndex:\\d+}/{spectrumIndex:\\d+}/search/", method = RequestMethod.POST)
@@ -164,15 +176,15 @@ public class IndividualSearchController {
                 .getSpectra()
                 .get(spectrumIndex);
 
-        return searchPost(spectrum, form, model, errors);
+        return searchPost(spectrum, form, model, errors, session);
     }
 
     @RequestMapping(value = "/spectrum/{spectrumId:\\d+}/search/", method = RequestMethod.POST)
     public ModelAndView search(@PathVariable("spectrumId") final long spectrumId, final Model model,
-                               @Valid final SearchForm form, final Errors errors) {
+                               @Valid final SearchForm form, final Errors errors, HttpSession session) {
 
         if (errors.hasErrors()) {
-            return new ModelAndView("file/match");
+            return new ModelAndView("submission/spectrum/search");
         }
 
         Spectrum spectrum;
@@ -184,15 +196,16 @@ public class IndividualSearchController {
             return new ModelAndView(new RedirectView("/notfound/"));
         }
 
-        return searchPost(spectrum, form, model, errors);
+        return searchPost(spectrum, form, model, errors, session);
     }
 
     private ModelAndView searchPost(final Spectrum querySpectrum,
-                                    final SearchForm form, @Valid final Model model, final Errors errors) {
+                                    final SearchForm form, @Valid final Model model, final Errors errors,
+                                    HttpSession session) {
 
         if (errors.hasErrors()) {
             model.addAttribute("querySpectrum", querySpectrum);
-            return new ModelAndView("file/match");
+            return new ModelAndView("submission/spectrum/search");
         }
 
         final SpectrumSearchService service =
@@ -201,13 +214,20 @@ public class IndividualSearchController {
         final QueryParameters parameters = ControllerUtils.getParameters(form);
 
         final List<SpectrumMatch> matches = service.search(querySpectrum, parameters);
+        List<ClusterDTO> clusters = matches.stream()
+                .map(SpectrumMatch::getMatchSpectrum)
+                .map(Spectrum::getCluster)
+                .map(c -> new ClusterDTO().spectrumClusterDTO(c))
+                .collect(Collectors.toList());
+
+        session.setAttribute(ControllerUtils.INDIVIDUAL_SEARCH_RESULTS_ATTRIBUTE_NAME, clusters);
 
         model.addAttribute("matches", matches);
 
         model.addAttribute("querySpectrum", querySpectrum);
         model.addAttribute("form", form);
 
-        return new ModelAndView("file/match");
+        return new ModelAndView("submission/spectrum/search");
     }
 
 }

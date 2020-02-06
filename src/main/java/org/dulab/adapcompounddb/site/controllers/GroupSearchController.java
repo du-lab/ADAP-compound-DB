@@ -51,7 +51,7 @@ public class GroupSearchController {
         final Submission submission = Submission.from(session);
         groupSearchService.setProgress(0F);
         if (errors.hasErrors()) {
-            return new ModelAndView("file/match");
+            return new ModelAndView("search");
         }
         final QueryParameters parameters = ControllerUtils.getParameters(form);
         new Thread(() -> groupSearchService.nonSubmittedGroupSearch(submission, session, parameters)).start();
@@ -63,7 +63,7 @@ public class GroupSearchController {
     public ModelAndView groupSearch(@PathVariable("submissionId") final long submissionId, final HttpSession session,
                                     final Model model, @Valid final SearchForm form, final Errors errors) {
         if (errors.hasErrors()) {
-            return new ModelAndView("file/match");
+            return new ModelAndView("search");
         }
         final QueryParameters parameters = ControllerUtils.getParameters(form);
         new Thread(() -> groupSearchService.groupSearch(submissionId, session, parameters)).start();

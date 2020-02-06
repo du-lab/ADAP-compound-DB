@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
-import org.dulab.adapcompounddb.models.dto.SpectrumClusterDTO;
+import org.dulab.adapcompounddb.models.dto.ClusterDTO;
 import org.dulab.adapcompounddb.site.controllers.ControllerUtils;
 import org.dulab.adapcompounddb.site.services.GroupSearchService;
 import org.dulab.adapcompounddb.site.services.SpectrumMatchService;
@@ -21,7 +21,7 @@ import java.util.List;
 @RestController
 public class GroupSearchRestController {
 
-    public static final List<SpectrumClusterDTO> EMPTY_LIST = new ArrayList<>(0);
+    public static final List<ClusterDTO> EMPTY_LIST = new ArrayList<>(0);
     private final SpectrumMatchService spectrumMatchService;
     private final GroupSearchService groupSearchService;
 
@@ -39,10 +39,10 @@ public class GroupSearchRestController {
             @RequestParam("sortDirection") final String sortDirection,
             @RequestParam("search") final String searchStr,
             final HttpSession session) throws JsonProcessingException {
-        List<SpectrumClusterDTO> matches;
+        List<ClusterDTO> matches;
         if (session.getAttribute("group_search_results") != null) {
-            List<SpectrumClusterDTO> sessionMatches =
-                    (List<SpectrumClusterDTO>) session.getAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
+            List<ClusterDTO> sessionMatches =
+                    (List<ClusterDTO>) session.getAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
             //Avoid ConcurrentModificationException by make a copy for sorting
             matches = new ArrayList<>(sessionMatches);
 

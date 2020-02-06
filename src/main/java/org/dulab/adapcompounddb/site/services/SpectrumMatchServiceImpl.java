@@ -6,7 +6,7 @@ import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
-import org.dulab.adapcompounddb.models.dto.SpectrumClusterDTO;
+import org.dulab.adapcompounddb.models.dto.ClusterDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
 import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
@@ -14,7 +14,6 @@ import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.dulab.adapcompounddb.utils.MathUtils;
-import org.dulab.adapcompounddb.utils.ObjectMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -397,8 +396,8 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
         Page<SpectrumClusterView> spectrumPage =
                 spectrumClusterRepository.findClusters(searchStr, species, source, disease, pageable);
-        List<SpectrumClusterDTO> dtoList = spectrumPage.stream()
-                .map(SpectrumClusterDTO::new)
+        List<ClusterDTO> dtoList = spectrumPage.stream()
+                .map(ClusterDTO::new)
                 .collect(Collectors.toList());
 
         final DataTableResponse response = new DataTableResponse(dtoList);
@@ -410,7 +409,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     @Override
     public DataTableResponse groupSearchSort(final String searchStr, final Integer start, final Integer length,
                                              final Integer column, final String sortDirection,
-                                             List<SpectrumClusterDTO> spectrumList) {
+                                             List<ClusterDTO> spectrumList) {
 
         String sortColumn = GroupSearchColumnInformation.getColumnNameFromPosition(column);
 
@@ -418,64 +417,27 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         if (sortColumn != null) {
             switch (sortColumn) {
                 case "querySpectrumName":
-
-                    spectrumList.sort(getComparator(s -> s.getQuerySpectrumName(), sortDirection));
+                    spectrumList.sort(getComparator(ClusterDTO::getQuerySpectrumName, sortDirection));
                     break;
-
                 case "consensusSpectrumName":
-
-                    spectrumList.sort(getComparator(s -> s.getConsensusSpectrumName(), sortDirection));
+                    spectrumList.sort(getComparator(ClusterDTO::getConsensusSpectrumName, sortDirection));
                     break;
-
                 case "size":
-
-                    spectrumList.sort(getComparator(s -> s.getSize(), sortDirection));
+                    spectrumList.sort(getComparator(ClusterDTO::getSize, sortDirection));
                     break;
-
                 case "diameter":
-
-                    spectrumList.sort(getComparator(s -> s.getDiameter(), sortDirection));
+                    spectrumList.sort(getComparator(ClusterDTO::getScore, sortDirection));
                     break;
-
                 case "aveSignificance":
-
-                    spectrumList.sort(getComparator(s -> s.getAveSignificance(), sortDirection));
+                    spectrumList.sort(getComparator(ClusterDTO::getAveSignificance, sortDirection));
                     break;
-
-                case "maxDiversity":
-
-                    spectrumList.sort(getComparator(s -> s.getMaxDiversity(), sortDirection));
-                    break;
-
-                case "minPValue":
-
-                    spectrumList.sort(getComparator(s -> s.getMinPValue(), sortDirection));
-                    break;
-
-                case "diseasePValue":
-
-                    spectrumList.sort(getComparator(s -> s.getDiseasePValue(), sortDirection));
-                    break;
-
-                case "speciesPValue":
-
-                    spectrumList.sort(getComparator(s -> s.getSpeciesPValue(), sortDirection));
-                    break;
-
-                case "sampleSourcePValue":
-
-                    spectrumList.sort(getComparator(s -> s.getSampleSourcePValue(), sortDirection));
-                    break;
-
                 case "chromatographyType":
-
-                    spectrumList.sort(getComparator(s -> s.getChromatographyType(), sortDirection));
+                    spectrumList.sort(getComparator(ClusterDTO::getChromatographyTypeLabel, sortDirection));
                     break;
-
             }
         }
 
-        final List<SpectrumClusterDTO> spectrumMatchList = new ArrayList<>();
+        final List<ClusterDTO> spectrumMatchList = new ArrayList<>();
         for (int i = 0; i < spectrumList.size(); i++) {
 
             if (i < start || spectrumMatchList.size() >= length)
@@ -493,8 +455,8 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
     // function for sorting the column
 
-    private <T extends Comparable> Comparator<SpectrumClusterDTO> getComparator(
-            Function<SpectrumClusterDTO, T> function, String sortDirection) {
+    private <T extends Comparable> Comparator<ClusterDTO> getComparator(
+            Function<ClusterDTO, T> function, String sortDirection) {
 
         return (o1, o2) -> {
 
