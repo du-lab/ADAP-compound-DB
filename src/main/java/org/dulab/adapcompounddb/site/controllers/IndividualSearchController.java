@@ -23,10 +23,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -39,10 +36,10 @@ public class IndividualSearchController {
 
     @Autowired
     public IndividualSearchController(final SubmissionService submissionService,
-                       final SubmissionTagService submissionTagService,
-                       @Qualifier("spectrumServiceImpl") final SpectrumService spectrumService,
-                       @Qualifier("spectrumSearchServiceGCImpl") final SpectrumSearchService gcSpectrumSearchService,
-                       @Qualifier("spectrumSearchServiceLCImpl") final SpectrumSearchService lcSpectrumSearchService) {
+                                      final SubmissionTagService submissionTagService,
+                                      @Qualifier("spectrumServiceImpl") final SpectrumService spectrumService,
+                                      @Qualifier("spectrumSearchServiceGCImpl") final SpectrumSearchService gcSpectrumSearchService,
+                                      @Qualifier("spectrumSearchServiceLCImpl") final SpectrumSearchService lcSpectrumSearchService) {
         this.submissionService = submissionService;
         this.spectrumService = spectrumService;
         this.submissionTagService = submissionTagService;
@@ -214,13 +211,16 @@ public class IndividualSearchController {
         final QueryParameters parameters = ControllerUtils.getParameters(form);
 
         final List<SpectrumMatch> matches = service.search(querySpectrum, parameters);
-        List<ClusterDTO> clusters = matches.stream()
-                .map(SpectrumMatch::getMatchSpectrum)
-                .map(Spectrum::getCluster)
-                .map(c -> new ClusterDTO().spectrumClusterDTO(c))
-                .collect(Collectors.toList());
+//        List<ClusterDTO> clusters = matches.stream()
+//                .map(SpectrumMatch::getMatchSpectrum)
+//                .map(Spectrum::getCluster)
+//                .map(c -> new ClusterDTO().spectrumClusterDTO(c))
+//                .collect(Collectors.toList());
 
-        session.setAttribute(ControllerUtils.INDIVIDUAL_SEARCH_RESULTS_ATTRIBUTE_NAME, clusters);
+
+
+
+        session.setAttribute(ControllerUtils.INDIVIDUAL_SEARCH_RESULTS_ATTRIBUTE_NAME, matches);
 
         model.addAttribute("matches", matches);
 

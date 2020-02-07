@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.ClusterDTO;
+import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 import org.dulab.adapcompounddb.site.controllers.ControllerUtils;
 import org.dulab.adapcompounddb.site.controllers.utils.PaginationUtils;
 import org.dulab.adapcompounddb.site.services.SpectrumMatchService;
@@ -19,7 +20,7 @@ import java.util.List;
 @RestController
 public class IndividualSearchRestController {
 
-    public static final List<ClusterDTO> EMPTY_LIST = new ArrayList<>(0);
+    public static final List<SpectrumMatch> EMPTY_LIST = new ArrayList<>(0);
 
     private final SpectrumMatchService spectrumMatchService;
 
@@ -37,20 +38,24 @@ public class IndividualSearchRestController {
             HttpSession session) throws JsonProcessingException {
 
         @SuppressWarnings("unchecked")
-        List<ClusterDTO> matches =
-                (List<ClusterDTO>) session.getAttribute(ControllerUtils.INDIVIDUAL_SEARCH_RESULTS_ATTRIBUTE_NAME);
+        List<SpectrumMatch> matches =
+                (List<SpectrumMatch>) session.getAttribute(ControllerUtils.INDIVIDUAL_SEARCH_RESULTS_ATTRIBUTE_NAME);
 
         if (matches == null)
             matches = EMPTY_LIST;
 
-        List<ClusterDTO> page = PaginationUtils.getPage(matches, start, length, column, sortDirection);
+        List<ClusterDTO> clusters = spectrumMatchService.convertSpectrumMatchToClusterDTO(matches);
+
+        List<ClusterDTO> page = PaginationUtils.getPage(clusters, start, length, column, sortDirection);
 
         DataTableResponse response = new DataTableResponse(page);
-        response.setRecordsTotal((long) matches.size());
-        response.setRecordsFiltered((long) matches.size());
+        response.setRecordsTotal((long) clusters.size());
+        response.setRecordsFiltered((long) clusters.size());
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         return mapper.writeValueAsString(response);
     }
+
+
 }

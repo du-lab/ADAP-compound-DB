@@ -496,4 +496,47 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
             e.printStackTrace();
         }
     }
+
+    @Override
+    @Transactional
+    public List<ClusterDTO> convertSpectrumMatchToClusterDTO(List<SpectrumMatch> matches) {
+        List<ClusterDTO> clusters = new ArrayList<>(matches.size());
+        for (SpectrumMatch match : matches) {
+            ClusterDTO cluster = new ClusterDTO();
+
+            // Query spectrum
+            cluster.setQuerySpectrumId(match.getQuerySpectrum().getId());
+            cluster.setQuerySpectrumName(match.getQuerySpectrum().getName());
+
+            // Match cluster
+            SpectrumCluster matchedCluster = match.getMatchSpectrum().getCluster();
+            cluster.setClusterId(matchedCluster.getId());
+            cluster.setConsensusSpectrumName(match.getMatchSpectrum().getName());
+            cluster.setSize((int) matchedCluster.getSpectra().stream()
+                    .map(Spectrum::getFile).filter(Objects::nonNull)
+                    .map(File::getSubmission).filter(Objects::nonNull)
+                    .distinct().count());
+            cluster.setScore(match.getScore());
+            matchedCluster.getSpectra().stream()
+                    .map(Spectrum::getSignificance).filter(Objects::nonNull)
+                    .mapToDouble(Double::doubleValue)
+                    .average()
+                    .ifPresent(cluster::setAveSignificance);
+            matchedCluster.getSpectra().stream()
+                    .map(Spectrum::getSignificance).filter(Objects::nonNull)
+                    .mapToDouble(Double::doubleValue)
+                    .min()
+                    .ifPresent(cluster::setMinSignificance);
+            matchedCluster.getSpectra().stream()
+                    .map(Spectrum::getSignificance).filter(Objects::nonNull)
+                    .mapToDouble(Double::doubleValue)
+                    .max()
+                    .ifPresent(cluster::setMaxSignificance);
+            cluster.setChromatographyTypeLabel(match.getMatchSpectrum().getChromatographyType().getLabel());
+            cluster.setChromatographyTypePath(match.getMatchSpectrum().getChromatographyType().getIconPath());
+
+            clusters.add(cluster);
+        }
+        return clusters;
+    }
 }
