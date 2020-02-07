@@ -4,6 +4,7 @@ import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
 import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
 
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -12,14 +13,14 @@ public class ClusterDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public static final Map<Integer, Function<ClusterDTO, Object>> columnToValueMap = new HashMap<>();
+    public static final Map<Integer, Function<ClusterDTO, Comparable>> COLUMN_TO_FIELD_MAP = new HashMap<>();
     static {
-        columnToValueMap.put(1, ClusterDTO::getQuerySpectrumName);
-        columnToValueMap.put(2, ClusterDTO::getConsensusSpectrumName);
-        columnToValueMap.put(3, ClusterDTO::getSize);
-        columnToValueMap.put(4, ClusterDTO::getScore);
-        columnToValueMap.put(5, ClusterDTO::getAveSignificance);
-        columnToValueMap.put(6, ClusterDTO::getChromatographyTypeLabel);
+        COLUMN_TO_FIELD_MAP.put(1, ClusterDTO::getQuerySpectrumName);
+        COLUMN_TO_FIELD_MAP.put(2, ClusterDTO::getConsensusSpectrumName);
+        COLUMN_TO_FIELD_MAP.put(3, ClusterDTO::getSize);
+        COLUMN_TO_FIELD_MAP.put(4, ClusterDTO::getScore);
+        COLUMN_TO_FIELD_MAP.put(5, ClusterDTO::getAveSignificance);
+        COLUMN_TO_FIELD_MAP.put(6, ClusterDTO::getChromatographyTypeLabel);
     }
 
     // *************************

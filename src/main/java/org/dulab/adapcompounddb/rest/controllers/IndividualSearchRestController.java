@@ -43,7 +43,7 @@ public class IndividualSearchRestController {
         if (matches == null)
             matches = EMPTY_LIST;
 
-        List<ClusterDTO> page = PaginationUtils.getPage(matches, start, length);
+        List<ClusterDTO> page = PaginationUtils.getPage(matches, start, length, column, sortDirection);
 
         DataTableResponse response = new DataTableResponse(page);
         response.setRecordsTotal((long) matches.size());
