@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 
 <div style="display: flex; justify-content: space-evenly">
     <div style="display: inline-block; vertical-align: middle" class="frame">
@@ -51,11 +52,14 @@
         scroller: true,
         serverSide: true,
         ajax: {
-            url: "${param.ajax_url}",
+            url: "${pageContext.request.contextPath}/rest/individual_search/json",
+            type: "POST",
             data: function (d) {
                 d.column = d.order[0].column;
                 d.sortDirection = d.order[0].dir;
                 d.search = d.search["value"];
+                <%--@elvariable id="querySpectrum" type="org.dulab.adapcompounddb.models.entities.Spectrum"--%>
+                d.queryJson = "${dulab:peaksToJsonString(querySpectrum.peaks)}";
                 // d.species = $('#species_filter');
                 // d.source = $('#source_filter');
                 // d.disease = $('#disease_filter');

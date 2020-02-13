@@ -2,6 +2,7 @@ package org.dulab.adapcompounddb.site.services;
 
 import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
+import org.dulab.adapcompounddb.models.dto.ClusterDTO;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
@@ -25,5 +26,10 @@ public class SpectrumSearchServiceLCImpl implements SpectrumSearchService {
     @Transactional
     public List<SpectrumMatch> search(Spectrum querySpectrum, QueryParameters parameters) {
         return spectrumRepository.spectrumSearch(SearchType.SIMILARITY_SEARCH, querySpectrum, parameters);
+    }
+
+    @Override
+    public List<ClusterDTO> searchConsensusSpectra(Spectrum querySpectrum) {
+        return null;
     }
 }

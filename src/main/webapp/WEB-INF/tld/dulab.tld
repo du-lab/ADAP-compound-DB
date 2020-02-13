@@ -105,4 +105,11 @@
         <function-signature>java.lang.String significanceBar(double,double,double)</function-signature>
     </function>
 
+    <function>
+        <description>Convert peaks to json string</description>
+        <name>peaksToJsonString</name>
+        <function-class>org.dulab.adapcompounddb.site.controllers.utils.ConversionsUtils</function-class>
+        <function-signature>java.lang.String peaksToJson(java.util.Collection)</function-signature>
+    </function>
+
 </taglib>

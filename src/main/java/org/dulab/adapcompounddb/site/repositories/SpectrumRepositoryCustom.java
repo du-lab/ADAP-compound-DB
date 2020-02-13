@@ -6,10 +6,13 @@ import java.util.Set;
 import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.entities.*;
+import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
 
 public interface SpectrumRepositoryCustom {
 
     List<SpectrumMatch> spectrumSearch(SearchType searchType, Spectrum querySpectrum, QueryParameters params);
+
+    Iterable<SpectrumClusterView> searchConsensusSpectra(Spectrum querySpectrum);
 
     void savePeaksAndPropertiesQuery(List<Spectrum> spectrumList, List<Long> savedSpectrumIdList);
 

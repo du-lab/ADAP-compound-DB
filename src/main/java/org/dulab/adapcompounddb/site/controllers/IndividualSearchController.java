@@ -205,24 +205,22 @@ public class IndividualSearchController {
             return new ModelAndView("submission/spectrum/search");
         }
 
-        final SpectrumSearchService service =
-                spectrumSearchServiceMap.get(querySpectrum.getChromatographyType());
-
-        final QueryParameters parameters = ControllerUtils.getParameters(form);
-
-        final List<SpectrumMatch> matches = service.search(querySpectrum, parameters);
-//        List<ClusterDTO> clusters = matches.stream()
-//                .map(SpectrumMatch::getMatchSpectrum)
-//                .map(Spectrum::getCluster)
-//                .map(c -> new ClusterDTO().spectrumClusterDTO(c))
-//                .collect(Collectors.toList());
-
-
-
-
-        session.setAttribute(ControllerUtils.INDIVIDUAL_SEARCH_RESULTS_ATTRIBUTE_NAME, matches);
-
-        model.addAttribute("matches", matches);
+//        final SpectrumSearchService service =
+//                spectrumSearchServiceMap.get(querySpectrum.getChromatographyType());
+//
+//        final QueryParameters parameters = ControllerUtils.getParameters(form);
+//
+//        final List<SpectrumMatch> matches = service.search(querySpectrum, parameters);
+////        List<ClusterDTO> clusters = matches.stream()
+////                .map(SpectrumMatch::getMatchSpectrum)
+////                .map(Spectrum::getCluster)
+////                .map(c -> new ClusterDTO().spectrumClusterDTO(c))
+////                .collect(Collectors.toList());
+//
+//
+//        session.setAttribute(ControllerUtils.INDIVIDUAL_SEARCH_RESULTS_ATTRIBUTE_NAME, matches);
+//
+//        model.addAttribute("matches", matches);
 
         model.addAttribute("querySpectrum", querySpectrum);
         model.addAttribute("form", form);

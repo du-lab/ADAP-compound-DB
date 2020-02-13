@@ -38,10 +38,11 @@
 <section>
     <h1>Matching Hits</h1>
     <div align="center">
-        <c:choose>
-            <c:when test="${matches != null && matches.size() > 0}">
+<%--        <c:choose>--%>
+<%--            <c:when test="${matches != null && matches.size() > 0}">--%>
                 <jsp:include page="/WEB-INF/jsp/shared/cluster_table.jsp">
                     <jsp:param name="ajax_url" value="${pageContext.request.contextPath}/rest/individual_search/json"/>
+                    <jsp:param name="query_spectrum" value="${querySpectrum}"/>
                 </jsp:include>
 <%--                &lt;%&ndash;                <div style="display: flex; justify-content: space-evenly">&ndash;%&gt;--%>
 <%--                &lt;%&ndash;                    <div style="display: inline-block; vertical-align: middle" class="frame">&ndash;%&gt;--%>
@@ -94,11 +95,11 @@
 <%--                    <tbody>--%>
 <%--                    </tbody>--%>
 <%--                </table>--%>
-            </c:when>
-            <c:otherwise>
-                <p>There is no mass spectra to display.</p>
-            </c:otherwise>
-        </c:choose>
+<%--            </c:when>--%>
+<%--            <c:otherwise>--%>
+<%--                <p>There is no mass spectra to display.</p>--%>
+<%--            </c:otherwise>--%>
+<%--        </c:choose>--%>
     </div>
 </section>
 
@@ -176,6 +177,9 @@
 <script src="<c:url value="/resources/tag-it-6ccd2de/js/tag-it.min.js"/>"></script>
 <script>
     $(document).ready(function () {
+
+        <%--@elvariable id="querySpectrumJson" type="java.lang.String"--%>
+        console.log("spectrum", ${querySpectrumJson})
 
         <%--let table = $('#match_table').DataTable({--%>
         <%--    // order: [[2, 'desc']],--%>

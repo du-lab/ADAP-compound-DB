@@ -17,6 +17,7 @@ import javax.persistence.criteria.Root;
 import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.entities.*;
+import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
 
 public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
@@ -68,6 +69,29 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         }
 
         return matches;
+    }
+
+    @Override
+    public Iterable<SpectrumClusterView> searchConsensusSpectra(Spectrum querySpectrum) {
+
+        String query = "";
+        query += "SELECT SpectrumCluster.Id, Spectrum.Name, SpectrumCluster.Size, POWER(SUM(Product), 2) AS Score, ";
+        query += "0 AS AverageSignificance, 0 AS MinimumSignificance, 0 AS MaximumSignificance, Spectrum.ChromatographyType FROM (\n";
+        query += querySpectrum.getPeaks().stream()
+                .map(p -> String.format("\tSELECT SpectrumId, SQRT(Intensity * %f) AS Product " +
+                                "FROM Peak JOIN Spectrum ON Peak.SpectrumId = Spectrum.Id " +
+                                "WHERE Peak.Mz > %f AND Peak.Mz < %f\n AND Spectrum.Consensus IS TRUE",
+                        p.getIntensity(), p.getMz() - 0.1, p.getMz() + 0.1))
+                .collect(Collectors.joining("\tUNION ALL\n"));
+        query += ") AS Result JOIN Spectrum ON SpectrumId = Spectrum.Id ";
+        query += "JOIN SpectrumCluster ON Spectrum.ClusterId = SpectrumCluster.Id\n";
+        query += "GROUP BY SpectrumId HAVING Score > 0.5 ORDER BY Score DESC;";
+
+        @SuppressWarnings("unchecked")
+        List<SpectrumClusterView> resultList =
+                entityManager.createNativeQuery(query, SpectrumClusterView.class).getResultList();
+
+        return resultList;
     }
 
     @Override
