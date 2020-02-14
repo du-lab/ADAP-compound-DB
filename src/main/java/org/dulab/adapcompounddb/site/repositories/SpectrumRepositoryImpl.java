@@ -72,10 +72,10 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     }
 
     @Override
-    public Iterable<SpectrumClusterView> searchConsensusSpectra(Spectrum querySpectrum) {
+    public Iterable<SpectrumClusterView> searchConsensusSpectra(
+            Spectrum querySpectrum, double scoreThreshold, double mzTolerance) {
 
-        String query = "";
-        query += "SELECT SpectrumCluster.Id, ConsensusSpectrum.Name, COUNT(DISTINCT File.SubmissionId) AS Size, Score, ";
+        String query = "SELECT SpectrumCluster.Id, ConsensusSpectrum.Name, COUNT(DISTINCT File.SubmissionId) AS Size, Score, ";
         query += "AVG(Spectrum.Significance) AS AverageSignificance, MIN(Spectrum.Significance) AS MinimumSignificance, ";
         query += "MAX(Spectrum.Significance) AS MaximumSignificance, ConsensusSpectrum.ChromatographyType FROM (\n";
         query += "SELECT ClusterId, POWER(SUM(Product), 2) AS Score FROM (\n";
@@ -83,10 +83,10 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                 .map(p -> String.format("\tSELECT ClusterId, SQRT(Intensity * %f) AS Product " +
                                 "FROM Peak INNER JOIN Spectrum ON Peak.SpectrumId = Spectrum.Id " +  //
                                 "WHERE Spectrum.Consensus IS TRUE AND Peak.Mz > %f AND Peak.Mz < %f\n",
-                        p.getIntensity(), p.getMz() - 0.1, p.getMz() + 0.1))
+                        p.getIntensity(), p.getMz() - mzTolerance, p.getMz() + mzTolerance))
                 .collect(Collectors.joining("\tUNION ALL\n"));
         query += ") AS SearchTable ";
-        query += "GROUP BY ClusterId HAVING Score > 0.5\n";
+        query += String.format("GROUP BY ClusterId HAVING Score > %f\n", scoreThreshold);
         query += ") AS ScoreTable JOIN SpectrumCluster ON SpectrumCluster.Id = ClusterId\n";
         query += "JOIN Spectrum AS ConsensusSpectrum ON ConsensusSpectrum.Id = SpectrumCluster.ConsensusSpectrumId\n";
         query += "JOIN Spectrum ON Spectrum.ClusterId = SpectrumCluster.Id\n";

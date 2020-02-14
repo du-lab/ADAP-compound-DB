@@ -12,7 +12,7 @@ public interface SpectrumRepositoryCustom {
 
     List<SpectrumMatch> spectrumSearch(SearchType searchType, Spectrum querySpectrum, QueryParameters params);
 
-    Iterable<SpectrumClusterView> searchConsensusSpectra(Spectrum querySpectrum);
+    Iterable<SpectrumClusterView> searchConsensusSpectra(Spectrum querySpectrum, double scoreThreshold, double mzTolerance);
 
     void savePeaksAndPropertiesQuery(List<Spectrum> spectrumList, List<Long> savedSpectrumIdList);
 

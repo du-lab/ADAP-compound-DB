@@ -43,6 +43,8 @@
                 <jsp:include page="/WEB-INF/jsp/shared/cluster_table.jsp">
                     <jsp:param name="ajax_url" value="${pageContext.request.contextPath}/rest/individual_search/json"/>
                     <jsp:param name="query_spectrum" value="${querySpectrum}"/>
+                    <jsp:param name="score_threshold" value="#scoreThreshold"/>
+                    <jsp:param name="mz_tolerance" value="#mzTolerance"/>
                 </jsp:include>
 <%--                &lt;%&ndash;                <div style="display: flex; justify-content: space-evenly">&ndash;%&gt;--%>
 <%--                &lt;%&ndash;                    <div style="display: inline-block; vertical-align: middle" class="frame">&ndash;%&gt;--%>

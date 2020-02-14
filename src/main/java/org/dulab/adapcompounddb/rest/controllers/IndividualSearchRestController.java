@@ -44,6 +44,8 @@ public class IndividualSearchRestController {
             @RequestParam("sortDirection") String sortDirection,
             @RequestParam("search") String search,
             @RequestParam("queryJson") String queryJson,
+            @RequestParam("scoreThreshold") double scoreThreshold,
+            @RequestParam("mzTolerance") double mzTolerance,
             HttpSession session) throws JsonProcessingException {
 
         List<Peak> queryPeaks = ConversionsUtils.jsonToPeaks(queryJson);
@@ -51,7 +53,8 @@ public class IndividualSearchRestController {
         Spectrum querySpectrum = new Spectrum();
         querySpectrum.setPeaks(queryPeaks);
 
-        List<ClusterDTO> clusters = spectrumSearchService.searchConsensusSpectra(querySpectrum);
+        List<ClusterDTO> clusters = spectrumSearchService.searchConsensusSpectra(
+                querySpectrum, scoreThreshold / 1000.0, mzTolerance);
 
 //        List<ClusterDTO> clusters = spectrumMatchService.convertSpectrumMatchToClusterDTO(matches);
 //
