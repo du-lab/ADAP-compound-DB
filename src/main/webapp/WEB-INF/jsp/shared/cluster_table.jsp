@@ -25,11 +25,6 @@
         <th title="Number of studies" class="Count">Count</th>
         <th title="Minimum matching score between all spectra in a cluster">Score</th>
         <th title="P-value of the In-study ANOVA test">In-study P-value</th>
-        <%--        <th title="Gini-Simpson Index">Maximum Diversity</th>--%>
-        <%--        <th title="P-value of the Cross-study Goodness-of-fit test">Cross-study P-value</th>--%>
-        <%--        <th title="P-value of disease">Cross-study P-value (disease)</th>--%>
-        <%--        <th title="P-value of species">Cross-study P-value (species)</th>--%>
-        <%--        <th title="P-value of sample source">Cross-study P-value (sample source)</th>--%>
         <th title="Chromatography type">Type</th>
         <th></th>
     </tr>
@@ -138,66 +133,6 @@
                         return content;
                     }
                 },
-                // {
-                //     "targets": 5,
-                //     "bSortable": true,
-                //     "bVisible": true,
-                //     "render": function (data, type, row, meta) {
-                //         var content = '';
-                //         if (row.maxDiversity != undefined) {
-                //             content = row.maxDiversity.toFixed(3);
-                //         }
-                //         return content;
-                //     }
-                // },
-                // {
-                //     "targets": 6,
-                //     "bSortable": true,
-                //     "bVisible": true,
-                //     "render": function (data, type, row, meta) {
-                //         var content = '';
-                //         if (row.minPValue) {
-                //             content = row.minPValue.toFixed(3);
-                //         }
-                //         return content;
-                //     }
-                // },
-                // {
-                //     "targets": 7,
-                //     "bSortable": true,
-                //     "bVisible": false,
-                //     "render": function (data, type, row, meta) {
-                //         var content = '';
-                //         if (row.diseasePValue) {
-                //             content = row.diseasePValue.toFixed(3);
-                //         }
-                //         return content;
-                //     },
-                // },
-                // {
-                //     "targets": 8,
-                //     "bSortable": true,
-                //     "bVisible": false,
-                //     "render": function (data, type, row, meta) {
-                //         var content = '';
-                //         if (row.speciesPValue) {
-                //             content = row.speciesPValue.toFixed(3);
-                //         }
-                //         return content;
-                //     }
-                // },
-                // {
-                //     "targets": 9,
-                //     "bSortable": true,
-                //     "bVisible": false,
-                //     "render": function (data, type, row, meta) {
-                //         var content = '';
-                //         if (row.sampleSourcePValue) {
-                //             content = row.sampleSourcePValue.toFixed(3);
-                //         }
-                //         return content;
-                //     }
-                // },
                 {
                     "targets": 6,
                     "bSortable": true,
@@ -221,8 +156,7 @@
                             + row.id + '/"><i class="material-icons" title="View">&#xE5D3;</i></a>';
                         return content;
                     }
-                },
-                {"className": "dt-center", "targets": "_all"}
+                }
             ]
         });
 
