@@ -12,7 +12,8 @@ public interface SpectrumRepositoryCustom {
 
     List<SpectrumMatch> spectrumSearch(SearchType searchType, Spectrum querySpectrum, QueryParameters params);
 
-    Iterable<SpectrumClusterView> searchConsensusSpectra(Spectrum querySpectrum, double scoreThreshold, double mzTolerance);
+    Iterable<SpectrumClusterView> searchConsensusSpectra(Spectrum querySpectrum, double scoreThreshold, double mzTolerance,
+                                                         String species, String source, String disease);
 
     void savePeaksAndPropertiesQuery(List<Spectrum> spectrumList, List<Long> savedSpectrumIdList);
 

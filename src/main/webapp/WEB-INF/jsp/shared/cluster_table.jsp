@@ -46,8 +46,12 @@
 
         let table = $('#table').DataTable({
             order: [[4, 'desc']],
-            select: {style: 'single'},
-            processing: true,
+            // select: {style: 'single'},
+            processing: true,  // Show indicator when loading ajax
+            'language': {
+                'loadingRecords': '&nbsp;',
+                'processing': '<div class="spinner"></div>'
+            },
             responsive: true,
             scrollX: true,
             scroller: true,
@@ -63,9 +67,9 @@
                     d.queryJson = "${dulab:peaksToJsonString(querySpectrum.peaks)}";
                     d.scoreThreshold = $('${param.score_threshold}').val();
                     d.mzTolerance = $('${param.mz_tolerance}').val();
-                    // d.species = $('#species_filter');
-                    // d.source = $('#source_filter');
-                    // d.disease = $('#disease_filter');
+                    d.species = $('#species_filter').val();
+                    d.source = $('#source_filter').val();
+                    d.disease = $('#disease_filter').val();
                 }
             },
             "aoColumnDefs": [
@@ -220,6 +224,10 @@
                 },
                 {"className": "dt-center", "targets": "_all"}
             ]
+        });
+
+        $("#species_filter, #source_filter, #disease_filter").change(function () {
+            table.ajax.reload();
         });
 
         columnVisibilityInit();

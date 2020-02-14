@@ -19,13 +19,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 public class IndividualSearchRestController {
-
-    public static final List<SpectrumMatch> EMPTY_LIST = new ArrayList<>(0);
 
     private final SpectrumMatchService spectrumMatchService;
     private final SpectrumSearchService spectrumSearchService;
@@ -46,6 +43,9 @@ public class IndividualSearchRestController {
             @RequestParam("queryJson") String queryJson,
             @RequestParam("scoreThreshold") double scoreThreshold,
             @RequestParam("mzTolerance") double mzTolerance,
+            @RequestParam("species") String species,
+            @RequestParam("source") String source,
+            @RequestParam("disease") String disease,
             HttpSession session) throws JsonProcessingException {
 
         List<Peak> queryPeaks = ConversionsUtils.jsonToPeaks(queryJson);
@@ -54,7 +54,7 @@ public class IndividualSearchRestController {
         querySpectrum.setPeaks(queryPeaks);
 
         List<ClusterDTO> clusters = spectrumSearchService.searchConsensusSpectra(
-                querySpectrum, scoreThreshold / 1000.0, mzTolerance);
+                querySpectrum, scoreThreshold / 1000.0, mzTolerance, species, source, disease);
 
 //        List<ClusterDTO> clusters = spectrumMatchService.convertSpectrumMatchToClusterDTO(matches);
 //

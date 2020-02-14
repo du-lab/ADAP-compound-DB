@@ -11,5 +11,6 @@ public interface SpectrumSearchService {
 
     List<SpectrumMatch> search(Spectrum spectrum, QueryParameters parameters);
 
-    List<ClusterDTO> searchConsensusSpectra(Spectrum querySpectrum, double scoreThreshold, double mzTolerance);
+    List<ClusterDTO> searchConsensusSpectra(Spectrum querySpectrum, double scoreThreshold, double mzTolerance,
+                                            String species, String source, String disease);
 }

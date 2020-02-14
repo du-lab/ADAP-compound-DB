@@ -29,7 +29,8 @@ public class SpectrumSearchServiceLCImpl implements SpectrumSearchService {
     }
 
     @Override
-    public List<ClusterDTO> searchConsensusSpectra(Spectrum querySpectrum, double scoreThreshold, double mzTolerance) {
+    public List<ClusterDTO> searchConsensusSpectra(Spectrum querySpectrum, double scoreThreshold, double mzTolerance,
+                                                   String species, String source, String disease) {
         return null;
     }
 }

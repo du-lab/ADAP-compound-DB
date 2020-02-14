@@ -35,10 +35,12 @@ public class SpectrumSearchServiceGCImpl implements SpectrumSearchService {
 
     @Override
     @Transactional
-    public List<ClusterDTO> searchConsensusSpectra(Spectrum querySpectrum, double scoreThreshold, double mzTolerance) {
+    public List<ClusterDTO> searchConsensusSpectra(Spectrum querySpectrum, double scoreThreshold, double mzTolerance,
+                                                   String species, String source, String disease) {
+
         List<ClusterDTO> clusters = new ArrayList<>();
-        for (SpectrumClusterView view :
-                spectrumRepository.searchConsensusSpectra(querySpectrum, scoreThreshold, mzTolerance)) {
+        for (SpectrumClusterView view : spectrumRepository.searchConsensusSpectra(
+                querySpectrum, scoreThreshold, mzTolerance, species, source, disease)) {
 
             ClusterDTO cluster = new ClusterDTO();
             cluster.setClusterId(view.getId());
