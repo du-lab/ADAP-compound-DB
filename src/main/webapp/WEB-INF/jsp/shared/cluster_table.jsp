@@ -2,18 +2,18 @@
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 
 <div style="display: flex; justify-content: space-evenly">
-    <div style="display: inline-block; vertical-align: middle" class="frame">
-        <jsp:include page="/WEB-INF/jsp/shared/filter.jsp">
-            <jsp:param name="table_id" value="#table"/>
-            <jsp:param name="filterOptions" value="filterOptions"/>
-        </jsp:include>
-    </div>
+<%--    <div style="display: inline-block; vertical-align: middle" class="frame">--%>
+<%--        <jsp:include page="/WEB-INF/jsp/shared/filter.jsp">--%>
+<%--            <jsp:param name="table_id" value="#table"/>--%>
+<%--            <jsp:param name="filterOptions" value="filterOptions"/>--%>
+<%--        </jsp:include>--%>
+<%--    </div>--%>
 
-    <div style="display: inline-block; width: 500px" class="frame">
-        <jsp:include page="/WEB-INF/jsp/shared/column_visibility.jsp">
-            <jsp:param name="table_id" value="#table"/>
-        </jsp:include>
-    </div>
+<%--    <div style="display: inline-block; width: 500px" class="frame">--%>
+<%--        <jsp:include page="/WEB-INF/jsp/shared/column_visibility.jsp">--%>
+<%--            <jsp:param name="table_id" value="#table"/>--%>
+<%--        </jsp:include>--%>
+<%--    </div>--%>
 </div>
 
 <table id="table" class="display responsive" style="width: 100%;">
@@ -40,6 +40,7 @@
     $(document).ready(function () {
 
         let table = $('#table').DataTable({
+            dom: 'l<"#species"><"#source"><"#disease">frtip',
             order: [[4, 'desc']],
             // select: {style: 'single'},
             processing: true,  // Show indicator when loading ajax
@@ -62,9 +63,15 @@
                     d.queryJson = "${dulab:peaksToJsonString(querySpectrum.peaks)}";
                     d.scoreThreshold = $('${param.score_threshold}').val();
                     d.mzTolerance = $('${param.mz_tolerance}').val();
-                    d.species = $('#species_filter').val();
-                    d.source = $('#source_filter').val();
-                    d.disease = $('#disease_filter').val();
+
+                    let speciesFilter = $('#species_filter');
+                    d.species = speciesFilter.length ? speciesFilter.val() : 'all';
+
+                    let sourceFilter = $('#source_filter');
+                    d.source = sourceFilter.length ? sourceFilter.val() : 'all';
+
+                    let diseaseFilter = $('#disease_filter');
+                    d.disease = diseaseFilter.length ? diseaseFilter.val() : 'all';
                 }
             },
             "aoColumnDefs": [
@@ -160,11 +167,34 @@
             ]
         });
 
-        $("#species_filter, #source_filter, #disease_filter").change(function () {
+        $('#species').addClass('table-dropdown');
+        // $('#species').css('padding-left', '30px');
+        $('<label/>').text('Species: ').appendTo('#species');
+        let speciesSelect = $('<select id="species_filter"/>').appendTo('#species');
+        $('<option/>').val('all').text('All').appendTo(speciesSelect);
+        <%--@elvariable id="filterOptions" type="org.dulab.adapcompounddb.site.controllers.forms.FilterOptions"--%>
+        <c:forEach items="${filterOptions.speciesList}" var="it">$('<option/>').val('${it}').text('${it}').appendTo(speciesSelect);
+        </c:forEach>
+
+        $('#source').addClass('table-dropdown');
+        $('<label/>').text('Sample source: ').appendTo('#source');
+        let sourceSelect = $('<select id="source_filter"/>').appendTo('#source');
+        $('<option/>').val('all').text('All').appendTo(sourceSelect);
+        <%--@elvariable id="filterOptions" type="org.dulab.adapcompounddb.site.controllers.forms.FilterOptions"--%>
+        <c:forEach items="${filterOptions.sourceList}" var="it">$('<option/>').val('${it}').text('${it}').appendTo(sourceSelect);
+        </c:forEach>
+
+        $('#disease').addClass('table-dropdown');
+        $('<label/>').text('Disease: ').appendTo('#disease');
+        let diseaseSelect = $('<select id="disease_filter"/>').appendTo('#disease');
+        $('<option/>').val('all').text('All').appendTo(diseaseSelect);
+        <%--@elvariable id="filterOptions" type="org.dulab.adapcompounddb.site.controllers.forms.FilterOptions"--%>
+        <c:forEach items="${filterOptions.diseaseList}" var="it">$('<option/>').val('${it}').text('${it}').appendTo(diseaseSelect);
+        </c:forEach>
+
+        $('#species_filter, #source_filter, #disease_filter').change(function () {
             table.ajax.reload();
         });
-
-        columnVisibilityInit();
 
     })
 </script>
