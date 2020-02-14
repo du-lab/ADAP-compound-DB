@@ -75,17 +75,23 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     public Iterable<SpectrumClusterView> searchConsensusSpectra(Spectrum querySpectrum) {
 
         String query = "";
-        query += "SELECT SpectrumCluster.Id, Spectrum.Name, SpectrumCluster.Size, POWER(SUM(Product), 2) AS Score, ";
-        query += "0 AS AverageSignificance, 0 AS MinimumSignificance, 0 AS MaximumSignificance, Spectrum.ChromatographyType FROM (\n";
+        query += "SELECT SpectrumCluster.Id, ConsensusSpectrum.Name, COUNT(DISTINCT File.SubmissionId) AS Size, Score, ";
+        query += "AVG(Spectrum.Significance) AS AverageSignificance, MIN(Spectrum.Significance) AS MinimumSignificance, ";
+        query += "MAX(Spectrum.Significance) AS MaximumSignificance, ConsensusSpectrum.ChromatographyType FROM (\n";
+        query += "SELECT ClusterId, POWER(SUM(Product), 2) AS Score FROM (\n";
         query += querySpectrum.getPeaks().stream()
-                .map(p -> String.format("\tSELECT SpectrumId, SQRT(Intensity * %f) AS Product " +
-                                "FROM Peak JOIN Spectrum ON Peak.SpectrumId = Spectrum.Id " +
-                                "WHERE Peak.Mz > %f AND Peak.Mz < %f\n AND Spectrum.Consensus IS TRUE",
+                .map(p -> String.format("\tSELECT ClusterId, SQRT(Intensity * %f) AS Product " +
+                                "FROM Peak INNER JOIN Spectrum ON Peak.SpectrumId = Spectrum.Id " +  //
+                                "WHERE Spectrum.Consensus IS TRUE AND Peak.Mz > %f AND Peak.Mz < %f\n",
                         p.getIntensity(), p.getMz() - 0.1, p.getMz() + 0.1))
                 .collect(Collectors.joining("\tUNION ALL\n"));
-        query += ") AS Result JOIN Spectrum ON SpectrumId = Spectrum.Id ";
-        query += "JOIN SpectrumCluster ON Spectrum.ClusterId = SpectrumCluster.Id\n";
-        query += "GROUP BY SpectrumId HAVING Score > 0.5 ORDER BY Score DESC;";
+        query += ") AS SearchTable ";
+        query += "GROUP BY ClusterId HAVING Score > 0.5\n";
+        query += ") AS ScoreTable JOIN SpectrumCluster ON SpectrumCluster.Id = ClusterId\n";
+        query += "JOIN Spectrum AS ConsensusSpectrum ON ConsensusSpectrum.Id = SpectrumCluster.ConsensusSpectrumId\n";
+        query += "JOIN Spectrum ON Spectrum.ClusterId = SpectrumCluster.Id\n";
+        query += "JOIN File ON File.Id = Spectrum.FileId\n";
+        query += "GROUP BY Spectrum.ClusterId ORDER BY Score DESC";
 
         @SuppressWarnings("unchecked")
         List<SpectrumClusterView> resultList =
