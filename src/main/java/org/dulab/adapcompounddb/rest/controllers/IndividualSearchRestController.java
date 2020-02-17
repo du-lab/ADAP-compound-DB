@@ -55,9 +55,7 @@ public class IndividualSearchRestController {
 
         List<ClusterDTO> clusters = spectrumSearchService.searchConsensusSpectra(
                 querySpectrum, scoreThreshold / 1000.0, mzTolerance, species, source, disease);
-
-//        List<ClusterDTO> clusters = spectrumMatchService.convertSpectrumMatchToClusterDTO(matches);
-//
+        
         List<ClusterDTO> page = PaginationUtils.getPage(clusters, start, length, column, sortDirection);
 
         DataTableResponse response = new DataTableResponse(page);

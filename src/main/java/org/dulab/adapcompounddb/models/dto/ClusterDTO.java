@@ -20,7 +20,9 @@ public class ClusterDTO implements Serializable {
         COLUMN_TO_FIELD_MAP.put(3, ClusterDTO::getSize);
         COLUMN_TO_FIELD_MAP.put(4, ClusterDTO::getScore);
         COLUMN_TO_FIELD_MAP.put(5, ClusterDTO::getAveSignificance);
-        COLUMN_TO_FIELD_MAP.put(6, ClusterDTO::getChromatographyTypeLabel);
+        COLUMN_TO_FIELD_MAP.put(6, ClusterDTO::getMinSignificance);
+        COLUMN_TO_FIELD_MAP.put(7, ClusterDTO::getMaxSignificance);
+        COLUMN_TO_FIELD_MAP.put(8, ClusterDTO::getChromatographyTypeLabel);
     }
 
     // *************************
