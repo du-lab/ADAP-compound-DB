@@ -1,30 +1,17 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 
-<div style="display: flex; justify-content: space-evenly">
-<%--    <div style="display: inline-block; vertical-align: middle" class="frame">--%>
-<%--        <jsp:include page="/WEB-INF/jsp/shared/filter.jsp">--%>
-<%--            <jsp:param name="table_id" value="#table"/>--%>
-<%--            <jsp:param name="filterOptions" value="filterOptions"/>--%>
-<%--        </jsp:include>--%>
-<%--    </div>--%>
-
-<%--    <div style="display: inline-block; width: 500px" class="frame">--%>
-<%--        <jsp:include page="/WEB-INF/jsp/shared/column_visibility.jsp">--%>
-<%--            <jsp:param name="table_id" value="#table"/>--%>
-<%--        </jsp:include>--%>
-<%--    </div>--%>
-</div>
-
 <table id="table" class="display responsive" style="width: 100%;">
     <thead>
     <tr>
         <th>Id</th>
         <th>Query Spectrum</th>
         <th title="Match spectra">Match Spectrum</th>
-        <th title="Number of studies" class="Count">Count</th>
+        <th title="Number of studies" class="Count">Studies</th>
         <th title="Minimum matching score between all spectra in a cluster">Score</th>
-        <th title="P-value of the In-study ANOVA test">In-study P-value</th>
+        <th title="Average P-value of ANOVA tests">Average P-value</th>
+        <th title="Minimum P-value of ANOVA tests">Minimum P-value</th>
+        <th title="Maximum P-value of ANOVA tests">Maximum P-value</th>
         <th title="Chromatography type">Type</th>
         <th></th>
     </tr>
@@ -87,7 +74,7 @@
                 {
                     "targets": 1,
                     "bSortable": true,
-                    "bVisible": true,
+                    "bVisible": ${param.hide_query_spectrum ? false : true},
                     "render": function (data, type, row, meta) {
                         if (row.querySpectrumId == null || row.querySpectrumName == null)
                             return '';
@@ -125,23 +112,33 @@
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
-                        var content = '';
-                        if (row.aveSignificance != null) {
-                            var avgSignificance = row.aveSignificance.toFixed(3);
-                            content += '<span title="{Average: ' + row.aveSignificance;
-                            if (row.minSignificance) {
-                                content += '; Min: ' + row.minSignificance.toFixed(3);
-                            }
-                            if (row.maxSignificance) {
-                                content += '; Max: ' + row.maxSignificance.toFixed(3);
-                            }
-                            content += '}">' + avgSignificance + '</span>';
-                        }
-                        return content;
+                        if (row.aveSignificance != null)
+                            return row.aveSignificance.toFixed(3);
+                        return '';
                     }
                 },
                 {
                     "targets": 6,
+                    "bSortable": true,
+                    "bVisible": true,
+                    "render": function (data, type, row, meta) {
+                        if (row.minSignificance != null)
+                            return row.minSignificance.toFixed(3);
+                        return '';
+                    }
+                },
+                {
+                    "targets": 7,
+                    "bSortable": true,
+                    "bVisible": true,
+                    "render": function (data, type, row, meta) {
+                        if (row.maxSignificance != null)
+                            return row.maxSignificance.toFixed(3);
+                        return '';
+                    }
+                },
+                {
+                    "targets": 8,
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
@@ -155,12 +152,12 @@
                     }
                 },
                 {
-                    "targets": 7,
+                    "targets": 9,
                     "bSortable": false,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
                         var content = '<a href="${pageContext.request.contextPath}/cluster/'
-                            + row.id + '/"><i class="material-icons" title="View">&#xE5D3;</i></a>';
+                            + row.clusterId + '/"><i class="material-icons" title="View">&#xE5D3;</i></a>';
                         return content;
                     }
                 }
