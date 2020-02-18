@@ -4,8 +4,11 @@ import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.dto.ClusterDTO;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
+import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
+import org.dulab.adapcompounddb.site.controllers.ControllerUtils;
+import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +24,13 @@ import java.util.stream.Collectors;
 public class SpectrumSearchServiceGCImpl implements SpectrumSearchService {
 
     private final SpectrumRepository spectrumRepository;
+    private final SpectrumClusterRepository spectrumClusterRepository;
 
     @Autowired
-    public SpectrumSearchServiceGCImpl(SpectrumRepository spectrumRepository) {
+    public SpectrumSearchServiceGCImpl(SpectrumRepository spectrumRepository,
+                                       SpectrumClusterRepository spectrumClusterRepository) {
         this.spectrumRepository = spectrumRepository;
+        this.spectrumClusterRepository = spectrumClusterRepository;
     }
 
     @Override
@@ -52,6 +58,12 @@ public class SpectrumSearchServiceGCImpl implements SpectrumSearchService {
             cluster.setMaxSignificance(view.getMaximumSignificance());
             cluster.setChromatographyTypeLabel(view.getChromatographyType().getLabel());
             cluster.setChromatographyTypePath(view.getChromatographyType().getIconPath());
+
+            spectrumClusterRepository.findById(view.getId())
+                    .ifPresent(c -> cluster.setJson(ControllerUtils
+                            .spectrumToJson(c.getConsensusSpectrum())
+                            .toString()));
+
             clusters.add(cluster);
         }
         return clusters;

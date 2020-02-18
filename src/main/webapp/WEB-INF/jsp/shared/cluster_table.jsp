@@ -31,10 +31,6 @@
             order: [[4, 'desc']],
             // select: {style: 'single'},
             processing: true,  // Show indicator when loading ajax
-            'language': {
-                'loadingRecords': '&nbsp;',
-                'processing': '<div class="spinner"></div>'
-            },
             responsive: true,
             scrollX: true,
             scroller: true,

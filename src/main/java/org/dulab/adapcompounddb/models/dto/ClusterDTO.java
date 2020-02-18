@@ -14,6 +14,7 @@ public class ClusterDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     public static final Map<Integer, Function<ClusterDTO, Comparable>> COLUMN_TO_FIELD_MAP = new HashMap<>();
+
     static {
         COLUMN_TO_FIELD_MAP.put(1, ClusterDTO::getQuerySpectrumName);
         COLUMN_TO_FIELD_MAP.put(2, ClusterDTO::getConsensusSpectrumName);
@@ -40,9 +41,7 @@ public class ClusterDTO implements Serializable {
     private Double maxSignificance;
     private String chromatographyTypeLabel;
     private String chromatographyTypePath;
-
-//    private SpectrumDTO consensusSpectrum;
-//    private Set<DiversityIndexDTO> diversityIndices;
+    private String json;
 
     public ClusterDTO() {
 
@@ -104,6 +103,10 @@ public class ClusterDTO implements Serializable {
 
     public Double getScore() {
         return score;
+    }
+
+    public Long getNISTScore() {
+        return (score != null) ? Math.round(score * 1000) : null;
     }
 
     public void setScore(final Double score) {
@@ -172,6 +175,14 @@ public class ClusterDTO implements Serializable {
 
     public void setConsensusSpectrumName(String consensusSpectrumName) {
         this.consensusSpectrumName = consensusSpectrumName;
+    }
+
+    public String getJson() {
+        return json;
+    }
+
+    public void setJson(String json) {
+        this.json = json;
     }
 
     @Override

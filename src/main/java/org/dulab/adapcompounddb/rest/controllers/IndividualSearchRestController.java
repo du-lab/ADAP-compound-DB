@@ -7,8 +7,6 @@ import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.ClusterDTO;
 import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
-import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
-import org.dulab.adapcompounddb.site.controllers.ControllerUtils;
 import org.dulab.adapcompounddb.site.controllers.utils.ConversionsUtils;
 import org.dulab.adapcompounddb.site.controllers.utils.PaginationUtils;
 import org.dulab.adapcompounddb.site.services.SpectrumMatchService;
@@ -55,7 +53,7 @@ public class IndividualSearchRestController {
 
         List<ClusterDTO> clusters = spectrumSearchService.searchConsensusSpectra(
                 querySpectrum, scoreThreshold / 1000.0, mzTolerance, species, source, disease);
-        
+
         List<ClusterDTO> page = PaginationUtils.getPage(clusters, start, length, column, sortDirection);
 
         DataTableResponse response = new DataTableResponse(page);
