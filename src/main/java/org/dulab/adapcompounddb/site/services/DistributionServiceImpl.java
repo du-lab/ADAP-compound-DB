@@ -257,6 +257,7 @@ public class DistributionServiceImpl implements DistributionService {
 
         List<String> tagValues = tags.stream()
                 .filter(t -> t.getSubmission().getMassSpectrometryType() == type)
+                .filter(t -> t.getTagKey().equals(key))
                 .map(SubmissionTag::getTagValue)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
