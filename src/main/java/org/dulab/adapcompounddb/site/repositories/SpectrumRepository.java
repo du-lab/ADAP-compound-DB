@@ -34,6 +34,9 @@ public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, Spec
             "AND s.chromatographyType=?1")
     Iterable<Spectrum> findSpectraForClustering(ChromatographyType type);
 
+    @Query("SELECT DISTINCT s FROM Spectrum s JOIN FETCH s.peaks WHERE s.id IN :ids")
+    Iterable<Spectrum> findSpectraWithPeaksById(@Param("ids") Set<Long> ids);
+
     long countByConsensusIsFalse();
 
     long countByChromatographyTypeAndConsensusFalse(ChromatographyType chromatographyType);

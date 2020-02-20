@@ -207,10 +207,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
             throws EmptySearchResultException {
 
         final SpectrumCluster cluster = new SpectrumCluster();
-        final List<Spectrum> spectra = spectrumIds.stream()
-                .map(this::findSpectrum)
-//                .peek(s -> s.setCluster(cluster))
-                .collect(Collectors.toList());
+        final List<Spectrum> spectra = findSpectra(spectrumIds);
 
         //set size of study
         long submissionCount = spectra.stream()
@@ -293,9 +290,8 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
         return cluster;
     }
 
-    private Spectrum findSpectrum(final long id) throws EmptySearchResultException {
-        return spectrumRepository.findById(id)
-                .orElseThrow(() -> new EmptySearchResultException(id));
+    private List<Spectrum> findSpectra(Set<Long> ids) {
+        return MappingUtils.toList(spectrumRepository.findSpectraWithPeaksById(ids));
     }
 
     /**
