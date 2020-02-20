@@ -218,8 +218,8 @@ public class DistributionServiceImpl implements DistributionService {
             TagDistribution tagDistribution = new TagDistribution();
             tagDistribution.setDistributionMap(clusterDistributionMap);
             tagDistribution.setLabel(key);
-//            tagDistribution.setPValue(
-//                    StatisticsUtils.calculateExactTestStatistics(clusterDistributionMap.values()));
+            tagDistribution.setPValue(
+                    StatisticsUtils.calculateExactTestStatistics(clusterDistributionMap.values()));
             tagDistribution.setMassSpectrometryType(massSpectrometryType);
 
             tagDistributionList.add(tagDistribution);

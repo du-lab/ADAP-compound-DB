@@ -206,12 +206,10 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                                           Map<String, Map<String, Integer>> lowResDbCountMaps)
             throws EmptySearchResultException {
 
-        LOGGER.info("Retrieving spectra...");
         final SpectrumCluster cluster = new SpectrumCluster();
         final List<Spectrum> spectra = findSpectra(spectrumIds);
 
         //set size of study
-        LOGGER.info("Calculating size...");
         long submissionCount = spectra.stream()
                 .map(Spectrum::getFile).filter(Objects::nonNull)
                 .map(File::getSubmission).filter(Objects::nonNull)
@@ -222,7 +220,6 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 //        cluster.setSpectra(spectra);
 
         // Calculate diameter
-        LOGGER.info("Calculating diameter...");
         cluster.setDiameter(spectra
                 .stream()
                 .flatMap(s -> s.getMatches().stream())
@@ -232,7 +229,6 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                 .orElse(0.0));
 
         // Calculate the significance statistics
-        LOGGER.info("Calculating statistics...");
         final DoubleSummaryStatistics significanceStats = spectra
                 .stream()
                 .map(Spectrum::getSignificance)
@@ -271,7 +267,6 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
             cluster.setAveDiversity(avgDiversity);
         }
 
-        LOGGER.info("Calculating consensus spectrum...");
         final Spectrum consensusSpectrum = createConsensusSpectrum(spectra, MZ_TOLERANCE);
         consensusSpectrum.setCluster(cluster);
         cluster.setConsensusSpectrum(consensusSpectrum);
@@ -285,7 +280,6 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                 .collect(Collectors.toList());
 
         // Calculate cluster distributions
-        LOGGER.info("Calculating tag distributions...");
         List<TagDistribution> distributions = distributionService.calculateClusterDistributions(tags,
                 consensusSpectrum.isIntegerMz() ? MassSpectrometryType.LOW_RESOLUTION : MassSpectrometryType.HIGH_RESOLUTION,
                 consensusSpectrum.isIntegerMz() ? lowResDbCountMaps : highResDbCountMaps);
@@ -405,8 +399,6 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
     private List<Peak> createConsensusPeaksWithFractionalMz(List<Spectrum> spectra, float mzTolerance) {
         
-        LOGGER.info("Creating consensus peak with fractional m/z...");
-
         if (spectra.size() == 1) {
 
             // Return copy of the spectrum peaks
@@ -423,16 +415,13 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
             return newPeaks;
         }
 
-        LOGGER.info("Building distance matrix...");
         Matrix distanceMatrix = getMzDistanceMatrix(spectra, mzTolerance);
 
         SparseHierarchicalClusterer clusterer = new SparseHierarchicalClusterer(
                 distanceMatrix, new org.dulab.jsparcehc.CompleteLinkage());
-        LOGGER.info("Clustering...");
         clusterer.cluster(mzTolerance);
         Map<Integer, Integer> labels = clusterer.getLabels();
 
-        LOGGER.info("Creating peaks...");
         Set<Integer> uniqueLabels = new HashSet<>(labels.values());
         final List<Peak> consensusPeaks = new ArrayList<>(uniqueLabels.size());
         List<Peak> clusterPeaks = new ArrayList<>();
@@ -465,8 +454,6 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
     }
 
     private List<Peak> createConsensusPeaksWithIntegerMz(List<Spectrum> spectra) {
-
-        LOGGER.info("Creating consensus peaks with integer m/z...");
 
         Map<Double, Double> totalIntensityMap = new HashMap<>();
         for (Spectrum spectrum : spectra) {
