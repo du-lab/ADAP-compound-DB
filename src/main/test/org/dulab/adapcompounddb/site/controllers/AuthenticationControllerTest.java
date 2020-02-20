@@ -37,20 +37,20 @@ public class AuthenticationControllerTest {
     @Mock
     private UserPrincipal userPrincipal;
 
-    @Before
-    public void setUp() {
-
-        mockMvc = MockMvcBuilders
-                .standaloneSetup(
-                        new AuthenticationController(authenticationServiceMock),
-                        new IndexController(spectrumServiceMock, feedbackServiceMock))
-                .setViewResolvers(
-                        new ServletContextConfiguration(
-                                new LocalValidatorFactoryBean()).viewResolver())
-                .build();
-
-        mockHttpSession = new MockHttpSession();
-    }
+//    @Before
+//    public void setUp() {
+//
+//        mockMvc = MockMvcBuilders
+//                .standaloneSetup(
+//                        new AuthenticationController(authenticationServiceMock),
+//                        new IndexController(spectrumServiceMock, feedbackServiceMock))
+//                .setViewResolvers(
+//                        new ServletContextConfiguration(
+//                                new LocalValidatorFactoryBean()).viewResolver())
+//                .build();
+//
+//        mockHttpSession = new MockHttpSession();
+//    }
 
     @Test
     public void loginGetTest() throws Exception {

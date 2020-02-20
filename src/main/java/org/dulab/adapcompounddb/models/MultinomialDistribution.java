@@ -3,6 +3,7 @@ package org.dulab.adapcompounddb.models;
 import org.apache.commons.math3.util.CombinatoricsUtils;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 public class MultinomialDistribution {
@@ -51,10 +52,11 @@ public class MultinomialDistribution {
 
         double thresholdP = getPMF(counts);
 
-        List<int[]> combinations = combinatorics.findCombinations(probabilities.length, numTrials);
+        Iterator<int[]> iterator = new CombinationOfIntegers(probabilities.length, numTrials);
 
         double sum = 0.0;
-        for (int[] combination : combinations) {
+        while (iterator.hasNext()) {
+            int[] combination = iterator.next();
             double p = getPMF(combination);
             if (p <= thresholdP)
                 sum += p;

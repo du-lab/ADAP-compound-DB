@@ -31,7 +31,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
     private static final int MIN_NUM_SPECTRA = 1;
 
-    private static final double PEAK_INTENSITY_FRACTION = 0.05;
+    private static final double PEAK_INTENSITY_FRACTION = 0.005;
 
     private static final Logger LOGGER = LogManager.getLogger(SpectrumClusterer.class);
 
@@ -140,6 +140,8 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
             LOGGER.info(String.format("Creating new clusters of type \"%s\" to the database...", type));
 
             for (final long label : uniqueLabels) {
+
+                System.out.println(label);
 
                 count += 1F;
                 final Set<Long> spectrumIds = labelMap.entrySet()

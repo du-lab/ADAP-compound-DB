@@ -65,14 +65,14 @@ public class AdminRestController {
 
                 } catch (Exception e) {
                     LOGGER.error("Error during clustering: ", e);
-                    throw e;
+                    throw new IllegalStateException("Error during clustering: " + e.getMessage(), e);
                 }
             };
             spectrumClusterer.setProgress(0F);
             executor.submit(r);
         } catch (final Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            LOGGER.error("Error during clustering: ", e);
+            throw new IllegalStateException("Error during clustering: " + e.getMessage(), e);
         }
         return "OK";
     }

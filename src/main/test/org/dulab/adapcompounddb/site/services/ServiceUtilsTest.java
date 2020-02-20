@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.site.services;
 
 import org.dulab.adapcompounddb.models.DbAndClusterValuePair;
+import org.dulab.adapcompounddb.site.services.utils.StatisticsUtils;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ public class ServiceUtilsTest {
 
         List<DbAndClusterValuePair> emptyList = new ArrayList<>(0);
 
-        double pValue = ServiceUtils.calculateChiSquaredStatistics(emptyList);
+        double pValue = StatisticsUtils.calculateChiSquaredStatistics(emptyList);
 
         assertEquals(1.0, pValue, EPS);
     }
@@ -30,7 +31,7 @@ public class ServiceUtilsTest {
         List<DbAndClusterValuePair> singleton = new ArrayList<>(1);
         singleton.add(new DbAndClusterValuePair(10, 2));
 
-        double pValue = ServiceUtils.calculateChiSquaredStatistics(singleton);
+        double pValue = StatisticsUtils.calculateChiSquaredStatistics(singleton);
 
         assertEquals(1.0, pValue, EPS);
     }
@@ -45,7 +46,7 @@ public class ServiceUtilsTest {
         pairs.add(new DbAndClusterValuePair(3, 30));
         pairs.add(new DbAndClusterValuePair(1, 5));
 
-        double pValue = ServiceUtils.calculateChiSquaredStatistics(pairs);
+        double pValue = StatisticsUtils.calculateChiSquaredStatistics(pairs);
 
         // The expected value is calculated by calculating Chi-squared Goodness-of-fit test described at
         // https://www.stat.berkeley.edu/~stark/SticiGui/Text/chiSquare.htm
@@ -62,7 +63,7 @@ public class ServiceUtilsTest {
         pairs.add(new DbAndClusterValuePair(30, 3));
         pairs.add(new DbAndClusterValuePair(5, 1));
 
-        double pValue = ServiceUtils.calculateExactTestStatistics(pairs);
+        double pValue = StatisticsUtils.calculateExactTestStatistics(pairs);
 
         assertEquals(	0.80727, pValue, EPS);
     }
@@ -81,7 +82,7 @@ public class ServiceUtilsTest {
         clusterCountMap.put("value3", 30);
 
         Map<String, DbAndClusterValuePair> distribution =
-                ServiceUtils.calculateDbAndClusterDistribution(dbCountMap, clusterCountMap);
+                StatisticsUtils.calculateDbAndClusterDistribution(dbCountMap, clusterCountMap);
 
         DbAndClusterValuePair pair1 = distribution.get("value1");
         assertEquals(1, pair1.getDbValue());
