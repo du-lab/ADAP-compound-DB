@@ -56,13 +56,13 @@ public class GroupSearchRestController {
         return jsonString;
     }
 
-    @RequestMapping(value = "/file/group_search_results/progress", produces = "application/json")
+    @RequestMapping(value = "/file/group_search/progress", produces = "application/json")
     public int fileGroupSearchProgress() {
         // Return json-string containing a number between 0 and 100.
         return Math.round(100 * groupSearchService.getProgress());
     }
 
-    @RequestMapping(value = "/submission/{submissionId:\\d+}/group_search_results/progress", produces = "application/json")
+    @RequestMapping(value = "/submission/{submissionId:\\d+}/group_search/progress", produces = "application/json")
     public int submissionGroupSearchProgress(@PathVariable("submissionId") final long submissionId) {
         // Return json-string containing a number between 0 and 100.
         return Math.round(100 * groupSearchService.getProgress());

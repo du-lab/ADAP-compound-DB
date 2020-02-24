@@ -25,49 +25,49 @@ public class GroupSearchController {
         this.groupSearchService = groupSearchService;
     }
 
-    @RequestMapping(value = "/file/group_search_results/", method = RequestMethod.GET)
+    @RequestMapping(value = "/file/group_search/", method = RequestMethod.GET)
     public String groupSearch(final HttpSession session, final Model model, @Valid final SearchForm form) {
         session.removeAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
 
         final Submission submission = Submission.from(session);
         if (submission == null) {
-            return "/file/upload/";
+            return "redirect:/file/upload/";
         }
         model.addAttribute("searchForm", form);
-        return "/group_search_results";
+        return "submission/group_search";
     }
 
-    @RequestMapping(value = "/submission/{submissionId:\\d+}/group_search_results/", method = RequestMethod.GET)
+    @RequestMapping(value = "/submission/{submissionId:\\d+}/group_search/", method = RequestMethod.GET)
     public String groupSearch(final Model model, @Valid final SearchForm form, final HttpSession session) {
         session.removeAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
         groupSearchService.setProgress(0F);
         model.addAttribute("searchForm", form);
-        return "/group_search_results";
+        return "submission/group_search";
     }
 
-    @RequestMapping(value = "/file/group_search_results/", method = RequestMethod.POST)
+    @RequestMapping(value = "/file/group_search/", method = RequestMethod.POST)
     public ModelAndView groupSearch(final HttpSession session, final Model model, @Valid final SearchForm form,
                                     final Errors errors) {
         final Submission submission = Submission.from(session);
         groupSearchService.setProgress(0F);
         if (errors.hasErrors()) {
-            return new ModelAndView("search");
+            return new ModelAndView("submission/group_search");
         }
         final QueryParameters parameters = ControllerUtils.getParameters(form);
         new Thread(() -> groupSearchService.nonSubmittedGroupSearch(submission, session, parameters)).start();
         model.addAttribute("form", form);
-        return new ModelAndView("group_search_results");
+        return new ModelAndView("submission/group_search");
     }
 
-    @RequestMapping(value = "/submission/{submissionId:\\d+}/group_search_results/", method = RequestMethod.POST)
+    @RequestMapping(value = "/submission/{submissionId:\\d+}/group_search/", method = RequestMethod.POST)
     public ModelAndView groupSearch(@PathVariable("submissionId") final long submissionId, final HttpSession session,
                                     final Model model, @Valid final SearchForm form, final Errors errors) {
         if (errors.hasErrors()) {
-            return new ModelAndView("search");
+            return new ModelAndView("submission/group_search");
         }
         final QueryParameters parameters = ControllerUtils.getParameters(form);
         new Thread(() -> groupSearchService.groupSearch(submissionId, session, parameters)).start();
         model.addAttribute("form", form);
-        return new ModelAndView("group_search_results");
+        return new ModelAndView("submission/group_search");
     }
 }
