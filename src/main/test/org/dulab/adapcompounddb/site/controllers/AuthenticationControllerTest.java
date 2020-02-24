@@ -45,8 +45,7 @@ public class AuthenticationControllerTest {
                         new AuthenticationController(authenticationServiceMock),
                         new IndexController(spectrumServiceMock, feedbackServiceMock))
                 .setViewResolvers(
-                        new ServletContextConfiguration(
-                                new LocalValidatorFactoryBean()).viewResolver())
+                        new ServletContextConfiguration().viewResolver())
                 .build();
 
         mockHttpSession = new MockHttpSession();
