@@ -12,13 +12,17 @@ import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.List;
+import java.util.concurrent.Future;
 
 @Service
 public class GroupSearchServiceImpl implements GroupSearchService {
@@ -26,12 +30,10 @@ public class GroupSearchServiceImpl implements GroupSearchService {
     private static final Logger LOGGER = LogManager.getLogger(GroupSearchServiceImpl.class);
 
     private float progress = -1F;
-    private final SubmissionRepository submissionRepository;
     private final SpectrumRepository spectrumRepository;
 
     @Autowired
-    public GroupSearchServiceImpl(SubmissionRepository submissionRepository, SpectrumRepository spectrumRepository) {
-        this.submissionRepository = submissionRepository;
+    public GroupSearchServiceImpl(SpectrumRepository spectrumRepository) {
         this.spectrumRepository = spectrumRepository;
     }
 
@@ -46,15 +48,16 @@ public class GroupSearchServiceImpl implements GroupSearchService {
     }
 
     @Override
-    @Transactional
-    public void groupSearch(Submission submission, HttpSession session, QueryParameters parameters) {
+    @Async
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void groupSearch(Submission submission, HttpSession session, String species, String source, String disease) {
 
         final List<ClusterDTO> groupSearchDTOList = new ArrayList<>();
 
         // Calculate total number of spectra
         long totalSteps = submission.getFiles().stream()
-                .flatMap(f -> f.getSpectra().stream())
-                .count();
+                .mapToLong(f -> f.getSpectra().size())
+                .sum();
 
         if (totalSteps == 0) {
             LOGGER.warn("No query spectra for performing a group search");
@@ -62,21 +65,24 @@ public class GroupSearchServiceImpl implements GroupSearchService {
             return;
         }
 
-
         int progressStep = 0;
         progress = 0F;
         for (File file : submission.getFiles()) {
 
+            if (Thread.interrupted()) break;
+
             List<Spectrum> querySpectra = file.getSpectra();
             for (Spectrum querySpectrum : querySpectra) {
+
+                if (Thread.interrupted()) break;
 
                 ClusterDTO clusterDTO = new ClusterDTO();
                 clusterDTO.setQuerySpectrumName(querySpectrum.getName());
                 clusterDTO.setQuerySpectrumId(querySpectrum.getId());
 
                 List<SpectrumClusterView> clusters = MappingUtils.toList(
-                        spectrumRepository.searchConsensusSpectra(
-                                querySpectrum, 0.25, 0.01, null, null, null));
+                            spectrumRepository.searchConsensusSpectra(
+                                    querySpectrum, 0.25, 0.01, species, source, disease));
 
                 // get the best match if the match is not null
                 if (clusters.size() > 0) {

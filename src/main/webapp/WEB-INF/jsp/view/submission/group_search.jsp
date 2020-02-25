@@ -1,9 +1,3 @@
-<%--@elvariable id="querySpectrum" type="org.dulab.adapcompounddb.models.entities.Spectrum"--%>
-<%--@elvariable id="matches" type="java.util.List<org.dulab.adapcompounddb.models.entities.SpectrumMatch>"--%>
-<%--@elvariable id="submissionCategoryTypes" type="org.dulab.adapcompounddb.models.SubmissionCategoryType[]"--%>
-<%--@elvariable id="submissionCategoryMap" type="java.util.Map<org.dulab.adapcompounddb.models.SubmissionCategoryType, org.dulab.adapcompounddb.models.entities.SubmissionCategory>"--%>
-<%--@elvariable id="searchForm" type="org.dulab.adapcompounddb.site.controllers.IndividualSearchController.SearchForm"--%>
-
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
@@ -18,7 +12,7 @@
         <span data-tab="files">Group Search Results</span>
     </div>
 
-    <div align="center">
+    <div style="text-align: center">
         <table id="match_table" class="display responsive" style="width: 100%; clear:none;">
             <thead>
             <tr>
@@ -37,8 +31,38 @@
             <tbody>
             </tbody>
         </table>
+
+        <%--@elvariable id="filterForm" type="org.dulab.adapcompounddb.site.controllers.forms.FilterForm"--%>
+        <%--@elvariable id="filterOptions" type="org.dulab.adapcompounddb.site.controllers.forms.FilterOptions"--%>
+        <form:form modelAttribute="filterForm" method="post">
+            <div class="table-dropdown">
+                <form:label path="species">Species:</form:label>
+                <form:select path="species">
+                    <form:option value="all">All</form:option>
+                    <form:options items="${filterOptions.speciesList}"/>
+                </form:select>
+            </div>
+            <div class="table-dropdown">
+                <form:label path="source">Species:</form:label>
+                <form:select path="source">
+                    <form:option value="all">All</form:option>
+                    <form:options items="${filterOptions.sourceList}"/>
+                </form:select>
+            </div>
+            <div class="table-dropdown">
+                <form:label path="disease">Species:</form:label>
+                <form:select path="disease">
+                    <form:option value="all">All</form:option>
+                    <form:options items="${filterOptions.diseaseList}"/>
+                </form:select>
+            </div>
+        </form:form>
     </div>
 </section>
+
+<%--<div style="text-align: center">--%>
+<%--    <a class="button" onclick="$('#filterForm').submit()">Search</a>--%>
+<%--</div>--%>
 
 <script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
 <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
@@ -49,7 +73,9 @@
 
 <script>
     $(document).ready(function () {
+
         let table = $('#match_table').DataTable({
+            dom: 'l<"#filter">frtip',
             serverSide: true,
             processing: true,
             responsive: true,
@@ -90,7 +116,7 @@
                         let content = '';
                         if (row.consensusSpectrumName != null) {
                             content = '<a href="${pageContext.request.contextPath}/cluster/'
-                                + row.matchSpectrumClusterId + '/">' + row.consensusSpectrumName + '</a>';
+                                + row.clusterId + '/">' + row.consensusSpectrumName + '</a>';
                         }
                         return content;
                     }
@@ -182,113 +208,126 @@
                 // {"className": "dt-center", "targets": "_all"}
             ]
         });
-        $('#scoreThreshold').prop('disabled', !$('#scoreThresholdCheck1').prop('checked'));
-        $('#mzTolerance').prop('disabled', !$('#scoreThresholdCheck1').prop('checked'));
-        $('#massTolerance').prop('disabled', !$('#massToleranceCheck1').prop('checked'));
-        $('#retTimeTolerance').prop('disabled', !$('#retTimeToleranceCheck1').prop('checked'));
-        $('#accordion').accordion();
+
+        // $('#scoreThreshold').prop('disabled', !$('#scoreThresholdCheck1').prop('checked'));
+        // $('#mzTolerance').prop('disabled', !$('#scoreThresholdCheck1').prop('checked'));
+        // $('#massTolerance').prop('disabled', !$('#massToleranceCheck1').prop('checked'));
+        // $('#retTimeTolerance').prop('disabled', !$('#retTimeToleranceCheck1').prop('checked'));
+        // $('#accordion').accordion();
 
         // refresh the datatable every 1 second
         setInterval(function () {
             table.ajax.reload(null, false);
         }, 1000);
 
-        //checkbox control data column display
-        $("input:checkbox").click(function () {
+        let filterForm = $('#filterForm');
+        filterForm.appendTo('#filter');
 
-                // table
-                var table = $('#match_table').dataTable();
-
-                // column
-                var colNum = $(this).attr('data-column');
-
-                // Define
-                var bVis = $(this).prop('checked');
-
-                // Toggle
-                table.fnSetColumnVis(colNum, bVis);
-            }
-        );
-
-        // initialize checkbox mark to unchecked for column not showing at the beginning
-        $("input:checkbox").ready(function () {
-            $("input:checkbox").each(function () {
-                var table = $('#match_table').dataTable();
-                var colNum = $(this).attr('data-column');
-                if (colNum != null) {
-                    var bVis = table.fnSettings().aoColumns[colNum].bVisible;
-                    $(this).prop("checked", bVis);
-                }
-            })
+        $('#species, #source, #disease').change(function () {
+            filterForm.submit();
         });
 
 
+        <c:if test="${pageContext.request.method == 'GET'}">filterForm.submit();</c:if>
+
+        new GroupSearchProgressBar(window.location.href + 'progress', 'group_search_progress', 1000).start();
+
+        // //checkbox control data column display
+        // $("input:checkbox").click(function () {
+        //
+        //         // table
+        //         var table = $('#match_table').dataTable();
+        //
+        //         // column
+        //         var colNum = $(this).attr('data-column');
+        //
+        //         // Define
+        //         var bVis = $(this).prop('checked');
+        //
+        //         // Toggle
+        //         table.fnSetColumnVis(colNum, bVis);
+        //     }
+        // );
+        //
+        // // initialize checkbox mark to unchecked for column not showing at the beginning
+        // $("input:checkbox").ready(function () {
+        //     $("input:checkbox").each(function () {
+        //         var table = $('#match_table').dataTable();
+        //         var colNum = $(this).attr('data-column');
+        //         if (colNum != null) {
+        //             var bVis = table.fnSettings().aoColumns[colNum].bVisible;
+        //             $(this).prop("checked", bVis);
+        //         }
+        //     })
+        // });
+
+
     });
-    var groupSearchProgressBar = new groupSearchProgressBar('progress', 'group_search_progress', 1000);
-    groupSearchProgressBar.start();
+    // let groupSearchProgressBar = new groupSearchProgressBar('progress', 'group_search_progress', 1000);
+    // groupSearchProgressBar.start();
 </script>
 
-<section>
-    <h1>Query Parameters</h1>
-    <div align="center">
-        <div align="left" class="subsection">
-            <p class="errors">${searchResultMessage}</p>
-            <c:if test="${validationErrors != null}">
-                <div class="errors">
-                    <ul>
-                        <c:forEach items="${validationErrors}" var="error">
-                            <li><c:out value="${error.message}"/></li>
-                        </c:forEach>
-                    </ul>
-                </div>
-            </c:if>
-            <form:form method="post" modelAttribute="searchForm">
-                <form:errors path="" cssClass="errors"/>
-                <div id="accordion">
-                    <h3>Search Parameters</h3>
-                    <div>
-                        <label>
-                            <form:checkbox path="scoreThresholdCheck" onchange="
-                                    $('#scoreThreshold').prop('disabled', !this.checked);
-                                    $('#mzTolerance').prop('disabled', !this.checked);"/>
-                            Spectral Similarity
-                        </label><br/>
-                        <form:label path="scoreThreshold">Matching Score Threshold</form:label><br/>
-                        <form:input path="scoreThreshold"/><br/>
-                        <form:errors path="scoreThreshold" cssClass="errors"/><br/>
+<%--<section>--%>
+<%--    <h1>Query Parameters</h1>--%>
+<%--    <div align="center">--%>
+<%--        <div align="left" class="subsection">--%>
+<%--            <p class="errors">${searchResultMessage}</p>--%>
+<%--            <c:if test="${validationErrors != null}">--%>
+<%--                <div class="errors">--%>
+<%--                    <ul>--%>
+<%--                        <c:forEach items="${validationErrors}" var="error">--%>
+<%--                            <li><c:out value="${error.message}"/></li>--%>
+<%--                        </c:forEach>--%>
+<%--                    </ul>--%>
+<%--                </div>--%>
+<%--            </c:if>--%>
+<%--            <form:form method="post" modelAttribute="searchForm">--%>
+<%--                <form:errors path="" cssClass="errors"/>--%>
+<%--                <div id="accordion">--%>
+<%--                    <h3>Search Parameters</h3>--%>
+<%--                    <div>--%>
+<%--                        <label>--%>
+<%--                            <form:checkbox path="scoreThresholdCheck" onchange="--%>
+<%--                                    $('#scoreThreshold').prop('disabled', !this.checked);--%>
+<%--                                    $('#mzTolerance').prop('disabled', !this.checked);"/>--%>
+<%--                            Spectral Similarity--%>
+<%--                        </label><br/>--%>
+<%--                        <form:label path="scoreThreshold">Matching Score Threshold</form:label><br/>--%>
+<%--                        <form:input path="scoreThreshold"/><br/>--%>
+<%--                        <form:errors path="scoreThreshold" cssClass="errors"/><br/>--%>
 
-                        <form:label path="mzTolerance">Product Ion M/z tolerance</form:label><br/>
-                        <form:input path="mzTolerance"/><br/>
-                        <form:errors path="mzTolerance" cssClass="errors"/><br/>
+<%--                        <form:label path="mzTolerance">Product Ion M/z tolerance</form:label><br/>--%>
+<%--                        <form:input path="mzTolerance"/><br/>--%>
+<%--                        <form:errors path="mzTolerance" cssClass="errors"/><br/>--%>
 
-                            <%--                        <c:if test="${querySpectrum.chromatographyType != 'GAS'}">--%>
-                            <%--                            <label><form:checkbox path="massToleranceCheck"--%>
-                            <%--                                                  onchange="$('#massTolerance').prop('disabled', !this.checked);"/>--%>
-                            <%--                                Precursor Ion M/z Tolerance--%>
-                            <%--                            </label><br/>--%>
-                            <%--                            <form:input path="massTolerance"/><br/>--%>
-                            <%--                            <form:errors path="massTolerance" cssClass="errors"/><br/>--%>
+<%--                            &lt;%&ndash;                        <c:if test="${querySpectrum.chromatographyType != 'GAS'}">&ndash;%&gt;--%>
+<%--                            &lt;%&ndash;                            <label><form:checkbox path="massToleranceCheck"&ndash;%&gt;--%>
+<%--                            &lt;%&ndash;                                                  onchange="$('#massTolerance').prop('disabled', !this.checked);"/>&ndash;%&gt;--%>
+<%--                            &lt;%&ndash;                                Precursor Ion M/z Tolerance&ndash;%&gt;--%>
+<%--                            &lt;%&ndash;                            </label><br/>&ndash;%&gt;--%>
+<%--                            &lt;%&ndash;                            <form:input path="massTolerance"/><br/>&ndash;%&gt;--%>
+<%--                            &lt;%&ndash;                            <form:errors path="massTolerance" cssClass="errors"/><br/>&ndash;%&gt;--%>
 
-                            <%--                            <label><form:checkbox path="retTimeToleranceCheck"--%>
-                            <%--                                                  onchange="$('#retTimeTolerance').prop('disabled', !this.checked);"/>--%>
-                            <%--                                Retention Time Tolerance--%>
-                            <%--                            </label><br/>--%>
-                            <%--                            <form:input path="retTimeTolerance"/><br/>--%>
-                            <%--                            <form:errors path="retTimeTolerance" cssClass="errors"/><br/>--%>
-                            <%--                        </c:if>--%>
-                    </div>
-                    <h3>Equipment Selector</h3>
-                    <div>
-                        <form:input path="tags"/><br/>
-                        <form:errors path="tags" cssClass="errors"/><br/>
-                    </div>
-                </div>
-                <div align="center">
-                    <input id="demo" type="submit" value="Group Match"/>
-                </div>
-            </form:form>
-        </div>
-    </div>
-</section>
+<%--                            &lt;%&ndash;                            <label><form:checkbox path="retTimeToleranceCheck"&ndash;%&gt;--%>
+<%--                            &lt;%&ndash;                                                  onchange="$('#retTimeTolerance').prop('disabled', !this.checked);"/>&ndash;%&gt;--%>
+<%--                            &lt;%&ndash;                                Retention Time Tolerance&ndash;%&gt;--%>
+<%--                            &lt;%&ndash;                            </label><br/>&ndash;%&gt;--%>
+<%--                            &lt;%&ndash;                            <form:input path="retTimeTolerance"/><br/>&ndash;%&gt;--%>
+<%--                            &lt;%&ndash;                            <form:errors path="retTimeTolerance" cssClass="errors"/><br/>&ndash;%&gt;--%>
+<%--                            &lt;%&ndash;                        </c:if>&ndash;%&gt;--%>
+<%--                    </div>--%>
+<%--                    <h3>Equipment Selector</h3>--%>
+<%--                    <div>--%>
+<%--                        <form:input path="tags"/><br/>--%>
+<%--                        <form:errors path="tags" cssClass="errors"/><br/>--%>
+<%--                    </div>--%>
+<%--                </div>--%>
+<%--                <div align="center">--%>
+<%--                    <input id="demo" type="submit" value="Group Match"/>--%>
+<%--                </div>--%>
+<%--            </form:form>--%>
+<%--        </div>--%>
+<%--    </div>--%>
+<%--</section>--%>
 
 

@@ -41,9 +41,13 @@ public class GroupSearchRestController {
             final HttpSession session) throws JsonProcessingException {
 
         List<ClusterDTO> matches;
+
         if (session.getAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME) != null) {
+
+            @SuppressWarnings("unchecked")
             List<ClusterDTO> sessionMatches =
                     (List<ClusterDTO>) session.getAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
+
             //Avoid ConcurrentModificationException by make a copy for sorting
             matches = new ArrayList<>(sessionMatches);
 
