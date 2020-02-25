@@ -7,9 +7,7 @@ import javax.servlet.http.HttpSession;
 
 public interface GroupSearchService {
 
-    void groupSearch(long submissionId, HttpSession session, QueryParameters parameters);
-
-    void nonSubmittedGroupSearch(Submission submission, HttpSession session, QueryParameters parameters);
+    void groupSearch(Submission submission, HttpSession session, QueryParameters parameters);
 
     /**
      * Calculates the fraction of processed query spectra

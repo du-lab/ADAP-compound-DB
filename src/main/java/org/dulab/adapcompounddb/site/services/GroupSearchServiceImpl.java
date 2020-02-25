@@ -1,15 +1,16 @@
 package org.dulab.adapcompounddb.site.services;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.dto.ClusterDTO;
-import org.dulab.adapcompounddb.models.entities.File;
-import org.dulab.adapcompounddb.models.entities.Spectrum;
-import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
-import org.dulab.adapcompounddb.models.entities.Submission;
+import org.dulab.adapcompounddb.models.entities.*;
+import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
 import org.dulab.adapcompounddb.site.controllers.ControllerUtils;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
+import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,8 @@ import java.util.List;
 
 @Service
 public class GroupSearchServiceImpl implements GroupSearchService {
+
+    private static final Logger LOGGER = LogManager.getLogger(GroupSearchServiceImpl.class);
 
     private float progress = -1F;
     private final SubmissionRepository submissionRepository;
@@ -44,107 +47,56 @@ public class GroupSearchServiceImpl implements GroupSearchService {
 
     @Override
     @Transactional
-    public void groupSearch(long submissionId, HttpSession session, QueryParameters parameters) {
-        Submission submission = submissionRepository.findById(submissionId).orElseThrow(EmptyStackException::new);
-        setSession(submission, parameters, session);
-    }
-
-    @Override
-    @Transactional
-    public void nonSubmittedGroupSearch(Submission submission, HttpSession session, QueryParameters parameters) {
-        setSession(submission, parameters, session);
-    }
-
-    private void setSession(Submission submission, QueryParameters parameters, HttpSession session) {
-
-        long fullSteps = 0l;
-        float progressStep = 0F;
-        progress = 0F;
-        // Calculate total number of submissions
-
-        for (File f : submission.getFiles()) {
-            List<Spectrum> querySpectra = f.getSpectra();
-            for (Spectrum s : querySpectra) {
-                fullSteps++;
-            }
-        }
+    public void groupSearch(Submission submission, HttpSession session, QueryParameters parameters) {
 
         final List<ClusterDTO> groupSearchDTOList = new ArrayList<>();
 
-        for (int fileIndex = 0; fileIndex < submission.getFiles().size(); fileIndex++) {
+        // Calculate total number of spectra
+        long totalSteps = submission.getFiles().stream()
+                .flatMap(f -> f.getSpectra().stream())
+                .count();
 
-            List<Spectrum> querySpectra = submission.getFiles().get(fileIndex).getSpectra();
+        if (totalSteps == 0) {
+            LOGGER.warn("No query spectra for performing a group search");
+            session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
+            return;
+        }
 
-            for (int i = 0; i < querySpectra.size(); i++) {
 
-                long querySpectrumId = querySpectra.get(i).getId();
-                final List<SpectrumMatch> matches = spectrumRepository.spectrumSearch(
-                        SearchType.SIMILARITY_SEARCH, querySpectra.get(i), parameters);
+        int progressStep = 0;
+        progress = 0F;
+        for (File file : submission.getFiles()) {
+
+            List<Spectrum> querySpectra = file.getSpectra();
+            for (Spectrum querySpectrum : querySpectra) {
+
+                ClusterDTO clusterDTO = new ClusterDTO();
+                clusterDTO.setQuerySpectrumName(querySpectrum.getName());
+                clusterDTO.setQuerySpectrumId(querySpectrum.getId());
+
+                List<SpectrumClusterView> clusters = MappingUtils.toList(
+                        spectrumRepository.searchConsensusSpectra(
+                                querySpectrum, 0.25, 0.01, null, null, null));
 
                 // get the best match if the match is not null
-                if (matches.size() > 0) {
-                    groupSearchDTOList.add(saveDTO(matches.get(0), fileIndex, i, querySpectrumId));
-                } else {
-                    SpectrumMatch noneMatch = new SpectrumMatch();
-                    noneMatch.setQuerySpectrum(querySpectra.get(i));
-                    groupSearchDTOList.add(saveDTO(noneMatch, fileIndex, i, querySpectrumId));
+                if (clusters.size() > 0) {
+                    SpectrumClusterView clusterView = clusters.get(0);
+                    clusterDTO.setClusterId(clusterView.getId());
+                    clusterDTO.setConsensusSpectrumName(clusterView.getName());
+                    clusterDTO.setSize(clusterView.getSize());
+                    clusterDTO.setScore(clusterView.getScore());
+                    clusterDTO.setAveSignificance(clusterView.getAverageSignificance());
+                    clusterDTO.setMinSignificance(clusterView.getMinimumSignificance());
+                    clusterDTO.setMaxSignificance(clusterView.getMaximumSignificance());
+                    clusterDTO.setChromatographyTypeLabel(clusterView.getChromatographyType().getLabel());
+                    clusterDTO.setChromatographyTypePath(clusterView.getChromatographyType().getIconPath());
                 }
+
+                groupSearchDTOList.add(clusterDTO);
                 session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
-                progress = progressStep / fullSteps;
-                progressStep = progressStep + 1F;
+                progress = (float) ++progressStep / totalSteps;
             }
         }
         progress = -1F;
-    }
-
-    private ClusterDTO saveDTO(SpectrumMatch spectrumMatch, int fileIndex, int spectrumIndex, long querySpectrumId) {
-        ClusterDTO clusterDTO = new ClusterDTO();
-        if (spectrumMatch.getMatchSpectrum() != null) {
-//            if (spectrumMatch.getMatchSpectrum().getCluster().getMinPValue() != null) {
-//                double pValue = spectrumMatch.getMatchSpectrum().getCluster().getMinPValue();
-//                clusterDTO.setMinPValue(pValue);
-//            }
-//            if (spectrumMatch.getMatchSpectrum().getCluster().getMaxDiversity() != null) {
-//                double maxDiversity = spectrumMatch.getMatchSpectrum().getCluster().getMaxDiversity();
-//                clusterDTO.setMaxDiversity(maxDiversity);
-//            }
-//            if (spectrumMatch.getMatchSpectrum().getCluster().getDiseasePValue() != null) {
-//                double diseasePValue = spectrumMatch.getMatchSpectrum().getCluster().getDiseasePValue();
-//                clusterDTO.setDiseasePValue(diseasePValue);
-//            }
-//            if (spectrumMatch.getMatchSpectrum().getCluster().getSpeciesPValue() != null) {
-//                double speciesPValue = spectrumMatch.getMatchSpectrum().getCluster().getSpeciesPValue();
-//                clusterDTO.setSpeciesPValue(speciesPValue);
-//            }
-//            if (spectrumMatch.getMatchSpectrum().getCluster().getSampleSourcePValue() != null) {
-//                double sampleSourcePValue = spectrumMatch.getMatchSpectrum().getCluster().getSampleSourcePValue();
-//                clusterDTO.setSampleSourcePValue(sampleSourcePValue);
-//            }
-
-            long matchSpectrumClusterId = spectrumMatch.getMatchSpectrum().getCluster().getId();
-            double score = spectrumMatch.getScore();
-            int size = spectrumMatch.getMatchSpectrum().getCluster().getSize();
-            String matchSpectrumName = spectrumMatch.getMatchSpectrum().getName();
-            String chromatographyTypeIconPath = spectrumMatch.getMatchSpectrum().getChromatographyType().getIconPath();
-            String chromatographyTypeLabel = spectrumMatch.getMatchSpectrum().getChromatographyType().getLabel();
-
-//            clusterDTO.setMatchSpectrumClusterId(matchSpectrumClusterId);
-            clusterDTO.setConsensusSpectrumName(matchSpectrumName);
-            clusterDTO.setScore(score);
-            clusterDTO.setSize(size);
-            clusterDTO.setChromatographyTypeLabel(spectrumMatch.getMatchSpectrum().getChromatographyType().getLabel());
-            clusterDTO.setChromatographyTypePath(spectrumMatch.getMatchSpectrum().getChromatographyType().getIconPath());
-//            clusterDTO.setChromatographyTypeIconPath(chromatographyTypeIconPath);
-//            clusterDTO.setChromatographyTypeLabel(chromatographyTypeLabel);
-
-        } else {
-            clusterDTO.setScore(null);
-        }
-        String querySpectrumName = spectrumMatch.getQuerySpectrum().getName();
-//        clusterDTO.setFileIndex(fileIndex);
-        clusterDTO.setQuerySpectrumName(querySpectrumName);
-//        clusterDTO.setSpectrumIndex(spectrumIndex);
-        clusterDTO.setQuerySpectrumId(querySpectrumId);
-        return clusterDTO;
     }
 }

@@ -31,7 +31,7 @@ public class GroupSearchRestController {
         this.groupSearchService = groupSearchService;
     }
 
-    @RequestMapping(value = "/file/group_search_results/data", produces = "application/json")
+    @RequestMapping(value = "/file/group_search/data", produces = "application/json")
     public String fileGroupSearchResults(
             @RequestParam("start") final Integer start,
             @RequestParam("length") final Integer length,
@@ -39,8 +39,9 @@ public class GroupSearchRestController {
             @RequestParam("sortDirection") final String sortDirection,
             @RequestParam("search") final String searchStr,
             final HttpSession session) throws JsonProcessingException {
+
         List<ClusterDTO> matches;
-        if (session.getAttribute("group_search_results") != null) {
+        if (session.getAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME) != null) {
             List<ClusterDTO> sessionMatches =
                     (List<ClusterDTO>) session.getAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
             //Avoid ConcurrentModificationException by make a copy for sorting

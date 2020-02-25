@@ -18,35 +18,18 @@
         <span data-tab="files">Group Search Results</span>
     </div>
 
-    <div>
-        Click to hide/show columns:
-        <label><input type="checkbox" data-column="2"/><strong>Best Match</strong></label> -
-        <label><input type="checkbox" data-column="3"/><strong>Count</strong></label> -
-        <label><input type="checkbox" data-column="4"/><strong>Score</strong></label> -
-        <label><input type="checkbox" data-column="5"/><strong>In-study P-value</strong></label> -
-        <label><input type="checkbox" data-column="6"/><strong>Maximum Diversity</strong></label> -
-        <label><input type="checkbox" data-column="7"/><strong>Cross-study P-value</strong></label> -
-        <label><input type="checkbox" data-column="8"/><strong>Cross-study P-value (disease)</strong></label> -
-        <label><input type="checkbox" data-column="9"/><strong>Cross-study P-value (species)</strong></label> -
-        <label><input type="checkbox" data-column="10"/><strong>Cross-study P-value (sample source)</strong></label> -
-        <label><input type="checkbox" data-column="11"/><strong>Type</strong></label>
-    </div>
-
     <div align="center">
         <table id="match_table" class="display responsive" style="width: 100%; clear:none;">
             <thead>
             <tr>
-                <th>ID</th>
-                <th>Compound from the Search List</th>
-                <th title="Top Matched Consensus spectrum">Best Match</th>
-                <th title="Number of studies">Count</th>
+                <th>Id</th>
+                <th>Query Spectrum</th>
+                <th title="Match spectra">Match Spectrum</th>
+                <th title="Number of studies" class="Count">Studies</th>
                 <th title="Minimum matching score between all spectra in a cluster">Score</th>
-                <th title="P-value of the In-study ANOVA test">In-study P-value</th>
-                <th title="Gini-Simpson Index">Maximum Diversity</th>
-                <th title="P-value of the Cross-study Goodness-of-fit test">Cross-study P-value</th>
-                <th title="P-value of disease">Cross-study P-value (disease)</th>
-                <th title="P-value of species">Cross-study P-value (species)</th>
-                <th title="P-value of sample source">Cross-study P-value (sample source)</th>
+                <th title="Average P-value of ANOVA tests">Average P-value</th>
+                <th title="Minimum P-value of ANOVA tests">Minimum P-value</th>
+                <th title="Maximum P-value of ANOVA tests">Maximum P-value</th>
                 <th title="Chromatography type">Type</th>
                 <th></th>
             </tr>
@@ -66,14 +49,14 @@
 
 <script>
     $(document).ready(function () {
-        var table = $('#match_table').DataTable({
+        let table = $('#match_table').DataTable({
             serverSide: true,
             processing: true,
             responsive: true,
             scrollX: true,
             // scroller: true,
             ajax: {
-                url: "${pageContext.request.contextPath}/file/group_search_results/data.json",
+                url: "${pageContext.request.contextPath}/file/group_search/data.json",
 
                 data: function (data) {
                     data.column = data.order[0].column;
@@ -96,8 +79,7 @@
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
-                        content = row.querySpectrumName;
-                        return content;
+                        return row.querySpectrumName;
                     }
                 },
                 {
@@ -105,7 +87,7 @@
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
-                        var content = '';
+                        let content = '';
                         if (row.consensusSpectrumName != null) {
                             content = '<a href="${pageContext.request.contextPath}/cluster/'
                                 + row.matchSpectrumClusterId + '/">' + row.consensusSpectrumName + '</a>';
@@ -117,18 +99,16 @@
                     "targets": 3,
                     "bSortable": true,
                     "bVisible": true,
-                    "data": "size"
+                    "render": function (data, type, row, meta) {
+                        return (row.size != null) ? row.size : '';
+                    }
                 },
                 {
                     "targets": 4,
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
-                        if (row.consensusSpectrumName != null && row.diameter != null) {
-                            return row.diameter.toFixed(3) * 1000;
-                        } else {
-                            return row.diameter;
-                        }
+                        return (row.score != null) ? row.score.toFixed(3) * 1000 : '';
                     }
                 },
                 {
@@ -136,10 +116,10 @@
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
-                        if (row.consensusSpectrumName != null && row.aveSignificance != null) {
+                        if (row.aveSignificance != null) {
                             return row.aveSignificance.toFixed(3);
                         } else {
-                            return row.aveSignificance;
+                            return '';
                         }
                     }
                 },
@@ -148,10 +128,10 @@
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
-                        if (row.consensusSpectrumName != null && row.maxDiversity != null) {
-                            return row.maxDiversity.toFixed(3);
+                        if (row.minSignificance != null) {
+                            return row.minSignificance.toFixed(3);
                         } else {
-                            return row.maxDiversity;
+                            return '';
                         }
                     }
                 },
@@ -160,58 +140,22 @@
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
-                        if (row.consensusSpectrumName != null && row.minPValue != null) {
-                            return row.minPValue.toFixed(3);
+                        if (row.maxSignificance != null) {
+                            return row.maxSignificance.toFixed(3);
                         } else {
-                            return row.minPValue;
+                            return '';
                         }
                     }
                 },
                 {
                     "targets": 8,
                     "bSortable": true,
-                    "bVisible": false,
-                    "render": function (data, type, row, meta) {
-                        if (row.consensusSpectrumName != null && row.diseasePValue != null) {
-                            return row.diseasePValue.toFixed(3);
-                        } else {
-                            return row.diseasePValue;
-                        }
-                    }
-                },
-                {
-                    "targets": 9,
-                    "bSortable": true,
-                    "bVisible": false,
-                    "render": function (data, type, row, meta) {
-                        if (row.consensusSpectrumName != null && row.speciesPValue != null) {
-                            return row.speciesPValue.toFixed(3);
-                        } else {
-                            return row.speciesPValue;
-                        }
-                    }
-                },
-                {
-                    "targets": 10,
-                    "bSortable": true,
-                    "bVisible": false,
-                    "render": function (data, type, row, meta) {
-                        if (row.consensusSpectrumName != null && row.sampleSourcePValue != null) {
-                            return row.sampleSourcePValue.toFixed(3);
-                        } else {
-                            return row.sampleSourcePValue;
-                        }
-                    }
-                },
-                {
-                    "targets": 11,
-                    "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
-                        var content = '';
+                        let content = '';
                         if (row.consensusSpectrumName != null) {
                             content = '<img' +
-                                ' src="${pageContext.request.contextPath}/' + row.chromatographyTypeIconPath + '"'
+                                ' src="${pageContext.request.contextPath}/' + row.chromatographyTypePath + '"'
                                 + ' alt="' + row.chromatographyTypeLabel + '"'
                                 + ' title="' + row.chromatographyTypeLabel + '"'
                                 + ' class="icon"/>';
@@ -220,21 +164,22 @@
                     }
                 },
                 {
-                    "targets": 12,
+                    "targets": 9,
                     "bSortable": false,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
+                        let content = '';
                         if (row.querySpectrumId != 0) {
-                            var content = '<a href="${pageContext.request.contextPath}/spectrum/'
+                            content = '<a href="${pageContext.request.contextPath}/spectrum/'
                                 + row.querySpectrumId + '/search/" class="button"> Search</a>';
                         } else {
-                            var content = '<a href="${pageContext.request.contextPath}/file/'
+                            content = '<a href="${pageContext.request.contextPath}/file/'
                                 + row.fileIndex + '/' + row.spectrumIndex + '/search/" class="button"> Search</a>';
                         }
                         return content;
                     }
                 },
-                {"className": "dt-center", "targets": "_all"}
+                // {"className": "dt-center", "targets": "_all"}
             ]
         });
         $('#scoreThreshold').prop('disabled', !$('#scoreThresholdCheck1').prop('checked'));

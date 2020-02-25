@@ -1,9 +1,12 @@
 package org.dulab.adapcompounddb.site.controllers;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchForm;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.site.services.GroupSearchService;
+import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,11 +21,16 @@ import javax.validation.Valid;
 
 @Controller
 public class GroupSearchController {
+
+    private static final Logger LOGGER = LogManager.getLogger(GroupSearchController.class);
+
     private final GroupSearchService groupSearchService;
+    private final SubmissionService submissionService;
 
     @Autowired
-    public GroupSearchController(final GroupSearchService groupSearchService) {
+    public GroupSearchController(final GroupSearchService groupSearchService, SubmissionService submissionService) {
         this.groupSearchService = groupSearchService;
+        this.submissionService = submissionService;
     }
 
     @RequestMapping(value = "/file/group_search/", method = RequestMethod.GET)
@@ -54,7 +62,7 @@ public class GroupSearchController {
             return new ModelAndView("submission/group_search");
         }
         final QueryParameters parameters = ControllerUtils.getParameters(form);
-        new Thread(() -> groupSearchService.nonSubmittedGroupSearch(submission, session, parameters)).start();
+        new Thread(() -> groupSearchService.groupSearch(submission, session, parameters)).start();
         model.addAttribute("form", form);
         return new ModelAndView("submission/group_search");
     }
@@ -66,7 +74,14 @@ public class GroupSearchController {
             return new ModelAndView("submission/group_search");
         }
         final QueryParameters parameters = ControllerUtils.getParameters(form);
-        new Thread(() -> groupSearchService.groupSearch(submissionId, session, parameters)).start();
+        Submission submission = submissionService.findSubmission(submissionId);
+        new Thread(() -> {
+            try {
+                groupSearchService.groupSearch(submission, session, parameters);
+            } catch (Exception e) {
+                LOGGER.error("Error during the group search: " + e.getMessage(), e);
+            }
+        }).start();
         model.addAttribute("form", form);
         return new ModelAndView("submission/group_search");
     }

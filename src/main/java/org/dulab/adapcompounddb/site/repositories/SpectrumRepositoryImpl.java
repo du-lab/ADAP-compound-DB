@@ -99,7 +99,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                 "USING (SubmissionId) " +
                 "INNER JOIN (SELECT SubmissionId FROM SubmissionTag " +
                 "WHERE :disease IS NULL OR :disease='all' OR (TagKey='disease' AND TagValue=:disease)) AS DiseaseTag " +
-                "USING (SubmissionId))";
+                "USING (SubmissionId))\n";
         query += "GROUP BY Spectrum.ClusterId ORDER BY Score DESC";
 
         @SuppressWarnings("unchecked")
