@@ -14,7 +14,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <spring.version>5.2.1.RELEASE</spring.version>
+        <spring.version>5.2.4.RELEASE</spring.version>
+        <spring-security.version>5.2.2.RELEASE</spring-security.version>
         <spring-data.version>2.1.9.RELEASE</spring-data.version>
         <log4j.version>2.10.0</log4j.version>
     </properties>
@@ -35,11 +36,11 @@
             <version>3.6.1</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.9.10.1</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.fasterxml.jackson.core</groupId>-->
+<!--            <artifactId>jackson-databind</artifactId>-->
+<!--            <version>2.9.10.1</version>-->
+<!--        </dependency>-->
 
         <!-- https://mvnrepository.com/artifact/org.json/json -->
 <!--        <dependency>-->
@@ -75,12 +76,12 @@
             <version>2.3.1</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>3.8.1</version>
-            <scope>test</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>junit</groupId>-->
+<!--            <artifactId>junit</artifactId>-->
+<!--            <version>3.8.1</version>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
 
         <!-- https://mvnrepository.com/artifact/javax.servlet/jstl -->
         <dependency>
@@ -261,22 +262,22 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-core</artifactId>
-            <version>${spring.version}</version>
+            <version>${spring-security.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
-            <version>${spring.version}</version>
+            <version>${spring-security.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-config</artifactId>
-            <version>${spring.version}</version>
+            <version>${spring-security.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-taglibs</artifactId>
-            <version>${spring.version}</version>
+            <version>${spring-security.version}</version>
         </dependency>
         <!--                         -->
         <!-- END of Spring libraries -->
@@ -327,13 +328,6 @@
             <groupId>com.github.haifengl</groupId>
             <artifactId>smile-core</artifactId>
             <version>1.5.1</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.9.10.1</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.sitemesh/sitemesh -->
