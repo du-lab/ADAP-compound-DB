@@ -1,18 +1,10 @@
 package org.dulab.adapcompounddb.site.repositories;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.Root;
+import javax.persistence.*;
 
 import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
@@ -27,7 +19,8 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
     public static final String DOUBLE_QUOTE = "\"";
     public static final String COMMA = ",";
-    @PersistenceContext
+
+    @PersistenceContext(type = PersistenceContextType.EXTENDED, synchronization = SynchronizationType.UNSYNCHRONIZED)
     private EntityManager entityManager;
 
     @Override
@@ -52,7 +45,9 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
         final String sqlQuery = queryBuilder.build();
 
-        @SuppressWarnings("unchecked") final List<Object[]> resultList = entityManager
+
+
+        @SuppressWarnings("unchecked") final List<Object[]> resultList = entityManager.getEntityManagerFactory().createEntityManager()
                 .createNativeQuery(sqlQuery, "SpectrumScoreMapping")
                 .getResultList();
 

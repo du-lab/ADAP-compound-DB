@@ -25,6 +25,7 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Controller
 public class GroupSearchController {
@@ -34,7 +35,7 @@ public class GroupSearchController {
     private final GroupSearchService groupSearchService;
     private final SubmissionService submissionService;
     private final SubmissionTagService submissionTagService;
-    private Thread thread = null;
+    private Future<Void> asyncResult;
 
     @Autowired
     public GroupSearchController(GroupSearchService groupSearchService,
@@ -98,19 +99,12 @@ public class GroupSearchController {
             return new ModelAndView("submission/group_search");
         }
 
-        if (thread != null)
-            thread.interrupt();
+        if (asyncResult != null) {
+            asyncResult.cancel(true);
+        }
 
-        thread = new Thread(() -> {
-            try {
-                groupSearchService.groupSearch(submission, session, form.getSpecies(), form.getSource(), form.getDisease());
-            } catch (Exception e) {
-                LOGGER.error("Error during the group search: " + e.getMessage(), e);
-            }
-        });
-        thread.start();
-
-        model.addAttribute("filterForm", form);
+        asyncResult = groupSearchService.groupSearch(
+                submission, session, form.getSpecies(), form.getSource(), form.getDisease());
 
         return new ModelAndView("submission/group_search");
     }

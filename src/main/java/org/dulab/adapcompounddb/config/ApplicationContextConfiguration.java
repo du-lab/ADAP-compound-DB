@@ -3,6 +3,7 @@ package org.dulab.adapcompounddb.config;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executor;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -24,6 +25,7 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -130,5 +132,12 @@ public class ApplicationContextConfiguration {
         }
 
         return prop;
+    }
+
+    @Bean
+    public Executor threadPoolTaskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(1);  // Set the number of threads to 1 because EntityManager throws errors when run in parallel threads
+        return executor;
     }
 }
