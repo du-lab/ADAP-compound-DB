@@ -54,10 +54,9 @@ public class GroupSearchServiceImpl implements GroupSearchService {
     @Async
     @Transactional(propagation = Propagation.REQUIRED)
     public Future<Void> groupSearch(
-            Submission submission, HttpSession session, String species, String source, String disease) {
+            List<Spectrum> querySpectra, HttpSession session, String species, String source, String disease) {
 
-        LOGGER.info(String.format("Group search is started on thread %s (species: %s, source: %s, disease: %s)",
-                Thread.currentThread().getName(),
+        LOGGER.info(String.format("Group search is started (species: %s, source: %s, disease: %s)",
                 species != null ? species : "all",
                 source != null ? source : "all",
                 disease != null ? disease : "all"));
@@ -67,9 +66,7 @@ public class GroupSearchServiceImpl implements GroupSearchService {
             session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
 
             // Calculate total number of spectra
-            long totalSteps = submission.getFiles().stream()
-                    .mapToLong(f -> f.getSpectra().size())
-                    .sum();
+            long totalSteps = querySpectra.size();
 
             if (totalSteps == 0) {
                 LOGGER.warn("No query spectra for performing a group search");
@@ -79,48 +76,40 @@ public class GroupSearchServiceImpl implements GroupSearchService {
 
             int progressStep = 0;
             progress = 0F;
-            for (File file : submission.getFiles()) {
+            for (Spectrum querySpectrum : querySpectra) {
 
                 if (Thread.currentThread().isInterrupted()) break;
 
-                List<Spectrum> querySpectra = file.getSpectra();
-                for (Spectrum querySpectrum : querySpectra) {
+                ClusterDTO clusterDTO = new ClusterDTO();
+                clusterDTO.setQuerySpectrumName(querySpectrum.getName());
+                clusterDTO.setQuerySpectrumId(querySpectrum.getId());
 
-                    if (Thread.currentThread().isInterrupted()) break;
+                List<SpectrumClusterView> clusters = MappingUtils.toList(
+                        spectrumRepository.searchConsensusSpectra(
+                                querySpectrum, 0.25, 0.01, species, source, disease));
 
-                    ClusterDTO clusterDTO = new ClusterDTO();
-                    clusterDTO.setQuerySpectrumName(querySpectrum.getName());
-                    clusterDTO.setQuerySpectrumId(querySpectrum.getId());
-
-                    List<SpectrumClusterView> clusters = MappingUtils.toList(
-                            spectrumRepository.searchConsensusSpectra(
-                                    querySpectrum, 0.25, 0.01, species, source, disease));
-
-                    // get the best match if the match is not null
-                    if (clusters.size() > 0) {
-                        SpectrumClusterView clusterView = clusters.get(0);
-                        clusterDTO.setClusterId(clusterView.getId());
-                        clusterDTO.setConsensusSpectrumName(clusterView.getName());
-                        clusterDTO.setSize(clusterView.getSize());
-                        clusterDTO.setScore(clusterView.getScore());
-                        clusterDTO.setAveSignificance(clusterView.getAverageSignificance());
-                        clusterDTO.setMinSignificance(clusterView.getMinimumSignificance());
-                        clusterDTO.setMaxSignificance(clusterView.getMaximumSignificance());
-                        clusterDTO.setChromatographyTypeLabel(clusterView.getChromatographyType().getLabel());
-                        clusterDTO.setChromatographyTypePath(clusterView.getChromatographyType().getIconPath());
-                    }
-
-//                    if (!running.get()) break;
-                    if (Thread.currentThread().isInterrupted()) break;
-
-                    groupSearchDTOList.add(clusterDTO);
-                    session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
-                    progress = (float) ++progressStep / totalSteps;
+                // get the best match if the match is not null
+                if (clusters.size() > 0) {
+                    SpectrumClusterView clusterView = clusters.get(0);
+                    clusterDTO.setClusterId(clusterView.getId());
+                    clusterDTO.setConsensusSpectrumName(clusterView.getName());
+                    clusterDTO.setSize(clusterView.getSize());
+                    clusterDTO.setScore(clusterView.getScore());
+                    clusterDTO.setAveSignificance(clusterView.getAverageSignificance());
+                    clusterDTO.setMinSignificance(clusterView.getMinimumSignificance());
+                    clusterDTO.setMaxSignificance(clusterView.getMaximumSignificance());
+                    clusterDTO.setChromatographyTypeLabel(clusterView.getChromatographyType().getLabel());
+                    clusterDTO.setChromatographyTypePath(clusterView.getChromatographyType().getIconPath());
                 }
+
+                if (Thread.currentThread().isInterrupted()) break;
+
+                groupSearchDTOList.add(clusterDTO);
+                session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
+                progress = (float) ++progressStep / totalSteps;
             }
         } catch (Throwable t) {
-            LOGGER.error(String.format("Error during the group search on thread %s (species: %s, source: %s, disease: %s): %s",
-                    Thread.currentThread().getName(),
+            LOGGER.error(String.format("Error during the group search (species: %s, source: %s, disease: %s): %s",
                     species != null ? species : "all",
                     source != null ? source : "all",
                     disease != null ? disease : "all",
@@ -129,8 +118,7 @@ public class GroupSearchServiceImpl implements GroupSearchService {
         }
 
         if (Thread.currentThread().isInterrupted())
-            LOGGER.info(String.format("Group search is cancelled on thread %s (species: %s, source: %s, disease: %s)",
-                    Thread.currentThread().getName(),
+            LOGGER.info(String.format("Group search is cancelled (species: %s, source: %s, disease: %s)",
                     species != null ? species : "all",
                     source != null ? source : "all",
                     disease != null ? disease : "all"));

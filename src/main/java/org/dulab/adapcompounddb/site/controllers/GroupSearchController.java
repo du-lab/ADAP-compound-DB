@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchForm;
+import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterForm;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterOptions;
@@ -26,6 +27,7 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 @Controller
 public class GroupSearchController {
@@ -99,12 +101,16 @@ public class GroupSearchController {
             return new ModelAndView("submission/group_search");
         }
 
-        if (asyncResult != null) {
+        if (asyncResult != null && !asyncResult.isDone()) {
             asyncResult.cancel(true);
         }
 
+        List<Spectrum> querySpectra = submission.getFiles().stream()
+                .flatMap(file -> file.getSpectra().stream())
+                .collect(Collectors.toList());
+
         asyncResult = groupSearchService.groupSearch(
-                submission, session, form.getSpecies(), form.getSource(), form.getDisease());
+                querySpectra, session, form.getSpecies(), form.getSource(), form.getDisease());
 
         return new ModelAndView("submission/group_search");
     }

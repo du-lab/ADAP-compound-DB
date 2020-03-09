@@ -20,7 +20,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     public static final String DOUBLE_QUOTE = "\"";
     public static final String COMMA = ",";
 
-    @PersistenceContext(type = PersistenceContextType.EXTENDED, synchronization = SynchronizationType.UNSYNCHRONIZED)
+    @PersistenceContext
     private EntityManager entityManager;
 
     @Override
