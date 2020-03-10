@@ -80,27 +80,13 @@ public class GroupSearchServiceImpl implements GroupSearchService {
 
                 if (Thread.currentThread().isInterrupted()) break;
 
-                ClusterDTO clusterDTO = new ClusterDTO();
-                clusterDTO.setQuerySpectrumName(querySpectrum.getName());
-                clusterDTO.setQuerySpectrumId(querySpectrum.getId());
-
                 List<SpectrumClusterView> clusters = MappingUtils.toList(
                         spectrumRepository.searchConsensusSpectra(
                                 querySpectrum, 0.25, 0.01, species, source, disease));
 
                 // get the best match if the match is not null
-                if (clusters.size() > 0) {
-                    SpectrumClusterView clusterView = clusters.get(0);
-                    clusterDTO.setClusterId(clusterView.getId());
-                    clusterDTO.setConsensusSpectrumName(clusterView.getName());
-                    clusterDTO.setSize(clusterView.getSize());
-                    clusterDTO.setScore(clusterView.getScore());
-                    clusterDTO.setAveSignificance(clusterView.getAverageSignificance());
-                    clusterDTO.setMinSignificance(clusterView.getMinimumSignificance());
-                    clusterDTO.setMaxSignificance(clusterView.getMaximumSignificance());
-                    clusterDTO.setChromatographyTypeLabel(clusterView.getChromatographyType().getLabel());
-                    clusterDTO.setChromatographyTypePath(clusterView.getChromatographyType().getIconPath());
-                }
+                ClusterDTO clusterDTO = new ClusterDTO(querySpectrum,
+                        (clusters.size() > 0) ? clusters.get(0) : null);
 
                 if (Thread.currentThread().isInterrupted()) break;
 

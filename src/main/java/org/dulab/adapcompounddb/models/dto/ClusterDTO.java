@@ -54,32 +54,26 @@ public class ClusterDTO implements Serializable {
             this.querySpectrumId = querySpectrum.getId();
             this.querySpectrumName = querySpectrum.getName();
         }
-        this.clusterId = view.getId();
-        this.consensusSpectrumName = view.getName();
-        this.size = view.getSize();
-        this.score = view.getScore();
-        this.aveSignificance = view.getAverageSignificance();
-        this.minSignificance = view.getMinimumSignificance();
-        this.maxSignificance = view.getMaximumSignificance();
-        this.chromatographyTypeLabel = view.getChromatographyType().getLabel();
-        this.chromatographyTypePath = view.getChromatographyType().getIconPath();
+
+        if (view != null) {
+            this.clusterId = view.getId();
+            this.consensusSpectrumName = view.getName();
+            this.size = view.getSize();
+            this.score = view.getScore();
+            this.aveSignificance = view.getAverageSignificance();
+            this.minSignificance = view.getMinimumSignificance();
+            this.maxSignificance = view.getMaximumSignificance();
+            this.chromatographyTypeLabel = view.getChromatographyType().getLabel();
+            this.chromatographyTypePath = view.getChromatographyType().getIconPath();
+        }
     }
 
     public ClusterDTO(SpectrumClusterView view) {
         this(null, view);
     }
 
-    public ClusterDTO spectrumClusterDTO(SpectrumCluster cluster) {
-        this.clusterId = cluster.getId();
-        this.consensusSpectrumName = cluster.getConsensusSpectrum().getName();
-        this.size = cluster.getSize();
-        this.score = cluster.getDiameter();
-        this.aveSignificance = cluster.getAveSignificance();
-        this.minSignificance = cluster.getMinSignificance();
-        this.maxSignificance = cluster.getMaxSignificance();
-        this.chromatographyTypeLabel = cluster.getConsensusSpectrum().getChromatographyType().getLabel();
-        this.chromatographyTypePath = cluster.getConsensusSpectrum().getChromatographyType().getIconPath();
-        return this;
+    public ClusterDTO(Spectrum querySpectrum) {
+        this(querySpectrum, null);
     }
 
     // *******************************

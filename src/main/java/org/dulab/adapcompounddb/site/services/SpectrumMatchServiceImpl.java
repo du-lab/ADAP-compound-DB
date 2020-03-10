@@ -79,11 +79,10 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         ID(0, "id"),QUERY_SPECTRUM(1, "querySpectrumName"),
         MATCH_SPECTRUM(2, "consensusSpectrumName"),
         COUNT(3, "size"), SCORE(4, "diameter"),
-        SIGNIFICANCE(5, "aveSignificance"), MAX_DIVERSITY(6, "maxDiversity"),
-        MIN_PVALUE(7, "minPValue"), DISEASE_PVALUE(8, "diseasePValue"),
-        SPECIES_PVALUE(9, "speciesPValue"),
-        SAMPLE_SOURCE_PVALUE(10, "sampleSourcePValue"),
-        CHROMATOGRAPHYTYPE(11, "chromatographyType");
+        AVERAGE_SIGNIFICANCE(5, "averageSignificance"),
+        MINIMUM_SIGNIFICANCE(6, "minimumSignificance"),
+        MAXIMUM_SIGNIFICANCE(7, "maximumSignificance"),
+        CHROMATOGRAPHYTYPE(8, "chromatographyType");
 
         private int position;
         private String sortColumnName;
@@ -425,8 +424,14 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
                 case "diameter":
                     spectrumList.sort(getComparator(ClusterDTO::getScore, sortDirection));
                     break;
-                case "aveSignificance":
+                case "averageSignificance":
                     spectrumList.sort(getComparator(ClusterDTO::getAveSignificance, sortDirection));
+                    break;
+                case "minimumSignificance":
+                    spectrumList.sort(getComparator(ClusterDTO::getMinSignificance, sortDirection));
+                    break;
+                case "maximumSignificance":
+                    spectrumList.sort(getComparator(ClusterDTO::getMaxSignificance, sortDirection));
                     break;
                 case "chromatographyType":
                     spectrumList.sort(getComparator(ClusterDTO::getChromatographyTypeLabel, sortDirection));
