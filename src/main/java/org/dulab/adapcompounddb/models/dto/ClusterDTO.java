@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.models.dto;
 
+import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
 import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
 
@@ -47,14 +48,25 @@ public class ClusterDTO implements Serializable {
 
     }
 
-    public ClusterDTO(SpectrumClusterView view) {
+    public ClusterDTO(Spectrum querySpectrum, SpectrumClusterView view) {
+
+        if (querySpectrum != null) {
+            this.querySpectrumId = querySpectrum.getId();
+            this.querySpectrumName = querySpectrum.getName();
+        }
         this.clusterId = view.getId();
         this.consensusSpectrumName = view.getName();
         this.size = view.getSize();
         this.score = view.getScore();
         this.aveSignificance = view.getAverageSignificance();
+        this.minSignificance = view.getMinimumSignificance();
+        this.maxSignificance = view.getMaximumSignificance();
         this.chromatographyTypeLabel = view.getChromatographyType().getLabel();
         this.chromatographyTypePath = view.getChromatographyType().getIconPath();
+    }
+
+    public ClusterDTO(SpectrumClusterView view) {
+        this(null, view);
     }
 
     public ClusterDTO spectrumClusterDTO(SpectrumCluster cluster) {
