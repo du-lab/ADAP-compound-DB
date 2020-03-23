@@ -33,13 +33,13 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
 
     @Autowired
     public SpectrumMatchCalculatorImpl(final SpectrumRepository spectrumRepository,
-            final SpectrumMatchRepository spectrumMatchRepository) {
+                                       final SpectrumMatchRepository spectrumMatchRepository) {
 
         this.spectrumRepository = spectrumRepository;
         this.spectrumMatchRepository = spectrumMatchRepository;
 
         final QueryParameters gcQueryParameters = new QueryParameters()
-                .setScoreThreshold(0.75)
+                .setScoreThreshold(0.5)
                 .setMzTolerance(0.01);
 
         final QueryParameters lcQueryParameters = new QueryParameters()
@@ -93,16 +93,18 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
             long startingTime = System.currentTimeMillis();
             for (final Spectrum querySpectrum : unmatchedSpectra) {
 
-                spectrumMatches.addAll(spectrumRepository.spectrumSearch(
-                        SearchType.CLUSTERING, querySpectrum, params));
+//                spectrumMatches.addAll(spectrumRepository.spectrumSearch(
+//                        SearchType.CLUSTERING, querySpectrum, params));
 
-                //                spectrumMatchRepository.saveAll(spectrumMatches);
-                //                spectrumMatchRepository.flush();
+                spectrumMatchRepository.saveAll(spectrumRepository.spectrumSearch(
+                        SearchType.CLUSTERING, querySpectrum, params));
+                spectrumMatchRepository.flush();
+
                 progressStep = progressStep + 1F;
                 progress = progressStep / countUnmatched;
                 count += 1;
 
-                if (count == 100) {
+                if (count == 10) {
                     final long endingTime = System.currentTimeMillis();
                     LOGGER.info(String.format("%d spectra of %s are matched with average time %d milliseconds.",
                             count, chromatographyType.getLabel(), (endingTime - startingTime) / count));
@@ -117,7 +119,7 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
         }
 
         LOGGER.info("Saving matches to the database...");
-        spectrumMatchRepository.saveAll(spectrumMatches);
+//        spectrumMatchRepository.saveAll(spectrumMatches);
         progress = -1F;
 
         LOGGER.info(String.format("Total %d matches are saved to the database.", spectrumMatches.size()));
