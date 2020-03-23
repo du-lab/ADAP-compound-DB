@@ -47,7 +47,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
 
 
-        @SuppressWarnings("unchecked") final List<Object[]> resultList = entityManager.getEntityManagerFactory().createEntityManager()
+        @SuppressWarnings("unchecked") final List<Object[]> resultList = entityManager  // .getEntityManagerFactory().createEntityManager()
                 .createNativeQuery(sqlQuery, "SpectrumScoreMapping")
                 .getResultList();
 
