@@ -15,8 +15,8 @@ import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -67,10 +67,7 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void run() {
-
-        final List<SpectrumMatch> spectrumMatches = new ArrayList<>();
 
         final long countUnmatched = spectrumRepository.countUnmatched();
 
@@ -85,8 +82,8 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
             }
 
             LOGGER.info(String.format("Retrieving unmatched spectra of %s...", chromatographyType));
-            final Iterable<Spectrum> unmatchedSpectra =
-                    spectrumRepository.findUnmatchedByChromatographyType(chromatographyType);
+            final Iterable<Spectrum> unmatchedSpectra = getUnmatchedSpectra(chromatographyType);
+//                    spectrumRepository.findUnmatchedByChromatographyType(chromatographyType);
 
             LOGGER.info(String.format("Matching unmatched spectra of %s...", chromatographyType));
             long count = 0;
@@ -96,9 +93,10 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
 //                spectrumMatches.addAll(spectrumRepository.spectrumSearch(
 //                        SearchType.CLUSTERING, querySpectrum, params));
 
-                spectrumMatchRepository.saveAll(spectrumRepository.spectrumSearch(
-                        SearchType.CLUSTERING, querySpectrum, params));
-                spectrumMatchRepository.flush();
+                match(querySpectrum, params);
+//                spectrumMatchRepository.saveAll(spectrumRepository.spectrumSearch(
+//                        SearchType.CLUSTERING, querySpectrum, params));
+//                spectrumMatchRepository.flush();
 
                 progressStep = progressStep + 1F;
                 progress = progressStep / countUnmatched;
@@ -122,6 +120,25 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
 //        spectrumMatchRepository.saveAll(spectrumMatches);
         progress = -1F;
 
-        LOGGER.info(String.format("Total %d matches are saved to the database.", spectrumMatches.size()));
+        LOGGER.info("All matches are saved to the database.");
+    }
+
+    @Transactional
+    public Iterable<Spectrum> getUnmatchedSpectra(ChromatographyType chromatographyType) {
+        return spectrumRepository.findUnmatchedByChromatographyType(chromatographyType);
+    }
+
+    @Transactional
+    @Async
+    public void match(Spectrum querySpectrum, QueryParameters params) {
+        try {
+            List<SpectrumMatch> matches = spectrumRepository.spectrumSearch(
+                    SearchType.CLUSTERING, querySpectrum, params);
+            spectrumMatchRepository.saveAll(matches);
+            spectrumMatchRepository.flush();
+        } catch (Throwable t) {
+            LOGGER.error("Error during spectrum matching: " + t.getMessage(), t);
+            throw t;
+        }
     }
 }
