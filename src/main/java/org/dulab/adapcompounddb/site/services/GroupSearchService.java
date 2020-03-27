@@ -1,15 +1,16 @@
 package org.dulab.adapcompounddb.site.services;
 
-import org.dulab.adapcompounddb.models.QueryParameters;
+import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.Submission;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public interface GroupSearchService {
 
-    void groupSearch(long submissionId, HttpSession session, QueryParameters parameters);
-
-    void nonSubmittedGroupSearch(Submission submission, HttpSession session, QueryParameters parameters);
+    Future<Void> groupSearch(List<Spectrum> querySpectra, HttpSession session, String species, String source, String disease);
 
     /**
      * Calculates the fraction of processed query spectra

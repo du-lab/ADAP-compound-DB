@@ -3,6 +3,7 @@ package org.dulab.adapcompounddb.config;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executor;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -23,6 +24,8 @@ import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -31,12 +34,13 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 import org.springframework.web.bind.annotation.ControllerAdvice;
 
 @Configuration
+@EnableAsync
 @EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = false)
-@EnableJpaRepositories(basePackages = "org.dulab.adapcompounddb.site.repositories", entityManagerFactoryRef = "entityManagerFactoryBean", transactionManagerRef = "jpaTransactionManager")
-@ComponentScan(basePackages = { "org.dulab.adapcompounddb.site",
-"org.dulab.adapcompounddb.rest" }, excludeFilters = @ComponentScan.Filter({ Controller.class,
-    ControllerAdvice.class }))
-@Import({ WebSecurityConfiguration.class })
+@EnableJpaRepositories(basePackages = "org.dulab.adapcompounddb.site.repositories",
+        entityManagerFactoryRef = "entityManagerFactoryBean", transactionManagerRef = "jpaTransactionManager")
+@ComponentScan(basePackages = {"org.dulab.adapcompounddb.site", "org.dulab.adapcompounddb.rest"},
+        excludeFilters = @ComponentScan.Filter({Controller.class, ControllerAdvice.class}))
+@Import({WebSecurityConfiguration.class})
 public class ApplicationContextConfiguration {
 
     @Autowired
@@ -88,6 +92,7 @@ public class ApplicationContextConfiguration {
         final Map<String, Object> jpaPropertyMap = new HashMap<>();
         jpaPropertyMap.put("javax.persistence.schema-generation.database.action", "none");
         jpaPropertyMap.put("hibernate.order_by.default_null_ordering", "last");
+        jpaPropertyMap.put("hibernate.enable_lazy_load_no_trans", true);
 //                jpaPropertyMap.put("hibernate.format_sql", true);
 //                jpaPropertyMap.put("hibernate.use_sql_comments", true);
 //                jpaPropertyMap.put("hibernate.show_sql", true);
@@ -107,7 +112,7 @@ public class ApplicationContextConfiguration {
         final Properties prop = new Properties();
         try {
             final Context initContext = new InitialContext();
-            final Context envContext  = (Context)initContext.lookup("java:/comp/env");
+            final Context envContext = (Context) initContext.lookup("java:/comp/env");
 
             // Used for smtp properties
             prop.put("mail.smtp.auth", true);
@@ -127,5 +132,12 @@ public class ApplicationContextConfiguration {
         }
 
         return prop;
+    }
+
+    @Bean
+    public Executor threadPoolTaskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(1);  // Set the number of threads to 1 because EntityManager throws errors when run in parallel threads
+        return executor;
     }
 }

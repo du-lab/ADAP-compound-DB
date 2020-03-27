@@ -1,35 +1,43 @@
 package org.dulab.adapcompounddb.site.services;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
-import org.dulab.adapcompounddb.models.dto.SpectrumClusterDTO;
-import org.dulab.adapcompounddb.models.entities.File;
-import org.dulab.adapcompounddb.models.entities.Spectrum;
-import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
-import org.dulab.adapcompounddb.models.entities.Submission;
+import org.dulab.adapcompounddb.models.dto.ClusterDTO;
+import org.dulab.adapcompounddb.models.entities.*;
+import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
 import org.dulab.adapcompounddb.site.controllers.ControllerUtils;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
+import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.List;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class GroupSearchServiceImpl implements GroupSearchService {
 
-    private float progress = -1F;
-    private final SubmissionRepository submissionRepository;
+    private static final Logger LOGGER = LogManager.getLogger(GroupSearchServiceImpl.class);
+
+    private float progress = 0;
     private final SpectrumRepository spectrumRepository;
+    private final SubmissionRepository submissionRepository;
 
     @Autowired
-    public GroupSearchServiceImpl(SubmissionRepository submissionRepository, SpectrumRepository spectrumRepository) {
-        this.submissionRepository = submissionRepository;
+    public GroupSearchServiceImpl(SpectrumRepository spectrumRepository, SubmissionRepository submissionRepository) {
         this.spectrumRepository = spectrumRepository;
+        this.submissionRepository = submissionRepository;
     }
 
     @Override
@@ -43,107 +51,64 @@ public class GroupSearchServiceImpl implements GroupSearchService {
     }
 
     @Override
-    @Transactional
-    public void groupSearch(long submissionId, HttpSession session, QueryParameters parameters) {
-        Submission submission = submissionRepository.findById(submissionId).orElseThrow(EmptyStackException::new);
-        setSession(submission, parameters, session);
-    }
+    @Async
+    @Transactional(propagation = Propagation.REQUIRED)
+    public Future<Void> groupSearch(
+            List<Spectrum> querySpectra, HttpSession session, String species, String source, String disease) {
 
-    @Override
-    @Transactional
-    public void nonSubmittedGroupSearch(Submission submission, HttpSession session, QueryParameters parameters) {
-        setSession(submission, parameters, session);
-    }
+        LOGGER.info(String.format("Group search is started (species: %s, source: %s, disease: %s)",
+                species != null ? species : "all",
+                source != null ? source : "all",
+                disease != null ? disease : "all"));
 
-    private void setSession(Submission submission, QueryParameters parameters, HttpSession session) {
+        try {
+            final List<ClusterDTO> groupSearchDTOList = new ArrayList<>();
+            session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
 
-        long fullSteps = 0l;
-        float progressStep = 0F;
-        progress = 0F;
-        // Calculate total number of submissions
+            // Calculate total number of spectra
+            long totalSteps = querySpectra.size();
 
-        for (File f : submission.getFiles()) {
-            List<Spectrum> querySpectra = f.getSpectra();
-            for (Spectrum s : querySpectra) {
-                fullSteps++;
+            if (totalSteps == 0) {
+                LOGGER.warn("No query spectra for performing a group search");
+                session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
+                return new AsyncResult<>(null);
             }
-        }
 
-        final List<SpectrumClusterDTO> groupSearchDTOList = new ArrayList<>();
+            int progressStep = 0;
+            progress = 0F;
+            for (Spectrum querySpectrum : querySpectra) {
 
-        for (int fileIndex = 0; fileIndex < submission.getFiles().size(); fileIndex++) {
+                if (Thread.currentThread().isInterrupted()) break;
 
-            List<Spectrum> querySpectra = submission.getFiles().get(fileIndex).getSpectra();
-
-            for (int i = 0; i < querySpectra.size(); i++) {
-
-                long querySpectrumId = querySpectra.get(i).getId();
-                final List<SpectrumMatch> matches = spectrumRepository.spectrumSearch(
-                        SearchType.SIMILARITY_SEARCH, querySpectra.get(i), parameters);
+                List<SpectrumClusterView> clusters = MappingUtils.toList(
+                        spectrumRepository.searchConsensusSpectra(
+                                querySpectrum, 0.25, 0.01, species, source, disease));
 
                 // get the best match if the match is not null
-                if (matches.size() > 0) {
-                    groupSearchDTOList.add(saveDTO(matches.get(0), fileIndex, i, querySpectrumId));
-                } else {
-                    SpectrumMatch noneMatch = new SpectrumMatch();
-                    noneMatch.setQuerySpectrum(querySpectra.get(i));
-                    groupSearchDTOList.add(saveDTO(noneMatch, fileIndex, i, querySpectrumId));
-                }
+                ClusterDTO clusterDTO = new ClusterDTO(querySpectrum,
+                        (clusters.size() > 0) ? clusters.get(0) : null);
+
+                if (Thread.currentThread().isInterrupted()) break;
+
+                groupSearchDTOList.add(clusterDTO);
                 session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
-                progress = progressStep / fullSteps;
-                progressStep = progressStep + 1F;
+                progress = (float) ++progressStep / totalSteps;
             }
+        } catch (Throwable t) {
+            LOGGER.error(String.format("Error during the group search (species: %s, source: %s, disease: %s): %s",
+                    species != null ? species : "all",
+                    source != null ? source : "all",
+                    disease != null ? disease : "all",
+                    t.getMessage()), t);
+            throw t;
         }
-        progress = -1F;
-    }
 
-    private SpectrumClusterDTO saveDTO(SpectrumMatch spectrumMatch, int fileIndex, int spectrumIndex, long querySpectrumId) {
-        SpectrumClusterDTO spectrumClusterDTO = new SpectrumClusterDTO();
-        if (spectrumMatch.getMatchSpectrum() != null) {
-            if (spectrumMatch.getMatchSpectrum().getCluster().getMinPValue() != null) {
-                double pValue = spectrumMatch.getMatchSpectrum().getCluster().getMinPValue();
-                spectrumClusterDTO.setMinPValue(pValue);
-            }
-            if (spectrumMatch.getMatchSpectrum().getCluster().getMaxDiversity() != null) {
-                double maxDiversity = spectrumMatch.getMatchSpectrum().getCluster().getMaxDiversity();
-                spectrumClusterDTO.setMaxDiversity(maxDiversity);
-            }
-            if (spectrumMatch.getMatchSpectrum().getCluster().getDiseasePValue() != null) {
-                double diseasePValue = spectrumMatch.getMatchSpectrum().getCluster().getDiseasePValue();
-                spectrumClusterDTO.setDiseasePValue(diseasePValue);
-            }
-            if (spectrumMatch.getMatchSpectrum().getCluster().getSpeciesPValue() != null) {
-                double speciesPValue = spectrumMatch.getMatchSpectrum().getCluster().getSpeciesPValue();
-                spectrumClusterDTO.setSpeciesPValue(speciesPValue);
-            }
-            if (spectrumMatch.getMatchSpectrum().getCluster().getSampleSourcePValue() != null) {
-                double sampleSourcePValue = spectrumMatch.getMatchSpectrum().getCluster().getSampleSourcePValue();
-                spectrumClusterDTO.setSampleSourcePValue(sampleSourcePValue);
-            }
+        if (Thread.currentThread().isInterrupted())
+            LOGGER.info(String.format("Group search is cancelled (species: %s, source: %s, disease: %s)",
+                    species != null ? species : "all",
+                    source != null ? source : "all",
+                    disease != null ? disease : "all"));
 
-            long matchSpectrumClusterId = spectrumMatch.getMatchSpectrum().getCluster().getId();
-            double score = spectrumMatch.getScore();
-            int size = spectrumMatch.getMatchSpectrum().getCluster().getSize();
-            String matchSpectrumName = spectrumMatch.getMatchSpectrum().getName();
-            String chromatographyTypeIconPath = spectrumMatch.getMatchSpectrum().getChromatographyType().getIconPath();
-            String chromatographyTypeLabel = spectrumMatch.getMatchSpectrum().getChromatographyType().getLabel();
-
-            spectrumClusterDTO.setMatchSpectrumClusterId(matchSpectrumClusterId);
-            spectrumClusterDTO.setConsensusSpectrumName(matchSpectrumName);
-            spectrumClusterDTO.setDiameter(score);
-            spectrumClusterDTO.setSize(size);
-            spectrumClusterDTO.setChromatographyType(spectrumMatch.getMatchSpectrum().getChromatographyType());
-            spectrumClusterDTO.setChromatographyTypeIconPath(chromatographyTypeIconPath);
-            spectrumClusterDTO.setChromatographyTypeLabel(chromatographyTypeLabel);
-
-        } else {
-            spectrumClusterDTO.setDiameter(null);
-        }
-        String querySpectrumName = spectrumMatch.getQuerySpectrum().getName();
-        spectrumClusterDTO.setFileIndex(fileIndex);
-        spectrumClusterDTO.setQuerySpectrumName(querySpectrumName);
-        spectrumClusterDTO.setSpectrumIndex(spectrumIndex);
-        spectrumClusterDTO.setQuerySpectrumId(querySpectrumId);
-        return spectrumClusterDTO;
+        return new AsyncResult<>(null);
     }
 }

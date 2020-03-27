@@ -2,8 +2,9 @@ package org.dulab.adapcompounddb.site.services;
 
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
-import org.dulab.adapcompounddb.models.dto.SpectrumClusterDTO;
+import org.dulab.adapcompounddb.models.dto.ClusterDTO;
 import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
+import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 
 import java.util.List;
 
@@ -24,7 +25,9 @@ public interface SpectrumMatchService {
 
     DataTableResponse groupSearchSort(final String searchStr, final Integer start, final Integer length,
                                       final Integer column, final String sortDirection,
-                                      List<SpectrumClusterDTO> spectrumList);
+                                      List<ClusterDTO> spectrumList);
 
     void loadTagsofCluster(SpectrumCluster cluster);
+
+    List<ClusterDTO> convertSpectrumMatchToClusterDTO(List<SpectrumMatch> matches);
 }

@@ -57,7 +57,7 @@ public class ClusterController {
         List<String> diseaseList = submissionTagService.findDistinctTagValuesByTagKey("disease");
 
         model.addAttribute("filterOptions", new FilterOptions(speciesList, sourceList, diseaseList));
-        return "cluster/all_clusters";
+        return "all_clusters";
     }
 
     @RequestMapping(value = "/cluster/{id:\\d+}/", method = RequestMethod.GET)

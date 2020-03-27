@@ -223,7 +223,7 @@ function TwoSpectraPlot(divId, topSpectrum) {
 
         svg.select('#bottomSpectrumName')
             .text(bottomSpectrum.name);
-    }
+    };
 
     var gridArea = svg.append('svg:rect')
         .attr('class', 'zoom xy box')

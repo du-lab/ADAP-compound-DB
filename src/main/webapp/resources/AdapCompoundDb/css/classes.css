@@ -49,3 +49,9 @@
     height: 1.5em;
     vertical-align: middle;
 }
+
+.table-dropdown {
+    display: inline-block;
+    padding-left: 30px;
+    float: left;
+}

@@ -1,22 +1,15 @@
 package org.dulab.adapcompounddb.site.repositories;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.Root;
+import javax.persistence.*;
 
 import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.entities.*;
+import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
 
 public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
@@ -26,6 +19,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
     public static final String DOUBLE_QUOTE = "\"";
     public static final String COMMA = ",";
+
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -51,7 +45,9 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
         final String sqlQuery = queryBuilder.build();
 
-        @SuppressWarnings("unchecked") final List<Object[]> resultList = entityManager
+
+
+        @SuppressWarnings("unchecked") final List<Object[]> resultList = entityManager  // .getEntityManagerFactory().createEntityManager()
                 .createNativeQuery(sqlQuery, "SpectrumScoreMapping")
                 .getResultList();
 
@@ -68,6 +64,49 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         }
 
         return matches;
+    }
+
+    @Override
+    public Iterable<SpectrumClusterView> searchConsensusSpectra(
+            Spectrum querySpectrum, double scoreThreshold, double mzTolerance,
+            String species, String source, String disease) {
+
+        String query = "SELECT SpectrumCluster.Id, ConsensusSpectrum.Name, COUNT(DISTINCT File.SubmissionId) AS Size, Score, ";
+        query += "AVG(Spectrum.Significance) AS AverageSignificance, MIN(Spectrum.Significance) AS MinimumSignificance, ";
+        query += "MAX(Spectrum.Significance) AS MaximumSignificance, ConsensusSpectrum.ChromatographyType FROM (\n";
+        query += "SELECT ClusterId, POWER(SUM(Product), 2) AS Score FROM (\n";
+        query += querySpectrum.getPeaks().stream()
+                .map(p -> String.format("\tSELECT ClusterId, SQRT(Intensity * %f) AS Product " +
+                                "FROM Peak INNER JOIN Spectrum ON Peak.SpectrumId = Spectrum.Id " +  //
+                                "WHERE Spectrum.Consensus IS TRUE AND Peak.Mz > %f AND Peak.Mz < %f\n",
+                        p.getIntensity(), p.getMz() - mzTolerance, p.getMz() + mzTolerance))
+                .collect(Collectors.joining("\tUNION ALL\n"));
+        query += ") AS SearchTable ";
+        query += "GROUP BY ClusterId HAVING Score > :scoreThreshold\n";
+        query += ") AS ScoreTable JOIN SpectrumCluster ON SpectrumCluster.Id = ClusterId\n";
+        query += "JOIN Spectrum AS ConsensusSpectrum ON ConsensusSpectrum.Id = SpectrumCluster.ConsensusSpectrumId\n";
+        query += "JOIN Spectrum ON Spectrum.ClusterId = SpectrumCluster.Id\n";
+        query += "JOIN File ON File.Id = Spectrum.FileId\n";
+        query += "WHERE File.SubmissionId IN (SELECT DISTINCT * FROM (SELECT SubmissionId FROM SubmissionTag " +
+                "WHERE :species IS NULL OR :species='all' OR (TagKey='species (common)' AND TagValue=:species)) AS SpeciesTag " +
+                "INNER JOIN (SELECT SubmissionId FROM SubmissionTag " +
+                "WHERE :source IS NULL OR :source='all' OR (TagKey='sample source' AND TagValue=:source)) AS SourceTag " +
+                "USING (SubmissionId) " +
+                "INNER JOIN (SELECT SubmissionId FROM SubmissionTag " +
+                "WHERE :disease IS NULL OR :disease='all' OR (TagKey='disease' AND TagValue=:disease)) AS DiseaseTag " +
+                "USING (SubmissionId))\n";
+        query += "GROUP BY Spectrum.ClusterId ORDER BY Score DESC";
+
+        @SuppressWarnings("unchecked")
+        List<SpectrumClusterView> resultList = entityManager
+                .createNativeQuery(query, SpectrumClusterView.class)
+                .setParameter("scoreThreshold", scoreThreshold)
+                .setParameter("species", species)
+                .setParameter("source", source)
+                .setParameter("disease", disease)
+                .getResultList();
+
+        return resultList;
     }
 
     @Override

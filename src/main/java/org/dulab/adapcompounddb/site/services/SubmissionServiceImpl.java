@@ -38,7 +38,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     private final SubmissionCategoryRepository submissionCategoryRepository;
     private final SpectrumRepository spectrumRepository;
 
-    private static enum ColumnInformation {
+    private enum ColumnInformation {
         ID(0, "id"), DATE(1, "dateTime"), NAME(2, "name"), USER(3, "user.username");
 
         private int position;
@@ -74,9 +74,9 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     @Autowired
     public SubmissionServiceImpl(final SubmissionRepository submissionRepository,
-            final SubmissionTagRepository submissionTagRepository,
-            final SubmissionCategoryRepository submissionCategoryRepository,
-            final SpectrumRepository spectrumRepository) {
+                                 final SubmissionTagRepository submissionTagRepository,
+                                 final SubmissionCategoryRepository submissionCategoryRepository,
+                                 final SpectrumRepository spectrumRepository) {
 
         this.submissionRepository = submissionRepository;
         this.submissionTagRepository = submissionTagRepository;
@@ -99,7 +99,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     @Transactional
     public DataTableResponse findAllSubmissionsForResponse(final String searchStr, final Integer start,
-            final Integer length, final Integer column, String orderDirection) {
+                                                           final Integer length, final Integer column, String orderDirection) {
         final ObjectMapperUtils objectMapper = new ObjectMapperUtils();
         Pageable pageable = null;
 
@@ -137,17 +137,17 @@ public class SubmissionServiceImpl implements SubmissionService {
     }
 
     @Override
-    @Transactional(propagation=Propagation.REQUIRES_NEW)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void saveSubmission(final Submission submission) {
         final List<File> fileList = submission.getFiles();
 
         final Submission submissionObj = submissionRepository.save(submission);
 
         final List<Long> savedFileIds = new ArrayList<>();
-        submissionObj.getFiles().stream().forEach(f->savedFileIds.add(f.getId()));
+        submissionObj.getFiles().stream().forEach(f -> savedFileIds.add(f.getId()));
 
 
-        if(fileList.get(0).getSpectra().get(0).getId() == 0) {
+        if (fileList.get(0).getSpectra().get(0).getId() == 0) {
             spectrumRepository.saveSpectrumAndPeaks(fileList, savedFileIds);
         }
     }
@@ -238,12 +238,12 @@ public class SubmissionServiceImpl implements SubmissionService {
 
         tags.forEach(tag -> {
             final String[] arr = tag.split(":", 2);
-            if(arr.length == 2) {
+            if (arr.length == 2) {
                 final String key = arr[0].trim();
                 final String value = arr[1].trim();
 
                 List<String> valueList = tagMap.get(key);
-                if(CollectionUtils.isEmpty(valueList)) {
+                if (CollectionUtils.isEmpty(valueList)) {
                     valueList = new ArrayList<>();
                     tagMap.put(key, valueList);
                 }

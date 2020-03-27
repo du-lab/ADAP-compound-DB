@@ -3,6 +3,8 @@ package org.dulab.adapcompounddb.rest.controllers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.site.services.SpectrumMatchService;
@@ -19,6 +21,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("/spectrum")
 public class SpectrumRestController {
+
+    private static final Logger LOGGER = LogManager.getLogger(SpectrumRestController.class);
 
     private final SpectrumService spectrumService;
     private final SpectrumMatchService spectrumMatchService;
@@ -71,9 +75,15 @@ public class SpectrumRestController {
 
         /*final ObjectMapperUtils objectMapper = new ObjectMapperUtils();
         objectMapper.map(spectrumMatchService.getAllClusters(), SpectrumDTO.class);*/
-        final DataTableResponse response = spectrumMatchService.findAllClusters(
-                searchStr, species, source, disease,
-                start, length, column, sortDirection);
+        final DataTableResponse response;
+        try {
+            response = spectrumMatchService.findAllClusters(
+                    searchStr, species, source, disease,
+                    start, length, column, sortDirection);
+        } catch (Throwable t) {
+            LOGGER.error("Error during cluster listing: " + t.getMessage(), t);
+            throw t;
+        }
 
         final ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);

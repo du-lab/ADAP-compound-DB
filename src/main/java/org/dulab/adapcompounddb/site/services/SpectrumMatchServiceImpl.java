@@ -6,7 +6,7 @@ import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
-import org.dulab.adapcompounddb.models.dto.SpectrumClusterDTO;
+import org.dulab.adapcompounddb.models.dto.ClusterDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
 import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
@@ -14,7 +14,6 @@ import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.dulab.adapcompounddb.utils.MathUtils;
-import org.dulab.adapcompounddb.utils.ObjectMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,15 +40,12 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     private final SpectrumClusterRepository spectrumClusterRepository;
 
     private enum ColumnInformation {
-        ID(0, "id"), NAME(1, "consensusSpectrum.name"),
-        COUNT(2, "size"), SCORE(3, "diameter"),
-        SIGNIFICANCE(4, "averageSignificance"),
-        MAX_DIVERSITY(5, "maxDiversity"),
-        MIN_PVALUE(6, "minPValue"),
-        DISEASE_PVALUE(7, "diseasePValue"),
-        SPECIES_PVALUE(8, "speciesPValue"),
-        SAMPLE_SOURCE_PVALUE(9, "sampleSourcePValue"),
-        CHROMATOGRAPHYTYPE(10, "chromatographyType");
+        ID(0, "id"), NAME(1, "name"),
+        COUNT(2, "size"), SCORE(3, "score"),
+        AVERAGE_SIGNIFICANCE(4, "averageSignificance"),
+        MINIMUM_SIGNIFICANCE(5, "minimumSignificance"),
+        MAXIMUM_SIGNIFICANCE(6, "maximumSignificance"),
+        CHROMATOGRAPHYTYPE(7, "chromatographyType");
 
         private int position;
         private String sortColumnName;
@@ -83,11 +79,10 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         ID(0, "id"),QUERY_SPECTRUM(1, "querySpectrumName"),
         MATCH_SPECTRUM(2, "consensusSpectrumName"),
         COUNT(3, "size"), SCORE(4, "diameter"),
-        SIGNIFICANCE(5, "aveSignificance"), MAX_DIVERSITY(6, "maxDiversity"),
-        MIN_PVALUE(7, "minPValue"), DISEASE_PVALUE(8, "diseasePValue"),
-        SPECIES_PVALUE(9, "speciesPValue"),
-        SAMPLE_SOURCE_PVALUE(10, "sampleSourcePValue"),
-        CHROMATOGRAPHYTYPE(11, "chromatographyType");
+        AVERAGE_SIGNIFICANCE(5, "averageSignificance"),
+        MINIMUM_SIGNIFICANCE(6, "minimumSignificance"),
+        MAXIMUM_SIGNIFICANCE(7, "maximumSignificance"),
+        CHROMATOGRAPHYTYPE(8, "chromatographyType");
 
         private int position;
         private String sortColumnName;
@@ -397,8 +392,8 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
         Page<SpectrumClusterView> spectrumPage =
                 spectrumClusterRepository.findClusters(searchStr, species, source, disease, pageable);
-        List<SpectrumClusterDTO> dtoList = spectrumPage.stream()
-                .map(SpectrumClusterDTO::new)
+        List<ClusterDTO> dtoList = spectrumPage.stream()
+                .map(ClusterDTO::new)
                 .collect(Collectors.toList());
 
         final DataTableResponse response = new DataTableResponse(dtoList);
@@ -410,7 +405,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     @Override
     public DataTableResponse groupSearchSort(final String searchStr, final Integer start, final Integer length,
                                              final Integer column, final String sortDirection,
-                                             List<SpectrumClusterDTO> spectrumList) {
+                                             List<ClusterDTO> spectrumList) {
 
         String sortColumn = GroupSearchColumnInformation.getColumnNameFromPosition(column);
 
@@ -418,64 +413,33 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         if (sortColumn != null) {
             switch (sortColumn) {
                 case "querySpectrumName":
-
-                    spectrumList.sort(getComparator(s -> s.getQuerySpectrumName(), sortDirection));
+                    spectrumList.sort(getComparator(ClusterDTO::getQuerySpectrumName, sortDirection));
                     break;
-
                 case "consensusSpectrumName":
-
-                    spectrumList.sort(getComparator(s -> s.getConsensusSpectrumName(), sortDirection));
+                    spectrumList.sort(getComparator(ClusterDTO::getConsensusSpectrumName, sortDirection));
                     break;
-
                 case "size":
-
-                    spectrumList.sort(getComparator(s -> s.getSize(), sortDirection));
+                    spectrumList.sort(getComparator(ClusterDTO::getSize, sortDirection));
                     break;
-
                 case "diameter":
-
-                    spectrumList.sort(getComparator(s -> s.getDiameter(), sortDirection));
+                    spectrumList.sort(getComparator(ClusterDTO::getScore, sortDirection));
                     break;
-
-                case "aveSignificance":
-
-                    spectrumList.sort(getComparator(s -> s.getAveSignificance(), sortDirection));
+                case "averageSignificance":
+                    spectrumList.sort(getComparator(ClusterDTO::getAveSignificance, sortDirection));
                     break;
-
-                case "maxDiversity":
-
-                    spectrumList.sort(getComparator(s -> s.getMaxDiversity(), sortDirection));
+                case "minimumSignificance":
+                    spectrumList.sort(getComparator(ClusterDTO::getMinSignificance, sortDirection));
                     break;
-
-                case "minPValue":
-
-                    spectrumList.sort(getComparator(s -> s.getMinPValue(), sortDirection));
+                case "maximumSignificance":
+                    spectrumList.sort(getComparator(ClusterDTO::getMaxSignificance, sortDirection));
                     break;
-
-                case "diseasePValue":
-
-                    spectrumList.sort(getComparator(s -> s.getDiseasePValue(), sortDirection));
-                    break;
-
-                case "speciesPValue":
-
-                    spectrumList.sort(getComparator(s -> s.getSpeciesPValue(), sortDirection));
-                    break;
-
-                case "sampleSourcePValue":
-
-                    spectrumList.sort(getComparator(s -> s.getSampleSourcePValue(), sortDirection));
-                    break;
-
                 case "chromatographyType":
-
-                    spectrumList.sort(getComparator(s -> s.getChromatographyType(), sortDirection));
+                    spectrumList.sort(getComparator(ClusterDTO::getChromatographyTypeLabel, sortDirection));
                     break;
-
             }
         }
 
-        final List<SpectrumClusterDTO> spectrumMatchList = new ArrayList<>();
+        final List<ClusterDTO> spectrumMatchList = new ArrayList<>();
         for (int i = 0; i < spectrumList.size(); i++) {
 
             if (i < start || spectrumMatchList.size() >= length)
@@ -493,8 +457,8 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
     // function for sorting the column
 
-    private <T extends Comparable> Comparator<SpectrumClusterDTO> getComparator(
-            Function<SpectrumClusterDTO, T> function, String sortDirection) {
+    private <T extends Comparable> Comparator<ClusterDTO> getComparator(
+            Function<ClusterDTO, T> function, String sortDirection) {
 
         return (o1, o2) -> {
 
@@ -533,5 +497,48 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    @Transactional
+    public List<ClusterDTO> convertSpectrumMatchToClusterDTO(List<SpectrumMatch> matches) {
+        List<ClusterDTO> clusters = new ArrayList<>(matches.size());
+        for (SpectrumMatch match : matches) {
+            ClusterDTO cluster = new ClusterDTO();
+
+            // Query spectrum
+            cluster.setQuerySpectrumId(match.getQuerySpectrum().getId());
+            cluster.setQuerySpectrumName(match.getQuerySpectrum().getName());
+
+            // Match cluster
+            SpectrumCluster matchedCluster = match.getMatchSpectrum().getCluster();
+            cluster.setClusterId(matchedCluster.getId());
+            cluster.setConsensusSpectrumName(match.getMatchSpectrum().getName());
+            cluster.setSize((int) matchedCluster.getSpectra().stream()
+                    .map(Spectrum::getFile).filter(Objects::nonNull)
+                    .map(File::getSubmission).filter(Objects::nonNull)
+                    .distinct().count());
+            cluster.setScore(match.getScore());
+            matchedCluster.getSpectra().stream()
+                    .map(Spectrum::getSignificance).filter(Objects::nonNull)
+                    .mapToDouble(Double::doubleValue)
+                    .average()
+                    .ifPresent(cluster::setAveSignificance);
+            matchedCluster.getSpectra().stream()
+                    .map(Spectrum::getSignificance).filter(Objects::nonNull)
+                    .mapToDouble(Double::doubleValue)
+                    .min()
+                    .ifPresent(cluster::setMinSignificance);
+            matchedCluster.getSpectra().stream()
+                    .map(Spectrum::getSignificance).filter(Objects::nonNull)
+                    .mapToDouble(Double::doubleValue)
+                    .max()
+                    .ifPresent(cluster::setMaxSignificance);
+            cluster.setChromatographyTypeLabel(match.getMatchSpectrum().getChromatographyType().getLabel());
+            cluster.setChromatographyTypePath(match.getMatchSpectrum().getChromatographyType().getIconPath());
+
+            clusters.add(cluster);
+        }
+        return clusters;
     }
 }
