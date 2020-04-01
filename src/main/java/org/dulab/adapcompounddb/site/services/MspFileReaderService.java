@@ -46,11 +46,11 @@ public class MspFileReaderService implements FileReaderService {
             }
             else if (line.contains(":")) {
                 // Add property
-                for (String s : line.split(";")) {
-                    String[] nameValuePair = s.split(":", 2);
+//                for (String s : line.split(";")) {
+                    String[] nameValuePair = line.split(":", 2);
                     if (nameValuePair.length == 2)
                         spectrum.addProperty(nameValuePair[0].trim(), nameValuePair[1].trim());
-                }
+//                }
             } else
                 addPeak(spectrum, peaks, line);
         }
@@ -69,7 +69,7 @@ public class MspFileReaderService implements FileReaderService {
     private void addPeak(Spectrum spectrum, List<Peak> peaks, String line) {
 
         for (String s : line.split(";")) {
-            String[] mzIntensityPair = s.split(" ");
+            String[] mzIntensityPair = s.split("[ \t]+");  // Split by any combination of the blank space and tab characters
             if (mzIntensityPair.length == 2) {
                 try {
                     Peak peak = new Peak();
