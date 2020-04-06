@@ -39,7 +39,7 @@
                 </select>
             </div>
             <div class="table-dropdown">
-                <label for="source">Species:</label>
+                <label for="source">Source:</label>
                 <select id="source">
                     <option value="all">All</option>
                     <c:forEach items="${filterOptions.sourceList}" var="it">
@@ -48,7 +48,7 @@
                 </select>
             </div>
             <div class="table-dropdown">
-                <label for="disease">Species:</label>
+                <label for="disease">Disease:</label>
                 <select id="disease">
                     <option value="all">All</option>
                     <c:forEach items="${filterOptions.diseaseList}" var="it">
@@ -143,42 +143,6 @@
                         return (row.maxSignificance != null) ? row.maxSignificance.toFixed(3) : '';
                     }
                 },
-                // {
-                //     "targets": 7,
-                //     "bSortable": true,
-                //     "bVisible": false,
-                //     "render": function (data, type, row, meta) {
-                //         var content = '';
-                //         if (row.diseasePValue) {
-                //             content = row.diseasePValue.toFixed(3);
-                //         }
-                //         return content;
-                //     },
-                // },
-                // {
-                //     "targets": 8,
-                //     "bSortable": true,
-                //     "bVisible": false,
-                //     "render": function (data, type, row, meta) {
-                //         var content = '';
-                //         if (row.speciesPValue) {
-                //             content = row.speciesPValue.toFixed(3);
-                //         }
-                //         return content;
-                //     }
-                // },
-                // {
-                //     "targets": 9,
-                //     "bSortable": true,
-                //     "bVisible": false,
-                //     "render": function (data, type, row, meta) {
-                //         var content = '';
-                //         if (row.sampleSourcePValue) {
-                //             content = row.sampleSourcePValue.toFixed(3);
-                //         }
-                //         return content;
-                //     }
-                // },
                 {
                     "targets": 7,
                     "bSortable": true,

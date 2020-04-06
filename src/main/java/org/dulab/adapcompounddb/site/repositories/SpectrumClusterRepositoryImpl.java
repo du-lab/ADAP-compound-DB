@@ -20,7 +20,7 @@ public class SpectrumClusterRepositoryImpl implements SpectrumClusterRepositoryC
             "join Spectrum on SpectrumCluster.Id=Spectrum.ClusterId " +
             "join Spectrum as ConsensusSpectrum on SpectrumCluster.ConsensusSpectrumId=ConsensusSpectrum.Id " +
             "join File on Spectrum.FileId=File.Id " +
-            "where :search is not null and File.SubmissionId in (select distinct * from " +
+            "where ConsensusSpectrum.Name LIKE :search and File.SubmissionId in (select distinct * from " +
             "(select SubmissionId from SubmissionTag " +
             "where :species is null or :species='all' or (TagKey='species (common)' and TagValue=:species)) as SpeciesTag " +
             "inner join (select SubmissionId from SubmissionTag " +
@@ -34,7 +34,7 @@ public class SpectrumClusterRepositoryImpl implements SpectrumClusterRepositoryC
             "join Spectrum on SpectrumCluster.Id=Spectrum.ClusterId " +
             "join Spectrum as ConsensusSpectrum on SpectrumCluster.ConsensusSpectrumId=ConsensusSpectrum.Id " +
             "join File on Spectrum.FileId=File.Id " +
-            "where :search is not null and File.SubmissionId in (select distinct * from " +
+            "where ConsensusSpectrum.Name LIKE :search and File.SubmissionId in (select distinct * from " +
             "(select SubmissionId from SubmissionTag " +
             "where :species is null or :species='all' or (TagKey='species (common)' and TagValue=:species)) as SpeciesTag " +
             "inner join (select SubmissionId from SubmissionTag " +
@@ -50,6 +50,8 @@ public class SpectrumClusterRepositoryImpl implements SpectrumClusterRepositoryC
     public Page<SpectrumClusterView> findClusters(
             String searchStr, String species, String source, String disease, Pageable pageable) {
 
+        searchStr = "%" + searchStr + "%";
+        
         BigInteger count = (BigInteger) entityManager.createNativeQuery(FIND_CLUSTERS_SQL_COUNT_QUERY)
                 .setParameter("search", searchStr)
                 .setParameter("species", species)
