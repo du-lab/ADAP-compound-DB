@@ -6,13 +6,13 @@
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<div align="center" class="desktop">
+<div class="desktop" style="text-align: center">
     <strong>
         ${cluster.consensusSpectrum.name} |
         <img src="${pageContext.request.contextPath}/${cluster.consensusSpectrum.chromatographyType.iconPath}"
-             class="icon"/> |
+             class="icon" alt="${cluster.consensusSpectrum.chromatographyType.name()}"/> |
         ${cluster.size} total spectra | ${dulab:toIntegerScore(cluster.diameter)} similarity score
-        | ${cluster.aveSignificance} significance
+        | ${dulab:formatDouble(cluster.aveSignificance)} significance
     </strong>
 </div>
 
@@ -61,20 +61,20 @@
             </tr>
             <c:if test="${cluster.aveSignificance != null}">
                 <tr>
-                    <td><strong>Average significance</strong></td>
-                    <td>${cluster.aveSignificance}</td>
+                    <td><strong>Average ANOVA P-value</strong></td>
+                    <td>${dulab:formatDouble(cluster.aveSignificance)}</td>
                 </tr>
             </c:if>
             <c:if test="${cluster.minSignificance != null}">
                 <tr>
-                    <td><strong>Minimum significance</strong></td>
-                    <td>${cluster.minSignificance}</td>
+                    <td><strong>Minimum ANOVA P-value</strong></td>
+                    <td>${dulab:formatDouble(cluster.minSignificance)}</td>
                 </tr>
             </c:if>
             <c:if test="${cluster.maxSignificance != null}">
                 <tr>
-                    <td><strong>Maximum significance</strong></td>
-                    <td>${cluster.maxSignificance}</td>
+                    <td><strong>Maximum ANOVA P-value</strong></td>
+                    <td>${dulab:formatDouble(cluster.maxSignificance)}</td>
                 </tr>
             </c:if>
             </tbody>
@@ -184,7 +184,6 @@
             scrollX: true,
             select: {style: 'single'},
             responsive: true,
-            scrollX: true,
             scroller: true,
             "fnInitComplete": function (oSettings, json) {
                 $('#spectrum_plot').addClass("hide");

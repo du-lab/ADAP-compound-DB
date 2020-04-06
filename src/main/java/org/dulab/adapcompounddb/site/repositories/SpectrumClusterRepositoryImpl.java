@@ -51,7 +51,7 @@ public class SpectrumClusterRepositoryImpl implements SpectrumClusterRepositoryC
             String searchStr, String species, String source, String disease, Pageable pageable) {
 
         searchStr = "%" + searchStr + "%";
-        
+
         BigInteger count = (BigInteger) entityManager.createNativeQuery(FIND_CLUSTERS_SQL_COUNT_QUERY)
                 .setParameter("search", searchStr)
                 .setParameter("species", species)
