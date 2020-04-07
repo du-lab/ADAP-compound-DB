@@ -125,7 +125,7 @@
         </c:forEach>
     </div>
 
-    <div id="pie_chart" align="center" class="hide">
+    <div id="pie_chart" class="hide" style="text-align: center">
         <div id='charts'></div>
     </div>
 
@@ -233,7 +233,7 @@
     $.each(jsonVal, function (k, v) {
         $pieDiv.append('<div style="display: inline-block; margin: 10px;">' +
             '<div>diversity: ' + parseFloat(v.diversity).toFixed(2) + '</div>' +
-            '<div id="PieChart-' + k + '"></div>' +
+            '<div id="PieChart-' + k + '" style="margin: 10px"></div>' +
             '<div>' + v.name + '</div>' +
             '</div>');
         addPieChart('PieChart-' + k, v.values);
