@@ -210,15 +210,14 @@ public class ControllerUtils {
                 .distinct()
                 .collect(Collectors.toList());
 
+        Set<Submission> submissions = spectra.stream()
+                .map(Spectrum::getFile).filter(Objects::nonNull)
+                .map(File::getSubmission).filter(Objects::nonNull)
+                .collect(Collectors.toSet());
 
         // For each key, find its values and their count
         List<TagInfo> tagInfoList = new ArrayList<>(keys.size());
         for (String key : keys) {
-
-            Set<Submission> submissions = spectra.stream()
-                    .map(Spectrum::getFile).filter(Objects::nonNull)
-                    .map(File::getSubmission).filter(Objects::nonNull)
-                    .collect(Collectors.toSet());
 
             Map<String, Integer> countMap = new HashMap<>();
             for (Submission submission : submissions) {

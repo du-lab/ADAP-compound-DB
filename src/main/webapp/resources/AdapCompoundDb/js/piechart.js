@@ -94,9 +94,6 @@ function addPieChart(idName, dataset) {
         return legend;
     }
 
-    // let dataCount = length(dataset);
-
-
     let width = 560;
     let height = 280;
     let radius = Math.min(width, height) / 2;
