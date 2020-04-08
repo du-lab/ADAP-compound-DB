@@ -15,10 +15,11 @@ function addPieChart(idName, dataset) {
             .value(function (d) {return d.count})
             .sort(null);
 
-        let container = svg.append('g')
+        let pieContainer = svg.append('g')
+            .attr('class', 'pieContainer')
             .attr('transform', 'translate(' + radius + ', ' + radius + ')');
 
-        let g = container
+        let g = pieContainer
             .selectAll('arc')
             .data(pie(dataset))
             .enter()
@@ -54,25 +55,25 @@ function addPieChart(idName, dataset) {
                 .style('left', (d3.event.layerX + 10) + 'px');
         });
 
-        return container;
+        return pieContainer;
     }
 
     /**
      * Draws a legend
      */
-    function drawLegend(svg, color) {
+    function drawLegend(svg, color, offset) {
 
         let legendRectSize = 18;
         let legendSpacing = 10;
 
         let legend = svg.append('g')
-            .attr('overflow', 'scroll')
-            .attr('transform', 'translate(' + (2 * radius) + ', 0)')
+            .attr('class', 'legendContainer')
+            .attr('transform', 'translate(' + offset + ', 0)')
             .selectAll('.legend')
             .data(color.domain())
             .enter()
             .append('g')
-            .attr('class', 'legend')
+            .attr('class', 'legendLabel')
             .attr('transform', function (d, i) {
                 let height = legendRectSize + legendSpacing;
                 let vert = i * height;
@@ -87,7 +88,7 @@ function addPieChart(idName, dataset) {
 
         legend.append('text')
             .attr('x', legendRectSize + legendSpacing)
-            .attr('y', '1em')  // legendRectSize - legendSpacing
+            .attr('y', '1em')
             .text(function (d) {return d;});
 
         return legend;
@@ -120,5 +121,5 @@ function addPieChart(idName, dataset) {
 
 
     let pieContainer = drawPie(svg, radius, dataset, color);
-    drawLegend(svg, color);
+    drawLegend(svg, color, 2 * radius);
 }
