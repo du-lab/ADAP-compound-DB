@@ -271,20 +271,12 @@ public class ControllerUtils {
                 .mapToInt(Integer::intValue)
                 .sum();
 
-
-//        double enthropy = -1 * counts.stream()
-//                .mapToDouble(Integer::doubleValue)
-//                .map(c -> c / total)
-//                .map(p -> p * Math.log(p))
-//                .sum();
-
         double proportionSum = counts.stream()
                 .mapToDouble(Integer::doubleValue)
                 .map(c -> (c / total) * (c / total))
                 .sum();
 
-        double giniSimpsonIndex = 1 - proportionSum;
-        return giniSimpsonIndex;
+        return 1 - proportionSum;
     }
 
     private static TagInfo stringToTagInfoWithName(String tag) {
