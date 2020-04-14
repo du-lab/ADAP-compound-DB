@@ -34,7 +34,7 @@ public class ServletContextConfiguration implements WebMvcConfigurer {
     @Bean
     public MultipartResolver multipartResolver() {
         CommonsMultipartResolver resolver = new CommonsMultipartResolver();
-        resolver.setMaxUploadSizePerFile(32 * 1024 * 1024);  // 32MB
+        resolver.setMaxUploadSizePerFile(128 * 1024 * 1024);  // 128MB
         return resolver;
     }
 }
