@@ -81,7 +81,7 @@ public class SpectrumServiceImpl implements SpectrumService {
     @Override
     @Transactional
     public DataTableResponse findSpectrumBySubmissionId(final Long submissionId, final String searchStr,
-            final Integer start, final Integer length, final Integer column, final String orderDirection) {
+                                                        final Integer start, final Integer length, final Integer column, final String orderDirection) {
         final ObjectMapperUtils objectMapper = new ObjectMapperUtils();
         Pageable pageable = null;
 
@@ -106,27 +106,31 @@ public class SpectrumServiceImpl implements SpectrumService {
 
     @Override
     public DataTableResponse processPagination(final Submission submission, final String searchStr,
-            final Integer start, final Integer length, final Integer column, final String orderDirection) {
+                                               final Integer start, final Integer length, final Integer column,
+                                               final String orderDirection) {
+
         final List<Spectrum> spectrumList = new ArrayList<>(submission.getFiles().stream()
                 .flatMap(file -> file.getSpectra().stream()).collect(Collectors.toList()));
         final ObjectMapperUtils objectMapper = new ObjectMapperUtils();
 
-        if(StringUtils.isNotBlank(searchStr)) {
+        if (StringUtils.isNotBlank(searchStr)) {
             final List<Spectrum> tempList = spectrumList.stream()
                     .filter(s -> StringUtils.containsIgnoreCase(s.getName(), searchStr)
                             || StringUtils.containsIgnoreCase(s.getChromatographyType().getLabel(), searchStr))
                     .collect(Collectors.toList());
-            spectrumList.clear();;
+            spectrumList.clear();
             spectrumList.addAll(tempList);
         }
 
         final String sortColumn = ColumnInformation.getColumnNameFromPosition(column);
-        if(sortColumn != null) {
-            Comparator<Object> comparator = new BeanComparator<>(sortColumn, new NullComparator(false));
-            if(Sort.Direction.fromString(orderDirection).equals(Direction.DESC)) {
-                comparator = new ReverseComparator(comparator);
+        if (sortColumn != null) {
+            Comparator<Object> comparator;
+            if (Sort.Direction.fromString(orderDirection).equals(Direction.ASC))
+                comparator = new BeanComparator<>(sortColumn, new NullComparator(true));
+            else {
+                comparator = new BeanComparator<>(sortColumn, new NullComparator(false)).reversed();
             }
-            Collections.sort(spectrumList, comparator);
+            spectrumList.sort(comparator);
         }
 
         final int totalSize = spectrumList.size();
