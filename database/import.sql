@@ -1,0 +1,1 @@
+LOAD DATA LOCAL INFILE '/Users/aleksandrsmirnov/Projects/du-lab/kdtree/data/matches_2020-04-14.filtered.csv' INTO TABLE SpectrumMatch FIELDS TERMINATED BY ',' IGNORE 1 LINES (QuerySpectrumId, MatchSpectrumId, Score);
