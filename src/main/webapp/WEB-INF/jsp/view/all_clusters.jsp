@@ -91,7 +91,8 @@
                     "searchable": false,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
-                        return meta.settings.oAjaxData.start + meta.row + 1;
+                        // return meta.settings.oAjaxData.start + meta.row + 1;
+                        return row.clusterId;
                     }
                 },
                 {
