@@ -12,6 +12,7 @@
             <thead>
             <tr>
                 <th>ID</th>
+                <th>Cluster ID</th>
                 <th title="Consensus spectrum">Spectrum</th>
                 <th title="Number of studies">Studies</th>
                 <th title="Minimum matching score between all spectra in a cluster">Score</th>
@@ -91,12 +92,19 @@
                     "searchable": false,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
-                        // return meta.settings.oAjaxData.start + meta.row + 1;
-                        return row.clusterId;
+                        return meta.settings.oAjaxData.start + meta.row + 1;
                     }
                 },
                 {
                     "targets": 1,
+                    "bSortable": true,
+                    "bVisible": true,
+                    "render": function (data, type, row, meta) {
+                        return row.clusterId;
+                    }
+                },
+                {
+                    "targets": 2,
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
@@ -107,13 +115,13 @@
                     }
                 },
                 {
-                    "targets": 2,
+                    "targets": 3,
                     "bSortable": true,
                     "bVisible": true,
                     "data": "size"
                 },
                 {
-                    "targets": 3,
+                    "targets": 4,
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
@@ -121,7 +129,7 @@
                     }
                 },
                 {
-                    "targets": 4,
+                    "targets": 5,
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
@@ -129,7 +137,7 @@
                     }
                 },
                 {
-                    "targets": 5,
+                    "targets": 6,
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
@@ -137,7 +145,7 @@
                     }
                 },
                 {
-                    "targets": 6,
+                    "targets": 7,
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
@@ -145,7 +153,7 @@
                     }
                 },
                 {
-                    "targets": 7,
+                    "targets": 8,
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
@@ -159,7 +167,7 @@
                     }
                 },
                 {
-                    "targets": 8,
+                    "targets": 9,
                     "bSortable": false,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
