@@ -12,7 +12,7 @@
             <thead>
             <tr>
                 <th>ID</th>
-                <th>Cluster ID</th>
+                <th title="Cluster ID in database">Cluster ID</th>
                 <th title="Consensus spectrum">Spectrum</th>
                 <th title="Number of studies">Studies</th>
                 <th title="Minimum matching score between all spectra in a cluster">Score</th>

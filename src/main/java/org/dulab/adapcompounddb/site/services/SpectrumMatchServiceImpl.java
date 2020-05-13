@@ -40,12 +40,13 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     private final SpectrumClusterRepository spectrumClusterRepository;
 
     private enum ColumnInformation {
-        ID(0, "id"), NAME(1, "name"),
-        COUNT(2, "size"), SCORE(3, "score"),
-        AVERAGE_SIGNIFICANCE(4, "averageSignificance"),
-        MINIMUM_SIGNIFICANCE(5, "minimumSignificance"),
-        MAXIMUM_SIGNIFICANCE(6, "maximumSignificance"),
-        CHROMATOGRAPHYTYPE(7, "chromatographyType");
+        ID(0, "id"), Cluster_ID(1, "id"),
+        NAME(2, "name"),
+        COUNT(3, "size"), SCORE(4, "score"),
+        AVERAGE_SIGNIFICANCE(5, "averageSignificance"),
+        MINIMUM_SIGNIFICANCE(6, "minimumSignificance"),
+        MAXIMUM_SIGNIFICANCE(7, "maximumSignificance"),
+        CHROMATOGRAPHYTYPE(8, "chromatographyType");
 
         private int position;
         private String sortColumnName;
