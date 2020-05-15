@@ -33,6 +33,7 @@
                 <th>ID</th>
                 <th>Date</th>
                 <th>Name</th>
+                <th>External ID</th>
                 <th>Properties</th>
                 <th></th>
             </tr>
@@ -46,6 +47,10 @@
                     </td>
                     <td>
                         <a href="${pageContext.request.contextPath}/submission/${study.id}/">${study.name}</a><br/>
+                        <small>${dulab:abbreviate(study.description, 80)}</small>
+                    </td>
+                    <td>
+                        <a href="${pageContext.request.contextPath}/submission/${study.id}/">${study.externalId}</a><br/>
                         <small>${dulab:abbreviate(study.description, 80)}</small>
                     </td>
                     <td>

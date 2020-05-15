@@ -128,6 +128,7 @@ public class SubmissionController extends BaseController {
         final SubmissionForm form = new SubmissionForm();
 //        form.setCategoryMap(submissionService.findAllCategories());
         form.setId(submission.getId());
+        form.setExternalId(submission.getExternalId());
         form.setName(submission.getName());
         form.setDescription(submission.getDescription());
         form.setReference(submission.getReference());
@@ -280,6 +281,7 @@ public class SubmissionController extends BaseController {
     private String submit(final Submission submission, final Model model, final SubmissionForm submissionForm) {
 
         submission.setName(submissionForm.getName());
+        submission.setExternalId(submissionForm.getExternalId());
         submission.setDescription(submissionForm.getDescription());
         submission.setReference(submissionForm.getReference());
         submission.setDateTime(new Date());
@@ -360,6 +362,8 @@ public class SubmissionController extends BaseController {
         @NotBlank(message = "The field Name is required.")
         private String name;
 
+        private String externalId;
+
         private String description;
 
         @URL(message = "The field Reference must be a valid URL.")
@@ -393,6 +397,14 @@ public class SubmissionController extends BaseController {
 
         public void setName(final String name) {
             this.name = name;
+        }
+
+        public String getExternalId() {
+            return externalId;
+        }
+
+        public void setExternalId(String externalId) {
+            this.externalId = externalId;
         }
 
         public String getDescription() {
