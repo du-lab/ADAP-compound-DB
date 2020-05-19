@@ -79,7 +79,7 @@ public class Submission implements Serializable {
     @URL(message = "Submission: The field Reference must be a valid URL.")
     private String reference;
 
-    private String ExternalId;
+    private String externalId;
 
     // *******************************
     // ***** Getters and Setters *****
@@ -176,11 +176,11 @@ public class Submission implements Serializable {
     }
 
     public String getExternalId() {
-        return ExternalId;
+        return externalId;
     }
 
     public void setExternalId(String externalId) {
-        ExternalId = externalId;
+        this.externalId = externalId;
     }
 
     // *************************
