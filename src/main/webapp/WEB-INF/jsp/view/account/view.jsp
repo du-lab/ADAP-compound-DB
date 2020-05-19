@@ -51,7 +51,6 @@
                     </td>
                     <td>
                         <a href="${pageContext.request.contextPath}/submission/${study.id}/">${study.externalId}</a><br/>
-                        <small>${dulab:abbreviate(study.description, 80)}</small>
                     </td>
                     <td>
                             <%--                            ${study.tagsAsString}--%>
