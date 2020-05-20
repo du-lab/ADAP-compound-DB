@@ -110,7 +110,7 @@
                     sortable: false
                 },
                 {
-                targets: [3, 4],
+                targets:4,
                 sortable: false
 
             }/*,

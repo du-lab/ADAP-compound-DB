@@ -219,9 +219,11 @@ var confirmDeleteDialog = $('#confirm-delete-dialog').confirmDeleteDialog();
                     "targets": 3,
                     "orderable": true,
                     "render": function (data, type, row, meta) {
-                        content = '<a href="${pageContext.request.contextPath}/submission/' + row.id + '/">' +
-                            row.externalId +
-                            '</a>';
+                        if (row.externalId == null){
+                            content = ''
+                        } else {
+                            content = row.externalId;
+                        }
                         return content;
                     }
                 },

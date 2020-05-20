@@ -39,7 +39,9 @@ public class SubmissionServiceImpl implements SubmissionService {
     private final SpectrumRepository spectrumRepository;
 
     private enum ColumnInformation {
-        ID(0, "id"), DATE(1, "dateTime"), NAME(2, "name"), USER(3, "user.username");
+        ID(0, "id"), DATE(1, "dateTime"),
+        NAME(2, "name"), EXTERNALID(3,"externalId"),
+        USER(4, "user.username");
 
         private int position;
         private String sortColumnName;
