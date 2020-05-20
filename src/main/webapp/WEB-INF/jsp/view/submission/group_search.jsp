@@ -43,14 +43,14 @@
                 </form:select>
             </div>
             <div class="table-dropdown">
-                <form:label path="source">Species:</form:label>
+                <form:label path="source">Source:</form:label>
                 <form:select path="source">
                     <form:option value="all">All</form:option>
                     <form:options items="${filterOptions.sourceList}"/>
                 </form:select>
             </div>
             <div class="table-dropdown">
-                <form:label path="disease">Species:</form:label>
+                <form:label path="disease">Disease:</form:label>
                 <form:select path="disease">
                     <form:option value="all">All</form:option>
                     <form:options items="${filterOptions.diseaseList}"/>
