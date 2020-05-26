@@ -5,6 +5,7 @@ build:
   stage: build
   script:
     - cmd /C %MAVEN_EXEC% tomcat7:redeploy -Denvironment=test
+    - echo %CI_JOB_STAGE%
 
 test:
   stage: test
