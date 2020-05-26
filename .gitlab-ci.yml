@@ -4,5 +4,5 @@ variables:
 build:
   stage: build
   script:
-    - cmd /C %MAVEN_EXEC% tomcat7:deploy -Denvironment=test
+    - cmd /C %MAVEN_EXEC% tomcat7:redeploy -Denvironment=test
     - python scripts/selenium/initial_test.py
