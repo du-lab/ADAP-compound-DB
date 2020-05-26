@@ -13,5 +13,6 @@ print(driver.title)
 
 # Close the browser
 driver.close()
+driver.quit()
 
 print('Test is complete')
