@@ -5,10 +5,9 @@ build:
   stage: build
   script:
     - cmd /C %MAVEN_EXEC% tomcat7:redeploy -Denvironment=test
-    - cmd /C echo %CI_JOB_ID%
 
 test:
   stage: test
   script:
-    - echo %CI_BUILDS_DIR%
-    - python %CI_BUILDS_DIR%/scripts/selenium/initial_test.py
+    - cmd /C echo %CI_BUILDS_DIR%
+    - cmd /C python %CI_BUILDS_DIR%/scripts/selenium/initial_test.py
