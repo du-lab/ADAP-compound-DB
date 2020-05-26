@@ -9,4 +9,4 @@ build:
 test:
   stage: test
   script:
-    - cmd /C python %CI_PROJECT_DIR%\scripts\selenium\initial_test.py
+    - python scripts\selenium\initial_test.py
