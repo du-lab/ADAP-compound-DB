@@ -1,0 +1,7 @@
+variables:
+  MAVEN_EXEC: C:\Maven\apache-maven-3.6.3\bin
+
+build:
+  stage: build
+  script:
+    - %MAVEN_EXEC% tomcat7:deploy
