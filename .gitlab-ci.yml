@@ -9,4 +9,5 @@ build:
 test:
   stage: test
   script:
-    - python scripts\selenium\initial_test.py
+#    - python scripts\selenium\initial_test.py
+    - python --version
