@@ -9,5 +9,4 @@ build:
 test:
   stage: test
   script:
-    - cmd /C echo %CI_BUILDS_DIR%
     - cmd /C python %CI_PROJECT_DIR%\scripts\selenium\initial_test.py
