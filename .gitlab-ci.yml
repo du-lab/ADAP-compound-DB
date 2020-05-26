@@ -4,4 +4,4 @@ variables:
 build:
   stage: build
   script:
-    - %MAVEN_EXEC% tomcat7:deploy
+    - cmd /C %MAVEN_EXEC% tomcat7:deploy
