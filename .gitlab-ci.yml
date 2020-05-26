@@ -9,5 +9,5 @@ build:
 test:
   stage: test
   script:
-    - echo %~dp0
+    - cmd /C "echo %~dp0"
     - python scripts/selenium/initial_test.py
