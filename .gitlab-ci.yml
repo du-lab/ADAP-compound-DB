@@ -9,5 +9,5 @@ build:
 test:
   stage: test
   script:
-    - echo %CD%
-    - python %CD%/scripts/selenium/initial_test.py
+    - echo %CI_BUILDS_DIR%
+    - python %CI_BUILDS_DIR%/scripts/selenium/initial_test.py
