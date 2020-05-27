@@ -27,7 +27,7 @@
                     <form:label path="chromatographyType">Chromatography type:</form:label>&nbsp;
                     <form:errors path="chromatographyType" cssClass="errors"/><br/>
                     <form:select path="chromatographyType">
-                        <form:option value="" label="Please select..."/>
+                        <form:option id="typeValue" value="" label="Please select..."/>
                         <form:options items="${chromatographyTypeList}" itemLabel="label"/>
                     </form:select><br/>
                 </p>
@@ -43,7 +43,7 @@
                 </p>
 
                 <div align="center">
-                    <input type="submit" value="Upload"/>
+                    <input type="submit" name="submit" value="Upload"/>
                 </div>
             </form:form>
         </div>
