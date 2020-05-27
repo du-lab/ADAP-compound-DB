@@ -1,12 +1,13 @@
 package org.dulab.adapcompounddb.models.dto;
 
+import org.apache.commons.lang3.StringUtils;
+import org.dulab.adapcompounddb.models.entities.UserPrincipal;
+
+import javax.persistence.Entity;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.*;
-import org.apache.commons.lang3.StringUtils;
-import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 
 @Entity
 public class SubmissionDTO implements Serializable {
@@ -36,6 +37,8 @@ public class SubmissionDTO implements Serializable {
     private String reference;
 
     private Integer allSpectrumReference;
+
+    private String externalId;
 
     // *******************************
     // ***** Getters and Setters *****
@@ -111,6 +114,14 @@ public class SubmissionDTO implements Serializable {
 
     public void setAllSpectrumReference(final Integer allSpectrumReference) {
         this.allSpectrumReference = allSpectrumReference;
+    }
+
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
     }
 
     // *************************

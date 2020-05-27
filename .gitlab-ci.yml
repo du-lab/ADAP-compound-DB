@@ -1,7 +1,13 @@
 variables:
-  MAVEN_EXEC: "C:\Maven\apache-maven-3.6.3\bin"
+  MAVEN_EXEC: C:\Maven\apache-maven-3.6.3\bin\mvn
 
 build:
   stage: build
   script:
-    - %MAVEN_EXEC% tomcat7:deploy
+    - cmd /C %MAVEN_EXEC% tomcat7:redeploy -Denvironment=test
+
+test:
+  stage: test
+  script:
+    - python scripts\selenium\initial_test.py
+#    - python --version

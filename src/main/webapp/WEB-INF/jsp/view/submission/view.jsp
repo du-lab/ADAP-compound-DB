@@ -38,6 +38,10 @@
                             <td>${submission.name}</td>
                         </tr>
                         <tr>
+                            <td><strong>External ID:</strong></td>
+                            <td>${submission.externalId}</td>>
+                        </tr>
+                        <tr>
                             <td><strong>Description:</strong></td>
                             <td>
                                 <pre>${submission.description}</pre>

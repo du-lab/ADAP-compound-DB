@@ -11,11 +11,23 @@
 ```
 git clone https://github.com/du-lab/ADAP-compound-DB.git
 ```
-2. Install Apache Tomcat server (tested with version 8.5) and add the content of the file **[repository]/database/datasource.xml** to the file **[tomcat]/conf/context.xml**
+2. Install Apache Tomcat server (tested with version 8.5) and add the content of the file 
+**[repository]/server/context.xml** to the file **[tomcat]/conf/context.xml**
 
-3. Install MySQL, MySQL JDBC driver, and (optionally) MySQL Workbench (tested with version 5.0.11). Then, run the script **[repository]/databse/create.sql** in MySQL Workbench.
+3. Install MySQL. Choose username and password for connecting to MySQL. Update fields `username` and 
+`password` in file **[tomcat]/conf/context.xml**. Then, download MySQL JDBC driver and put it into 
+**[tomcat]/lib** directory. To populate the database, download a backup file from Google Drive and run
+```
+mysql -u root -p < dump.mysql
+```
 
-4. Install IntelliJ IDEA (or other IDE of your choice) and configure it to deploy our project on Tomcat 
+4. (Optional) Install MySQL Workbench and check if you can connect to MySQL. Then, run the script **[repository]/databse/create.sql** in MySQL Workbench.
+
+5. Install Maven and compile and deploy the project by running
+```
+mvn tomcat7:deploy
+```
+Alternatively, you can open the repository in IntelliJ IDEA and set it up to deploy the project. 
 
 ### Setup for Amazon Web Services EC2 machine
 See [link](INSTALL_LINUX.md)

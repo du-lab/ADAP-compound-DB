@@ -34,6 +34,10 @@
             <form:input class="width_input" path="name"/><br/>
             <form:errors path="name" cssClass="errors"/><br/>
 
+            <form:label path="externalId">External ID:</form:label><br/>
+            <form:input class="width_input" path="externalId"/><br/>
+            <form:errors path="externalId" cssClass="errors"/><br/>
+
             <form:label path="description">Description:</form:label><br/>
             <form:textarea class="width_textarea" path="description"/><br/>
             <form:errors path="description" cssClass="errors"/><br/>
