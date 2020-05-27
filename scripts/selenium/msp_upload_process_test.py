@@ -8,7 +8,7 @@ from selenium.webdriver.support.ui import Select
 
 
 def upload_process_test(homepage_url, msp_path):
-    driver = webdriver.Chrome('/Users/ericliao/Documents/chromedriver')
+    driver = webdriver.Chrome('drivers/chromedriver')
 
     driver.get(homepage_url)
 
