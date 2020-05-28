@@ -5,6 +5,7 @@ import argparse
 
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
+from urllib.parse import urljoin
 
 
 def upload_process_test(homepage_url, msp_path):
@@ -22,11 +23,9 @@ def upload_process_test(homepage_url, msp_path):
     choose_key.send_keys(msp_path)
     submit_button.click()
 
-    print(driver.current_url)
+    assert (driver.current_url.__str__().startswith(urljoin(homepage_url, 'file/')))
 
-    assert (driver.current_url.__str__().startswith(homepage_url))
-
-    driver.close()
+    driver.quit()
 
 
 def main():
