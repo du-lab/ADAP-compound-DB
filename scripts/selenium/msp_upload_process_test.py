@@ -9,7 +9,7 @@ from urllib.parse import urljoin
 
 
 def upload_process_test(homepage_url, msp_path):
-    driver = webdriver.Chrome('drivers/chromedriver')
+    driver = webdriver.Chrome('scripts/selenium/drivers/chromedriver')
 
     driver.get(homepage_url)
 
