@@ -107,7 +107,7 @@
             <nav>
                 <ul>
                     <li><a href="<c:url value="/"/>"><i class="material-icons">home</i>Home</a></li>
-                    <li><a href="<c:url value="/file/upload/" />"><i
+                    <li id="uploadPage"><a href="<c:url value="/file/upload/" />"><i
                             class="material-icons">cloud_upload</i>Upload Files</a></li>
                     <li><a href="<c:url value="/allClusters/" />"><i
                             class="material-icons">equalizer</i>Spectra</a></li>
