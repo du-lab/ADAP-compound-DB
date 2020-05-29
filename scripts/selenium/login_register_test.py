@@ -6,6 +6,7 @@ import random
 import string
 from selenium import webdriver
 from urllib.parse import urljoin
+from webdriver_manager.chrome import ChromeDriverManager
 
 #  generate random string as username
 def random_string(stringLength):
@@ -24,54 +25,65 @@ def random_password(stringLength):
 def login_register_test(homepage_url):
 
     #TODO Change path to the driver. See msp_upload_process_test.py
-    driver = webdriver.Chrome('drivers/chromedriver')
+    driver = webdriver.Chrome('scripts/selenium/drivers/chromedriver')
+    # driver = webdriver.Chrome(ChromeDriverManager().install())
 
-    #TODO Add try-except block. See msp_upload_process_test.py
-    driver.get(homepage_url)
+    try:
+        #TODO Add try-except block. See msp_upload_process_test.py
+        driver.get(homepage_url)
 
-    #TODO This code is somewhat long. Add some comments or split it into several functions. 
+        #TODO This code is somewhat long. Add some comments or split it into several functions.
 
-    upload_page_button = driver.find_element_by_id('loginPage')
-    upload_page_button.click()
+        # go to login page
+        upload_page_button = driver.find_element_by_id('loginPage')
+        upload_page_button.click()
 
-    register_button = driver.find_element_by_class_name('button')
-    register_button.click()
+        # go to registration
+        register_button = driver.find_element_by_class_name('button')
+        register_button.click()
 
-    username_input = driver.find_element_by_id('username')
-    username_value = random_string(8)
-    username_input.send_keys(username_value)
+        # input username, email, password for new register user
+        username_input = driver.find_element_by_id('username')
+        username_value = random_string(8)
+        username_input.send_keys(username_value)
 
-    email_input = driver.find_element_by_id('email')
-    email = random_string(8) + '@gmail.com'
-    email_input.send_keys(email)
+        email_input = driver.find_element_by_id('email')
+        email = random_string(8) + '@gmail.com'
+        email_input.send_keys(email)
 
-    confirm_email_input = driver.find_element_by_id('confirmedEmail')
-    confirm_email_input.send_keys(email)
+        confirm_email_input = driver.find_element_by_id('confirmedEmail')
+        confirm_email_input.send_keys(email)
 
-    password_input = driver.find_element_by_id('password')
-    password_value = random_password(9)
-    password_input.send_keys(password_value)
+        password_input = driver.find_element_by_id('password')
+        password_value = random_password(9)
+        password_input.send_keys(password_value)
 
-    confirmed_password_input = driver.find_element_by_id('confirmedPassword')
-    confirmed_password_input.send_keys(password_value)
+        confirmed_password_input = driver.find_element_by_id('confirmedPassword')
+        confirmed_password_input.send_keys(password_value)
 
-    submit_button = driver.find_element_by_id('submit')
-    submit_button.click()
+        # commit new registration
+        submit_button = driver.find_element_by_id('submit')
+        submit_button.click()
 
-    username_login = driver.find_element_by_id('username')
-    username_login.send_keys(username_value)
+        # log in with new created user information
+        username_login = driver.find_element_by_id('username')
+        username_login.send_keys(username_value)
 
-    password_login = driver.find_element_by_id('password')
-    password_login.send_keys(password_value)
+        password_login = driver.find_element_by_id('password')
+        password_login.send_keys(password_value)
 
-    driver.find_element_by_name("submit").click()
+        driver.find_element_by_name("submit").click()
 
-    account_page_button = driver.find_element_by_id("accountPage")
-    account_page_button.click()
+        # go to account page
+        account_page_button = driver.find_element_by_id("accountPage")
+        account_page_button.click()
 
-    assert (driver.current_url.__str__().startswith(urljoin(homepage_url, 'account/')))
+        # validate if current url is account page
+        assert (driver.current_url.__str__().startswith(urljoin(homepage_url, 'account/')))
 
-    driver.quit()
+    except Exception as e:
+        driver.quit()
+        raise e
 
 
 def main():
