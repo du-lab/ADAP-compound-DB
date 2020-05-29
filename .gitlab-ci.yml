@@ -1,5 +1,6 @@
 variables:
   MAVEN_EXEC: C:\Maven\apache-maven-3.6.3\bin\mvn
+  HOMEPAGE_URL: http://localhost:8080/adap_compound_db_war/
 
 build:
   stage: build
@@ -14,3 +15,4 @@ test:
     - master
   script:
     - python scripts\selenium\initial_test.py
+    - cmd /C python scripts\selenium\msp_upload_process_test.py --homepage_url %HOMEPAGE_URL% --msp_path %CI_PROJECT_DIR%\scripts\selenium\combined.msp

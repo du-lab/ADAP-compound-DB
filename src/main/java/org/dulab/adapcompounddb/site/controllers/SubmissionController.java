@@ -337,13 +337,13 @@ public class SubmissionController extends BaseController {
     public String delete(@PathVariable("submissionId") final long id, @RequestHeader(value = "referer",
             required = false) final String referer) {
         submissionService.delete(id);
-        String newReferer;
-        if (referer.contains("?")) {
-            newReferer = referer.split("\\?")[0];
-        } else {
-            newReferer = referer;
-        }
-        return "redirect:" + newReferer;
+//        String newReferer;
+//        if (referer.contains("?")) {
+//            newReferer = referer.split("\\?")[0];
+//        } else {
+//            newReferer = referer;
+//        }
+        return "redirect:/account/";
     }
 
     private String redirectFileUpload() {

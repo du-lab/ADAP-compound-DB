@@ -26,9 +26,11 @@ public class ErrorHandlingFilter implements Filter {
         catch (Exception e) {
             if (response instanceof HttpServletResponse)
                 ((HttpServletResponse) response).sendRedirect(
-                        String.format("/error?errorMsg=%s",
+                        String.format("%s/error?errorMsg=%s",
+                                request.getServletContext().getContextPath(),
                                 URLEncoder.encode(e.getMessage(), "UTF-8")));
             LOG.error(e.getMessage(), e.getCause());
+
         }
     }
 

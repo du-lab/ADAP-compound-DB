@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
@@ -31,6 +33,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class SubmissionServiceImpl implements SubmissionService {
+
+    private static final Logger LOG = LogManager.getLogger();
 
     private static final String DESC = "DESC";
     private final SubmissionRepository submissionRepository;
@@ -163,11 +167,18 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     @Transactional
     public void delete(final long submissionId) {
-        submissionRepository.deleteById(submissionId);
+        Optional<Submission> submission = submissionRepository.findById(submissionId);
+        if (submission.isPresent())
+            submissionRepository.delete(submission.get());
+        else
+            LOG.warn(String.format(
+                    "Fail to delete submission %d because this submission is not in the database", submissionId));
     }
 
     public List<String> findUniqueTagStrings() {
-        return MappingUtils.toList(submissionTagRepository.findUniqueTagStrings());
+        List<String> uniqueTags = MappingUtils.toList(submissionTagRepository.findUniqueTagStrings());
+        uniqueTags.sort(String.CASE_INSENSITIVE_ORDER);
+        return uniqueTags;
     }
 
     @Override

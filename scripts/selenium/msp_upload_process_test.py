@@ -9,24 +9,26 @@ from urllib.parse import urljoin
 
 
 def upload_process_test(homepage_url, msp_path):
-    driver = webdriver.Chrome('drivers/chromedriver')
+    driver = webdriver.Chrome('scripts/selenium/drivers/chromedriver')
 
-    driver.get(homepage_url)
+    try:
+        driver.get(homepage_url)
 
-    upload_page_button = driver.find_element_by_id('uploadPage')
-    upload_page_button.click()
+        upload_page_button = driver.find_element_by_id('uploadPage')
+        upload_page_button.click()
 
-    option_bar = Select(driver.find_element_by_id('chromatographyType'))
-    choose_key = driver.find_element_by_name('files')
-    submit_button = driver.find_element_by_name("submit")
-    option_bar.select_by_visible_text('Gas Chromatography')
-    choose_key.send_keys(msp_path)
-    submit_button.click()
+        option_bar = Select(driver.find_element_by_id('chromatographyType'))
+        choose_key = driver.find_element_by_name('files')
+        submit_button = driver.find_element_by_name("submit")
+        option_bar.select_by_visible_text('Gas Chromatography')
+        choose_key.send_keys(msp_path)
+        submit_button.click()
 
-    assert (driver.current_url.__str__().startswith(urljoin(homepage_url, 'file/')))
+        assert (driver.current_url.__str__().startswith(urljoin(homepage_url, 'file/')))
 
-    driver.quit()
-
+    except Exception as e:
+        driver.quit()
+        raise e
 
 def main():
     """Main function that is called from a command line"""
