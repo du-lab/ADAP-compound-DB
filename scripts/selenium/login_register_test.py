@@ -22,9 +22,14 @@ def random_password(stringLength):
 
 
 def login_register_test(homepage_url):
+
+    #TODO Change path to the driver. See msp_upload_process_test.py
     driver = webdriver.Chrome('drivers/chromedriver')
 
+    #TODO Add try-except block. See msp_upload_process_test.py
     driver.get(homepage_url)
+
+    #TODO This code is somewhat long. Add some comments or split it into several functions. 
 
     upload_page_button = driver.find_element_by_id('loginPage')
     upload_page_button.click()
