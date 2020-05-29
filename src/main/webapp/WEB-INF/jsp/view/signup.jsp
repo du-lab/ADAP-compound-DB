@@ -56,7 +56,7 @@
                     </span>
                 </p>
                 <div align="center">
-                    <input type="submit" value="Sign up"/>
+                    <input id= "submit" type="submit" value="Sign up"/>
                 </div>
             </form:form>
         </div>

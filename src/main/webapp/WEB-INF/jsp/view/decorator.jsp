@@ -115,7 +115,7 @@
                         <a href="<c:url value="/study_distributions/" />"><i class="material-icons">book</i>Distributions</a>
                     </li>
                     <c:if test="${currentUser == null}">
-                        <li><a href="<c:url value="/login/"/>"><i class="material-icons">person</i>Log-in / Sign-up</a>
+                        <li id="loginPage"><a href="<c:url value="/login/"/>"><i class="material-icons">person</i>Log-in / Sign-up</a>
                         </li>
                     </c:if>
                     <c:if test="${currentUser != null}">
@@ -126,7 +126,7 @@
                                 </a>
                             </li>
                         </c:if>
-                        <li><a href="<c:url value="/account/"/>"><i class="material-icons">account_box</i>Account</a>
+                        <li><a id="accountPage" href="<c:url value="/account/"/>"><i class="material-icons">account_box</i>Account</a>
                         </li>
                         <li><a href="<c:url value="/logout/"/>"><i class="material-icons">transit_enterexit</i>Log
                             out</a>
