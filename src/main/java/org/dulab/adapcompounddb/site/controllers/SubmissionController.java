@@ -294,15 +294,19 @@ public class SubmissionController extends BaseController {
         }
         tags.clear();
 
-        JSONArray tagArray = new JSONArray(submissionForm.getTags());
+        String tagString = submissionForm.getTags();
+        if (tagString != null && tagString.length() > 0) {
 
-        for (int i = 0; i < tagArray.length(); i++) {
-            JSONObject tagJsonObject = tagArray.getJSONObject(i);
-            String name = tagJsonObject.getString("value");
-            if (name.trim().isEmpty()) {
-                continue;
+            JSONArray tagArray = new JSONArray(tagString);
+
+            for (int i = 0; i < tagArray.length(); i++) {
+                JSONObject tagJsonObject = tagArray.getJSONObject(i);
+                String name = tagJsonObject.getString("value");
+                if (name.trim().isEmpty()) {
+                    continue;
+                }
+                tags.add(new SubmissionTag(submission, name));
             }
-            tags.add(new SubmissionTag(submission, name));
         }
 
         //        final List<SubmissionCategory> categories = new ArrayList<>();
