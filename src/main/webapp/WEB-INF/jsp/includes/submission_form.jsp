@@ -83,8 +83,8 @@
 <%-- using tagify library to generate tags--%>
 <script>
     $( '#tags' ).tagify( {
-            pattern: /^.{0,50}$/,  // Validate typed tag(s) by Regex. Here maximum chars length is defined as "20"
-            delimiters: ", ",         // add new tags when a comma or a space character is entered
+            // pattern: /^.{0,50}$/,  // Validate typed tag(s) by Regex. Here maximum chars length is defined as "20"
+            // delimiters: ", ",         // add new tags when a comma or a space character is entered
             // maxTags: 6,
             keepInvalidTags: true,         // do not remove invalid tags (but keep them marked as invalid)
             backspace: "edit",
