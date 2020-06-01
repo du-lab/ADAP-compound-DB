@@ -6,7 +6,6 @@ import random
 import string
 from selenium import webdriver
 from urllib.parse import urljoin
-from webdriver_manager.chrome import ChromeDriverManager
 
 #  generate random string as username
 def random_string(stringLength):
@@ -24,15 +23,10 @@ def random_password(stringLength):
 
 def login_register_test(homepage_url):
 
-    #TODO Change path to the driver. See msp_upload_process_test.py
     driver = webdriver.Chrome('scripts/selenium/drivers/chromedriver')
-    # driver = webdriver.Chrome(ChromeDriverManager().install())
 
     try:
-        #TODO Add try-except block. See msp_upload_process_test.py
         driver.get(homepage_url)
-
-        #TODO This code is somewhat long. Add some comments or split it into several functions.
 
         # go to login page
         upload_page_button = driver.find_element_by_id('loginPage')
