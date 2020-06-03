@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
 #TODO Update this description
-"""this script is using for auto-testing upload msp process"""
+"""this script is using for auto-testing individual search test after login"""
 import argparse
+import time
 
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
@@ -38,6 +39,9 @@ def individual_search_test(homepage_url, msp_path, user_name, user_password):
         choose_key.send_keys(msp_path)
         submit_button.click()
 
+        # add 5 seconds delay for msp file to upload before next step
+        time.sleep(5)
+
         # click Mass Spectra tab
         mass_spectra_tab = driver.find_element_by_name("massSpectraTab")
         mass_spectra_tab.click()
@@ -56,6 +60,9 @@ def individual_search_test(homepage_url, msp_path, user_name, user_password):
         # click search button on single search page
         search_button = driver.find_element_by_class_name('button')
         search_button.click()
+
+        # add 10 seconds delay for spectrum search complete before next step
+        time.sleep(10)
 
         # check if spectrum figure is plotted
         assert (driver.find_element_by_id('plot'))
