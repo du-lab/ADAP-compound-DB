@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+#TODO Update this description
 """this script is using for auto-testing upload msp process"""
 import argparse
 
@@ -24,6 +25,8 @@ def individual_search_test(homepage_url, msp_path):
         choose_key.send_keys(msp_path)
         submit_button.click()
 
+        #TODO Let's add a few seconds delay for a file to upload. Otherwise, table is not always constructed in time
+
         # choose the first spectrum and go to the spectrum page
         spectra_table = driver.find_element_by_id("spectrum_table")
         spectra_list = spectra_table.find_elements_by_css_selector("table>tbody>tr>td")
@@ -38,6 +41,8 @@ def individual_search_test(homepage_url, msp_path):
         # click search button on single search page
         search_button = driver.find_element_by_class_name('button')
         search_button.click()
+
+        #TODO Let's add at least a 10-second delay for the search to complete
 
         # check if spectrum figure is plotted
         assert (driver.find_element_by_id('plot'))
