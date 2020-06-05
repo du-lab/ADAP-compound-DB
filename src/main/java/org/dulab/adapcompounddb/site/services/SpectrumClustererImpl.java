@@ -27,7 +27,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
     private static final float MZ_TOLERANCE = 0.01F;
 
-    private static final float SCORE_TOLERANCE = 0.25F;
+    private static final float SCORE_TOLERANCE = 0.2F;
 
     private static final int MIN_NUM_SPECTRA = 1;
 
