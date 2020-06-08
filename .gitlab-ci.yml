@@ -2,6 +2,8 @@ variables:
   MAVEN_EXEC: C:\Maven\apache-maven-3.6.3\bin\mvn
   HOMEPAGE_URL: http://localhost:8080/adap_compound_db_war/
 
+# In addition, variables ADAP_KDB_TEST_USERNAME and ADAP_KDB_TEST_PASSWORD must be defined in GitLab CI settings.
+
 build:
   stage: build
   only:
@@ -17,3 +19,5 @@ test:
     - python scripts\selenium\initial_test.py
     - cmd /C python scripts\selenium\msp_upload_process_test.py --homepage_url %HOMEPAGE_URL% --msp_path %CI_PROJECT_DIR%\scripts\selenium\combined.msp
     - cmd /C python scripts\selenium\login_register_test.py --homepage_url %HOMEPAGE_URL%
+    - cmd /C python scripts\selenium\individual_search_test_without_login.py --homepage_url %HOMEPAGE_URL% --msp_path %CI_PROJECT_DIR%\scripts\selenium\combined.msp
+    - cmd /C python scripts\selenium\individual_search_test_after_login.py --homepage_url %HOMEPAGE_URL% --msp_path %CI_PROJECT_DIR%\scripts\selenium\combined.msp --user_name %ADAP_KDB_TEST_USERNAME% --user_password %ADAP_KDB_TEST_PASSWORD%

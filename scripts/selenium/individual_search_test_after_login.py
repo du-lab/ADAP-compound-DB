@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-#TODO Update this description
 """this script is using for auto-testing individual search test after login"""
 import argparse
 import time
