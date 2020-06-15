@@ -132,12 +132,10 @@
                             out</a>
                         </li>
                     </c:if>
-
-                    <%-- <li><a class="feedback" href="<c:url value="/feedback"/>">Leave Feedback</a></li> --%>
                 </ul>
             </nav>
         </aside>
-        <a class="feedback" href="<c:url value="/feedback"/>"><strong>Leave Feedback</strong></a>
+        <a class="feedback" href="https://forms.gle/zYPXt463DC1WjJMy8" target="_blank"><strong>Leave Feedback</strong></a>
     </div>
 
     <div style="width: 100%;">
