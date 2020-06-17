@@ -37,7 +37,7 @@ def cluster_page_test(homepage_url):
         time.sleep(5)
 
         # validate if current url is account page
-        assert(driver.current_url.__str__().startswith(urljoin(homepage_url, 'cluster/', cluster_id)))
+        assert(driver.current_url.__str__().startswith(urljoin(homepage_url, 'cluster/') + cluster_id))
 
         # get the Spectrum Plot span
         span_list = driver.find_elements_by_css_selector("section>div>span")
