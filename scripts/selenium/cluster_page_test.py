@@ -38,7 +38,7 @@ def cluster_page_test(homepage_url):
 
         # validate if current url is account page
         #TODO "urljoin(homepage_url, 'cluster/', cluster_id)" produces "cluster/" for me. Does it work for you?
-        assert(driver.current_url.__str__().startswith(urljoin(homepage_url, 'cluster/', cluster_id)))
+        assert(driver.current_url.__str__().startswith(urljoin(homepage_url, 'cluster/') + cluster_id))
 
         # get the Spectrum Plot span
         span_list = driver.find_elements_by_css_selector("section>div>span")
