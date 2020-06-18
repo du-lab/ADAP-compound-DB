@@ -22,3 +22,4 @@ test:
     - cmd /C python scripts\selenium\individual_search_test_without_login.py --homepage_url %HOMEPAGE_URL% --msp_path %CI_PROJECT_DIR%\scripts\selenium\combined.msp
     - cmd /C python scripts\selenium\individual_search_test_after_login.py --homepage_url %HOMEPAGE_URL% --msp_path %CI_PROJECT_DIR%\scripts\selenium\combined.msp --user_name %ADAP_KDB_TEST_USERNAME% --user_password %ADAP_KDB_TEST_PASSWORD%
     - cmd /C python scripts\selenium\group_search_test_without_login.py --homepage_url %HOMEPAGE_URL% --msp_path %CI_PROJECT_DIR%\scripts\selenium\combined.msp
+    - cmd /C python scripts\selenium\cluster_page_test.py --homepage_url %HOMEPAGE_URL%
