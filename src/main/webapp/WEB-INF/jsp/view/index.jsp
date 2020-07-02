@@ -9,7 +9,7 @@
 <div align="center" class="cookie-banner" style="display: none">
     <p>
         By using our website, you agree to our
-        <a href="insert-link">cookie policy</a>
+        <a href="${pageContext.request.contextPath}/resources/cookie-policy.txt" target="_blank">cookie policy</a>
         <button class="close">&times;</button>
     </p>
 </div>
@@ -17,9 +17,9 @@
 <script>
     if (localStorage.getItem("cookieSeen") != "shown") {
         $(".cookie-banner").delay(2000).fadeIn();
-        localStorage.setItem("cookieSeen","shown")
+        localStorage.setItem("cookieSeen", "shown")
     };
-    $(".close").click(function() {
+    $(".close").click(function () {
         $(".cookie-banner").fadeOut();
     })
 </script>
@@ -33,7 +33,8 @@
 
     <div align="center">
         <div align="left" class="text large-subsection">
-            <img src="<c:url value="/resources/AdapCompoundDb/img/molecule.jpg"/>" style="float: left; margin-right: 30px;">
+            <img src="<c:url value="/resources/AdapCompoundDb/img/molecule.jpg"/>"
+                 style="float: left; margin-right: 30px;">
             <p>
                 Our Knowledgebase is designed for tracking unknown compounds by sharing metabolite information across
                 different
@@ -75,7 +76,8 @@
                 <li>Search for matching knowledgebase spectra by clicking the search icon
                     <i class="material-icons" style="font-size: 1em;">search</i> on the right from the spectrum name,
                 </li>
-                <li> (Optional) If you want to save your spectra to the Knowledgebase, <a href="/login/">register</a> yourself
+                <li> (Optional) If you want to save your spectra to the Knowledgebase, <a href="/login/">register</a>
+                    yourself
                     as
                     a user and click the button <a href="/file/">Submit</a> below the spectrum table.
                 </li>
@@ -90,12 +92,14 @@
     <div align="center">
         <div align="left" class="text large-subsection">
             <p>
-                This knowledgebase is currently being actively developed by the Du-Lab team (<a href="https://www.du-lab.org/" target="_blank"><strong>https://www.du-lab.org/</strong></a>).
+                This knowledgebase is currently being actively developed by the Du-Lab team (<a
+                    href="https://www.du-lab.org/" target="_blank"><strong>https://www.du-lab.org/</strong></a>).
             </p>
             <p>
                 If you encounter any issues
                 (which is quite possible) or would like to provide a feedback on your experience using ADAP Spectral
-                Knowledgebase click <a href="feedback/"><strong>here</strong></a>,<br/>or please contact us through the email
+                Knowledgebase click <a href="feedback/"><strong>here</strong></a>,<br/>or please contact us through the
+                email
                 <a href="mailto:dulab.binf@gmail.com">dulab.binf@gmail.com</a>.
             </p>
         </div>
