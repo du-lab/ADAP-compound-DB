@@ -6,24 +6,6 @@
 <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
 <script src="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.js"/>"></script>
 
-<div align="center" class="cookie-banner" style="display: none">
-    <p>
-        By using our website, you agree to our
-        <a href="${pageContext.request.contextPath}/resources/cookie-policy.txt" target="_blank">cookie policy</a>
-        <button class="close">&times;</button>
-    </p>
-</div>
-
-<script>
-    if (localStorage.getItem("cookieSeen") != "shown") {
-        $(".cookie-banner").delay(2000).fadeIn();
-        localStorage.setItem("cookieSeen", "shown")
-    };
-    $(".close").click(function () {
-        $(".cookie-banner").fadeOut();
-    })
-</script>
-
 <div align="center">
     <h1>Welcome to ADAP Spectral Knowledgebase!</h1>
 </div>

@@ -89,6 +89,24 @@
 
 <body>
 
+<div align="center" class="cookie-banner" style="display: none">
+    <p>
+        By using our website, you agree to our
+        <a href="${pageContext.request.contextPath}/resources/cookie-policy.txt" target="_blank">cookie policy</a>
+        <button class="close">&times;</button>
+    </p>
+</div>
+
+<script>
+    if (localStorage.getItem("cookieSeen") != "shown") {
+        $(".cookie-banner").delay(2000).fadeIn();
+        localStorage.setItem("cookieSeen", "shown")
+    };
+    $(".close").click(function () {
+        $(".cookie-banner").fadeOut();
+    })
+</script>
+
 <header>
 
     <h1>
