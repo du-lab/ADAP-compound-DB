@@ -1,11 +1,9 @@
 package org.dulab.adapcompounddb.models.dto;
 
 import org.dulab.adapcompounddb.models.entities.Spectrum;
-import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
 import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
 
 import java.io.Serializable;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -34,6 +32,8 @@ public class ClusterDTO implements Serializable {
     private long clusterId;
     private String querySpectrumName;
     private Long querySpectrumId;
+    private Integer querySpectrumIndex;
+    private Integer queryFileIndex;
     private String consensusSpectrumName;
     private Integer size;
     private Double score;
@@ -157,6 +157,22 @@ public class ClusterDTO implements Serializable {
 
     public void setQuerySpectrumId(long querySpectrumId) {
         this.querySpectrumId = querySpectrumId;
+    }
+
+    public Integer getQuerySpectrumIndex() {
+        return querySpectrumIndex;
+    }
+
+    public void setQuerySpectrumIndex(Integer querySpectrumIndex) {
+        this.querySpectrumIndex = querySpectrumIndex;
+    }
+
+    public Integer getQueryFileIndex() {
+        return queryFileIndex;
+    }
+
+    public void setQueryFileIndex(Integer queryFileIndex) {
+        this.queryFileIndex = queryFileIndex;
     }
 
     public String getChromatographyTypeLabel() {

@@ -2,8 +2,6 @@ package org.dulab.adapcompounddb.site.services;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dulab.adapcompounddb.models.QueryParameters;
-import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.dto.ClusterDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
@@ -20,10 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
-import java.util.EmptyStackException;
 import java.util.List;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class GroupSearchServiceImpl implements GroupSearchService {
@@ -54,7 +50,7 @@ public class GroupSearchServiceImpl implements GroupSearchService {
     @Async
     @Transactional(propagation = Propagation.REQUIRED)
     public Future<Void> groupSearch(
-            List<Spectrum> querySpectra, HttpSession session, String species, String source, String disease) {
+            List<File> files, HttpSession session, String species, String source, String disease) {
 
         LOGGER.info(String.format("Group search is started (species: %s, source: %s, disease: %s)",
                 species != null ? species : "all",
@@ -66,7 +62,7 @@ public class GroupSearchServiceImpl implements GroupSearchService {
             session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
 
             // Calculate total number of spectra
-            long totalSteps = querySpectra.size();
+            long totalSteps = files.stream().mapToInt(file -> file.getSpectra().size()).sum();
 
             if (totalSteps == 0) {
                 LOGGER.warn("No query spectra for performing a group search");
@@ -76,23 +72,30 @@ public class GroupSearchServiceImpl implements GroupSearchService {
 
             int progressStep = 0;
             progress = 0F;
-            for (Spectrum querySpectrum : querySpectra) {
+            for (int fileIndex = 0; fileIndex < files.size(); ++fileIndex) {
+                File file = files.get(fileIndex);
+                List<Spectrum> spectra = file.getSpectra();
+                for (int spectrumIndex = 0; spectrumIndex < spectra.size(); ++spectrumIndex) {  // Spectrum querySpectrum : file.getSpectra()
+                    Spectrum querySpectrum = spectra.get(spectrumIndex);
 
-                if (Thread.currentThread().isInterrupted()) break;
+                    if (Thread.currentThread().isInterrupted()) break;
 
-                List<SpectrumClusterView> clusters = MappingUtils.toList(
-                        spectrumRepository.searchConsensusSpectra(
-                                querySpectrum, 0.25, 0.01, species, source, disease));
+                    List<SpectrumClusterView> clusters = MappingUtils.toList(
+                            spectrumRepository.searchConsensusSpectra(
+                                    querySpectrum, 0.25, 0.01, species, source, disease));
 
-                // get the best match if the match is not null
-                ClusterDTO clusterDTO = new ClusterDTO(querySpectrum,
-                        (clusters.size() > 0) ? clusters.get(0) : null);
+                    // get the best match if the match is not null
+                    ClusterDTO clusterDTO = new ClusterDTO(querySpectrum,
+                            (clusters.size() > 0) ? clusters.get(0) : null);
+                    clusterDTO.setQueryFileIndex(fileIndex);
+                    clusterDTO.setQuerySpectrumIndex(spectrumIndex);
 
-                if (Thread.currentThread().isInterrupted()) break;
+                    if (Thread.currentThread().isInterrupted()) break;
 
-                groupSearchDTOList.add(clusterDTO);
-                session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
-                progress = (float) ++progressStep / totalSteps;
+                    groupSearchDTOList.add(clusterDTO);
+                    session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
+                    progress = (float) ++progressStep / totalSteps;
+                }
             }
         } catch (Throwable t) {
             LOGGER.error(String.format("Error during the group search (species: %s, source: %s, disease: %s): %s",

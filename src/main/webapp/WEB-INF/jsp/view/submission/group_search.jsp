@@ -196,7 +196,7 @@
                                 + row.querySpectrumId + '/search/" class="button"> Search</a>';
                         } else {
                             content = '<a href="${pageContext.request.contextPath}/file/'
-                                + row.fileIndex + '/' + row.spectrumIndex + '/search/" class="button"> Search</a>';
+                                + row.queryFileIndex + '/' + row.querySpectrumIndex + '/search/" class="button"> Search</a>';
                         }
                         return content;
                     }
