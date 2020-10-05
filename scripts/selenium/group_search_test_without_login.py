@@ -5,8 +5,13 @@ import argparse
 from urllib.parse import urljoin
 
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.ui import Select
 import time
+
+from selenium.webdriver.support.wait import WebDriverWait
 
 
 def group_search_test(homepage_url, msp_path):
@@ -43,6 +48,14 @@ def group_search_test(homepage_url, msp_path):
         matching_table = driver.find_element_by_id('match_table')
         data_list = matching_table.find_elements_by_css_selector('table>tbody>tr')
         assert data_list
+
+        # check if the single search button working
+        single_search_button_numbers = len(driver.find_elements_by_link_text('Search'))
+
+        for index in range(single_search_button_numbers):
+            driver.find_elements_by_link_text('Search')[index].click()
+            assert (driver.current_url.__str__().startswith(urljoin(homepage_url, 'file/')))
+            break
 
     except Exception as e:
         driver.quit()
