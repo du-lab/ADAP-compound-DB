@@ -5,14 +5,8 @@ import argparse
 from urllib.parse import urljoin
 
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.ui import Select
 import time
-
-from selenium.webdriver.support.wait import WebDriverWait
-
 
 def group_search_test(homepage_url, msp_path):
     driver = webdriver.Chrome('scripts/selenium/drivers/chromedriver')
@@ -53,9 +47,10 @@ def group_search_test(homepage_url, msp_path):
         #TODO Assign `driver.find_elements_by_link_text('Search')` to a variable and use that variable instead of
         # calling driver.find_elements_by_link_text('Search') multiple times.
         single_search_button_numbers = len(driver.find_elements_by_link_text('Search'))
+        search_button_list = driver.find_elements_by_link_text('Search')
 
         for index in range(single_search_button_numbers):
-            driver.find_elements_by_link_text('Search')[index].click()
+            search_button_list[index].click()
             assert (driver.current_url.__str__().startswith(urljoin(homepage_url, 'file/')))
             break
 
