@@ -8,7 +8,6 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 import time
 
-
 def group_search_test(homepage_url, msp_path):
     driver = webdriver.Chrome('scripts/selenium/drivers/chromedriver')
 
@@ -43,6 +42,13 @@ def group_search_test(homepage_url, msp_path):
         matching_table = driver.find_element_by_id('match_table')
         data_list = matching_table.find_elements_by_css_selector('table>tbody>tr')
         assert data_list
+
+        # check the search button on the file/group_search/ page
+        search_button_list = driver.find_elements_by_link_text('Search')
+        search_button_list[0].click()
+        time.sleep(5)
+        assert (driver.current_url.__str__().startswith(urljoin(homepage_url, 'file/')))
+
 
     except Exception as e:
         driver.quit()
