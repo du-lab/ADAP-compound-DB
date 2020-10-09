@@ -46,10 +46,11 @@ def group_search_test(homepage_url, msp_path):
         # check if the single search button working
         #TODO Assign `driver.find_elements_by_link_text('Search')` to a variable and use that variable instead of
         # calling driver.find_elements_by_link_text('Search') multiple times.
-        single_search_button_numbers = len(driver.find_elements_by_link_text('Search'))
+
+        # single_search_button_numbers = len(driver.find_elements_by_link_text('Search'))
         search_button_list = driver.find_elements_by_link_text('Search')
 
-        for index in range(single_search_button_numbers):
+        for index in range(1):
             search_button_list[index].click()
             assert (driver.current_url.__str__().startswith(urljoin(homepage_url, 'file/')))
             break
