@@ -43,12 +43,8 @@ def group_search_test(homepage_url, msp_path):
         data_list = matching_table.find_elements_by_css_selector('table>tbody>tr')
         assert data_list
 
-        # check if the single search button working
-        #TODO Assign `driver.find_elements_by_link_text('Search')` to a variable and use that variable instead of
-        # calling driver.find_elements_by_link_text('Search') multiple times.
-
+        # check the search button on the file/group_search/ page
         search_button_list = driver.find_elements_by_link_text('Search')
-
         search_button_list[0].click()
         time.sleep(5)
         assert (driver.current_url.__str__().startswith(urljoin(homepage_url, 'file/')))
