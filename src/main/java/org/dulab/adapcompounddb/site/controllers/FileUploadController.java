@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.controllers;
 
+import com.sun.org.apache.xpath.internal.operations.Mult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.ChromatographyType;
@@ -8,6 +9,7 @@ import org.dulab.adapcompounddb.models.entities.File;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.models.enums.MassSpectrometryType;
+import org.dulab.adapcompounddb.site.controllers.utils.MultipartFileUtils;
 import org.dulab.adapcompounddb.site.services.FileReaderService;
 import org.dulab.adapcompounddb.site.services.MspFileReaderService;
 import org.dulab.adapcompounddb.validation.ContainsFiles;
@@ -77,63 +79,72 @@ public class FileUploadController {
 //        submission.setFileType(form.getFileType());
 //        submission.setChromatographyType(form.getChromatographyType());
 
-        final FileReaderService service = fileReaderServiceMap.get(form.fileType);
-        if (service == null) {
-            LOG.warn("Cannot find an implementation of FileReaderService for a file of type {}", form.getFileType());
-            model.addAttribute("message", "Cannot read this file type.");
+        Submission submission = new Submission();
+        try {
+            MultipartFileUtils.readMultipartFile(submission, form.getFiles(), form.getFileType(), form.getChromatographyType());
+        } catch (IllegalStateException e) {
+            LOG.warn(e.getMessage(), e);
+            model.addAttribute("message", e.getMessage());
             return "file/upload";
         }
 
-        final Submission submission = new Submission();
-
-        final List<File> files = new ArrayList<>(form.getFiles().size());
-
-        // create two integer totalNumberOfFiles and totalNumberOfIntFiles to calculate MassSpectrometryType,
-        // totalNumberOfFiles is the number of files a study contained,
-        // totalNumberOfIntFiles is the number of files that contain Intergered M/Z value.
-        int totalNumberOfFiles = form.getFiles().size();
-        int totalNumberOfIntFiles = 0;
-
-        for (final MultipartFile multipartFile : form.getFiles()) {
-            final File file = new File();
-            file.setName(multipartFile.getOriginalFilename());
-            file.setFileType(form.getFileType());
-            file.setSubmission(submission);
-            try {
-                file.setContent(multipartFile.getBytes());
-                file.setSpectra(service.read(multipartFile.getInputStream(), form.getChromatographyType()));
-                file.getSpectra().forEach(s -> s.setFile(file));
-
-                // check if the file exists spectrum has integral m/z value
-                for (Spectrum s : file.getSpectra()) {
-                    if (s.isIntegerMz()) {
-                        totalNumberOfIntFiles++;
-                        break;
-                    }
-                }
-                files.add(file);
-            } catch (final IOException e) {
-                LOG.warn(e);
-                model.addAttribute("message", "Cannot read this file: " + e.getMessage());
-                return "file/upload";
-            }
-        }
-
-       // if totalNumberOfFiles == totalNumberOfIntFiles, it means every file of the study contains at least
-       // one spectrum that isIntegerMz is true, then set massSpectrometryType is LOW_Resolution
-       // else set massSpectrometryType is High_Resolution
-        if (totalNumberOfFiles == totalNumberOfIntFiles) {
-            submission.setMassSpectrometryType(MassSpectrometryType.LOW_RESOLUTION);
-        } else {
-            submission.setMassSpectrometryType(MassSpectrometryType.HIGH_RESOLUTION);
-        }
-
-        if (files.isEmpty()) {
-            model.addAttribute("message", "Cannot read this file");
-            return "file/upload";
-        }
-
-        submission.setFiles(files);
+//        final FileReaderService service = fileReaderServiceMap.get(form.fileType);
+//        if (service == null) {
+//            LOG.warn("Cannot find an implementation of FileReaderService for a file of type {}", form.getFileType());
+//            model.addAttribute("message", "Cannot read this file type.");
+//            return "file/upload";
+//        }
+//
+//        final Submission submission = new Submission();
+//
+//        final List<File> files = new ArrayList<>(form.getFiles().size());
+//
+//        // create two integer totalNumberOfFiles and totalNumberOfIntFiles to calculate MassSpectrometryType,
+//        // totalNumberOfFiles is the number of files a study contained,
+//        // totalNumberOfIntFiles is the number of files that contain Intergered M/Z value.
+//        int totalNumberOfFiles = form.getFiles().size();
+//        int totalNumberOfIntFiles = 0;
+//
+//        for (final MultipartFile multipartFile : form.getFiles()) {
+//            final File file = new File();
+//            file.setName(multipartFile.getOriginalFilename());
+//            file.setFileType(form.getFileType());
+//            file.setSubmission(submission);
+//            try {
+//                file.setContent(multipartFile.getBytes());
+//                file.setSpectra(service.read(multipartFile.getInputStream(), form.getChromatographyType()));
+//                file.getSpectra().forEach(s -> s.setFile(file));
+//
+//                // check if the file exists spectrum has integral m/z value
+//                for (Spectrum s : file.getSpectra()) {
+//                    if (s.isIntegerMz()) {
+//                        totalNumberOfIntFiles++;
+//                        break;
+//                    }
+//                }
+//                files.add(file);
+//            } catch (final IOException e) {
+//                LOG.warn(e);
+//                model.addAttribute("message", "Cannot read this file: " + e.getMessage());
+//                return "file/upload";
+//            }
+//        }
+//
+//       // if totalNumberOfFiles == totalNumberOfIntFiles, it means every file of the study contains at least
+//       // one spectrum that isIntegerMz is true, then set massSpectrometryType is LOW_Resolution
+//       // else set massSpectrometryType is High_Resolution
+//        if (totalNumberOfFiles == totalNumberOfIntFiles) {
+//            submission.setMassSpectrometryType(MassSpectrometryType.LOW_RESOLUTION);
+//        } else {
+//            submission.setMassSpectrometryType(MassSpectrometryType.HIGH_RESOLUTION);
+//        }
+//
+//        if (files.isEmpty()) {
+//            model.addAttribute("message", "Cannot read this file");
+//            return "file/upload";
+//        }
+//
+//        submission.setFiles(files);
 
         Submission.assign(session, submission);
         return "redirect:/file/";
