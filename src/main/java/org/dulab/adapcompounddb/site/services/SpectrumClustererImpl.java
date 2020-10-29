@@ -11,9 +11,7 @@ import org.dulab.adapcompounddb.models.enums.MassSpectrometryType;
 import org.dulab.adapcompounddb.site.controllers.ControllerUtils;
 import org.dulab.adapcompounddb.site.repositories.*;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
-import org.dulab.jsparcehc.Matrix;
-import org.dulab.jsparcehc.MatrixImpl;
-import org.dulab.jsparcehc.SparseHierarchicalClusterer;
+import org.dulab.jsparcehc.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -38,8 +36,8 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
     private final SpectrumRepository spectrumRepository;
     private final SpectrumMatchRepository spectrumMatchRepository;
     private final SpectrumClusterRepository spectrumClusterRepository;
-    private DistributionRepository distributionRepository;
-    private DistributionService distributionService;
+    private final DistributionRepository distributionRepository;
+    private final DistributionService distributionService;
 
     private float progress = -0.1F;
 
@@ -117,7 +115,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                 continue;
             }
 
-            final SparseHierarchicalClusterer clusterer = new SparseHierarchicalClusterer(
+            final SparseHierarchicalClustererV2 clusterer = new SparseHierarchicalClustererV2(
                     matrix, new org.dulab.jsparcehc.CompleteLinkage());
             try {
                 clusterer.cluster(SCORE_TOLERANCE);
@@ -127,11 +125,11 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                         "Something is wrong with the sparse hierarchical clustering: " + e.getMessage());
             }
 
-            final Map<Integer, Integer> labelMap = clusterer.getLabels();
+            Map<Integer, Integer> labelMap = clusterer.getLabels();
 
-            final long[] uniqueLabels = labelMap.values()
+            int[] uniqueLabels = labelMap.values()
                     .stream()
-                    .mapToLong(Integer::longValue)
+                    .mapToInt(Integer::intValue)
                     .distinct()
                     .toArray();
 
@@ -139,9 +137,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
             LOGGER.info(String.format("Creating new clusters of type \"%s\" to the database...", type));
 
-            for (final long label : uniqueLabels) {
-
-                System.out.println(label);
+            for (int label : uniqueLabels) {
 
                 count += 1F;
                 final Set<Long> spectrumIds = labelMap.entrySet()
@@ -353,52 +349,25 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
         return maxPeakIntensity;
     }
 
-    private Matrix getMzDistanceMatrix(List<Spectrum> spectra, float mzTolerance) {
+    private Matrix getMzDistanceMatrix(List<Peak> peaks, float mzTolerance) {  // List<Spectrum> spectra, float mzTolerance
 
-        MatrixImpl distanceMatrix = new MatrixImpl(mzTolerance);
+        MatrixImpl distanceMatrix = new MatrixImpl(mzTolerance, peaks.size());
 
-        for (int i = 0; i < spectra.size(); ++i) {
-
-            List<Peak> peaks1 = spectra.get(i).getPeaks();
-            // double intensityThreshold1 = PEAK_INTENSITY_FRACTION * peaks1.stream()
-            //         .mapToDouble(Peak::getIntensity)
-            //         .max()
-            //         .orElse(0.0);
-            double intensityThreshold1 = PEAK_INTENSITY_FRACTION * getMaxPeakIntensity(peaks1);
-
-            for (Peak peak1 : peaks1) {
-
-                if (peak1.getIntensity() < intensityThreshold1)
-                    continue;
-
-                for (int j = i + 1; j < spectra.size(); ++j) {
-
-                    List<Peak> peaks2 = spectra.get(j).getPeaks();
-                    // double intensityThreshold2 = PEAK_INTENSITY_FRACTION * peaks2.stream()
-                    //         .mapToDouble(Peak::getIntensity)
-                    //         .max()
-                    //         .orElse(0.0);
-                    double intensityThreshold2 = PEAK_INTENSITY_FRACTION * getMaxPeakIntensity(peaks2);
-
-                    for (Peak peak2 : peaks2) {
-
-                        if (peak2.getIntensity() < intensityThreshold2)
-                            continue;
-
-                        distanceMatrix.add(
-                                (int) peak1.getId(),
-                                (int) peak2.getId(),
-                                (float) Math.abs(peak1.getMz() - peak2.getMz()));
-                    }
-                }
+        for (int i = 0; i < peaks.size(); ++i)
+            for (int j = i + 1; j < peaks.size(); ++j) {
+                Peak peak1 = peaks.get(i);
+                Peak peak2 = peaks.get(j);
+                distanceMatrix.add(
+                        i,  // peak1.getId()
+                        j,   // peak2.getId()
+                        (float) Math.abs(peak1.getMz() - peak2.getMz()));
             }
-        }
 
         return distanceMatrix;
     }
 
     private List<Peak> createConsensusPeaksWithFractionalMz(List<Spectrum> spectra, float mzTolerance) {
-        
+
         if (spectra.size() == 1) {
 
             // Return copy of the spectrum peaks
@@ -415,9 +384,15 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
             return newPeaks;
         }
 
-        Matrix distanceMatrix = getMzDistanceMatrix(spectra, mzTolerance);
+        List<Peak> allPeaks = MappingUtils.toList(spectrumRepository.findPeaksBySpectrumIds(
+                spectra.stream()
+                        .mapToLong(Spectrum::getId)
+                        .boxed()
+                        .collect(Collectors.toSet())));
 
-        SparseHierarchicalClusterer clusterer = new SparseHierarchicalClusterer(
+        Matrix distanceMatrix = getMzDistanceMatrix(allPeaks, mzTolerance);
+
+        SparseHierarchicalClustererV2 clusterer = new SparseHierarchicalClustererV2(
                 distanceMatrix, new org.dulab.jsparcehc.CompleteLinkage());
         clusterer.cluster(mzTolerance);
         Map<Integer, Integer> labels = clusterer.getLabels();
@@ -428,12 +403,13 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
         for (final int label : uniqueLabels) {
 
             clusterPeaks.clear();
-            for (Spectrum spectrum : spectra)
-                for (Peak peak : spectrum.getPeaks()) {
-                    Integer l = labels.get((int) peak.getId());
-                    if (l != null && label == l)
-                        clusterPeaks.add(peak);
-                }
+            for (int i = 0; i < allPeaks.size(); ++i) {
+                Integer l = labels.get(i);
+                if (l != null && label == l)
+                    clusterPeaks.add(allPeaks.get(i));
+            }
+
+            if (clusterPeaks.isEmpty()) continue;
 
             double averageMz = 0.0;
             double averageIntensity = 0.0;

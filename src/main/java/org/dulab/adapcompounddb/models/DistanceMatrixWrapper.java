@@ -54,20 +54,19 @@ public class DistanceMatrixWrapper implements Matrix {
     @Override
     public MatrixElement getNext() {
 
-        // If iterator has reached the end and there exists a next page, get that next page
-        if (!iterator.hasNext() && page.hasNext()) {
-            page = function.apply(page.nextPageable());
-            iterator = page.iterator();
-        }
+        // If iterator or page have a next element, return that element
+        while (iterator.hasNext() || page.hasNext()) {
 
-        // If iterator has a next element, return that element
-        if (iterator.hasNext()) {
+            // If iterator has reached the end and there exists a next page, get that next page
+            if (!iterator.hasNext() && page.hasNext()) {
+                page = function.apply(page.nextPageable());
+                iterator = page.iterator();
+            }
+
             final SpectrumMatch match = iterator.next();
-            final Integer row = spectrumIndexMap.get(
-                    match.getMatchSpectrum().getId());
-            final Integer col = spectrumIndexMap.get(
-                    match.getQuerySpectrum().getId());
-            if(row != null) {
+            final Integer row = spectrumIndexMap.get(match.getMatchSpectrum().getId());
+            final Integer col = spectrumIndexMap.get(match.getQuerySpectrum().getId());
+            if (row != null && col != null) {
                 float distance = (float) (1.0 - match.getScore());
                 distance = Math.max(0F, distance);
                 distance = Math.min(1F, distance);
@@ -77,6 +76,13 @@ public class DistanceMatrixWrapper implements Matrix {
         }
 
         // Otherwise, return null
+        return null;
+    }
+
+    public Long findSpectrumId(int index) {
+        for (Map.Entry<Long, Integer> e : spectrumIndexMap.entrySet())
+            if (e.getValue() == index)
+                return e.getKey();
         return null;
     }
 }

@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.site.repositories;
 
 import org.dulab.adapcompounddb.models.ChromatographyType;
+import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
 import org.springframework.data.domain.Page;
@@ -36,6 +37,9 @@ public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, Spec
 
     @Query("SELECT DISTINCT s FROM Spectrum s JOIN FETCH s.peaks WHERE s.id IN :ids")
     Iterable<Spectrum> findSpectraWithPeaksById(@Param("ids") Set<Long> ids);
+
+    @Query("SELECT p FROM Peak p WHERE p.spectrum.id IN :ids")
+    Iterable<Peak> findPeaksBySpectrumIds(@Param("ids") Set<Long> spectrumIds);
 
     long countByConsensusIsFalse();
 
