@@ -64,6 +64,7 @@
                 </tbody>
             </table>
             <a href="<c:url value="group_search/"/>" class="button">Search all spectra</a>
+            <a href="<c:url value="study_search/"/>" class="button">Search studies</a>
         </div>
     </div>
 </section>
