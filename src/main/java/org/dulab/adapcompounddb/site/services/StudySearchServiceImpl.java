@@ -1,27 +1,26 @@
 package org.dulab.adapcompounddb.site.services;
 
-import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.entities.File;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 import org.dulab.adapcompounddb.models.entities.Submission;
-import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
-import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @Service
 public class StudySearchServiceImpl implements StudySearchService {
+
     private final SpectrumRepository spectrumRepository;
 
     public StudySearchServiceImpl(SpectrumRepository spectrumRepository) {
         this.spectrumRepository = spectrumRepository;
     }
 
+    //TODO Return List<SubmissionMatchDTO> and display it in study_search.jsp
     @Override
     public String studySearch(Submission submission) {
         final QueryParameters gcQueryParameters = new QueryParameters()
@@ -29,6 +28,8 @@ public class StudySearchServiceImpl implements StudySearchService {
                 .setMzTolerance(0.01);
         List<SpectrumMatch> spectrumMatches = new ArrayList<>();
 
+        //TODO You don't need to store spectra in a set. You just need to count their number,
+        // so just use `int` instead of `Set<Spectrum>`
         Set<Spectrum> querySubmissionSpectraSet = new HashSet<>();
         for(File file : submission.getFiles()){
             for(Spectrum spectrum : file.getSpectra()){
@@ -39,7 +40,7 @@ public class StudySearchServiceImpl implements StudySearchService {
             }
         }
 
-        Set<Submission> matchSubmissions = new HashSet();
+        Set<Submission> matchSubmissions = new HashSet<>();
 
         // For each library submission, this map will contain unique spectra from the
         // submission that matches a spectrum from the user submission
@@ -74,6 +75,10 @@ public class StudySearchServiceImpl implements StudySearchService {
             int si = querySubmissionSpectraSet.size();
             int sj;
 
+            //TODO Again, you can just use `int` variable to count the number of spectra.
+            // Notice that we use sets in `matchSubmissionToMatchSpectraMap` and `matchSubmissionToQuerySpectraMap`
+            // because we want to find the number of unique spectra. But each submission already contains only unique
+            // spectra, so we don't need sets here.
             Set<Spectrum> matchSubmissionSpectraSet = new HashSet<>();
             for(File file: matchSubmission.getFiles()){
                 for(Spectrum spectrum: file.getSpectra()){
@@ -81,6 +86,7 @@ public class StudySearchServiceImpl implements StudySearchService {
                 }
             }
             sj = matchSubmissionSpectraSet.size();
+            //TODO Here you divide integer number by an integer number, so `(cij + cji) / (si + sj)` will always be zero.
             float bc = 1 - (cij + cji) / (si + sj);
             System.out.println(bc);
         }
