@@ -13,6 +13,8 @@ import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
 
 public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
+    private static final String PEAK_INSERT_SQL_STRING = "INSERT INTO `Peak`(`Mz`, `Intensity`, `SpectrumId`) VALUES ";
+    private static final String PROPERTY_INSERT_SQL_STRING = "INSERT INTO `SpectrumProperty`(`SpectrumId`, `Name`, `Value`) VALUES ";
     private static final String PEAK_VALUE_SQL_STRING = "(%f,%f,%d)";
     private static final String PROPERTY_VALUE_SQL_STRING = "(%d, %s, %s)";
     private static final String SPECTRUM_VALUE_SQL_STRING = "(%s, %f, %f, %f, %d, %b, %b, %b, %s, %d)";
@@ -111,40 +113,45 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
     @Override
     public void savePeaksAndPropertiesQuery(final List<Spectrum> spectrumList, final List<Long> savedSpectrumIdList) {
-        final StringBuilder peakSql = new StringBuilder("INSERT INTO `Peak`(" +
-                "`Mz`, `Intensity`, `SpectrumId`) VALUES ");
-        final StringBuilder propertySql = new StringBuilder("INSERT INTO `SpectrumProperty`(" +
-                "`SpectrumId`, `Name`, `Value`) VALUES ");
+        final StringBuilder peakSql = new StringBuilder(PEAK_INSERT_SQL_STRING);
+        final StringBuilder propertySql = new StringBuilder(PROPERTY_INSERT_SQL_STRING);
 
         final String peakValueString = "(%f, %f, %d)";
         final String propertyValueString = "(%d, %s, %s)";
 
         for (int i = 0; i < spectrumList.size(); i++) {
             final List<Peak> peaks = spectrumList.get(i).getPeaks();
-            final List<SpectrumProperty> properties = spectrumList.get(i).getProperties();
+            if (peaks != null) {
+                for (int j = 0; j < peaks.size(); j++) {
+                    if (i != 0 || j != 0) {
+                        peakSql.append(COMMA);
+                    }
+                    final Peak p = peaks.get(j);
 
-            for (int j = 0; j < peaks.size(); j++) {
-                if (i != 0 || j != 0) {
-                    peakSql.append(COMMA);
+                    peakSql.append(String.format(peakValueString, p.getMz(), p.getIntensity(), savedSpectrumIdList.get(i)));
                 }
-                final Peak p = peaks.get(j);
-
-                peakSql.append(String.format(peakValueString, p.getMz(), p.getIntensity(), savedSpectrumIdList.get(i)));
             }
 
-            for (int j = 0; j < properties.size(); j++) {
-                if (i != 0 || j != 0) {
-                    propertySql.append(COMMA);
+            final List<SpectrumProperty> properties = spectrumList.get(i).getProperties();
+            if (properties != null) {
+                for (int j = 0; j < properties.size(); j++) {
+                    if (i != 0 || j != 0) {
+                        propertySql.append(COMMA);
+                    }
+                    final SpectrumProperty sp = properties.get(j);
+                    propertySql.append(String.format(propertyValueString, savedSpectrumIdList.get(i), DOUBLE_QUOTE + sp.getName() + DOUBLE_QUOTE, DOUBLE_QUOTE + sp.getValue() + DOUBLE_QUOTE));
                 }
-                final SpectrumProperty sp = properties.get(j);
-                propertySql.append(String.format(propertyValueString, savedSpectrumIdList.get(i), DOUBLE_QUOTE + sp.getName() + DOUBLE_QUOTE, DOUBLE_QUOTE + sp.getValue() + DOUBLE_QUOTE));
             }
         }
 
-        final Query peakQuery = entityManager.createNativeQuery(peakSql.toString());
-        peakQuery.executeUpdate();
-        final Query propertyQuery = entityManager.createNativeQuery(propertySql.toString());
-        propertyQuery.executeUpdate();
+        if (!peakSql.toString().equals(PEAK_INSERT_SQL_STRING)) {
+            final Query peakQuery = entityManager.createNativeQuery(peakSql.toString());
+            peakQuery.executeUpdate();
+        }
+        if (!propertySql.toString().equals(PROPERTY_INSERT_SQL_STRING)) {
+            final Query propertyQuery = entityManager.createNativeQuery(propertySql.toString());
+            propertyQuery.executeUpdate();
+        }
     }
 
     @Override

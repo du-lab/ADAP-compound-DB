@@ -2,7 +2,8 @@ package org.dulab.adapcompounddb.models;
 
 public enum FileType implements EnumWithLabels {
 
-    MSP("MSP: NIST text format of individual spectra");
+    MSP("MSP: NIST text format of individual spectra"),
+    CSV("CSV: Comma-separated values");
 
     private final String label;
 

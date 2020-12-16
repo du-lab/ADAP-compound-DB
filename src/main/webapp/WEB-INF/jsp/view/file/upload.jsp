@@ -39,7 +39,7 @@
                 <p>
                     <form:label path="files">File:</form:label>&nbsp;
                     <form:errors path="files" cssClass="errors"/><br/>
-                    <input type="file" name="files" accept=".msp" multiple/><br/>
+                    <input type="file" name="files" accept=".msp,.csv" multiple/><br/>
                 </p>
 
                 <div align="center">

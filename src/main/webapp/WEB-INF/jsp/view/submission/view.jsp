@@ -24,8 +24,7 @@
             </c:when>
             <c:otherwise>
                 <div align="center">
-                    <table id="info_table" class="display"
-                           style="max-width: 800px; clear: none;">
+                    <table id="info_table" class="display" style="max-width: 800px; clear: none;" >
                         <thead>
                         <tr>
                             <td></td>

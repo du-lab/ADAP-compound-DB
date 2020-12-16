@@ -99,16 +99,17 @@ public class ControllerUtils {
         final JsonObjectBuilder jsonObjectBuilder = Json.createObjectBuilder();
         jsonObjectBuilder.add("name", spectrum.getName().replace("'", ""));
 
-        final double maxIntensity = spectrum.getPeaks().stream()
-                .mapToDouble(Peak::getIntensity)
-                .max()
-                .orElse(0.0);
-
         final JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
 
-        if (maxIntensity > 0.0) {
-            spectrum.getPeaks()
-                    .forEach(p -> jsonArrayBuilder.add(
+        List<Peak> peaks = spectrum.getPeaks();
+        if (peaks != null) {
+
+            double maxIntensity = peaks.stream()
+                    .mapToDouble(Peak::getIntensity)
+                    .max()
+                    .orElse(0.0);
+
+            peaks.forEach(p -> jsonArrayBuilder.add(
                             Json.createObjectBuilder()
                                     .add("mz", p.getMz())
                                     .add("intensity", 100 * p.getIntensity() / maxIntensity)
