@@ -2,10 +2,8 @@ package org.dulab.adapcompounddb.site.controllers;
 
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.ChromatographyType;
-import org.dulab.adapcompounddb.models.QueryParameters;
-import org.dulab.adapcompounddb.models.SearchForm;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
-import org.dulab.adapcompounddb.models.dto.ClusterDTO;
+import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterForm;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterOptions;
@@ -25,7 +23,6 @@ import org.springframework.web.servlet.view.RedirectView;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Controller
 public class IndividualSearchController {
@@ -38,9 +35,11 @@ public class IndividualSearchController {
     @Autowired
     public IndividualSearchController(final SubmissionService submissionService,
                                       final SubmissionTagService submissionTagService,
-                                      @Qualifier("spectrumServiceImpl") final SpectrumService spectrumService,
-                                      @Qualifier("spectrumSearchServiceGCImpl") final SpectrumSearchService gcSpectrumSearchService,
-                                      @Qualifier("spectrumSearchServiceLCImpl") final SpectrumSearchService lcSpectrumSearchService) {
+                                      @Qualifier("spectrumServiceImpl") SpectrumService spectrumService,
+                                      @Qualifier("spectrumSearchServiceGCImpl") SpectrumSearchService gcSpectrumSearchService,
+                                      @Qualifier("spectrumSearchServiceLCImpl") SpectrumSearchService lcSpectrumSearchService,
+                                      @Qualifier("massSearchService") SpectrumSearchService massSearchService) {
+
         this.submissionService = submissionService;
         this.spectrumService = spectrumService;
         this.submissionTagService = submissionTagService;
@@ -50,6 +49,7 @@ public class IndividualSearchController {
         this.spectrumSearchServiceMap.put(ChromatographyType.LIQUID_NEGATIVE, lcSpectrumSearchService);
         this.spectrumSearchServiceMap.put(ChromatographyType.LC_MSMS_POS, lcSpectrumSearchService);
         this.spectrumSearchServiceMap.put(ChromatographyType.LC_MSMS_NEG, lcSpectrumSearchService);
+        this.spectrumSearchServiceMap.put(ChromatographyType.NONE, massSearchService);
     }
 
     @ModelAttribute
@@ -206,13 +206,13 @@ public class IndividualSearchController {
         final SpectrumSearchService spectrumSearchService =
                 spectrumSearchServiceMap.get(querySpectrum.getChromatographyType());
 
-        List<ClusterDTO> clusters = spectrumSearchService.searchConsensusSpectra(
+        List<SearchResultDTO> searchResults = spectrumSearchService.searchConsensusSpectra(
                 querySpectrum, 0.25, 0.01,
                 filterForm.getSpecies(), filterForm.getSource(), filterForm.getDisease());
 
         model.addAttribute("querySpectrum", querySpectrum);
         model.addAttribute("filterForm", filterForm);
-        model.addAttribute("clusters", clusters);
+        model.addAttribute("searchResults", searchResults);
 
         return new ModelAndView("submission/spectrum/search");
     }

@@ -116,7 +116,7 @@
         <description>Formats a float to have 3 decimals</description>
         <name>formatDouble</name>
         <function-class>org.dulab.adapcompounddb.site.controllers.utils.ConversionsUtils</function-class>
-        <function-signature>java.lang.String formatDouble(double)</function-signature>
+        <function-signature>java.lang.String formatDouble(java.lang.Double)</function-signature>
     </function>
 
 </taglib>

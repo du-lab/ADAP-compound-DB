@@ -10,6 +10,7 @@ import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
+import org.dulab.adapcompounddb.models.entities.views.MassSearchResult;
 
 public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
@@ -17,7 +18,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     private static final String PROPERTY_INSERT_SQL_STRING = "INSERT INTO `SpectrumProperty`(`SpectrumId`, `Name`, `Value`) VALUES ";
     private static final String PEAK_VALUE_SQL_STRING = "(%f,%f,%d)";
     private static final String PROPERTY_VALUE_SQL_STRING = "(%d, %s, %s)";
-    private static final String SPECTRUM_VALUE_SQL_STRING = "(%s, %f, %f, %f, %d, %b, %b, %b, %s, %d)";
+    private static final String SPECTRUM_VALUE_SQL_STRING = "(%s, %f, %f, %f, %d, %b, %b, %b, %s, %d, %f)";
 
     public static final String DOUBLE_QUOTE = "\"";
     public static final String COMMA = ",";
@@ -48,7 +49,6 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         final String sqlQuery = queryBuilder.build();
 
 
-
         @SuppressWarnings("unchecked") final List<Object[]> resultList = entityManager  // .getEntityManagerFactory().createEntityManager()
                 .createNativeQuery(sqlQuery, "SpectrumScoreMapping")
                 .getResultList();
@@ -69,7 +69,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     }
 
     @Override
-    public Iterable<SpectrumClusterView> searchConsensusSpectra(
+    public Iterable<SpectrumClusterView> searchLibrarySpectra(
             Spectrum querySpectrum, double scoreThreshold, double mzTolerance,
             String species, String source, String disease) {
 
@@ -106,6 +106,30 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                 .setParameter("species", species)
                 .setParameter("source", source)
                 .setParameter("disease", disease)
+                .getResultList();
+
+        return resultList;
+    }
+
+    @Override
+    public Iterable<MassSearchResult> searchLibraryMasses(Spectrum querySpectrum, double tolerance, String species, String source, String disease) {
+
+        Double queryWeight = querySpectrum.getMolecularWeight();
+        if (queryWeight == null) return new ArrayList<>(0);
+
+        String query = String.format(
+                "SELECT Id, Name, MolecularWeight, ABS(MolecularWeight - %f) AS Error, ChromatographyType " +
+                        "FROM Spectrum WHERE (Consensus IS TRUE OR Reference IS True) AND " +
+                        "ChromatographyType = '%s' AND MolecularWeight > %f AND MolecularWeight < %f " +
+                        "ORDER BY Error ASC",
+                queryWeight,
+                querySpectrum.getChromatographyType(),
+                queryWeight - tolerance,
+                queryWeight + tolerance);
+
+        @SuppressWarnings("unchecked")
+        List<MassSearchResult> resultList = entityManager
+                .createNativeQuery(query, MassSearchResult.class)
                 .getResultList();
 
         return resultList;
@@ -161,7 +185,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         final StringBuilder insertSql = new StringBuilder("INSERT INTO `Spectrum`(" +
                 "`Name`, `Precursor`, `RetentionTime`, `Significance`, " +
                 "`ClusterId`, `Consensus`, `Reference`, `IntegerMz`, " +
-                "`ChromatographyType`, `FileId`" +
+                "`ChromatographyType`, `FileId`, `MolecularWeight`" +
                 ") VALUES ");
 
         for (int i = 0; i < fileList.size(); i++) {
@@ -183,7 +207,8 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                         spectrum.isReference(),
                         spectrum.isIntegerMz(),
                         DOUBLE_QUOTE + spectrum.getChromatographyType().name() + DOUBLE_QUOTE,
-                        savedFileIdList.get(i)
+                        savedFileIdList.get(i),
+                        spectrum.getMolecularWeight()
                 ));
             }
         }

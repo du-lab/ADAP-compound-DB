@@ -1,6 +1,8 @@
 package org.dulab.adapcompounddb.models.dto;
 
+import org.dulab.adapcompounddb.models.MatchType;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
+import org.dulab.adapcompounddb.models.entities.views.MassSearchResult;
 import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
 
 import java.io.Serializable;
@@ -8,47 +10,58 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-public class ClusterDTO implements Serializable {
+
+public class SearchResultDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public static final Map<Integer, Function<ClusterDTO, Comparable>> COLUMN_TO_FIELD_MAP = new HashMap<>();
+    public static final Map<Integer, Function<SearchResultDTO, Comparable>> COLUMN_TO_FIELD_MAP = new HashMap<>();
 
     static {
-        COLUMN_TO_FIELD_MAP.put(1, ClusterDTO::getQuerySpectrumName);
-        COLUMN_TO_FIELD_MAP.put(2, ClusterDTO::getConsensusSpectrumName);
-        COLUMN_TO_FIELD_MAP.put(3, ClusterDTO::getSize);
-        COLUMN_TO_FIELD_MAP.put(4, ClusterDTO::getScore);
-        COLUMN_TO_FIELD_MAP.put(5, ClusterDTO::getAveSignificance);
-        COLUMN_TO_FIELD_MAP.put(6, ClusterDTO::getMinSignificance);
-        COLUMN_TO_FIELD_MAP.put(7, ClusterDTO::getMaxSignificance);
-        COLUMN_TO_FIELD_MAP.put(8, ClusterDTO::getChromatographyTypeLabel);
+        COLUMN_TO_FIELD_MAP.put(1, SearchResultDTO::getQuerySpectrumName);
+        COLUMN_TO_FIELD_MAP.put(2, SearchResultDTO::getName);
+        COLUMN_TO_FIELD_MAP.put(3, SearchResultDTO::getSize);
+        COLUMN_TO_FIELD_MAP.put(4, SearchResultDTO::getScore);
+        COLUMN_TO_FIELD_MAP.put(5, SearchResultDTO::getAveSignificance);
+        COLUMN_TO_FIELD_MAP.put(6, SearchResultDTO::getMinSignificance);
+        COLUMN_TO_FIELD_MAP.put(7, SearchResultDTO::getMaxSignificance);
+        COLUMN_TO_FIELD_MAP.put(8, SearchResultDTO::getChromatographyTypeLabel);
     }
 
     // *************************
     // ***** Entity fields *****
     // *************************
 
-    private long clusterId;
-    private String querySpectrumName;
+    // Query
     private Long querySpectrumId;
     private Integer querySpectrumIndex;
     private Integer queryFileIndex;
-    private String consensusSpectrumName;
+    private String querySpectrumName;
+
+    // Match
+    private MatchType matchType;
+    private long id;
+    private String name;
     private Integer size;
-    private Double score;
     private Double aveSignificance;
     private Double minSignificance;
     private Double maxSignificance;
     private String chromatographyTypeLabel;
     private String chromatographyTypePath;
     private String json;
+    private Double molecularWeight;
 
-    public ClusterDTO() {
+    // Score
+    private Double score;
+    private Double error;
 
-    }
 
-    public ClusterDTO(Spectrum querySpectrum, SpectrumClusterView view) {
+    public SearchResultDTO() {}
+
+    public SearchResultDTO(Spectrum querySpectrum, SpectrumClusterView view) {
+        this(querySpectrum);
+
+        matchType = MatchType.CLUSTER;
 
         if (querySpectrum != null) {
             this.querySpectrumId = querySpectrum.getId();
@@ -56,8 +69,8 @@ public class ClusterDTO implements Serializable {
         }
 
         if (view != null) {
-            this.clusterId = view.getId();
-            this.consensusSpectrumName = view.getName();
+            this.id = view.getId();
+            this.name = view.getName();
             this.size = view.getSize();
             this.score = view.getScore();
             this.aveSignificance = view.getAverageSignificance();
@@ -68,12 +81,30 @@ public class ClusterDTO implements Serializable {
         }
     }
 
-    public ClusterDTO(SpectrumClusterView view) {
+    public SearchResultDTO(SpectrumClusterView view) {
         this(null, view);
     }
 
-    public ClusterDTO(Spectrum querySpectrum) {
-        this(querySpectrum, null);
+    public SearchResultDTO(Spectrum querySpectrum) {
+        if (querySpectrum != null) {
+            this.querySpectrumId = querySpectrum.getId();
+            this.querySpectrumName = querySpectrum.getName();
+        }
+    }
+
+    public SearchResultDTO(Spectrum querySpectrum, MassSearchResult massSearchResult) {
+        this(querySpectrum);
+
+        matchType = MatchType.SPECTRUM;
+
+        if (massSearchResult != null) {
+            this.id = massSearchResult.getId();
+            this.name = massSearchResult.getName();
+            this.chromatographyTypeLabel = massSearchResult.getChromatographyType().getLabel();
+            this.chromatographyTypePath = massSearchResult.getChromatographyType().getIconPath();
+            this.molecularWeight = massSearchResult.getMolecularWeight();
+            this.error = massSearchResult.getError();
+        }
     }
 
     // *******************************
@@ -85,18 +116,18 @@ public class ClusterDTO implements Serializable {
         if (this == other) {
             return true;
         }
-        if (!(other instanceof ClusterDTO)) {
+        if (!(other instanceof SearchResultDTO)) {
             return false;
         }
-        return clusterId == ((ClusterDTO) other).clusterId;
+        return id == ((SearchResultDTO) other).id;
     }
 
-    public long getClusterId() {
-        return clusterId;
+    public long getId() {
+        return id;
     }
 
-    public void setClusterId(final long clusterId) {
-        this.clusterId = clusterId;
+    public void setId(final long id) {
+        this.id = id;
     }
 
     public Integer getSize() {
@@ -191,12 +222,12 @@ public class ClusterDTO implements Serializable {
         this.chromatographyTypePath = chromatographyTypePath;
     }
 
-    public String getConsensusSpectrumName() {
-        return consensusSpectrumName;
+    public String getName() {
+        return name;
     }
 
-    public void setConsensusSpectrumName(String consensusSpectrumName) {
-        this.consensusSpectrumName = consensusSpectrumName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getJson() {
@@ -207,13 +238,37 @@ public class ClusterDTO implements Serializable {
         this.json = json;
     }
 
+    public MatchType getMatchType() {
+        return matchType;
+    }
+
+    public void setMatchType(MatchType matchType) {
+        this.matchType = matchType;
+    }
+
+    public Double getMolecularWeight() {
+        return molecularWeight;
+    }
+
+    public void setMolecularWeight(Double molecularWeight) {
+        this.molecularWeight = molecularWeight;
+    }
+
+    public Double getError() {
+        return error;
+    }
+
+    public void setError(Double error) {
+        this.error = error;
+    }
+
     @Override
     public int hashCode() {
-        return Long.hashCode(clusterId);
+        return Long.hashCode(id);
     }
 
     @Override
     public String toString() {
-        return "Cluster ID = " + getClusterId();
+        return "Search Result ID = " + getId();
     }
 }

@@ -2,7 +2,7 @@ package org.dulab.adapcompounddb.site.services;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dulab.adapcompounddb.models.dto.ClusterDTO;
+import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
 import org.dulab.adapcompounddb.site.controllers.ControllerUtils;
@@ -58,7 +58,7 @@ public class GroupSearchServiceImpl implements GroupSearchService {
                 disease != null ? disease : "all"));
 
         try {
-            final List<ClusterDTO> groupSearchDTOList = new ArrayList<>();
+            final List<SearchResultDTO> groupSearchDTOList = new ArrayList<>();
             session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
 
             // Calculate total number of spectra
@@ -81,18 +81,18 @@ public class GroupSearchServiceImpl implements GroupSearchService {
                     if (Thread.currentThread().isInterrupted()) break;
 
                     List<SpectrumClusterView> clusters = MappingUtils.toList(
-                            spectrumRepository.searchConsensusSpectra(
+                            spectrumRepository.searchLibrarySpectra(
                                     querySpectrum, 0.25, 0.01, species, source, disease));
 
                     // get the best match if the match is not null
-                    ClusterDTO clusterDTO = new ClusterDTO(querySpectrum,
+                    SearchResultDTO searchResultDTO = new SearchResultDTO(querySpectrum,
                             (clusters.size() > 0) ? clusters.get(0) : null);
-                    clusterDTO.setQueryFileIndex(fileIndex);
-                    clusterDTO.setQuerySpectrumIndex(spectrumIndex);
+                    searchResultDTO.setQueryFileIndex(fileIndex);
+                    searchResultDTO.setQuerySpectrumIndex(spectrumIndex);
 
                     if (Thread.currentThread().isInterrupted()) break;
 
-                    groupSearchDTOList.add(clusterDTO);
+                    groupSearchDTOList.add(searchResultDTO);
                     session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
                     progress = (float) ++progressStep / totalSteps;
                 }

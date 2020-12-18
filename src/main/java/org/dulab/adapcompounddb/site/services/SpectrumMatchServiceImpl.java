@@ -6,7 +6,7 @@ import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.ChromatographyType;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
-import org.dulab.adapcompounddb.models.dto.ClusterDTO;
+import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
 import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
@@ -393,8 +393,8 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
         Page<SpectrumClusterView> spectrumPage =
                 spectrumClusterRepository.findClusters(searchStr, species, source, disease, pageable);
-        List<ClusterDTO> dtoList = spectrumPage.stream()
-                .map(ClusterDTO::new)
+        List<SearchResultDTO> dtoList = spectrumPage.stream()
+                .map(SearchResultDTO::new)
                 .collect(Collectors.toList());
 
         final DataTableResponse response = new DataTableResponse(dtoList);
@@ -406,7 +406,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     @Override
     public DataTableResponse groupSearchSort(final String searchStr, final Integer start, final Integer length,
                                              final Integer column, final String sortDirection,
-                                             List<ClusterDTO> spectrumList) {
+                                             List<SearchResultDTO> spectrumList) {
 
         String sortColumn = GroupSearchColumnInformation.getColumnNameFromPosition(column);
 
@@ -414,33 +414,33 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         if (sortColumn != null) {
             switch (sortColumn) {
                 case "querySpectrumName":
-                    spectrumList.sort(getComparator(ClusterDTO::getQuerySpectrumName, sortDirection));
+                    spectrumList.sort(getComparator(SearchResultDTO::getQuerySpectrumName, sortDirection));
                     break;
                 case "consensusSpectrumName":
-                    spectrumList.sort(getComparator(ClusterDTO::getConsensusSpectrumName, sortDirection));
+                    spectrumList.sort(getComparator(SearchResultDTO::getName, sortDirection));
                     break;
                 case "size":
-                    spectrumList.sort(getComparator(ClusterDTO::getSize, sortDirection));
+                    spectrumList.sort(getComparator(SearchResultDTO::getSize, sortDirection));
                     break;
                 case "diameter":
-                    spectrumList.sort(getComparator(ClusterDTO::getScore, sortDirection));
+                    spectrumList.sort(getComparator(SearchResultDTO::getScore, sortDirection));
                     break;
                 case "averageSignificance":
-                    spectrumList.sort(getComparator(ClusterDTO::getAveSignificance, sortDirection));
+                    spectrumList.sort(getComparator(SearchResultDTO::getAveSignificance, sortDirection));
                     break;
                 case "minimumSignificance":
-                    spectrumList.sort(getComparator(ClusterDTO::getMinSignificance, sortDirection));
+                    spectrumList.sort(getComparator(SearchResultDTO::getMinSignificance, sortDirection));
                     break;
                 case "maximumSignificance":
-                    spectrumList.sort(getComparator(ClusterDTO::getMaxSignificance, sortDirection));
+                    spectrumList.sort(getComparator(SearchResultDTO::getMaxSignificance, sortDirection));
                     break;
                 case "chromatographyType":
-                    spectrumList.sort(getComparator(ClusterDTO::getChromatographyTypeLabel, sortDirection));
+                    spectrumList.sort(getComparator(SearchResultDTO::getChromatographyTypeLabel, sortDirection));
                     break;
             }
         }
 
-        final List<ClusterDTO> spectrumMatchList = new ArrayList<>();
+        final List<SearchResultDTO> spectrumMatchList = new ArrayList<>();
         for (int i = 0; i < spectrumList.size(); i++) {
 
             if (i < start || spectrumMatchList.size() >= length)
@@ -458,8 +458,8 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
     // function for sorting the column
 
-    private <T extends Comparable> Comparator<ClusterDTO> getComparator(
-            Function<ClusterDTO, T> function, String sortDirection) {
+    private <T extends Comparable> Comparator<SearchResultDTO> getComparator(
+            Function<SearchResultDTO, T> function, String sortDirection) {
 
         return (o1, o2) -> {
 
@@ -502,10 +502,10 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
     @Override
     @Transactional
-    public List<ClusterDTO> convertSpectrumMatchToClusterDTO(List<SpectrumMatch> matches) {
-        List<ClusterDTO> clusters = new ArrayList<>(matches.size());
+    public List<SearchResultDTO> convertSpectrumMatchToClusterDTO(List<SpectrumMatch> matches) {
+        List<SearchResultDTO> clusters = new ArrayList<>(matches.size());
         for (SpectrumMatch match : matches) {
-            ClusterDTO cluster = new ClusterDTO();
+            SearchResultDTO cluster = new SearchResultDTO();
 
             // Query spectrum
             cluster.setQuerySpectrumId(match.getQuerySpectrum().getId());
@@ -513,8 +513,8 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
             // Match cluster
             SpectrumCluster matchedCluster = match.getMatchSpectrum().getCluster();
-            cluster.setClusterId(matchedCluster.getId());
-            cluster.setConsensusSpectrumName(match.getMatchSpectrum().getName());
+            cluster.setId(matchedCluster.getId());
+            cluster.setName(match.getMatchSpectrum().getName());
             cluster.setSize((int) matchedCluster.getSpectra().stream()
                     .map(Spectrum::getFile).filter(Objects::nonNull)
                     .map(File::getSubmission).filter(Objects::nonNull)
