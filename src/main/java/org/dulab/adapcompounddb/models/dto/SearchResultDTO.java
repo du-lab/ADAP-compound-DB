@@ -51,7 +51,8 @@ public class SearchResultDTO implements Serializable {
     private String json;
     private Double molecularWeight;
 
-    // Score
+    // Other
+    private int position;
     private Double score;
     private Double error;
 
@@ -260,6 +261,14 @@ public class SearchResultDTO implements Serializable {
 
     public void setError(Double error) {
         this.error = error;
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
     }
 
     @Override

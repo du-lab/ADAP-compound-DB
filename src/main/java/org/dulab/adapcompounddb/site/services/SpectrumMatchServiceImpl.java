@@ -76,14 +76,16 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     }
 
 
-    private static enum GroupSearchColumnInformation {
+    private enum GroupSearchColumnInformation {
         ID(0, "id"),QUERY_SPECTRUM(1, "querySpectrumName"),
         MATCH_SPECTRUM(2, "consensusSpectrumName"),
-        COUNT(3, "size"), SCORE(4, "diameter"),
-        AVERAGE_SIGNIFICANCE(5, "averageSignificance"),
-        MINIMUM_SIGNIFICANCE(6, "minimumSignificance"),
-        MAXIMUM_SIGNIFICANCE(7, "maximumSignificance"),
-        CHROMATOGRAPHYTYPE(8, "chromatographyType");
+        MOLECULAR_WEIGHT(3, "molecularWeight"),
+        COUNT(4, "size"), SCORE(5, "diameter"),
+        ERROR(6, "error"),
+        AVERAGE_SIGNIFICANCE(7, "averageSignificance"),
+        MINIMUM_SIGNIFICANCE(8, "minimumSignificance"),
+        MAXIMUM_SIGNIFICANCE(9, "maximumSignificance"),
+        CHROMATOGRAPHY_TYPE(10, "chromatographyType");
 
         private int position;
         private String sortColumnName;
@@ -413,17 +415,26 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         // sorting each column
         if (sortColumn != null) {
             switch (sortColumn) {
+                case "id":
+                    spectrumList.sort(getComparator(SearchResultDTO::getPosition, sortDirection));
+                    break;
                 case "querySpectrumName":
                     spectrumList.sort(getComparator(SearchResultDTO::getQuerySpectrumName, sortDirection));
                     break;
                 case "consensusSpectrumName":
                     spectrumList.sort(getComparator(SearchResultDTO::getName, sortDirection));
                     break;
+                case "molecularWeight":
+                    spectrumList.sort(getComparator(SearchResultDTO::getMolecularWeight, sortDirection));
+                    break;
                 case "size":
                     spectrumList.sort(getComparator(SearchResultDTO::getSize, sortDirection));
                     break;
                 case "diameter":
                     spectrumList.sort(getComparator(SearchResultDTO::getScore, sortDirection));
+                    break;
+                case "error":
+                    spectrumList.sort(getComparator(SearchResultDTO::getError, sortDirection));
                     break;
                 case "averageSignificance":
                     spectrumList.sort(getComparator(SearchResultDTO::getAveSignificance, sortDirection));

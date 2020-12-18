@@ -1,7 +1,6 @@
 package org.dulab.adapcompounddb.models;
 
 import org.dulab.adapcompounddb.models.entities.Spectrum;
-import org.dulab.adapcompounddb.site.services.SpectrumSearchService;
 
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;

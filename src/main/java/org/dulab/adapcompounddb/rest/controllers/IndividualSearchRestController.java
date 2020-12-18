@@ -10,7 +10,7 @@ import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.site.controllers.utils.ConversionsUtils;
 import org.dulab.adapcompounddb.site.controllers.utils.PaginationUtils;
 import org.dulab.adapcompounddb.site.services.SpectrumMatchService;
-import org.dulab.adapcompounddb.site.services.SpectrumSearchService;
+import org.dulab.adapcompounddb.site.services.search.SpectrumSearchService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;

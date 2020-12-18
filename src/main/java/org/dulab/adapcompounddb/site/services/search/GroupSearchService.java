@@ -1,4 +1,4 @@
-package org.dulab.adapcompounddb.site.services;
+package org.dulab.adapcompounddb.site.services.search;
 
 import org.dulab.adapcompounddb.models.entities.File;
 

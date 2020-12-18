@@ -8,6 +8,8 @@ import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterForm;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterOptions;
 import org.dulab.adapcompounddb.site.services.*;
+import org.dulab.adapcompounddb.site.services.search.SearchServiceSelector;
+import org.dulab.adapcompounddb.site.services.search.SpectrumSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -29,27 +31,18 @@ public class IndividualSearchController {
     private final SubmissionService submissionService;
     private final SpectrumService spectrumService;
     private final SubmissionTagService submissionTagService;
-
-    private final Map<ChromatographyType, SpectrumSearchService> spectrumSearchServiceMap;
+    private final SearchServiceSelector searchServiceSelector;
 
     @Autowired
     public IndividualSearchController(final SubmissionService submissionService,
                                       final SubmissionTagService submissionTagService,
                                       @Qualifier("spectrumServiceImpl") SpectrumService spectrumService,
-                                      @Qualifier("spectrumSearchServiceGCImpl") SpectrumSearchService gcSpectrumSearchService,
-                                      @Qualifier("spectrumSearchServiceLCImpl") SpectrumSearchService lcSpectrumSearchService,
-                                      @Qualifier("massSearchService") SpectrumSearchService massSearchService) {
+                                      final SearchServiceSelector searchServiceSelector) {
 
         this.submissionService = submissionService;
         this.spectrumService = spectrumService;
         this.submissionTagService = submissionTagService;
-        this.spectrumSearchServiceMap = new HashMap<>();
-        this.spectrumSearchServiceMap.put(ChromatographyType.GAS, gcSpectrumSearchService);
-        this.spectrumSearchServiceMap.put(ChromatographyType.LIQUID_POSITIVE, lcSpectrumSearchService);
-        this.spectrumSearchServiceMap.put(ChromatographyType.LIQUID_NEGATIVE, lcSpectrumSearchService);
-        this.spectrumSearchServiceMap.put(ChromatographyType.LC_MSMS_POS, lcSpectrumSearchService);
-        this.spectrumSearchServiceMap.put(ChromatographyType.LC_MSMS_NEG, lcSpectrumSearchService);
-        this.spectrumSearchServiceMap.put(ChromatographyType.NONE, massSearchService);
+        this.searchServiceSelector = searchServiceSelector;
     }
 
     @ModelAttribute
@@ -204,7 +197,7 @@ public class IndividualSearchController {
         }
 
         final SpectrumSearchService spectrumSearchService =
-                spectrumSearchServiceMap.get(querySpectrum.getChromatographyType());
+                searchServiceSelector.findByChromatographyType(querySpectrum.getChromatographyType());
 
         List<SearchResultDTO> searchResults = spectrumSearchService.searchConsensusSpectra(
                 querySpectrum, 0.25, 0.01,
