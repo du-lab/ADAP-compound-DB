@@ -20,14 +20,14 @@ public class StudySearchController {
     }
 
     @RequestMapping(value = "/file/study_search/", method = RequestMethod.GET)
-    public String groupSearch(final HttpSession session) {
+    public String groupSearch(final HttpSession session, final Model model) {
 
         final Submission submission = Submission.from(session);
         if (submission == null) {
             return "redirect:/file/upload/";
         }
-        studySearchService.studySearch(submission);
 
+        model.addAttribute("match_submissions",studySearchService.studySearch(submission));
         return "file/study_search";
     }
 }
