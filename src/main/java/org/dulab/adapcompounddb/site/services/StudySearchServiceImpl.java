@@ -39,11 +39,6 @@ public class StudySearchServiceImpl implements StudySearchService {
             for(Spectrum spectrum : file.getSpectra()){
                 List<SpectrumMatch> matches = spectrumRepository.spectrumSearch(
                         SearchType.CLUSTERING, spectrum, gcQueryParameters);
-                for(SpectrumMatch match: matches){
-                    SubmissionMatchDTO submissionMatchDTO = new SubmissionMatchDTO(match.getId(),submission.getName(),
-                            (int) (match.getScore()*1000));
-                    submissionMatchDTOS.add(submissionMatchDTO);
-                }
                 spectrumMatches.addAll(matches);
                 querySubmissionSpectraCount++;
             }
@@ -87,13 +82,15 @@ public class StudySearchServiceImpl implements StudySearchService {
             int matchSubmissionSpectraCount = 0;
             for(File file: matchSubmission.getFiles()){
                 //TODO you can replace the inner loop with `matchSubmissionSpectraCount += file.getSpectra().size()`
-                for(Spectrum spectrum: file.getSpectra()){
-                    matchSubmissionSpectraCount++;
-                }
+                matchSubmissionSpectraCount += file.getSpectra().size();
             }
             sj = matchSubmissionSpectraCount;
             float bc = 1 - (float)(cij + cji) / (si + sj);
             System.out.println(bc);
+
+            SubmissionMatchDTO submissionMatchDTO = new SubmissionMatchDTO(matchSubmission.getId(),matchSubmission.getName(),
+                        (int) (bc*1000));
+            submissionMatchDTOS.add(submissionMatchDTO);
         }
 
         return submissionMatchDTOS;
