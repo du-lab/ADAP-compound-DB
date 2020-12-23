@@ -21,17 +21,19 @@ public class StudySearchServiceImpl implements StudySearchService {
         this.spectrumRepository = spectrumRepository;
     }
 
-    //TODO Return List<SubmissionMatchDTO> and display it in study_search.jsp
     @Override
     public List<SubmissionMatchDTO> studySearch(Submission submission) {
+
         final QueryParameters gcQueryParameters = new QueryParameters()
                 .setScoreThreshold(0.5)
                 .setMzTolerance(0.01);
+
         List<SpectrumMatch> spectrumMatches = new ArrayList<>();
+
+        //TODO submissionMatchDTOs should contain one entry per matched submission, with `submissionName` is the name
+        // of the matched submission (study), and `score` is the Bray-Curtis dissimilarity
         List<SubmissionMatchDTO> submissionMatchDTOS = new ArrayList<>();
 
-        //TODO You don't need to store spectra in a set. You just need to count their number,
-        // so just use `int` instead of `Set<Spectrum>`
         int querySubmissionSpectraCount = 0;
         for(File file : submission.getFiles()){
             for(Spectrum spectrum : file.getSpectra()){
@@ -82,18 +84,14 @@ public class StudySearchServiceImpl implements StudySearchService {
             int si = querySubmissionSpectraCount;
             int sj;
 
-            //TODO Again, you can just use `int` variable to count the number of spectra.
-            // Notice that we use sets in `matchSubmissionToMatchSpectraMap` and `matchSubmissionToQuerySpectraMap`
-            // because we want to find the number of unique spectra. But each submission already contains only unique
-            // spectra, so we don't need sets here.
             int matchSubmissionSpectraCount = 0;
             for(File file: matchSubmission.getFiles()){
+                //TODO you can replace the inner loop with `matchSubmissionSpectraCount += file.getSpectra().size()`
                 for(Spectrum spectrum: file.getSpectra()){
                     matchSubmissionSpectraCount++;
                 }
             }
             sj = matchSubmissionSpectraCount;
-            //TODO Here you divide integer number by an integer number, so `(cij + cji) / (si + sj)` will always be zero.
             float bc = 1 - (float)(cij + cji) / (si + sj);
             System.out.println(bc);
         }
