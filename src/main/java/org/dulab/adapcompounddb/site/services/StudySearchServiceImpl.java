@@ -30,13 +30,9 @@ public class StudySearchServiceImpl implements StudySearchService {
 
         List<SpectrumMatch> spectrumMatches = new ArrayList<>();
 
-        //TODO submissionMatchDTOs should contain one entry per matched submission, with `submissionName` is the name
-        // of the matched submission (study), and `score` is the Bray-Curtis dissimilarity
-        List<SubmissionMatchDTO> submissionMatchDTOS = new ArrayList<>();
-
         int querySubmissionSpectraCount = 0;
-        for(File file : submission.getFiles()){
-            for(Spectrum spectrum : file.getSpectra()){
+        for (File file : submission.getFiles()) {
+            for (Spectrum spectrum : file.getSpectra()) {
                 List<SpectrumMatch> matches = spectrumRepository.spectrumSearch(
                         SearchType.CLUSTERING, spectrum, gcQueryParameters);
                 spectrumMatches.addAll(matches);
@@ -73,6 +69,7 @@ public class StudySearchServiceImpl implements StudySearchService {
             querySpectrumSet.add(querySpectrum);
         }
 
+        List<SubmissionMatchDTO> submissionMatchDTOs = new ArrayList<>();
         for (Submission matchSubmission : matchSubmissions) {
             int cij = matchSubmissionToQuerySpectraMap.get(matchSubmission).size();
             int cji = matchSubmissionToMatchSpectraMap.get(matchSubmission).size();
@@ -80,19 +77,18 @@ public class StudySearchServiceImpl implements StudySearchService {
             int sj;
 
             int matchSubmissionSpectraCount = 0;
-            for(File file: matchSubmission.getFiles()){
-                //TODO you can replace the inner loop with `matchSubmissionSpectraCount += file.getSpectra().size()`
+            for (File file : matchSubmission.getFiles()) {
                 matchSubmissionSpectraCount += file.getSpectra().size();
             }
             sj = matchSubmissionSpectraCount;
-            float bc = 1 - (float)(cij + cji) / (si + sj);
+            float bc = 1 - (float) (cij + cji) / (si + sj);
             System.out.println(bc);
 
-            SubmissionMatchDTO submissionMatchDTO = new SubmissionMatchDTO(matchSubmission.getId(),matchSubmission.getName(),
-                        (int) (bc*1000));
-            submissionMatchDTOS.add(submissionMatchDTO);
+            SubmissionMatchDTO submissionMatchDTO = new SubmissionMatchDTO(matchSubmission.getId(), matchSubmission.getName(),
+                    (int) (bc * 1000));
+            submissionMatchDTOs.add(submissionMatchDTO);
         }
 
-        return submissionMatchDTOS;
+        return submissionMatchDTOs;
     }
 }
