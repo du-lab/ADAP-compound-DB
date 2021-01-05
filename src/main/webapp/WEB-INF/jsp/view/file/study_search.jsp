@@ -8,8 +8,8 @@
             <thead>
             <tr>
                 <th></th>
-                <th title="study external ID">Study ID</th>
                 <th title="Match submission Name">Match Submission Name</th>
+                <th title="study external ID">Study ID</th>
                 <th title="study tags">Study Tags</th>
                 <th title="Match Score">Matching Score</th>
             </tr>
@@ -18,8 +18,8 @@
             <c:forEach items="${match_submissions}" var="match_submission" varStatus="theCount">
                 <tr>
                     <td>${theCount.count}</td>
-                    <td><c:out value="${match_submission.externalId}"/></td>
                     <td><c:out value="${match_submission.submissionName}"/></td>
+                    <td><c:out value="${match_submission.externalId}"/></td>
                     <td><c:out value="${match_submission.studyTag}"/></td>
                     <td><c:out value="${match_submission.score}"/></td>
                 </tr>
