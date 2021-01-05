@@ -81,13 +81,18 @@ public class StudySearchServiceImpl implements StudySearchService {
                 matchSubmissionSpectraCount += file.getSpectra().size();
             }
             sj = matchSubmissionSpectraCount;
-            float bc = 1 - (float) (cij + cji) / (si + sj);
+
+            // edit the bray curtis formula (now when bc close to 0 means low similarity)
+            float bc = (float) (cij + cji) / (si + sj);
             System.out.println(bc);
 
             SubmissionMatchDTO submissionMatchDTO = new SubmissionMatchDTO(matchSubmission.getId(), matchSubmission.getName(),
-                    (int) (bc * 1000));
+                    (int) (bc * 1000),matchSubmission.getExternalId(),matchSubmission.getTags());
             submissionMatchDTOs.add(submissionMatchDTO);
         }
+
+        Collections.sort(submissionMatchDTOs,Comparator.comparingDouble(m -> -1 * m.getScore()));
+//        Collections.sort(submissionMatchDTOs,Comparator.comparingDouble(SubmissionMatchDTO::getScore));
 
         return submissionMatchDTOs;
     }

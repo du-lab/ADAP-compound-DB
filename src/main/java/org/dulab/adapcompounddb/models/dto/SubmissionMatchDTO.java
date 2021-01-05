@@ -1,5 +1,9 @@
 package org.dulab.adapcompounddb.models.dto;
 
+import org.dulab.adapcompounddb.models.entities.SubmissionTag;
+
+import java.util.List;
+
 /**
  * This class is used to return study matches from StudySearchService.studySearch() and display them on study_search.jsp
  */
@@ -14,10 +18,16 @@ public class SubmissionMatchDTO {
     // Bray-Curtis dissimilarity score multiplied by 1000
     private int score;
 
-    public SubmissionMatchDTO(long submissionId, String submissionName, int score) {
+    private String externalId;
+
+    private List<SubmissionTag> studyTag;
+
+    public SubmissionMatchDTO(long submissionId, String submissionName, int score, String externalId, List<SubmissionTag> studyTag) {
         this.submissionId = submissionId;
         this.submissionName = submissionName;
         this.score = score;
+        this.externalId = externalId;
+        this.studyTag = studyTag;
     }
 
     public long getSubmissionId() {
@@ -42,5 +52,21 @@ public class SubmissionMatchDTO {
 
     public void setScore(int score) {
         this.score = score;
+    }
+
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
+    }
+
+    public List<SubmissionTag> getStudyTag() {
+        return studyTag;
+    }
+
+    public void setStudyTag(List<SubmissionTag> studyTag) {
+        this.studyTag = studyTag;
     }
 }
