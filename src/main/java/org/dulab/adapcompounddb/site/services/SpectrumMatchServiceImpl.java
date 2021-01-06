@@ -12,6 +12,7 @@ import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
 import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
+import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.dulab.adapcompounddb.utils.MathUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     private final SpectrumRepository spectrumRepository;
     private final SpectrumMatchRepository spectrumMatchRepository;
     private final SpectrumClusterRepository spectrumClusterRepository;
+    private final SubmissionRepository submissionRepository;
 
     private enum ColumnInformation {
         ID(0, "id"), Cluster_ID(1, "id"),
@@ -118,11 +120,13 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     @Autowired
     public SpectrumMatchServiceImpl(final SpectrumRepository spectrumRepository,
                                     final SpectrumMatchRepository spectrumMatchRepository,
-                                    final SpectrumClusterRepository spectrumClusterRepository) {
+                                    final SpectrumClusterRepository spectrumClusterRepository,
+                                    final SubmissionRepository submissionRepository) {
 
         this.spectrumRepository = spectrumRepository;
         this.spectrumMatchRepository = spectrumMatchRepository;
         this.spectrumClusterRepository = spectrumClusterRepository;
+        this.submissionRepository = submissionRepository;
     }
 
     @Transactional
@@ -393,8 +397,9 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
             pageable = PageRequest.of(start / length, length);
         }
 
+        Iterable<Long> submissionIds = submissionRepository.findSubmissionIdsBySubmissionTags(species, source, disease);
         Page<SpectrumClusterView> spectrumPage =
-                spectrumClusterRepository.findClusters(searchStr, species, source, disease, pageable);
+                spectrumClusterRepository.findClusters(searchStr, submissionIds, pageable);
         List<SearchResultDTO> dtoList = spectrumPage.stream()
                 .map(SearchResultDTO::new)
                 .collect(Collectors.toList());
