@@ -22,12 +22,16 @@ public class SubmissionMatchDTO {
 
     private List<SubmissionTag> studyTag;
 
-    public SubmissionMatchDTO(long submissionId, String submissionName, int score, String externalId, List<SubmissionTag> studyTag) {
+    private String description;
+
+    public SubmissionMatchDTO(long submissionId, String submissionName, int score, String externalId,
+                              List<SubmissionTag> studyTag, String description) {
         this.submissionId = submissionId;
         this.submissionName = submissionName;
         this.score = score;
         this.externalId = externalId;
         this.studyTag = studyTag;
+        this.description = description;
     }
 
     public long getSubmissionId() {
@@ -69,4 +73,13 @@ public class SubmissionMatchDTO {
     public void setStudyTag(List<SubmissionTag> studyTag) {
         this.studyTag = studyTag;
     }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
 }

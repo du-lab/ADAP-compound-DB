@@ -1,9 +1,12 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<script src="<c:url value="/resources/AdapCompoundDb/js/tagsColor.js"/>"></script>
 
 <section>
-
-    <div style="text-align: center">
+    <h1>Match Studies</h1>
+    <div align="center">
         <table id="match_table" class="display responsive" style="width: 100%; clear:none;">
             <thead>
             <tr>
@@ -12,16 +15,43 @@
                 <th title="study external ID">Study ID</th>
                 <th title="study tags">Study Tags</th>
                 <th title="Match Score">Matching Score</th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
-            <c:forEach items="${match_submissions}" var="match_submission" varStatus="theCount">
+            <c:forEach items="${match_submissions}" var="match_submission">
                 <tr>
-                    <td>${theCount.count}</td>
-                    <td><c:out value="${match_submission.submissionName}"/></td>
-                    <td><c:out value="${match_submission.externalId}"/></td>
-                    <td><c:out value="${match_submission.studyTag}"/></td>
+                    <td></td>
+                    <td>
+                        <a href="${pageContext.request.contextPath}/submission/${match_submission.submissionId}/">${match_submission.submissionName}</a><br/>
+                        <small>${dulab:abbreviate(match_submission.description, 80)}</small>
+                    </td>
+                    <td>
+                        <a href="${pageContext.request.contextPath}/submission/${match_submission.submissionId}/">${match_submission.externalId}</a><br/>
+                    </td>
+                    <td>
+<%--                        <c:out value="${match_submission.studyTag}"/>--%>
+                        <c:forEach items="${match_submission.studyTag}" var="tag" varStatus="status">
+                            <span id="${match_submission.submissionId}color${status.index}">${tag.toString()}&nbsp;</span>
+                            <script>
+                                var spanId = '${fn:length(match_submission.studyTag)}';
+                                spanColor( ${match_submission.submissionId}, spanId );
+                            </script>
+                        </c:forEach>
+                    </td>
                     <td><c:out value="${match_submission.score}"/></td>
+                    <td>
+                        <!-- more horiz -->
+                        <a href="${pageContext.request.contextPath}/submission/${match_submission.submissionId}/"><i
+                                class="material-icons" title="View">&#xE5D3;</i></a>
+
+                        <!-- delete -->
+<%--                        <a onclick="confirmDeleteDialog.show(--%>
+<%--                                'Submission &quot;${match_submission.submissionName}&quot; and all its spectra will be deleted. Are you sure?',--%>
+<%--                                '${pageContext.request.contextPath}/submission/${match_submission.submissionId}/delete/');">--%>
+<%--                            <i class="material-icons" title="Delete">&#xE872;</i>--%>
+<%--                        </a>--%>
+                    </td>
                 </tr>
             </c:forEach>
             </tbody>
@@ -52,21 +82,30 @@
                 },
                 {
                     targets: 1,
-                    sortable: false
+                    sortable: true
                 },
                 {
                     targets: 2,
-                    sortable: false
+                    sortable: true
                 },
                 {
                     targets: 3,
-                    sortable: false
+                    sortable: true
                 },
                 {
                     targets: 4,
+                    sortable: true
+                },
+                {
+                    targets: 5,
                     sortable: false
                 }
             ],
         });
+        t.on( 'order.dt search.dt', function () {
+            t.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
+                cell.innerHTML = i+1;
+            } );
+        } ).draw();
     });
 </script>

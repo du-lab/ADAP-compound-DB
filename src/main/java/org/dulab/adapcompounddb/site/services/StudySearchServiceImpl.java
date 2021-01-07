@@ -87,7 +87,7 @@ public class StudySearchServiceImpl implements StudySearchService {
             System.out.println(bc);
 
             SubmissionMatchDTO submissionMatchDTO = new SubmissionMatchDTO(matchSubmission.getId(), matchSubmission.getName(),
-                    (int) (bc * 1000),matchSubmission.getExternalId(),matchSubmission.getTags());
+                    (int) (bc * 1000),matchSubmission.getExternalId(),matchSubmission.getTags(), matchSubmission.getDescription());
             submissionMatchDTOs.add(submissionMatchDTO);
         }
 
