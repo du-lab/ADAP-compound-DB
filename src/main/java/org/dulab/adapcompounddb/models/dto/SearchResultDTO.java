@@ -70,8 +70,10 @@ public class SearchResultDTO implements Serializable {
         }
 
         if (view != null) {
-            this.id = view.getId();
-            this.name = view.getName();
+            boolean isReference = view.getClusterId() == null;
+            this.matchType = (isReference) ? MatchType.SPECTRUM : MatchType.CLUSTER;
+            this.id = (isReference) ? view.getId() : view.getClusterId();
+            this.name = (isReference ? "[Ref Spec] " : "[Con Spec] ") + view.getName();
             this.size = view.getSize();
             this.score = view.getScore();
             this.aveSignificance = view.getAverageSignificance();

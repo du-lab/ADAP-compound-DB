@@ -104,10 +104,7 @@
                 {
                     "targets": 2,
                     "render": function (data, type, row, meta) {
-                        content = '<a href="${pageContext.request.contextPath}/cluster/' + row.id + '/">' +
-                            row.name +
-                            '</a>';
-                        return content
+                        return `<a href="${pageContext.request.contextPath}/\${row.matchType.toLowerCase()}/\${row.id}/">\${row.name}</a>`;
                     }
                 },
                 {
@@ -117,7 +114,7 @@
                 {
                     "targets": 4,
                     "render": function (data, type, row, meta) {
-                        return row.score.toFixed(3) * 1000;
+                        return (row.score != null) ? row.score.toFixed(3) * 1000 : '';
                     }
                 },
                 {
@@ -154,9 +151,8 @@
                     "targets": 9,
                     "bSortable": false,
                     "render": function (data, type, row, meta) {
-                        var content = '<a href="${pageContext.request.contextPath}/cluster/'
-                            + row.id + '/"><i class="material-icons" title="View">&#xE5D3;</i></a>';
-                        return content;
+                        return `<a href="${pageContext.request.contextPath}/\${row.matchType.toLowerCase()}/\${row.id}/">
+                                <i class="material-icons" title="view">&#xE5D3;</i></a>`;
                     }
                 },
                 {"className": "dt-center", "targets": "_all"}

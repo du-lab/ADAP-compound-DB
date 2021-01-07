@@ -12,10 +12,10 @@ public class SpectrumClusterView {
 
     @Id
     private long id;
-
+    private Long clusterId;
     private String name;
     private int size;
-    private double score;
+    private Double score;
     private Double averageSignificance;
     private Double minimumSignificance;
     private Double maximumSignificance;
@@ -29,6 +29,14 @@ public class SpectrumClusterView {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public Long getClusterId() {
+        return clusterId;
+    }
+
+    public void setClusterId(Long clusterId) {
+        this.clusterId = clusterId;
     }
 
     public String getName() {
@@ -47,11 +55,11 @@ public class SpectrumClusterView {
         this.size = size;
     }
 
-    public double getScore() {
+    public Double getScore() {
         return score;
     }
 
-    public void setScore(double score) {
+    public void setScore(Double score) {
         this.score = score;
     }
 
