@@ -4,13 +4,20 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <script src="<c:url value="/resources/AdapCompoundDb/js/tagsColor.js"/>"></script>
 
+<div>
+    Study matching score is calculated based on the number of similar spectra between two studies.<br/>
+    It ranges from 0 to 1000 with the higher score corresponding to higher similarity between studies.
+</div>
+
 <section>
+<%-- TODO rename the header to "Matched Studies"   --%>
     <h1>Match Studies</h1>
     <div align="center">
         <table id="match_table" class="display responsive" style="width: 100%; clear:none;">
             <thead>
             <tr>
                 <th></th>
+<%-- TODO rename "Match submission Name" to "Name"               --%>
                 <th title="Match submission Name">Match Submission Name</th>
                 <th title="study external ID">Study ID</th>
                 <th title="study tags">Study Tags</th>
@@ -19,6 +26,7 @@
             </tr>
             </thead>
             <tbody>
+<%-- TODO: Define variable math_submissions with @elvariable. See all_clusters.jsp for an example     --%>
             <c:forEach items="${match_submissions}" var="match_submission">
                 <tr>
                     <td></td>
@@ -30,7 +38,6 @@
                         <a href="${pageContext.request.contextPath}/submission/${match_submission.submissionId}/">${match_submission.externalId}</a><br/>
                     </td>
                     <td>
-<%--                        <c:out value="${match_submission.studyTag}"/>--%>
                         <c:forEach items="${match_submission.studyTag}" var="tag" varStatus="status">
                             <span id="${match_submission.submissionId}color${status.index}">${tag.toString()}&nbsp;</span>
                             <script>
@@ -41,16 +48,8 @@
                     </td>
                     <td><c:out value="${match_submission.score}"/></td>
                     <td>
-                        <!-- more horiz -->
                         <a href="${pageContext.request.contextPath}/submission/${match_submission.submissionId}/"><i
                                 class="material-icons" title="View">&#xE5D3;</i></a>
-
-                        <!-- delete -->
-<%--                        <a onclick="confirmDeleteDialog.show(--%>
-<%--                                'Submission &quot;${match_submission.submissionName}&quot; and all its spectra will be deleted. Are you sure?',--%>
-<%--                                '${pageContext.request.contextPath}/submission/${match_submission.submissionId}/delete/');">--%>
-<%--                            <i class="material-icons" title="Delete">&#xE872;</i>--%>
-<%--                        </a>--%>
                     </td>
                 </tr>
             </c:forEach>
