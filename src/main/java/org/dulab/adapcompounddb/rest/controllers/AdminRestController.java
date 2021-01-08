@@ -47,9 +47,8 @@ public class AdminRestController {
     @RequestMapping(value = "/admin/calculatescores", method = RequestMethod.GET)
     public String calculateScores() {
         //        spectrumMatchService.fillSpectrumMatchTable(0.01F, 0.75F);
-        final Runnable r = () -> spectrumMatchCalculator.run();
         spectrumMatchCalculator.setProgress(0F);
-        executor.submit(r);
+        executor.submit(spectrumMatchCalculator::run);
         return "OK";
     }
 
