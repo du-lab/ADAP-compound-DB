@@ -67,7 +67,7 @@
                         <td>${searchResult.molecularWeight}</td>
                         <td>${searchResult.size}</td>
                         <td>${searchResult.getNISTScore()}</td>
-                        <td>${searchResult.error}</td>
+                        <td>${dulab:formatDouble(searchResult.error)}</td>
                         <td>${dulab:formatDouble(searchResult.aveSignificance)}</td>
                         <td>${dulab:formatDouble(searchResult.minSignificance)}</td>
                         <td>${dulab:formatDouble(searchResult.maxSignificance)}</td>
@@ -125,7 +125,7 @@
 
         let table = $('#table').DataTable({
             dom: 'l<"#filter">frtip',
-            order: [[4, 'desc']],
+            // order: [[5, 'desc']],
             processing: true,  // Show indicator when loading ajax
             responsive: true,
             scrollX: true,
@@ -136,16 +136,16 @@
                     "targets": 1,
                     visible: false,
                 }
-            ],
-            // Hide columns with no data
-            "fnDrawCallback": function() {
-                const api = this.api();
-                api.columns().flatten().each(function(colIndex) {
-                    const column = api.column(colIndex);
-                    const columnData = column.data().join('');
-                    column.visible(columnData);
-                })
-            }
+            ]
+            // // Hide columns with no data
+            // "fnDrawCallback": function() {
+            //     const api = this.api();
+            //     api.columns().flatten().each(function(colIndex) {
+            //         const column = api.column(colIndex);
+            //         const columnData = column.data().join('');
+            //         column.visible(columnData);
+            //     })
+            // }
         });
 
         let plot = new TwoSpectraPlot('plot', JSON.parse('${dulab:spectrumToJson(querySpectrum)}'))

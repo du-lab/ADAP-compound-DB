@@ -13,7 +13,7 @@ public interface SpectrumRepositoryCustom {
     List<SpectrumMatch> spectrumSearch(SearchType searchType, Spectrum querySpectrum, QueryParameters params);
 
     Iterable<SpectrumClusterView> searchLibrarySpectra(Spectrum querySpectrum, double scoreThreshold, double mzTolerance,
-                                                       String species, String source, String disease);
+                                                       Iterable<Long> submissionIds);
 
     Iterable<MassSearchResult> searchLibraryMasses(Spectrum querySpectrum, double tolerance,
                                                    String species, String source, String disease);

@@ -9,6 +9,7 @@ import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
 import org.dulab.adapcompounddb.site.controllers.ControllerUtils;
 import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
+import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,12 +22,15 @@ public class SpectrumSearchServiceGCImpl implements SpectrumSearchService {
 
     private final SpectrumRepository spectrumRepository;
     private final SpectrumClusterRepository spectrumClusterRepository;
+    private final SubmissionRepository submissionRepository;
 
     @Autowired
     public SpectrumSearchServiceGCImpl(SpectrumRepository spectrumRepository,
-                                       SpectrumClusterRepository spectrumClusterRepository) {
+                                       SpectrumClusterRepository spectrumClusterRepository,
+                                       SubmissionRepository submissionRepository) {
         this.spectrumRepository = spectrumRepository;
         this.spectrumClusterRepository = spectrumClusterRepository;
+        this.submissionRepository = submissionRepository;
     }
 
     @Override
@@ -40,28 +44,21 @@ public class SpectrumSearchServiceGCImpl implements SpectrumSearchService {
     public List<SearchResultDTO> searchConsensusSpectra(Spectrum querySpectrum, double scoreThreshold, double mzTolerance,
                                                         String species, String source, String disease) {
 
-        List<SearchResultDTO> clusters = new ArrayList<>();
+        Iterable<Long> submissionIds = submissionRepository.findSubmissionIdsBySubmissionTags(species, source, disease);
+
+        List<SearchResultDTO> searchResults = new ArrayList<>();
         for (SpectrumClusterView view : spectrumRepository.searchLibrarySpectra(
-                querySpectrum, scoreThreshold, mzTolerance, species, source, disease)) {
+                querySpectrum, scoreThreshold, mzTolerance, submissionIds)) {
 
-            SearchResultDTO cluster = new SearchResultDTO();
-            cluster.setId(view.getId());
-            cluster.setName(view.getName());
-            cluster.setSize(view.getSize());
-            cluster.setScore(view.getScore());
-            cluster.setAveSignificance(view.getAverageSignificance());
-            cluster.setMinSignificance(view.getMinimumSignificance());
-            cluster.setMaxSignificance(view.getMaximumSignificance());
-            cluster.setChromatographyTypeLabel(view.getChromatographyType().getLabel());
-            cluster.setChromatographyTypePath(view.getChromatographyType().getIconPath());
+            SearchResultDTO searchResult = new SearchResultDTO(querySpectrum, view);
 
-            spectrumClusterRepository.findById(view.getId())
-                    .ifPresent(c -> cluster.setJson(ControllerUtils
+            spectrumClusterRepository.findById(view.getClusterId())
+                    .ifPresent(c -> searchResult.setJson(ControllerUtils
                             .spectrumToJson(c.getConsensusSpectrum())
                             .toString()));
 
-            clusters.add(cluster);
+            searchResults.add(searchResult);
         }
-        return clusters;
+        return searchResults;
     }
 }

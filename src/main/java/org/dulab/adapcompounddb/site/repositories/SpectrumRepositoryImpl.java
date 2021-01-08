@@ -71,9 +71,9 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     @Override
     public Iterable<SpectrumClusterView> searchLibrarySpectra(
             Spectrum querySpectrum, double scoreThreshold, double mzTolerance,
-            String species, String source, String disease) {
+            Iterable<Long> submissionIds) {
 
-        String query = "SELECT SpectrumCluster.Id, ConsensusSpectrum.Name, COUNT(DISTINCT File.SubmissionId) AS Size, Score, ";
+        String query = "SELECT ConsensusSpectrum.Id, SpectrumCluster.Id AS ClusterId, ConsensusSpectrum.Name, COUNT(DISTINCT File.SubmissionId) AS Size, Score, ";
         query += "AVG(Spectrum.Significance) AS AverageSignificance, MIN(Spectrum.Significance) AS MinimumSignificance, ";
         query += "MAX(Spectrum.Significance) AS MaximumSignificance, ConsensusSpectrum.ChromatographyType FROM (\n";
         query += "SELECT ClusterId, POWER(SUM(Product), 2) AS Score FROM (\n";
@@ -89,23 +89,14 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         query += "JOIN Spectrum AS ConsensusSpectrum ON ConsensusSpectrum.Id = SpectrumCluster.ConsensusSpectrumId\n";
         query += "JOIN Spectrum ON Spectrum.ClusterId = SpectrumCluster.Id\n";
         query += "JOIN File ON File.Id = Spectrum.FileId\n";
-        query += "WHERE File.SubmissionId IN (SELECT DISTINCT * FROM (SELECT SubmissionId FROM SubmissionTag " +
-                "WHERE :species IS NULL OR :species='all' OR (TagKey='species (common)' AND TagValue=:species)) AS SpeciesTag " +
-                "INNER JOIN (SELECT SubmissionId FROM SubmissionTag " +
-                "WHERE :source IS NULL OR :source='all' OR (TagKey='sample source' AND TagValue=:source)) AS SourceTag " +
-                "USING (SubmissionId) " +
-                "INNER JOIN (SELECT SubmissionId FROM SubmissionTag " +
-                "WHERE :disease IS NULL OR :disease='all' OR (TagKey='disease' AND TagValue=:disease)) AS DiseaseTag " +
-                "USING (SubmissionId))\n";
+        query += "WHERE File.SubmissionId IN (:submissionIds)\n";
         query += "GROUP BY Spectrum.ClusterId ORDER BY Score DESC";
 
         @SuppressWarnings("unchecked")
         List<SpectrumClusterView> resultList = entityManager
                 .createNativeQuery(query, SpectrumClusterView.class)
                 .setParameter("scoreThreshold", scoreThreshold)
-                .setParameter("species", species)
-                .setParameter("source", source)
-                .setParameter("disease", disease)
+                .setParameter("submissionIds", submissionIds)
                 .getResultList();
 
         return resultList;
