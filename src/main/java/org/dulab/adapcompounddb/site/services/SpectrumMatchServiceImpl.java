@@ -13,6 +13,7 @@ import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
+import org.dulab.adapcompounddb.site.services.utils.DataUtils;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.dulab.adapcompounddb.utils.MathUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -389,14 +390,15 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
         final String sortColumn = ColumnInformation.getColumnNameFromPosition(column);
 
-        Pageable pageable;
-        if (sortColumn != null) {
-            final Sort sort = new Sort(Sort.Direction.fromString(sortDirection), sortColumn);
-            pageable = PageRequest.of(start / length, length, sort);
-        } else {
-            pageable = PageRequest.of(start / length, length);
-        }
+//        Pageable pageable;
+//        if (sortColumn != null) {
+//            final Sort sort = new Sort(Sort.Direction.fromString(sortDirection), sortColumn);
+//            pageable = PageRequest.of(start / length, length, sort);
+//        } else {
+//            pageable = PageRequest.of(start / length, length);
+//        }
 
+        Pageable pageable = DataUtils.createPageable(start, length, sortColumn, sortDirection);
         Iterable<Long> submissionIds = submissionRepository.findSubmissionIdsBySubmissionTags(species, source, disease);
         Page<SpectrumClusterView> spectrumPage =
                 spectrumClusterRepository.findClusters(searchStr, submissionIds, pageable);

@@ -26,6 +26,7 @@
             </tr>
             </thead>
             <tbody>
+            <%--@elvariable id="submission" type="java.util.List<org.dulab.adapcompounddb.models.entities.Submission>"--%>
             <c:forEach items="${submission.files}" var="file" varStatus="loop">
                 <tr>
                     <td><a href="${loop.index}/view/" target="_blank">${file.name}</a></td>
@@ -55,6 +56,7 @@
                     <th>Ret Time (min)</th>
                     <th>Precursor mass</th>
                     <th>Significance</th>
+                    <th>Molecular Weight</th>
                     <th>Type</th>
                     <th></th>
                 </tr>
@@ -78,10 +80,10 @@
 <script src="<c:url value="/resources/tag-it-6ccd2de/js/tag-it.min.js"/>"></script>
 <script type="text/javascript" src="<c:url value="/resources/AdapCompoundDb/js/tabs.js"/>"></script>
 <script>
-    $( document ).ready( function () {
+    $(document).ready(function () {
 
         // Table with a list of spectra
-        $( '#spectrum_table' ).DataTable( {
+        const table = $('#spectrum_table').DataTable({
             serverSide: true,
             processing: true,
             responsive: true,
@@ -89,66 +91,68 @@
             scroller: true,
             ajax: {
                 url: "${pageContext.request.contextPath}/spectrum/findSpectrumBySubmissionId.json?submissionId=${submission.id}",
-
                 data: function (data) {
                     data.column = data.order[0].column;
                     data.sortDirection = data.order[0].dir;
                     data.search = data.search["value"];
+                },
+                dataSrc: function (d) {
+                    // Hide columns without data
+                    table.column(2).visible(d.data.map(row => row['retentionTime']).join(''));
+                    table.column(3).visible(d.data.map(row => row['precursor']).join(''));
+                    table.column(4).visible(d.data.map(row => row['significance']).join(''));
+                    table.column(5).visible(d.data.map(row => row['molecularWeight']).join(''));
+                    return d.data;
                 }
             },
             "columnDefs": [
                 {
                     "targets": 0,
-                    "orderable": false,
+                    // "orderable": false,
                     "searchable": false,
                     "render": function (data, type, row, meta) {
                         return meta.settings.oAjaxData.start + meta.row + 1;
                     }
                 },
                 {
-                    "orderable": true,
+                    // "orderable": true,
                     "targets": 1,
                     "render": function (data, type, row, meta) {
-                        content = '<a href="' + row.fileIndex + '/' + row.spectrumIndex + '/">' +
-                            row.name +
-                            '</a>' +
-                            '<br/><small>' + row.fileName + '</small>';
-                        return content;
+                        return `<a href="\${row.fileIndex}/\${row.spectrumIndex}/">\${row.name}</a><br/>
+                                <small>\${row.fileName}</small>`
                     }
                 },
                 {
                     "targets": 2,
                     "render": function (data, type, row, meta) {
-                        var value = row.retentionTime;
-                        if (value != null && !isNaN( value )) {
-                            value = value.toFixed( 3 );
-                        }
-                        return value;
+                        let x = row.retentionTime;
+                        return (x != null && !isNaN(x)) ? x.toFixed(3) : '';
                     }
                 },
                 {
                     "targets": 3,
                     "render": function (data, type, row, meta) {
-                        var value = row.precursor;
-                        if (value != null && !isNaN( value )) {
-                            value = value.toFixed( 3 );
-                        }
-                        return value;
+                        let x = row.precursor;
+                        return (x != null && !isNaN(x)) ? x.toFixed(3) : '';
                     }
                 },
                 {
                     "targets": 4,
                     "render": function (data, type, row, meta) {
-                        var value = row.significance;
-                        if (value != null && !isNaN( value )) {
-                            value = value.toFixed( 3 );
-                        }
-                        return value;
+                        let x = row.significance;
+                        return (x != null && !isNaN(x)) ? x.toFixed(3) : '';
                     }
                 },
                 {
-                    "orderable": true,
                     "targets": 5,
+                    "render": function (data, type, row, meta) {
+                        let x = row.molecularWeight;
+                        return (x != null && !isNaN(x)) ? x.toFixed(3) : '';
+                    }
+                },
+                {
+                    // "orderable": true,
+                    "targets": 6,
                     "render": function (data, type, row, meta) {
                         content = '<img' +
                             ' src="${pageContext.request.contextPath}/' + row.chromatographyTypeIconPath + '"'
@@ -161,7 +165,7 @@
                 },
                 {
                     "orderable": false,
-                    "targets": 6,
+                    "targets": 7,
                     "render": function (data, type, row, meta) {
                         content = '<a href="' + row.fileIndex + '/' + row.spectrumIndex + '/">' +
                             '<i class="material-icons" title="View spectrum">&#xE5D3;</i>' +
@@ -169,7 +173,7 @@
                             '<a href="' + row.fileIndex + '/' + row.spectrumIndex + '/search/">' +
                             '<i class="material-icons" title="Search spectrum">&#xE8B6;</i>' +
                             '</a>';
-                        if (JSON.parse( "${submissionForm.authorized && edit}" )) {
+                        if (JSON.parse("${submissionForm.authorized && edit}")) {
                             content += '<a href="spectrum/' + row.id + '/delete">' +
                                 '<i class="material-icons" title="Delete spectrum">&#xE872;</i>' +
                                 '</a>';
@@ -178,14 +182,14 @@
                     }
                 }
             ]
-        } );
+        });
 
-        $( ".tabbed-pane" ).each( function () {
-            $( this ).tabbedPane();
-        } );
+        $(".tabbed-pane").each(function () {
+            $(this).tabbedPane();
+        });
 
         // Table with a list of files
-        $( '#file_table' ).DataTable( {
+        $('#file_table').DataTable({
             responsive: true,
             scrollX: true,
             scroller: true,
@@ -194,13 +198,13 @@
             // ordering: false,
             // paging: false,
             // searching: false
-        } );
+        });
 
         // Selector with autocomplete
-        $( '#tags' ).tagit( {
+        $('#tags').tagit({
             autocomplete: {
                 source: ${dulab:stringsToJson(availableTags)}
             }
-        } );
-    } )
+        });
+    })
 </script>
