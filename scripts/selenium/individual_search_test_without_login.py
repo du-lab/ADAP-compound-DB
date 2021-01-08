@@ -55,7 +55,7 @@ def individual_search_test(homepage_url, msp_path):
         assert data_list
 
     except Exception as e:
-#         driver.quit()
+        driver.quit()
         raise e
 
 
