@@ -85,7 +85,6 @@ public class StudySearchServiceImpl implements StudySearchService {
             // edit the bray curtis formula (now when bc close to 0 means low similarity)
             float bc = (float) (cij + cji) / (si + sj);
             //TODO remove println
-            System.out.println(bc);
 
             SubmissionMatchDTO submissionMatchDTO = new SubmissionMatchDTO(matchSubmission.getId(), matchSubmission.getName(),
                     (int) (bc * 1000), matchSubmission.getExternalId(), matchSubmission.getTags(), matchSubmission.getDescription());
@@ -93,7 +92,7 @@ public class StudySearchServiceImpl implements StudySearchService {
         }
 
         //TODO Use submissionMatchTDOs.sort() instead
-        Collections.sort(submissionMatchDTOs, Comparator.comparingDouble(m -> -1 * m.getScore()));
+        submissionMatchDTOs.sort(Comparator.comparingDouble(m -> -1 * m.getScore()));
 
         return submissionMatchDTOs;
     }

@@ -11,22 +11,23 @@
 
 <section>
 <%-- TODO rename the header to "Matched Studies"   --%>
-    <h1>Match Studies</h1>
+    <h1>Matched Studies</h1>
     <div align="center">
         <table id="match_table" class="display responsive" style="width: 100%; clear:none;">
             <thead>
             <tr>
                 <th></th>
 <%-- TODO rename "Match submission Name" to "Name"               --%>
-                <th title="Match submission Name">Match Submission Name</th>
-                <th title="study external ID">Study ID</th>
-                <th title="study tags">Study Tags</th>
+                <th title="Name">Match Submission Name</th>
+                <th title="Study External ID">Study ID</th>
+                <th title="Study Tags">Study Tags</th>
                 <th title="Match Score">Matching Score</th>
                 <th></th>
             </tr>
             </thead>
             <tbody>
 <%-- TODO: Define variable math_submissions with @elvariable. See all_clusters.jsp for an example     --%>
+<%--@elvariable id="match_submissions" type="java.util.List<dulab.adapcompounddb.models.dto.SubmissionMatchDTO>"--%>
             <c:forEach items="${match_submissions}" var="match_submission">
                 <tr>
                     <td></td>
