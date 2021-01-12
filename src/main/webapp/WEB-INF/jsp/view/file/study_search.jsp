@@ -4,21 +4,22 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <script src="<c:url value="/resources/AdapCompoundDb/js/tagsColor.js"/>"></script>
 
+
 <div>
-    Study matching score is calculated based on the number of similar spectra between two studies.<br/>
-    It ranges from 0 to 1000 with the higher score corresponding to higher similarity between studies.
+    <div style="text-align: left; margin: 0 auto" class="text large-subsection">
+        Study matching score is calculated based on the number of similar spectra between two studies.<br/>
+        It ranges from 0 to 1000 with the higher score corresponding to higher similarity between studies.
+    </div>
 </div>
 
 <section>
-<%-- TODO rename the header to "Matched Studies"   --%>
     <h1>Matched Studies</h1>
     <div align="center">
         <table id="match_table" class="display responsive" style="width: 100%; clear:none;">
             <thead>
             <tr>
                 <th></th>
-<%-- TODO rename "Match submission Name" to "Name"               --%>
-                <th title="Name">Match Submission Name</th>
+                <th title="Name">Name</th>
                 <th title="Study External ID">Study ID</th>
                 <th title="Study Tags">Study Tags</th>
                 <th title="Match Score">Matching Score</th>
@@ -26,8 +27,7 @@
             </tr>
             </thead>
             <tbody>
-<%-- TODO: Define variable math_submissions with @elvariable. See all_clusters.jsp for an example     --%>
-<%--@elvariable id="match_submissions" type="java.util.List<dulab.adapcompounddb.models.dto.SubmissionMatchDTO>"--%>
+            <%--@elvariable id="match_submissions" type="java.util.List<dulab.adapcompounddb.models.dto.SubmissionMatchDTO>"--%>
             <c:forEach items="${match_submissions}" var="match_submission">
                 <tr>
                     <td></td>
