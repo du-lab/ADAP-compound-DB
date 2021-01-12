@@ -44,7 +44,7 @@ def individual_search_test(homepage_url, msp_path):
         search_button.click()
 
         # add 10 seconds delay for spectrum search complete before next step
-        time.sleep(10)
+        time.sleep(30)
 
         # check if spectrum figure is plotted
         assert (driver.find_element_by_id('plot'))

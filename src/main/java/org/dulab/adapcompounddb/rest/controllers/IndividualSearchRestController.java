@@ -4,13 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
-import org.dulab.adapcompounddb.models.dto.ClusterDTO;
+import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.site.controllers.utils.ConversionsUtils;
 import org.dulab.adapcompounddb.site.controllers.utils.PaginationUtils;
 import org.dulab.adapcompounddb.site.services.SpectrumMatchService;
-import org.dulab.adapcompounddb.site.services.SpectrumSearchService;
+import org.dulab.adapcompounddb.site.services.search.SpectrumSearchService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -51,10 +51,10 @@ public class IndividualSearchRestController {
         Spectrum querySpectrum = new Spectrum();
         querySpectrum.setPeaks(queryPeaks);
 
-        List<ClusterDTO> clusters = spectrumSearchService.searchConsensusSpectra(
+        List<SearchResultDTO> clusters = spectrumSearchService.searchConsensusSpectra(
                 querySpectrum, scoreThreshold / 1000.0, mzTolerance, species, source, disease);
 
-        List<ClusterDTO> page = PaginationUtils.getPage(clusters, start, length, column, sortDirection);
+        List<SearchResultDTO> page = PaginationUtils.getPage(clusters, start, length, column, sortDirection);
 
         DataTableResponse response = new DataTableResponse(page);
         response.setRecordsTotal((long) clusters.size());

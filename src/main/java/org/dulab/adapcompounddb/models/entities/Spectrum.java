@@ -66,6 +66,8 @@ public class Spectrum implements Serializable {
 
     private Double significance;
 
+    private Double molecularWeight;
+
     @NotNull(message = "Spectrum: the field Chromatography Type is required.")
     @Enumerated(EnumType.STRING)
     private ChromatographyType chromatographyType;
@@ -244,6 +246,14 @@ public class Spectrum implements Serializable {
 
     public void setSignificance(final Double significance) {
         this.significance = significance;
+    }
+
+    public Double getMolecularWeight() {
+        return molecularWeight;
+    }
+
+    public void setMolecularWeight(Double molecularWeight) {
+        this.molecularWeight = molecularWeight;
     }
 
     // ****************************

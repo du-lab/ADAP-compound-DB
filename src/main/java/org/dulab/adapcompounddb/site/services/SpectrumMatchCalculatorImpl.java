@@ -48,12 +48,16 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
                 .setPrecursorTolerance(0.01);
         //                .setRetTimeTolerance(0.5);
 
+        final QueryParameters massQueryParameters = new QueryParameters()
+                .setMzTolerance(0.01);
+
         this.queryParametersMap = new HashMap<>();
         this.queryParametersMap.put(ChromatographyType.GAS, gcQueryParameters);
         this.queryParametersMap.put(ChromatographyType.LIQUID_POSITIVE, lcQueryParameters);
         this.queryParametersMap.put(ChromatographyType.LIQUID_NEGATIVE, lcQueryParameters);
         this.queryParametersMap.put(ChromatographyType.LC_MSMS_POS, lcQueryParameters);
         this.queryParametersMap.put(ChromatographyType.LC_MSMS_NEG, lcQueryParameters);
+        this.queryParametersMap.put(ChromatographyType.NONE, massQueryParameters);
     }
 
     @Override
@@ -92,6 +96,11 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
 
 //                spectrumMatches.addAll(spectrumRepository.spectrumSearch(
 //                        SearchType.CLUSTERING, querySpectrum, params));
+
+                if (chromatographyType == ChromatographyType.NONE) {
+                    throw new IllegalStateException(String.format(
+                            "Clustering of spectra of type %s is not currently supported", chromatographyType));
+                }
 
                 match(querySpectrum, params);
 //                spectrumMatchRepository.saveAll(spectrumRepository.spectrumSearch(

@@ -24,8 +24,7 @@
             </c:when>
             <c:otherwise>
                 <div align="center">
-                    <table id="info_table" class="display"
-                           style="max-width: 800px; clear: none;">
+                    <table id="info_table" class="display" style="max-width: 800px; clear: none;">
                         <thead>
                         <tr>
                             <td></td>
@@ -39,7 +38,8 @@
                         </tr>
                         <tr>
                             <td><strong>External ID:</strong></td>
-                            <td>${submission.externalId}</td>>
+                            <td>${submission.externalId}</td>
+                            >
                         </tr>
                         <tr>
                             <td><strong>Description:</strong></td>
@@ -70,7 +70,7 @@
                                     </c:forEach>
 
                                     <script>
-                                        spanColor( ${submission.id}, spanId );
+                                        spanColor(${submission.id}, spanId);
                                     </script>
                                 </td>
                             </tr>
@@ -132,6 +132,7 @@
                     <td>Ret Time (min)</td>
                     <td>Precursor mass</td>
                     <td>Significance</td>
+                    <td>Molecular Weight</td>
                     <td>Integer m/z</td>
                     <td>Type</td>
                     <td></td>
@@ -159,9 +160,9 @@
 <script type="text/javascript" src="<c:url value="/resources/AdapCompoundDb/js/tabs.js"/>"></script>
 <script src="<c:url value="/resources/tagify-master/jQuery.tagify.min.js"/>"></script>
 <script>
-    $( document ).ready( function () {
+    $(document).ready(function () {
         // Table with a list of spectra
-        $( '#spectrum_table' ).DataTable( {
+        const table = $('#spectrum_table').DataTable({
             serverSide: true,
             processing: true,
             responsive: true,
@@ -173,77 +174,67 @@
                     data.column = data.order[0].column;
                     data.sortDirection = data.order[0].dir;
                     data.search = data.search["value"];
+                },
+                dataSrc: function (d) {
+                    // Hide columns without data
+                    table.column(2).visible(d.data.map(row => row['retentionTime']).join(''));
+                    table.column(3).visible(d.data.map(row => row['precursor']).join(''));
+                    table.column(4).visible(d.data.map(row => row['significance']).join(''));
+                    table.column(5).visible(d.data.map(row => row['molecularWeight']).join(''));
+                    return d.data;
                 }
             },
             "columnDefs": [
                 {
                     "targets": 0,
-                    "orderable": false,
                     "searchable": false,
                     "render": function (data, type, row, meta) {
                         return meta.settings.oAjaxData.start + meta.row + 1;
                     }
                 },
                 {
-                    "orderable": true,
+                    // "orderable": true,
                     "targets": 1,
                     "render": function (data, type, row, meta) {
-                        var content = '';
-                        if (row.id > 0) {
-                            content = '<a href="spectrum/' + row.id + '/">';
-                        } else {
-                            content = '<a href="' + row.fileIndex + '/' + row.spectrumIndex + '/">'
-                        }
-                        content = content + row.name + '</a>' +
-                            '<br/><small>' + row.fileName + '</small>';
-                        return content;
+                        let href = (row.id > 0) ? `spectrum/\${row.id}/` : `\${row.fileIndex}/\${row.spectrumIndex}/`;
+                        return `<a href="\${href}">\${row.name}</a><br/><small>\${row.fileName}</small>`;
                     }
                 },
                 {
                     "targets": 2,
                     "render": function (data, type, row, meta) {
-                        var value = row.retentionTime;
-                        if (value != null && !isNaN( value )) {
-                            value = value.toFixed( 3 );
-                        }
-                        return value;
+                        let x = row.retentionTime;
+                        return (x != null && !isNaN(x)) ? x.toFixed(3) : x;
                     }
                 },
                 {
                     "targets": 3,
                     "render": function (data, type, row, meta) {
-                        var value = row.precursor;
-                        if (value != null && !isNaN( value )) {
-                            value = value.toFixed( 3 );
-                        }
-                        return value;
+                        let x = row.precursor;
+                        return (x != null && !isNaN(x)) ? x.toFixed(3) : x;
                     }
                 },
                 {
                     "targets": 4,
                     "render": function (data, type, row, meta) {
-                        var value = row.significance;
-                        if (value != null && !isNaN( value )) {
-                            value = value.toFixed( 3 );
-                        }
-                        return value;
+                        let x = row.significance;
+                        return (x != null && !isNaN(x)) ? x.toFixed(3) : x;
                     }
-                },
-                {
+                }, {
                     "targets": 5,
                     "render": function (data, type, row, meta) {
-                        var content = '';
-                        if (row.integerMz) {
-                            content = 'Yes';
-                        } else {
-                            content = 'No';
-                        }
-                        return content;
+                        let x = row.molecularWeight;
+                        return (x != null && !isNaN(x)) ? x.toFixed(3) : x;
+                    }
+                }, {
+                    "targets": 6,
+                    "render": function (data, type, row, meta) {
+                        return (row.integerMz) ? 'Yes' : 'No';
                     }
                 },
                 {
-                    "orderable": true,
-                    "targets": 6,
+                    // "orderable": true,
+                    "targets": 7,
                     "render": function (data, type, row, meta) {
                         content = '<img' +
                             ' src="${pageContext.request.contextPath}/' + row.chromatographyTypeIconPath + '"'
@@ -256,50 +247,35 @@
                 },
                 {
                     "orderable": false,
-                    "targets": 7,
+                    "targets": 8,
                     "render": function (data, type, row, meta) {
-                        var content = '';
-                        if (row.id > 0) {
-                            content = '<a href="spectrum/' + row.id + '/">';
-                        } else {
-                            content = '<a href="' + row.fileIndex + '/' + row.spectrumIndex + '/">'
-                        }
-                        content = content +
-                            '<i class="material-icons" title="View spectrum">&#xE5D3;</i>' +
-                            '</a>';
-                        if (row.id > 0) {
-                            content = content + '<a href="spectrum/' + row.id + '/search/">';
-                        } else {
-                            content = content + '<a href="' + row.fileIndex + '/' + row.spectrumIndex + '/search/">';
-                        }
-                        content = content + '<i class="material-icons" title="Search spectrum">&#xE8B6;</i></a>';
-                        if (JSON.parse( "${submissionForm.authorized && edit}" )) {
-                            content += '<a href="spectrum/' + row.id + '/delete">' +
-                                '<i class="material-icons" title="Delete spectrum">&#xE872;</i>' +
-                                '</a>';
-                        }
+                        let href = (row.id > 0) ? `spectrum/\${row.id}/` : `\${row.fileIndex}/\${row.spectrumIndex}/`;
+                        let content = `<a href="\${href}"><i class="material-icons" title="View spectrum">&#xE5D3;</i></a>`;
+                        content += `<a href="\${href}search/"><i class="material-icons" title="Search spectrum">&#xE8B6;</i></a>`
+                        if (JSON.parse("${submissionForm.authorized && edit}"))
+                            content += `<a href="spectrum/\${row.id}/delete"><i class="material-icons" title="Delete spectrum">&#xE872;</i></a>`;
                         return content;
                     }
                 }
             ]
-        } );
+        });
 
 
-        $( ".tabbed-pane" ).each( function () {
-            $( this ).tabbedPane( '#spectrum_table' );
-        } );
+        $(".tabbed-pane").each(function () {
+            $(this).tabbedPane('#spectrum_table');
+        });
 
         // Table with submissionForm information
-        $( '#info_table' ).DataTable( {
+        $('#info_table').DataTable({
             bLengthChange: false,
             info: false,
             ordering: false,
             paging: false,
             searching: false
-        } );
+        });
 
         // Table with a list of files
-        $( '#file_table' ).DataTable();
+        $('#file_table').DataTable();
 
         <%--// Selector with autocomplete--%>
         <%--$( '#tags' ).tagit( {--%>
@@ -308,8 +284,7 @@
         <%--    }--%>
         <%--} );--%>
 
-    } );
-
+    });
 
 
 </script>

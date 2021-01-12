@@ -7,8 +7,8 @@
 <section>
     <h1>Query Spectrum</h1>
 
-    <div align="center">
-        <table>
+    <div>
+        <table style="margin: auto">
             <tr>
                 <%--@elvariable id="querySpectrum" type="org.dulab.adapcompounddb.models.entities.Spectrum"--%>
                 <td>
@@ -24,25 +24,27 @@
     </div>
 </section>
 
-<%--@elvariable id="clusters" type="java.util.List<org.dulab.adapcompounddb.models.dto.ClusterDTO>"--%>
-<c:if test="${clusters != null && clusters.size() > 0}">
+<%--@elvariable id="searchResults" type="java.util.List<org.dulab.adapcompounddb.models.dto.SearchResultDTO>"--%>
+<c:if test="${searchResults != null && searchResults.size() > 0}">
     <section id="chartSection">
         <h1>Comparison</h1>
-        <div id="plot" align="center" class="plot"></div>
+        <div id="plot" style="alignment: center" class="plot"></div>
     </section>
 </c:if>
 
 <section>
     <h1>Matching Hits</h1>
-    <div align="center">
+    <div style="alignment: center">
         <table id="table" class="display responsive" style="width: 100%;">
             <thead>
             <tr>
                 <th>Id</th>
                 <th>Query Spectrum</th>
                 <th title="Match spectra">Match Spectrum</th>
+                <th title="Molecular weight">Molecular weight</th>
                 <th title="Number of studies" class="Count">Studies</th>
                 <th title="Minimum matching score between all spectra in a cluster">Score</th>
+                <th title="Error">Error</th>
                 <th title="Average P-value of ANOVA tests">Average P-value</th>
                 <th title="Minimum P-value of ANOVA tests">Minimum P-value</th>
                 <th title="Maximum P-value of ANOVA tests">Maximum P-value</th>
@@ -51,23 +53,27 @@
             </tr>
             </thead>
             <tbody>
-            <%--@elvariable id="clusters" type="java.util.List<org.dulab.adapcompounddb.models.dto.ClusterDTO>"--%>
-            <c:if test="${clusters != null}">
-                <c:forEach items="${clusters}" var="cluster" varStatus="status">
-                    <tr data-spectrum='${cluster.json}'>
+            <%--@elvariable id="searchResults" type="java.util.List<org.dulab.adapcompounddb.models.dto.SearchResultDTO>"--%>
+            <c:if test="${searchResults != null}">
+                <c:forEach items="${searchResults}" var="searchResult" varStatus="status">
+                    <tr data-spectrum='${searchResult.json}'>
                         <td>${status.index + 1}</td>
-                        <td>${cluster.querySpectrumName}</td>
+                        <td>${searchResult.querySpectrumName}</td>
                         <td>
-                            <a href="${pageContext.request.contextPath}/cluster/${cluster.clusterId}/">${cluster.consensusSpectrumName}</a>
+                            <a href="${pageContext.request.contextPath}/${fn:toLowerCase(searchResult.matchType)}/${searchResult.id}/">
+                                    ${searchResult.name}
+                            </a>
                         </td>
-                        <td>${cluster.size}</td>
-                        <td>${cluster.getNISTScore()}</td>
-                        <td>${dulab:formatDouble(cluster.aveSignificance)}</td>
-                        <td>${dulab:formatDouble(cluster.minSignificance)}</td>
-                        <td>${dulab:formatDouble(cluster.maxSignificance)}</td>
-                        <td><img src="${pageContext.request.contextPath}/${cluster.chromatographyTypePath}"
-                                 alt="${cluster.chromatographyTypeLabel}" title="${cluster.chromatographyTypeLabel}"/></td>
-                        <td><a href="${pageContext.request.contextPath}/cluster/${cluster.clusterId}/">
+                        <td>${searchResult.molecularWeight}</td>
+                        <td>${searchResult.size}</td>
+                        <td>${searchResult.getNISTScore()}</td>
+                        <td>${dulab:formatDouble(searchResult.error)}</td>
+                        <td>${dulab:formatDouble(searchResult.aveSignificance)}</td>
+                        <td>${dulab:formatDouble(searchResult.minSignificance)}</td>
+                        <td>${dulab:formatDouble(searchResult.maxSignificance)}</td>
+                        <td><img src="${pageContext.request.contextPath}/${searchResult.chromatographyTypePath}"
+                                 alt="${searchResult.chromatographyTypeLabel}" title="${searchResult.chromatographyTypeLabel}"/></td>
+                        <td><a href="${pageContext.request.contextPath}/${fn:toLowerCase(searchResult.matchType)}/${searchResult.id}/">
                             <i class="material-icons" title="View">&#xE5D3;</i>
                         </a></td>
                     </tr>
@@ -119,18 +125,27 @@
 
         let table = $('#table').DataTable({
             dom: 'l<"#filter">frtip',
-            order: [[4, 'desc']],
-            select: {style: 'single'},
+            // order: [[5, 'desc']],
             processing: true,  // Show indicator when loading ajax
             responsive: true,
             scrollX: true,
             scroller: true,
+            select: {style: 'single'},
             "aoColumnDefs": [
                 {
                     "targets": 1,
                     visible: false,
                 }
             ]
+            // // Hide columns with no data
+            // "fnDrawCallback": function() {
+            //     const api = this.api();
+            //     api.columns().flatten().each(function(colIndex) {
+            //         const column = api.column(colIndex);
+            //         const columnData = column.data().join('');
+            //         column.visible(columnData);
+            //     })
+            // }
         });
 
         let plot = new TwoSpectraPlot('plot', JSON.parse('${dulab:spectrumToJson(querySpectrum)}'))
@@ -138,7 +153,12 @@
         table.on('select', function(e, dt, type, indexes) {
             let row = table.row(indexes).node();
             let spectrum = $(row).attr('data-spectrum');
-            plot.update(JSON.parse(spectrum));
+            if (spectrum) {
+                $('#chartSection').show();
+                plot.update(JSON.parse(spectrum));
+            } else {
+                $('#chartSection').hide();
+            }
         });
 
         table.rows(':eq(0)').select();

@@ -10,12 +10,15 @@ import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
+import org.dulab.adapcompounddb.models.entities.views.MassSearchResult;
 
 public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
+    private static final String PEAK_INSERT_SQL_STRING = "INSERT INTO `Peak`(`Mz`, `Intensity`, `SpectrumId`) VALUES ";
+    private static final String PROPERTY_INSERT_SQL_STRING = "INSERT INTO `SpectrumProperty`(`SpectrumId`, `Name`, `Value`) VALUES ";
     private static final String PEAK_VALUE_SQL_STRING = "(%f,%f,%d)";
     private static final String PROPERTY_VALUE_SQL_STRING = "(%d, %s, %s)";
-    private static final String SPECTRUM_VALUE_SQL_STRING = "(%s, %f, %f, %f, %d, %b, %b, %b, %s, %d)";
+    private static final String SPECTRUM_VALUE_SQL_STRING = "(%s, %f, %f, %f, %d, %b, %b, %b, %s, %d, %f)";
 
     public static final String DOUBLE_QUOTE = "\"";
     public static final String COMMA = ",";
@@ -46,7 +49,6 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         final String sqlQuery = queryBuilder.build();
 
 
-
         @SuppressWarnings("unchecked") final List<Object[]> resultList = entityManager  // .getEntityManagerFactory().createEntityManager()
                 .createNativeQuery(sqlQuery, "SpectrumScoreMapping")
                 .getResultList();
@@ -67,11 +69,11 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     }
 
     @Override
-    public Iterable<SpectrumClusterView> searchConsensusSpectra(
+    public Iterable<SpectrumClusterView> searchLibrarySpectra(
             Spectrum querySpectrum, double scoreThreshold, double mzTolerance,
-            String species, String source, String disease) {
+            Iterable<Long> submissionIds) {
 
-        String query = "SELECT SpectrumCluster.Id, ConsensusSpectrum.Name, COUNT(DISTINCT File.SubmissionId) AS Size, Score, ";
+        String query = "SELECT ConsensusSpectrum.Id, SpectrumCluster.Id AS ClusterId, ConsensusSpectrum.Name, COUNT(DISTINCT File.SubmissionId) AS Size, Score, ";
         query += "AVG(Spectrum.Significance) AS AverageSignificance, MIN(Spectrum.Significance) AS MinimumSignificance, ";
         query += "MAX(Spectrum.Significance) AS MaximumSignificance, ConsensusSpectrum.ChromatographyType FROM (\n";
         query += "SELECT ClusterId, POWER(SUM(Product), 2) AS Score FROM (\n";
@@ -87,23 +89,38 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         query += "JOIN Spectrum AS ConsensusSpectrum ON ConsensusSpectrum.Id = SpectrumCluster.ConsensusSpectrumId\n";
         query += "JOIN Spectrum ON Spectrum.ClusterId = SpectrumCluster.Id\n";
         query += "JOIN File ON File.Id = Spectrum.FileId\n";
-        query += "WHERE File.SubmissionId IN (SELECT DISTINCT * FROM (SELECT SubmissionId FROM SubmissionTag " +
-                "WHERE :species IS NULL OR :species='all' OR (TagKey='species (common)' AND TagValue=:species)) AS SpeciesTag " +
-                "INNER JOIN (SELECT SubmissionId FROM SubmissionTag " +
-                "WHERE :source IS NULL OR :source='all' OR (TagKey='sample source' AND TagValue=:source)) AS SourceTag " +
-                "USING (SubmissionId) " +
-                "INNER JOIN (SELECT SubmissionId FROM SubmissionTag " +
-                "WHERE :disease IS NULL OR :disease='all' OR (TagKey='disease' AND TagValue=:disease)) AS DiseaseTag " +
-                "USING (SubmissionId))\n";
+        query += "WHERE File.SubmissionId IN (:submissionIds)\n";
         query += "GROUP BY Spectrum.ClusterId ORDER BY Score DESC";
 
         @SuppressWarnings("unchecked")
         List<SpectrumClusterView> resultList = entityManager
                 .createNativeQuery(query, SpectrumClusterView.class)
                 .setParameter("scoreThreshold", scoreThreshold)
-                .setParameter("species", species)
-                .setParameter("source", source)
-                .setParameter("disease", disease)
+                .setParameter("submissionIds", submissionIds)
+                .getResultList();
+
+        return resultList;
+    }
+
+    @Override
+    public Iterable<MassSearchResult> searchLibraryMasses(Spectrum querySpectrum, double tolerance, String species, String source, String disease) {
+
+        Double queryWeight = querySpectrum.getMolecularWeight();
+        if (queryWeight == null) return new ArrayList<>(0);
+
+        String query = String.format(
+                "SELECT Id, Name, MolecularWeight, ABS(MolecularWeight - %f) AS Error, ChromatographyType " +
+                        "FROM Spectrum WHERE (Consensus IS TRUE OR Reference IS True) AND " +
+                        "ChromatographyType = '%s' AND MolecularWeight > %f AND MolecularWeight < %f " +
+                        "ORDER BY Error ASC",
+                queryWeight,
+                querySpectrum.getChromatographyType(),
+                queryWeight - tolerance,
+                queryWeight + tolerance);
+
+        @SuppressWarnings("unchecked")
+        List<MassSearchResult> resultList = entityManager
+                .createNativeQuery(query, MassSearchResult.class)
                 .getResultList();
 
         return resultList;
@@ -111,40 +128,45 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
     @Override
     public void savePeaksAndPropertiesQuery(final List<Spectrum> spectrumList, final List<Long> savedSpectrumIdList) {
-        final StringBuilder peakSql = new StringBuilder("INSERT INTO `Peak`(" +
-                "`Mz`, `Intensity`, `SpectrumId`) VALUES ");
-        final StringBuilder propertySql = new StringBuilder("INSERT INTO `SpectrumProperty`(" +
-                "`SpectrumId`, `Name`, `Value`) VALUES ");
+        final StringBuilder peakSql = new StringBuilder(PEAK_INSERT_SQL_STRING);
+        final StringBuilder propertySql = new StringBuilder(PROPERTY_INSERT_SQL_STRING);
 
         final String peakValueString = "(%f, %f, %d)";
         final String propertyValueString = "(%d, %s, %s)";
 
         for (int i = 0; i < spectrumList.size(); i++) {
             final List<Peak> peaks = spectrumList.get(i).getPeaks();
-            final List<SpectrumProperty> properties = spectrumList.get(i).getProperties();
+            if (peaks != null) {
+                for (int j = 0; j < peaks.size(); j++) {
+                    if (i != 0 || j != 0) {
+                        peakSql.append(COMMA);
+                    }
+                    final Peak p = peaks.get(j);
 
-            for (int j = 0; j < peaks.size(); j++) {
-                if (i != 0 || j != 0) {
-                    peakSql.append(COMMA);
+                    peakSql.append(String.format(peakValueString, p.getMz(), p.getIntensity(), savedSpectrumIdList.get(i)));
                 }
-                final Peak p = peaks.get(j);
-
-                peakSql.append(String.format(peakValueString, p.getMz(), p.getIntensity(), savedSpectrumIdList.get(i)));
             }
 
-            for (int j = 0; j < properties.size(); j++) {
-                if (i != 0 || j != 0) {
-                    propertySql.append(COMMA);
+            final List<SpectrumProperty> properties = spectrumList.get(i).getProperties();
+            if (properties != null) {
+                for (int j = 0; j < properties.size(); j++) {
+                    if (i != 0 || j != 0) {
+                        propertySql.append(COMMA);
+                    }
+                    final SpectrumProperty sp = properties.get(j);
+                    propertySql.append(String.format(propertyValueString, savedSpectrumIdList.get(i), DOUBLE_QUOTE + sp.getName() + DOUBLE_QUOTE, DOUBLE_QUOTE + sp.getValue() + DOUBLE_QUOTE));
                 }
-                final SpectrumProperty sp = properties.get(j);
-                propertySql.append(String.format(propertyValueString, savedSpectrumIdList.get(i), DOUBLE_QUOTE + sp.getName() + DOUBLE_QUOTE, DOUBLE_QUOTE + sp.getValue() + DOUBLE_QUOTE));
             }
         }
 
-        final Query peakQuery = entityManager.createNativeQuery(peakSql.toString());
-        peakQuery.executeUpdate();
-        final Query propertyQuery = entityManager.createNativeQuery(propertySql.toString());
-        propertyQuery.executeUpdate();
+        if (!peakSql.toString().equals(PEAK_INSERT_SQL_STRING)) {
+            final Query peakQuery = entityManager.createNativeQuery(peakSql.toString());
+            peakQuery.executeUpdate();
+        }
+        if (!propertySql.toString().equals(PROPERTY_INSERT_SQL_STRING)) {
+            final Query propertyQuery = entityManager.createNativeQuery(propertySql.toString());
+            propertyQuery.executeUpdate();
+        }
     }
 
     @Override
@@ -154,7 +176,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         final StringBuilder insertSql = new StringBuilder("INSERT INTO `Spectrum`(" +
                 "`Name`, `Precursor`, `RetentionTime`, `Significance`, " +
                 "`ClusterId`, `Consensus`, `Reference`, `IntegerMz`, " +
-                "`ChromatographyType`, `FileId`" +
+                "`ChromatographyType`, `FileId`, `MolecularWeight`" +
                 ") VALUES ");
 
         for (int i = 0; i < fileList.size(); i++) {
@@ -176,7 +198,8 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                         spectrum.isReference(),
                         spectrum.isIntegerMz(),
                         DOUBLE_QUOTE + spectrum.getChromatographyType().name() + DOUBLE_QUOTE,
-                        savedFileIdList.get(i)
+                        savedFileIdList.get(i),
+                        spectrum.getMolecularWeight()
                 ));
             }
         }

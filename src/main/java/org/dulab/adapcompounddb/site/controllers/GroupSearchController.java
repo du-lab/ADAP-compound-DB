@@ -2,13 +2,10 @@ package org.dulab.adapcompounddb.site.controllers;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dulab.adapcompounddb.models.QueryParameters;
-import org.dulab.adapcompounddb.models.SearchForm;
-import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterForm;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterOptions;
-import org.dulab.adapcompounddb.site.services.GroupSearchService;
+import org.dulab.adapcompounddb.site.services.search.GroupSearchService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.dulab.adapcompounddb.site.services.SubmissionTagService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.Filter;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 @Controller
 public class GroupSearchController {

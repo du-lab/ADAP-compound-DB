@@ -10,15 +10,12 @@ public interface SpectrumService {
 
     Spectrum find(long id);
 
-    DataTableResponse findSpectrumBySubmissionId(Long submissionId, String searchStr, Integer start, Integer length,
-            Integer column, String orderDirection);
+    DataTableResponse findSpectrumBySubmissionId(long submissionId, String search, int start, int length,
+            String column, String direction);
 
     long countConsensusSpectra();
 
     long countReferenceSpectra();
 
     Boolean updateReferenceOfAllSpectraOfSubmission(Long submissionId, boolean value);
-
-    DataTableResponse processPagination(Submission from, final String searchStr,
-            final Integer start, final Integer length, final Integer column, final String orderDirection);
 }

@@ -1,6 +1,6 @@
 package org.dulab.adapcompounddb.site.controllers.utils;
 
-import org.dulab.adapcompounddb.models.dto.ClusterDTO;
+import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 
 import java.util.Comparator;
 import java.util.List;
@@ -10,17 +10,17 @@ import java.util.stream.IntStream;
 
 public class PaginationUtils {
 
-    public static List<ClusterDTO> getPage(List<ClusterDTO> clusters, int start, int length, int column,
-                                           String sortDirection) {
+    public static List<SearchResultDTO> getPage(List<SearchResultDTO> clusters, int start, int length, int column,
+                                                String sortDirection) {
 
         // Sort the list based on the column
 
-        Function<ClusterDTO, Comparable> field = ClusterDTO.COLUMN_TO_FIELD_MAP.get(column);
+        Function<SearchResultDTO, Comparable> field = SearchResultDTO.COLUMN_TO_FIELD_MAP.get(column);
 
         if (field == null)
             throw new IllegalStateException("Cannot find field for column " + column);
 
-        Comparator<ClusterDTO> comparator = sortDirection.equalsIgnoreCase("desc")
+        Comparator<SearchResultDTO> comparator = sortDirection.equalsIgnoreCase("desc")
                 ? Comparator.comparing(field, Comparator.nullsLast(Comparator.reverseOrder()))
                 : Comparator.comparing(field, Comparator.nullsLast(Comparator.naturalOrder()));
 

@@ -27,7 +27,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Controller
-@SessionAttributes({"availableTags"})
+//@SessionAttributes({"availableTags"})
 public class SubmissionController extends BaseController {
 
     private static final Logger LOGGER = LogManager.getLogger(SubmissionController.class);
@@ -41,19 +41,19 @@ public class SubmissionController extends BaseController {
         this.submissionService = submissionService;
     }
 
-    @ModelAttribute
-    public void addAttributes(final Model model) {
-        model.addAttribute("availableTags", submissionService.findUniqueTagStrings());
-        /*model.addAttribute("submissionCategoryTypes", SubmissionCategoryType.values());
-
-        final Map<SubmissionCategoryType, List<SubmissionCategory>> availableCategories = Arrays
-                .stream(SubmissionCategoryType.values()).collect(Collectors.toMap(t -> t, t -> new ArrayList<>()));
-
-        submissionService.findAllCategories()
-                .forEach(category -> availableCategories.get(category.getCategoryType()).add(category));
-
-        model.addAttribute("availableCategories", availableCategories);*/
-    }
+//    @ModelAttribute
+//    public void addAttributes(final Model model) {
+//        model.addAttribute("availableTags", submissionService.findUniqueTagStrings());
+//        /*model.addAttribute("submissionCategoryTypes", SubmissionCategoryType.values());
+//
+//        final Map<SubmissionCategoryType, List<SubmissionCategory>> availableCategories = Arrays
+//                .stream(SubmissionCategoryType.values()).collect(Collectors.toMap(t -> t, t -> new ArrayList<>()));
+//
+//        submissionService.findAllCategories()
+//                .forEach(category -> availableCategories.get(category.getCategoryType()).add(category));
+//
+//        model.addAttribute("availableCategories", availableCategories);*/
+//    }
 
     /********************************
      ***** View File / Submission *****
@@ -106,6 +106,7 @@ public class SubmissionController extends BaseController {
         model.addAttribute("submission", submission);
         model.addAttribute("submissionForm", submissionForm);
         model.addAttribute("edit", edit);
+        model.addAttribute("availableTags", submissionService.findUniqueTagStrings());
 
         return "submission/view";
     }
@@ -116,6 +117,7 @@ public class SubmissionController extends BaseController {
         model.addAttribute("submission", submission);
         model.addAttribute("submissionForm", submissionForm);
         model.addAttribute("authenticated", authenticated); // User is logged in
+        model.addAttribute("availableTags", submissionService.findUniqueTagStrings());
 
         if (authenticated) {
             return "submission/view";

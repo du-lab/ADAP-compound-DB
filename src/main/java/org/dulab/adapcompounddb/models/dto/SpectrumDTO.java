@@ -7,30 +7,19 @@ public class SpectrumDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String name;
-
     private long id;
-
     private boolean consensus;
-
     private boolean reference;
-
     private boolean integerMz;
-
     private Double precursor;
-
     private Double retentionTime;
-
     private String chromatographyTypeLabel;
-
     private String chromatographyTypeIconPath;
-
     private String fileName;
-
     private Integer fileIndex;
-
     private Integer spectrumIndex;
-
     private Double significance;
+    private Double molecularWeight;
 
     // ****************************
     // ***** Standard methods *****
@@ -163,5 +152,13 @@ public class SpectrumDTO implements Serializable {
 
     public void setSignificance(final Double significance) {
         this.significance = significance;
+    }
+
+    public Double getMolecularWeight() {
+        return molecularWeight;
+    }
+
+    public void setMolecularWeight(Double molecularWeight) {
+        this.molecularWeight = molecularWeight;
     }
 }

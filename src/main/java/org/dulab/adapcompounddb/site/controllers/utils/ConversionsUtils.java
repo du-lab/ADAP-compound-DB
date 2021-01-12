@@ -31,7 +31,8 @@ public class ConversionsUtils {
         return peaks;
     }
 
-    public static String formatDouble(double x) {
+    public static String formatDouble(Double x) {
+        if (x == null) return null;
         return String.format("%.3f", x);
     }
 }

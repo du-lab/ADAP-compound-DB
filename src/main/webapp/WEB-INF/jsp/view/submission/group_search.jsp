@@ -19,8 +19,10 @@
                 <th>Id</th>
                 <th>Query Spectrum</th>
                 <th title="Match spectra">Match Spectrum</th>
+                <th title="Molecular weight">Molecular weight</th>
                 <th title="Number of studies" class="Count">Studies</th>
                 <th title="Minimum matching score between all spectra in a cluster">Score</th>
+                <th title="Difference between query and library molecular weights">Error</th>
                 <th title="Average P-value of ANOVA tests">Average P-value</th>
                 <th title="Minimum P-value of ANOVA tests">Minimum P-value</th>
                 <th title="Maximum P-value of ANOVA tests">Maximum P-value</th>
@@ -73,27 +75,39 @@
         let table = $('#match_table').DataTable({
             dom: 'l<"#filter">frtip',
             serverSide: true,
+            order: [[0, 'desc']],
             processing: true,
             responsive: true,
             scrollX: true,
             // scroller: true,
             ajax: {
                 url: "${pageContext.request.contextPath}/file/group_search/data.json",
-
                 data: function (data) {
                     data.column = data.order[0].column;
                     data.sortDirection = data.order[0].dir;
                     data.search = data.search["value"];
+                },
+                dataSrc: function (d) {
+                    // // Hide columns with no data
+                    table.column(3).visible(d.data.map(row => row['molecularWeight']).join(''));
+                    table.column(4).visible(d.data.map(row => row['size']).join(''));
+                    table.column(5).visible(d.data.map(row => row['score']).join(''));
+                    table.column(6).visible(d.data.map(row => row['error']).join(''));
+                    table.column(7).visible(d.data.map(row => row['aveSignificance']).join(''));
+                    table.column(8).visible(d.data.map(row => row['minSignificance']).join(''));
+                    table.column(9).visible(d.data.map(row => row['maxSignificance']).join(''));
+                    return d.data;
                 }
             },
             "aoColumnDefs": [
                 {
                     "targets": 0,
-                    "bSortable": false,
+                    "bSortable": true,
                     "searchable": false,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
-                        return meta.settings.oAjaxData.start + meta.row + 1;
+                        // return meta.settings.oAjaxData.start + meta.row + 1;
+                        return row.position;
                     }
                 },
                 {
@@ -110,9 +124,9 @@
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
                         let content = '';
-                        if (row.consensusSpectrumName != null) {
-                            content = '<a href="${pageContext.request.contextPath}/cluster/'
-                                + row.clusterId + '/">' + row.consensusSpectrumName + '</a>';
+                        if (row.name != null) {
+                            content = '<a href="${pageContext.request.contextPath}/' + row.matchType.toLowerCase() + '/'
+                                + row.id + '/">' + row.name + '</a>';
                         }
                         return content;
                     }
@@ -121,8 +135,8 @@
                     "targets": 3,
                     "bSortable": true,
                     "bVisible": true,
-                    "render": function (data, type, row, meta) {
-                        return (row.size != null) ? row.size : '';
+                    "render": function (data, type, row) {
+                        return (row.molecularWeight != null) ? row.molecularWeight.toFixed(3) : '';
                     }
                 },
                 {
@@ -130,11 +144,27 @@
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
-                        return (row.score != null) ? row.score.toFixed(3) * 1000 : '';
+                        return (row.size != null) ? row.size : '';
                     }
                 },
                 {
                     "targets": 5,
+                    "bSortable": true,
+                    "bVisible": true,
+                    "render": function (data, type, row, meta) {
+                        return (row.score != null) ? row.score.toFixed(3) * 1000 : '';
+                    }
+                },
+                {
+                    "targets": 6,
+                    "bSortable": true,
+                    "bVisible": true,
+                    "render": function (data, type, row) {
+                        return (row.error != null) ? row.error.toFixed(3) : '';
+                    }
+                },
+                {
+                    "targets": 7,
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
@@ -146,7 +176,7 @@
                     }
                 },
                 {
-                    "targets": 6,
+                    "targets": 8,
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
@@ -158,7 +188,7 @@
                     }
                 },
                 {
-                    "targets": 7,
+                    "targets": 9,
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
@@ -170,12 +200,12 @@
                     }
                 },
                 {
-                    "targets": 8,
+                    "targets": 10,
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
                         let content = '';
-                        if (row.consensusSpectrumName != null) {
+                        if (row.name != null) {
                             content = '<img' +
                                 ' src="${pageContext.request.contextPath}/' + row.chromatographyTypePath + '"'
                                 + ' alt="' + row.chromatographyTypeLabel + '"'
@@ -186,12 +216,12 @@
                     }
                 },
                 {
-                    "targets": 9,
+                    "targets": 11,
                     "bSortable": false,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
                         let content = '';
-                        if (row.querySpectrumId != 0) {
+                        if (row.querySpectrumId !== 0) {
                             content = '<a href="${pageContext.request.contextPath}/spectrum/'
                                 + row.querySpectrumId + '/search/" class="button"> Search</a>';
                         } else {
@@ -202,7 +232,7 @@
                     }
                 },
                 // {"className": "dt-center", "targets": "_all"}
-            ]
+            ],
         });
 
         // refresh the datatable every 1 second
@@ -218,7 +248,8 @@
         });
 
 
-        <c:if test="${pageContext.request.method == 'GET'}">filterForm.submit();</c:if>
+        <c:if test="${pageContext.request.method == 'GET'}">filterForm.submit();
+        </c:if>
 
         new GroupSearchProgressBar(window.location.href + 'progress', 'group_search_progress', 1000).start();
     });

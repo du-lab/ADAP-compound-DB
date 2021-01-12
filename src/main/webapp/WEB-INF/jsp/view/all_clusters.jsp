@@ -73,6 +73,8 @@
             responsive: true,
             scrollX: true,
             scroller: true,
+            sortable: true,
+            visible: true,
             ajax: {
                 url: "${pageContext.request.contextPath}/spectrum/findClusters.json",
 
@@ -97,65 +99,44 @@
                 },
                 {
                     "targets": 1,
-                    "bSortable": true,
-                    "bVisible": true,
-                    "render": function (data, type, row, meta) {
-                        return row.clusterId;
-                    }
+                    "data": "id"
                 },
                 {
                     "targets": 2,
-                    "bSortable": true,
-                    "bVisible": true,
                     "render": function (data, type, row, meta) {
-                        content = '<a href="${pageContext.request.contextPath}/cluster/' + row.clusterId + '/">' +
-                            row.consensusSpectrumName +
-                            '</a>';
-                        return content
+                        return `<a href="${pageContext.request.contextPath}/\${row.matchType.toLowerCase()}/\${row.id}/">\${row.name}</a>`;
                     }
                 },
                 {
                     "targets": 3,
-                    "bSortable": true,
-                    "bVisible": true,
                     "data": "size"
                 },
                 {
                     "targets": 4,
-                    "bSortable": true,
-                    "bVisible": true,
                     "render": function (data, type, row, meta) {
-                        return row.score.toFixed(3) * 1000;
+                        return (row.score != null) ? row.score.toFixed(3) * 1000 : '';
                     }
                 },
                 {
                     "targets": 5,
-                    "bSortable": true,
-                    "bVisible": true,
                     "render": function (data, type, row, meta) {
                         return (row.aveSignificance != null) ? row.aveSignificance.toFixed(3) : '';
                     }
                 },
                 {
                     "targets": 6,
-                    "bSortable": true,
-                    "bVisible": true,
                     "render": function (data, type, row, meta) {
                         return (row.minSignificance != null) ? row.minSignificance.toFixed(3) : '';
                     }
                 },
                 {
                     "targets": 7,
-                    "bSortable": true,
-                    "bVisible": true,
                     "render": function (data, type, row, meta) {
                         return (row.maxSignificance != null) ? row.maxSignificance.toFixed(3) : '';
                     }
                 },
                 {
                     "targets": 8,
-                    "bSortable": true,
-                    "bVisible": true,
                     "render": function (data, type, row, meta) {
                         var content = '<img' +
                             ' src="${pageContext.request.contextPath}/' + row.chromatographyTypePath + '"'
@@ -169,11 +150,9 @@
                 {
                     "targets": 9,
                     "bSortable": false,
-                    "bVisible": true,
                     "render": function (data, type, row, meta) {
-                        var content = '<a href="${pageContext.request.contextPath}/cluster/'
-                            + row.clusterId + '/"><i class="material-icons" title="View">&#xE5D3;</i></a>';
-                        return content;
+                        return `<a href="${pageContext.request.contextPath}/\${row.matchType.toLowerCase()}/\${row.id}/">
+                                <i class="material-icons" title="view">&#xE5D3;</i></a>`;
                     }
                 },
                 {"className": "dt-center", "targets": "_all"}
