@@ -32,7 +32,7 @@ public class SpectrumClusterRepositoryImpl implements SpectrumClusterRepositoryC
                 "join Spectrum on SpectrumCluster.Id=Spectrum.ClusterId " +
                 "join Spectrum as ConsensusSpectrum on SpectrumCluster.ConsensusSpectrumId=ConsensusSpectrum.Id " +
                 "join File on Spectrum.FileId=File.Id " +
-                "where ConsensusSpectrum.Name LIKE :search and File.SubmissionId in (:submissionIds)";
+                "where (ConsensusSpectrum.Name LIKE :search OR ConsensusSpectrum.ChromatographyType LIKE :search ) and File.SubmissionId in (:submissionIds)";
 
         return (BigInteger) entityManager.createNativeQuery(sqlQuery)
                 .setParameter("search", "%" + search + "%")
@@ -50,7 +50,7 @@ public class SpectrumClusterRepositoryImpl implements SpectrumClusterRepositoryC
     private BigInteger countAllReferenceSpectra(Iterable<Long> submissionIds, String search) {
 
         String sqlQuery = "select count(*) from Spectrum join File on Spectrum.FileId=File.Id " +
-                "where Spectrum.Reference is true and Spectrum.Name like :search and File.SubmissionId in (:submissionIds)";
+                "where Spectrum.Reference is true and (Spectrum.Name like :search OR Spectrum.ChromatographyType LIKE :search ) and File.SubmissionId in (:submissionIds)";
 
         return (BigInteger) entityManager.createNativeQuery(sqlQuery)
                 .setParameter("search", "%" + search + "%")
@@ -74,11 +74,11 @@ public class SpectrumClusterRepositoryImpl implements SpectrumClusterRepositoryC
                 "join Spectrum on SpectrumCluster.Id=Spectrum.ClusterId " +
                 "join Spectrum as ConsensusSpectrum on SpectrumCluster.ConsensusSpectrumId=ConsensusSpectrum.Id " +
                 "join File on Spectrum.FileId=File.Id " +
-                "where ConsensusSpectrum.Name LIKE :search and File.SubmissionId in (:submissionIds) group by SpectrumCluster.Id " +
+                "where (ConsensusSpectrum.Name LIKE :search or ConsensusSpectrum.ChromatographyType like :search) and File.SubmissionId in (:submissionIds) group by SpectrumCluster.Id " +
                 "union all " +
                 "select Spectrum.Id, null, Spectrum.Name, 1, null, null, null, null, Spectrum.ChromatographyType from Spectrum " +
                 "join File on Spectrum.FileId=File.Id " +
-                "where Spectrum.Reference is true and Spectrum.Name like :search and File.SubmissionId in (:submissionIds)";
+                "where Spectrum.Reference is true and (Spectrum.Name like :search or Spectrum.ChromatographyType like :search) and File.SubmissionId in (:submissionIds)";
 
         String findClusterSqlQueryWithSort = pageable.getSort().stream()
                 .map(order -> String.format(

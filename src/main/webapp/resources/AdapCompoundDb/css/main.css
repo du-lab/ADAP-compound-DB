@@ -24,7 +24,6 @@ Cluster Distribution Color:#ffb47c
 ***********************/
 
 html {
-    background: #f2f2f2;
     font-family: "Lato", sans-serif; /*"Times New Roman"*/
     font-weight: lighter;
 }
@@ -35,6 +34,10 @@ body, header, aside, section, article, h1, h2 {
     padding: 0;
 }
 
+body {
+    background-color: #f2f2f2;
+}
+
 /***** Header *****/
 
 header {
@@ -43,7 +46,7 @@ header {
     color: #ffffff;
     display: block;
     font-family: "Chrimson Text", serif;
-    height: 40px;
+    /*height: 40px;*/
     padding: 10px;
     position: fixed;
     top: 0;
@@ -95,11 +98,12 @@ aside ul {
 }
 
 aside li a {
+    box-sizing: content-box;
     display: block;
     text-decoration: none;
     color: #542410; /*#844d36*/
     width: 160px;
-    height: 20px;
+    /*height: 20px;*/
     margin: 0;
     padding: 10px;
 }
@@ -121,8 +125,8 @@ aside li a:hover {
     text-decoration: none;
     color: #ffffff;
     width: 160px;
-    height: 20px;
-    margin: 0px 10px;
+    /*height: 20px;*/
+    margin: 0 10px;
     padding: 10px;
     background: #542410;
     border-radius: 10px 50% 50% 10px;
