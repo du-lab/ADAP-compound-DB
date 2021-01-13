@@ -131,9 +131,6 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         final StringBuilder peakSql = new StringBuilder(PEAK_INSERT_SQL_STRING);
         final StringBuilder propertySql = new StringBuilder(PROPERTY_INSERT_SQL_STRING);
 
-        final String peakValueString = "(%f, %f, %d)";
-        final String propertyValueString = "(%d, %s, %s)";
-
         for (int i = 0; i < spectrumList.size(); i++) {
             final List<Peak> peaks = spectrumList.get(i).getPeaks();
             if (peaks != null) {
@@ -141,9 +138,8 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                     if (i != 0 || j != 0) {
                         peakSql.append(COMMA);
                     }
-                    final Peak p = peaks.get(j);
-
-                    peakSql.append(String.format(peakValueString, p.getMz(), p.getIntensity(), savedSpectrumIdList.get(i)));
+                    final Peak peak = peaks.get(j);
+                    peakSql.append(String.format("(%f, %f, %d)", peak.getMz(), peak.getIntensity(), savedSpectrumIdList.get(i)));
                 }
             }
 
@@ -153,8 +149,11 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                     if (i != 0 || j != 0) {
                         propertySql.append(COMMA);
                     }
-                    final SpectrumProperty sp = properties.get(j);
-                    propertySql.append(String.format(propertyValueString, savedSpectrumIdList.get(i), DOUBLE_QUOTE + sp.getName() + DOUBLE_QUOTE, DOUBLE_QUOTE + sp.getValue() + DOUBLE_QUOTE));
+                    final SpectrumProperty property = properties.get(j);
+                    propertySql.append(String.format("(%d, \"%s\", \"%s\")",
+                            savedSpectrumIdList.get(i),
+                            property.getName().replace("\"", "\"\""),
+                            property.getValue().replace("\"", "\"\"")));
                 }
             }
         }

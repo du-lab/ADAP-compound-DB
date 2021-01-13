@@ -111,7 +111,7 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
                 progress = progressStep / countUnmatched;
                 count += 1;
 
-                if (count == 10) {
+                if (count == 100) {
                     final long endingTime = System.currentTimeMillis();
                     LOGGER.info(String.format("%d spectra of %s are matched with average time %d milliseconds.",
                             count, chromatographyType.getLabel(), (endingTime - startingTime) / count));
