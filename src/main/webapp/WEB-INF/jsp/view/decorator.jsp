@@ -102,66 +102,121 @@
     if (localStorage.getItem("cookieSeen") != "shown") {
         $(".cookie-banner").delay(2000).fadeIn();
         localStorage.setItem("cookieSeen", "shown")
-    };
+    }
+    ;
     $(".close").click(function () {
         $(".cookie-banner").fadeOut();
     })
 </script>
 
-<header>
-
-    <h1>
-        <i class="material-icons mobile" title="Menu" id="menu">view_headline</i>
-        ADAP Spectral Knowledgebase
-        <sup>Beta</sup>
-    </h1>
-    <c:if test="${currentUser != null}">
-        <div class="user">User: ${currentUser.username} (<a href="<c:url value="/logout"/>">Log out</a>)</div>
-    </c:if>
+<header class="jambotron fixed-top">
+    <div class="container-fluid">
+        <div class="row row-header">
+            <div class="col-12 col-lg-8">
+                <h1 class="text-nowrap">
+                    <i class="material-icons mobile" title="Menu" id="menu">view_headline</i>
+                    ADAP Spectral Knowledgebase
+                    <sup><small class="badge badge-pill badge-light">Beta</small></sup>
+                </h1>
+            </div>
+            <div class="col-12 col-lg-4">
+                <c:if test="${currentUser != null}">
+                    <div class="user">User: ${currentUser.username} (<a href="<c:url value="/logout"/>">Log out</a>)
+                    </div>
+                </c:if>
+            </div>
+        </div>
+    </div>
 </header>
 
-<div style="display: flex;">
-    <div class="side">
-        <aside>
-            <nav>
-                <ul>
-                    <li><a href="<c:url value="/"/>"><i class="material-icons">home</i>Home</a></li>
-                    <li id="uploadPage"><a href="<c:url value="/file/upload/" />"><i
-                            class="material-icons">cloud_upload</i>Upload Files</a></li>
-                    <li id="spectraPage"><a href="<c:url value="/allClusters/" />"><i
-                            class="material-icons">equalizer</i>Spectra</a></li>
-                    <li>
-                        <a href="<c:url value="/study_distributions/" />"><i class="material-icons">book</i>Distributions</a>
-                    </li>
-                    <c:if test="${currentUser == null}">
-                        <li id="loginPage"><a href="<c:url value="/login/"/>"><i class="material-icons">person</i>Log-in / Sign-up</a>
+<%--<div style="display: flex;">--%>
+<div class="wrapper">
+    <%--    <div class="side">--%>
+    <%--        <aside>--%>
+    <nav id="sidebar">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="<c:url value="/"/>">
+                                <i class="material-icons align-middle">home</i>
+                                <span class="align-middle">Home</span>
+                            </a>
                         </li>
-                    </c:if>
-                    <c:if test="${currentUser != null}">
-                        <c:if test="${dulab:isAdmin(currentUser)}">
-                            <li>
-                                <a href="<c:url value="/admin/" />">
-                                    <i class="material-icons" style="color: red;">account_circle</i>Admin
+                        <li id="uploadPage" class="nav-item">
+                            <a class="nav-link" href="<c:url value="/file/upload/" />">
+                                <i class="material-icons align-middle">cloud_upload</i>
+                                <span class="align-middle">Upload Files</span>
+                            </a>
+                        </li>
+                        <li id="spectraPage" class="nav-item">
+                            <a class="nav-link" href="<c:url value="/allClusters/" />">
+                                <i class="material-icons align-middle">equalizer</i>
+                                <span class="align-middle">Spectra</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<c:url value="/study_distributions/" />">
+                                <i class="material-icons align-middle">book</i>
+                                <span class="align-middle">Distributions</span>
+                            </a>
+                        </li>
+                        <c:if test="${currentUser == null}">
+                            <li id="loginPage" class="nav-item">
+                                <a class="nav-link" href="<c:url value="/login/"/>">
+                                    <i class="material-icons align-middle">person</i>
+                                    <span class="align-middle">Log-in / Sign-up</span>
                                 </a>
                             </li>
                         </c:if>
-                        <li><a id="accountPage" href="<c:url value="/account/"/>"><i class="material-icons">account_box</i>Account</a>
-                        </li>
-                        <li><a href="<c:url value="/logout/"/>"><i class="material-icons">transit_enterexit</i>Log
-                            out</a>
-                        </li>
-                    </c:if>
-                </ul>
-            </nav>
-        </aside>
-        <a class="feedback" href="https://forms.gle/zYPXt463DC1WjJMy8" target="_blank"><strong>Leave Feedback</strong></a>
-    </div>
+                        <c:if test="${currentUser != null}">
+                            <c:if test="${dulab:isAdmin(currentUser)}">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="<c:url value="/admin/" />">
+                                        <i class="material-icons align-middle" style="color: red;">account_circle</i>
+                                        <span class="align-middle">Admin</span>
+                                    </a>
+                                </li>
+                            </c:if>
+                            <li class="nav-item">
+                                <a id="accountPage" class="nav-link" href="<c:url value="/account/"/>">
+                                    <i class="material-icons align-middle">account_box</i>
+                                    <span class="align-middle">Account</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<c:url value="/logout/"/>">
+                                    <i class="material-icons align-middle">transit_enterexit</i>
+                                    <span class="align-middle">Log out</span>
+                                </a>
+                            </li>
+                        </c:if>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <a class="feedback" href="https://forms.gle/zYPXt463DC1WjJMy8" target="_blank">
+                        <strong>Leave Feedback</strong>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <%--                </div>--%>
+    <%--                <div class="row">--%>
+    <%--                    <div class="col-12">--%>
+    <%--                    <a class="feedback" href="https://forms.gle/zYPXt463DC1WjJMy8" target="_blank"><strong>Leave Feedback</strong></a>--%>
+    <%--                    </div>--%>
+    <%--                </div>--%>
+    <%--        </aside>--%>
 
-    <div style="width: 100%;">
-        <article>
-            <decorator:body/>
-        </article>
-    </div>
+    <%--    </div>--%>
+
+    <article class="container">
+        <decorator:body/>
+    </article>
 </div>
 
 </body>
