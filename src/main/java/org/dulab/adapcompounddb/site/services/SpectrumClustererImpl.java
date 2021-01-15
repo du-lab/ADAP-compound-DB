@@ -36,6 +36,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
     private final SpectrumRepository spectrumRepository;
     private final SpectrumMatchRepository spectrumMatchRepository;
     private final SpectrumClusterRepository spectrumClusterRepository;
+    private final SubmissionRepository submissionRepository;
     private final DistributionRepository distributionRepository;
     private final DistributionService distributionService;
 
@@ -46,13 +47,15 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                                  final SpectrumMatchRepository spectrumMatchRepository,
                                  final DistributionRepository distributionRepository,
                                  final SpectrumClusterRepository spectrumClusterRepository,
-                                 final DistributionService distributionService) {
+                                 final DistributionService distributionService,
+                                 final SubmissionRepository submissionRepository) {
 
         this.spectrumRepository = spectrumRepository;
         this.spectrumMatchRepository = spectrumMatchRepository;
         this.spectrumClusterRepository = spectrumClusterRepository;
         this.distributionRepository = distributionRepository;
         this.distributionService = distributionService;
+        this.submissionRepository = submissionRepository;
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -82,6 +85,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
     @Override
     public void cluster() {
 
+        long clusterTotalSize = 0;
         long createClusterTotalTime = 0;
         long saveClusterTotalTime = 0;
         long savePeakTotalTime = 0;
@@ -151,6 +155,8 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
                     numClusters += 1;
 
+                    clusterTotalSize += spectrumIds.size();
+
                     long time = System.currentTimeMillis();
                     final SpectrumCluster cluster = createCluster(
                             spectrumIds, highResDbCountMaps, lowResDbCountMaps);
@@ -178,16 +184,25 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                     updateSpectraTotalTime += System.currentTimeMillis() - time;
                 }
 
-                if (numClusters > 0 && numClusters % 100 == 0) {
-                    LOGGER.info(String.format("Statistics for %d created clusters\n" +
+                if (numClusters > 0 && numClusters % 1000 == 0) {
+                    LOGGER.info(String.format("Statistics for %d created clusters of type %s\n" +
+                                    "Average size of a cluster: %.3f\n" +
                                     "Average time to create a cluster: %.3f ms\n" +
                                     "Average time to save a cluster: %.3f ms\n" +
                                     "Average time to save consensus spectrum: %.3f ms\n" +
                                     "Average time to update spectra: %.3f ms",
-                            numClusters, (double) createClusterTotalTime / numClusters,
+                            numClusters, type.getLabel(),
+                            (double) clusterTotalSize / numClusters,
+                            (double) createClusterTotalTime / numClusters,
                             (double) saveClusterTotalTime / numClusters,
                             (double) savePeakTotalTime / numClusters,
                             (double) updateSpectraTotalTime / numClusters));
+                    clusterTotalSize = 0;
+                    createClusterTotalTime = 0;
+                    saveClusterTotalTime = 0;
+                    savePeakTotalTime = 0;
+                    updateSpectraTotalTime = 0;
+                    numClusters = 0;
                 }
 
                 progress = count / total;
@@ -206,23 +221,28 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
         final List<Spectrum> spectra = findSpectra(spectrumIds);
 
         //set size of study
-        long submissionCount = spectra.stream()
-                .map(Spectrum::getFile).filter(Objects::nonNull)
-                .map(File::getSubmission).filter(Objects::nonNull)
-                .distinct()
-                .count();
-        cluster.setSize((int) submissionCount);
+//        long submissionCount = spectra.stream()
+//                .map(Spectrum::getFile).filter(Objects::nonNull)
+//                .map(File::getSubmission).filter(Objects::nonNull)
+//                .distinct()
+//                .count();
+//        cluster.setSize((int) submissionCount);
+        cluster.setSize(spectra.size());
 
 //        cluster.setSpectra(spectra);
 
         // Calculate diameter
-        cluster.setDiameter(spectra
-                .stream()
-                .flatMap(s -> s.getMatches().stream())
-                .filter(m -> spectrumIds.contains(m.getMatchSpectrum().getId()))
-                .mapToDouble(SpectrumMatch::getScore)
-                .min()
-                .orElse(0.0));
+        if (spectra.size() <= 1)
+            cluster.setDiameter(1.0);
+        else {
+            cluster.setDiameter(spectra
+                    .stream()
+                    .flatMap(s -> s.getMatches().stream())
+                    .filter(m -> spectrumIds.contains(m.getMatchSpectrum().getId()))
+                    .mapToDouble(SpectrumMatch::getScore)
+                    .min()
+                    .orElse(0.0));
+        }
 
         // Calculate the significance statistics
         final DoubleSummaryStatistics significanceStats = spectra
@@ -240,7 +260,9 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
         // Calculate diversity
         // setDiversityIndices(cluster);
-        final List<TagInfo> tagInfoList = ControllerUtils.getDiversityIndices(spectra);
+        List<Submission> submissions = MappingUtils.toList(
+                submissionRepository.finsSubmissionsWithTagsBySpectrumId(spectrumIds));
+        final List<TagInfo> tagInfoList = ControllerUtils.getDiversityIndices(submissions);
 
         if (!tagInfoList.isEmpty()) {
             Double minDiversity = Double.MAX_VALUE;
@@ -268,10 +290,14 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
         cluster.setConsensusSpectrum(consensusSpectrum);
 
         //get cluster tags of unique submission
-        List<SubmissionTag> tags = spectra.stream()
-                .map(Spectrum::getFile).filter(Objects::nonNull)
-                .map(File::getSubmission).filter(Objects::nonNull)
-                .distinct()
+//        List<SubmissionTag> tags = spectra.stream()
+//                .map(Spectrum::getFile).filter(Objects::nonNull)
+//                .map(File::getSubmission).filter(Objects::nonNull)
+//                .distinct()
+//                .flatMap(s -> s.getTags().stream())
+//                .collect(Collectors.toList());
+
+        List<SubmissionTag> tags = submissions.stream()
                 .flatMap(s -> s.getTags().stream())
                 .collect(Collectors.toList());
 

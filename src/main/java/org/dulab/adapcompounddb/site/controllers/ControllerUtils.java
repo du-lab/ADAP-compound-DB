@@ -171,7 +171,7 @@ public class ControllerUtils {
 
     public static String clusterTagsToJson(final List<Spectrum> spectra) {
 
-        final List<TagInfo> tagInfoList = getDiversityIndices(spectra);
+        final List<TagInfo> tagInfoList = getDiversityIndicesDeprecated(spectra);
         final ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         final Gson gson = new Gson();
@@ -198,23 +198,34 @@ public class ControllerUtils {
         return gson.toJson(pieChart, List.class);
     }
 
-    public static List<TagInfo> getDiversityIndices(final List<Spectrum> spectra) {
-
-        // Find unique keys among all tags of all spectra
-        final List<String> keys = spectra.stream()
+    @Deprecated
+    public static List<TagInfo> getDiversityIndicesDeprecated(List<Spectrum> spectra) {
+        List<Submission> submissions = spectra.stream()
                 .map(Spectrum::getFile).filter(Objects::nonNull)
                 .map(File::getSubmission).filter(Objects::nonNull)
                 .distinct()
+                .collect(Collectors.toList());
+        return getDiversityIndices(submissions);
+    }
+
+    public static List<TagInfo> getDiversityIndices(List<Submission> submissions) {
+
+        // Find unique keys among all tags of all spectra
+//        final List<String> keys = spectra.stream()
+//                .map(Spectrum::getFile).filter(Objects::nonNull)
+//                .map(File::getSubmission).filter(Objects::nonNull)
+//                .distinct()
+        List<String> keys = submissions.stream()
                 .flatMap(s -> s.getTags().stream())
                 .map(SubmissionTag::getTagKey)
                 .filter(Objects::nonNull)
                 .distinct()
                 .collect(Collectors.toList());
 
-        Set<Submission> submissions = spectra.stream()
-                .map(Spectrum::getFile).filter(Objects::nonNull)
-                .map(File::getSubmission).filter(Objects::nonNull)
-                .collect(Collectors.toSet());
+//        Set<Submission> submissions = spectra.stream()
+//                .map(Spectrum::getFile).filter(Objects::nonNull)
+//                .map(File::getSubmission).filter(Objects::nonNull)
+//                .collect(Collectors.toSet());
 
         // For each key, find its values and their count
         List<TagInfo> tagInfoList = new ArrayList<>(keys.size());

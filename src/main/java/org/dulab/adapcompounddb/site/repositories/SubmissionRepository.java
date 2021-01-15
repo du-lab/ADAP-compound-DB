@@ -8,6 +8,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
+import java.util.Set;
 
 public interface SubmissionRepository extends CrudRepository<Submission, Long> {
 
@@ -34,4 +35,6 @@ public interface SubmissionRepository extends CrudRepository<Submission, Long> {
     Iterable<Long> findSubmissionIdsBySubmissionTags(
             @Param("species") String species, @Param("source") String source, @Param("disease") String disease);
 
+    @Query("select distinct s from Submission s join s.files f join f.spectra spectrum left join fetch s.tags where spectrum.id in (:spectrumIds)")
+    Iterable<Submission> finsSubmissionsWithTagsBySpectrumId(@Param("spectrumIds") Set<Long> spectrumIds);
 }
