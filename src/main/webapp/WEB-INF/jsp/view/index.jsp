@@ -10,40 +10,52 @@
     <h1>Welcome to ADAP Spectral Knowledgebase!</h1>
 </div>
 
-<section>
-    <h1>Knowledgebase</h1>
+<div class="row row-content">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header card-header-single">
+                Knowledgebase
+            </div>
 
-    <div align="center">
-        <div align="left" class="text large-subsection">
-            <img src="<c:url value="/resources/AdapCompoundDb/img/molecule.jpg"/>"
-                 style="float: left; margin-right: 30px;">
-            <p>
-                Our Knowledgebase is designed for tracking unknown compounds by sharing metabolite information across
-                different
-                labs
-                and studies. Key features of our Knowledgebase include:
-            <ul>
-                <li>Collecting <strong>all</strong> (identified and unidentified) fragmentation spectra constructed by
-                    the
-                    data processing algorithms
-                </li>
-                <li>Collecting <strong>meta</strong> data for each spectrum, such as sample source, analyzed species,
-                    their
-                    treatment as well as the type of equipment and the data acquisition procedures.
-                </li>
-            </ul>
+            <div align="center" class="card-body">
+                <div align="left" class="text large-subsection">
+                    <img src="<c:url value="/resources/AdapCompoundDb/img/molecule.jpg"/>"
+                         style="float: left; margin-right: 30px;">
+                    <p>
+                        Our Knowledgebase is designed for tracking unknown compounds by sharing metabolite
+                        information across
+                        different
+                        labs
+                        and studies. Key features of our Knowledgebase include:
+                    <ul>
+                        <li>Collecting <strong>all</strong> (identified and unidentified) fragmentation spectra
+                            constructed by
+                            the
+                            data processing algorithms
+                        </li>
+                        <li>Collecting <strong>meta</strong> data for each spectrum, such as sample source, analyzed
+                            species,
+                            their
+                            treatment as well as the type of equipment and the data acquisition procedures.
+                        </li>
+                    </ul>
 
-            After collecting the data, we group similar spectra together and construct consensus fragmentation spectra
-            so that users can easily find compounds (identified or unidentified) that are statistically relevant to a
-            specific category (i.e. sample source, species, or treatment).
-            </p>
-            <p>
-                Currently, our knowledgebase contains ${countConsensusSpectra} consensus and ${countReferenceSpectra}
-                reference spectra.
-            </p>
+                    After collecting the data, we group similar spectra together and construct consensus
+                    fragmentation spectra
+                    so that users can easily find compounds (identified or unidentified) that are statistically
+                    relevant to a
+                    specific category (i.e. sample source, species, or treatment).
+                    </p>
+                    <p>
+                        Currently, our knowledgebase contains ${countConsensusSpectra} consensus
+                        and ${countReferenceSpectra}
+                        reference spectra.
+                    </p>
+                </div>
+            </div>
         </div>
     </div>
-</section>
+</div>
 
 <section>
     <h1>Try It!</h1>

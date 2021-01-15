@@ -27,7 +27,7 @@
     <link rel="icon" type="image/png" href="<c:url value="/resources/static/favicon-16x16.png"/>" sizes="16x16"/>
 
     <link rel="stylesheet" href="<c:url value="/resources/bootstrap-4.5.3-dist/css/bootstrap.min.css"/>">
-    <link rel="stylesheet" href="<c:url value="/resources/datatables.min.css"/>">
+    <link rel="stylesheet" href="<c:url value="/resources/DataTables/datatables.css"/>">
     <link rel="stylesheet" type="text/css" media="(max-width: 480px)"
           href="<c:url value="/resources/AdapCompoundDb/css/main_mobile_portrait.css"/>">
     <link rel="stylesheet" type="text/css" media="(min-width: 481px)"
@@ -135,7 +135,7 @@
     <%--        <aside>--%>
     <nav id="sidebar">
         <div class="container">
-            <div class="row">
+            <div class="row row-menu">
                 <div class="col-12">
                     <ul class="nav flex-column">
                         <li class="nav-item">
