@@ -9,7 +9,7 @@ build:
   only:
     - master
   script:
-    - cmd /C %MAVEN_EXEC% tomcat7:redeploy -Denvironment=test
+    - cmd /C %MAVEN_EXEC% clean tomcat7:redeploy -Denvironment=test
 
 test:
   stage: test
