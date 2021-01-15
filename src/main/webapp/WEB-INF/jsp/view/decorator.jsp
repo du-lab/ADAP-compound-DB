@@ -144,14 +144,14 @@
                                 <span class="align-middle">Home</span>
                             </a>
                         </li>
-                        <li id="uploadPage" class="nav-item">
-                            <a class="nav-link" href="<c:url value="/file/upload/" />">
+                        <li class="nav-item">
+                            <a id="uploadPage" class="nav-link" href="<c:url value="/file/upload/" />">
                                 <i class="material-icons align-middle">cloud_upload</i>
                                 <span class="align-middle">Upload Files</span>
                             </a>
                         </li>
-                        <li id="spectraPage" class="nav-item">
-                            <a class="nav-link" href="<c:url value="/allClusters/" />">
+                        <li class="nav-item">
+                            <a id="spectraPage" class="nav-link" href="<c:url value="/allClusters/" />">
                                 <i class="material-icons align-middle">equalizer</i>
                                 <span class="align-middle">Spectra</span>
                             </a>
@@ -163,8 +163,8 @@
                             </a>
                         </li>
                         <c:if test="${currentUser == null}">
-                            <li id="loginPage" class="nav-item">
-                                <a class="nav-link" href="<c:url value="/login/"/>">
+                            <li class="nav-item">
+                                <a id="loginPage" class="nav-link" href="<c:url value="/login/"/>">
                                     <i class="material-icons align-middle">person</i>
                                     <span class="align-middle">Log-in / Sign-up</span>
                                 </a>
