@@ -7,7 +7,9 @@ import org.dulab.adapcompounddb.models.entities.File;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 import org.dulab.adapcompounddb.models.entities.Submission;
+import org.dulab.adapcompounddb.site.repositories.MultiSpectrumQueryBuilder;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
+import org.dulab.adapcompounddb.site.repositories.SpectrumRepositoryImpl;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -16,6 +18,7 @@ import java.util.*;
 public class StudySearchServiceImpl implements StudySearchService {
 
     private final SpectrumRepository spectrumRepository;
+
 
     public StudySearchServiceImpl(SpectrumRepository spectrumRepository) {
         this.spectrumRepository = spectrumRepository;
@@ -32,12 +35,14 @@ public class StudySearchServiceImpl implements StudySearchService {
 
         int querySubmissionSpectraCount = 0;
         for (File file : submission.getFiles()) {
-            for (Spectrum spectrum : file.getSpectra()) {
-                List<SpectrumMatch> matches = spectrumRepository.spectrumSearch(
-                        SearchType.CLUSTERING, spectrum, gcQueryParameters);
-                spectrumMatches.addAll(matches);
-                querySubmissionSpectraCount++;
-            }
+            List<SpectrumMatch> matches = spectrumRepository.multiSpectrumSearch(file.getSpectra());
+            spectrumMatches.addAll(matches);
+//            for (Spectrum spectrum : file.getSpectra()) {
+//                List<SpectrumMatch> matches = spectrumRepository.spectrumSearch(
+//                        SearchType.CLUSTERING, spectrum, gcQueryParameters);
+//                spectrumMatches.addAll(matches);
+//                querySubmissionSpectraCount++;
+//            }
         }
 
         Set<Submission> matchSubmissions = new HashSet<>();

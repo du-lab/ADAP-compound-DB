@@ -247,4 +247,13 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         final Query propertyQuery = entityManager.createNativeQuery(propertySql.toString());
         propertyQuery.executeUpdate();
     }
+
+    public List<SpectrumMatch> multiSpectrumSearch(List<Spectrum> querySpectra){
+        final MultiSpectrumQueryBuilder multiSpectrumQueryBuilder = new MultiSpectrumQueryBuilder(querySpectra);
+        final String querySpectrumSqlQuery = multiSpectrumQueryBuilder.build();
+
+        return (List<SpectrumMatch>) entityManager
+                .createNativeQuery(querySpectrumSqlQuery, SpectrumMatch.class)
+                .getResultList();
+    }
 }
