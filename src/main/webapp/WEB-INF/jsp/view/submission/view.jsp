@@ -12,12 +12,18 @@
         <div class="card">
             <div class="card-header card-header-tabs">
                 <ul class="nav nav-tabs nav-fill nav-justified">
-                    <%--@elvariable id="edit" type="java.util.Boolean"--%>
-                    <%--@elvariable id="submissionForm" type="org.dulab.adapcompounddb.models.entities.submissionForm"--%>
-                    <li class="nav-item"><a class="nav-link active" data-toggle="tab"
-                                            href="#submission_${(edit && submissionForm.authorized) || submissionForm.id == 0 ? "edit" : "view"}">
-                        Study Properties</a></li>
-                    <li class="nav-item"><a id="mass_spectra_link" class="nav-link" data-toggle="tab"
+                    <%--@elvariable id="edit_submission" type="java.lang.Boolean"--%>
+                    <%--@elvariable id="view_submission" type="java.lang.Boolean"--%>
+                    <c:if test="${view_submission && edit_submission}">
+                        <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#submission_edit">
+                            Study Properties</a></li>
+                    </c:if>
+                    <c:if test="${view_submission && !edit_submission}">
+                        <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#submission_view">
+                            Study Properties</a></li>
+                    </c:if>
+                    <li class="nav-item"><a id="mass_spectra_link" class="nav-link ${!view_submission ? "active" : ""}"
+                                            data-toggle="tab"
                                             href="#mass_spectra">Mass Spectra</a>
                     </li>
                     <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#files">Files</a></li>
@@ -26,167 +32,162 @@
 
             <div class="card-body tab-content">
 
-                <c:choose>
-                    <c:when test="${(edit && submissionForm.authorized) || submissionForm.id == 0}">
-                        <!-- Submission Information (Edit Mode) -->
-                        <div id="submission_edit" class="tab-pane">
-                            <div class="container">
-                                <div class="row row-content">
-                                    <div class="col-12 col-md-8 offset-md-2">
-                                        Please provide name and detailed description of the data when you submit
-                                        mass
-                                        spectra to the
-                                        knowledgebase.
+                <c:if test="${view_submission && edit_submission}">
+                    <!-- Submission Information (Edit Mode) -->
+                    <div id="submission_edit" class="tab-pane active">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-12 col-md-8 offset-md-2">
+                                    Please provide name and detailed description of the data when you submit
+                                    mass spectra to the knowledgebase.
+                                </div>
+                            </div>
+                                <%--@elvariable id="validationErrors" type="java.util.Set<javax.validation.ConstraintViolation>"--%>
+                            <c:if test="${validationErrors != null}">
+                                <div class="row">
+                                    <div class="col-8 offset-2 text-danger">
+                                        <ul>
+                                            <c:forEach items="${validationErrors}" var="error">
+                                                <li><c:out value="${error.message}"/></li>
+                                            </c:forEach>
+                                        </ul>
                                     </div>
                                 </div>
-                                    <%--@elvariable id="validationErrors" type="java.util.Set<javax.validation.ConstraintViolation>"--%>
-                                <c:if test="${validationErrors != null}">
-                                    <div class="row">
-                                        <div class="col-8 offset-2 text-danger">
-                                            <ul>
-                                                <c:forEach items="${validationErrors}" var="error">
-                                                    <li><c:out value="${error.message}"/></li>
-                                                </c:forEach>
-                                            </ul>
-                                        </div>
+                            </c:if>
+
+                            <form:form method="POST" modelAttribute="submissionForm" cssStyle="width: 100%">
+                                <form:errors path="" cssClass="errors"/><br/>
+                                <form:hidden path="id"/><br/>
+
+                                <div class="row form-group">
+                                    <form:label path="name"
+                                                cssClass="col-12 col-md-2 col-form-label">Name</form:label>
+                                    <form:input path="name" cssClass="col-12 col-md-10 form-control"/>
+                                    <form:errors path="name" cssClass="text-danger"/>
+                                </div>
+
+                                <div class="row form-group">
+                                    <form:label path="externalId"
+                                                cssClass="col-12 col-md-2 col-form-label">External ID</form:label>
+                                    <form:input path="externalId" cssClass="col-12 col-md-6 form-control"/>
+                                    <form:errors path="externalId" cssClass="text-danger"/>
+                                </div>
+
+                                <div class="row form-group">
+                                    <form:label path="description"
+                                                cssClass="col-12 col-md-2 col-form-label">Description</form:label>
+                                    <form:textarea path="description" cssClass="col-12 col-md-8 form-control"
+                                                   rows="10"/>
+                                    <form:errors path="description" cssClass="text-danger"/>
+                                </div>
+
+                                <div class="row form-group">
+                                    <form:label path="reference"
+                                                cssClass="col-12 col-md-2 col-form-label">URL</form:label>
+                                    <form:input path="reference" cssClass="col-12 col-md-10 form-control"/>
+                                    <form:errors path="reference" cssClass="text-danger"/>
+                                </div>
+
+                                <%--                                <form:errors path="submissionCategoryIds" cssClass="errors"/><br/>--%>
+
+                                <div class="row form-group">
+                                    <form:label path="tags"
+                                                cssClass="col-12 col-md-2 col-form-label">Tags</form:label>
+                                    <form:input placeholder="Add tags here!" path="tags"
+                                                cssClass="col-12 col-md-10 form-control"/>
+                                    <form:errors path="tags" cssClass="errors"/>
+                                </div>
+
+                                <div class="row form-group">
+                                    <div class="col-md-2 offset-md-2">
+                                        <input class="btn btn-primary w-100" type="submit"
+                                               value="${(submissionForm.id > 0) ? "Save" : "Submit"}"/>
                                     </div>
-                                </c:if>
-
-                                <form:form method="POST" modelAttribute="submissionForm" cssStyle="width: 100%">
-                                    <form:errors path="" cssClass="errors"/><br/>
-                                    <form:hidden path="id"/><br/>
-
-                                    <div class="row form-group">
-                                        <form:label path="name"
-                                                    cssClass="col-12 col-md-2 col-form-label">Name</form:label>
-                                        <form:input path="name" cssClass="col-12 col-md-10 form-control"/>
-                                        <form:errors path="name" cssClass="text-danger"/>
-                                    </div>
-
-                                    <div class="row form-group">
-                                        <form:label path="externalId"
-                                                    cssClass="col-12 col-md-2 col-form-label">External ID</form:label>
-                                        <form:input path="externalId" cssClass="col-12 col-md-6 form-control"/>
-                                        <form:errors path="externalId" cssClass="text-danger"/>
-                                    </div>
-
-                                    <div class="row form-group">
-                                        <form:label path="description"
-                                                    cssClass="col-12 col-md-2 col-form-label">Description</form:label>
-                                        <form:textarea path="description" cssClass="col-12 col-md-8 form-control"
-                                                       rows="10"/>
-                                        <form:errors path="description" cssClass="text-danger"/>
-                                    </div>
-
-                                    <div class="row form-group">
-                                        <form:label path="reference"
-                                                    cssClass="col-12 col-md-2 col-form-label">URL</form:label>
-                                        <form:input path="reference" cssClass="col-12 col-md-10 form-control"/>
-                                        <form:errors path="reference" cssClass="text-danger"/>
-                                    </div>
-
-                                    <%--                                <form:errors path="submissionCategoryIds" cssClass="errors"/><br/>--%>
-
-                                    <div class="row form-group">
-                                        <form:label path="tags"
-                                                    cssClass="col-12 col-md-2 col-form-label">Tags</form:label>
-                                        <form:input placeholder="Add tags here!" path="tags"
-                                                    cssClass="col-12 col-md-10 form-control"/>
-                                        <form:errors path="tags" cssClass="errors"/>
-                                    </div>
-
-                                    <div class="row form-group">
-                                        <div class="col-md-2 offset-md-2">
-                                            <input class="btn btn-primary w-100" type="submit"
-                                                   value="${(submissionForm.id > 0) ? "Save" : "Submit"}"/>
-                                        </div>
-                                    </div>
-                                </form:form>
-                            </div>
+                                </div>
+                            </form:form>
                         </div>
+                    </div>
 
-                    </c:when>
-                    <c:otherwise>
+                </c:if>
+                <c:if test="${view_submission && !edit_submission}">
 
-                        <!-- Submission Information (View Mode) -->
-                        <div id="submission_view" class="tab-pane active">
-                            <div class="row row-content">
-                                <div class="col-12">
-                                    <table id="info_table" class="display" style="width: 100%; clear: none;">
-                                        <thead>
+                    <!-- Submission Information (View Mode) -->
+                    <div id="submission_view" class="tab-pane active">
+                        <div class="row row-content">
+                            <div class="col-12">
+                                <table id="info_table" class="display" style="width: 100%; clear: none;">
+                                    <thead>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td><strong>Name:</strong></td>
+                                        <td>${submission.name}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>External ID:</strong></td>
+                                        <td>${submission.externalId}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Description:</strong></td>
+                                        <td>
+                                            <pre>${submission.description}</pre>
+                                        </td>
+                                    </tr>
+                                    <c:if test="${submission.reference != null}">
                                         <tr>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr>
-                                            <td><strong>Name:</strong></td>
-                                            <td>${submission.name}</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>External ID:</strong></td>
-                                            <td>${submission.externalId}</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Description:</strong></td>
-                                            <td>
-                                                <pre>${submission.description}</pre>
+                                            <td><strong>URL:</strong></td>
+                                            <td><a href="${submission.reference}"
+                                                   title="${submission.reference}"
+                                                   target="_blank">${dulab:abbreviate(submission.reference, 80)}</a>
                                             </td>
                                         </tr>
-                                        <c:if test="${submission.reference != null}">
-                                            <tr>
-                                                <td><strong>URL:</strong></td>
-                                                <td><a href="${submission.reference}"
-                                                       title="${submission.reference}"
-                                                       target="_blank">${dulab:abbreviate(submission.reference, 80)}</a>
-                                                </td>
-                                            </tr>
-                                        </c:if>
-                                        <c:if test="${submission.tagsAsString.length() > 0}">
-                                            <tr>
-                                                <td><strong>Tags:</strong></td>
-                                                <td>
-                                                        <%-- ${submission.tagsAsString}--%>
-                                                    <c:forEach items="${submission.tags}" var="tag"
-                                                               varStatus="status">
-                                                        <span id="${submission.id}color${status.index}">${tag}&nbsp;</span>
-                                                        <script>
-                                                            var spanId = '${fn:length(submission.tags)}';
-                                                        </script>
-                                                    </c:forEach>
-
+                                    </c:if>
+                                    <c:if test="${submission.tagsAsString.length() > 0}">
+                                        <tr>
+                                            <td><strong>Tags:</strong></td>
+                                            <td>
+                                                    <%-- ${submission.tagsAsString}--%>
+                                                <c:forEach items="${submission.tags}" var="tag"
+                                                           varStatus="status">
+                                                    <span id="${submission.id}color${status.index}">${tag}&nbsp;</span>
                                                     <script>
-                                                        spanColor(${submission.id}, spanId);
+                                                        var spanId = '${fn:length(submission.tags)}';
                                                     </script>
-                                                </td>
-                                            </tr>
-                                        </c:if>
-                                        <c:forEach items="${submissionCategoryTypes}" var="type">
-                                            <tr>
-                                                <td><strong>${type.label}:</strong></td>
-                                                <td>${submission.getCategory(type)}</td>
-                                            </tr>
-                                        </c:forEach>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4 offset-md-4">
-                                    <a href="edit" class="btn btn-primary w-100">Edit Submission</a>
-                                </div>
-                            </div>
+                                                </c:forEach>
 
-                                <%--                            </c:otherwise>--%>
-                                <%--                        </c:choose>--%>
+                                                <script>
+                                                    spanColor(${submission.id}, spanId);
+                                                </script>
+                                            </td>
+                                        </tr>
+                                    </c:if>
+                                    <c:forEach items="${submissionCategoryTypes}" var="type">
+                                        <tr>
+                                            <td><strong>${type.label}:</strong></td>
+                                            <td>${submission.getCategory(type)}</td>
+                                        </tr>
+                                    </c:forEach>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 offset-md-4">
+                                <a href="edit" class="btn btn-primary w-100">Edit Submission</a>
+                            </div>
                         </div>
 
-                    </c:otherwise>
-                </c:choose>
+                            <%--                            </c:otherwise>--%>
+                            <%--                        </c:choose>--%>
+                    </div>
+                </c:if>
 
                 <!-- List of spectra -->
-                <div id="mass_spectra" class="tab-pane">
+                <div id="mass_spectra" class="tab-pane ${!view_submission ? "active" : ""}">
                     <div class="row row-content">
                         <div class="col-12">
                             <table id="spectrum_table" class="display responsive" style="width: 100%">
@@ -267,7 +268,6 @@
 <script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
 <script src="<c:url value="/resources/DataTables/datatables.min.js"/>"></script>
 <script src="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.js"/>"></script>
-<script src="<c:url value="/resources/tag-it-6ccd2de/js/tag-it.min.js"/>"></script>
 <script src="<c:url value="/resources/tagify-master/jQuery.tagify.min.js"/>"></script>
 <script>
     // $(document).ready(function () {
@@ -396,15 +396,21 @@
     // Table with a list of files
     $('#file_table').DataTable();
 
-    <%--// Selector with autocomplete--%>
-    <%--$( '#tags' ).tagit( {--%>
-    <%--    autocomplete: {--%>
-    <%--        source: ${dulab:stringsToJson(availableTags)}--%>
-    <%--    }--%>
-    <%--} );--%>
-
-    // });
-
+    $( '#tags' ).tagify( {
+            // pattern: /^.{0,50}$/,  // Validate typed tag(s) by Regex. Here maximum chars length is defined as "20"
+            // delimiters: ", ",         // add new tags when a comma or a space character is entered
+            // maxTags: 6,
+            keepInvalidTags: true,         // do not remove invalid tags (but keep them marked as invalid)
+            backspace: "edit",
+            <%--@elvariable id="availableTags" type="java.util.List<java.lang.String>"--%>
+            whitelist:${dulab:stringsToJson(availableTags)},
+            dropdown: {
+                classname:"color-blue",
+                enabled: 2,
+                maxItems:6
+            }
+        }
+    )
 
 </script>
 

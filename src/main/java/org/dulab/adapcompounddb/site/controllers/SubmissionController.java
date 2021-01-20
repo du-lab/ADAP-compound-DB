@@ -66,7 +66,16 @@ public class SubmissionController extends BaseController {
             return redirectFileUpload();
         }
         final boolean authenticated = session.getAttribute(SESSION_ATTRIBUTE_KEY) != null;
-        return edit(Submission.from(session), model, authenticated);
+
+        final SubmissionForm submissionForm = createSubmissionForm(submission);
+        submissionForm.setAuthorized(authenticated);
+        model.addAttribute("submission", submission);
+        model.addAttribute("submissionForm", submissionForm);
+        model.addAttribute("view_submission", authenticated); // User is logged in
+        model.addAttribute("edit_submission", authenticated); // User is logged in
+        model.addAttribute("availableTags", submissionService.findUniqueTagStrings());
+
+        return "submission/view";
     }
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/edit", method = RequestMethod.GET)
@@ -105,25 +114,11 @@ public class SubmissionController extends BaseController {
 
         model.addAttribute("submission", submission);
         model.addAttribute("submissionForm", submissionForm);
-        model.addAttribute("edit", edit);
+        model.addAttribute("view_submission", true);
+        model.addAttribute("edit_submission", edit);
         model.addAttribute("availableTags", submissionService.findUniqueTagStrings());
 
         return "submission/view";
-    }
-
-    private String edit(final Submission submission, final Model model, final boolean authenticated) {
-
-        final SubmissionForm submissionForm = createSubmissionForm(submission);
-        model.addAttribute("submission", submission);
-        model.addAttribute("submissionForm", submissionForm);
-        model.addAttribute("authenticated", authenticated); // User is logged in
-        model.addAttribute("availableTags", submissionService.findUniqueTagStrings());
-
-        if (authenticated) {
-            return "submission/view";
-        } else {
-            return "file/view";
-        }
     }
 
     private SubmissionForm createSubmissionForm(final Submission submission) {
@@ -245,7 +240,8 @@ public class SubmissionController extends BaseController {
 
         final Submission submission = Submission.from(session);
         if (errors.hasErrors()) {
-            model.addAttribute("authenticated", isAuthenticated());
+            model.addAttribute("view_submission", submissionForm.isAuthorized());
+            model.addAttribute("edit_submission", submissionForm.isAuthorized());
             model.addAttribute("submissionForm", submissionForm);
             return "submission/view";
         }
@@ -269,7 +265,8 @@ public class SubmissionController extends BaseController {
         if (errors.hasErrors()) {
             model.addAttribute("submissionForm", submissionForm);
             model.addAttribute("submission", submission);
-            model.addAttribute("edit", true);
+            model.addAttribute("view_submission", true);
+            model.addAttribute("edit_submission", submissionForm.isAuthorized());
             return "submission/view";
         }
 
@@ -330,7 +327,10 @@ public class SubmissionController extends BaseController {
             e.printStackTrace();
             model.addAttribute("validationErrors", e.getConstraintViolations());
             model.addAttribute("submissionForm", submissionForm);
-            return "file/view";
+            model.addAttribute("view_submission", true);
+            model.addAttribute("edit_submission", true);
+            return "submission/view";
+
         } catch (final Exception e) {
             throw e;
         }
