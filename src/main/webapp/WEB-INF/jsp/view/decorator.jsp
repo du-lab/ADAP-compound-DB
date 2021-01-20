@@ -26,7 +26,7 @@
     <link rel="icon" type="image/png" href="<c:url value="/resources/static/favicon-32x32.png"/>" sizes="32x32"/>
     <link rel="icon" type="image/png" href="<c:url value="/resources/static/favicon-16x16.png"/>" sizes="16x16"/>
 
-    <link rel="stylesheet" href="<c:url value="/resources/bootstrap-4.5.3-dist/css/bootstrap.min.css"/>">
+    <link rel="stylesheet" href="<c:url value="/resources/custom-bootstrap.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/DataTables/datatables.css"/>">
     <link rel="stylesheet" type="text/css" media="(max-width: 480px)"
           href="<c:url value="/resources/AdapCompoundDb/css/main_mobile_portrait.css"/>">

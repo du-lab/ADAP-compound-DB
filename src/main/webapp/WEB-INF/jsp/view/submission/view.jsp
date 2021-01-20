@@ -261,8 +261,10 @@
     </div>
 </c:if>
 
+<script src="<c:url value="/resources/npm/node_modules/jquery/dist/jquery.slim.min.js"/>"></script>
+<script src="<c:url value="/resources/npm/node_modules/popper.js/dist/umd/popper.min.js"/>"></script>
+<script src="<c:url value="/resources/npm/node_modules/bootstrap/dist/js/bootstrap.min.js"/>"></script>
 <script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
-<script src="<c:url value="/resources/bootstrap-4.5.3-dist/js/bootstrap.min.js"/>"></script>
 <script src="<c:url value="/resources/DataTables/datatables.min.js"/>"></script>
 <script src="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.js"/>"></script>
 <script src="<c:url value="/resources/tag-it-6ccd2de/js/tag-it.min.js"/>"></script>
