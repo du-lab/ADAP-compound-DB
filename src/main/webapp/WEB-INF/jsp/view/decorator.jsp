@@ -38,8 +38,6 @@
     <link rel="stylesheet" href="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.theme.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.structure.min.css"/>">
-    <link rel="stylesheet" href="<c:url value="/resources/tag-it-6ccd2de/css/jquery.tagit.css"/>">
-    <link rel="stylesheet" href="<c:url value="/resources/tag-it-6ccd2de/css/tagit.ui-zendesk.css"/>">
     <link rel="stylesheet" href="<c:url value="https://fonts.googleapis.com/icon?family=Material+Icons"/>">
     <link rel="stylesheet" href="<c:url value="/resources/AdapCompoundDb/css/tables.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/AdapCompoundDb/css/classes.css"/>">

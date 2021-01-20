@@ -42,7 +42,7 @@ def individual_search_test(homepage_url, msp_path, user_name, user_password):
         time.sleep(5)
 
         # click Mass Spectra tab
-        mass_spectra_tab = driver.find_element_by_name("massSpectraTab")
+        mass_spectra_tab = driver.find_element_by_name("mass_spectra_link")
         mass_spectra_tab.click()
 
         # choose the first spectrum and go to the spectrum page
