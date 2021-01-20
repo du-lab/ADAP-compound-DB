@@ -223,10 +223,10 @@
                         let content = '';
                         if (row.querySpectrumId !== 0) {
                             content = '<a href="${pageContext.request.contextPath}/spectrum/'
-                                + row.querySpectrumId + '/search/" class="button"> Search</a>';
+                                + row.querySpectrumId + '/search/" class="button">Search</a>';
                         } else {
                             content = '<a href="${pageContext.request.contextPath}/file/'
-                                + row.queryFileIndex + '/' + row.querySpectrumIndex + '/search/" class="button"> Search</a>';
+                                + row.queryFileIndex + '/' + row.querySpectrumIndex + '/search/" class="button">Search</a>';
                         }
                         return content;
                     }
