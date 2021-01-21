@@ -11,7 +11,7 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header card-header-tabs">
-                <ul class="nav nav-tabs nav-fill nav-justified">
+                <ul class="nav nav-tabs nav-fill nav-justified" role="tablist">
                     <%--@elvariable id="edit_submission" type="java.lang.Boolean"--%>
                     <%--@elvariable id="view_submission" type="java.lang.Boolean"--%>
                     <c:if test="${view_submission && edit_submission}">
@@ -34,7 +34,7 @@
 
                 <c:if test="${view_submission && edit_submission}">
                     <!-- Submission Information (Edit Mode) -->
-                    <div id="submission_edit" class="tab-pane active">
+                    <div id="submission_edit" class="tab-pane active" role="tabpanel">
                         <div class="container">
                             <div class="row">
                                 <div class="col-12 col-md-8 offset-md-2">
@@ -112,7 +112,7 @@
                 <c:if test="${view_submission && !edit_submission}">
 
                     <!-- Submission Information (View Mode) -->
-                    <div id="submission_view" class="tab-pane active">
+                    <div id="submission_view" class="tab-pane active" role="tabpanel">
                         <div class="row row-content">
                             <div class="col-12">
                                 <table id="info_table" class="display" style="width: 100%; clear: none;">
@@ -187,7 +187,7 @@
                 </c:if>
 
                 <!-- List of spectra -->
-                <div id="mass_spectra" class="tab-pane ${!view_submission ? "active" : ""}">
+                <div id="mass_spectra" class="tab-pane ${!view_submission ? "active" : ""}" role="tabpanel">
                     <div class="row row-content">
                         <div class="col-12">
                             <table id="spectrum_table" class="display responsive" style="width: 100%">
@@ -221,7 +221,7 @@
                 </div>
 
                 <!-- List of files -->
-                <div id="files" class="tab-pane">
+                <div id="files" class="tab-pane" role="tabpanel">
                     <table id="file_table" class="display responsive" style="width: 100%;">
                         <thead>
                         <tr>
@@ -262,12 +262,13 @@
     </div>
 </c:if>
 
-<script src="<c:url value="/resources/npm/node_modules/jquery/dist/jquery.slim.min.js"/>"></script>
+<script src="<c:url value="/resources/npm/node_modules/jquery/dist/jquery.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/popper.js/dist/umd/popper.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/bootstrap/dist/js/bootstrap.min.js"/>"></script>
-<script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
-<script src="<c:url value="/resources/DataTables/datatables.min.js"/>"></script>
-<script src="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.js"/>"></script>
+<%--<script src="<c:url value="/resources/DataTables/jQuery-3.3.1/jquery-3.3.1.min.js"/>"></script>--%>
+<script src="<c:url value="/resources/DataTables/DataTables-1.10.23/js/jquery.dataTables.min.js"/>"></script>
+<%--<script src="<c:url value="/resources/DataTables/DataTables-1.10.23/js/dataTables.bootstrap4.min.js"/>"></script>--%>
+<%--<script src="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.js"/>"></script>--%>
 <script src="<c:url value="/resources/tagify-master/jQuery.tagify.min.js"/>"></script>
 <script>
     // $(document).ready(function () {
@@ -370,20 +371,6 @@
         ]
     });
 
-    $('#mass_spectra_link').on('shown.bs.tab', function (e) {
-        table.columns.adjust();
-    });
-
-    // $('#mass_spectra_link').click(function () {
-    //     table.columns.adjust();
-    // });
-    //
-    // table.one('draw.dtr', function () {table.columns.adjust()});
-
-    // $(".tabbed-pane").each(function () {
-    //     $(this).tabbedPane('#spectrum_table');
-    // });
-
     // Table with submissionForm information
     $('#info_table').DataTable({
         bLengthChange: false,
@@ -396,7 +383,7 @@
     // Table with a list of files
     $('#file_table').DataTable();
 
-    $( '#tags' ).tagify( {
+    $('#tags').tagify({
             // pattern: /^.{0,50}$/,  // Validate typed tag(s) by Regex. Here maximum chars length is defined as "20"
             // delimiters: ", ",         // add new tags when a comma or a space character is entered
             // maxTags: 6,
@@ -405,12 +392,17 @@
             <%--@elvariable id="availableTags" type="java.util.List<java.lang.String>"--%>
             whitelist:${dulab:stringsToJson(availableTags)},
             dropdown: {
-                classname:"color-blue",
+                classname: "color-blue",
                 enabled: 2,
-                maxItems:6
+                maxItems: 6
             }
         }
     )
+
+    // Adjust column widths when a table becomes visible
+    $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
+        $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust();
+    });
 
 </script>
 
