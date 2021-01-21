@@ -27,6 +27,7 @@
     <link rel="icon" type="image/png" href="<c:url value="/resources/static/favicon-16x16.png"/>" sizes="16x16"/>
 
     <link rel="stylesheet" href="<c:url value="/resources/custom-bootstrap.css"/>">
+    <link rel="stylesheet" href="<c:url value="/resources/npm/node_modules/bootstrap4-toggle/css/bootstrap4-toggle.min.css"/>">
 <%--    <link rel="stylesheet" href="<c:url value="/resources/DataTables/DataTables-1.10.23/css/jquery.dataTables.min.css"/>">--%>
 <%--    <link rel="stylesheet" href="<c:url value="/resources/DataTables/DataTables-1.10.23/css/dataTables.bootstrap4.min.css"/>">--%>
     <link rel="stylesheet" href="<c:url value="/resources/DataTables/DataTables-1.10.23/css/jquery.dataTables.min.css"/>">

@@ -81,6 +81,8 @@ public class Submission implements Serializable {
 
     private String externalId;
 
+    private boolean isPrivate;
+
     // *******************************
     // ***** Getters and Setters *****
     // *******************************
@@ -181,6 +183,14 @@ public class Submission implements Serializable {
 
     public void setExternalId(String externalId) {
         this.externalId = externalId;
+    }
+
+    public boolean isPrivate() {
+        return isPrivate;
+    }
+
+    public void setPrivate(boolean aPrivate) {
+        isPrivate = aPrivate;
     }
 
     // *************************

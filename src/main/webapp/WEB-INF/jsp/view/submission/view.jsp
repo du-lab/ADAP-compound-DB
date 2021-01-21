@@ -82,6 +82,12 @@
                                 </div>
 
                                 <div class="row form-group">
+                                    <form:label path="isPrivate" cssClass="col-md-2 col-form-label">Private</form:label>
+                                    <form:checkbox path="isPrivate" data-toggle="toggle" data-on="Yes" data-off="No" data-size="sm"/>
+                                    <form:errors path="isPrivate" cssClass="text-danger"/>
+                                </div>
+
+                                <div class="row form-group">
                                     <form:label path="reference"
                                                 cssClass="col-12 col-md-2 col-form-label">URL</form:label>
                                     <form:input path="reference" cssClass="col-12 col-md-10 form-control"/>
@@ -93,9 +99,8 @@
                                 <div class="row form-group">
                                     <form:label path="tags"
                                                 cssClass="col-12 col-md-2 col-form-label">Tags</form:label>
-                                    <form:input placeholder="Add tags here!" path="tags"
-                                                cssClass="col-12 col-md-10 form-control"/>
-                                    <form:errors path="tags" cssClass="errors"/>
+                                    <form:input placeholder="Add tags here!" path="tags" cssClass="col-12 col-md-10"/>
+                                    <form:errors path="tags" cssClass="text-danger"/>
                                 </div>
 
                                 <div class="row form-group">
@@ -136,6 +141,10 @@
                                         <td>
                                             <pre>${submission.description}</pre>
                                         </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Private:</strong></td>
+                                        <td><span class="badge badge-info">${submission.isPrivate() ? "Yes" : "No"}</span></td>
                                     </tr>
                                     <c:if test="${submission.reference != null}">
                                         <tr>
@@ -265,6 +274,7 @@
 <script src="<c:url value="/resources/npm/node_modules/jquery/dist/jquery.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/popper.js/dist/umd/popper.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/bootstrap/dist/js/bootstrap.min.js"/>"></script>
+<script src="<c:url value="/resources/npm/node_modules/bootstrap4-toggle/js/bootstrap4-toggle.min.js"/>"></script>
 <%--<script src="<c:url value="/resources/DataTables/jQuery-3.3.1/jquery-3.3.1.min.js"/>"></script>--%>
 <script src="<c:url value="/resources/DataTables/DataTables-1.10.23/js/jquery.dataTables.min.js"/>"></script>
 <%--<script src="<c:url value="/resources/DataTables/DataTables-1.10.23/js/dataTables.bootstrap4.min.js"/>"></script>--%>

@@ -128,6 +128,7 @@ public class SubmissionController extends BaseController {
         form.setExternalId(submission.getExternalId());
         form.setName(submission.getName());
         form.setDescription(submission.getDescription());
+        form.setIsPrivate(submission.isPrivate());
         form.setReference(submission.getReference());
 
         if (submission.getTags() != null) {
@@ -282,6 +283,7 @@ public class SubmissionController extends BaseController {
         submission.setName(submissionForm.getName());
         submission.setExternalId(submissionForm.getExternalId());
         submission.setDescription(submissionForm.getDescription());
+        submission.setPrivate(submissionForm.getIsPrivate());
         submission.setReference(submissionForm.getReference());
         submission.setDateTime(new Date());
 
@@ -372,6 +374,8 @@ public class SubmissionController extends BaseController {
 
         private String description;
 
+        private boolean isPrivate;
+
         @URL(message = "The field Reference must be a valid URL.")
         private String reference;
 
@@ -419,6 +423,14 @@ public class SubmissionController extends BaseController {
 
         public void setDescription(final String description) {
             this.description = description;
+        }
+
+        public boolean getIsPrivate() {
+            return isPrivate;
+        }
+
+        public void setIsPrivate(boolean aPrivate) {
+            isPrivate = aPrivate;
         }
 
         public String getReference() {
