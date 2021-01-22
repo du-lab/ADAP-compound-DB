@@ -27,6 +27,7 @@ import smile.clustering.HierarchicalClustering;
 import smile.clustering.linkage.CompleteLinkage;
 import smile.clustering.linkage.Linkage;
 
+import java.math.BigInteger;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -399,7 +400,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 //        }
 
         Pageable pageable = DataUtils.createPageable(start, length, sortColumn, sortDirection);
-        Iterable<Long> submissionIds = submissionRepository.findSubmissionIdsBySubmissionTags(species, source, disease);
+        Iterable<BigInteger> submissionIds = submissionRepository.findSubmissionIdsBySubmissionTags(species, source, disease);
         Page<SpectrumClusterView> spectrumPage =
                 spectrumClusterRepository.findClusters(searchStr, submissionIds, pageable);
         List<SearchResultDTO> dtoList = spectrumPage.stream()

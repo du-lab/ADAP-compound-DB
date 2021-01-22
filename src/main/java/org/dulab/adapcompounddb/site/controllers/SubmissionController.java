@@ -3,6 +3,7 @@ package org.dulab.adapcompounddb.site.controllers;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.entities.*;
+import org.dulab.adapcompounddb.site.controllers.forms.SubmissionForm;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.hibernate.validator.constraints.URL;
@@ -67,7 +68,7 @@ public class SubmissionController extends BaseController {
         }
         final boolean authenticated = session.getAttribute(SESSION_ATTRIBUTE_KEY) != null;
 
-        final SubmissionForm submissionForm = createSubmissionForm(submission);
+        final SubmissionForm submissionForm = new SubmissionForm(submission);
         submissionForm.setAuthorized(authenticated);
         model.addAttribute("submission", submission);
         model.addAttribute("submissionForm", submissionForm);
@@ -109,7 +110,7 @@ public class SubmissionController extends BaseController {
         if (!authorized && edit) {
             return "redirect:/error?errorMsg=" + ACCESS_DENIED_MESSAGE;
         }
-        final SubmissionForm submissionForm = createSubmissionForm(submission);
+        final SubmissionForm submissionForm = new SubmissionForm(submission);
         submissionForm.setAuthorized(authorized);
 
         model.addAttribute("submission", submission);
@@ -121,31 +122,31 @@ public class SubmissionController extends BaseController {
         return "submission/view";
     }
 
-    private SubmissionForm createSubmissionForm(final Submission submission) {
-        final SubmissionForm form = new SubmissionForm();
-//        form.setCategoryMap(submissionService.findAllCategories());
-        form.setId(submission.getId());
-        form.setExternalId(submission.getExternalId());
-        form.setName(submission.getName());
-        form.setDescription(submission.getDescription());
-        form.setIsPrivate(submission.isPrivate());
-        form.setReference(submission.getReference());
-
-        if (submission.getTags() != null) {
-            //format tag into the same format created by tagify which is JsonArray
-            JSONArray jsonArray = new JSONArray();
-            for (SubmissionTag submissionTag : submission.getTags()) {
-                jsonArray.put(submissionTag.toString());
-            }
-            form.setTags(jsonArray.toString());
-        }
-
-        if (submission.getCategories() != null) {
-            form.setSubmissionCategoryIds(submission.getCategories().stream().filter(Objects::nonNull)
-                    .map(SubmissionCategory::getId).collect(Collectors.toList()));
-        }
-        return form;
-    }
+//    private SubmissionForm createSubmissionForm(final Submission submission) {
+//        final SubmissionForm form = new SubmissionForm();
+////        form.setCategoryMap(submissionService.findAllCategories());
+//        form.setId(submission.getId());
+//        form.setExternalId(submission.getExternalId());
+//        form.setName(submission.getName());
+//        form.setDescription(submission.getDescription());
+//        form.setIsPrivate(submission.isPrivate());
+//        form.setReference(submission.getReference());
+//
+//        if (submission.getTags() != null) {
+//            //format tag into the same format created by tagify which is JsonArray
+//            JSONArray jsonArray = new JSONArray();
+//            for (SubmissionTag submissionTag : submission.getTags()) {
+//                jsonArray.put(submissionTag.toString());
+//            }
+//            form.setTags(jsonArray.toString());
+//        }
+//
+//        if (submission.getCategories() != null) {
+//            form.setSubmissionCategoryIds(submission.getCategories().stream().filter(Objects::nonNull)
+//                    .map(SubmissionCategory::getId).collect(Collectors.toList()));
+//        }
+//        return form;
+//    }
 
     /**********************
      ***** File Clear *****
@@ -235,7 +236,7 @@ public class SubmissionController extends BaseController {
     /**********************************
      ***** File / Submission Submit *****
      **********************************/
-    @RequestMapping(value = "/file/submit", method = RequestMethod.POST)
+    @RequestMapping(value = "/file", method = RequestMethod.POST)
     public String fileView(final HttpSession session, final Model model, @Valid final SubmissionForm submissionForm,
                            final Errors errors) {
 
@@ -361,100 +362,5 @@ public class SubmissionController extends BaseController {
     private String submissionNotFound(final Model model, final long submissionId) {
         model.addAttribute("errorMessage", "Cannot find submission ID = " + submissionId);
         return "/notfound/";
-    }
-
-    public static class SubmissionForm {
-
-        private Long id;
-
-        @NotBlank(message = "The field Name is required.")
-        private String name;
-
-        private String externalId;
-
-        private String description;
-
-        private boolean isPrivate;
-
-        @URL(message = "The field Reference must be a valid URL.")
-        private String reference;
-
-        private String tags;
-
-        private List<Long> submissionCategoryIds;
-
-        private boolean authorized;
-
-        public Long getId() {
-            return id;
-        }
-
-        public boolean isAuthorized() {
-            return authorized;
-        }
-
-        public void setAuthorized(final boolean authorized) {
-            this.authorized = authorized;
-        }
-
-        public void setId(final Long id) {
-            this.id = id;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(final String name) {
-            this.name = name;
-        }
-
-        public String getExternalId() {
-            return externalId;
-        }
-
-        public void setExternalId(String externalId) {
-            this.externalId = externalId;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-
-        public void setDescription(final String description) {
-            this.description = description;
-        }
-
-        public boolean getIsPrivate() {
-            return isPrivate;
-        }
-
-        public void setIsPrivate(boolean aPrivate) {
-            isPrivate = aPrivate;
-        }
-
-        public String getReference() {
-            return reference;
-        }
-
-        public void setReference(final String reference) {
-            this.reference = reference;
-        }
-
-        public String getTags() {
-            return tags;
-        }
-
-        public void setTags(final String tags) {
-            this.tags = tags;
-        }
-
-        public List<Long> getSubmissionCategoryIds() {
-            return submissionCategoryIds;
-        }
-
-        public void setSubmissionCategoryIds(final List<Long> submissionCategoryIds) {
-            this.submissionCategoryIds = submissionCategoryIds;
-        }
     }
 }

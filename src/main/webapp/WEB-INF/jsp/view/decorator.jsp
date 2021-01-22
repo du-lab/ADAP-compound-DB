@@ -198,7 +198,7 @@
                     </ul>
                 </div>
             </div>
-            <div class="row">
+            <div class="row mt-5">
                 <div class="col-12">
                     <a class="feedback" href="https://forms.gle/zYPXt463DC1WjJMy8" target="_blank">
                         <strong>Leave Feedback</strong>
@@ -217,7 +217,7 @@
 
     <%--    </div>--%>
 
-    <article class="container">
+    <article class="container-fluid">
         <decorator:body/>
     </article>
 </div>

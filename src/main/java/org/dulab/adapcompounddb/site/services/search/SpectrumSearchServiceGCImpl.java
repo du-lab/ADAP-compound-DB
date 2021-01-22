@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.services.search;
 
+import org.dulab.adapcompounddb.models.MatchType;
 import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +46,7 @@ public class SpectrumSearchServiceGCImpl implements SpectrumSearchService {
     public List<SearchResultDTO> searchConsensusSpectra(Spectrum querySpectrum, double scoreThreshold, double mzTolerance,
                                                         String species, String source, String disease) {
 
-        Iterable<Long> submissionIds = submissionRepository.findSubmissionIdsBySubmissionTags(species, source, disease);
+        Iterable<BigInteger> submissionIds = submissionRepository.findSubmissionIdsBySubmissionTags(species, source, disease);
 
         List<SearchResultDTO> searchResults = new ArrayList<>();
         for (SpectrumClusterView view : spectrumRepository.searchLibrarySpectra(
@@ -52,9 +54,9 @@ public class SpectrumSearchServiceGCImpl implements SpectrumSearchService {
 
             SearchResultDTO searchResult = new SearchResultDTO(querySpectrum, view);
 
-            spectrumClusterRepository.findById(view.getClusterId())
+            spectrumRepository.findById(view.getId())
                     .ifPresent(c -> searchResult.setJson(ControllerUtils
-                            .spectrumToJson(c.getConsensusSpectrum())
+                            .spectrumToJson(c)
                             .toString()));
 
             searchResults.add(searchResult);

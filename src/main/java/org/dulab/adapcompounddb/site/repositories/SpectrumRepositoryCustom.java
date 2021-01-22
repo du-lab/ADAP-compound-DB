@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.repositories;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import org.dulab.adapcompounddb.models.QueryParameters;
@@ -13,7 +14,7 @@ public interface SpectrumRepositoryCustom {
     List<SpectrumMatch> spectrumSearch(SearchType searchType, Spectrum querySpectrum, QueryParameters params);
 
     Iterable<SpectrumClusterView> searchLibrarySpectra(Spectrum querySpectrum, double scoreThreshold, double mzTolerance,
-                                                       Iterable<Long> submissionIds);
+                                                       Iterable<BigInteger> submissionIds);
 
     Iterable<MassSearchResult> searchLibraryMasses(Spectrum querySpectrum, double tolerance,
                                                    String species, String source, String disease);

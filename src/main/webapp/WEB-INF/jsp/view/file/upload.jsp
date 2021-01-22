@@ -102,7 +102,6 @@
 <script src="<c:url value="/resources/npm/node_modules/popper.js/dist/umd/popper.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/bootstrap/dist/js/bootstrap.min.js"/>"></script>
 <script>
-
     $('#fileUploadForm').submit(function () {
         $('#progressModal').modal('show');
     })

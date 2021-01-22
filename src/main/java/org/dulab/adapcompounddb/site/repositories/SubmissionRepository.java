@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigInteger;
 import java.util.Optional;
 import java.util.Set;
 
@@ -32,7 +33,7 @@ public interface SubmissionRepository extends CrudRepository<Submission, Long> {
             "and (:source is null or :source='all' or Source=:source) " +
             "and (:disease is null or :disease='all' or Disease=:disease)",
             nativeQuery = true)
-    Iterable<Long> findSubmissionIdsBySubmissionTags(
+    Iterable<BigInteger> findSubmissionIdsBySubmissionTags(
             @Param("species") String species, @Param("source") String source, @Param("disease") String disease);
 
     @Query("select distinct s from Submission s join s.files f join f.spectra spectrum left join fetch s.tags where spectrum.id in (:spectrumIds)")

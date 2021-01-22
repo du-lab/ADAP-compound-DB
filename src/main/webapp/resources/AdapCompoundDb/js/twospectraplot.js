@@ -1,7 +1,9 @@
 function TwoSpectraPlot(divId, topSpectrum) {
 
-	var width = $('#' + divId).width();
-    var height = $('#' + divId).height();
+	// var width = $('#' + divId).width();
+    // var height = $('#' + divId).height();
+    var width = 400;
+    var height = 400;
     /*if(width > 600) {
     	width = $('#' + divId).width();
     	height = $('#' + divId).height();
@@ -37,8 +39,9 @@ function TwoSpectraPlot(divId, topSpectrum) {
 
     var svg = d3.select('#' + divId)
         .append('svg')
-        .attr('width', width)
-        .attr('height', height);
+        .attr('viewBox', '0 0 400 400');
+        // .attr('width', width)
+        // .attr('height', height);
     var gButton = svg.append("g")
         .attr('class', 'button_g desktop')
         .attr("transform", "translate(" + padding.left + ", 0)")

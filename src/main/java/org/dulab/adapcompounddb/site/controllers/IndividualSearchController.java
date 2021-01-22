@@ -200,7 +200,7 @@ public class IndividualSearchController {
                 searchServiceSelector.findByChromatographyType(querySpectrum.getChromatographyType());
 
         List<SearchResultDTO> searchResults = spectrumSearchService.searchConsensusSpectra(
-                querySpectrum, 0.25, 0.01,
+                querySpectrum, 0.5, 0.01,
                 filterForm.getSpecies(), filterForm.getSource(), filterForm.getDisease());
 
         model.addAttribute("querySpectrum", querySpectrum);

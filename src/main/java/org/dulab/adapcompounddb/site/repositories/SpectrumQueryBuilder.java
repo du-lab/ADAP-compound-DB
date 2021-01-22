@@ -8,6 +8,7 @@ import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 
+@Deprecated
 public class SpectrumQueryBuilder {
 
     private final SearchType searchType;

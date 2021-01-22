@@ -1,5 +1,7 @@
 package org.dulab.adapcompounddb.site.repositories;
 
+import java.math.BigInteger;
+import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -10,154 +12,117 @@ import org.dulab.adapcompounddb.models.entities.Spectrum;
 
 public class SpectrumQueryBuilderAlt {
 
-    private final String peakView;
-
+    private final Collection<BigInteger> submissionIds;
     private final ChromatographyType chromatographyType;
+    private final boolean searchConsensusSpectra;
+    private final boolean searchReferenceSpectra;
 
-    private final Set<Spectrum> excludeSpectra;
-
-    private Range precursorRange = null;
-
-    private Range retentionTimeRange = null;
-
+    private Double precursorMz = null;
+    private Double precursorTolerance = null;
+    private Double retTime = null;
+    private Double retTimeTolerance = null;
     private Spectrum spectrum = null;
-
-    private double mzTolerance;
-
-    private double scoreThreshold;
+    private Double mzTolerance = null;
+    private Double scoreThreshold = null;
 
 
-    public SpectrumQueryBuilderAlt(SearchType searchType, ChromatographyType chromatographyType, Set<Spectrum> excludeSpectra) {
+    public SpectrumQueryBuilderAlt(Collection<BigInteger> submissionIds, ChromatographyType chromatographyType,
+                                   boolean searchConsensusSpectra, boolean searchReferenceSpectra) {
 
-        switch (searchType) {
-            case SIMILARITY_SEARCH:
-                this.peakView = "SearchSpectrumPeakView";
-                break;
-            case CLUSTERING:
-                this.peakView = "ClusterSpectrumPeakView";
-                break;
-            default:
-                this.peakView = "SearchSpectrumPeakView";
-        }
+        if (!searchConsensusSpectra && !searchReferenceSpectra)
+            throw new IllegalArgumentException("Either 'searchConsensusSpectra' or 'searchReferenceSpectra' must be true");
 
+        this.submissionIds = submissionIds;
         this.chromatographyType = chromatographyType;
-        this.excludeSpectra = excludeSpectra;
+        this.searchConsensusSpectra = searchConsensusSpectra;
+        this.searchReferenceSpectra = searchReferenceSpectra;
     }
 
-    public SpectrumQueryBuilderAlt setPrecursorRange(double precursor, double tolerance) {
-        this.precursorRange = new Range(precursor - tolerance, precursor + tolerance);
+    public SpectrumQueryBuilderAlt withPrecursor(double mz, double tolerance) {
+        this.precursorMz = mz;
+        this.precursorTolerance = tolerance;
         return this;
     }
 
-    public SpectrumQueryBuilderAlt setRetentionTimeRange(double retentionTime, double tolerance) {
-        this.retentionTimeRange = new Range(retentionTime - tolerance, retentionTime + tolerance);
+    public SpectrumQueryBuilderAlt withRetTime(double retTime, double tolerance) {
+        this.retTime = retTime;
+        this.retTimeTolerance = tolerance;
         return this;
     }
 
-    public SpectrumQueryBuilderAlt setSpectrum(Spectrum spectrum, double mzTolerance, double scoreThreshold) {
+    public SpectrumQueryBuilderAlt withQuerySpectrum(Spectrum spectrum, double mzTolerance, double scoreThreshold) {
         this.spectrum = spectrum;
         this.mzTolerance = mzTolerance;
         this.scoreThreshold = scoreThreshold;
         return this;
     }
 
+    public String build() {
 
-    public String[] build() {
+        String consensusSpectraQuery = buildConsensusSpectraQuery();
+        String referenceSpectraQuery = buildReferenceSpectraQuery();
 
-        String sqlQuery = "CREATE TEMPORARY TABLE Condition (Intensity DOUBLE NOT NULL, MzMin DOUBLE NOT NULL, MzMax DOUBLE NUT NULL, CONSTRAINT Condition_pk PRIMARY KEY (MzMin, MzMax));\n";
-        sqlQuery += "INSERT INTO Condition (Intensity, MzMin, MzMax) VALUES\n";
-        sqlQuery += spectrum.getPeaks()
-                .stream()
-                .map(p -> String.format("(%f,%f,%f)", p.getIntensity(), p.getMz() - mzTolerance, p.getMz() + mzTolerance))
-                .collect(Collectors.joining(",")) + ";\n";
+        String query = null;
+        if (consensusSpectraQuery != null && referenceSpectraQuery != null)
+            query = String.format("%s\nUNION ALL\n%s\nORDER BY Score DESC",
+                    consensusSpectraQuery, referenceSpectraQuery);
+        else if (consensusSpectraQuery != null)
+            query = consensusSpectraQuery + "\nORDER BY Score DESC";
+        else if (referenceSpectraQuery != null)
+            query = referenceSpectraQuery + "\nORDER BY Score DESC";
 
-        sqlQuery += "SELECT SpectrumId, POWER(SUM(SearchSpectrumPeakView.Intensity * Condition.Intensity), 2) AS Score FROM SearchSpectrumPeakView, Condition\n" +
-                "WHERE ChromatographyType = \"GAS\" AND Mz < MzMin AND Mz > MzMax" +
-                "GROUP BY SpectrumId HAVING Score > %f ORDER BY Score DESC";
-
-        final String commonTableName = "PeakCTE" + RandomStringUtils.randomAlphanumeric(12);
-
-        // -----------------------
-        // Start of WITH statement
-        // -----------------------
-
-//        String query = String.format("WITH PeakCTE AS (\n" +
-        String initQuery = String.format("CREATE TABLE %s AS (\n" +  // ENGINE=MEMORY
-                "\tSELECT * FROM %s\n" +
-                "\tWHERE ChromatographyType = \"%s\"\n", commonTableName, peakView, chromatographyType);
-
-        if (precursorRange != null)
-            initQuery += String.format("\tAND Precursor > %f AND Precursor < %f\n",
-                    precursorRange.getStart(), precursorRange.getEnd());
-
-        if (retentionTimeRange != null)
-            initQuery += String.format("\tAND RetentionTime > %f AND RetentionTime < %f\n",
-                    retentionTimeRange.getStart(), retentionTimeRange.getEnd());
-
-        if (excludeSpectra != null)
-            initQuery += String.format(
-                    "\tAND SpectrumId NOT IN (%s)\n",
-                    excludeSpectra.stream()
-                            .map(s -> Long.toString(s.getId()))
-                            .distinct()
-                            .collect(Collectors.joining(", ")));
-
-
-        initQuery += ");\n";
-
-        // ---------------------
-        // End of WITH statement
-        // ---------------------
-
-        // -----------------------
-        // Start of spectrum match
-        // -----------------------
-
-
-        String selectQuery;
-        if (spectrum == null)
-            selectQuery = String.format("SELECT DISTINCT SpectrumId, 0 AS Score FROM %s\n", peakView);
-
-        else {
-            selectQuery = "SELECT SpectrumId, POWER(SUM(Product), 2) AS Score FROM (\n";  // 0 AS Id, NULL AS QuerySpectrumId, SpectrumId AS MatchSpectrumId
-
-            selectQuery += spectrum.getPeaks()
-                    .stream()
-                    .map(p -> String.format("\tSELECT SpectrumId, MAX(SQRT(Intensity * %f)) AS Product FROM %s " +
-                                    "WHERE Mz > %f AND Mz < %f GROUP BY SpectrumId\n",
-                            p.getIntensity(), commonTableName, p.getMz() - mzTolerance, p.getMz() + mzTolerance))
-                    .collect(Collectors.joining("\tUNION ALL\n"));
-
-            selectQuery += ") AS Result\n";
-            selectQuery += String.format("GROUP BY SpectrumId HAVING Score > %f ORDER BY Score DESC\n", scoreThreshold);
-        }
-
-        // ---------------------
-        // End of spectrum match
-        // ---------------------
-
-        String dropQuery = String.format("DROP TABLE %s;", commonTableName);
-
-        return new String[] {initQuery, selectQuery, dropQuery};
+        return query;
     }
 
+    private String buildConsensusSpectraQuery() {
 
-    public static class Range {
+        if (!searchConsensusSpectra) return null;
 
-        private final double start;
-        private final double end;
+        String query = "SELECT ConsensusSpectrum.Id, SpectrumCluster.Id AS ClusterId, ConsensusSpectrum.Name, COUNT(DISTINCT File.SubmissionId) AS Size, Score, ";
+        query += "AVG(Spectrum.Significance) AS AverageSignificance, MIN(Spectrum.Significance) AS MinimumSignificance, ";
+        query += "MAX(Spectrum.Significance) AS MaximumSignificance, ConsensusSpectrum.ChromatographyType FROM (\n";
+        query += "SELECT ClusterId, POWER(SUM(Product), 2) AS Score FROM (\n";
+        query += spectrum.getPeaks().stream()
+                .map(p -> String.format("\tSELECT ClusterId, SQRT(Intensity * %f) AS Product " +
+                                "FROM Peak INNER JOIN Spectrum ON Peak.SpectrumId = Spectrum.Id " +
+                                "WHERE ChromatographyType = '%s' AND Spectrum.Consensus IS TRUE AND Peak.Mz > %f AND Peak.Mz < %f\n",
+                        p.getIntensity(), chromatographyType, p.getMz() - mzTolerance, p.getMz() + mzTolerance))
+                .collect(Collectors.joining("\tUNION ALL\n"));
+        query += ") AS SearchTable ";
+        query += String.format("GROUP BY ClusterId HAVING Score > %f\n", scoreThreshold);
+        query += ") AS ScoreTable JOIN SpectrumCluster ON SpectrumCluster.Id = ClusterId\n";
+        query += "JOIN Spectrum AS ConsensusSpectrum ON ConsensusSpectrum.Id = SpectrumCluster.ConsensusSpectrumId\n";
+        query += "JOIN Spectrum ON Spectrum.ClusterId = SpectrumCluster.Id\n";
+        query += "JOIN File ON File.Id = Spectrum.FileId\n";
+        query += String.format("WHERE File.SubmissionId IN (%s)\n", submissionIds.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(",")));
+        query += "GROUP BY Spectrum.ClusterId";
+        return query;
+    }
 
-        public Range(double start, double end) {
-            this.start = start;
-            this.end = end;
-        }
+    private String buildReferenceSpectraQuery() {
 
-        public double getStart() {
-            return start;
-        }
+        if (!searchReferenceSpectra) return null;
 
-        public double getEnd() {
-            return end;
-        }
+        String query = "SELECT Spectrum.Id, NULL AS ClusterId, Spectrum.Name, 1 AS Size, Score, ";
+        query += "Spectrum.Significance AS AverageSignificance, Spectrum.Significance AS MinimumSignificance, ";
+        query += "Spectrum.Significance AS MaximumSignificance, Spectrum.ChromatographyType FROM (\n";
+        query += "SELECT SpectrumId, POWER(SUM(Product), 2) AS Score FROM (\n";
+        query += spectrum.getPeaks().stream()
+                .map(p -> String.format("\tSELECT SpectrumId, SQRT(Intensity * %f) AS Product " +
+                                "FROM Peak INNER JOIN Spectrum ON Peak.SpectrumId = Spectrum.Id " +
+                                "WHERE ChromatographyType = '%s' AND Spectrum.Reference IS TRUE AND Peak.Mz > %f AND Peak.Mz < %f\n",
+                        p.getIntensity(), chromatographyType, p.getMz() - mzTolerance, p.getMz() + mzTolerance))
+                .collect(Collectors.joining("\tUNION ALL\n"));
+        query += ") AS SearchTable ";
+        query += String.format("GROUP BY SpectrumId HAVING Score > %f\n", scoreThreshold);
+        query += ") AS ScoreTable JOIN Spectrum ON Spectrum.Id = SpectrumId\n";
+        query += "JOIN File ON File.Id = Spectrum.FileId\n";
+        query += String.format("WHERE File.SubmissionId IN (%s)\n", submissionIds.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(",")));
+
+        return query;
     }
 }

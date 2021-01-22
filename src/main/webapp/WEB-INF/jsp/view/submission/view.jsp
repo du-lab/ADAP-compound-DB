@@ -198,8 +198,8 @@
                 <!-- List of spectra -->
                 <div id="mass_spectra" class="tab-pane ${!view_submission ? "active" : ""}" role="tabpanel">
                     <div class="row row-content">
-                        <div class="col-12">
-                            <table id="spectrum_table" class="display responsive" style="width: 100%">
+                        <div class="col-12 small">
+                            <table id="spectrum_table" class="display compact" style="width: 100%">
                                 <thead>
                                 <tr>
                                     <td></td>

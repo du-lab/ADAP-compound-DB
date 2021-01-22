@@ -26,7 +26,7 @@ public class SpectrumClusterRepositoryImpl implements SpectrumClusterRepositoryC
      * @param search        string for filtering spectra by their names
      * @return number of consensus spectra
      */
-    private BigInteger countAllConsensusSpectra(Iterable<Long> submissionIds, String search) {
+    private BigInteger countAllConsensusSpectra(Iterable<BigInteger> submissionIds, String search) {
 
         String sqlQuery = "select count(distinct SpectrumCluster.Id) from SpectrumCluster " +
                 "join Spectrum on SpectrumCluster.Id=Spectrum.ClusterId " +
@@ -47,7 +47,7 @@ public class SpectrumClusterRepositoryImpl implements SpectrumClusterRepositoryC
      * @param search        string for filtering spectra by their names
      * @return number of reference spectra
      */
-    private BigInteger countAllReferenceSpectra(Iterable<Long> submissionIds, String search) {
+    private BigInteger countAllReferenceSpectra(Iterable<BigInteger> submissionIds, String search) {
 
         String sqlQuery = "select count(*) from Spectrum join File on Spectrum.FileId=File.Id " +
                 "where Spectrum.Reference is true and (Spectrum.Name like :search OR Spectrum.ChromatographyType LIKE :search ) and File.SubmissionId in (:submissionIds)";
@@ -62,7 +62,7 @@ public class SpectrumClusterRepositoryImpl implements SpectrumClusterRepositoryC
     private EntityManager entityManager;
 
     public Page<SpectrumClusterView> findClusters(
-            String searchStr, Iterable<Long> submissionIds, Pageable pageable) {
+            String searchStr, Iterable<BigInteger> submissionIds, Pageable pageable) {
 
         if (submissionIds == null || !submissionIds.iterator().hasNext())
             return new PageImpl<>(new ArrayList<>(0), pageable, 0);
