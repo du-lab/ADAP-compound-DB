@@ -28,12 +28,13 @@ public interface SubmissionRepository extends CrudRepository<Submission, Long> {
             "left join (select SubmissionId, TagValue from SubmissionTag where TagKey='species (common)') as SpeciesTag on SpeciesTag.SubmissionId=Submission.Id " +
             "left join (select SubmissionId, TagValue from SubmissionTag where TagKey='sample source') as SourceTag on SourceTag.SubmissionId=Submission.Id " +
             "left join (select SubmissionId, TagValue from SubmissionTag where TagKey='disease') as DiseaseTag on DiseaseTag.SubmissionId=Submission.Id " +
+            "where Submission.IsPrivate is false or (Submission.IsPrivate is true and Submission.UserPrincipalId = :userId) " +
             ") as SummaryTable " +
             "where (:species is null or :species='all' or Species=:species) " +
             "and (:source is null or :source='all' or Source=:source) " +
             "and (:disease is null or :disease='all' or Disease=:disease)",
             nativeQuery = true)
-    Iterable<BigInteger> findSubmissionIdsBySubmissionTags(
+    Iterable<BigInteger> findSubmissionIdsBySubmissionTags(@Param("userId") Long userId,
             @Param("species") String species, @Param("source") String source, @Param("disease") String disease);
 
     @Query("select distinct s from Submission s join s.files f join f.spectra spectrum left join fetch s.tags where spectrum.id in (:spectrumIds)")

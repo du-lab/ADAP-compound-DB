@@ -6,6 +6,7 @@ import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
+import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
 import org.dulab.adapcompounddb.site.controllers.ControllerUtils;
 import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
@@ -43,10 +44,12 @@ public class SpectrumSearchServiceGCImpl implements SpectrumSearchService {
 
     @Override
     @Transactional
-    public List<SearchResultDTO> searchConsensusSpectra(Spectrum querySpectrum, double scoreThreshold, double mzTolerance,
+    public List<SearchResultDTO> searchConsensusSpectra(UserPrincipal user, Spectrum querySpectrum,
+                                                        double scoreThreshold, double mzTolerance,
                                                         String species, String source, String disease) {
 
-        Iterable<BigInteger> submissionIds = submissionRepository.findSubmissionIdsBySubmissionTags(species, source, disease);
+        Iterable<BigInteger> submissionIds = submissionRepository.findSubmissionIdsBySubmissionTags(
+                user != null ? user.getId() : null, species, source, disease);
 
         List<SearchResultDTO> searchResults = new ArrayList<>();
         for (SpectrumClusterView view : spectrumRepository.searchLibrarySpectra(

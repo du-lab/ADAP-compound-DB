@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.concurrent.Future;
 
 @Controller
-public class GroupSearchController {
+public class GroupSearchController extends BaseController {
 
     private static final Logger LOGGER = LogManager.getLogger(GroupSearchController.class);
 
@@ -103,7 +103,7 @@ public class GroupSearchController {
 //                .flatMap(file -> file.getSpectra().stream())
 //                .collect(Collectors.toList());
 
-        asyncResult = groupSearchService.groupSearch(
+        asyncResult = groupSearchService.groupSearch(this.getCurrentUserPrincipal(),
                 submission.getFiles(), session, form.getSpecies(), form.getSource(), form.getDisease());
 
         return new ModelAndView("submission/group_search");

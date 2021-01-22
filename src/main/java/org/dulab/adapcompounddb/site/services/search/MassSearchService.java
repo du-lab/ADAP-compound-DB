@@ -4,6 +4,7 @@ import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
+import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.models.entities.views.MassSearchResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,8 @@ public class MassSearchService implements SpectrumSearchService {
     }
 
     @Override
-    public List<SearchResultDTO> searchConsensusSpectra(Spectrum querySpectrum, double scoreThreshold, double mzTolerance,
+    public List<SearchResultDTO> searchConsensusSpectra(UserPrincipal userPrincipal, Spectrum querySpectrum,
+                                                        double scoreThreshold, double mzTolerance,
                                                         String species, String source, String disease) {
 
         List<SearchResultDTO> searchResults = new ArrayList<>();

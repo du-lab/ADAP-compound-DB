@@ -27,7 +27,7 @@ import javax.validation.Valid;
 import java.util.*;
 
 @Controller
-public class IndividualSearchController {
+public class IndividualSearchController extends BaseController {
     private final SubmissionService submissionService;
     private final SpectrumService spectrumService;
     private final SubmissionTagService submissionTagService;
@@ -200,6 +200,7 @@ public class IndividualSearchController {
                 searchServiceSelector.findByChromatographyType(querySpectrum.getChromatographyType());
 
         List<SearchResultDTO> searchResults = spectrumSearchService.searchConsensusSpectra(
+                this.getCurrentUserPrincipal(),
                 querySpectrum, 0.5, 0.01,
                 filterForm.getSpecies(), filterForm.getSource(), filterForm.getDisease());
 

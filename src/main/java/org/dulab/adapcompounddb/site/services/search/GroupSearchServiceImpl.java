@@ -49,7 +49,7 @@ public class GroupSearchServiceImpl implements GroupSearchService {
     @Override
     @Async
     @Transactional(propagation = Propagation.REQUIRED)
-    public Future<Void> groupSearch(
+    public Future<Void> groupSearch(UserPrincipal userPrincipal,
             List<File> files, HttpSession session, String species, String source, String disease) {
 
         LOGGER.info(String.format("Group search is started (species: %s, source: %s, disease: %s)",
@@ -85,7 +85,7 @@ public class GroupSearchServiceImpl implements GroupSearchService {
                             .findByChromatographyType(querySpectrum.getChromatographyType());
 
                     List<SearchResultDTO> individualSearchResults =
-                            spectrumSearchService.searchConsensusSpectra(querySpectrum, 0.25, 0.01,
+                            spectrumSearchService.searchConsensusSpectra(userPrincipal, querySpectrum, 0.25, 0.01,
                                     species, source, disease);
 
                     // get the best match if the match is not null

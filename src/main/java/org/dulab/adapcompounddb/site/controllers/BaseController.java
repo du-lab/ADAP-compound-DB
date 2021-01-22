@@ -31,7 +31,7 @@ public abstract class BaseController {
         String username = null;
         final Object user = getAuthentication().getPrincipal();
 
-        if (user instanceof User && user != null) {
+        if (user instanceof User) {
             username = ((User) user).getUsername();
         }
 
