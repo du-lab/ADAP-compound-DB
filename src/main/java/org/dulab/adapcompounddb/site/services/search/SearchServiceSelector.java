@@ -11,27 +11,27 @@ import java.util.Map;
 @Service
 public class SearchServiceSelector {
 
-    private final Map<ChromatographyType, SpectrumSearchService> spectrumSearchServiceMap;
+    private final Map<ChromatographyType, IndividualSearchService> spectrumSearchServiceMap;
 
     @Autowired
-    public SearchServiceSelector(@Qualifier("spectrumSearchServiceGCImpl") SpectrumSearchService gcSpectrumSearchService,
-                                 @Qualifier("spectrumSearchServiceLCImpl") SpectrumSearchService lcSpectrumSearchService,
-                                 @Qualifier("massSearchService") SpectrumSearchService massSearchService) {
+    public SearchServiceSelector(@Qualifier("spectrumSearchServiceImpl") IndividualSearchService spectrumSearchService,
+                                 @Qualifier("spectrumAndPrecursorSearchServiceImpl") IndividualSearchService spectrumAndPrecursorSearchService,
+                                 @Qualifier("massSearchService") IndividualSearchService massSearchService) {
 
         this.spectrumSearchServiceMap = new HashMap<>();
-        this.spectrumSearchServiceMap.put(ChromatographyType.GAS, gcSpectrumSearchService);
-        this.spectrumSearchServiceMap.put(ChromatographyType.LIQUID_POSITIVE, lcSpectrumSearchService);
-        this.spectrumSearchServiceMap.put(ChromatographyType.LIQUID_NEGATIVE, lcSpectrumSearchService);
-        this.spectrumSearchServiceMap.put(ChromatographyType.LC_MSMS_POS, lcSpectrumSearchService);
-        this.spectrumSearchServiceMap.put(ChromatographyType.LC_MSMS_NEG, lcSpectrumSearchService);
+        this.spectrumSearchServiceMap.put(ChromatographyType.GAS, spectrumSearchService);
+        this.spectrumSearchServiceMap.put(ChromatographyType.LIQUID_POSITIVE, spectrumSearchService);
+        this.spectrumSearchServiceMap.put(ChromatographyType.LIQUID_NEGATIVE, spectrumSearchService);
+        this.spectrumSearchServiceMap.put(ChromatographyType.LC_MSMS_POS, spectrumAndPrecursorSearchService);
+        this.spectrumSearchServiceMap.put(ChromatographyType.LC_MSMS_NEG, spectrumAndPrecursorSearchService);
         this.spectrumSearchServiceMap.put(ChromatographyType.NONE, massSearchService);
     }
 
-    public SpectrumSearchService findByChromatographyType(ChromatographyType chromatographyType) {
-        SpectrumSearchService spectrumSearchService = spectrumSearchServiceMap.get(chromatographyType);
+    public IndividualSearchService findByChromatographyType(ChromatographyType chromatographyType) {
+        IndividualSearchService spectrumSearchService = spectrumSearchServiceMap.get(chromatographyType);
         if (spectrumSearchService == null)
             throw new IllegalArgumentException(
-                    "Cannot find SpectrumSearchService for chromatography type " + chromatographyType);
+                    "Cannot find IndividualSearchService for chromatography type " + chromatographyType);
         return spectrumSearchService;
     }
 }

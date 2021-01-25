@@ -70,9 +70,9 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     }
 
     @Override
-    public Iterable<SpectrumClusterView> searchLibrarySpectra(
-            Spectrum querySpectrum, double scoreThreshold, double mzTolerance,
-            Iterable<BigInteger> submissionIds) {
+    public Iterable<SpectrumClusterView> searchLibrarySpectra(Iterable<BigInteger> submissionIds, Spectrum querySpectrum,
+                                                              double scoreThreshold, double mzTolerance,
+                                                              Double precursor, Double precursorTolerance) {
 
 //        String query = "SELECT ConsensusSpectrum.Id, SpectrumCluster.Id AS ClusterId, ConsensusSpectrum.Name, COUNT(DISTINCT File.SubmissionId) AS Size, Score, ";
 //        query += "AVG(Spectrum.Significance) AS AverageSignificance, MIN(Spectrum.Significance) AS MinimumSignificance, ";
@@ -99,6 +99,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         String query = new SpectrumQueryBuilderAlt(submissionIdList,
                 querySpectrum.getChromatographyType(), true, true)
                 .withQuerySpectrum(querySpectrum, mzTolerance, scoreThreshold)
+                .withPrecursor(precursor, precursorTolerance)
                 .build();
 
         @SuppressWarnings("unchecked")

@@ -11,7 +11,8 @@ import org.dulab.adapcompounddb.site.controllers.BaseController;
 import org.dulab.adapcompounddb.site.controllers.utils.ConversionsUtils;
 import org.dulab.adapcompounddb.site.controllers.utils.PaginationUtils;
 import org.dulab.adapcompounddb.site.services.SpectrumMatchService;
-import org.dulab.adapcompounddb.site.services.search.SpectrumSearchService;
+import org.dulab.adapcompounddb.site.services.search.IndividualSearchService;
+import org.dulab.adapcompounddb.site.services.search.SearchParameters;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,10 +25,10 @@ import java.util.List;
 public class IndividualSearchRestController extends BaseController {
 
     private final SpectrumMatchService spectrumMatchService;
-    private final SpectrumSearchService spectrumSearchService;
+    private final IndividualSearchService spectrumSearchService;
 
     public IndividualSearchRestController(SpectrumMatchService spectrumMatchService,
-                                          @Qualifier("spectrumSearchServiceGCImpl") SpectrumSearchService gcSpectrumSearchService) {
+                                          @Qualifier("spectrumSearchServiceImpl") IndividualSearchService gcSpectrumSearchService) {
         this.spectrumMatchService = spectrumMatchService;
         this.spectrumSearchService = gcSpectrumSearchService;
     }
@@ -52,8 +53,15 @@ public class IndividualSearchRestController extends BaseController {
         Spectrum querySpectrum = new Spectrum();
         querySpectrum.setPeaks(queryPeaks);
 
+        SearchParameters parameters = new SearchParameters();
+        parameters.setScoreThreshold(scoreThreshold / 1000.0);
+        parameters.setMzTolerance(mzTolerance);
+        parameters.setSpecies(species);
+        parameters.setSource(source);
+        parameters.setDisease(disease);
+
         List<SearchResultDTO> clusters = spectrumSearchService.searchConsensusSpectra(this.getCurrentUserPrincipal(),
-                querySpectrum, scoreThreshold / 1000.0, mzTolerance, species, source, disease);
+                querySpectrum, parameters);
 
         List<SearchResultDTO> page = PaginationUtils.getPage(clusters, start, length, column, sortDirection);
 

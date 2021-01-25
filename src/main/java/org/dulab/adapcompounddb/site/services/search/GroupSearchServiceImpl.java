@@ -4,11 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.entities.*;
-import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
 import org.dulab.adapcompounddb.site.controllers.ControllerUtils;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
-import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
-import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -81,12 +78,18 @@ public class GroupSearchServiceImpl implements GroupSearchService {
 
                     if (Thread.currentThread().isInterrupted()) break;
 
-                    SpectrumSearchService spectrumSearchService = searchServiceSelector
+                    IndividualSearchService spectrumSearchService = searchServiceSelector
                             .findByChromatographyType(querySpectrum.getChromatographyType());
 
+                    SearchParameters parameters = new SearchParameters();
+                    parameters.setScoreThreshold(0.5);
+                    parameters.setMzTolerance(0.01);
+                    parameters.setSpecies(species);
+                    parameters.setSource(source);
+                    parameters.setDisease(disease);
+
                     List<SearchResultDTO> individualSearchResults =
-                            spectrumSearchService.searchConsensusSpectra(userPrincipal, querySpectrum, 0.25, 0.01,
-                                    species, source, disease);
+                            spectrumSearchService.searchConsensusSpectra(userPrincipal, querySpectrum, parameters);
 
                     // get the best match if the match is not null
                     SearchResultDTO topSearchResult = individualSearchResults.size() > 0

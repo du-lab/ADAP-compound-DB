@@ -1,10 +1,13 @@
 package org.dulab.adapcompounddb.site.controllers.forms;
 
+import java.util.Map;
+
 public class FilterForm {
 
     private String species;
     private String source;
     private String disease;
+    private Map<Long, String> submissions;
 
     public String getSpecies() {
         return species;
@@ -28,5 +31,13 @@ public class FilterForm {
 
     public void setDisease(String disease) {
         this.disease = disease;
+    }
+
+    public Map<Long, String> getSubmissions() {
+        return submissions;
+    }
+
+    public void setSubmissions(Map<Long, String> submissions) {
+        this.submissions = submissions;
     }
 }

@@ -1,6 +1,14 @@
 $theme-colors: (
         "primary": #844d36,
-        "secondary": #bfbfbf
+        "primary-dark": #542410,
+        "primary-light": #b67960,
+        "secondary": #bfbfbf,
+        "gray": #f2f2f2
 );
 
 @import "npm/node_modules/bootstrap/scss/bootstrap";
+
+.modal-header, .modal-footer {
+  background-color: theme-color("gray");
+  color: theme-color("primary-dark");
+}

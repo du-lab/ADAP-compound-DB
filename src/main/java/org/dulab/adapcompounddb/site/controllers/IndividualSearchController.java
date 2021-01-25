@@ -8,8 +8,9 @@ import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterForm;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterOptions;
 import org.dulab.adapcompounddb.site.services.*;
+import org.dulab.adapcompounddb.site.services.search.IndividualSearchService;
+import org.dulab.adapcompounddb.site.services.search.SearchParameters;
 import org.dulab.adapcompounddb.site.services.search.SearchServiceSelector;
-import org.dulab.adapcompounddb.site.services.search.SpectrumSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -196,13 +197,20 @@ public class IndividualSearchController extends BaseController {
             return new ModelAndView("submission/spectrum/search");
         }
 
-        final SpectrumSearchService spectrumSearchService =
+        final IndividualSearchService individualSearchService =
                 searchServiceSelector.findByChromatographyType(querySpectrum.getChromatographyType());
 
-        List<SearchResultDTO> searchResults = spectrumSearchService.searchConsensusSpectra(
-                this.getCurrentUserPrincipal(),
-                querySpectrum, 0.5, 0.01,
-                filterForm.getSpecies(), filterForm.getSource(), filterForm.getDisease());
+        SearchParameters parameters = new SearchParameters();
+        parameters.setScoreThreshold(0.5);
+        parameters.setMzTolerance(0.01);
+        parameters.setPrecursorMz(querySpectrum.getPrecursor());
+        parameters.setPrecursorTolerance(0.01);
+        parameters.setSpecies(filterForm.getSpecies());
+        parameters.setSource(filterForm.getSource());
+        parameters.setDisease(filterForm.getDisease());
+
+        List<SearchResultDTO> searchResults = individualSearchService.searchConsensusSpectra(
+                this.getCurrentUserPrincipal(), querySpectrum, parameters);
 
         model.addAttribute("querySpectrum", querySpectrum);
         model.addAttribute("filterForm", filterForm);

@@ -38,13 +38,13 @@ public class SpectrumQueryBuilderAlt {
         this.searchReferenceSpectra = searchReferenceSpectra;
     }
 
-    public SpectrumQueryBuilderAlt withPrecursor(double mz, double tolerance) {
+    public SpectrumQueryBuilderAlt withPrecursor(Double mz, Double tolerance) {
         this.precursorMz = mz;
         this.precursorTolerance = tolerance;
         return this;
     }
 
-    public SpectrumQueryBuilderAlt withRetTime(double retTime, double tolerance) {
+    public SpectrumQueryBuilderAlt withRetTime(Double retTime, Double tolerance) {
         this.retTime = retTime;
         this.retTimeTolerance = tolerance;
         return this;
@@ -58,6 +58,9 @@ public class SpectrumQueryBuilderAlt {
     }
 
     public String build() {
+
+        if (submissionIds == null || submissionIds.isEmpty())
+            return buildEmptyQuery();
 
         String consensusSpectraQuery = buildConsensusSpectraQuery();
         String referenceSpectraQuery = buildReferenceSpectraQuery();
@@ -85,8 +88,10 @@ public class SpectrumQueryBuilderAlt {
         query += spectrum.getPeaks().stream()
                 .map(p -> String.format("\tSELECT ClusterId, SQRT(Intensity * %f) AS Product " +
                                 "FROM Peak INNER JOIN Spectrum ON Peak.SpectrumId = Spectrum.Id " +
-                                "WHERE ChromatographyType = '%s' AND Spectrum.Consensus IS TRUE AND Peak.Mz > %f AND Peak.Mz < %f\n",
-                        p.getIntensity(), chromatographyType, p.getMz() - mzTolerance, p.getMz() + mzTolerance))
+                                "WHERE %s AND Peak.Mz > %f AND Peak.Mz < %f\n",
+                        p.getIntensity(),
+                        getSpectrumSelector(true, false),
+                        p.getMz() - mzTolerance, p.getMz() + mzTolerance))
                 .collect(Collectors.joining("\tUNION ALL\n"));
         query += ") AS SearchTable ";
         query += String.format("GROUP BY ClusterId HAVING Score > %f\n", scoreThreshold);
@@ -112,8 +117,10 @@ public class SpectrumQueryBuilderAlt {
         query += spectrum.getPeaks().stream()
                 .map(p -> String.format("\tSELECT SpectrumId, SQRT(Intensity * %f) AS Product " +
                                 "FROM Peak INNER JOIN Spectrum ON Peak.SpectrumId = Spectrum.Id " +
-                                "WHERE ChromatographyType = '%s' AND Spectrum.Reference IS TRUE AND Peak.Mz > %f AND Peak.Mz < %f\n",
-                        p.getIntensity(), chromatographyType, p.getMz() - mzTolerance, p.getMz() + mzTolerance))
+                                "WHERE %s AND Peak.Mz > %f AND Peak.Mz < %f\n",
+                        p.getIntensity(),
+                        getSpectrumSelector(false, true),
+                        p.getMz() - mzTolerance, p.getMz() + mzTolerance))
                 .collect(Collectors.joining("\tUNION ALL\n"));
         query += ") AS SearchTable ";
         query += String.format("GROUP BY SpectrumId HAVING Score > %f\n", scoreThreshold);
@@ -124,5 +131,28 @@ public class SpectrumQueryBuilderAlt {
                 .collect(Collectors.joining(",")));
 
         return query;
+    }
+
+    private String buildEmptyQuery() {
+        return "SELECT Id, NULL AS ClusterId, Name, 1 AS Size, 0 AS Score, " +
+                "Significance AS AverageSignificance, Significance AS MinimumSignificance, " +
+                "Significance AS MaximumSignificance, ChromatographyType FROM Spectrum WHERE FALSE";
+    }
+
+    /**
+     * Return the condition for selecting spectra based on a chromatography type, consensus or reference spectrum, precursor, etc.
+     * @param isConsensus true if spectra must be consensus spectra
+     * @param isReference true if spectra must be reference spectra
+     * @return SQL string with the condition
+     */
+    private String getSpectrumSelector(boolean isConsensus, boolean isReference) {
+        String spectrumSelector = String.format(
+                "Spectrum.ChromatographyType = '%s' AND Spectrum.Consensus IS %s AND Spectrum.Reference IS %s",
+                this.chromatographyType, isConsensus, isReference);
+        if (this.precursorMz != null && this.precursorTolerance != null)
+            spectrumSelector += String.format(" AND Spectrum.Precursor > %f AND Spectrum.Precursor < %f",
+                    this.precursorMz - this.precursorTolerance,
+                    this.precursorMz + this.precursorTolerance);
+        return spectrumSelector;
     }
 }

@@ -7,269 +7,277 @@
 
 <script src="<c:url value="/resources/AdapCompoundDb/js/tagsColor.js"/>"></script>
 
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header card-header-tabs">
-                <ul class="nav nav-tabs nav-fill nav-justified" role="tablist">
-                    <%--@elvariable id="edit_submission" type="java.lang.Boolean"--%>
-                    <%--@elvariable id="view_submission" type="java.lang.Boolean"--%>
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header card-header-tabs">
+                    <ul class="nav nav-tabs nav-fill nav-justified" role="tablist">
+                        <%--@elvariable id="edit_submission" type="java.lang.Boolean"--%>
+                        <%--@elvariable id="view_submission" type="java.lang.Boolean"--%>
+                        <c:if test="${view_submission && edit_submission}">
+                            <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#submission_edit">
+                                Study Properties</a></li>
+                        </c:if>
+                        <c:if test="${view_submission && !edit_submission}">
+                            <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#submission_view">
+                                Study Properties</a></li>
+                        </c:if>
+                        <li class="nav-item"><a id="mass_spectra_link"
+                                                class="nav-link ${!view_submission ? "active" : ""}"
+                                                data-toggle="tab"
+                                                href="#mass_spectra">Mass Spectra</a>
+                        </li>
+                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#files">Files</a></li>
+                    </ul>
+                </div>
+
+                <div class="card-body tab-content">
+
                     <c:if test="${view_submission && edit_submission}">
-                        <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#submission_edit">
-                            Study Properties</a></li>
+                        <!-- Submission Information (Edit Mode) -->
+                        <div id="submission_edit" class="tab-pane active" role="tabpanel">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-12 col-md-8 offset-md-2">
+                                        Please provide name and detailed description of the data when you submit
+                                        mass spectra to the knowledgebase.
+                                    </div>
+                                </div>
+                                    <%--@elvariable id="validationErrors" type="java.util.Set<javax.validation.ConstraintViolation>"--%>
+                                <c:if test="${validationErrors != null}">
+                                    <div class="row">
+                                        <div class="col-8 offset-2 text-danger">
+                                            <ul>
+                                                <c:forEach items="${validationErrors}" var="error">
+                                                    <li><c:out value="${error.message}"/></li>
+                                                </c:forEach>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </c:if>
+
+                                <form:form method="POST" modelAttribute="submissionForm" cssStyle="width: 100%">
+                                    <form:errors path="" cssClass="errors"/><br/>
+                                    <form:hidden path="id"/><br/>
+
+                                    <div class="row form-group">
+                                        <form:label path="name"
+                                                    cssClass="col-12 col-md-2 col-form-label">Name</form:label>
+                                        <form:input path="name" cssClass="col-12 col-md-10 form-control"/>
+                                        <form:errors path="name" cssClass="text-danger"/>
+                                    </div>
+
+                                    <div class="row form-group">
+                                        <form:label path="externalId"
+                                                    cssClass="col-12 col-md-2 col-form-label">External ID</form:label>
+                                        <form:input path="externalId" cssClass="col-12 col-md-6 form-control"/>
+                                        <form:errors path="externalId" cssClass="text-danger"/>
+                                    </div>
+
+                                    <div class="row form-group">
+                                        <form:label path="description"
+                                                    cssClass="col-12 col-md-2 col-form-label">Description</form:label>
+                                        <form:textarea path="description" cssClass="col-12 col-md-8 form-control"
+                                                       rows="10"/>
+                                        <form:errors path="description" cssClass="text-danger"/>
+                                    </div>
+
+                                    <div class="row form-group">
+                                        <form:label path="isPrivate"
+                                                    cssClass="col-md-2 col-form-label">Private</form:label>
+                                        <form:checkbox path="isPrivate" data-toggle="toggle" data-on="Yes" data-off="No"
+                                                       data-size="sm"/>
+                                        <form:errors path="isPrivate" cssClass="text-danger"/>
+                                    </div>
+
+                                    <div class="row form-group">
+                                        <form:label path="reference"
+                                                    cssClass="col-12 col-md-2 col-form-label">URL</form:label>
+                                        <form:input path="reference" cssClass="col-12 col-md-10 form-control"/>
+                                        <form:errors path="reference" cssClass="text-danger"/>
+                                    </div>
+
+                                    <%--                                <form:errors path="submissionCategoryIds" cssClass="errors"/><br/>--%>
+
+                                    <div class="row form-group">
+                                        <form:label path="tags"
+                                                    cssClass="col-12 col-md-2 col-form-label">Tags</form:label>
+                                        <form:input placeholder="Add tags here!" path="tags"
+                                                    cssClass="col-12 col-md-10"/>
+                                        <form:errors path="tags" cssClass="text-danger"/>
+                                    </div>
+
+                                    <div class="row form-group">
+                                        <div class="col-md-2 offset-md-2">
+                                            <input class="btn btn-primary w-100" type="submit"
+                                                   value="${(submissionForm.id > 0) ? "Save" : "Submit"}"/>
+                                        </div>
+                                    </div>
+                                </form:form>
+                            </div>
+                        </div>
+
                     </c:if>
                     <c:if test="${view_submission && !edit_submission}">
-                        <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#submission_view">
-                            Study Properties</a></li>
-                    </c:if>
-                    <li class="nav-item"><a id="mass_spectra_link" class="nav-link ${!view_submission ? "active" : ""}"
-                                            data-toggle="tab"
-                                            href="#mass_spectra">Mass Spectra</a>
-                    </li>
-                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#files">Files</a></li>
-                </ul>
-            </div>
 
-            <div class="card-body tab-content">
+                        <!-- Submission Information (View Mode) -->
+                        <div id="submission_view" class="tab-pane active" role="tabpanel">
+                            <div class="row row-content">
+                                <div class="col-12">
+                                    <table id="info_table" class="display" style="width: 100%; clear: none;">
+                                        <thead>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td><strong>Name:</strong></td>
+                                            <td>${submission.name}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>External ID:</strong></td>
+                                            <td>${submission.externalId}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Description:</strong></td>
+                                            <td>
+                                                <pre>${submission.description}</pre>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Private:</strong></td>
+                                            <td><span
+                                                    class="badge badge-info">${submission.isPrivate() ? "Yes" : "No"}</span>
+                                            </td>
+                                        </tr>
+                                        <c:if test="${submission.reference != null}">
+                                            <tr>
+                                                <td><strong>URL:</strong></td>
+                                                <td><a href="${submission.reference}"
+                                                       title="${submission.reference}"
+                                                       target="_blank">${dulab:abbreviate(submission.reference, 80)}</a>
+                                                </td>
+                                            </tr>
+                                        </c:if>
+                                        <c:if test="${submission.tagsAsString.length() > 0}">
+                                            <tr>
+                                                <td><strong>Tags:</strong></td>
+                                                <td>
+                                                        <%-- ${submission.tagsAsString}--%>
+                                                    <c:forEach items="${submission.tags}" var="tag"
+                                                               varStatus="status">
+                                                        <span id="${submission.id}color${status.index}">${tag}&nbsp;</span>
+                                                        <script>
+                                                            var spanId = '${fn:length(submission.tags)}';
+                                                        </script>
+                                                    </c:forEach>
 
-                <c:if test="${view_submission && edit_submission}">
-                    <!-- Submission Information (Edit Mode) -->
-                    <div id="submission_edit" class="tab-pane active" role="tabpanel">
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-12 col-md-8 offset-md-2">
-                                    Please provide name and detailed description of the data when you submit
-                                    mass spectra to the knowledgebase.
+                                                    <script>
+                                                        spanColor(${submission.id}, spanId);
+                                                    </script>
+                                                </td>
+                                            </tr>
+                                        </c:if>
+                                        <c:forEach items="${submissionCategoryTypes}" var="type">
+                                            <tr>
+                                                <td><strong>${type.label}:</strong></td>
+                                                <td>${submission.getCategory(type)}</td>
+                                            </tr>
+                                        </c:forEach>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
-                                <%--@elvariable id="validationErrors" type="java.util.Set<javax.validation.ConstraintViolation>"--%>
-                            <c:if test="${validationErrors != null}">
-                                <div class="row">
-                                    <div class="col-8 offset-2 text-danger">
-                                        <ul>
-                                            <c:forEach items="${validationErrors}" var="error">
-                                                <li><c:out value="${error.message}"/></li>
-                                            </c:forEach>
-                                        </ul>
-                                    </div>
+                            <div class="row">
+                                <div class="col-md-4 offset-md-4">
+                                    <a href="edit" class="btn btn-primary w-100">Edit Submission</a>
                                 </div>
-                            </c:if>
+                            </div>
 
-                            <form:form method="POST" modelAttribute="submissionForm" cssStyle="width: 100%">
-                                <form:errors path="" cssClass="errors"/><br/>
-                                <form:hidden path="id"/><br/>
-
-                                <div class="row form-group">
-                                    <form:label path="name"
-                                                cssClass="col-12 col-md-2 col-form-label">Name</form:label>
-                                    <form:input path="name" cssClass="col-12 col-md-10 form-control"/>
-                                    <form:errors path="name" cssClass="text-danger"/>
-                                </div>
-
-                                <div class="row form-group">
-                                    <form:label path="externalId"
-                                                cssClass="col-12 col-md-2 col-form-label">External ID</form:label>
-                                    <form:input path="externalId" cssClass="col-12 col-md-6 form-control"/>
-                                    <form:errors path="externalId" cssClass="text-danger"/>
-                                </div>
-
-                                <div class="row form-group">
-                                    <form:label path="description"
-                                                cssClass="col-12 col-md-2 col-form-label">Description</form:label>
-                                    <form:textarea path="description" cssClass="col-12 col-md-8 form-control"
-                                                   rows="10"/>
-                                    <form:errors path="description" cssClass="text-danger"/>
-                                </div>
-
-                                <div class="row form-group">
-                                    <form:label path="isPrivate" cssClass="col-md-2 col-form-label">Private</form:label>
-                                    <form:checkbox path="isPrivate" data-toggle="toggle" data-on="Yes" data-off="No" data-size="sm"/>
-                                    <form:errors path="isPrivate" cssClass="text-danger"/>
-                                </div>
-
-                                <div class="row form-group">
-                                    <form:label path="reference"
-                                                cssClass="col-12 col-md-2 col-form-label">URL</form:label>
-                                    <form:input path="reference" cssClass="col-12 col-md-10 form-control"/>
-                                    <form:errors path="reference" cssClass="text-danger"/>
-                                </div>
-
-                                <%--                                <form:errors path="submissionCategoryIds" cssClass="errors"/><br/>--%>
-
-                                <div class="row form-group">
-                                    <form:label path="tags"
-                                                cssClass="col-12 col-md-2 col-form-label">Tags</form:label>
-                                    <form:input placeholder="Add tags here!" path="tags" cssClass="col-12 col-md-10"/>
-                                    <form:errors path="tags" cssClass="text-danger"/>
-                                </div>
-
-                                <div class="row form-group">
-                                    <div class="col-md-2 offset-md-2">
-                                        <input class="btn btn-primary w-100" type="submit"
-                                               value="${(submissionForm.id > 0) ? "Save" : "Submit"}"/>
-                                    </div>
-                                </div>
-                            </form:form>
+                                <%--                            </c:otherwise>--%>
+                                <%--                        </c:choose>--%>
                         </div>
-                    </div>
+                    </c:if>
 
-                </c:if>
-                <c:if test="${view_submission && !edit_submission}">
-
-                    <!-- Submission Information (View Mode) -->
-                    <div id="submission_view" class="tab-pane active" role="tabpanel">
+                    <!-- List of spectra -->
+                    <div id="mass_spectra" class="tab-pane ${!view_submission ? "active" : ""}" role="tabpanel">
                         <div class="row row-content">
-                            <div class="col-12">
-                                <table id="info_table" class="display" style="width: 100%; clear: none;">
+                            <div class="col-12 small">
+                                <table id="spectrum_table" class="display compact" style="width: 100%">
                                     <thead>
                                     <tr>
                                         <td></td>
+                                        <td>Name</td>
+                                        <td>Ret Time (min)</td>
+                                        <td>Precursor mass</td>
+                                        <td>Significance</td>
+                                        <td>Molecular Weight</td>
+                                        <td>Integer m/z</td>
+                                        <td>Type</td>
                                         <td></td>
                                     </tr>
                                     </thead>
-                                    <tbody>
-                                    <tr>
-                                        <td><strong>Name:</strong></td>
-                                        <td>${submission.name}</td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>External ID:</strong></td>
-                                        <td>${submission.externalId}</td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Description:</strong></td>
-                                        <td>
-                                            <pre>${submission.description}</pre>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Private:</strong></td>
-                                        <td><span class="badge badge-info">${submission.isPrivate() ? "Yes" : "No"}</span></td>
-                                    </tr>
-                                    <c:if test="${submission.reference != null}">
-                                        <tr>
-                                            <td><strong>URL:</strong></td>
-                                            <td><a href="${submission.reference}"
-                                                   title="${submission.reference}"
-                                                   target="_blank">${dulab:abbreviate(submission.reference, 80)}</a>
-                                            </td>
-                                        </tr>
-                                    </c:if>
-                                    <c:if test="${submission.tagsAsString.length() > 0}">
-                                        <tr>
-                                            <td><strong>Tags:</strong></td>
-                                            <td>
-                                                    <%-- ${submission.tagsAsString}--%>
-                                                <c:forEach items="${submission.tags}" var="tag"
-                                                           varStatus="status">
-                                                    <span id="${submission.id}color${status.index}">${tag}&nbsp;</span>
-                                                    <script>
-                                                        var spanId = '${fn:length(submission.tags)}';
-                                                    </script>
-                                                </c:forEach>
-
-                                                <script>
-                                                    spanColor(${submission.id}, spanId);
-                                                </script>
-                                            </td>
-                                        </tr>
-                                    </c:if>
-                                    <c:forEach items="${submissionCategoryTypes}" var="type">
-                                        <tr>
-                                            <td><strong>${type.label}:</strong></td>
-                                            <td>${submission.getCategory(type)}</td>
-                                        </tr>
-                                    </c:forEach>
-                                    </tbody>
+                                    <tbody></tbody>
                                 </table>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-4 offset-md-4">
-                                <a href="edit" class="btn btn-primary w-100">Edit Submission</a>
+                            <div class="col-md-3 offset-md-3">
+                                <a href="<c:url value="group_search/"/>" class="btn btn-primary w-100">Search all
+                                    spectra</a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="<c:url value="study_search/"/>" class="btn btn-primary w-100">Search
+                                    studies</a>
                             </div>
                         </div>
-
-                            <%--                            </c:otherwise>--%>
-                            <%--                        </c:choose>--%>
                     </div>
-                </c:if>
 
-                <!-- List of spectra -->
-                <div id="mass_spectra" class="tab-pane ${!view_submission ? "active" : ""}" role="tabpanel">
-                    <div class="row row-content">
-                        <div class="col-12 small">
-                            <table id="spectrum_table" class="display compact" style="width: 100%">
-                                <thead>
-                                <tr>
-                                    <td></td>
-                                    <td>Name</td>
-                                    <td>Ret Time (min)</td>
-                                    <td>Precursor mass</td>
-                                    <td>Significance</td>
-                                    <td>Molecular Weight</td>
-                                    <td>Integer m/z</td>
-                                    <td>Type</td>
-                                    <td></td>
-                                </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-3 offset-md-3">
-                            <a href="<c:url value="group_search/"/>" class="btn btn-primary w-100">Search all
-                                spectra</a>
-                        </div>
-                        <div class="col-md-3">
-                            <a href="<c:url value="study_search/"/>" class="btn btn-primary w-100">Search
-                                studies</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- List of files -->
-                <div id="files" class="tab-pane" role="tabpanel">
-                    <table id="file_table" class="display responsive" style="width: 100%;">
-                        <thead>
-                        <tr>
-                            <th>File</th>
-                            <th>Type</th>
-                            <th>Size</th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <c:forEach items="${submission.files}" var="file" varStatus="loop">
+                    <!-- List of files -->
+                    <div id="files" class="tab-pane" role="tabpanel">
+                        <table id="file_table" class="display responsive" style="width: 100%;">
+                            <thead>
                             <tr>
-                                <td><a href="${loop.index}/view/" target="_blank">${file.name}</a></td>
-                                <td>${file.fileType.label}</td>
-                                <td>${file.spectra.size()} spectra</td>
-                                <td>
-                                    <a href="${loop.index}/view/" target="_blank">
-                                        <i class="material-icons" title="View">attach_file</i>
-                                    </a>
-                                    <a href="${loop.index}/download/" target="_blank">
-                                        <i class="material-icons" title="Download">save_alt</i>
-                                    </a>
-                                </td>
+                                <th>File</th>
+                                <th>Type</th>
+                                <th>Size</th>
+                                <th></th>
                             </tr>
-                        </c:forEach>
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                            <c:forEach items="${submission.files}" var="file" varStatus="loop">
+                                <tr>
+                                    <td><a href="${loop.index}/view/" target="_blank">${file.name}</a></td>
+                                    <td>${file.fileType.label}</td>
+                                    <td>${file.spectra.size()} spectra</td>
+                                    <td>
+                                        <a href="${loop.index}/view/" target="_blank">
+                                            <i class="material-icons" title="View">attach_file</i>
+                                        </a>
+                                        <a href="${loop.index}/download/" target="_blank">
+                                            <i class="material-icons" title="Download">save_alt</i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<c:if test="${submissionForm.id == 0}">
-    <div align="center">
-        <!-- <div style="text-align: right; margin-right: 40px;"> -->
-        <a href="clear/" class="button">Clear</a>
-    </div>
-</c:if>
+    <c:if test="${submissionForm.id == 0}">
+        <div align="center">
+            <!-- <div style="text-align: right; margin-right: 40px;"> -->
+            <a href="clear/" class="button">Clear</a>
+        </div>
+    </c:if>
+</div>
 
 <script src="<c:url value="/resources/npm/node_modules/jquery/dist/jquery.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/popper.js/dist/umd/popper.min.js"/>"></script>
@@ -411,7 +419,7 @@
 
     // Adjust column widths when a table becomes visible
     $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
-        $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust();
+        $.fn.dataTable.tables({visible: true, api: true}).columns.adjust();
     });
 
 </script>

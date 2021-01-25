@@ -1,6 +1,5 @@
 package org.dulab.adapcompounddb.site.services.search;
 
-import org.dulab.adapcompounddb.models.MatchType;
 import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
@@ -21,16 +20,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class SpectrumSearchServiceGCImpl implements SpectrumSearchService {
+public class SpectrumSearchServiceImpl implements IndividualSearchService {
 
     private final SpectrumRepository spectrumRepository;
     private final SpectrumClusterRepository spectrumClusterRepository;
     private final SubmissionRepository submissionRepository;
 
     @Autowired
-    public SpectrumSearchServiceGCImpl(SpectrumRepository spectrumRepository,
-                                       SpectrumClusterRepository spectrumClusterRepository,
-                                       SubmissionRepository submissionRepository) {
+    public SpectrumSearchServiceImpl(SpectrumRepository spectrumRepository,
+                                     SpectrumClusterRepository spectrumClusterRepository,
+                                     SubmissionRepository submissionRepository) {
         this.spectrumRepository = spectrumRepository;
         this.spectrumClusterRepository = spectrumClusterRepository;
         this.submissionRepository = submissionRepository;
@@ -45,15 +44,16 @@ public class SpectrumSearchServiceGCImpl implements SpectrumSearchService {
     @Override
     @Transactional
     public List<SearchResultDTO> searchConsensusSpectra(UserPrincipal user, Spectrum querySpectrum,
-                                                        double scoreThreshold, double mzTolerance,
-                                                        String species, String source, String disease) {
+                                                        SearchParameters parameters) {
 
         Iterable<BigInteger> submissionIds = submissionRepository.findSubmissionIdsBySubmissionTags(
-                user != null ? user.getId() : null, species, source, disease);
+                user != null ? user.getId() : null,
+                parameters.getSpecies(), parameters.getSource(), parameters.getDisease());
 
         List<SearchResultDTO> searchResults = new ArrayList<>();
         for (SpectrumClusterView view : spectrumRepository.searchLibrarySpectra(
-                querySpectrum, scoreThreshold, mzTolerance, submissionIds)) {
+                submissionIds, querySpectrum, parameters.getScoreThreshold(), parameters.getMzTolerance(),
+                null, null)) {
 
             SearchResultDTO searchResult = new SearchResultDTO(querySpectrum, view);
 

@@ -27,18 +27,20 @@
     <link rel="icon" type="image/png" href="<c:url value="/resources/static/favicon-16x16.png"/>" sizes="16x16"/>
 
     <link rel="stylesheet" href="<c:url value="/resources/custom-bootstrap.css"/>">
-    <link rel="stylesheet" href="<c:url value="/resources/npm/node_modules/bootstrap4-toggle/css/bootstrap4-toggle.min.css"/>">
-<%--    <link rel="stylesheet" href="<c:url value="/resources/DataTables/DataTables-1.10.23/css/jquery.dataTables.min.css"/>">--%>
-<%--    <link rel="stylesheet" href="<c:url value="/resources/DataTables/DataTables-1.10.23/css/dataTables.bootstrap4.min.css"/>">--%>
-    <link rel="stylesheet" href="<c:url value="/resources/DataTables/DataTables-1.10.23/css/jquery.dataTables.min.css"/>">
-<%--    <link rel="stylesheet" href="<c:url value="/resources/DataTables/datatables.css"/>">--%>
+    <link rel="stylesheet"
+          href="<c:url value="/resources/npm/node_modules/bootstrap4-toggle/css/bootstrap4-toggle.min.css"/>">
+    <%--    <link rel="stylesheet" href="<c:url value="/resources/DataTables/DataTables-1.10.23/css/jquery.dataTables.min.css"/>">--%>
+    <%--    <link rel="stylesheet" href="<c:url value="/resources/DataTables/DataTables-1.10.23/css/dataTables.bootstrap4.min.css"/>">--%>
+    <link rel="stylesheet"
+          href="<c:url value="/resources/DataTables/DataTables-1.10.23/css/jquery.dataTables.min.css"/>">
+    <%--    <link rel="stylesheet" href="<c:url value="/resources/DataTables/datatables.css"/>">--%>
     <link rel="stylesheet" type="text/css" media="(max-width: 480px)"
           href="<c:url value="/resources/AdapCompoundDb/css/main_mobile_portrait.css"/>">
     <link rel="stylesheet" type="text/css" media="(min-width: 481px)"
           href="<c:url value="/resources/AdapCompoundDb/css/main.css"/>">
 
-<%--    <link rel="stylesheet" href="<c:url value="/resources/DataTables-1.10.16/css/jquery.dataTables.min.css"/>">--%>
-<%--    <link rel="stylesheet" href="<c:url value="/resources/Select-1.2.5/css/select.dataTables.min.css"/>">--%>
+    <%--    <link rel="stylesheet" href="<c:url value="/resources/DataTables-1.10.16/css/jquery.dataTables.min.css"/>">--%>
+    <%--    <link rel="stylesheet" href="<c:url value="/resources/Select-1.2.5/css/select.dataTables.min.css"/>">--%>
     <link rel="stylesheet" href="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.theme.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.structure.min.css"/>">
@@ -50,43 +52,43 @@
           href="<c:url value="https://fonts.googleapis.com/css?family=Crimson+Text|Proza+Libre|Lato:300,400"/>">
     <link rel="stylesheet" href="<c:url value="/resources/tagify-master/tagify.css"/>">
 
-<%--    <script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>--%>
-<%--    <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>--%>
-<%--    <script src="<c:url value="/resources/Select-1.2.5/js/dataTables.select.min.js"/>"></script>--%>
-<%--    <script type="text/javascript" src="<c:url value="/resources/AdapCompoundDb/js/tabs.js"/>"></script>--%>
-<%--    <script src="http://d3js.org/d3.v4.min.js"></script>--%>
-<%--    <script type="text/javascript">--%>
-<%--        $(document).ready(function () {--%>
-<%--            $(document).click(function (e) {--%>
-<%--                var side = $(".side");--%>
-<%--                if ($(side).hasClass("menu") && e.target.id != "menu") {--%>
-<%--                    var menu = $(e.target).closest(".side");--%>
-<%--                    if (menu.length == 0) {--%>
-<%--                        $(".side").removeClass("menu");--%>
-<%--                        animateIcon("view_headline");--%>
-<%--                    }--%>
-<%--                }--%>
-<%--            });--%>
+    <%--    <script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>--%>
+    <%--    <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>--%>
+    <%--    <script src="<c:url value="/resources/Select-1.2.5/js/dataTables.select.min.js"/>"></script>--%>
+    <%--    <script type="text/javascript" src="<c:url value="/resources/AdapCompoundDb/js/tabs.js"/>"></script>--%>
+    <%--    <script src="http://d3js.org/d3.v4.min.js"></script>--%>
+    <%--    <script type="text/javascript">--%>
+    <%--        $(document).ready(function () {--%>
+    <%--            $(document).click(function (e) {--%>
+    <%--                var side = $(".side");--%>
+    <%--                if ($(side).hasClass("menu") && e.target.id != "menu") {--%>
+    <%--                    var menu = $(e.target).closest(".side");--%>
+    <%--                    if (menu.length == 0) {--%>
+    <%--                        $(".side").removeClass("menu");--%>
+    <%--                        animateIcon("view_headline");--%>
+    <%--                    }--%>
+    <%--                }--%>
+    <%--            });--%>
 
-<%--            var animateIcon = function (content) {--%>
-<%--                $('#menu').animate({--%>
-<%--                    'opacity': 0--%>
-<%--                }, 100, function () {--%>
-<%--                    $(this).html(content).animate({'opacity': 1}, 100);--%>
-<%--                });--%>
-<%--            };--%>
+    <%--            var animateIcon = function (content) {--%>
+    <%--                $('#menu').animate({--%>
+    <%--                    'opacity': 0--%>
+    <%--                }, 100, function () {--%>
+    <%--                    $(this).html(content).animate({'opacity': 1}, 100);--%>
+    <%--                });--%>
+    <%--            };--%>
 
-<%--            $("#menu").click(function () {--%>
-<%--                if ($("#menu").html() == 'view_headline') {--%>
-<%--                    animateIcon("clear");--%>
-<%--                    $(".side").addClass("menu");--%>
-<%--                } else {--%>
-<%--                    animateIcon("view_headline");--%>
-<%--                    $(".side").removeClass("menu");--%>
-<%--                }--%>
-<%--            });--%>
-<%--        });--%>
-<%--    </script>--%>
+    <%--            $("#menu").click(function () {--%>
+    <%--                if ($("#menu").html() == 'view_headline') {--%>
+    <%--                    animateIcon("clear");--%>
+    <%--                    $(".side").addClass("menu");--%>
+    <%--                } else {--%>
+    <%--                    animateIcon("view_headline");--%>
+    <%--                    $(".side").removeClass("menu");--%>
+    <%--                }--%>
+    <%--            });--%>
+    <%--        });--%>
+    <%--    </script>--%>
 
 </head>
 
@@ -217,7 +219,7 @@
 
     <%--    </div>--%>
 
-    <article class="container-fluid">
+    <article style="margin: 0 auto; width: 100%">
         <decorator:body/>
     </article>
 </div>

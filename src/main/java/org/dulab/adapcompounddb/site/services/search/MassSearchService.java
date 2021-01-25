@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class MassSearchService implements SpectrumSearchService {
+public class MassSearchService implements IndividualSearchService {
 
     private final SpectrumRepository spectrumRepository;
 
@@ -30,12 +30,12 @@ public class MassSearchService implements SpectrumSearchService {
 
     @Override
     public List<SearchResultDTO> searchConsensusSpectra(UserPrincipal userPrincipal, Spectrum querySpectrum,
-                                                        double scoreThreshold, double mzTolerance,
-                                                        String species, String source, String disease) {
+                                                        SearchParameters parameters) {
 
         List<SearchResultDTO> searchResults = new ArrayList<>();
         for (MassSearchResult massSearchResult : spectrumRepository.searchLibraryMasses(
-                querySpectrum, mzTolerance, species, source, disease)) {
+                querySpectrum, parameters.getMzTolerance(),
+                parameters.getSpecies(), parameters.getSource(), parameters.getDisease())) {
 
             SearchResultDTO searchResult = new SearchResultDTO(querySpectrum, massSearchResult);
             searchResults.add(searchResult);

@@ -19,79 +19,82 @@
     </div>
 </div>
 
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header card-header-single">
-                Upload File
-            </div>
-            <div class="card-body">
-                <div class="container">
-                    <%--@elvariable id="message" type="java.lang.String"--%>
-                    <c:if test="${message}">
-                        <div class="row">
-                            <div class="col-md-8 offset-md-2">
-                                <p class="text-danger">${message}</p>
-                            </div>
-                        </div>
-                    </c:if>
-                    <%--@elvariable id="validationErrors" type="java.util.Set<javax.validation.ConstraintViolation>"--%>
-                    <c:if test="${validationErrors}">
-                        <div class="row">
-                            <div class="col-md-8 offset-md-2">
-                                <ul class="text-danger">
-                                    <c:forEach items="${validationErrors}" var="error">
-                                        <li><c:out value="${error.message}"/></li>
-                                    </c:forEach>
-                                </ul>
-                            </div>
-                        </div>
-                    </c:if>
-
-                    <form:form method="POST" modelAttribute="fileUploadForm" enctype="multipart/form-data">
-                        <form:errors path="" cssClass="errors"/>
-                        <div class="row form-group">
-                            <form:label path="chromatographyType"
-                                        cssClass="col-12 col-md-3 offset-md-2 col-form-label">Chromatography type</form:label>&nbsp;
-                            <div class="col-12 col-md-5">
-                                <form:select path="chromatographyType" cssClass="form-control">
-                                    <form:option id="typeValue" value="" label="Please select..."/>
-                                    <form:options items="${chromatographyTypeList}" itemLabel="label"/>
-                                </form:select>
-                                <form:errors path="chromatographyType" cssClass="text-danger form-control-sm"/>
-                            </div>
-                        </div>
-                        <fieldset class="form-group">
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header card-header-single">
+                    Upload File
+                </div>
+                <div class="card-body">
+                    <div class="container">
+                        <%--@elvariable id="message" type="java.lang.String"--%>
+                        <c:if test="${message}">
                             <div class="row">
-                                <form:label path="fileType"
-                                            cssClass="col-12 col-md-3 offset-md-2 col-form-label">File type</form:label>
-                                <div class="col-md-5">
-                                        <%--@elvariable id="fileTypeList" type="org.dulab.adapcompounddb.models.FileType[]"--%>
-                                    <c:forEach items="${fileTypeList}" var="type">
-                                        <div class="form-check">
-                                            <form:radiobutton path="fileType" label="${type.label}" value="${type}"
-                                                              cssClass="form-check-input"/>
-                                        </div>
-                                    </c:forEach>
-                                    <form:errors path="fileType" cssClass="text-danger form-control-sm"/>
+                                <div class="col-md-8 offset-md-2">
+                                    <p class="text-danger">${message}</p>
                                 </div>
                             </div>
-                        </fieldset>
-                        <div class="row form-group">
-                            <form:label path="files" cssClass="col-md-3 offset-md-2 col-form-label">File</form:label>&nbsp;
-                            <div class="col-md-5">
-                                <input type="file" name="files" accept=".msp,.csv" class="form-control-file"
-                                       multiple/>
-                                <form:errors path="files" cssClass="text-danger form-control-sm"/>
+                        </c:if>
+                        <%--@elvariable id="validationErrors" type="java.util.Set<javax.validation.ConstraintViolation>"--%>
+                        <c:if test="${validationErrors}">
+                            <div class="row">
+                                <div class="col-md-8 offset-md-2">
+                                    <ul class="text-danger">
+                                        <c:forEach items="${validationErrors}" var="error">
+                                            <li><c:out value="${error.message}"/></li>
+                                        </c:forEach>
+                                    </ul>
+                                </div>
                             </div>
-                        </div>
+                        </c:if>
 
-                        <div class="row">
-                            <div class="col-md-2 offset-md-5">
-                                <input type="submit" name="submit" value="Upload" class="btn btn-primary"/>
+                        <form:form method="POST" modelAttribute="fileUploadForm" enctype="multipart/form-data">
+                            <form:errors path="" cssClass="errors"/>
+                            <div class="row form-group">
+                                <form:label path="chromatographyType"
+                                            cssClass="col-12 col-md-3 offset-md-2 col-form-label">Chromatography type</form:label>&nbsp;
+                                <div class="col-12 col-md-5">
+                                    <form:select path="chromatographyType" cssClass="form-control">
+                                        <form:option id="typeValue" value="" label="Please select..."/>
+                                        <form:options items="${chromatographyTypeList}" itemLabel="label"/>
+                                    </form:select>
+                                    <form:errors path="chromatographyType" cssClass="text-danger form-control-sm"/>
+                                </div>
                             </div>
-                        </div>
-                    </form:form>
+                            <fieldset class="form-group">
+                                <div class="row">
+                                    <form:label path="fileType"
+                                                cssClass="col-12 col-md-3 offset-md-2 col-form-label">File type</form:label>
+                                    <div class="col-md-5">
+                                            <%--@elvariable id="fileTypeList" type="org.dulab.adapcompounddb.models.FileType[]"--%>
+                                        <c:forEach items="${fileTypeList}" var="type">
+                                            <div class="form-check">
+                                                <form:radiobutton path="fileType" label="${type.label}" value="${type}"
+                                                                  cssClass="form-check-input"/>
+                                            </div>
+                                        </c:forEach>
+                                        <form:errors path="fileType" cssClass="text-danger form-control-sm"/>
+                                    </div>
+                                </div>
+                            </fieldset>
+                            <div class="row form-group">
+                                <form:label path="files"
+                                            cssClass="col-md-3 offset-md-2 col-form-label">File</form:label>&nbsp;
+                                <div class="col-md-5">
+                                    <input type="file" name="files" accept=".msp,.csv" class="form-control-file"
+                                           multiple/>
+                                    <form:errors path="files" cssClass="text-danger form-control-sm"/>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-2 offset-md-5">
+                                    <input type="submit" name="submit" value="Upload" class="btn btn-primary"/>
+                                </div>
+                            </div>
+                        </form:form>
+                    </div>
                 </div>
             </div>
         </div>
