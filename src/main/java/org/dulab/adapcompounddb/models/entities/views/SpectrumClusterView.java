@@ -16,6 +16,7 @@ public class SpectrumClusterView {
     private String name;
     private int size;
     private Double score;
+    private Double error;
     private Double averageSignificance;
     private Double minimumSignificance;
     private Double maximumSignificance;
@@ -61,6 +62,14 @@ public class SpectrumClusterView {
 
     public void setScore(Double score) {
         this.score = score;
+    }
+
+    public Double getError() {
+        return error;
+    }
+
+    public void setError(Double error) {
+        this.error = error;
     }
 
     public Double getAverageSignificance() {

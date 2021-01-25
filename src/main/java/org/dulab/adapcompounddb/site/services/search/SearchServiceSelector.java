@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
+@Deprecated
 public class SearchServiceSelector {
 
     private final Map<ChromatographyType, IndividualSearchService> spectrumSearchServiceMap;

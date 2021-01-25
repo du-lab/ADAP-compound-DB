@@ -64,11 +64,6 @@ public class SearchResultDTO implements Serializable {
 
         matchType = MatchType.CLUSTER;
 
-        if (querySpectrum != null) {
-            this.querySpectrumId = querySpectrum.getId();
-            this.querySpectrumName = querySpectrum.getName();
-        }
-
         if (view != null) {
             boolean isReference = view.getClusterId() == null;
             this.matchType = (isReference) ? MatchType.SPECTRUM : MatchType.CLUSTER;
@@ -76,6 +71,7 @@ public class SearchResultDTO implements Serializable {
             this.name = (isReference ? "[Ref Spec] " : "[Con Spec] ") + view.getName();
             this.size = view.getSize();
             this.score = view.getScore();
+            this.error = view.getError();
             this.aveSignificance = view.getAverageSignificance();
             this.minSignificance = view.getMinimumSignificance();
             this.maxSignificance = view.getMaximumSignificance();

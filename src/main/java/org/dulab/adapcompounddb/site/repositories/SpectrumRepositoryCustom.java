@@ -14,8 +14,8 @@ public interface SpectrumRepositoryCustom {
     List<SpectrumMatch> spectrumSearch(SearchType searchType, Spectrum querySpectrum, QueryParameters params);
 
     Iterable<SpectrumClusterView> searchLibrarySpectra(Iterable<BigInteger> submissionIds, Spectrum querySpectrum,
-                                                       double scoreThreshold, double mzTolerance,
-                                                       Double precursor, Double precursorTolerance);
+                                                       Double scoreThreshold, Double mzTolerance,
+                                                       Double precursorTolerance, Double molecularWeightTolerance);
 
     Iterable<MassSearchResult> searchLibraryMasses(Spectrum querySpectrum, double tolerance,
                                                    String species, String source, String disease);

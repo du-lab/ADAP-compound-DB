@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Deprecated
 public class SpectrumAndPrecursorSearchServiceImpl implements IndividualSearchService {
 
     private final SpectrumRepository spectrumRepository;
@@ -49,7 +50,7 @@ public class SpectrumAndPrecursorSearchServiceImpl implements IndividualSearchSe
         for (SpectrumClusterView view : spectrumRepository.searchLibrarySpectra(
                 submissionIds, querySpectrum,
                 parameters.getScoreThreshold(), parameters.getMzTolerance(),
-                parameters.getPrecursorMz(), parameters.getPrecursorTolerance())) {
+                parameters.getPrecursorTolerance(), null)) {
 
             SearchResultDTO searchResult = new SearchResultDTO(querySpectrum, view);
 

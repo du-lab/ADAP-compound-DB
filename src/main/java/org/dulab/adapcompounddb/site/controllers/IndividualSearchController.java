@@ -32,18 +32,18 @@ public class IndividualSearchController extends BaseController {
     private final SubmissionService submissionService;
     private final SpectrumService spectrumService;
     private final SubmissionTagService submissionTagService;
-    private final SearchServiceSelector searchServiceSelector;
+    private final IndividualSearchService individualSearchService;
 
     @Autowired
-    public IndividualSearchController(final SubmissionService submissionService,
-                                      final SubmissionTagService submissionTagService,
+    public IndividualSearchController(SubmissionService submissionService,
+                                      SubmissionTagService submissionTagService,
                                       @Qualifier("spectrumServiceImpl") SpectrumService spectrumService,
-                                      final SearchServiceSelector searchServiceSelector) {
+                                      @Qualifier("spectrumSearchServiceImpl") IndividualSearchService individualSearchService) {
 
         this.submissionService = submissionService;
         this.spectrumService = spectrumService;
         this.submissionTagService = submissionTagService;
-        this.searchServiceSelector = searchServiceSelector;
+        this.individualSearchService = individualSearchService;
     }
 
     @ModelAttribute
@@ -197,14 +197,27 @@ public class IndividualSearchController extends BaseController {
             return new ModelAndView("submission/spectrum/search");
         }
 
-        final IndividualSearchService individualSearchService =
-                searchServiceSelector.findByChromatographyType(querySpectrum.getChromatographyType());
+//        final IndividualSearchService individualSearchService =
+//                searchServiceSelector.findByChromatographyType(querySpectrum.getChromatographyType());
 
         SearchParameters parameters = new SearchParameters();
-        parameters.setScoreThreshold(0.5);
-        parameters.setMzTolerance(0.01);
-        parameters.setPrecursorMz(querySpectrum.getPrecursor());
-        parameters.setPrecursorTolerance(0.01);
+        switch (querySpectrum.getChromatographyType()) {
+            case GAS:
+            case LIQUID_POSITIVE:
+            case LIQUID_NEGATIVE:
+                parameters.setMzTolerance(0.01);
+                parameters.setScoreThreshold(0.5);
+                break;
+            case LC_MSMS_POS:
+            case LC_MSMS_NEG:
+                parameters.setMzTolerance(0.01);
+                parameters.setScoreThreshold(0.5);
+                parameters.setPrecursorTolerance(0.01);
+                break;
+            case NONE:
+                parameters.setMolecularWeightTolerance(0.01);
+                break;
+        }
         parameters.setSpecies(filterForm.getSpecies());
         parameters.setSource(filterForm.getSource());
         parameters.setDisease(filterForm.getDisease());

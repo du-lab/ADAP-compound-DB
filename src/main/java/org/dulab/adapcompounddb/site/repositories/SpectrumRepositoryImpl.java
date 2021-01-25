@@ -3,9 +3,9 @@ package org.dulab.adapcompounddb.site.repositories;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
@@ -70,43 +70,24 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     }
 
     @Override
-    public Iterable<SpectrumClusterView> searchLibrarySpectra(Iterable<BigInteger> submissionIds, Spectrum querySpectrum,
-                                                              double scoreThreshold, double mzTolerance,
-                                                              Double precursor, Double precursorTolerance) {
-
-//        String query = "SELECT ConsensusSpectrum.Id, SpectrumCluster.Id AS ClusterId, ConsensusSpectrum.Name, COUNT(DISTINCT File.SubmissionId) AS Size, Score, ";
-//        query += "AVG(Spectrum.Significance) AS AverageSignificance, MIN(Spectrum.Significance) AS MinimumSignificance, ";
-//        query += "MAX(Spectrum.Significance) AS MaximumSignificance, ConsensusSpectrum.ChromatographyType FROM (\n";
-//        query += "SELECT ClusterId, POWER(SUM(Product), 2) AS Score FROM (\n";
-//        query += querySpectrum.getPeaks().stream()
-//                .map(p -> String.format("\tSELECT ClusterId, SQRT(Intensity * %f) AS Product " +
-//                                "FROM Peak INNER JOIN Spectrum ON Peak.SpectrumId = Spectrum.Id " +  //
-//                                "WHERE Spectrum.Consensus IS TRUE AND Peak.Mz > %f AND Peak.Mz < %f\n",
-//                        p.getIntensity(), p.getMz() - mzTolerance, p.getMz() + mzTolerance))
-//                .collect(Collectors.joining("\tUNION ALL\n"));
-//        query += ") AS SearchTable ";
-//        query += "GROUP BY ClusterId HAVING Score > :scoreThreshold\n";
-//        query += ") AS ScoreTable JOIN SpectrumCluster ON SpectrumCluster.Id = ClusterId\n";
-//        query += "JOIN Spectrum AS ConsensusSpectrum ON ConsensusSpectrum.Id = SpectrumCluster.ConsensusSpectrumId\n";
-//        query += "JOIN Spectrum ON Spectrum.ClusterId = SpectrumCluster.Id\n";
-//        query += "JOIN File ON File.Id = Spectrum.FileId\n";
-//        query += "WHERE File.SubmissionId IN (:submissionIds)\n";
-//        query += "GROUP BY Spectrum.ClusterId ORDER BY Score DESC";
+    public Iterable<SpectrumClusterView> searchLibrarySpectra(@NotNull Iterable<BigInteger> submissionIds,
+                                                              @NotNull Spectrum querySpectrum,
+                                                              Double scoreThreshold, Double mzTolerance,
+                                                              Double precursorTolerance, Double molecularWeightTolerance) {
 
         List<BigInteger> submissionIdList = new ArrayList<>();
         submissionIds.forEach(submissionIdList::add);
 
         String query = new SpectrumQueryBuilderAlt(submissionIdList,
                 querySpectrum.getChromatographyType(), true, true)
-                .withQuerySpectrum(querySpectrum, mzTolerance, scoreThreshold)
-                .withPrecursor(precursor, precursorTolerance)
+                .withQuerySpectrum(querySpectrum.getPeaks(), mzTolerance, scoreThreshold)
+                .withPrecursor(querySpectrum.getPrecursor(), precursorTolerance)
+                .withMolecularWeight(querySpectrum.getMolecularWeight(), molecularWeightTolerance)
                 .build();
 
         @SuppressWarnings("unchecked")
         List<SpectrumClusterView> resultList = entityManager
                 .createNativeQuery(query, SpectrumClusterView.class)
-//                .setParameter("scoreThreshold", scoreThreshold)
-//                .setParameter("submissionIds", submissionIds)
                 .getResultList();
 
         return resultList;
