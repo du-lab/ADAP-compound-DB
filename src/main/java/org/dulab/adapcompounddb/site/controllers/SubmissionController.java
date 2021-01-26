@@ -234,7 +234,7 @@ public class SubmissionController extends BaseController {
     /**********************************
      ***** File / Submission Submit *****
      **********************************/
-    @RequestMapping(value = "/file/submit", method = RequestMethod.POST)
+    @RequestMapping(value = "/file", method = RequestMethod.POST)
     public String fileView(final HttpSession session, final Model model, @Valid final SubmissionForm submissionForm,
                            final Errors errors) {
 
