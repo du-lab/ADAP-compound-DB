@@ -121,7 +121,7 @@ public class SpectrumQueryBuilderAlt {
     }
 
     private String buildEmptyQuery() {
-        return "SELECT Id, NULL AS ClusterId, Name, 1 AS Size, 0 AS Score, " +
+        return "SELECT Id, NULL AS ClusterId, Name, 1 AS Size, 0 AS Score, NULL AS Error, " +
                 "Significance AS AverageSignificance, Significance AS MinimumSignificance, " +
                 "Significance AS MaximumSignificance, ChromatographyType FROM Spectrum WHERE FALSE";
     }
@@ -149,7 +149,7 @@ public class SpectrumQueryBuilderAlt {
 
         String scoreTable = "";
         if (peaks != null && mzTolerance != null && scoreThreshold != null) {
-            scoreTable += "SELECT SpectrumId, POWER(SUM(Product), 2) AS Score, MAX(Error) FROM (\n";
+            scoreTable += "SELECT SpectrumId, POWER(SUM(Product), 2) AS Score, MAX(Error) AS Error FROM (\n";
             String finalSpectrumSelector = spectrumSelector;
             scoreTable += peaks.stream()
                     .map(p -> String.format(

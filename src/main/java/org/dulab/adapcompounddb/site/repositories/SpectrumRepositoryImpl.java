@@ -94,30 +94,6 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     }
 
     @Override
-    public Iterable<MassSearchResult> searchLibraryMasses(Spectrum querySpectrum, double tolerance, String species, String source, String disease) {
-
-        Double queryWeight = querySpectrum.getMolecularWeight();
-        if (queryWeight == null) return new ArrayList<>(0);
-
-        String query = String.format(
-                "SELECT Id, Name, MolecularWeight, ABS(MolecularWeight - %f) AS Error, ChromatographyType " +
-                        "FROM Spectrum WHERE (Consensus IS TRUE OR Reference IS True) AND " +
-                        "ChromatographyType = '%s' AND MolecularWeight > %f AND MolecularWeight < %f " +
-                        "ORDER BY Error ASC",
-                queryWeight,
-                querySpectrum.getChromatographyType(),
-                queryWeight - tolerance,
-                queryWeight + tolerance);
-
-        @SuppressWarnings("unchecked")
-        List<MassSearchResult> resultList = entityManager
-                .createNativeQuery(query, MassSearchResult.class)
-                .getResultList();
-
-        return resultList;
-    }
-
-    @Override
     public void savePeaksAndPropertiesQuery(final List<Spectrum> spectrumList, final List<Long> savedSpectrumIdList) {
         final StringBuilder peakSql = new StringBuilder(PEAK_INSERT_SQL_STRING);
         final StringBuilder propertySql = new StringBuilder(PROPERTY_INSERT_SQL_STRING);

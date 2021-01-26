@@ -17,9 +17,6 @@ public interface SpectrumRepositoryCustom {
                                                        Double scoreThreshold, Double mzTolerance,
                                                        Double precursorTolerance, Double molecularWeightTolerance);
 
-    Iterable<MassSearchResult> searchLibraryMasses(Spectrum querySpectrum, double tolerance,
-                                                   String species, String source, String disease);
-
     void savePeaksAndPropertiesQuery(List<Spectrum> spectrumList, List<Long> savedSpectrumIdList);
 
     void saveSpectrumAndPeaks(final List<File> fileList, final List<Long> savedFileIdList);

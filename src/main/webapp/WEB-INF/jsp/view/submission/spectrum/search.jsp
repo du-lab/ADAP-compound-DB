@@ -79,7 +79,7 @@
         <div class="col col-md-4 px-2">
             <%--@elvariable id="searchResults" type="java.util.List<org.dulab.adapcompounddb.models.dto.SearchResultDTO>"--%>
             <c:if test="${searchResults != null && searchResults.size() > 0}">
-                <div class="row mb-1">
+                <div id="chartRow" class="row mb-1">
                     <div class="col-12 px-0">
                         <div class="card">
                             <div class="card-header card-header-single">Plot</div>
@@ -96,19 +96,19 @@
                 <div class="col col-12 px-0">
                     <div class="card">
                         <div class="card-header card-header-single">Query Spectrum</div>
-                        <div class="card-body small">
+                        <div class="card-body small overflow-auto" style="max-height: 400px">
                             <%--@elvariable id="querySpectrum" type="org.dulab.adapcompounddb.models.entities.Spectrum"--%>
                             <strong>${querySpectrum.name}</strong>&nbsp;
                             <span class="badge badge-info">${querySpectrum.chromatographyType.label}</span><br/>
-                            <strong>${querySpectrum.file.submission.name}</strong>
-                            <table>
+                            ${querySpectrum.file.submission.name}
+                            <ul class="list-group list-group-flush">
                                 <c:forEach items="${querySpectrum.properties}" var="property">
-                                    <tr>
-                                        <td><strong>${property.name}:</strong>&nbsp;</td>
-                                        <td><span style="word-break: break-all">${dulab:abbreviate(property.value, 80)}</span></td>
-                                    </tr>
+                                    <li class="list-group-item py-1">
+                                        <strong>${property.name}:</strong>&nbsp
+                                        <span style="word-break: break-all">${property.value}</span>
+                                    </li>
                                 </c:forEach>
-                            </table>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -198,9 +198,9 @@
         </div>
     </div>
 
-<%--    <div align="center">--%>
-<%--        <a id="searchButton" class="btn btn-primary" onclick="$('#filterForm').submit()">Search</a>--%>
-<%--    </div>--%>
+    <%--    <div align="center">--%>
+    <%--        <a id="searchButton" class="btn btn-primary" onclick="$('#filterForm').submit()">Search</a>--%>
+    <%--    </div>--%>
 </div>
 
 <script src="<c:url value="/resources/npm/node_modules/jquery/dist/jquery.min.js"/>"></script>
@@ -238,35 +238,40 @@
             // }
         });
 
-        let plot = new TwoSpectraPlot('plot', JSON.parse('${dulab:spectrumToJson(querySpectrum)}'))
+        let plot = new TwoSpectraPlot('plot', JSON.parse('${dulab:spectrumToJson(querySpectrum)}'));
 
         table.on('select', function (e, dt, type, indexes) {
+
+            let chartRow = $('#chartRow');
+            chartRow.hide();
+
             let row = table.row(indexes).node();
             let spectrum = $(row).attr('data-spectrum');
-            if (spectrum) {
-                $('#chartSection').show();
-                plot.update(JSON.parse(spectrum));
-            } else {
-                $('#chartSection').hide();
-            }
+            if (spectrum == null) return;
+
+            let spectrumJson = JSON.parse(spectrum);
+            if (spectrumJson["peaks"].length === 0) return;
+
+            plot.update(spectrumJson);
+            chartRow.show();
         });
 
-        table.rows(':eq(0)').select();
+    table.rows(':eq(0)').select();
 
-        $('#searchButton').click(function() {
-            $('#filterForm').submit();
-            $(this).prop('disabled', true);
-            $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;Search')
-        });
-
-        // $('span[data-id="property_table"]').spa(function () {
-        //     console.log(this.style.overflow);
-        // });
-
-        // $('#filterForm').appendTo('#filter');
-
-        // $('#species, #source, #disease').change(function () {
-        //     $('#filterForm').submit();
-        // });
+    $('#searchButton').click(function () {
+        $('#filterForm').submit();
+        $(this).prop('disabled', true);
+        $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;Search')
     });
+
+    // $('span[data-id="property_table"]').spa(function () {
+    //     console.log(this.style.overflow);
+    // });
+
+    // $('#filterForm').appendTo('#filter');
+
+    // $('#species, #source, #disease').change(function () {
+    //     $('#filterForm').submit();
+    // });
+    })
 </script>

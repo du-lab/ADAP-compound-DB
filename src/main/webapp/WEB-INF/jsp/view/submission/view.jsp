@@ -8,13 +8,38 @@
 <script src="<c:url value="/resources/AdapCompoundDb/js/tagsColor.js"/>"></script>
 
 <div class="container">
-    <div class="row">
+
+    <div class="row row-content">
+        <div class="col">
+            <div class="btn-toolbar justify-content-between" role="toolbar">
+                <div>
+                    <c:if test="${submissionForm.id == 0}">
+                        <%--                    <div align="center">--%>
+                        <%--                        <!-- <div style="text-align: right; margin-right: 40px;"> -->--%>
+                        <%--                        <a href="clear/" class="button">Clear</a>--%>
+                        <%--                    </div>--%>
+                        <a id="clearButton" type="button" class="btn btn-secondary" href="clear/">Clear</a>
+                    </c:if>
+                    <%--@elvariable id="edit_submission" type="java.lang.Boolean"--%>
+                    <%--@elvariable id="view_submission" type="java.lang.Boolean"--%>
+                    <c:if test="${view_submission && !edit_submission}">
+                        <a href="edit" type="button" class="btn btn-primary">Edit Submission</a>
+                    </c:if>
+                </div>
+                <div>
+                    <a href="<c:url value="group_search/"/>" type="button" class="btn btn-primary">Search all
+                        spectra</a>
+                    <a href="<c:url value="study_search/"/>" type="button" class="btn btn-primary">Search studies</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row row-content">
         <div class="col-12">
             <div class="card">
                 <div class="card-header card-header-tabs">
                     <ul class="nav nav-tabs nav-fill nav-justified" role="tablist">
-                        <%--@elvariable id="edit_submission" type="java.lang.Boolean"--%>
-                        <%--@elvariable id="view_submission" type="java.lang.Boolean"--%>
                         <c:if test="${view_submission && edit_submission}">
                             <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#submission_edit">
                                 Study Properties</a></li>
@@ -37,7 +62,7 @@
                     <c:if test="${view_submission && edit_submission}">
                         <!-- Submission Information (Edit Mode) -->
                         <div id="submission_edit" class="tab-pane active" role="tabpanel">
-                            <div class="container">
+                            <div class="container small">
                                 <div class="row">
                                     <div class="col-12 col-md-8 offset-md-2">
                                         Please provide name and detailed description of the data when you submit
@@ -61,21 +86,21 @@
                                     <form:errors path="" cssClass="errors"/><br/>
                                     <form:hidden path="id"/><br/>
 
-                                    <div class="row form-group">
+                                    <div class="form-row form-group">
                                         <form:label path="name"
                                                     cssClass="col-12 col-md-2 col-form-label">Name</form:label>
                                         <form:input path="name" cssClass="col-12 col-md-10 form-control"/>
                                         <form:errors path="name" cssClass="text-danger"/>
                                     </div>
 
-                                    <div class="row form-group">
+                                    <div class="form-row form-group">
                                         <form:label path="externalId"
                                                     cssClass="col-12 col-md-2 col-form-label">External ID</form:label>
                                         <form:input path="externalId" cssClass="col-12 col-md-6 form-control"/>
                                         <form:errors path="externalId" cssClass="text-danger"/>
                                     </div>
 
-                                    <div class="row form-group">
+                                    <div class="form-row form-group">
                                         <form:label path="description"
                                                     cssClass="col-12 col-md-2 col-form-label">Description</form:label>
                                         <form:textarea path="description" cssClass="col-12 col-md-8 form-control"
@@ -83,7 +108,7 @@
                                         <form:errors path="description" cssClass="text-danger"/>
                                     </div>
 
-                                    <div class="row form-group">
+                                    <div class="form-row form-group">
                                         <form:label path="isPrivate"
                                                     cssClass="col-md-2 col-form-label">Private</form:label>
                                         <form:checkbox path="isPrivate" data-toggle="toggle" data-on="Yes" data-off="No"
@@ -91,7 +116,7 @@
                                         <form:errors path="isPrivate" cssClass="text-danger"/>
                                     </div>
 
-                                    <div class="row form-group">
+                                    <div class="form-row form-group">
                                         <form:label path="reference"
                                                     cssClass="col-12 col-md-2 col-form-label">URL</form:label>
                                         <form:input path="reference" cssClass="col-12 col-md-10 form-control"/>
@@ -100,7 +125,7 @@
 
                                     <%--                                <form:errors path="submissionCategoryIds" cssClass="errors"/><br/>--%>
 
-                                    <div class="row form-group">
+                                    <div class="form-row form-group">
                                         <form:label path="tags"
                                                     cssClass="col-12 col-md-2 col-form-label">Tags</form:label>
                                         <form:input placeholder="Add tags here!" path="tags"
@@ -108,7 +133,7 @@
                                         <form:errors path="tags" cssClass="text-danger"/>
                                     </div>
 
-                                    <div class="row form-group">
+                                    <div class="form-row form-group">
                                         <div class="col-md-2 offset-md-2">
                                             <input class="btn btn-primary w-100" type="submit"
                                                    value="${(submissionForm.id > 0) ? "Save" : "Submit"}"/>
@@ -191,11 +216,11 @@
                                     </table>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-4 offset-md-4">
-                                    <a href="edit" class="btn btn-primary w-100">Edit Submission</a>
-                                </div>
-                            </div>
+<%--                            <div class="row">--%>
+<%--                                <div class="col-md-4 offset-md-4">--%>
+<%--                                    <a href="edit" class="btn btn-primary w-100">Edit Submission</a>--%>
+<%--                                </div>--%>
+<%--                            </div>--%>
 
                                 <%--                            </c:otherwise>--%>
                                 <%--                        </c:choose>--%>
@@ -224,16 +249,16 @@
                                 </table>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-3 offset-md-3">
-                                <a href="<c:url value="group_search/"/>" class="btn btn-primary w-100">Search all
-                                    spectra</a>
-                            </div>
-                            <div class="col-md-3">
-                                <a href="<c:url value="study_search/"/>" class="btn btn-primary w-100">Search
-                                    studies</a>
-                            </div>
-                        </div>
+                        <%--                        <div class="row">--%>
+                        <%--                            <div class="col-md-3 offset-md-3">--%>
+                        <%--                                <a href="<c:url value="group_search/"/>" class="btn btn-primary w-100">Search all--%>
+                        <%--                                    spectra</a>--%>
+                        <%--                            </div>--%>
+                        <%--                            <div class="col-md-3">--%>
+                        <%--                                <a href="<c:url value="study_search/"/>" class="btn btn-primary w-100">Search--%>
+                        <%--                                    studies</a>--%>
+                        <%--                            </div>--%>
+                        <%--                        </div>--%>
                     </div>
 
                     <!-- List of files -->
@@ -271,22 +296,19 @@
         </div>
     </div>
 
-    <c:if test="${submissionForm.id == 0}">
-        <div align="center">
-            <!-- <div style="text-align: right; margin-right: 40px;"> -->
-            <a href="clear/" class="button">Clear</a>
-        </div>
-    </c:if>
+    <%--    <c:if test="${submissionForm.id == 0}">--%>
+    <%--        <div align="center">--%>
+    <%--            <!-- <div style="text-align: right; margin-right: 40px;"> -->--%>
+    <%--            <a href="clear/" class="button">Clear</a>--%>
+    <%--        </div>--%>
+    <%--    </c:if>--%>
 </div>
 
 <script src="<c:url value="/resources/npm/node_modules/jquery/dist/jquery.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/popper.js/dist/umd/popper.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/bootstrap/dist/js/bootstrap.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/bootstrap4-toggle/js/bootstrap4-toggle.min.js"/>"></script>
-<%--<script src="<c:url value="/resources/DataTables/jQuery-3.3.1/jquery-3.3.1.min.js"/>"></script>--%>
 <script src="<c:url value="/resources/DataTables/DataTables-1.10.23/js/jquery.dataTables.min.js"/>"></script>
-<%--<script src="<c:url value="/resources/DataTables/DataTables-1.10.23/js/dataTables.bootstrap4.min.js"/>"></script>--%>
-<%--<script src="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.js"/>"></script>--%>
 <script src="<c:url value="/resources/tagify-master/jQuery.tagify.min.js"/>"></script>
 <script>
     // $(document).ready(function () {
