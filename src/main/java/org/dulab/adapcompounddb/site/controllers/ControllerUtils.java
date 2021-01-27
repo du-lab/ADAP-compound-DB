@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.gson.Gson;
 import org.dulab.adapcompounddb.models.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchForm;
-import org.dulab.adapcompounddb.models.UserRole;
+import org.dulab.adapcompounddb.models.enums.UserRole;
 import org.dulab.adapcompounddb.models.dto.TagInfo;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.services.SpectrumClusterer;

@@ -3,7 +3,7 @@ package org.dulab.adapcompounddb.site.services;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.dulab.adapcompounddb.models.UserRole;
+import org.dulab.adapcompounddb.models.enums.UserRole;
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User.UserBuilder;

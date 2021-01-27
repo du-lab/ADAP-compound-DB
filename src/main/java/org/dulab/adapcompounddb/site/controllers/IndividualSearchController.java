@@ -1,7 +1,7 @@
 package org.dulab.adapcompounddb.site.controllers;
 
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
-import org.dulab.adapcompounddb.models.ChromatographyType;
+import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.entities.*;
@@ -10,7 +10,6 @@ import org.dulab.adapcompounddb.site.controllers.forms.FilterOptions;
 import org.dulab.adapcompounddb.site.services.*;
 import org.dulab.adapcompounddb.site.services.search.IndividualSearchService;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters;
-import org.dulab.adapcompounddb.site.services.search.SearchServiceSelector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -200,24 +199,25 @@ public class IndividualSearchController extends BaseController {
 //        final IndividualSearchService individualSearchService =
 //                searchServiceSelector.findByChromatographyType(querySpectrum.getChromatographyType());
 
-        SearchParameters parameters = new SearchParameters();
-        switch (querySpectrum.getChromatographyType()) {
-            case GAS:
-            case LIQUID_POSITIVE:
-            case LIQUID_NEGATIVE:
-                parameters.setMzTolerance(0.01);
-                parameters.setScoreThreshold(0.5);
-                break;
-            case LC_MSMS_POS:
-            case LC_MSMS_NEG:
-                parameters.setMzTolerance(0.01);
-                parameters.setScoreThreshold(0.5);
-                parameters.setPrecursorTolerance(0.01);
-                break;
-            case NONE:
-                parameters.setMolecularWeightTolerance(0.01);
-                break;
-        }
+//        SearchParameters parameters = new SearchParameters();
+//        switch (querySpectrum.getChromatographyType()) {
+//            case GAS:
+//            case LIQUID_POSITIVE:
+//            case LIQUID_NEGATIVE:
+//                parameters.setMzTolerance(0.01);
+//                parameters.setScoreThreshold(0.5);
+//                break;
+//            case LC_MSMS_POS:
+//            case LC_MSMS_NEG:
+//                parameters.setMzTolerance(0.01);
+//                parameters.setScoreThreshold(0.5);
+//                parameters.setPrecursorTolerance(0.01);
+//                break;
+//            case NONE:
+//                parameters.setMolecularWeightTolerance(0.01);
+//                break;
+//        }
+        SearchParameters parameters = SearchParameters.getDefaultParameters(querySpectrum.getChromatographyType());
         parameters.setSpecies(filterForm.getSpecies());
         parameters.setSource(filterForm.getSource());
         parameters.setDisease(filterForm.getDisease());

@@ -2,10 +2,9 @@ package org.dulab.adapcompounddb.site.services;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dulab.adapcompounddb.models.ChromatographyType;
+import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
-import org.dulab.adapcompounddb.models.entities.SpectrumProperty;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;

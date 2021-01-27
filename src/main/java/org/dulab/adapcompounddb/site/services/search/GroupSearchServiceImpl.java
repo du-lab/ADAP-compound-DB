@@ -47,7 +47,7 @@ public class GroupSearchServiceImpl implements GroupSearchService {
     @Async
     @Transactional(propagation = Propagation.REQUIRED)
     public Future<Void> groupSearch(UserPrincipal userPrincipal,
-            List<File> files, HttpSession session, String species, String source, String disease) {
+                                    List<File> files, HttpSession session, String species, String source, String disease) {
 
         LOGGER.info(String.format("Group search is started (species: %s, source: %s, disease: %s)",
                 species != null ? species : "all",
@@ -81,9 +81,11 @@ public class GroupSearchServiceImpl implements GroupSearchService {
                     IndividualSearchService spectrumSearchService = searchServiceSelector
                             .findByChromatographyType(querySpectrum.getChromatographyType());
 
-                    SearchParameters parameters = new SearchParameters();
-                    parameters.setScoreThreshold(0.5);
-                    parameters.setMzTolerance(0.01);
+//                    SearchParameters parameters = new SearchParameters();
+//                    parameters.setScoreThreshold(0.5);
+//                    parameters.setMzTolerance(0.01);
+                    SearchParameters parameters =
+                            SearchParameters.getDefaultParameters(querySpectrum.getChromatographyType());
                     parameters.setSpecies(species);
                     parameters.setSource(source);
                     parameters.setDisease(disease);

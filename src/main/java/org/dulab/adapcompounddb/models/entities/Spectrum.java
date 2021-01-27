@@ -8,7 +8,7 @@ import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.dulab.adapcompounddb.models.ChromatographyType;
+import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 
 @Entity
 @SqlResultSetMapping(name = "SpectrumScoreMapping", columns = { @ColumnResult(name = "SpectrumId", type = Long.class),

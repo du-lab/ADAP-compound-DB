@@ -4,10 +4,10 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.dulab.adapcompounddb.models.ChromatographyType;
+import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.Statistics;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
-import org.dulab.adapcompounddb.models.UserRole;
+import org.dulab.adapcompounddb.models.enums.UserRole;
 import org.dulab.adapcompounddb.site.services.FeedbackService;
 import org.dulab.adapcompounddb.site.services.StatisticsService;
 import org.dulab.adapcompounddb.site.services.UserPrincipalService;

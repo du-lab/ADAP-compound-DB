@@ -1,7 +1,7 @@
 package org.dulab.adapcompounddb.site.repositories;
 
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
-import org.dulab.adapcompounddb.models.ChromatographyType;
+import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

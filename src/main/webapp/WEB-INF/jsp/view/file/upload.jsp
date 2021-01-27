@@ -1,4 +1,4 @@
-<%--@elvariable id="chromatographyTypeList" type="org.dulab.adapcompounddb.models.ChromatographyType[]"--%>
+<%--@elvariable id="chromatographyTypeList" type="org.dulab.adapcompounddb.models.enums.ChromatographyType[]"--%>
 <%--@elvariable id="fileUploadForm" type="org.dulab.adapcompounddb.site.controllers.FileUploadController.FileUploadForm"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
@@ -67,7 +67,7 @@
                                     <form:label path="fileType"
                                                 cssClass="col-12 col-md-3 offset-md-2 col-form-label">File type</form:label>
                                     <div class="col-md-5">
-                                            <%--@elvariable id="fileTypeList" type="org.dulab.adapcompounddb.models.FileType[]"--%>
+                                            <%--@elvariable id="fileTypeList" type="org.dulab.adapcompounddb.models.enums.FileType[]"--%>
                                         <c:forEach items="${fileTypeList}" var="type">
                                             <div class="form-check">
                                                 <form:radiobutton path="fileType" label="${type.label}" value="${type}"

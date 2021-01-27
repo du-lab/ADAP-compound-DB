@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.dulab.adapcompounddb.models.ChromatographyType;
+import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.entities.Peak;
 
 public class SpectrumQueryBuilderAlt {

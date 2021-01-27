@@ -1,14 +1,10 @@
 package org.dulab.adapcompounddb.site.controllers;
 
-import com.sun.org.apache.xpath.internal.operations.Mult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dulab.adapcompounddb.models.ChromatographyType;
-import org.dulab.adapcompounddb.models.FileType;
-import org.dulab.adapcompounddb.models.entities.File;
-import org.dulab.adapcompounddb.models.entities.Spectrum;
+import org.dulab.adapcompounddb.models.enums.ChromatographyType;
+import org.dulab.adapcompounddb.models.enums.FileType;
 import org.dulab.adapcompounddb.models.entities.Submission;
-import org.dulab.adapcompounddb.models.enums.MassSpectrometryType;
 import org.dulab.adapcompounddb.site.controllers.utils.MultipartFileUtils;
 import org.dulab.adapcompounddb.site.services.FileReaderService;
 import org.dulab.adapcompounddb.site.services.MspFileReaderService;
@@ -24,8 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

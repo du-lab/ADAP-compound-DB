@@ -1,5 +1,7 @@
 package org.dulab.adapcompounddb.site.services.search;
 
+import org.dulab.adapcompounddb.models.enums.ChromatographyType;
+
 public class SearchParameters {
 
     private Double scoreThreshold;
@@ -64,5 +66,27 @@ public class SearchParameters {
 
     public void setDisease(String disease) {
         this.disease = disease;
+    }
+
+    public static SearchParameters getDefaultParameters(ChromatographyType type) {
+        SearchParameters parameters = new SearchParameters();
+        switch (type) {
+            case GAS:
+            case LIQUID_POSITIVE:
+            case LIQUID_NEGATIVE:
+                parameters.setMzTolerance(0.01);
+                parameters.setScoreThreshold(0.5);
+                break;
+            case LC_MSMS_POS:
+            case LC_MSMS_NEG:
+                parameters.setMzTolerance(0.01);
+                parameters.setScoreThreshold(0.5);
+                parameters.setPrecursorTolerance(0.01);
+                break;
+            case NONE:
+                parameters.setMolecularWeightTolerance(0.01);
+                break;
+        }
+        return parameters;
     }
 }

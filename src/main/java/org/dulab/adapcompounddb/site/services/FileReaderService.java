@@ -1,6 +1,6 @@
 package org.dulab.adapcompounddb.site.services;
 
-import org.dulab.adapcompounddb.models.ChromatographyType;
+import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.springframework.validation.annotation.Validated;
 

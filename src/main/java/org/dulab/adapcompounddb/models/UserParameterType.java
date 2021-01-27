@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.models;
 
+import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.json.JSONArray;
 
 import java.util.List;

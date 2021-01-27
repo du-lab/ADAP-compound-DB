@@ -74,7 +74,7 @@
                     Group Search Results
                 </div>
                 <div class="card-body">
-                    <table id="match_table" class="display responsive" style="width: 100%; clear:none;">
+                    <table id="match_table" class="display compact" style="width: 100%; clear:none;">
                         <thead>
                         <tr>
                             <th>Id</th>

@@ -1,4 +1,4 @@
-package org.dulab.adapcompounddb.models;
+package org.dulab.adapcompounddb.models.enums;
 
 public interface EnumWithLabelsAndIcons {
 

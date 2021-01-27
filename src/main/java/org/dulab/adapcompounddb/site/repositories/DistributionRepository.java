@@ -1,15 +1,9 @@
 package org.dulab.adapcompounddb.site.repositories;
 
-import org.dulab.adapcompounddb.models.ChromatographyType;
-import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.TagDistribution;
 import org.dulab.adapcompounddb.models.enums.MassSpectrometryType;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
-
-import java.util.Date;
 
 
 public interface DistributionRepository extends CrudRepository<TagDistribution, Long> {

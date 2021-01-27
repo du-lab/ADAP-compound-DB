@@ -1,4 +1,6 @@
-package org.dulab.adapcompounddb.models;
+package org.dulab.adapcompounddb.models.enums;
+
+import org.dulab.adapcompounddb.models.enums.EnumWithLabels;
 
 public enum FileType implements EnumWithLabels {
 

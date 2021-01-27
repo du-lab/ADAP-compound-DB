@@ -3,7 +3,7 @@ package org.dulab.adapcompounddb.site.services;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
-import org.dulab.adapcompounddb.models.ChromatographyType;
+import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.DistanceMatrixWrapper;
 import org.dulab.adapcompounddb.models.dto.TagInfo;
 import org.dulab.adapcompounddb.models.entities.*;

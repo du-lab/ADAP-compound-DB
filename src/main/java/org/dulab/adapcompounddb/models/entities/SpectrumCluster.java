@@ -1,7 +1,7 @@
 package org.dulab.adapcompounddb.models.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.dulab.adapcompounddb.models.ChromatographyType;
+import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;

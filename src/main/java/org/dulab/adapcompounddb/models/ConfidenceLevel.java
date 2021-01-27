@@ -1,5 +1,7 @@
 package org.dulab.adapcompounddb.models;
 
+import org.dulab.adapcompounddb.models.enums.EnumWithLabels;
+
 @Deprecated
 public enum ConfidenceLevel implements EnumWithLabels {
     LEVEL_1A("1A. Highly confident match"),

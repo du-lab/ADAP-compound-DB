@@ -1,6 +1,6 @@
 <%--@elvariable id="submissionCategoryTypes" type="org.dulab.adapcompounddv.models.SubmissionCategoryType[]"--%>
 <%--@elvariable id="availableUserRoles" type="org.dulab.adapcompound.models.UserRole[]"--%>
-<%--@elvariable id="statistics" type="java.util.Map<org.dulab.adapcompounddb.models.ChromatographyType, org.dulab.adapcompounddb.models.Statistics>"--%>
+<%--@elvariable id="statistics" type="java.util.Map<org.dulab.adapcompounddb.models.enums.ChromatographyType, org.dulab.adapcompounddb.models.Statistics>"--%>
 <%--@elvariable id="clusters" type="java.util.List<org.dulab.adapcompounddb.models.entities.SpectrumCluster>"--%>
 <%--@elvariable id="users" type="java.util.List<org.dulab.adapcompounddb.models.entities.UserPrinicpal>"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>

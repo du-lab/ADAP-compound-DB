@@ -1,7 +1,7 @@
 package org.dulab.adapcompounddb.site.controllers.utils;
 
-import org.dulab.adapcompounddb.models.ChromatographyType;
-import org.dulab.adapcompounddb.models.FileType;
+import org.dulab.adapcompounddb.models.enums.ChromatographyType;
+import org.dulab.adapcompounddb.models.enums.FileType;
 import org.dulab.adapcompounddb.models.entities.File;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.Submission;

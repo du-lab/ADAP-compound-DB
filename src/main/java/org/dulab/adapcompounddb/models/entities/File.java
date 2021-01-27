@@ -18,7 +18,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import org.dulab.adapcompounddb.models.FileType;
+import org.dulab.adapcompounddb.models.enums.FileType;
 
 @Entity
 public class File implements Serializable {

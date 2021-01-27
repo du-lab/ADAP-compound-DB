@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -22,7 +21,7 @@ import javax.persistence.UniqueConstraint;
 import javax.servlet.http.HttpSession;
 import javax.validation.constraints.NotBlank;
 
-import org.dulab.adapcompounddb.models.UserRole;
+import org.dulab.adapcompounddb.models.enums.UserRole;
 import org.dulab.adapcompounddb.validation.Email;
 
 @Entity

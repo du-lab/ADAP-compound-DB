@@ -1,5 +1,7 @@
 package org.dulab.adapcompounddb.models;
 
+import org.dulab.adapcompounddb.models.enums.EnumWithLabels;
+
 @Deprecated
 public enum SubmissionCategoryType implements EnumWithLabels {
 
