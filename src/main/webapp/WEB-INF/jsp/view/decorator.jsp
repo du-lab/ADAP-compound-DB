@@ -137,7 +137,7 @@
     <%--        <aside>--%>
     <nav id="sidebar">
         <div class="container">
-            <div class="row row-menu">
+            <div class="row row-menu mb-5">
                 <div class="col-12">
                     <ul class="nav flex-column">
                         <li class="nav-item">
