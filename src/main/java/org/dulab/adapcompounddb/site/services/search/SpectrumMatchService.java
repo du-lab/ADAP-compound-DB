@@ -1,10 +1,12 @@
-package org.dulab.adapcompounddb.site.services;
+package org.dulab.adapcompounddb.site.services.search;
 
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
+import org.dulab.adapcompounddb.models.entities.UserPrincipal;
+import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 
 import java.util.List;
 
@@ -20,7 +22,8 @@ public interface SpectrumMatchService {
 
     SpectrumCluster getCluster(long id);
 
-    DataTableResponse findAllClusters(String searchStr, String species, String source, String disease,
+    DataTableResponse findAllClusters(UserPrincipal user, ChromatographyType chromatographyType,
+                                      String searchStr, String species, String source, String disease,
                                       Integer start, Integer length, Integer column, String sortDirection);
 
     DataTableResponse groupSearchSort(final String searchStr, final Integer start, final Integer length,

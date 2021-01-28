@@ -1,10 +1,12 @@
 package org.dulab.adapcompounddb.site.controllers.forms;
 
-import javax.validation.constraints.NotBlank;
+import org.dulab.adapcompounddb.models.enums.ChromatographyType;
+
 import java.util.List;
 
 public class FilterOptions {
 
+    private final ChromatographyType[] chromatographyTypes;
     private final List<String> speciesList;
     private final List<String> sourceList;
     private final List<String> diseaseList;
@@ -13,6 +15,11 @@ public class FilterOptions {
         this.speciesList = speciesList;
         this.sourceList = sourceList;
         this.diseaseList = diseaseList;
+        this.chromatographyTypes = ChromatographyType.values();
+    }
+
+    public ChromatographyType[] getChromatographyTypes() {
+        return chromatographyTypes;
     }
 
     public List<String> getSpeciesList() {

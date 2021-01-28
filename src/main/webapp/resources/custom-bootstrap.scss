@@ -8,6 +8,10 @@ $theme-colors: (
 
 @import "npm/node_modules/bootstrap/scss/bootstrap";
 
+.modal-content {
+  border-color: theme-color("primary-dark");
+}
+
 .modal-header, .modal-footer {
   background-color: theme-color("gray");
   color: theme-color("primary-dark");

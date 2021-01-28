@@ -10339,6 +10339,10 @@ h3 {
     border-color: #dee2e6;
   }
 }
+.modal-content {
+  border-color: #542410;
+}
+
 .modal-header, .modal-footer {
   background-color: #f2f2f2;
   color: #542410;

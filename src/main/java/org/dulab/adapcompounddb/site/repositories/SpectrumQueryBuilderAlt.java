@@ -11,10 +11,10 @@ import org.dulab.adapcompounddb.models.entities.Peak;
 public class SpectrumQueryBuilderAlt {
 
     private final Collection<BigInteger> submissionIds;
-    private final ChromatographyType chromatographyType;
     private final boolean searchConsensusSpectra;
     private final boolean searchReferenceSpectra;
 
+    private ChromatographyType chromatographyType;
     private Double precursorMz = null;
     private Double precursorTolerance = null;
     private Double retTime = null;
@@ -26,16 +26,20 @@ public class SpectrumQueryBuilderAlt {
     private Double scoreThreshold = null;
 
 
-    public SpectrumQueryBuilderAlt(Collection<BigInteger> submissionIds, ChromatographyType chromatographyType,
+    public SpectrumQueryBuilderAlt(Collection<BigInteger> submissionIds,
                                    boolean searchConsensusSpectra, boolean searchReferenceSpectra) {
 
         if (!searchConsensusSpectra && !searchReferenceSpectra)
             throw new IllegalArgumentException("Either 'searchConsensusSpectra' or 'searchReferenceSpectra' must be true");
 
         this.submissionIds = submissionIds;
-        this.chromatographyType = chromatographyType;
         this.searchConsensusSpectra = searchConsensusSpectra;
         this.searchReferenceSpectra = searchReferenceSpectra;
+    }
+
+    public  SpectrumQueryBuilderAlt withChromatographyType(ChromatographyType chromatographyType) {
+        this.chromatographyType = chromatographyType;
+        return this;
     }
 
     public SpectrumQueryBuilderAlt withPrecursor(Double mz, Double tolerance) {
@@ -136,12 +140,16 @@ public class SpectrumQueryBuilderAlt {
     private String getScoreTable(boolean isConsensus, boolean isReference) {
 
         String spectrumSelector = String.format(
-                "Spectrum.ChromatographyType = '%s' AND Spectrum.Consensus IS %s AND Spectrum.Reference IS %s",
-                this.chromatographyType, isConsensus, isReference);
+                "Spectrum.Consensus IS %s AND Spectrum.Reference IS %s", isConsensus, isReference);
+
+        if (chromatographyType != null)
+            spectrumSelector += String.format(" AND Spectrum.ChromatographyType = '%s'", chromatographyType);
+
         if (this.precursorMz != null && this.precursorTolerance != null)
             spectrumSelector += String.format(" AND Spectrum.Precursor > %f AND Spectrum.Precursor < %f",
                     this.precursorMz - this.precursorTolerance,
                     this.precursorMz + this.precursorTolerance);
+
         if (this.molecularWeight != null && this.molecularWeightTolerance != null)
             spectrumSelector += String.format(" AND Spectrum.MolecularWeight > %f AND Spectrum.MolecularWeight < %f",
                     this.molecularWeight - this.molecularWeightTolerance,

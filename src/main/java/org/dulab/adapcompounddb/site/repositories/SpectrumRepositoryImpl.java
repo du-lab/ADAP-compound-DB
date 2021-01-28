@@ -71,19 +71,20 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
     @Override
     public Iterable<SpectrumClusterView> searchLibrarySpectra(@NotNull Iterable<BigInteger> submissionIds,
-                                                              @NotNull Spectrum querySpectrum,
+                                                              Spectrum querySpectrum,
                                                               Double scoreThreshold, Double mzTolerance,
                                                               Double precursorTolerance, Double molecularWeightTolerance) {
 
         List<BigInteger> submissionIdList = new ArrayList<>();
         submissionIds.forEach(submissionIdList::add);
 
-        String query = new SpectrumQueryBuilderAlt(submissionIdList,
-                querySpectrum.getChromatographyType(), true, true)
-                .withQuerySpectrum(querySpectrum.getPeaks(), mzTolerance, scoreThreshold)
-                .withPrecursor(querySpectrum.getPrecursor(), precursorTolerance)
-                .withMolecularWeight(querySpectrum.getMolecularWeight(), molecularWeightTolerance)
-                .build();
+        SpectrumQueryBuilderAlt builder = new SpectrumQueryBuilderAlt(submissionIdList, true, true);
+        if (querySpectrum != null)
+            builder = builder.withChromatographyType(querySpectrum.getChromatographyType())
+                    .withQuerySpectrum(querySpectrum.getPeaks(), mzTolerance, scoreThreshold)
+                    .withPrecursor(querySpectrum.getPrecursor(), precursorTolerance)
+                    .withMolecularWeight(querySpectrum.getMolecularWeight(), molecularWeightTolerance);
+        String query = builder.build();
 
         @SuppressWarnings("unchecked")
         List<SpectrumClusterView> resultList = entityManager

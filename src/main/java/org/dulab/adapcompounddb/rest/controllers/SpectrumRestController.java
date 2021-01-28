@@ -12,10 +12,14 @@ import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.SpectrumDTO;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.Submission;
-import org.dulab.adapcompounddb.site.services.SpectrumMatchService;
+import org.dulab.adapcompounddb.models.enums.ChromatographyType;
+import org.dulab.adapcompounddb.site.controllers.BaseController;
+import org.dulab.adapcompounddb.site.services.search.SpectrumMatchService;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
+import org.dulab.adapcompounddb.site.services.search.IndividualSearchService;
 import org.dulab.adapcompounddb.utils.ObjectMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,7 +34,7 @@ import java.util.stream.IntStream;
 
 @RestController
 @RequestMapping("/spectrum")
-public class SpectrumRestController {
+public class SpectrumRestController extends BaseController {
 
     private static final Logger LOGGER = LogManager.getLogger(SpectrumRestController.class);
 
@@ -66,11 +70,15 @@ public class SpectrumRestController {
 
     private final SpectrumService spectrumService;
     private final SpectrumMatchService spectrumMatchService;
+    private final IndividualSearchService individualSearchService;
 
     @Autowired
-    public SpectrumRestController(final SpectrumService spectrumService, final SpectrumMatchService spectrumMatchService) {
+    public SpectrumRestController(SpectrumService spectrumService,
+                                  SpectrumMatchService spectrumMatchService,
+                                  @Qualifier("spectrumSearchServiceImpl") IndividualSearchService individualSearchService) {
         this.spectrumService = spectrumService;
         this.spectrumMatchService = spectrumMatchService;
+        this.individualSearchService = individualSearchService;
     }
 
     @RequestMapping(value = "/findSpectrumBySubmissionId", produces = "application/json")
@@ -105,7 +113,8 @@ public class SpectrumRestController {
                                @RequestParam("length") final Integer length,
                                @RequestParam("column") final Integer column,
                                @RequestParam("sortDirection") final String sortDirection,
-                               @RequestParam("search") final String searchStr,
+                               @RequestParam("chromatographyType") final String chromatographyTypeString,
+                               @RequestParam("search") final String search,
                                @RequestParam("species") final String species,
                                @RequestParam("source") final String source,
                                @RequestParam("disease") final String disease)
@@ -113,10 +122,15 @@ public class SpectrumRestController {
 
         /*final ObjectMapperUtils objectMapper = new ObjectMapperUtils();
         objectMapper.map(spectrumMatchService.getAllClusters(), SpectrumDTO.class);*/
+
+        ChromatographyType chromatographyType =
+                (chromatographyTypeString == null || chromatographyTypeString.equalsIgnoreCase("all"))
+                        ? null : ChromatographyType.valueOf(chromatographyTypeString);
+
         final DataTableResponse response;
         try {
-            response = spectrumMatchService.findAllClusters(
-                    searchStr, species, source, disease,
+            response = spectrumMatchService.findAllClusters(this.getCurrentUserPrincipal(),
+                    chromatographyType, search, species, source, disease,
                     start, length, column, sortDirection);
         } catch (Throwable t) {
             LOGGER.error("Error during cluster listing: " + t.getMessage(), t);
@@ -125,8 +139,7 @@ public class SpectrumRestController {
 
         final ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-        final String jsonString = mapper.writeValueAsString(response);
-        return jsonString;
+        return mapper.writeValueAsString(response);
     }
 
     private DataTableResponse paginate(final Submission submission, final String search,

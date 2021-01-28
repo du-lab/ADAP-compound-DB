@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.site.repositories;
 
 import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
+import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -26,15 +27,19 @@ public class SpectrumClusterRepositoryImpl implements SpectrumClusterRepositoryC
      * @param search        string for filtering spectra by their names
      * @return number of consensus spectra
      */
-    private BigInteger countAllConsensusSpectra(Iterable<BigInteger> submissionIds, String search) {
+    private BigInteger countAllConsensusSpectra(
+            Iterable<BigInteger> submissionIds, ChromatographyType chromatographyType, String search) {
 
         String sqlQuery = "select count(distinct SpectrumCluster.Id) from SpectrumCluster " +
                 "join Spectrum on SpectrumCluster.Id=Spectrum.ClusterId " +
                 "join Spectrum as ConsensusSpectrum on SpectrumCluster.ConsensusSpectrumId=ConsensusSpectrum.Id " +
                 "join File on Spectrum.FileId=File.Id " +
-                "where (ConsensusSpectrum.Name LIKE :search OR ConsensusSpectrum.ChromatographyType LIKE :search ) and File.SubmissionId in (:submissionIds)";
+                "where ConsensusSpectrum.Name LIKE :search " +
+                "and (:type is null or ConsensusSpectrum.ChromatographyType = :type) " +
+                "and File.SubmissionId in (:submissionIds)";
 
         return (BigInteger) entityManager.createNativeQuery(sqlQuery)
+                .setParameter("type", chromatographyType != null ? chromatographyType.name() : null)
                 .setParameter("search", "%" + search + "%")
                 .setParameter("submissionIds", submissionIds)
                 .getSingleResult();
@@ -47,12 +52,15 @@ public class SpectrumClusterRepositoryImpl implements SpectrumClusterRepositoryC
      * @param search        string for filtering spectra by their names
      * @return number of reference spectra
      */
-    private BigInteger countAllReferenceSpectra(Iterable<BigInteger> submissionIds, String search) {
+    private BigInteger countAllReferenceSpectra(
+            Iterable<BigInteger> submissionIds, ChromatographyType chromatographyType, String search) {
 
         String sqlQuery = "select count(*) from Spectrum join File on Spectrum.FileId=File.Id " +
-                "where Spectrum.Reference is true and (Spectrum.Name like :search OR Spectrum.ChromatographyType LIKE :search ) and File.SubmissionId in (:submissionIds)";
+                "where Spectrum.Reference is true and Spectrum.Name like :search " +
+                "and (:type is null or Spectrum.ChromatographyType = :type) and File.SubmissionId in (:submissionIds)";
 
         return (BigInteger) entityManager.createNativeQuery(sqlQuery)
+                .setParameter("type", chromatographyType != null ? chromatographyType.name() : null)
                 .setParameter("search", "%" + search + "%")
                 .setParameter("submissionIds", submissionIds)
                 .getSingleResult();
@@ -62,7 +70,7 @@ public class SpectrumClusterRepositoryImpl implements SpectrumClusterRepositoryC
     private EntityManager entityManager;
 
     public Page<SpectrumClusterView> findClusters(
-            String searchStr, Iterable<BigInteger> submissionIds, Pageable pageable) {
+            ChromatographyType chromatographyType, String search, Iterable<BigInteger> submissionIds, Pageable pageable) {
 
         if (submissionIds == null || !submissionIds.iterator().hasNext())
             return new PageImpl<>(new ArrayList<>(0), pageable, 0);
@@ -75,11 +83,14 @@ public class SpectrumClusterRepositoryImpl implements SpectrumClusterRepositoryC
                 "join Spectrum on SpectrumCluster.Id=Spectrum.ClusterId " +
                 "join Spectrum as ConsensusSpectrum on SpectrumCluster.ConsensusSpectrumId=ConsensusSpectrum.Id " +
                 "join File on Spectrum.FileId=File.Id " +
-                "where (ConsensusSpectrum.Name LIKE :search or ConsensusSpectrum.ChromatographyType like :search) and File.SubmissionId in (:submissionIds) group by SpectrumCluster.Id " +
+                "where ConsensusSpectrum.Name LIKE :search " +
+                "and (:type is null or ConsensusSpectrum.ChromatographyType = :type) " +
+                "and File.SubmissionId in (:submissionIds) group by SpectrumCluster.Id " +
                 "union all " +
                 "select Spectrum.Id, null, Spectrum.Name, 1, null, null, null, null, null, Spectrum.ChromatographyType from Spectrum " +
                 "join File on Spectrum.FileId=File.Id " +
-                "where Spectrum.Reference is true and (Spectrum.Name like :search or Spectrum.ChromatographyType like :search) and File.SubmissionId in (:submissionIds)";
+                "where Spectrum.Reference is true and Spectrum.Name like :search " +
+                "and (:type is null or Spectrum.ChromatographyType = :type) and File.SubmissionId in (:submissionIds)";
 
         String findClusterSqlQueryWithSort = pageable.getSort().stream()
                 .map(order -> String.format(
@@ -90,14 +101,15 @@ public class SpectrumClusterRepositoryImpl implements SpectrumClusterRepositoryC
         @SuppressWarnings("unchecked")
         List<SpectrumClusterView> clusters = entityManager
                 .createNativeQuery(findClusterSqlQueryWithSort, SpectrumClusterView.class)
-                .setParameter("search", "%" + searchStr + "%")
+                .setParameter("type", chromatographyType != null ? chromatographyType.name() : null)
+                .setParameter("search", "%" + search + "%")
                 .setParameter("submissionIds", submissionIds)
                 .setFirstResult((int) pageable.getOffset())
                 .setMaxResults(pageable.getPageSize())
                 .getResultList();
 
-        BigInteger consensusSpectraCount = countAllConsensusSpectra(submissionIds, searchStr);
-        BigInteger referenceSpectraCount = countAllReferenceSpectra(submissionIds, searchStr);
+        BigInteger consensusSpectraCount = countAllConsensusSpectra(submissionIds, chromatographyType, search);
+        BigInteger referenceSpectraCount = countAllReferenceSpectra(submissionIds, chromatographyType, search);
 
         return new PageImpl<>(clusters, pageable, consensusSpectraCount.longValue() + referenceSpectraCount.longValue());
     }

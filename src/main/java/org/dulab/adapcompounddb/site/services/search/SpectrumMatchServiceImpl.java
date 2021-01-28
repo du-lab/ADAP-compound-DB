@@ -1,4 +1,4 @@
-package org.dulab.adapcompounddb.site.services;
+package org.dulab.adapcompounddb.site.services.search;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -384,7 +384,8 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     }
 
     @Override
-    public DataTableResponse findAllClusters(String searchStr, String species, String source, String disease,
+    public DataTableResponse findAllClusters(UserPrincipal user, ChromatographyType chromatographyType, String search,
+                                             String species, String source, String disease,
                                              Integer start, Integer length, Integer column, String sortDirection) {
 
         final String sortColumn = ColumnInformation.getColumnNameFromPosition(column);
@@ -398,10 +399,10 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 //        }
 
         Pageable pageable = DataUtils.createPageable(start, length, sortColumn, sortDirection);
-        Iterable<BigInteger> submissionIds =
-                submissionRepository.findSubmissionIdsBySubmissionTags(null, species, source, disease);
+        Iterable<BigInteger> submissionIds = submissionRepository.findSubmissionIdsBySubmissionTags(
+                user != null ? user.getId() : null, species, source, disease);
         Page<SpectrumClusterView> spectrumPage =
-                spectrumClusterRepository.findClusters(searchStr, submissionIds, pageable);
+                spectrumClusterRepository.findClusters(chromatographyType, search, submissionIds, pageable);
         List<SearchResultDTO> dtoList = spectrumPage.stream()
                 .map(SearchResultDTO::new)
                 .collect(Collectors.toList());
