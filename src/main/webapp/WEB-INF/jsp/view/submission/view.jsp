@@ -72,7 +72,7 @@
                                     <%--@elvariable id="validationErrors" type="java.util.Set<javax.validation.ConstraintViolation>"--%>
                                 <c:if test="${validationErrors != null}">
                                     <div class="row">
-                                        <div class="col-8 offset-2 text-danger">
+                                        <div class="col-md-8 offset-md-2 text-danger">
                                             <ul>
                                                 <c:forEach items="${validationErrors}" var="error">
                                                     <li><c:out value="${error.message}"/></li>
