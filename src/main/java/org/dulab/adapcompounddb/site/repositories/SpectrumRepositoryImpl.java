@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.repositories;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -252,8 +253,23 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         final MultiSpectrumQueryBuilder multiSpectrumQueryBuilder = new MultiSpectrumQueryBuilder(querySpectra);
         final String querySpectrumSqlQuery = multiSpectrumQueryBuilder.build();
 
-        return (List<SpectrumMatch>) entityManager
-                .createNativeQuery(querySpectrumSqlQuery, SpectrumMatch.class)
+        final List<Object[]> resultList = entityManager
+                .createNativeQuery(querySpectrumSqlQuery)
                 .getResultList();
+
+        final List<SpectrumMatch> matchList = new ArrayList<>();
+        for (final Object[] objects : resultList) {
+            final int querySpectrumIndex = ((BigInteger) objects[0]).intValue();
+            final long matchSpectrumId = ((BigInteger) objects[1]).longValue();
+            final double score = ((Double) objects[2]).longValue();
+
+            final SpectrumMatch match = new SpectrumMatch();
+
+            match.setQuerySpectrum(querySpectra.get(querySpectrumIndex));
+            match.setMatchSpectrum(entityManager.find(Spectrum.class, matchSpectrumId));
+            match.setScore(score);
+            matchList.add(match);
+        }
+    return matchList;
     }
 }

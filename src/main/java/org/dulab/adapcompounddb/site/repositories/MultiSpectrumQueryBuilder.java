@@ -25,22 +25,30 @@ public class MultiSpectrumQueryBuilder {
 //        StringBuilder librarySelectionBuilder = new StringBuilder();
 
         String query;
-        if (querySpectra == null)
-            query = "SELECT 0 as Id,DISTINCT SpectrumId, 0 AS Score FROM Peak\n";
-        else{
-            query = "select Id, SpectrumId, sum(Product) as Score from(\n";
 
-            for (Spectrum s: querySpectra) {
-                query += s.getPeaks()
-                        .stream()
-                        .map(p -> String.format("\tselect " + s.getId() + " as Id, SpectrumId, SQRT(Intensity * 1.0) "
-                                + "as Product from Peak "
-                                + "where Peak.Mz - p.Mz < 0.01 or p.Mz - Peak.Mz < 0.01")
-                        ).collect(Collectors.joining("\tUNION ALL\n"));
-            }
+        query = "select Id, SpectrumId, sum(Product) as Score from(\n";
+        int index = 0;
+        for (Spectrum s: querySpectra) {
+           int n = index;
+           if (index == 0){
 
-            query += ") AS Result group by Id, SpectrumId having Score > 0.5\n";
+           }else{
+               query = query + "\tUNION all\n";
+           }
+            query += s.getPeaks()
+                    .stream()
+                    .map(p -> String.format("\tselect %d as Id, SpectrumId, SQRT(Intensity * %f) "
+                            + "as Product from Peak join Spectrum on Spectrum.Id = Peak.SpectrumId "
+                            + "where Peak.Mz < %f and %f < Peak.Mz "
+                            + "and Spectrum.Consensus is False and Spectrum.Reference is False",
+                            n,
+                            p.getIntensity(),
+                            p.getMz() + 0.01,
+                            p.getMz() - 0.01)
+                    ).collect(Collectors.joining("\tUNION ALL\n"));
+            index++;
         }
+        query += ") AS Result group by Id, SpectrumId having Score > 0.5\n";
 
         return query;
     }
