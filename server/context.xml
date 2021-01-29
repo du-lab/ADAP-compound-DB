@@ -35,29 +35,5 @@
         username="root" password="sesame"
         driverClassName="com.mysql.cj.jdbc.Driver"
         url="jdbc:mysql://localhost:3306/adapcompounddb?autoReconnect=true&amp;useSSL=false&amp;serverTimezone=UTC"/>
-
-
-    <!-- SMTP server parameters
-    -->
-    <Environment name="email_smtp_host" value="mail.domain.ext"
-         type="java.lang.String" override="false"/>
-    <Environment name="email_smtp_port" value="587"
-         type="java.lang.Integer" override="false"/>
-
-
-    <!-- SMTP server credentials
-    -->
-    <Environment name="email_username" value="$user"
-         type="java.lang.String" override="false"/>
-    <Environment name="email_password" value="$password"
-         type="java.lang.String" override="false"/>
-
-
-    <!-- Verified Email addresses for FROM/TO
-    -->
-    <Environment name="email_from" value="$from"
-         type="java.lang.String" override="false"/>
-    <Environment name="email_to" value="$to"
-         type="java.lang.String" override="false"/>
         
 </Context>
