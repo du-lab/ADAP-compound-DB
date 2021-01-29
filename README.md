@@ -11,7 +11,7 @@
 ```
 https://cci-scm.uncc.edu/du-lab/adap-kdb.git
 ```
-2. Install Apache Tomcat server (tested with version 8.5) and add the content of the file 
+2. Install Apache Tomcat 8.5 server ([link](https://mirrors.ocf.berkeley.edu/apache/tomcat/tomcat-8/v8.5.61/bin/apache-tomcat-8.5.61.zip)) and add the content of the file 
 **[repository]/server/context.xml** to the file **[tomcat]/conf/context.xml**
 
 3. Install MySQL. Choose username and password for connecting to MySQL. Update fields `username` and 
