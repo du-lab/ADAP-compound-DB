@@ -9,7 +9,7 @@
 ### Setup
 1. Clone GitHub repository of the project
 ```
-git clone https://github.com/du-lab/ADAP-compound-DB.git
+https://cci-scm.uncc.edu/du-lab/adap-kdb.git
 ```
 2. Install Apache Tomcat server (tested with version 8.5) and add the content of the file 
 **[repository]/server/context.xml** to the file **[tomcat]/conf/context.xml**
