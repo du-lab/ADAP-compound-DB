@@ -7,7 +7,7 @@
 - MySQL 8.0
 
 ### Setup
-1. Clone GitHub repository of the project
+1. Clone GitLab repository of the project
 ```
 https://cci-scm.uncc.edu/du-lab/adap-kdb.git
 ```
