@@ -261,7 +261,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         for (final Object[] objects : resultList) {
             final int querySpectrumIndex = ((BigInteger) objects[0]).intValue();
             final long matchSpectrumId = ((BigInteger) objects[1]).longValue();
-            final double score = ((Double) objects[2]).longValue();
+            final double score = ((Double) objects[2]).doubleValue();
 
             final SpectrumMatch match = new SpectrumMatch();
 

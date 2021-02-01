@@ -37,7 +37,7 @@ public class StudySearchServiceImpl implements StudySearchService {
         for (File file : submission.getFiles()) {
             List<SpectrumMatch> matches = spectrumRepository.multiSpectrumSearch(file.getSpectra());
             spectrumMatches.addAll(matches);
-            querySubmissionSpectraCount = file.getSpectra().size();
+            querySubmissionSpectraCount = querySubmissionSpectraCount + file.getSpectra().size();
 //            for (Spectrum spectrum : file.getSpectra()) {
 //                List<SpectrumMatch> matches = spectrumRepository.spectrumSearch(
 //                        SearchType.CLUSTERING, spectrum, gcQueryParameters);
