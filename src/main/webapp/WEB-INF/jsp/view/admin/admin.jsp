@@ -1,6 +1,5 @@
 <%--@elvariable id="submissionCategoryTypes" type="org.dulab.adapcompounddv.models.SubmissionCategoryType[]"--%>
 <%--@elvariable id="availableUserRoles" type="org.dulab.adapcompound.models.UserRole[]"--%>
-<%--@elvariable id="statistics" type="java.util.Map<org.dulab.adapcompounddb.models.enums.ChromatographyType, org.dulab.adapcompounddb.models.Statistics>"--%>
 <%--@elvariable id="clusters" type="java.util.List<org.dulab.adapcompounddb.models.entities.SpectrumCluster>"--%>
 <%--@elvariable id="users" type="java.util.List<org.dulab.adapcompounddb.models.entities.UserPrinicpal>"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -8,175 +7,265 @@
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<section>
-    <div class="tabbed-pane">
-        <span class="active" data-tab="tools">Tools</span>
-        <span data-tab="users">All Users</span>
-        <span data-tab="submissions">All Studies</span>
-        <span data-tab="feedback">Feedback</span>
-    </div>
-
-    <div id="tools">
-        <div>
-            <div id="progressBarDiv" class="progress_bar"></div>
-        </div>
-        <h2>Number of Spectra in Knowledgebase</h2>
-        <div align="center">
-            <table>
-                <tr>
-                    <th></th>
-                    <th>Submitted</th>
-                    <th>Unmatched</th>
-                    <th>Consensus</th>
-                    <th>Matches</th>
-                </tr>
-                <c:forEach items="${statistics}" var="mapEntry">
-                    <tr>
-                        <td>${mapEntry.key.label}</td>
-                        <td>${mapEntry.value.numSubmittedSpectra}</td>
-                        <td>${mapEntry.value.numUnmatchedSpectra}</td>
-                        <td>${mapEntry.value.numConsensusSpectra}</td>
-                        <td>${mapEntry.value.numSpectrumMatches}</td>
-                    </tr>
-                </c:forEach>
-            </table>
-        </div>
-
-        <h3>Admin Tools</h3>
-        <div>
-            <table style="width: 100%;">
-                <thead>
-                    <tr><th class="desktop" style="width: 20%;"></th><th style="width: 25%;"></th><th></th></tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="desktop">Calculates matching scores for all spectra in the Knowledgebase</td>
-                        <td>
-                            <!-- <a href="calculatescores/" class="button"
-                                onclick="progressBar.start('calculatescores/progress')">Calculate Matching Scores...</a> -->
-                            <button class="button" id="calculate_match_button" style="width: 100%;">Calculate Matching Scores</button>
-                        </td>
-                        <td>
-                            <progress id="match_progress" value="0" max="100" style="width:100%; height: 1.4em;"></progress>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="desktop">Cluster spectra into clusters</td>
-                        <td>
-                            <!-- <a id="button-cluster" href="cluster/"
-                                class="button">Cluster spectra...</a> -->
-                            <button class="button" id="cluster_button" style="width: 100%;">Cluster spectra</button>
-                        </td>
-                        <td>
-                            <progress id="cluster_progress" value="0" max="100" style="width:100%; height: 1.4em;"></progress>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+<div id="deleteUserModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Delete user</h4>
+                <button type="button" class="close" data-dismiss="modal">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>User &quot;<span id="username"></span>&quot; and all user's studies will be deleted. Are you sure?
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <a id="deleteUserButton" type="button" class="btn btn-primary" href="#">Delete</a>
+            </div>
         </div>
     </div>
+</div>
 
-    <div id="users" class="">
-        <div align="center">
-            <table id="user_table" class="display" style="width: 100%;">
-                <thead>
-                    <tr>
-                        <th>User</th>
-                        <th>Email</th>
-                        <c:forEach items="${availableUserRoles}"
-                            var="role">
-                            <th>${role.label}</th>
-                        </c:forEach>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <c:forEach items="${users}" var="user">
-                        <tr>
-                            <td>${user.name}</td>
-                            <td>${user.email}</td>
-                            <c:forEach items="${availableUserRoles}"
-                                var="role">
-                                <td><c:if
-                                        test="${user.roles.contains(role)}">
-                                        <i class="material-icons">check</i>
-                                    </c:if></td>
-                            </c:forEach>
-                            <td><a onclick="confirmDeleteDialog.show(
-                                'User &quot;${user.name}&quot; and all user\'s studies will be deleted. Are you sure?',
-                                '${pageContext.request.contextPath}/user/${user.id}/delete');">
-                                    <i class="material-icons">delete</i>
-                            </a></td>
-                        </tr>
-                    </c:forEach>
-                </tbody>
-            </table>
+<div id="deleteSubmissionModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Delete user</h4>
+                <button type="button" class="close" data-dismiss="modal">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Submission &quot;<span id="submissionName"></span>&quot; and all its spectra will be deleted. Are you
+                    sure?
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <a id="deleteSubmissionButton" type="button" class="btn btn-primary" href="#">Delete</a>
+            </div>
         </div>
     </div>
+</div>
 
-    <div id="submissions" class="">
-        <table id="submission_table" class="display" style="width: 100%;">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Date / Time</th>
-                    <th>Name</th>
-                    <th>External ID</th>
-                    <th>User</th>
-                    <th>Properties</th>
-                    <th>Reference (Off/On)</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+<div class="container">
+    <div class="row row-content">
+        <div class="col">
+            <div class="card">
+                <div class="card-header card-header-tabs">
+                    <ul class="nav nav-tabs nav-fill nav-justified" role="tablist">
+                        <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#tools">Tools</a></li>
+                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#users">Users</a></li>
+                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#submissions">Studies</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="card-body tab-content">
+                    <div id="tools" class="tab-pane active" role="tabpanel">
+                        <div class="container small">
+                            <div class="row row-content">
+                                <div id="progressBarDiv" class="progress_bar"></div>
+                            </div>
+                            <div class="row row-content">
+                                <h4 class="col text-center">Number of Spectra in Knowledgebase</h4>
+                            </div>
+
+                            <div class="row row-content">
+                                <div class="col">
+                                    <table class="mx-auto">
+                                        <tr>
+                                            <th></th>
+                                            <th>Total</th>
+                                            <th>Clusterable</th>
+                                            <th>Consensus</th>
+                                            <th>Reference</th>
+                                            <th>Matches</th>
+                                        </tr>
+                                        <%--@elvariable id="statistics" type="java.util.Map<org.dulab.adapcompounddb.models.enums.ChromatographyType, org.dulab.adapcompounddb.models.Statistics>"--%>
+                                        <c:forEach items="${statistics}" var="mapEntry">
+                                            <tr>
+                                                <td>${mapEntry.key.label}</td>
+                                                <td>${mapEntry.value.numSpectra}</td>
+                                                <td>${mapEntry.value.numClusterableSpectra}</td>
+                                                <td>${mapEntry.value.numConsensusSpectra}</td>
+                                                <td>${mapEntry.value.numReferenceSpectra}</td>
+                                                <td>${mapEntry.value.numSpectrumMatches}</td>
+                                            </tr>
+                                        </c:forEach>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="row row-content">
+                                <h4 class="col text-center">Admin Tools</h4>
+                            </div>
+
+                            <div class="row row-content">
+                                <div class="col">
+                                    <div class="btn-toolbar" role="toolbar">
+                                        <button id="calculateMatchButton" type="button" class="btn btn-primary mr-2">
+                                            Calculate Matching Scores
+                                        </button>
+                                        <div class="progress flex-grow-1 align-self-center mx-2">
+                                            <div id="calculateMatchProgressBar" class="progress-bar" role="progressbar"
+                                                 aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row row-content">
+                                <div class="col">
+                                    <div class="btn-toolbar" role="toolbar">
+                                        <button id="clusterButton" type="button" class="btn btn-primary mr-2">
+                                            Cluster Spectra
+                                        </button>
+                                        <div class="progress flex-grow-1 align-self-center mx-2">
+                                            <div id="clusterProgressBar" class="progress-bar" role="progressbar"
+                                                 aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <%--                            <div class="row row-content">--%>
+                            <%--                                <table style="width: 100%;">--%>
+                            <%--                                    <thead>--%>
+                            <%--                                    <tr>--%>
+                            <%--                                        <th class="desktop" style="width: 20%;"></th>--%>
+                            <%--                                        <th style="width: 25%;"></th>--%>
+                            <%--                                        <th></th>--%>
+                            <%--                                    </tr>--%>
+                            <%--                                    </thead>--%>
+                            <%--                                    <tbody>--%>
+                            <%--                                    <tr>--%>
+                            <%--                                        <td class="desktop">Calculates matching scores for all spectra in the--%>
+                            <%--                                            Knowledgebase--%>
+                            <%--                                        </td>--%>
+                            <%--                                        <td>--%>
+                            <%--                                            <!-- <a href="calculatescores/" class="button"--%>
+                            <%--                                                onclick="progressBar.start('calculatescores/progress')">Calculate Matching Scores...</a> -->--%>
+                            <%--                                            <button class="btn btn-primary" id="calculate_match_button"--%>
+                            <%--                                                    style="width: 100%;">--%>
+                            <%--                                                Calculate Matching Scores--%>
+                            <%--                                            </button>--%>
+                            <%--                                        </td>--%>
+                            <%--                                        <td>--%>
+                            <%--                                            <progress id="match_progress" value="0" max="100"--%>
+                            <%--                                                      style="width:100%; height: 1.4em;"></progress>--%>
+                            <%--                                        </td>--%>
+                            <%--                                    </tr>--%>
+                            <%--                                    <tr>--%>
+                            <%--                                        <td class="desktop">Cluster spectra into clusters</td>--%>
+                            <%--                                        <td>--%>
+                            <%--                                            <!-- <a id="button-cluster" href="cluster/"--%>
+                            <%--                                                class="button">Cluster spectra...</a> -->--%>
+                            <%--                                            <button class="btn btn-primary" id="cluster_button" style="width: 100%;">--%>
+                            <%--                                                Cluster--%>
+                            <%--                                                spectra--%>
+                            <%--                                            </button>--%>
+                            <%--                                        </td>--%>
+                            <%--                                        <td>--%>
+                            <%--                                            <progress id="cluster_progress" value="0" max="100"--%>
+                            <%--                                                      style="width:100%; height: 1.4em;"></progress>--%>
+                            <%--                                        </td>--%>
+                            <%--                                    </tr>--%>
+                            <%--                                    </tbody>--%>
+                            <%--                                </table>--%>
+                            <%--                            </div>--%>
+                        </div>
+                    </div>
+
+                    <div id="users" class="tab-pane" role="tabpanel">
+                        <div class="row row-content">
+                            <div class="col">
+                                <table id="user_table" class="display compact" style="width: 100%;">
+                                    <thead>
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Email</th>
+                                        <c:forEach items="${availableUserRoles}"
+                                                   var="role">
+                                            <th>${role.label}</th>
+                                        </c:forEach>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <c:forEach items="${users}" var="user">
+                                        <tr>
+                                            <td>${user.name}</td>
+                                            <td>${user.email}</td>
+                                            <c:forEach items="${availableUserRoles}"
+                                                       var="role">
+                                                <td><c:if
+                                                        test="${user.roles.contains(role)}">
+                                                    <i class="material-icons">check</i>
+                                                </c:if></td>
+                                            </c:forEach>
+                                            <td>
+                                                <a data-username="${user.name}" data-userid="${user.id}" href="#"
+                                                   data-toggle="modal" data-target="#deleteUserModal">
+                                                    <i class="material-icons">delete</i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="submissions" class="tab-pane" role="tabpanel">
+                        <div class="row row-content">
+                            <div class="col small">
+                                <table id="submission_table" class="display compact" style="width: 100%;">
+                                    <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Date / Time</th>
+                                        <th>Name</th>
+                                        <th>External ID</th>
+                                        <th>User</th>
+                                        <th>Properties</th>
+                                        <th>Clusterable</th>
+                                        <th>Reference</th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 
-    <div id="feedback" class="">
-        <table id="feedback_table" class="display" style="width: 100%;">
-            <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Message</th>
-                    <th></th>
-                    <th>By</th>
-                    <th>Date</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
-</section>
+<%--<div id="confirm-delete-dialog"></div>--%>
+<%--<div id="progress-dialog"></div>--%>
 
-<div id="confirm-delete-dialog"></div>
-<div id="progress-dialog"></div>
-
-<!-- End the middle column -->
-
-<script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
-<script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
-<script src="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.js"/>"></script>
-<script src="<c:url value="/resources/AdapCompoundDb/js/dialogs.js"/>"></script>
-<script src="<c:url value="/resources/AdapCompoundDb/js/progressBar.js"/>"></script>
-<script type="text/javascript" src="<c:url value="/resources/AdapCompoundDb/js/tabs.js"/>"></script>
+<script src="<c:url value="/resources/npm/node_modules/jquery/dist/jquery.min.js"/>"></script>
+<script src="<c:url value="/resources/npm/node_modules/popper.js/dist/umd/popper.min.js"/>"></script>
+<script src="<c:url value="/resources/npm/node_modules/bootstrap/dist/js/bootstrap.min.js"/>"></script>
+<%--<script src="<c:url value="/resources/npm/node_modules/bootstrap4-toggle/js/bootstrap4-toggle.min.js"/>"></script>--%>
+<script src="<c:url value="/resources/DataTables/DataTables-1.10.23/js/jquery.dataTables.min.js"/>"></script>
+<%--<script src="<c:url value="/resources/AdapCompoundDb/js/dialogs.js"/>"></script>--%>
+<%--<script src="<c:url value="/resources/AdapCompoundDb/js/progressBar.js"/>"></script>--%>
 <script>
-var confirmDeleteDialog = $('#confirm-delete-dialog').confirmDeleteDialog();
-    var progressDialog = $('#progress-dialog').progressDialog();
-    var markRead = function(obj) {
-        $(obj).closest("tr").find("td:eq(2)").find("i").html("drafts");
-    };
 
     $(document).ready(function () {
-        $('#cluster_table').DataTable();
+        // $('#cluster_table').DataTable();
         $('#user_table').DataTable({
             scrollX: true,
-            scroller: true,
-            "fnInitComplete": function (oSettings, json) {
-                $("#users").addClass("hide");
-            }
+            scroller: true
         });
 
         $('#submission_table').DataTable({
@@ -186,8 +275,8 @@ var confirmDeleteDialog = $('#confirm-delete-dialog').confirmDeleteDialog();
             scrollX: true,
             scroller: true,
             ajax: {
-                url: "${pageContext.request.contextPath}/submission/findAllSubmissions.json",
-    
+                url: "${pageContext.request.contextPath}/admin/get/submissions.json",
+
                 data: function (data) {
                     data.column = data.order[0].column;
                     data.sortDirection = data.order[0].dir;
@@ -209,17 +298,16 @@ var confirmDeleteDialog = $('#confirm-delete-dialog').confirmDeleteDialog();
                     "targets": 2,
                     "orderable": true,
                     "render": function (data, type, row, meta) {
-                        content = '<a href="${pageContext.request.contextPath}/submission/' + row.id + '/">' +
-                            row.name +
-                            '</a>';
-                        return content;
+                        href  = `${pageContext.request.contextPath}/submission/\${row.id}/`;
+                        privateBadge = (row.private) ? `<span class="badge badge-info">private</span>` : '';
+                        return `<a href="\${href}">\${row.name}&nbsp;\${privateBadge}</a>`;
                     }
                 },
                 {
                     "targets": 3,
                     "orderable": true,
                     "render": function (data, type, row, meta) {
-                        if (row.externalId == null){
+                        if (row.externalId == null) {
                             content = ''
                         } else {
                             content = row.externalId;
@@ -231,7 +319,7 @@ var confirmDeleteDialog = $('#confirm-delete-dialog').confirmDeleteDialog();
                     "targets": 4,
                     "orderable": true,
                     "render": function (data, type, row, meta) {
-                        content = row.user.name + '<br/><small>' + row.user.email + '<small>';
+                        content = row.userName + '<br/><small>' + row.userEMail + '<small>';
                         return content;
                     }
                 },
@@ -244,188 +332,131 @@ var confirmDeleteDialog = $('#confirm-delete-dialog').confirmDeleteDialog();
                     "targets": 6,
                     "orderable": false,
                     "render": function (data, type, row, meta) {
-                        var content = '<label class="switch" id="reference_checkbox">' +
-                            '<input type="checkbox" value="' + row.id + '" ';
-                        if(row.allSpectrumReference == 1) {
-                            content += 'checked'
-                        }
-                        content += '><span class="checkbox-slider ';
-                        if(row.allSpectrumReference == null) {
-                            content += 'translate-middle';
-                        }
-                        content += '"></span></label>';
-                        return content;
+                        const text = (row.clusterable) ? 'Yes' : 'No';
+                        const href = `${pageContext.request.contextPath}/admin/set/submission/\${row.id}/clusterable/\${!row.clusterable}`;
+                        return `<a href="\${href}">\${text}</a>`
                     }
                 },
                 {
                     "targets": 7,
                     "orderable": false,
                     "render": function (data, type, row, meta) {
-                        var clickEve = "confirmDeleteDialog.show(" +
-                            "'Submission &quot;" + row.name + "&quot; and all its spectra will be deleted. Are you sure?'," +
-                            "'${pageContext.request.contextPath}/submission/" + row.id + "/delete/');";
-                        var content = '<a href="${pageContext.request.contextPath}/submission/' + row.id + '/">' +
-                            '<i class="material-icons" title="View">&#xE5D3;</i>' +
-                            '</a>' +
-                            '<a onclick="' + clickEve + '">' +
-                            '<i class="material-icons" title="Delete">&#xE872;</i></a>';
-    
-                        return content;
+                        const text = (row.reference) ? 'Yes' : 'No';
+                        const href = `${pageContext.request.contextPath}/admin/set/submission/\${row.id}/reference/\${!row.reference}`;
+                        return `<a href="\${href}">\${text}</a>`
+                    }
+                },
+                {
+                    "targets": 8,
+                    "orderable": false,
+                    "render": function (data, type, row, meta) {
+                        return `<a href="${pageContext.request.contextPath}/submission/\${row.id}/">
+                                <i class="material-icons" title="View">&#xE5D3;</i></a>
+                                <a data-submissionname="\${row.name}" data-submissionid="\${row.id}" href="#"
+                                   data-toggle="modal" data-target="#deleteSubmissionModal">
+                                   <i class="material-icons">delete</i></a>`;
                     }
                 }
-            ],
-            "fnInitComplete": function (oSettings, json) {
-                $("#submissions").addClass("hide");
-            }
-        }).on('draw', function() {
-            $("#reference_checkbox > input[type='checkbox']").each(function() {
-                $(this).on("change", function() {
-                    $(this).parent().find("span.checkbox-slider").removeClass("translate-middle");
-                    updateReferenceOfAllSpectraOfSubmission($(this).val(), $(this).is(":checked"));
-                });
+            ]
+
+        });
+
+        // Adjust column widths when a table becomes visible
+        $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
+            $.fn.dataTable.tables({visible: true, api: true}).columns.adjust();
+        });
+
+        $('#deleteUserModal').on('show.bs.modal', function (event) {
+            const button = $(event.relatedTarget);
+            const userName = button.data('username');
+            const userId = button.data('userid');
+
+            const modal = $(this);
+            modal.find('#username').text(userName);
+            modal.find('#deleteUserButton').attr('href', `${pageContext.request.contextPath}/user/\${userId}/delete`);
+        });
+
+        $('#deleteSubmissionModal').on('show.bs.modal', function (event) {
+            const button = $(event.relatedTarget);
+            const submissionName = button.data('submissionname');
+            const submissionId = button.data('submissionid');
+
+            const modal = $(this);
+            modal.find('#submissionName').text(submissionName);
+            modal.find('#deleteSubmissionButton').attr(
+                'href', `${pageContext.request.contextPath}/submission/\${submissionId}/delete/`);
+        });
+
+        // var clusterButton = $('#cluster_button');
+        // var matchButton = $('#calculate_match_button');
+        // $(clusterButton).attr("disabled", "disabled");
+        // $(matchButton).attr("disabled", "disabled");
+        //
+        // var counter = 0;
+        // var buttonHandler = function () {
+        //     counter++;
+        //     if (counter >= 2) {
+        //         $(clusterButton).removeAttr("disabled");
+        //         $(matchButton).removeAttr("disabled");
+        //     }
+        // }
+        // var scoreProgressBar = new ProgressBar('calculatescores/progress', 'match_progress', 3000, buttonHandler);
+        // var clusterProgressBar = new ProgressBar('cluster/progress', 'cluster_progress', 500, buttonHandler);
+        //
+        // scoreProgressBar.start();
+        // clusterProgressBar.start();
+
+        const matchButton = $('#calculateMatchButton');
+        const clusterButton = $('#clusterButton');
+        const matchProgressBar = $('#calculateMatchProgressBar');
+        const clusterProgressBar = $('#clusterProgressBar');
+
+        matchButton.click(function () {
+            // clusterButton.attr("disabled", "disabled");
+            // matchButton.attr("disabled", "disabled");
+            $.ajax({url: "admin/calculatescores"});
+            // }).done(function () {
+            //     matchProgressBar.removeClass("hide");
+            //     scoreProgressBar.start();
+            // });
+        });
+
+        $(clusterButton).click(function () {
+            // $(clusterButton).attr("disabled", "disabled");
+            // $(matchButton).attr("disabled", "disabled");
+            $.ajax({url: "admin/cluster"});
+            //     .done(function () {
+            //     $("#cluster_progress").removeClass("hide");
+            //     clusterProgressBar.start();
+            // });
+        });
+
+        setInterval(function () {
+            $.getJSON(window.location.href + 'calculatescores/progress', function (x) {
+                const width = x + '%';
+                const progressBar = $('#calculateMatchProgressBar')
+                    .css('width', width)
+                    .attr('aria-valuenow', x)
+                    .html(width);
+                if (0 < x && x < 100)
+                    progressBar.addClass('progress-bar-striped progress-bar-animated');
+                else {
+                    progressBar.removeClass('progress-bar-striped progress-bar-animated');
+                }
             });
-        });
 
-
-        $('#feedback_table').DataTable({
-            "order": [[3, "desc"]],
-            serverSide: true,
-            processing: true,
-            scrollX: true,
-            scroller: true,
-            ajax: {
-                url: "${pageContext.request.contextPath}/feedback/findAllFeedback.json",
-    
-                data: function (data) {
-                    data.column = data.order[0].column;
-                    data.sortDirection = data.order[0].dir;
-                    data.search = data.search["value"];
+            $.getJSON(window.location.href + 'cluster/progress', function (x) {
+                const width = x + '%';
+                const progressBar = $('#clusterProgressBar')
+                    .css('width', width)
+                    .attr('aria-valuenow', x)
+                    .html(width);
+                if (0 < x && x < 100)
+                    progressBar.addClass('progress-bar-striped progress-bar-animated');
+                else {
+                    progressBar.removeClass('progress-bar-striped progress-bar-animated');
                 }
-            },
-            "columnDefs": [
-                {
-                    "targets": 0,
-                    "orderable": true,
-                    "data": "id"
-                },
-                {
-                    "targets": 1,
-                    "orderable": false,
-                    "render": function (data, type, row, meta) {
-                        msg = row.message;
-                        if(msg.length > 20) {
-                            msg = msg.substr(0, 20) + "...";
-                        }
-                        
-                        content = '<span title="' + row.message.substr(0, 500) + '">'
-                                        + msg + '</span>';
-                        return content;
-                    }
-                },
-                {
-                    "targets": 2,
-                    "orderable": false,
-                    "render": function (data, type, row, meta) {
-                        if(row.read) {
-                            content = '<i class="material-icons">drafts</i>';
-                        } else {
-                            content = '<i class="material-icons">mail</i>';
-                        }
-                        return content;
-                    }
-                },
-                {
-                    "targets": 3,
-                    "orderable": true,
-                    "render": function (data, type, row, meta) {
-                        content = row.name
-                                        + '<br/>'
-                                        + '<small>' + row.email + '<small>'
-                                        + '<br/>'
-                                        + '<small>Affiliation: ' + row.affiliation + '<small>';
-                        return content;
-                    }
-                },
-                {
-                    "targets": 4,
-                    "orderable": true,
-                    "render": function (data, type, row, meta) {
-                        content = row.submitDate;
-                        return content;
-                    }
-                },
-                {
-                    "targets": 5,
-                    "orderable": true,
-                    "render": function (data, type, row, meta) {
-                        content = '<a onclick="markRead(this);" target="_blank" href="${pageContext.request.contextPath}/admin/feedback/' + row.id + '/">' +
-                            '<i class="material-icons" title="View">&#xE5D3;</i>' +
-                            '</a>';
-                        return content;
-                    }
-                }
-            ],
-            "fnInitComplete": function (oSettings, json) {
-                $("#feedback").addClass("hide");
-            }
-        })
-    });
-
-    function updateReferenceOfAllSpectraOfSubmission(submissionId, reference) {
-        $.ajax({
-              url: "${pageContext.request.contextPath}/spectrum/updateReferenceOfAllSpectraOfSubmission",
-              type: "GET",
-              contentType: 'application/json; charset=utf-8',
-              data: {"value": reference, "submissionId": submissionId},
-              success: function (r) {
-              },
-              error: function (xhr) {
-                  alert('Error while selecting list..!!');
-              }
-        });
-    }
-
-    var clusterButton = $('#cluster_button');
-    var matchButton = $('#calculate_match_button');
-    $(clusterButton).attr("disabled", "disabled");
-    $(matchButton).attr("disabled", "disabled");
-
-    var counter = 0;
-    var buttonHandler = function() {
-        counter++;
-        if(counter >= 2) {
-            $(clusterButton).removeAttr("disabled");
-            $(matchButton).removeAttr("disabled");
-        }
-    }
-    var scoreProgressBar = new ProgressBar('calculatescores/progress', 'match_progress', 3000, buttonHandler);
-    var clusterProgressBar = new ProgressBar('cluster/progress', 'cluster_progress', 500, buttonHandler);
-
-    scoreProgressBar.start();
-    clusterProgressBar.start();
-
-    $(matchButton).click(function () {
-        $(clusterButton).attr("disabled", "disabled");
-        $(matchButton).attr("disabled", "disabled");
-        $.ajax({
-            url: "admin/calculatescores"
-        }).done(function() {
-            $("#match_progress").removeClass("hide");
-            scoreProgressBar.start();
-        });
-    });
-
-    $(clusterButton).click(function () {
-        $(clusterButton).attr("disabled", "disabled");
-        $(matchButton).attr("disabled", "disabled");
-        $.ajax({
-            url: "admin/cluster"
-        }).done(function() {
-            $("#cluster_progress").removeClass("hide");
-            clusterProgressBar.start(); 
-        });
-    });
-    $(".tabbed-pane").each(function() {
-        $(this).tabbedPane();
+            });
+        }, 1000);
     });
 </script>

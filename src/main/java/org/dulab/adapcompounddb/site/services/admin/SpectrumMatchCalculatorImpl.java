@@ -1,5 +1,6 @@
-package org.dulab.adapcompounddb.site.services;
+package org.dulab.adapcompounddb.site.services.admin;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,12 +8,12 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
-import org.dulab.adapcompounddb.models.QueryParameters;
-import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
+import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
+import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -25,17 +26,20 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
 
     private final SpectrumRepository spectrumRepository;
     private final SpectrumMatchRepository spectrumMatchRepository;
+    private final SubmissionRepository submissionRepository;
 
     private final Map<ChromatographyType, QueryParameters> queryParametersMap;
 
     private float progress = -1F;
 
     @Autowired
-    public SpectrumMatchCalculatorImpl(final SpectrumRepository spectrumRepository,
-                                       final SpectrumMatchRepository spectrumMatchRepository) {
+    public SpectrumMatchCalculatorImpl(SpectrumRepository spectrumRepository,
+                                       SpectrumMatchRepository spectrumMatchRepository,
+                                       SubmissionRepository submissionRepository) {
 
         this.spectrumRepository = spectrumRepository;
         this.spectrumMatchRepository = spectrumMatchRepository;
+        this.submissionRepository = submissionRepository;
 
         final QueryParameters gcQueryParameters = new QueryParameters()
                 .setScoreThreshold(0.5)
@@ -48,7 +52,7 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
         //                .setRetTimeTolerance(0.5);
 
         final QueryParameters massQueryParameters = new QueryParameters()
-                .setMzTolerance(0.01);
+                .setMolecularWeightThreshold(0.01);
 
         this.queryParametersMap = new HashMap<>();
         this.queryParametersMap.put(ChromatographyType.GAS, gcQueryParameters);
@@ -72,7 +76,10 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
     @Override
     public void run() {
 
-        final long countUnmatched = spectrumRepository.countUnmatched();
+        final long countUnmatched = spectrumRepository.countByClusterableTrueAndConsensusFalseAndReferenceFalse();
+
+        final Iterable<BigInteger> qualifiedSubmissionIds = submissionRepository.findSubmissionIdsBySubmissionTags(
+                null, null, null, null);
 
         progress = 0F;
         float progressStep = 0F;
@@ -86,7 +93,6 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
 
             LOGGER.info(String.format("Retrieving unmatched spectra of %s...", chromatographyType));
             final Iterable<Spectrum> unmatchedSpectra = getUnmatchedSpectra(chromatographyType);
-//                    spectrumRepository.findUnmatchedByChromatographyType(chromatographyType);
 
             LOGGER.info(String.format("Matching unmatched spectra of %s...", chromatographyType));
             long count = 0;
@@ -101,7 +107,7 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
                             "Clustering of spectra of type %s is not currently supported", chromatographyType));
                 }
 
-                match(querySpectrum, params);
+                match(qualifiedSubmissionIds, querySpectrum, params);
 //                spectrumMatchRepository.saveAll(spectrumRepository.spectrumSearch(
 //                        SearchType.CLUSTERING, querySpectrum, params));
 //                spectrumMatchRepository.flush();
@@ -133,15 +139,17 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
 
     @Transactional
     public Iterable<Spectrum> getUnmatchedSpectra(ChromatographyType chromatographyType) {
-        return spectrumRepository.findUnmatchedByChromatographyType(chromatographyType);
+        return spectrumRepository
+                .findByClusterableTrueAndConsensusFalseAndReferenceFalseAndChromatographyType(chromatographyType);
     }
 
     @Transactional
     @Async
-    public void match(Spectrum querySpectrum, QueryParameters params) {
+    public void match(Iterable<BigInteger> submissionIds, Spectrum querySpectrum, QueryParameters params) {
         try {
-            List<SpectrumMatch> matches = spectrumRepository.spectrumSearch(
-                    SearchType.CLUSTERING, querySpectrum, params);
+            List<SpectrumMatch> matches = MappingUtils.toList(spectrumRepository.matchAgainstClusterableSpectra(
+                    submissionIds, querySpectrum, params.getScoreThreshold(), params.getMzTolerance(),
+                    params.getPrecursorTolerance(), params.getMolecularWeightThreshold()));
             spectrumMatchRepository.saveAll(matches);
             spectrumMatchRepository.flush();
         } catch (Throwable t) {

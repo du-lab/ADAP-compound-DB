@@ -102,12 +102,6 @@ public class SpectrumRestController extends BaseController {
         return objectMapper.writeValueAsString(response);
     }
 
-    @RequestMapping(value = "/updateReferenceOfAllSpectraOfSubmission", produces = "application/json")
-    public Boolean updateReferenceOfAllSpectraOfSubmission(@RequestParam("submissionId") final Long submissionId,
-                                                           @RequestParam("value") final boolean value) throws JsonProcessingException {
-        return spectrumService.updateReferenceOfAllSpectraOfSubmission(submissionId, value);
-    }
-
     @RequestMapping(value = "/findClusters", produces = "application/json")
     public String findClusters(@RequestParam("start") final Integer start,
                                @RequestParam("length") final Integer length,

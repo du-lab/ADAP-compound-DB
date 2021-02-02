@@ -3,19 +3,23 @@ package org.dulab.adapcompounddb.site.repositories;
 import java.math.BigInteger;
 import java.util.List;
 
-import org.dulab.adapcompounddb.models.QueryParameters;
+import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
+import org.dulab.adapcompounddb.site.services.admin.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.entities.*;
-import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
-import org.dulab.adapcompounddb.models.entities.views.MassSearchResult;
 
 public interface SpectrumRepositoryCustom {
 
+    @Deprecated
     List<SpectrumMatch> spectrumSearch(SearchType searchType, Spectrum querySpectrum, QueryParameters params);
 
-    Iterable<SpectrumClusterView> searchLibrarySpectra(Iterable<BigInteger> submissionIds, Spectrum querySpectrum,
-                                                       Double scoreThreshold, Double mzTolerance,
-                                                       Double precursorTolerance, Double molecularWeightTolerance);
+    Iterable<SpectrumClusterView> matchAgainstConsensusAndReferenceSpectra(
+            Iterable<BigInteger> submissionIds, Spectrum querySpectrum, Double scoreThreshold, Double mzTolerance,
+            Double precursorTolerance, Double molecularWeightTolerance);
+
+    Iterable<SpectrumMatch> matchAgainstClusterableSpectra(
+            Iterable<BigInteger> submissionIds, Spectrum querySpectrum, Double scoreThreshold, Double mzTolerance,
+            Double precursorTolerance, Double molecularWeightTolerance);
 
     void savePeaksAndPropertiesQuery(List<Spectrum> spectrumList, List<Long> savedSpectrumIdList);
 

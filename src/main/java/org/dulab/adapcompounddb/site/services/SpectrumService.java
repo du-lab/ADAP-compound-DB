@@ -17,5 +17,7 @@ public interface SpectrumService {
 
     long countReferenceSpectra();
 
-    Boolean updateReferenceOfAllSpectraOfSubmission(Long submissionId, boolean value);
+    void updateReferenceBySubmissionId(long submissionId, boolean reference);
+
+    void updateClusterableBySubmissionId(long submissionId, boolean clusterable);
 }

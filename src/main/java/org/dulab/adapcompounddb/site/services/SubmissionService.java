@@ -10,6 +10,7 @@ import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
+import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 
 @Validated
@@ -41,8 +42,7 @@ public interface SubmissionService {
 
     void deleteSubmissionCategory(long submissionCategoryId);
 
-    DataTableResponse findAllSubmissionsForResponse(String searchStr, Integer start, Integer length, Integer column,
-            String orderDirection);
+    DataTableResponse findAllSubmissions(String searchStr, Pageable pageable);
 
 //    List<String> findTagsFromACluster(Long clusterId);
 

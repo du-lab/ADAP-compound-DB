@@ -4,44 +4,41 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.Statistics;
-import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.enums.UserRole;
-import org.dulab.adapcompounddb.site.services.FeedbackService;
+import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.dulab.adapcompounddb.site.services.StatisticsService;
 import org.dulab.adapcompounddb.site.services.UserPrincipalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class AdminController {
 
     private final StatisticsService statisticsService;
     private final UserPrincipalService userPrincipalService;
-    final private FeedbackService feedbackService;
+    private final SpectrumService spectrumService;
 
-    private final Progress progress;
+//    private final Progress progress;
 
     @Autowired
-    public AdminController(final FeedbackService feedbackService,
-            final StatisticsService statisticsService,
-            final UserPrincipalService userPrincipalService) {
+    public AdminController(StatisticsService statisticsService,
+                           UserPrincipalService userPrincipalService,
+                           SpectrumService spectrumService) {
 
-        this.feedbackService = feedbackService;
         this.statisticsService = statisticsService;
         this.userPrincipalService = userPrincipalService;
+        this.spectrumService = spectrumService;
 
-        progress = new Progress();
+//        progress = new Progress();
     }
 
-    @ModelAttribute
-    public void addAttributes(final Model model) {
+    @RequestMapping(value = "/admin/", method = RequestMethod.GET)
+    public String admin(final Model model) {
 
         final Map<ChromatographyType, Statistics> statisticsMap = new TreeMap<>();
         for (final ChromatographyType type : ChromatographyType.values()) {
@@ -49,26 +46,25 @@ public class AdminController {
         }
 
         model.addAttribute("statistics", statisticsMap);
-        //        model.addAttribute("clusters", spectrumMatchService.getAllClusters());
-    }
-
-    @RequestMapping(value = "/admin/", method = RequestMethod.GET)
-    public String admin(final Model model) {
-
-        model.addAttribute("submissionCategoryTypes", SubmissionCategoryType.values());
         model.addAttribute("availableUserRoles", UserRole.values());
         model.addAttribute("users", userPrincipalService.findAllUsers());
         return "admin/admin";
     }
 
-    @RequestMapping(value = "/admin/feedback/{feedbackId:\\d+}/", method = RequestMethod.GET)
-    public String feedback(final Model model, @PathVariable("feedbackId") final Integer feedbackId) {
 
-        model.addAttribute("feedback", feedbackService.getFeedBackById(feedbackId));
-        feedbackService.markRead(feedbackId);
-        return "admin/show_feedback";
+    @RequestMapping(value = "/admin/set/submission/{submissionId:\\d+}/reference/{value}", method = RequestMethod.GET)
+    public String setSubmissionReference(@PathVariable("submissionId") long submissionId,
+                                         @PathVariable("value") boolean value) throws JsonProcessingException {
+        spectrumService.updateReferenceBySubmissionId(submissionId, value);
+        return "redirect:/admin/";
     }
 
+    @RequestMapping(value = "/admin/set/submission/{submissionId:\\d+}/clusterable/{value}", method = RequestMethod.GET)
+    public String setSubmissionClusterable(@PathVariable("submissionId") long submissionId,
+                                           @PathVariable("value") boolean value) throws JsonProcessingException {
+        spectrumService.updateClusterableBySubmissionId(submissionId, value);
+        return "redirect:/admin/";
+    }
 
     public static class Progress implements Serializable {
 

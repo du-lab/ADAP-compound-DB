@@ -1,6 +1,6 @@
 package org.dulab.adapcompounddb.site.services.search;
 
-import org.dulab.adapcompounddb.models.QueryParameters;
+import org.dulab.adapcompounddb.site.services.admin.QueryParameters;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;

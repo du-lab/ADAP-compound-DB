@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
@@ -21,12 +23,9 @@ import org.dulab.adapcompounddb.site.repositories.SubmissionCategoryRepository;
 import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
 import org.dulab.adapcompounddb.site.repositories.SubmissionTagRepository;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
-import org.dulab.adapcompounddb.utils.ObjectMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,47 +35,12 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     private static final Logger LOG = LogManager.getLogger();
 
-    private static final String DESC = "DESC";
+    //    private static final String DESC = "DESC";
     private final SubmissionRepository submissionRepository;
     private final SubmissionTagRepository submissionTagRepository;
     private final SubmissionCategoryRepository submissionCategoryRepository;
     private final SpectrumRepository spectrumRepository;
 
-    private enum ColumnInformation {
-        ID(0, "id"), DATE(1, "dateTime"),
-        NAME(2, "name"), EXTERNALID(3,"externalId"),
-        USER(4, "user.username");
-
-        private int position;
-        private String sortColumnName;
-
-        private ColumnInformation(final int position, final String sortColumnName) {
-            this.position = position;
-            this.sortColumnName = sortColumnName;
-        }
-
-        public int getPosition() {
-            return position;
-        }
-
-        public String getSortColumnName() {
-            return sortColumnName;
-        }
-
-        public static String getColumnNameFromPosition(final int position) {
-            String columnName = null;
-            for (final ColumnInformation columnInformation : ColumnInformation.values()) {
-                if (position == columnInformation.getPosition()) {
-                    columnName = columnInformation.getSortColumnName();
-                }
-            }
-            return columnName;
-        }
-
-        public static String getDefaultSortColumn() {
-            return ColumnInformation.DATE.getSortColumnName();
-        }
-    }
 
     @Autowired
     public SubmissionServiceImpl(final SubmissionRepository submissionRepository,
@@ -104,32 +68,22 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     @Override
     @Transactional
-    public DataTableResponse findAllSubmissionsForResponse(final String searchStr, final Integer start,
-                                                           final Integer length, final Integer column, String orderDirection) {
-        final ObjectMapperUtils objectMapper = new ObjectMapperUtils();
-        Pageable pageable = null;
+    public DataTableResponse findAllSubmissions(String search, Pageable pageable) {
 
-        String sortColumn = ColumnInformation.getColumnNameFromPosition(column);
-        if (sortColumn == null) {
-            sortColumn = ColumnInformation.getDefaultSortColumn();
-            orderDirection = DESC;
-        }
-        if (sortColumn != null) {
-            final Sort sort = new Sort(Sort.Direction.fromString(orderDirection), sortColumn);
-            pageable = PageRequest.of(start / length, length, sort);
-        } else {
-            pageable = PageRequest.of(start / length, length);
-        }
+        Page<Submission> submissionPage = submissionRepository.findAllSubmissions(search, pageable);
+        List<Submission> submissions = submissionPage.getContent();
 
-        final Page<Submission> submissionPage = submissionRepository.findAllSubmissions(searchStr, pageable);
-        final List<SubmissionDTO> submissionList = objectMapper.map(submissionPage.getContent(), SubmissionDTO.class);
+        long[] submissionIds = submissions.stream().mapToLong(Submission::getId).toArray();
+        Map<Long, Boolean> references = MappingUtils.toMap(
+                spectrumRepository.getAllSpectrumReferenceBySubmissionIds(submissionIds));
+        Map<Long, Boolean> clusterables = MappingUtils.toMap(
+                spectrumRepository.getAllSpectrumClusterableBySubmissionIds(submissionIds));
 
-        for (final SubmissionDTO sub : submissionList) {
-            final Integer reference = spectrumRepository.getSpectrumReferenceOfSubmissionIfSame(sub.getId());
-            sub.setAllSpectrumReference(reference);
-        }
+        List<SubmissionDTO> submissionDTOS = submissions.stream()
+                .map(s -> new SubmissionDTO(s, references.get(s.getId()), clusterables.get(s.getId())))
+                .collect(Collectors.toList());
 
-        final DataTableResponse response = new DataTableResponse(submissionList);
+        final DataTableResponse response = new DataTableResponse(submissionDTOS);
         response.setRecordsTotal(submissionPage.getTotalElements());
         response.setRecordsFiltered(submissionPage.getTotalElements());
 

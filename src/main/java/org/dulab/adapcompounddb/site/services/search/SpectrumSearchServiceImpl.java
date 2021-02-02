@@ -1,6 +1,6 @@
 package org.dulab.adapcompounddb.site.services.search;
 
-import org.dulab.adapcompounddb.models.QueryParameters;
+import org.dulab.adapcompounddb.site.services.admin.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
@@ -51,7 +51,7 @@ public class SpectrumSearchServiceImpl implements IndividualSearchService {
                 parameters.getSpecies(), parameters.getSource(), parameters.getDisease());
 
         List<SearchResultDTO> searchResults = new ArrayList<>();
-        for (SpectrumClusterView view : spectrumRepository.searchLibrarySpectra(
+        for (SpectrumClusterView view : spectrumRepository.matchAgainstConsensusAndReferenceSpectra(
                 submissionIds, querySpectrum, parameters.getScoreThreshold(), parameters.getMzTolerance(),
                 parameters.getPrecursorTolerance(), parameters.getMolecularWeightTolerance())) {
 

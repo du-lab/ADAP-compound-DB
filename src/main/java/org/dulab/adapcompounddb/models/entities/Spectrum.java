@@ -58,6 +58,8 @@ public class Spectrum implements Serializable {
 
     private boolean reference;
 
+    private boolean clusterable;
+
     private boolean integerMz;
 
     private Double precursor;
@@ -206,6 +208,14 @@ public class Spectrum implements Serializable {
 
     public void setReference(final boolean reference) {
         this.reference = reference;
+    }
+
+    public boolean isClusterable() {
+        return clusterable;
+    }
+
+    public void setClusterable(boolean clusterable) {
+        this.clusterable = clusterable;
     }
 
     public boolean isIntegerMz() {

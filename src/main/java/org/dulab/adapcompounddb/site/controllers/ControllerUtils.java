@@ -3,7 +3,7 @@ package org.dulab.adapcompounddb.site.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.gson.Gson;
-import org.dulab.adapcompounddb.models.QueryParameters;
+import org.dulab.adapcompounddb.site.services.admin.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchForm;
 import org.dulab.adapcompounddb.models.enums.UserRole;
 import org.dulab.adapcompounddb.models.dto.TagInfo;

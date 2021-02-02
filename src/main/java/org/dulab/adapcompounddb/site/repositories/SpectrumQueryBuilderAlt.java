@@ -3,16 +3,27 @@ package org.dulab.adapcompounddb.site.repositories;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.entities.Peak;
 
 public class SpectrumQueryBuilderAlt {
 
+    private static final String SPECTRUM_CLUSTER_VIEW_OUTPUT = "Spectrum.Id, Spectrum.ClusterId, " +
+            "Spectrum.Name, COUNT(DISTINCT File.SubmissionId) AS Size, Score, Error, " +
+            "AVG(Spectrum.Significance) AS AverageSignificance, MIN(Spectrum.Significance) AS MinimumSignificance, " +
+            "MAX(Spectrum.Significance) AS MaximumSignificance, Spectrum.ChromatographyType";
+
+    private static final String SPECTRUM_MATCH_OUTPUT =
+            "0 AS Id, NULL AS QuerySpectrumId, Spectrum.Id AS MatchSpectrumId, Score";
+
     private final Collection<BigInteger> submissionIds;
     private final boolean searchConsensusSpectra;
     private final boolean searchReferenceSpectra;
+    private final boolean searchClusterableSpectra;
 
     private ChromatographyType chromatographyType;
     private Double precursorMz = null;
@@ -26,15 +37,13 @@ public class SpectrumQueryBuilderAlt {
     private Double scoreThreshold = null;
 
 
-    public SpectrumQueryBuilderAlt(Collection<BigInteger> submissionIds,
-                                   boolean searchConsensusSpectra, boolean searchReferenceSpectra) {
-
-        if (!searchConsensusSpectra && !searchReferenceSpectra)
-            throw new IllegalArgumentException("Either 'searchConsensusSpectra' or 'searchReferenceSpectra' must be true");
+    public SpectrumQueryBuilderAlt(Collection<BigInteger> submissionIds, boolean searchConsensusSpectra,
+                                   boolean searchReferenceSpectra, boolean searchClusterableSpectra) {
 
         this.submissionIds = submissionIds;
         this.searchConsensusSpectra = searchConsensusSpectra;
         this.searchReferenceSpectra = searchReferenceSpectra;
+        this.searchClusterableSpectra = searchClusterableSpectra;
     }
 
     public  SpectrumQueryBuilderAlt withChromatographyType(ChromatographyType chromatographyType) {
@@ -67,54 +76,68 @@ public class SpectrumQueryBuilderAlt {
         return this;
     }
 
-    public String build() {
-
-        if (submissionIds == null || submissionIds.isEmpty())
-            return buildEmptyQuery();
-
-        String consensusSpectraQuery = buildConsensusSpectraQuery();
-        String referenceSpectraQuery = buildReferenceSpectraQuery();
-
-        String query = null;
-        if (consensusSpectraQuery != null && referenceSpectraQuery != null)
-            query = String.format("%s\nUNION ALL\n%s\nORDER BY Score DESC",
-                    consensusSpectraQuery, referenceSpectraQuery);
-        else if (consensusSpectraQuery != null)
-            query = consensusSpectraQuery + "\nORDER BY Score DESC";
-        else if (referenceSpectraQuery != null)
-            query = referenceSpectraQuery + "\nORDER BY Score DESC";
-
-        return query;
+    public String buildSpectrumClusterViewQuery() {
+        return build(SPECTRUM_CLUSTER_VIEW_OUTPUT);
     }
 
-    private String buildConsensusSpectraQuery() {
+    public String buildSpectrumMatchQuery() {
+        return build(SPECTRUM_MATCH_OUTPUT);
+    }
+
+    private String build(String output) {
+
+        if (submissionIds == null || submissionIds.isEmpty())
+            return buildEmptyQuery(output);
+
+        String consensusSpectraQuery = buildConsensusSpectraQuery(output);
+        String referenceSpectraQuery = buildReferenceSpectraQuery(output);
+        String clusterableSpectraQuery = buildClusterableSpectraQuery(output);
+
+        String query = Stream.of(new String[]{consensusSpectraQuery, referenceSpectraQuery, clusterableSpectraQuery})
+                .filter(Objects::nonNull)
+                .collect(Collectors.joining("\nUNION ALL\n"));
+        query += "\nORDER BY Score DESC";
+
+        return query;
+
+//        String query = null;
+//        if (consensusSpectraQuery != null && referenceSpectraQuery != null)
+//            query = String.format("%s\nUNION ALL\n%s\nORDER BY Score DESC",
+//                    consensusSpectraQuery, referenceSpectraQuery);
+//        else if (consensusSpectraQuery != null)
+//            query = consensusSpectraQuery + "\nORDER BY Score DESC";
+//        else if (referenceSpectraQuery != null)
+//            query = referenceSpectraQuery + "\nORDER BY Score DESC";
+//
+//        return query;
+    }
+
+    private String buildConsensusSpectraQuery(String output) {
 
         if (!searchConsensusSpectra) return null;
 
-        String query = "SELECT ConsensusSpectrum.Id, SpectrumCluster.Id AS ClusterId, ConsensusSpectrum.Name, ";
-        query += "COUNT(DISTINCT File.SubmissionId) AS Size, Score, Error, ";
-        query += "AVG(Spectrum.Significance) AS AverageSignificance, MIN(Spectrum.Significance) AS MinimumSignificance, ";
-        query += "MAX(Spectrum.Significance) AS MaximumSignificance, ConsensusSpectrum.ChromatographyType FROM (\n";
-        query += getScoreTable(true, false);
+        String query = String.format("SELECT %s FROM (\n", output);
+        query += getScoreTable(true, false, false);
         query += ") AS ScoreTable JOIN SpectrumCluster ON SpectrumCluster.ConsensusSpectrumId = SpectrumId\n";
-        query += "JOIN Spectrum AS ConsensusSpectrum ON ConsensusSpectrum.Id = SpectrumId\n";
-        query += "JOIN Spectrum ON Spectrum.ClusterId = SpectrumCluster.Id\n";
-        query += "JOIN File ON File.Id = Spectrum.FileId\n";
+        query += "JOIN Spectrum ON Spectrum.Id = SpectrumId\n";
+        query += "JOIN Spectrum AS ClusteredSpectrum ON ClusteredSpectrum.ClusterId = SpectrumCluster.Id\n";
+        query += "JOIN File ON File.Id = ClusteredSpectrum.FileId\n";
         query += String.format("WHERE File.SubmissionId IN (%s)\n", submissionIds.stream()
                 .map(String::valueOf)
                 .collect(Collectors.joining(",")));
-        query += "GROUP BY Spectrum.ClusterId";
+        query += "GROUP BY ClusteredSpectrum.ClusterId";
         return query;
     }
 
-    private String buildReferenceSpectraQuery() {
+    private String buildReferenceSpectraQuery(String output) {
 
         if (!searchReferenceSpectra) return null;
 
-        String query = "SELECT Spectrum.Id, NULL AS ClusterId, Spectrum.Name, 1 AS Size, Score, Error, ";
-        query += "Spectrum.Significance AS AverageSignificance, Spectrum.Significance AS MinimumSignificance, ";
-        query += "Spectrum.Significance AS MaximumSignificance, Spectrum.ChromatographyType FROM (\n";
-        query += getScoreTable(false, true);
+//        String query = "SELECT Spectrum.Id, NULL AS ClusterId, Spectrum.Name, 1 AS Size, Score, Error, ";
+//        query += "Spectrum.Significance AS AverageSignificance, Spectrum.Significance AS MinimumSignificance, ";
+//        query += "Spectrum.Significance AS MaximumSignificance, Spectrum.ChromatographyType FROM (\n";
+        String query = String.format("SELECT %s FROM (\n", output);
+        query += getScoreTable(false, true, false);
         query += ") AS ScoreTable JOIN Spectrum ON Spectrum.Id = SpectrumId\n";
         query += "JOIN File ON File.Id = Spectrum.FileId\n";
         query += String.format("WHERE File.SubmissionId IN (%s)\n", submissionIds.stream()
@@ -124,10 +147,26 @@ public class SpectrumQueryBuilderAlt {
         return query;
     }
 
-    private String buildEmptyQuery() {
-        return "SELECT Id, NULL AS ClusterId, Name, 1 AS Size, 0 AS Score, NULL AS Error, " +
-                "Significance AS AverageSignificance, Significance AS MinimumSignificance, " +
-                "Significance AS MaximumSignificance, ChromatographyType FROM Spectrum WHERE FALSE";
+    private String buildClusterableSpectraQuery(String output) {
+
+        if (!searchClusterableSpectra) return null;
+
+        String query = String.format("SELECT %s FROM (\n", output);
+        query += getScoreTable(false, false, true);
+        query += ") AS ScoreTable JOIN Spectrum ON Spectrum.Id = SpectrumId\n";
+        query += "JOIN File ON File.Id = Spectrum.FileId\n";
+        query += String.format("WHERE File.SubmissionId IN (%s)\n", submissionIds.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(",")));
+
+        return query;
+    }
+
+    private String buildEmptyQuery(String output) {
+//        return "SELECT Id, NULL AS ClusterId, Name, 1 AS Size, 0 AS Score, NULL AS Error, " +
+//                "Significance AS AverageSignificance, Significance AS MinimumSignificance, " +
+//                "Significance AS MaximumSignificance, ChromatographyType FROM Spectrum WHERE FALSE";
+        return String.format("SELECT %s FROM Spectrum JOIN File ON Spectrum.FileId = File.Id WHERE FALSE", output);
     }
 
     /**
@@ -137,10 +176,11 @@ public class SpectrumQueryBuilderAlt {
      * @param isReference true if spectra must be reference spectra
      * @return SQL string with the condition
      */
-    private String getScoreTable(boolean isConsensus, boolean isReference) {
+    private String getScoreTable(boolean isConsensus, boolean isReference, boolean isClusterable) {
 
         String spectrumSelector = String.format(
-                "Spectrum.Consensus IS %s AND Spectrum.Reference IS %s", isConsensus, isReference);
+                "Spectrum.Consensus IS %s AND Spectrum.Reference IS %s AND Spectrum.Clusterable IS %s",
+                isConsensus, isReference, isClusterable);
 
         if (chromatographyType != null)
             spectrumSelector += String.format(" AND Spectrum.ChromatographyType = '%s'", chromatographyType);

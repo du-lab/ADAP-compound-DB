@@ -1,32 +1,19 @@
 package org.dulab.adapcompounddb.site.services;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-import org.apache.commons.beanutils.BeanComparator;
-import org.apache.commons.collections.comparators.NullComparator;
-import org.apache.commons.collections.comparators.ReverseComparator;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.SpectrumDTO;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
-import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.services.utils.DataUtils;
 import org.dulab.adapcompounddb.utils.ObjectMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -120,7 +107,13 @@ public class SpectrumServiceImpl implements SpectrumService {
 
     @Override
     @Transactional
-    public Boolean updateReferenceOfAllSpectraOfSubmission(final Long submissionId, final boolean value) {
-        return spectrumRepository.updateReferenceOfAllSpectraOfSubmission(submissionId, value) == 1;
+    public void updateReferenceBySubmissionId(long submissionId, boolean reference) {
+        spectrumRepository.updateReferenceBySubmissionId(submissionId, reference);
+    }
+
+    @Override
+    @Transactional
+    public void updateClusterableBySubmissionId(long submissionId, boolean clusterable) {
+        spectrumRepository.updateClusterableBySubmissionId(submissionId, clusterable);
     }
 }

@@ -1,9 +1,6 @@
 package org.dulab.adapcompounddb.site.services.utils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class MappingUtils {
 
@@ -11,6 +8,12 @@ public class MappingUtils {
         List<E> list = new ArrayList<>();
         iterable.forEach(list::add);
         return list;
+    }
+
+    public static <E> Map<Long, E> toMap(Iterable<Object[]> iterable) {
+        Map<Long, E> map = new HashMap<>();
+        iterable.forEach(it -> map.put((Long) it[0], (E) it[1]));
+        return map;
     }
 
     public static <E> List<E> randomSubList(List<E> list, int n) {

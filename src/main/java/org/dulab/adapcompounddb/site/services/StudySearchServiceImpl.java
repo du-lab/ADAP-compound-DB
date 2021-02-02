@@ -1,6 +1,6 @@
 package org.dulab.adapcompounddb.site.services;
 
-import org.dulab.adapcompounddb.models.QueryParameters;
+import org.dulab.adapcompounddb.site.services.admin.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.dto.SubmissionMatchDTO;
 import org.dulab.adapcompounddb.models.entities.File;

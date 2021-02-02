@@ -1,15 +1,11 @@
 package org.dulab.adapcompounddb.models.dto;
 
-import org.apache.commons.lang3.StringUtils;
-import org.dulab.adapcompounddb.models.entities.UserPrincipal;
+import org.dulab.adapcompounddb.models.entities.Submission;
 
-import javax.persistence.Entity;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
-@Entity
 public class SubmissionDTO implements Serializable {
 
     private static final String YYYY_MM_DD = "yyyy/MM/dd HH:mm:ss";
@@ -28,17 +24,40 @@ public class SubmissionDTO implements Serializable {
 
     private Date dateTime;
 
-    private List<SubmissionCategoryDTO> categories;
-
     private String tagsAsString;
 
-    private UserPrincipal user;
+    private String userName;
 
-    private String reference;
+    private String userEMail;
 
-    private Integer allSpectrumReference;
+    private String url;
+
+    private boolean isPrivate;
+
+    private boolean reference;
+
+    private boolean clusterable;
 
     private String externalId;
+
+    public SubmissionDTO(Submission submission, boolean reference, boolean clusterable) {
+        this.id = submission.getId();
+        this.name = submission.getName();
+        this.description = submission.getDescription();
+        this.dateTime = submission.getDateTime();
+        this.tagsAsString = submission.getTagsAsString();
+        this.userName = submission.getUser().getUsername();
+        this.userEMail = submission.getUser().getEmail();
+        this.url = submission.getReference();
+        this.isPrivate = submission.isPrivate();
+        this.reference = reference;
+        this.clusterable = clusterable;
+        this.externalId = submission.getExternalId();
+    }
+
+    public SubmissionDTO(Submission submission) {
+        this(submission, false, false);
+    }
 
     // *******************************
     // ***** Getters and Setters *****
@@ -76,14 +95,6 @@ public class SubmissionDTO implements Serializable {
         this.dateTime = dateTime;
     }
 
-    public List<SubmissionCategoryDTO> getCategories() {
-        return categories;
-    }
-
-    public void setCategories(final List<SubmissionCategoryDTO> categories) {
-        this.categories = categories;
-    }
-
     public String getTagsAsString() {
         return tagsAsString;
     }
@@ -92,28 +103,52 @@ public class SubmissionDTO implements Serializable {
         this.tagsAsString = tagsAsString;
     }
 
-    public UserPrincipal getUser() {
-        return user;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUser(final UserPrincipal user) {
-        this.user = user;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
-    public String getReference() {
+    public String getUserEMail() {
+        return userEMail;
+    }
+
+    public void setUserEMail(String userEMail) {
+        this.userEMail = userEMail;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(final String url) {
+        this.url = url;
+    }
+
+    public boolean isPrivate() {
+        return isPrivate;
+    }
+
+    public void setPrivate(boolean aPrivate) {
+        isPrivate = aPrivate;
+    }
+
+    public boolean isReference() {
         return reference;
     }
 
-    public void setReference(final String reference) {
+    public void setReference(boolean reference) {
         this.reference = reference;
     }
 
-    public Integer getAllSpectrumReference() {
-        return allSpectrumReference;
+    public boolean isClusterable() {
+        return clusterable;
     }
 
-    public void setAllSpectrumReference(final Integer allSpectrumReference) {
-        this.allSpectrumReference = allSpectrumReference;
+    public void setClusterable(boolean clusterable) {
+        this.clusterable = clusterable;
     }
 
     public String getExternalId() {
@@ -128,18 +163,18 @@ public class SubmissionDTO implements Serializable {
     // ***** Other methods *****
     // *************************
 
-    public boolean isAuthorized(final UserPrincipal user) {
-        boolean authorized = false;
-        if (user == null) {
-            authorized = false;
-        } else if (user.isAdmin()) {
-            authorized = true;
-        } else if (id != 0) {
-            authorized = StringUtils.equals(user.getUsername(), getUser().getUsername());
-        }
-
-        return authorized;
-    }
+//    public boolean isAuthorized(final UserPrincipal user) {
+//        boolean authorized = false;
+//        if (user == null) {
+//            authorized = false;
+//        } else if (user.isAdmin()) {
+//            authorized = true;
+//        } else if (id != 0) {
+//            authorized = StringUtils.equals(user.getUsername(), getUser().getUsername());
+//        }
+//
+//        return authorized;
+//    }
 
     public String getFormattedDate() {
         final SimpleDateFormat format = new SimpleDateFormat(YYYY_MM_DD);

@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Set;
 
 public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, SpectrumRepositoryCustom {
@@ -18,12 +19,16 @@ public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, Spec
     @Query("SELECT s FROM Spectrum s WHERE s.matches IS EMPTY")
     Iterable<Spectrum> findAllByMatchesIsEmpty();
 
-    @Query("SELECT s FROM Spectrum s WHERE s.matches IS EMPTY "
-            + "AND s.consensus=FALSE AND s.reference=FALSE AND s.chromatographyType = ?1")
-    Iterable<Spectrum> findUnmatchedByChromatographyType(ChromatographyType chromatographyType);
+//    @Query("SELECT s FROM Spectrum s WHERE s.matches IS EMPTY "
+//            + "AND s.clusterable=TRUE AND s.consensus=FALSE AND s.reference=FALSE AND s.chromatographyType = ?1")
+//    Iterable<Spectrum> findUnmatchedByChromatographyType(ChromatographyType chromatographyType);
 
-    @Query("SELECT COUNT(s) FROM Spectrum s WHERE s.matches IS EMPTY AND s.consensus=FALSE AND s.reference=FALSE")
-    long countUnmatched();
+    Iterable<Spectrum> findByClusterableTrueAndConsensusFalseAndReferenceFalseAndChromatographyType(ChromatographyType type);
+
+//    @Query("SELECT COUNT(s) FROM Spectrum s WHERE s.matches IS EMPTY AND s.consensus=FALSE AND s.reference=FALSE")
+//    long countUnmatched();
+
+    long countByClusterableTrueAndConsensusFalseAndReferenceFalse();
 
     Iterable<Spectrum> findAllByConsensusFalseAndReferenceFalseAndChromatographyType(
             ChromatographyType chromatographyType);
@@ -43,9 +48,15 @@ public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, Spec
 
     long countByConsensusIsFalse();
 
-    long countByChromatographyTypeAndConsensusFalse(ChromatographyType chromatographyType);
+    //***** Statistics *****
+
+    long countByChromatographyType(ChromatographyType chromatographyType);
 
     long countByChromatographyTypeAndConsensusTrue(ChromatographyType chromatographyType);
+
+    long countByChromatographyTypeAndClusterableTrue(ChromatographyType chromatographyType);
+
+    long countByChromatographyTypeAndReferenceTrue(ChromatographyType chromatographyType);
 
     @Query(value = "select s from Spectrum s " +
             "inner join s.file f " +
@@ -58,12 +69,35 @@ public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, Spec
             + "AND s.consensus=FALSE AND s.chromatographyType = ?1")
     long countUnmatchedBySubmissionChromatographyType(ChromatographyType chromatographyType);
 
-    @Query(value = "select temp.t from (select reference, "
-            + "(select max(reference) from Spectrum s1 where s1.FileId in (SELECT distinct f.id from File f where f.SubmissionId = :submissionId)) as t "
-            + "from Spectrum s2 where s2.FileId in (SELECT distinct f.id from File f where f.SubmissionId = :submissionId) group by reference) "
-            + "as temp "
-            + "group by temp.t having count(temp.reference) = 1", nativeQuery = true)
-    Integer getSpectrumReferenceOfSubmissionIfSame(@Param("submissionId") Long submissionId);
+//    @Query(value = "select temp.t from (select reference, "
+//            + "(select max(reference) from Spectrum s1 where s1.FileId in (SELECT distinct f.id from File f where f.SubmissionId = :submissionId)) as t "
+//            + "from Spectrum s2 where s2.FileId in (SELECT distinct f.id from File f where f.SubmissionId = :submissionId) group by reference) "
+//            + "as temp "
+//            + "group by temp.t having count(temp.reference) = 1", nativeQuery = true)
+//    Integer getSpectrumReferenceOfSubmissionIfSame(@Param("submissionId") Long submissionId);
+
+    @Query("select sum(s.reference) from Spectrum s where s.file.submission.id = :submissionId")
+    boolean getAllSpectrumReferenceBySubmissionId(@Param("submissionId") Long submissionId);
+
+    @Query("select s.file.submission.id, sum(s.reference) from Spectrum s where s.file.submission.id in :ids group by s.file.submission.id")
+    Iterable<Object[]> getAllSpectrumReferenceBySubmissionIds(@Param("ids") long[] submissionIds);
+
+    @Query("select sum(s.clusterable) from Spectrum s where s.file.submission.id = :submissionId")
+    boolean getAllSpectrumClusterableBySubmissionId(@Param("submissionId") Long submissionId);
+
+    @Query("select s.file.submission.id, sum(s.clusterable) from Spectrum s " +
+            "where s.file.submission.id in :ids group by s.file.submission.id")
+    Iterable<Object[]> getAllSpectrumClusterableBySubmissionIds(@Param("ids") long[] submissionIds);
+
+    @Modifying  //clearAutomatically = true
+    @Query(value = "UPDATE Spectrum JOIN File ON File.Id = Spectrum.FileId " +
+            "SET Reference = :value WHERE File.SubmissionId = :submissionId", nativeQuery = true)
+    void updateReferenceBySubmissionId(@Param("submissionId") long submissionId, @Param("value") boolean value);
+
+    @Modifying  //clearAutomatically = true
+    @Query(value = "UPDATE Spectrum JOIN File ON File.Id = Spectrum.FileId " +
+            "SET Clusterable = :value WHERE File.SubmissionId = :submissionId", nativeQuery = true)
+    void updateClusterableBySubmissionId(@Param("submissionId") long submissionId, @Param("value") boolean value);
 
     long countByConsensusTrue();
 
@@ -72,11 +106,6 @@ public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, Spec
     @Query("select s.file.submission.id, s.reference, count(s.reference) " + "from Spectrum s "
             + "where s.file.submission.id = :submissionId " + "group by s.file.submission.id, s.reference")
     Boolean getReferenceInfoOfAllSpectra(@Param("submissionId") Long submissionId);
-
-    @Modifying(clearAutomatically = true)
-    @Query("UPDATE Spectrum s SET s.reference = :reference where s.file.id in (SELECT distinct f.id from File f where f.submission.id = :submissionId)")
-    int updateReferenceOfAllSpectraOfSubmission(@Param("submissionId") Long submissionId,
-                                                @Param("reference") Boolean value);
 
     @Modifying
     @Query("UPDATE Spectrum s SET s.cluster = :cluster WHERE s.id IN (:ids)")

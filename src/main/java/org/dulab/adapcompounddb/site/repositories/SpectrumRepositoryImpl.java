@@ -7,11 +7,10 @@ import java.util.List;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
-import org.dulab.adapcompounddb.models.QueryParameters;
+import org.dulab.adapcompounddb.site.services.admin.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
-import org.dulab.adapcompounddb.models.entities.views.MassSearchResult;
 
 public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
@@ -27,6 +26,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Deprecated
     @Override
     public List<SpectrumMatch> spectrumSearch(final SearchType searchType, final Spectrum querySpectrum, final QueryParameters params) {
 
@@ -70,25 +70,56 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     }
 
     @Override
-    public Iterable<SpectrumClusterView> searchLibrarySpectra(@NotNull Iterable<BigInteger> submissionIds,
-                                                              Spectrum querySpectrum,
-                                                              Double scoreThreshold, Double mzTolerance,
-                                                              Double precursorTolerance, Double molecularWeightTolerance) {
+    public Iterable<SpectrumClusterView> matchAgainstConsensusAndReferenceSpectra(
+            @NotNull Iterable<BigInteger> submissionIds, Spectrum querySpectrum,
+            Double scoreThreshold, Double mzTolerance, Double precursorTolerance, Double molecularWeightTolerance) {
+
+        return searchSpectra(submissionIds, querySpectrum,
+                scoreThreshold, mzTolerance, precursorTolerance, molecularWeightTolerance,
+                true, true, false,
+                SpectrumClusterView.class);
+    }
+
+    @Override
+    public Iterable<SpectrumMatch> matchAgainstClusterableSpectra(
+            @NotNull Iterable<BigInteger> submissionIds, Spectrum querySpectrum,
+            Double scoreThreshold, Double mzTolerance, Double precursorTolerance, Double molecularWeightTolerance) {
+
+        Iterable<SpectrumMatch> matches = searchSpectra(submissionIds, querySpectrum,
+                scoreThreshold, mzTolerance, precursorTolerance, molecularWeightTolerance,
+                false, false, true, SpectrumMatch.class);
+        matches.forEach(m -> m.setQuerySpectrum(querySpectrum));
+        return matches;
+    }
+
+    private <E> Iterable<E> searchSpectra(@NotNull Iterable<BigInteger> submissionIds, Spectrum querySpectrum,
+                                          Double scoreThreshold, Double mzTolerance,
+                                          Double precursorTolerance, Double molecularWeightTolerance,
+                                          boolean searchConsensusSpectra, boolean searchReferenceSpectra,
+                                          boolean searchClusterableSpectr, Class<E> classOfE) {
 
         List<BigInteger> submissionIdList = new ArrayList<>();
         submissionIds.forEach(submissionIdList::add);
 
-        SpectrumQueryBuilderAlt builder = new SpectrumQueryBuilderAlt(submissionIdList, true, true);
+        SpectrumQueryBuilderAlt builder = new SpectrumQueryBuilderAlt(submissionIdList,
+                searchConsensusSpectra, searchReferenceSpectra, searchClusterableSpectr);
         if (querySpectrum != null)
             builder = builder.withChromatographyType(querySpectrum.getChromatographyType())
                     .withQuerySpectrum(querySpectrum.getPeaks(), mzTolerance, scoreThreshold)
                     .withPrecursor(querySpectrum.getPrecursor(), precursorTolerance)
                     .withMolecularWeight(querySpectrum.getMolecularWeight(), molecularWeightTolerance);
-        String query = builder.build();
+
+        String query;
+        if (classOfE == SpectrumClusterView.class)
+            query = builder.buildSpectrumClusterViewQuery();
+        else if (classOfE == SpectrumMatch.class)
+            query = builder.buildSpectrumMatchQuery();
+        else
+            throw new IllegalStateException("Unknown class: " + classOfE);
 
         @SuppressWarnings("unchecked")
-        List<SpectrumClusterView> resultList = entityManager
-                .createNativeQuery(query, SpectrumClusterView.class)
+        List<E> resultList = entityManager
+                .createNativeQuery(query, classOfE)
                 .getResultList();
 
         return resultList;

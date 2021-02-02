@@ -1,9 +1,7 @@
-package org.dulab.adapcompounddb.models;
+package org.dulab.adapcompounddb.site.services.admin;
 
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 
-import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 public class QueryParameters {
@@ -12,6 +10,7 @@ public class QueryParameters {
     private Double precursorTolerance = null;
     private Double mzTolerance = null;
     private Double scoreThreshold = null;
+    private Double molecularWeightThreshold = null;
     private Set<String> tags = null;
     private Set<Spectrum> excludeSpectra = null;
 
@@ -48,6 +47,15 @@ public class QueryParameters {
 
     public QueryParameters setScoreThreshold(Double scoreThreshold) {
         this.scoreThreshold = scoreThreshold;
+        return this;
+    }
+
+    public Double getMolecularWeightThreshold() {
+        return molecularWeightThreshold;
+    }
+
+    public QueryParameters setMolecularWeightThreshold(Double molecularWeightThreshold) {
+        this.molecularWeightThreshold = molecularWeightThreshold;
         return this;
     }
 

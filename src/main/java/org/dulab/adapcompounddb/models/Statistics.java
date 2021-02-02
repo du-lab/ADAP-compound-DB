@@ -2,25 +2,26 @@ package org.dulab.adapcompounddb.models;
 
 public class Statistics {
 
-    private Long numSubmittedSpectra;
-    private Long numUnmatchedSpectra;
+    private Long numSpectra;
+    private Long numClusterableSpectra;
     private Long numConsensusSpectra;
+    private Long numReferenceSpectra;
     private Long numSpectrumMatches;
 
-    public Long getNumSubmittedSpectra() {
-        return numSubmittedSpectra;
+    public Long getNumSpectra() {
+        return numSpectra;
     }
 
-    public void setNumSubmittedSpectra(Long numSubmittedSpectra) {
-        this.numSubmittedSpectra = numSubmittedSpectra;
+    public void setNumSpectra(Long numSpectra) {
+        this.numSpectra = numSpectra;
     }
 
-    public Long getNumUnmatchedSpectra() {
-        return numUnmatchedSpectra;
+    public Long getNumClusterableSpectra() {
+        return numClusterableSpectra;
     }
 
-    public void setNumUnmatchedSpectra(Long numUnmatchedSpectra) {
-        this.numUnmatchedSpectra = numUnmatchedSpectra;
+    public void setNumClusterableSpectra(Long numClusterableSpectra) {
+        this.numClusterableSpectra = numClusterableSpectra;
     }
 
     public Long getNumConsensusSpectra() {
@@ -29,6 +30,14 @@ public class Statistics {
 
     public void setNumConsensusSpectra(Long numConsensusSpectra) {
         this.numConsensusSpectra = numConsensusSpectra;
+    }
+
+    public Long getNumReferenceSpectra() {
+        return numReferenceSpectra;
+    }
+
+    public void setNumReferenceSpectra(Long numReferenceSpectra) {
+        this.numReferenceSpectra = numReferenceSpectra;
     }
 
     public Long getNumSpectrumMatches() {
