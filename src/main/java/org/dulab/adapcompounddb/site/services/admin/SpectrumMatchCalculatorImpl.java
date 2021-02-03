@@ -76,7 +76,8 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
     @Override
     public void run() {
 
-        final long countUnmatched = spectrumRepository.countByClusterableTrueAndConsensusFalseAndReferenceFalse();
+        final long countUnmatched =
+                spectrumRepository.countByMatchesEmptyAndClusterableTrueAndConsensusFalseAndReferenceFalse();
 
         final Iterable<BigInteger> qualifiedSubmissionIds = submissionRepository.findSubmissionIdsBySubmissionTags(
                 null, null, null, null);
@@ -140,7 +141,7 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
     @Transactional
     public Iterable<Spectrum> getUnmatchedSpectra(ChromatographyType chromatographyType) {
         return spectrumRepository
-                .findByClusterableTrueAndConsensusFalseAndReferenceFalseAndChromatographyType(chromatographyType);
+                .findByMatchesEmptyAndClusterableTrueAndConsensusFalseAndReferenceFalseAndChromatographyType(chromatographyType);
     }
 
     @Transactional

@@ -12,13 +12,27 @@ import org.dulab.adapcompounddb.models.entities.Peak;
 
 public class SpectrumQueryBuilderAlt {
 
-    private static final String SPECTRUM_CLUSTER_VIEW_OUTPUT = "Spectrum.Id, Spectrum.ClusterId, " +
+    private static final String AGGREGATED_SPECTRUM_CLUSTER_VIEW_OUTPUT = "Spectrum.Id, Spectrum.ClusterId, " +
             "Spectrum.Name, COUNT(DISTINCT File.SubmissionId) AS Size, Score, Error, " +
             "AVG(Spectrum.Significance) AS AverageSignificance, MIN(Spectrum.Significance) AS MinimumSignificance, " +
             "MAX(Spectrum.Significance) AS MaximumSignificance, Spectrum.ChromatographyType";
 
+    private static final String SIMPLE_SPECTRUM_CLUSTER_VIEW_OUTPUT = "Spectrum.Id, Spectrum.ClusterId, " +
+            "Spectrum.Name, 1 AS Size, Score, Error, " +
+            "Spectrum.Significance AS AverageSignificance, Spectrum.Significance AS MinimumSignificance, " +
+            "Spectrum.Significance AS MaximumSignificance, Spectrum.ChromatographyType";
+
+    private static final String EMPTY_SPECTRUM_CLUSTER_VIEW_OUTPUT = "Spectrum.Id, Spectrum.ClusterId, " +
+            "Spectrum.Name, 0 AS Size, 0 AS Score, NULL AS Error, " +
+            "Spectrum.Significance AS AverageSignificance, Spectrum.Significance AS MinimumSignificance, " +
+            "Spectrum.Significance AS MaximumSignificance, Spectrum.ChromatographyType";
+
     private static final String SPECTRUM_MATCH_OUTPUT =
             "0 AS Id, NULL AS QuerySpectrumId, Spectrum.Id AS MatchSpectrumId, Score";
+
+    private static final String EMPTY_SPECTRUM_MATCH_OUTPUT =
+            "0 AS Id, NULL AS QuerySpectrumId, Spectrum.Id AS MatchSpectrumId, 0 AS Score";
+
 
     private final Collection<BigInteger> submissionIds;
     private final boolean searchConsensusSpectra;
@@ -77,21 +91,22 @@ public class SpectrumQueryBuilderAlt {
     }
 
     public String buildSpectrumClusterViewQuery() {
-        return build(SPECTRUM_CLUSTER_VIEW_OUTPUT);
+        return build(AGGREGATED_SPECTRUM_CLUSTER_VIEW_OUTPUT,
+                SIMPLE_SPECTRUM_CLUSTER_VIEW_OUTPUT, EMPTY_SPECTRUM_CLUSTER_VIEW_OUTPUT);
     }
 
     public String buildSpectrumMatchQuery() {
-        return build(SPECTRUM_MATCH_OUTPUT);
+        return build(SPECTRUM_MATCH_OUTPUT, SPECTRUM_MATCH_OUTPUT, EMPTY_SPECTRUM_MATCH_OUTPUT);
     }
 
-    private String build(String output) {
+    private String build(String aggregatedOutput, String simpleOutput, String emptyOutput) {
 
         if (submissionIds == null || submissionIds.isEmpty())
-            return buildEmptyQuery(output);
+            return buildEmptyQuery(emptyOutput);
 
-        String consensusSpectraQuery = buildConsensusSpectraQuery(output);
-        String referenceSpectraQuery = buildReferenceSpectraQuery(output);
-        String clusterableSpectraQuery = buildClusterableSpectraQuery(output);
+        String consensusSpectraQuery = buildConsensusSpectraQuery(aggregatedOutput);
+        String referenceSpectraQuery = buildReferenceSpectraQuery(simpleOutput);
+        String clusterableSpectraQuery = buildClusterableSpectraQuery(simpleOutput);
 
         String query = Stream.of(new String[]{consensusSpectraQuery, referenceSpectraQuery, clusterableSpectraQuery})
                 .filter(Objects::nonNull)
@@ -99,17 +114,6 @@ public class SpectrumQueryBuilderAlt {
         query += "\nORDER BY Score DESC";
 
         return query;
-
-//        String query = null;
-//        if (consensusSpectraQuery != null && referenceSpectraQuery != null)
-//            query = String.format("%s\nUNION ALL\n%s\nORDER BY Score DESC",
-//                    consensusSpectraQuery, referenceSpectraQuery);
-//        else if (consensusSpectraQuery != null)
-//            query = consensusSpectraQuery + "\nORDER BY Score DESC";
-//        else if (referenceSpectraQuery != null)
-//            query = referenceSpectraQuery + "\nORDER BY Score DESC";
-//
-//        return query;
     }
 
     private String buildConsensusSpectraQuery(String output) {
@@ -133,9 +137,6 @@ public class SpectrumQueryBuilderAlt {
 
         if (!searchReferenceSpectra) return null;
 
-//        String query = "SELECT Spectrum.Id, NULL AS ClusterId, Spectrum.Name, 1 AS Size, Score, Error, ";
-//        query += "Spectrum.Significance AS AverageSignificance, Spectrum.Significance AS MinimumSignificance, ";
-//        query += "Spectrum.Significance AS MaximumSignificance, Spectrum.ChromatographyType FROM (\n";
         String query = String.format("SELECT %s FROM (\n", output);
         query += getScoreTable(false, true, false);
         query += ") AS ScoreTable JOIN Spectrum ON Spectrum.Id = SpectrumId\n";
@@ -163,9 +164,6 @@ public class SpectrumQueryBuilderAlt {
     }
 
     private String buildEmptyQuery(String output) {
-//        return "SELECT Id, NULL AS ClusterId, Name, 1 AS Size, 0 AS Score, NULL AS Error, " +
-//                "Significance AS AverageSignificance, Significance AS MinimumSignificance, " +
-//                "Significance AS MaximumSignificance, ChromatographyType FROM Spectrum WHERE FALSE";
         return String.format("SELECT %s FROM Spectrum JOIN File ON Spectrum.FileId = File.Id WHERE FALSE", output);
     }
 
