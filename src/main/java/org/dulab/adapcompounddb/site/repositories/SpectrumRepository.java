@@ -58,6 +58,8 @@ public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, Spec
 
     long countByChromatographyTypeAndReferenceTrue(ChromatographyType chromatographyType);
 
+    long countByChromatographyTypeAndConsensusFalseAndClusterableFalseAndReferenceFalse(ChromatographyType chromatographyType);
+
     @Query(value = "select s from Spectrum s " +
             "inner join s.file f " +
             "inner join f.submission sub "

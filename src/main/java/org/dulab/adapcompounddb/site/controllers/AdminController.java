@@ -66,18 +66,18 @@ public class AdminController {
         return "redirect:/admin/";
     }
 
-    public static class Progress implements Serializable {
-
-        private final static long serialVersionUID = 1L;
-
-        private Integer value;
-
-        public Integer getValue() {
-            return value;
-        }
-
-        public void setValue(final Integer value) {
-            this.value = value;
-        }
-    }
+//    public static class Progress implements Serializable {
+//
+//        private final static long serialVersionUID = 1L;
+//
+//        private Integer value;
+//
+//        public Integer getValue() {
+//            return value;
+//        }
+//
+//        public void setValue(final Integer value) {
+//            this.value = value;
+//        }
+//    }
 }

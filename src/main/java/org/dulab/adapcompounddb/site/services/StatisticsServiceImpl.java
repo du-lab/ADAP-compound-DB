@@ -31,6 +31,8 @@ public class StatisticsServiceImpl implements StatisticsService {
                 spectrumRepository.countByChromatographyTypeAndConsensusTrue(type));
         statistics.setNumReferenceSpectra(
                 spectrumRepository.countByChromatographyTypeAndReferenceTrue(type));
+        statistics.setNumOtherSpectra(
+                spectrumRepository.countByChromatographyTypeAndConsensusFalseAndClusterableFalseAndReferenceFalse(type));
         statistics.setNumSpectrumMatches(
                 spectrumMatchRepository.countByQuerySpectrumChromatographyType(type));
         return statistics;

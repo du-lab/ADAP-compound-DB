@@ -82,6 +82,7 @@
                                             <th>Clusterable</th>
                                             <th>Consensus</th>
                                             <th>Reference</th>
+                                            <th>Other</th>
                                             <th>Matches</th>
                                         </tr>
                                         <%--@elvariable id="statistics" type="java.util.Map<org.dulab.adapcompounddb.models.enums.ChromatographyType, org.dulab.adapcompounddb.models.Statistics>"--%>
@@ -92,6 +93,7 @@
                                                 <td>${mapEntry.value.numClusterableSpectra}</td>
                                                 <td>${mapEntry.value.numConsensusSpectra}</td>
                                                 <td>${mapEntry.value.numReferenceSpectra}</td>
+                                                <td>${mapEntry.value.numOtherSpectra}</td>
                                                 <td>${mapEntry.value.numSpectrumMatches}</td>
                                             </tr>
                                         </c:forEach>
@@ -130,52 +132,6 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <%--                            <div class="row row-content">--%>
-                            <%--                                <table style="width: 100%;">--%>
-                            <%--                                    <thead>--%>
-                            <%--                                    <tr>--%>
-                            <%--                                        <th class="desktop" style="width: 20%;"></th>--%>
-                            <%--                                        <th style="width: 25%;"></th>--%>
-                            <%--                                        <th></th>--%>
-                            <%--                                    </tr>--%>
-                            <%--                                    </thead>--%>
-                            <%--                                    <tbody>--%>
-                            <%--                                    <tr>--%>
-                            <%--                                        <td class="desktop">Calculates matching scores for all spectra in the--%>
-                            <%--                                            Knowledgebase--%>
-                            <%--                                        </td>--%>
-                            <%--                                        <td>--%>
-                            <%--                                            <!-- <a href="calculatescores/" class="button"--%>
-                            <%--                                                onclick="progressBar.start('calculatescores/progress')">Calculate Matching Scores...</a> -->--%>
-                            <%--                                            <button class="btn btn-primary" id="calculate_match_button"--%>
-                            <%--                                                    style="width: 100%;">--%>
-                            <%--                                                Calculate Matching Scores--%>
-                            <%--                                            </button>--%>
-                            <%--                                        </td>--%>
-                            <%--                                        <td>--%>
-                            <%--                                            <progress id="match_progress" value="0" max="100"--%>
-                            <%--                                                      style="width:100%; height: 1.4em;"></progress>--%>
-                            <%--                                        </td>--%>
-                            <%--                                    </tr>--%>
-                            <%--                                    <tr>--%>
-                            <%--                                        <td class="desktop">Cluster spectra into clusters</td>--%>
-                            <%--                                        <td>--%>
-                            <%--                                            <!-- <a id="button-cluster" href="cluster/"--%>
-                            <%--                                                class="button">Cluster spectra...</a> -->--%>
-                            <%--                                            <button class="btn btn-primary" id="cluster_button" style="width: 100%;">--%>
-                            <%--                                                Cluster--%>
-                            <%--                                                spectra--%>
-                            <%--                                            </button>--%>
-                            <%--                                        </td>--%>
-                            <%--                                        <td>--%>
-                            <%--                                            <progress id="cluster_progress" value="0" max="100"--%>
-                            <%--                                                      style="width:100%; height: 1.4em;"></progress>--%>
-                            <%--                                        </td>--%>
-                            <%--                                    </tr>--%>
-                            <%--                                    </tbody>--%>
-                            <%--                                </table>--%>
-                            <%--                            </div>--%>
                         </div>
                     </div>
 
@@ -386,25 +342,6 @@
             modal.find('#deleteSubmissionButton').attr(
                 'href', `${pageContext.request.contextPath}/submission/\${submissionId}/delete/`);
         });
-
-        // var clusterButton = $('#cluster_button');
-        // var matchButton = $('#calculate_match_button');
-        // $(clusterButton).attr("disabled", "disabled");
-        // $(matchButton).attr("disabled", "disabled");
-        //
-        // var counter = 0;
-        // var buttonHandler = function () {
-        //     counter++;
-        //     if (counter >= 2) {
-        //         $(clusterButton).removeAttr("disabled");
-        //         $(matchButton).removeAttr("disabled");
-        //     }
-        // }
-        // var scoreProgressBar = new ProgressBar('calculatescores/progress', 'match_progress', 3000, buttonHandler);
-        // var clusterProgressBar = new ProgressBar('cluster/progress', 'cluster_progress', 500, buttonHandler);
-        //
-        // scoreProgressBar.start();
-        // clusterProgressBar.start();
 
         const matchButton = $('#calculateMatchButton');
         const clusterButton = $('#clusterButton');

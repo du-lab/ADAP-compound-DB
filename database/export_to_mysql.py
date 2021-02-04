@@ -100,7 +100,7 @@ def _export_lines(original_lines: List[str], arguments: List[str]):
     
     command_line = ['mysql'] + arguments + ['<', partial_sql_file.name]
     # print(command_line)
-    subprocess.run(' '.join(command_line), shell=True)
+    subprocess.run(' '.join(command_line), shell=True, check=True)
 
     # input()
     partial_sql_file.close()

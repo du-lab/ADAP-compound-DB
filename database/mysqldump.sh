@@ -3,6 +3,6 @@ mysqldump --user=dulab --host=adapcompounddbrds.cti4tencv7f9.us-east-2.rds.amazo
 
 
 # To upload the backup, run
-# mysql -u root -p < dump.mysql
+# python3 export_to_mysql.py --user MYSQL_USERNAME --password MYSQL_PASSWORD --dump-file DUMP_FILE
 # You may need to temporally increase the maximum allowed packet size of MySQL with
 # SET GLOBAL max_allowed_packet=1073741824

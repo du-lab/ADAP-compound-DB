@@ -6,6 +6,7 @@ public class Statistics {
     private Long numClusterableSpectra;
     private Long numConsensusSpectra;
     private Long numReferenceSpectra;
+    private Long numOtherSpectra;
     private Long numSpectrumMatches;
 
     public Long getNumSpectra() {
@@ -38,6 +39,14 @@ public class Statistics {
 
     public void setNumReferenceSpectra(Long numReferenceSpectra) {
         this.numReferenceSpectra = numReferenceSpectra;
+    }
+
+    public Long getNumOtherSpectra() {
+        return numOtherSpectra;
+    }
+
+    public void setNumOtherSpectra(Long numOtherSpectra) {
+        this.numOtherSpectra = numOtherSpectra;
     }
 
     public Long getNumSpectrumMatches() {

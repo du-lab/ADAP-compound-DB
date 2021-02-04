@@ -73,17 +73,20 @@ public class SubmissionServiceImpl implements SubmissionService {
         Page<Submission> submissionPage = submissionRepository.findAllSubmissions(search, pageable);
         List<Submission> submissions = submissionPage.getContent();
 
-        long[] submissionIds = submissions.stream().mapToLong(Submission::getId).toArray();
-        Map<Long, Boolean> references = MappingUtils.toMap(
-                spectrumRepository.getAllSpectrumReferenceBySubmissionIds(submissionIds));
-        Map<Long, Boolean> clusterables = MappingUtils.toMap(
-                spectrumRepository.getAllSpectrumClusterableBySubmissionIds(submissionIds));
+        List<SubmissionDTO> submissionDTOs = new ArrayList<>(0);
+        if (!submissions.isEmpty()) {
+            long[] submissionIds = submissions.stream().mapToLong(Submission::getId).toArray();
+            Map<Long, Boolean> references = MappingUtils.toMap(
+                    spectrumRepository.getAllSpectrumReferenceBySubmissionIds(submissionIds));
+            Map<Long, Boolean> clusterables = MappingUtils.toMap(
+                    spectrumRepository.getAllSpectrumClusterableBySubmissionIds(submissionIds));
 
-        List<SubmissionDTO> submissionDTOS = submissions.stream()
-                .map(s -> new SubmissionDTO(s, references.get(s.getId()), clusterables.get(s.getId())))
-                .collect(Collectors.toList());
+            submissionDTOs = submissions.stream()
+                    .map(s -> new SubmissionDTO(s, references.get(s.getId()), clusterables.get(s.getId())))
+                    .collect(Collectors.toList());
+        }
 
-        final DataTableResponse response = new DataTableResponse(submissionDTOS);
+        final DataTableResponse response = new DataTableResponse(submissionDTOs);
         response.setRecordsTotal(submissionPage.getTotalElements());
         response.setRecordsFiltered(submissionPage.getTotalElements());
 
