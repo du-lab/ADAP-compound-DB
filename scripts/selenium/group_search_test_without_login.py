@@ -44,8 +44,10 @@ def group_search_test(homepage_url, msp_path):
         assert data_list
 
         # check the search button on the file/group_search/ page
-        search_button_list = driver.find_elements_by_link_text('Search')
-        search_button_list[0].click()
+#         search_button_list = driver.find_elements_by_link_text('Search')
+#         search_button_list[0].click()
+        search_button = driver.find_element_by_xpath("//i[@title='Search spectrum']/parent::a")
+        search_button.click()
         time.sleep(5)
         assert (driver.current_url.__str__().startswith(urljoin(homepage_url, 'file/')))
 
