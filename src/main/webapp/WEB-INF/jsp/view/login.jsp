@@ -72,7 +72,7 @@
                     </div>
                     <div class="row row-content justify-content-center">
                         <div class="col-auto">
-                            <a href="<c:url value="/signup"/>" class="btn btn-secondary">Register</a>
+                            <a id="registerButton" href="<c:url value="/signup"/>" class="btn btn-secondary">Register</a>
                         </div>
                     </div>
                 </div>

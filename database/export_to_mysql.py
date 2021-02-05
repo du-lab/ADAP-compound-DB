@@ -1,6 +1,7 @@
 """Export a dump file to MySQL"""
 
 import argparse
+import os
 import re
 import subprocess
 import tempfile
@@ -89,21 +90,22 @@ def _export_lines(original_lines: List[str], arguments: List[str]):
     lines = prefix + lines + suffix
     # lines.append('SET FOREIGN_KEY_CHECKS=1;\n')
 
-    partial_sql_file = tempfile.NamedTemporaryFile(mode='w', prefix='export-to-mysql.')
+    partial_sql_file = tempfile.NamedTemporaryFile(mode='w', prefix='export-to-mysql.', delete=False, encoding='utf-8')
     partial_sql_file.writelines(lines)
     partial_sql_file.flush()
+    partial_sql_file.close()
 
     print('Executing {:d} lines ({:.3f}MB) starting with:\n{:s}...'.format(
-        len(original_lines), 
-        getsize(partial_sql_file.name) / (1024 * 1024), 
+        len(original_lines),
+        getsize(partial_sql_file.name) / (1024 * 1024),
         original_lines[0][:80]))
-    
+
     command_line = ['mysql'] + arguments + ['<', partial_sql_file.name]
     # print(command_line)
     subprocess.run(' '.join(command_line), shell=True, check=True)
 
     # input()
-    partial_sql_file.close()
+    os.remove(partial_sql_file.name)
 
     if use_statement is None:
         for line in lines:
@@ -112,17 +114,17 @@ def _export_lines(original_lines: List[str], arguments: List[str]):
 
 
 def export_to_mysql(filename: str, arguments: List[str]):
-    
+
     global use_statement
     use_statement = None
 
     insert_lines = []
     other_lines = []
-    for line in open(filename):
+    for line in open(filename, encoding='utf-8'):
         # if line.startswith('DROP TABLE') and len(partial_lines) > 0:
         #     _export_lines(partial_lines, arguments)
         #     partial_lines = []
-        
+
         if line.startswith('DROP TABLE'):
             _export_lines(other_lines, arguments)
             _export_insert_lines(insert_lines, arguments)
@@ -133,7 +135,7 @@ def export_to_mysql(filename: str, arguments: List[str]):
             insert_lines.append(line)
         else:
             other_lines.append(line)
-    
+
     _export_lines(other_lines, arguments)
     _export_lines(insert_lines, arguments)
 

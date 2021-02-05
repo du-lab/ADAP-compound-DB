@@ -33,7 +33,8 @@ def login_register_test(homepage_url):
         upload_page_button.click()
 
         # go to registration
-        register_button = driver.find_element_by_class_name('button')
+#         register_button = driver.find_element_by_class_name('button')
+        register_button = driver.find_element_by_id('registerButton')
         register_button.click()
 
         # input username, email, password for new register user
