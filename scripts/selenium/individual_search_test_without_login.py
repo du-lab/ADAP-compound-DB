@@ -40,7 +40,8 @@ def individual_search_test(homepage_url, msp_path):
         search_button.click()
 
         # click search button on single search page
-        search_button = driver.find_element_by_class_name('button')
+#         search_button = driver.find_element_by_class_name('button')
+        search_button = driver.find_element_by_id('searchButton')
         search_button.click()
 
         # add 10 seconds delay for spectrum search complete before next step
