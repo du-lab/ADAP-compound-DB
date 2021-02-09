@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<%--@elvariable id="currentUser" type="org.springframework.security.core.userdetails.User"--%>
 <%@ taglib prefix="decorator" uri="http://www.opensymphony.com/sitemesh/decorator" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
@@ -125,6 +124,7 @@
                 </h1>
             </div>
             <div class="col-12 col-lg-4">
+                <%--@elvariable id="currentUser" type="org.springframework.security.core.userdetails.User"--%>
                 <c:if test="${currentUser != null}">
                     <div class="user">User: ${currentUser.username} (<a href="<c:url value="/logout"/>">Log out</a>)
                     </div>

@@ -57,7 +57,7 @@ public class ClusterController {
         List<String> sourceList = submissionTagService.findDistinctTagValuesByTagKey("sample source");
         List<String> diseaseList = submissionTagService.findDistinctTagValuesByTagKey("disease");
 
-        model.addAttribute("filterOptions", new FilterOptions(speciesList, sourceList, diseaseList));
+        model.addAttribute("filterOptions", new FilterOptions(speciesList, sourceList, diseaseList, null));
         return "all_clusters";
     }
 

@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Future;
 
 @Service
@@ -46,8 +47,8 @@ public class GroupSearchServiceImpl implements GroupSearchService {
     @Override
     @Async
     @Transactional(propagation = Propagation.REQUIRED)
-    public Future<Void> groupSearch(UserPrincipal userPrincipal,
-                                    List<File> files, HttpSession session, String species, String source, String disease) {
+    public Future<Void> groupSearch(UserPrincipal userPrincipal, List<File> files, HttpSession session,
+                                    Set<Long> submissionIds, String species, String source, String disease) {
 
         LOGGER.info(String.format("Group search is started (species: %s, source: %s, disease: %s)",
                 species != null ? species : "all",
@@ -89,6 +90,7 @@ public class GroupSearchServiceImpl implements GroupSearchService {
                     parameters.setSpecies(species);
                     parameters.setSource(source);
                     parameters.setDisease(disease);
+                    parameters.setSubmissionIds(submissionIds);
 
                     List<SearchResultDTO> individualSearchResults =
                             spectrumSearchService.searchConsensusSpectra(userPrincipal, querySpectrum, parameters);

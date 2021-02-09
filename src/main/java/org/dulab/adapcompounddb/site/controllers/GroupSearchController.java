@@ -21,6 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 
 @Controller
@@ -31,6 +32,7 @@ public class GroupSearchController extends BaseController {
     private final GroupSearchService groupSearchService;
     private final SubmissionService submissionService;
     private final SubmissionTagService submissionTagService;
+    private FilterOptions filterOptions;
     private Future<Void> asyncResult;
 
     @Autowired
@@ -48,8 +50,11 @@ public class GroupSearchController extends BaseController {
         List<String> speciesList = submissionTagService.findDistinctTagValuesByTagKey("species (common)");
         List<String> sourceList = submissionTagService.findDistinctTagValuesByTagKey("sample source");
         List<String> diseaseList = submissionTagService.findDistinctTagValuesByTagKey("disease");
+        Map<Long, String> submissions = submissionService.findUserPrivateSubmissions(this.getCurrentUserPrincipal());
+        submissions.put(0L, "Public");
 
-        model.addAttribute("filterOptions", new FilterOptions(speciesList, sourceList, diseaseList));
+        filterOptions = new FilterOptions(speciesList, sourceList, diseaseList, submissions);
+        model.addAttribute("filterOptions", filterOptions);
     }
 
     @RequestMapping(value = "/file/group_search/", method = RequestMethod.GET)
@@ -60,6 +65,8 @@ public class GroupSearchController extends BaseController {
         if (submission == null) {
             return "redirect:/file/upload/";
         }
+
+        form.setSubmissionIds(filterOptions.getSubmissions().keySet());
         model.addAttribute("filterForm", form);
         return "submission/group_search";
     }
@@ -68,6 +75,8 @@ public class GroupSearchController extends BaseController {
     public String groupSearch(final Model model, @Valid final FilterForm form, final HttpSession session) {
         session.removeAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
         groupSearchService.setProgress(0F);
+
+        form.setSubmissionIds(filterOptions.getSubmissions().keySet());
         model.addAttribute("filterForm", form);
         return "submission/group_search";
     }
@@ -103,8 +112,8 @@ public class GroupSearchController extends BaseController {
 //                .flatMap(file -> file.getSpectra().stream())
 //                .collect(Collectors.toList());
 
-        asyncResult = groupSearchService.groupSearch(this.getCurrentUserPrincipal(),
-                submission.getFiles(), session, form.getSpecies(), form.getSource(), form.getDisease());
+        asyncResult = groupSearchService.groupSearch(this.getCurrentUserPrincipal(), submission.getFiles(), session,
+                form.getSubmissionIds(), form.getSpecies(), form.getSource(), form.getDisease());
 
         return new ModelAndView("submission/group_search");
     }

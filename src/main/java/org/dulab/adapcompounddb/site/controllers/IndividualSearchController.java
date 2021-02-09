@@ -1,10 +1,9 @@
 package org.dulab.adapcompounddb.site.controllers;
 
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
-import org.dulab.adapcompounddb.models.enums.ChromatographyType;
-import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.entities.*;
+import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterForm;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterOptions;
 import org.dulab.adapcompounddb.site.services.*;
@@ -28,6 +27,7 @@ import java.util.*;
 
 @Controller
 public class IndividualSearchController extends BaseController {
+
     private final SubmissionService submissionService;
     private final SpectrumService spectrumService;
     private final SubmissionTagService submissionTagService;
@@ -47,24 +47,24 @@ public class IndividualSearchController extends BaseController {
 
     @ModelAttribute
     public void addAttributes(final Model model) {
-        model.addAttribute("chromatographyTypes", ChromatographyType.values());
-        model.addAttribute("submissionCategories", submissionService.findAllCategories());
+//        model.addAttribute("chromatographyTypes", ChromatographyType.values());
+//        model.addAttribute("submissionCategories", submissionService.findAllCategories());
 
-        model.addAttribute("submissionCategoryTypes", SubmissionCategoryType.values());
+//        model.addAttribute("submissionCategoryTypes", SubmissionCategoryType.values());
 
-        final Map<SubmissionCategoryType, List<SubmissionCategory>> submissionCategoryMap = new HashMap<>();
-        for (final SubmissionCategory category : submissionService.findAllCategories()) {
-            submissionCategoryMap
-                    .computeIfAbsent(category.getCategoryType(), c -> new ArrayList<>())
-                    .add(category);
-        }
-        model.addAttribute("submissionCategoryMap", submissionCategoryMap);
+//        final Map<SubmissionCategoryType, List<SubmissionCategory>> submissionCategoryMap = new HashMap<>();
+//        for (final SubmissionCategory category : submissionService.findAllCategories()) {
+//            submissionCategoryMap
+//                    .computeIfAbsent(category.getCategoryType(), c -> new ArrayList<>())
+//                    .add(category);
+//        }
+//        model.addAttribute("submissionCategoryMap", submissionCategoryMap);
 
-        List<String> speciesList = submissionTagService.findDistinctTagValuesByTagKey("species (common)");
-        List<String> sourceList = submissionTagService.findDistinctTagValuesByTagKey("sample source");
-        List<String> diseaseList = submissionTagService.findDistinctTagValuesByTagKey("disease");
-
-        model.addAttribute("filterOptions", new FilterOptions(speciesList, sourceList, diseaseList));
+//        List<String> speciesList = submissionTagService.findDistinctTagValuesByTagKey("species (common)");
+//        List<String> sourceList = submissionTagService.findDistinctTagValuesByTagKey("sample source");
+//        List<String> diseaseList = submissionTagService.findDistinctTagValuesByTagKey("disease");
+//
+//        model.addAttribute("filterOptions", new FilterOptions(speciesList, sourceList, diseaseList));
     }
 
     @RequestMapping(
@@ -83,7 +83,7 @@ public class IndividualSearchController extends BaseController {
             return "redirect:/notfound/";
         }
 
-        return searchGet(spectrum, UserPrincipal.from(session), model);
+        return searchGet(spectrum, model);
     }
 
     @RequestMapping(value = "/file/{fileIndex:\\d+}/{spectrumIndex:\\d+}/search/", method = RequestMethod.GET)
@@ -102,7 +102,7 @@ public class IndividualSearchController extends BaseController {
                 .getSpectra()
                 .get(spectrumIndex);
 
-        return searchGet(spectrum, UserPrincipal.from(session), model);
+        return searchGet(spectrum, model);
     }
 
     @RequestMapping(value = "/spectrum/{spectrumId}/search/", method = RequestMethod.GET)
@@ -116,13 +116,19 @@ public class IndividualSearchController extends BaseController {
             return "redirect:/notfound/";
         }
 
-        return searchGet(spectrum, UserPrincipal.from(session), model);
+        return searchGet(spectrum, model);
     }
 
-    private String searchGet(final Spectrum querySpectrum, final UserPrincipal user, final Model model) {
+    private String searchGet(final Spectrum querySpectrum, final Model model) {
 
         model.addAttribute("querySpectrum", querySpectrum);
-        model.addAttribute("filterForm", new FilterForm());
+
+        FilterOptions filterOptions = getFilterOptions(querySpectrum.getChromatographyType());
+        model.addAttribute("filterOptions", filterOptions);
+
+        FilterForm form = new FilterForm();
+        form.setSubmissionIds(filterOptions.getSubmissions().keySet());
+        model.addAttribute("filterForm", form);
 
         return "submission/spectrum/search";
     }
@@ -196,40 +202,32 @@ public class IndividualSearchController extends BaseController {
             return new ModelAndView("submission/spectrum/search");
         }
 
-//        final IndividualSearchService individualSearchService =
-//                searchServiceSelector.findByChromatographyType(querySpectrum.getChromatographyType());
-
-//        SearchParameters parameters = new SearchParameters();
-//        switch (querySpectrum.getChromatographyType()) {
-//            case GAS:
-//            case LIQUID_POSITIVE:
-//            case LIQUID_NEGATIVE:
-//                parameters.setMzTolerance(0.01);
-//                parameters.setScoreThreshold(0.5);
-//                break;
-//            case LC_MSMS_POS:
-//            case LC_MSMS_NEG:
-//                parameters.setMzTolerance(0.01);
-//                parameters.setScoreThreshold(0.5);
-//                parameters.setPrecursorTolerance(0.01);
-//                break;
-//            case NONE:
-//                parameters.setMolecularWeightTolerance(0.01);
-//                break;
-//        }
         SearchParameters parameters = SearchParameters.getDefaultParameters(querySpectrum.getChromatographyType());
         parameters.setSpecies(filterForm.getSpecies());
         parameters.setSource(filterForm.getSource());
         parameters.setDisease(filterForm.getDisease());
+        parameters.setSubmissionIds(filterForm.getSubmissionIds());
 
         List<SearchResultDTO> searchResults = individualSearchService.searchConsensusSpectra(
                 this.getCurrentUserPrincipal(), querySpectrum, parameters);
 
         model.addAttribute("querySpectrum", querySpectrum);
+        model.addAttribute("filterOptions", getFilterOptions(querySpectrum.getChromatographyType()));
         model.addAttribute("filterForm", filterForm);
         model.addAttribute("searchResults", searchResults);
 
         return new ModelAndView("submission/spectrum/search");
     }
 
+    private FilterOptions getFilterOptions(ChromatographyType chromatographyType) {
+        List<String> speciesList = submissionTagService.findDistinctTagValuesByTagKey("species (common)");
+        List<String> sourceList = submissionTagService.findDistinctTagValuesByTagKey("sample source");
+        List<String> diseaseList = submissionTagService.findDistinctTagValuesByTagKey("disease");
+
+        Map<Long, String> submissions = submissionService.findUserPrivateSubmissions(
+                this.getCurrentUserPrincipal(), chromatographyType);
+        submissions.put(0L, "Public");
+
+        return new FilterOptions(speciesList, sourceList, diseaseList, submissions);
+    }
 }

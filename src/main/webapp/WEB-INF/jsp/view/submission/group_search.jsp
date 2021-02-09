@@ -16,7 +16,21 @@
                     <%--@elvariable id="filterOptions" type="org.dulab.adapcompounddb.site.controllers.forms.FilterOptions"--%>
                     <form:form modelAttribute="filterForm" method="post">
                         <div class="row">
-                            <div class="col">
+                            <div class="col-md-6">
+                                <div class="row form-group">
+                                    <form:label path="submissionIds" cssClass="col-form-label">Libraries:</form:label>
+                                    <form:select path="submissionIds" cssClass="custom-select" multiple="multiple">
+                                        <c:forEach items="${filterOptions.submissions}" var="entry">
+                                            <form:option value="${entry.key}"
+                                                         selected="${filterForm.submissionIds.contains(entry.key) ? 'selected' : ''}">
+                                                ${entry.value}
+                                            </form:option>
+                                        </c:forEach>
+                                    </form:select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
                                 <div class="row form-group">
                                     <form:label path="species" cssClass="col-md-6 col-form-label">Species:</form:label>
                                     <form:select path="species" cssClass="col-md-6 form-control">

@@ -2,6 +2,8 @@ package org.dulab.adapcompounddb.site.services.search;
 
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 
+import java.util.Set;
+
 public class SearchParameters {
 
     private Double scoreThreshold;
@@ -11,6 +13,7 @@ public class SearchParameters {
     private String species;
     private String source;
     private String disease;
+    private Set<Long> submissionIds;
 
     public Double getScoreThreshold() {
         return scoreThreshold;
@@ -67,6 +70,15 @@ public class SearchParameters {
     public void setDisease(String disease) {
         this.disease = disease;
     }
+
+    public Set<Long> getSubmissionIds() {
+        return submissionIds;
+    }
+
+    public void setSubmissionIds(Set<Long> submissionIds) {
+        this.submissionIds = submissionIds;
+    }
+
 
     public static SearchParameters getDefaultParameters(ChromatographyType type) {
         SearchParameters parameters = new SearchParameters();

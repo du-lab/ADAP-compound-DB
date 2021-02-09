@@ -3,6 +3,7 @@
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="font" uri="http://www.springframework.org/tags/form" %>
 
 <div id="filterModal" class="modal fade" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
@@ -22,9 +23,14 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="row form-group">
-                                    <form:label path="submissions" cssClass="col-form-label">Libraries:</form:label>
-                                    <form:select path="submissions" cssClass="custom-select" multiple="multiple">
-                                        <form:option value="0" label="Public"/>
+                                    <form:label path="submissionIds" cssClass="col-form-label">Libraries:</form:label>
+                                    <form:select path="submissionIds" cssClass="custom-select" multiple="multiple">
+                                        <c:forEach items="${filterOptions.submissions}" var="entry">
+                                            <form:option value="${entry.key}"
+                                                         selected="${filterForm.submissionIds.contains(entry.key) ? 'selected' : ''}">
+                                                ${entry.value}
+                                            </form:option>
+                                        </c:forEach>
                                     </form:select>
                                 </div>
                             </div>
@@ -256,22 +262,22 @@
             chartRow.show();
         });
 
-    table.rows(':eq(0)').select();
+        table.rows(':eq(0)').select();
 
-    $('#searchButton').click(function () {
-        $('#filterForm').submit();
-        $(this).prop('disabled', true);
-        $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;Search')
-    });
+        $('#searchButton').click(function () {
+            $('#filterForm').submit();
+            $(this).prop('disabled', true);
+            $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;Search')
+        });
 
-    // $('span[data-id="property_table"]').spa(function () {
-    //     console.log(this.style.overflow);
-    // });
+        // $('span[data-id="property_table"]').spa(function () {
+        //     console.log(this.style.overflow);
+        // });
 
-    // $('#filterForm').appendTo('#filter');
+        // $('#filterForm').appendTo('#filter');
 
-    // $('#species, #source, #disease').change(function () {
-    //     $('#filterForm').submit();
-    // });
+        // $('#species, #source, #disease').change(function () {
+        //     $('#filterForm').submit();
+        // });
     })
 </script>

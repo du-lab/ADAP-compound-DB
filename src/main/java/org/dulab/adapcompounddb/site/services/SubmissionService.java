@@ -10,6 +10,8 @@ import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
+import org.dulab.adapcompounddb.models.entities.UserPrincipal;
+import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 
@@ -47,4 +49,8 @@ public interface SubmissionService {
 //    List<String> findTagsFromACluster(Long clusterId);
 
     Map<String, List<String>> groupTags(List<String> tags);
+
+    Map<Long, String> findUserPrivateSubmissions(UserPrincipal user, ChromatographyType type);
+
+    Map<Long, String> findUserPrivateSubmissions(UserPrincipal user);
 }

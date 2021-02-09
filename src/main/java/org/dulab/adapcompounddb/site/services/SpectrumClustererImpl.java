@@ -261,7 +261,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
         // Calculate diversity
         // setDiversityIndices(cluster);
         List<Submission> submissions = MappingUtils.toList(
-                submissionRepository.finsSubmissionsWithTagsBySpectrumId(spectrumIds));
+                submissionRepository.findSubmissionsWithTagsBySpectrumId(spectrumIds));
         final List<TagInfo> tagInfoList = ControllerUtils.getDiversityIndices(submissions);
 
         if (!tagInfoList.isEmpty()) {

@@ -1,13 +1,14 @@
 package org.dulab.adapcompounddb.site.controllers.forms;
 
 import java.util.Map;
+import java.util.Set;
 
 public class FilterForm {
 
     private String species;
     private String source;
     private String disease;
-    private Map<Long, String> submissions;
+    private Set<Long> submissionIds;
 
     public String getSpecies() {
         return species;
@@ -33,11 +34,11 @@ public class FilterForm {
         this.disease = disease;
     }
 
-    public Map<Long, String> getSubmissions() {
-        return submissions;
+    public Set<Long> getSubmissionIds() {
+        return submissionIds;
     }
 
-    public void setSubmissions(Map<Long, String> submissions) {
-        this.submissions = submissions;
+    public void setSubmissionIds(Set<Long> submissionIds) {
+        this.submissionIds = submissionIds;
     }
 }

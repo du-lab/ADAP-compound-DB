@@ -32,7 +32,7 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final String SESSION_ATTRIBUTE_KEY = "userPrincipal";
+    public static final String SESSION_ATTRIBUTE_KEY = "userPrincipal";
 
     private long id;
 
@@ -148,11 +148,11 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
         return username;
     }
 
-    public static UserPrincipal from(HttpSession session) {
-        return session == null ? null : (UserPrincipal) session.getAttribute(SESSION_ATTRIBUTE_KEY);
-    }
-
-    public static void assign(HttpSession session, UserPrincipal principal) {
-        session.setAttribute(SESSION_ATTRIBUTE_KEY, principal);
-    }
+//    public static UserPrincipal from(HttpSession session) {
+//        return session == null ? null : (UserPrincipal) session.getAttribute(SESSION_ATTRIBUTE_KEY);
+//    }
+//
+//    public static void assign(HttpSession session, UserPrincipal principal) {
+//        session.setAttribute(SESSION_ATTRIBUTE_KEY, principal);
+//    }
 }

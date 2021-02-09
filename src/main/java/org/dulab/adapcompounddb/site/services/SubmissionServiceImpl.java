@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
@@ -18,6 +17,8 @@ import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
 import org.dulab.adapcompounddb.models.entities.File;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
+import org.dulab.adapcompounddb.models.entities.UserPrincipal;
+import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.repositories.SubmissionCategoryRepository;
 import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
@@ -222,5 +223,25 @@ public class SubmissionServiceImpl implements SubmissionService {
         });
 
         return tagMap;
+    }
+
+    @Override
+    public Map<Long, String> findUserPrivateSubmissions(UserPrincipal user, ChromatographyType type) {
+        Iterable<Submission> submissions =
+                submissionRepository.findByPrivateTrueAndReferenceTrueAndUserAndChromatographyType(user, type);
+
+        Map<Long, String> submissionIdToNameMap = new HashMap<>();
+        submissions.forEach(s -> submissionIdToNameMap.put(s.getId(), s.getName()));
+        return submissionIdToNameMap;
+    }
+
+    @Override
+    public Map<Long, String> findUserPrivateSubmissions(UserPrincipal user) {
+        Iterable<Submission> submissions =
+                submissionRepository.findByPrivateTrueAndReferenceTrueAndUser(user);
+
+        Map<Long, String> submissionIdToNameMap = new HashMap<>();
+        submissions.forEach(s -> submissionIdToNameMap.put(s.getId(), s.getName()));
+        return submissionIdToNameMap;
     }
 }

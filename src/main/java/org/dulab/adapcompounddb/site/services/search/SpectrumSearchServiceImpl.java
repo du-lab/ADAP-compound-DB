@@ -17,7 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class SpectrumSearchServiceImpl implements IndividualSearchService {
@@ -46,9 +49,16 @@ public class SpectrumSearchServiceImpl implements IndividualSearchService {
     public List<SearchResultDTO> searchConsensusSpectra(UserPrincipal user, Spectrum querySpectrum,
                                                         SearchParameters parameters) {
 
-        Iterable<BigInteger> submissionIds = submissionRepository.findSubmissionIdsBySubmissionTags(
-                user != null ? user.getId() : null,
-                parameters.getSpecies(), parameters.getSource(), parameters.getDisease());
+        Set<BigInteger> submissionIds = (parameters.getSubmissionIds() != null)
+                ? parameters.getSubmissionIds().stream().map(BigInteger::valueOf).collect(Collectors.toSet())
+                : new HashSet<>();
+
+        if (submissionIds.isEmpty() || submissionIds.contains(BigInteger.ZERO)) {
+            Iterable<BigInteger> publicSubmissionIds = submissionRepository.findSubmissionIdsBySubmissionTags(
+                    parameters.getSpecies(), parameters.getSource(), parameters.getDisease());
+            publicSubmissionIds.forEach(submissionIds::add);
+            submissionIds.remove(BigInteger.ZERO);
+        }
 
         List<SearchResultDTO> searchResults = new ArrayList<>();
         for (SpectrumClusterView view : spectrumRepository.matchAgainstConsensusAndReferenceSpectra(

@@ -3,6 +3,7 @@ package org.dulab.adapcompounddb.site.controllers.forms;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 
 import java.util.List;
+import java.util.Map;
 
 public class FilterOptions {
 
@@ -10,12 +11,15 @@ public class FilterOptions {
     private final List<String> speciesList;
     private final List<String> sourceList;
     private final List<String> diseaseList;
+    private final Map<Long, String> submissions;
 
-    public FilterOptions(List<String> speciesList, List<String> sourceList, List<String> diseaseList) {
+    public FilterOptions(List<String> speciesList, List<String> sourceList, List<String> diseaseList,
+                         Map<Long, String> submissions) {
         this.speciesList = speciesList;
         this.sourceList = sourceList;
         this.diseaseList = diseaseList;
         this.chromatographyTypes = ChromatographyType.values();
+        this.submissions = submissions;
     }
 
     public ChromatographyType[] getChromatographyTypes() {
@@ -32,5 +36,9 @@ public class FilterOptions {
 
     public List<String> getDiseaseList() {
         return diseaseList;
+    }
+
+    public Map<Long, String> getSubmissions() {
+        return submissions;
     }
 }

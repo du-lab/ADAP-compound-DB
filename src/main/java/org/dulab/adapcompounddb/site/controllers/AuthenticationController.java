@@ -26,7 +26,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 
 @Controller
-public class AuthenticationController {
+public class AuthenticationController extends BaseController {
 
     private static final Logger LOG = LogManager.getLogger();
 
@@ -42,8 +42,9 @@ public class AuthenticationController {
      ****************/
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public ModelAndView login(final Model model, final HttpSession session, @RequestParam(name = "loginFailed", required = false, defaultValue = "false") final Boolean loginFailed) {
-        if (UserPrincipal.from(session) != null) {
+    public ModelAndView login(final Model model, final HttpSession session,
+                              @RequestParam(name = "loginFailed", required = false, defaultValue = "false") final Boolean loginFailed) {
+        if (this.getCurrentUserPrincipal() != null) {
             return getHomeRedirect();
         }
 
@@ -93,7 +94,7 @@ public class AuthenticationController {
 
     @RequestMapping(value = "/signup", method = RequestMethod.GET)
     public ModelAndView signup(final Model model, final HttpSession session) {
-        if (UserPrincipal.from(session) != null) {
+        if (this.getCurrentUserPrincipal() != null) {
             return getHomeRedirect();
         }
 
@@ -106,7 +107,7 @@ public class AuthenticationController {
     @RequestMapping(value = "/signup", method = RequestMethod.POST)
     public ModelAndView signup(final Model model, final HttpSession session, final HttpServletRequest request,
                                @Valid final SignUpForm form, final Errors errors) {
-        if (UserPrincipal.from(session) != null) {
+        if (this.getCurrentUserPrincipal() != null) {
             return getHomeRedirect();
         }
 
