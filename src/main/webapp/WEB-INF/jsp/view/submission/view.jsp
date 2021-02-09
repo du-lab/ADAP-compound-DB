@@ -23,7 +23,7 @@
                     <%--@elvariable id="edit_submission" type="java.lang.Boolean"--%>
                     <%--@elvariable id="view_submission" type="java.lang.Boolean"--%>
                     <c:if test="${view_submission && !edit_submission}">
-                        <a href="edit" type="button" class="btn btn-primary">Edit Submission</a>
+                        <a href="edit" type="button" class="btn btn-primary">Edit</a>
                     </c:if>
                 </div>
                 <div>

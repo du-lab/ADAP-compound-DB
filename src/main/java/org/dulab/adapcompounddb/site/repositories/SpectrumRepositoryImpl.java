@@ -187,7 +187,9 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                 final Spectrum spectrum = spectra.get(j);
 
                 insertSql.append(String.format(SPECTRUM_VALUE_SQL_STRING,
-                        DOUBLE_QUOTE + spectrum.getName() + DOUBLE_QUOTE,
+                        spectrum.getName() != null
+                                ? String.format("\"%s\"", spectrum.getName().replace("\"", "\"\""))
+                                : null,
                         spectrum.getPrecursor(),
                         spectrum.getRetentionTime(),
                         spectrum.getSignificance(),
@@ -195,7 +197,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                         spectrum.isConsensus(),
                         spectrum.isReference(),
                         spectrum.isIntegerMz(),
-                        DOUBLE_QUOTE + spectrum.getChromatographyType().name() + DOUBLE_QUOTE,
+                        String.format("\"%s\"", spectrum.getChromatographyType().name()),
                         savedFileIdList.get(i),
                         spectrum.getMolecularWeight()
                 ));
