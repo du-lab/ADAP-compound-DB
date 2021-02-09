@@ -224,7 +224,7 @@ public class IndividualSearchController extends BaseController {
         List<String> sourceList = submissionTagService.findDistinctTagValuesByTagKey("sample source");
         List<String> diseaseList = submissionTagService.findDistinctTagValuesByTagKey("disease");
 
-        Map<Long, String> submissions = submissionService.findUserPrivateSubmissions(
+        SortedMap<Long, String> submissions = submissionService.findUserPrivateSubmissions(
                 this.getCurrentUserPrincipal(), chromatographyType);
         submissions.put(0L, "Public");
 

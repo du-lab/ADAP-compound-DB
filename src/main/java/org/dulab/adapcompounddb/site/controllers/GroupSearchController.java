@@ -22,6 +22,7 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.concurrent.Future;
 
 @Controller
@@ -50,7 +51,7 @@ public class GroupSearchController extends BaseController {
         List<String> speciesList = submissionTagService.findDistinctTagValuesByTagKey("species (common)");
         List<String> sourceList = submissionTagService.findDistinctTagValuesByTagKey("sample source");
         List<String> diseaseList = submissionTagService.findDistinctTagValuesByTagKey("disease");
-        Map<Long, String> submissions = submissionService.findUserPrivateSubmissions(this.getCurrentUserPrincipal());
+        SortedMap<Long, String> submissions = submissionService.findUserPrivateSubmissions(this.getCurrentUserPrincipal());
         submissions.put(0L, "Public");
 
         filterOptions = new FilterOptions(speciesList, sourceList, diseaseList, submissions);

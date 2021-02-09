@@ -1,11 +1,6 @@
 package org.dulab.adapcompounddb.site.services;
 
-import java.util.ArrayList;
-import java.util.EmptyStackException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -226,21 +221,21 @@ public class SubmissionServiceImpl implements SubmissionService {
     }
 
     @Override
-    public Map<Long, String> findUserPrivateSubmissions(UserPrincipal user, ChromatographyType type) {
+    public SortedMap<Long, String> findUserPrivateSubmissions(UserPrincipal user, ChromatographyType type) {
         Iterable<Submission> submissions =
                 submissionRepository.findByPrivateTrueAndReferenceTrueAndUserAndChromatographyType(user, type);
 
-        Map<Long, String> submissionIdToNameMap = new HashMap<>();
+        SortedMap<Long, String> submissionIdToNameMap = new TreeMap<>();
         submissions.forEach(s -> submissionIdToNameMap.put(s.getId(), s.getName()));
         return submissionIdToNameMap;
     }
 
     @Override
-    public Map<Long, String> findUserPrivateSubmissions(UserPrincipal user) {
+    public SortedMap<Long, String> findUserPrivateSubmissions(UserPrincipal user) {
         Iterable<Submission> submissions =
                 submissionRepository.findByPrivateTrueAndReferenceTrueAndUser(user);
 
-        Map<Long, String> submissionIdToNameMap = new HashMap<>();
+        SortedMap<Long, String> submissionIdToNameMap = new TreeMap<>();
         submissions.forEach(s -> submissionIdToNameMap.put(s.getId(), s.getName()));
         return submissionIdToNameMap;
     }

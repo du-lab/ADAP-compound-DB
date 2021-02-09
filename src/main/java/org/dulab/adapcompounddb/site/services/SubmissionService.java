@@ -3,6 +3,7 @@ package org.dulab.adapcompounddb.site.services;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.SortedMap;
 
 import javax.validation.constraints.NotNull;
 
@@ -50,7 +51,7 @@ public interface SubmissionService {
 
     Map<String, List<String>> groupTags(List<String> tags);
 
-    Map<Long, String> findUserPrivateSubmissions(UserPrincipal user, ChromatographyType type);
+    SortedMap<Long, String> findUserPrivateSubmissions(UserPrincipal user, ChromatographyType type);
 
-    Map<Long, String> findUserPrivateSubmissions(UserPrincipal user);
+    SortedMap<Long, String> findUserPrivateSubmissions(UserPrincipal user);
 }

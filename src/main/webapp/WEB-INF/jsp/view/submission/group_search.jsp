@@ -19,7 +19,7 @@
                             <div class="col-md-6">
                                 <div class="row form-group">
                                     <form:label path="submissionIds" cssClass="col-form-label">Libraries:</form:label>
-                                    <form:select path="submissionIds" cssClass="custom-select" multiple="multiple">
+                                    <form:select path="submissionIds" cssClass="custom-select" multiple="multiple" size="10">
                                         <c:forEach items="${filterOptions.submissions}" var="entry">
                                             <form:option value="${entry.key}"
                                                          selected="${filterForm.submissionIds.contains(entry.key) ? 'selected' : ''}">
