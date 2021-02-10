@@ -2,7 +2,10 @@ package org.dulab.adapcompounddb.site.controllers;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dulab.adapcompounddb.models.entities.File;
+import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.Submission;
+import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterForm;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterOptions;
 import org.dulab.adapcompounddb.site.services.search.GroupSearchService;
@@ -20,9 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
+import java.util.*;
 import java.util.concurrent.Future;
 
 @Controller
@@ -67,15 +68,23 @@ public class GroupSearchController extends BaseController {
             return "redirect:/file/upload/";
         }
 
-        form.setSubmissionIds(filterOptions.getSubmissions().keySet());
-        model.addAttribute("filterForm", form);
-        return "submission/group_search";
+        return groupSearchGet(submission, model, form);
     }
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/group_search/", method = RequestMethod.GET)
-    public String groupSearch(final Model model, @Valid final FilterForm form, final HttpSession session) {
+    public String groupSearch(@PathVariable("submissionId") long submissionId, Model model, @Valid FilterForm form,
+                              HttpSession session) {
         session.removeAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
         groupSearchService.setProgress(0F);
+
+        Submission submission = submissionService.findSubmission(submissionId);
+        return groupSearchGet(submission, model, form);
+    }
+
+    public String groupSearchGet(Submission submission, Model model, FilterForm form) {
+
+        FilterOptions filterOptions = getFilterOptions(getChromatographyTypes(submission));
+        model.addAttribute("filterOptions", filterOptions);
 
         form.setSubmissionIds(filterOptions.getSubmissions().keySet());
         model.addAttribute("filterForm", form);
@@ -101,6 +110,9 @@ public class GroupSearchController extends BaseController {
     private ModelAndView groupSearchPost(
             HttpSession session, Model model, @Valid FilterForm form, Errors errors, Submission submission) {
 
+        FilterOptions filterOptions = getFilterOptions(getChromatographyTypes(submission));
+        model.addAttribute("filterOptions", filterOptions);
+
         if (errors.hasErrors()) {
             return new ModelAndView("submission/group_search");
         }
@@ -117,5 +129,34 @@ public class GroupSearchController extends BaseController {
                 form.getSubmissionIds(), form.getSpecies(), form.getSource(), form.getDisease());
 
         return new ModelAndView("submission/group_search");
+    }
+
+    private Collection<ChromatographyType> getChromatographyTypes(Submission submission) {
+        Collection<ChromatographyType> chromatographyTypes;
+        if (submission.getId() == 0) {
+            chromatographyTypes = new HashSet<>();
+            for (File file : submission.getFiles())
+                for (Spectrum spectrum : file.getSpectra())
+                    chromatographyTypes.add(spectrum.getChromatographyType());
+        } else {
+            Map<Long, List<ChromatographyType>> map =
+                    submissionService.findChromatographyTypeBySubmissionIds(Collections.singletonList(submission));
+            chromatographyTypes = map.get(submission.getId());
+        }
+        return chromatographyTypes;
+    }
+
+    private FilterOptions getFilterOptions(Collection<ChromatographyType> chromatographyTypes) {
+        List<String> speciesList = submissionTagService.findDistinctTagValuesByTagKey("species (common)");
+        List<String> sourceList = submissionTagService.findDistinctTagValuesByTagKey("sample source");
+        List<String> diseaseList = submissionTagService.findDistinctTagValuesByTagKey("disease");
+
+        SortedMap<Long, String> submissions = new TreeMap<>();
+        for (ChromatographyType chromatographyType : chromatographyTypes)
+            submissions.putAll(
+                    submissionService.findUserPrivateSubmissions(this.getCurrentUserPrincipal(), chromatographyType));
+        submissions.put(0L, "Public");
+
+        return new FilterOptions(speciesList, sourceList, diseaseList, submissions);
     }
 }
