@@ -54,4 +54,6 @@ public interface SubmissionService {
     SortedMap<Long, String> findUserPrivateSubmissions(UserPrincipal user, ChromatographyType type);
 
     SortedMap<Long, String> findUserPrivateSubmissions(UserPrincipal user);
+
+    Map<Long, List<ChromatographyType>> findChromatographyTypeBySubmissionIds(List<Submission> submissions);
 }

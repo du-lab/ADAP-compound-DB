@@ -239,4 +239,26 @@ public class SubmissionServiceImpl implements SubmissionService {
         submissions.forEach(s -> submissionIdToNameMap.put(s.getId(), s.getName()));
         return submissionIdToNameMap;
     }
+
+    @Override
+    public Map<Long, List<ChromatographyType>> findChromatographyTypeBySubmissionIds(List<Submission> submissions) {
+
+        List<Long> submissionIds = submissions.stream()
+                .map(Submission::getId)
+                .collect(Collectors.toList());
+
+        Map<Long, List<ChromatographyType>> map = MappingUtils.toMapOfLists(
+                submissionRepository.findChromatographyTypesBySubmissionId(submissionIds));
+
+        return map;
+
+//        Map<Long, List<ChromatographyType>> result = new HashMap<>();
+//        for (Map.Entry<Long, List<String>> e : map.entrySet()) {
+//            List<ChromatographyType> chromatographyTypes = e.getValue().stream()
+//                    .map(ChromatographyType::valueOf)
+//                    .collect(Collectors.toList());
+//            result.put(e.getKey(), chromatographyTypes);
+//        }
+//        return result;
+    }
 }

@@ -10,6 +10,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -64,4 +65,7 @@ public interface SubmissionRepository extends CrudRepository<Submission, Long> {
     @Query("select distinct s from Spectrum sp join sp.file.submission s " +
             "where s.user = :user and s.isPrivate = true and sp.reference = true")
     Iterable<Submission> findByPrivateTrueAndReferenceTrueAndUser(@Param("user") UserPrincipal user);
+
+    @Query("select distinct s.id, sp.chromatographyType from Spectrum sp join sp.file.submission s where s.id in :ids")
+    Iterable<Object[]> findChromatographyTypesBySubmissionId(@Param("ids") List<Long> submissionIds);
 }
