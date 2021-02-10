@@ -12,9 +12,9 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title">Delete user</h4>
-                <button type="button" class="close" data-dismiss="modal">
-                    &times;
-                </button>
+<%--                <button type="button" class="close" data-dismiss="modal">--%>
+<%--                    &times;--%>
+<%--                </button>--%>
             </div>
             <div class="modal-body">
                 <p>User &quot;<span id="username"></span>&quot; and all user's studies will be deleted. Are you sure?
@@ -33,9 +33,6 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title">Delete user</h4>
-                <button type="button" class="close" data-dismiss="modal">
-                    &times;
-                </button>
             </div>
             <div class="modal-body">
                 <p>Submission &quot;<span id="submissionName"></span>&quot; and all its spectra will be deleted. Are you
@@ -49,6 +46,24 @@
         </div>
     </div>
 </div>
+
+<div id="yesNoModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"></h4>
+            </div>
+            <div class="modal-body">
+                <p class="modal-message"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                <a id="yesButton" type="button" class="btn btn-primary" href="#">Yes</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div class="container">
     <div class="row row-content">
@@ -288,18 +303,47 @@
                     "targets": 6,
                     "orderable": false,
                     "render": function (data, type, row, meta) {
-                        const text = (row.clusterable) ? 'Yes' : 'No';
-                        const href = `${pageContext.request.contextPath}/admin/set/submission/\${row.id}/clusterable/\${!row.clusterable}`;
-                        return `<a href="\${href}">\${text}</a>`
+                        if (row.clusterable) {
+                            title = 'Make submission non-clusterable';
+                            message = `Do you want to make submission &quot;\${row.name}&quot; non-clusterable? If you
+                            do so, you may need to manually remove corresponding spectrum matches from the database.`;
+                            href = `${pageContext.request.contextPath}/admin/set/submission/\${row.id}/clusterable/false`;
+                            output = `<a href="#" data-toggle="modal" data-target="#yesNoModal" data-title="\${title}"
+                                    data-message="\${message}" data-href=\${href}>Yes</a>`;
+                        } else {
+                            title = "Make submission clusterable";
+                            message = `Do you want to make submission &quot;\${row.name}&quot; clusterable? If you do
+                            so, its spectra will participate in the clustering and become publicly available.`;
+                            href = `${pageContext.request.contextPath}/admin/set/submission/\${row.id}/clusterable/true`;
+                            output = `<a href="#" data-toggle="modal" data-target="#yesNoModal" data-title="\${title}"
+                                    data-message="\${message}" data-href=\${href}>No</a>`;
+                        }
+                        return output;
                     }
                 },
                 {
                     "targets": 7,
                     "orderable": false,
                     "render": function (data, type, row, meta) {
-                        const text = (row.reference) ? 'Yes' : 'No';
-                        const href = `${pageContext.request.contextPath}/admin/set/submission/\${row.id}/reference/\${!row.reference}`;
-                        return `<a href="\${href}">\${text}</a>`
+                        if (row.reference) {
+                            title = "Mark submission's spectra as non-reference";
+                            message = `Do you want to mark submission &quot;\${row.name}&quot; as non-reference? If you
+                            do so, its spectra will not be searchable and will not show up in the library search results.`;
+                            href = `${pageContext.request.contextPath}/admin/set/submission/\${row.id}/reference/false`;
+                            output = `<a href="#" data-toggle="modal" data-target="#yesNoModal" data-title="\${title}"
+                                    data-message="\${message}" data-href=\${href}>Yes</a>`;
+                        } else {
+                            title = "Mark submission's spectra as reference";
+                            message = `Do you want to mark submission &quot;\${row.name}&quot; as reference? If you
+                            do so, its spectra will become searchable and show up in the library search results.`;
+                            href = `${pageContext.request.contextPath}/admin/set/submission/\${row.id}/reference/true`;
+                            output = `<a href="#" data-toggle="modal" data-target="#yesNoModal" data-title="\${title}"
+                                    data-message="\${message}" data-href=\${href}>No</a>`;
+                        }
+                        return output;
+                        <%--const text = (row.reference) ? 'Yes' : 'No';--%>
+                        <%--const href = `${pageContext.request.contextPath}/admin/set/submission/\${row.id}/reference/\${!row.reference}`;--%>
+                        <%--return `<a href="\${href}">\${text}</a>`--%>
                     }
                 },
                 {
@@ -314,7 +358,6 @@
                     }
                 }
             ]
-
         });
 
         // Adjust column widths when a table becomes visible
@@ -341,6 +384,18 @@
             modal.find('#submissionName').text(submissionName);
             modal.find('#deleteSubmissionButton').attr(
                 'href', `${pageContext.request.contextPath}/submission/\${submissionId}/delete/`);
+        });
+
+        $('#yesNoModal').on('show.bs.modal', function (event) {
+            const button = $(event.relatedTarget);
+            const title = button.data('title');
+            const message = button.data('message');
+            const href = button.data('href');
+
+            const modal = $(this);
+            modal.find('.modal-title').text(title);
+            modal.find('.modal-message').text(message);
+            modal.find('#yesButton').attr('href', href);
         });
 
         const matchButton = $('#calculateMatchButton');
