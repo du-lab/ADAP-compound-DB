@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.controllers;
 
+import org.dulab.adapcompounddb.models.dto.SubmissionMatchDTO;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterForm;
 import org.dulab.adapcompounddb.site.services.StudySearchService;
@@ -10,10 +11,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.util.List;
 
 @Controller
-public class StudySearchController {
-    private StudySearchService studySearchService;
+public class StudySearchController extends BaseController {
+
+    private final StudySearchService studySearchService;
 
     public StudySearchController(StudySearchService studySearchService) {
         this.studySearchService = studySearchService;
@@ -27,7 +30,9 @@ public class StudySearchController {
             return "redirect:/file/upload/";
         }
 
-        model.addAttribute("match_submissions",studySearchService.studySearch(submission));
+        List<SubmissionMatchDTO> submissionMatches =
+                studySearchService.studySearch(this.getCurrentUserPrincipal(), submission);
+        model.addAttribute("match_submissions", submissionMatches);
         return "file/study_search";
     }
 }

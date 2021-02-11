@@ -1,40 +1,49 @@
 package org.dulab.adapcompounddb.site.services;
 
+import org.dulab.adapcompounddb.models.entities.*;
+import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
 import org.dulab.adapcompounddb.site.services.admin.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.dto.SubmissionMatchDTO;
-import org.dulab.adapcompounddb.models.entities.File;
-import org.dulab.adapcompounddb.models.entities.Spectrum;
-import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
-import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
+import org.dulab.adapcompounddb.site.services.search.SearchParameters;
+import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
 import java.util.*;
 
 @Service
 public class StudySearchServiceImpl implements StudySearchService {
 
     private final SpectrumRepository spectrumRepository;
+    private final SubmissionRepository submissionRepository;
 
-    public StudySearchServiceImpl(SpectrumRepository spectrumRepository) {
+    public StudySearchServiceImpl(SpectrumRepository spectrumRepository, SubmissionRepository submissionRepository) {
         this.spectrumRepository = spectrumRepository;
+        this.submissionRepository = submissionRepository;
     }
 
     @Override
-    public List<SubmissionMatchDTO> studySearch(Submission submission) {
-
-        final QueryParameters gcQueryParameters = new QueryParameters()
-                .setScoreThreshold(0.5)
-                .setMzTolerance(0.01);
+    public List<SubmissionMatchDTO> studySearch(UserPrincipal user, Submission submission) {
 
         List<SpectrumMatch> spectrumMatches = new ArrayList<>();
+
+        Iterable<BigInteger> submissionIds = submissionRepository.findSubmissionIdsByUserAndSubmissionTags(
+                user != null ? user.getId() : null, null, null, null);
 
         int querySubmissionSpectraCount = 0;
         for (File file : submission.getFiles()) {
             for (Spectrum spectrum : file.getSpectra()) {
-                List<SpectrumMatch> matches = spectrumRepository.spectrumSearch(
-                        SearchType.CLUSTERING, spectrum, gcQueryParameters);
+                SearchParameters searchParameters =
+                        SearchParameters.getDefaultParameters(spectrum.getChromatographyType());
+                List<SpectrumMatch> matches = MappingUtils.toList(spectrumRepository.matchAgainstClusterableSpectra(
+                        submissionIds,
+                        spectrum,
+                        searchParameters.getScoreThreshold(),
+                        searchParameters.getMzTolerance(),
+                        searchParameters.getPrecursorTolerance(),
+                        searchParameters.getMolecularWeightTolerance()));
                 spectrumMatches.addAll(matches);
                 querySubmissionSpectraCount++;
             }

@@ -79,7 +79,7 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
         final long countUnmatched =
                 spectrumRepository.countByMatchesEmptyAndClusterableTrueAndConsensusFalseAndReferenceFalse();
 
-        final Iterable<BigInteger> qualifiedSubmissionIds = submissionRepository.findSubmissionIdsBySubmissionTags(
+        final Iterable<BigInteger> qualifiedSubmissionIds = submissionRepository.findSubmissionIdsByUserAndSubmissionTags(
                 null, null, null, null);
 
         progress = 0F;

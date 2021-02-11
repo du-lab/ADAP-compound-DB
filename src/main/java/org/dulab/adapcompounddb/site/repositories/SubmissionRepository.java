@@ -37,8 +37,8 @@ public interface SubmissionRepository extends CrudRepository<Submission, Long> {
             "and (:source is null or :source='all' or Source=:source) " +
             "and (:disease is null or :disease='all' or Disease=:disease)",
             nativeQuery = true)
-    Iterable<BigInteger> findSubmissionIdsBySubmissionTags(@Param("userId") Long userId,
-                                                           @Param("species") String species, @Param("source") String source, @Param("disease") String disease);
+    Iterable<BigInteger> findSubmissionIdsByUserAndSubmissionTags(@Param("userId") Long userId,
+                                                                  @Param("species") String species, @Param("source") String source, @Param("disease") String disease);
 
     @Query(value = "select Id from (" +
             "select Submission.Id, SpeciesTag.TagValue as Species, SourceTag.TagValue as Source, DiseaseTag.TagValue as Disease from Submission " +
