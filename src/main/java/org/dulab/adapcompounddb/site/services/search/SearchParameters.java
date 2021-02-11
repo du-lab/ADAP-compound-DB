@@ -91,8 +91,8 @@ public class SearchParameters {
                 break;
             case LC_MSMS_POS:
             case LC_MSMS_NEG:
-                parameters.setMzTolerance(0.01);
-                parameters.setScoreThreshold(0.5);
+                parameters.setMzTolerance(0.001);
+                parameters.setScoreThreshold(0.3);
                 parameters.setPrecursorTolerance(0.01);
                 break;
             case NONE:
