@@ -34,7 +34,7 @@ def individual_search_test(homepage_url, msp_path, user_name, user_password):
         option_bar = Select(driver.find_element_by_id('chromatographyType'))
         choose_key = driver.find_element_by_name('files')
         submit_button = driver.find_element_by_name("submit")
-        option_bar.select_by_visible_text('Gas Chromatography')
+        option_bar.select_by_visible_text('GC')
         choose_key.send_keys(msp_path)
         submit_button.click()
 
