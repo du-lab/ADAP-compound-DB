@@ -6,59 +6,84 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<section>
-    <h1>Sign-Up</h1>
-    <div align="center">
-        <div align="left" class="subsection">
-            <p>All fields are required.</p>
-            <p>Password should match the pattern:</p>
-            <ul>
-                <li>at least one digit: 0-9</li>
-                <li>at least one lower case letter: a-z</li>
-                <li>at least one upper case letter: A-Z</li>
-                <li>at least one special character: @, #, $, %, ^, &, +, =</li>
-                <li>no whitespaces</li>
-                <li>at least eight characters long</li>
-            </ul>
-
-            <form:form method="POST" modelAttribute="signUpForm">
-                <c:if test="${errorMsg != null}">
-                    <p class="errors">${errorMsg}</p>
-                </c:if>
-                <c:if test="${validationErrors != null}">
-                    <c:forEach items="${validationErrors}" var="e">
-                        <p class="errors"><c:out value="${e.message}"/></p>
-                    </c:forEach>
-                </c:if>
-                <form:errors path="*" element="div" cssClass="errors"/>
-                <p>
-                    <form:label path="username">Username:</form:label><br/>
-                    <form:input path="username" autofocus="autofocus" />
-                </p>
-                <p>
-                    <span>
-                        <form:label path="email">E-mail address</form:label><br/>
-                        <form:input path="email"/>
-                    </span>
-                    <span>
-                        <form:label path="confirmedEmail">Confirm E-mail address</form:label><br/>
-                        <form:input path="confirmedEmail"/>
-                    </span>
-                </p>
-                <p>
-                    <span>
-                        <form:label path="password">Password:</form:label><br/>
-                        <form:password path="password"/>
-                    </span>
-                    <span>
-                        <form:label path="confirmedPassword">Confirm password:</form:label><br/>
-                        <form:password path="confirmedPassword"/>
-                    </span>
-                </p>
-                <div align="center">
-                    <input id= "submit" type="submit" value="Sign up"/>
+<div class="container">
+    <div class="row row-content">
+        <div class="col">
+            <div class="card">
+                <div class="card-header card-header-single">Sign-Up</div>
+                <div class="card-body">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-6 offset-md-3">
+                                <p>All fields are required.</p>
+                                <p>Password should match the pattern:</p>
+                                <ul>
+                                    <li>at least one digit: 0-9</li>
+                                    <li>at least one lower case letter: a-z</li>
+                                    <li>at least one upper case letter: A-Z</li>
+                                    <li>at least one special character: @, #, $, %, ^, &, +, =</li>
+                                    <li>no whitespaces</li>
+                                    <li>at least eight characters long</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <form:form method="POST" modelAttribute="signUpForm">
+                            <c:if test="${errorMsg != null}">
+                                <div class="row">
+                                    <div class="col-md-8 offset-md-2">
+                                        <p class="text-danger">${errorMsg}</p>
+                                    </div>
+                                </div>
+                            </c:if>
+                            <%--@elvariable id="validationErrors" type="java.util.Set<javax.validation.ConstraintViolation>"--%>
+                            <c:if test="${validationErrors != null}">
+                                <div class="row">
+                                    <div class="col-md-8 offset-md-2">
+                                        <c:forEach items="${validationErrors}" var="e">
+                                            <p class="text-danger"><c:out value="${e.message}"/></p>
+                                        </c:forEach>
+                                    </div>
+                                </div>
+                            </c:if>
+                            <div class="row form-group">
+                                <form:label path="username"
+                                            cssClass="col-md-3 offset-md-3 col-form-label">Username:</form:label>
+                                <form:input path="username" cssClass="col-md-3 form-control" autofocus="autofocus"/>
+                            </div>
+                            <div class="row form-group">
+                                <form:label path="email"
+                                            cssClass="col-md-3 offset-md-3 col-form-label">E-mail address</form:label>
+                                <form:input path="email" cssClass="col-md-3 form-control"/>
+                            </div>
+                            <div class="row form-group">
+                                <form:label path="confirmedEmail"
+                                            cssClass="col-md-3 offset-md-3 col-form-label">Confirm E-mail address</form:label>
+                                <form:input path="confirmedEmail" cssClass="col-md-3 form-control"/>
+                            </div>
+                            <div class="row form-group">
+                                <form:label path="password"
+                                            cssClass="col-md-3 offset-md-3 col-form-label">Password:</form:label>
+                                <form:password path="password" cssClass="col-md-3 form-control"/>
+                            </div>
+                            <div class="row form-group">
+                                <form:label path="confirmedPassword"
+                                            cssClass="col-md-3 offset-md-3 col-form-label">Confirm password:</form:label>
+                                <form:password path="confirmedPassword" cssClass="col-md-3 form-control"/>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col-md-6 offset-md-3">
+                                    <form:errors path="*" element="div" cssClass="text-danger"/>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col-md-2 offset-md-6">
+                                    <input id="submit" type="submit" class="btn btn-primary" value="Sign up"/>
+                                </div>
+                            </div>
+                        </form:form>
+                    </div>
                 </div>
-            </form:form>
+            </div>
         </div>
     </div>
-</section>
+</div>
