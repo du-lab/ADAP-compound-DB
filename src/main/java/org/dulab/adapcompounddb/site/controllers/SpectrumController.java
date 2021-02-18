@@ -64,6 +64,6 @@ public class SpectrumController {
 
     public String spectrum(final Spectrum spectrum, final Model model) {
         model.addAttribute("spectrum", spectrum);
-        return "file/spectrum";
+        return "submission/spectrum/spectrum";
     }
 }

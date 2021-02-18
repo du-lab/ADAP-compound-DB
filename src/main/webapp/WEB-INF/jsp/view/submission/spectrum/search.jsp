@@ -110,7 +110,7 @@
                             <ul class="list-group list-group-flush">
                                 <c:forEach items="${querySpectrum.properties}" var="property">
                                     <li class="list-group-item py-1">
-                                        <strong>${property.name}:</strong>&nbsp
+                                        <strong>${property.name}:</strong>&nbsp;
                                         <span style="word-break: break-all">${property.value}</span>
                                     </li>
                                 </c:forEach>

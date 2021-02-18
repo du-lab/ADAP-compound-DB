@@ -1,7 +1,10 @@
 function SpectrumPlot(divId, spectrum) {
 
-	var width = $('#' + divId).width();
-    var height = $('#' + divId).height();
+	// var width = $('#' + divId).width();
+    // var height = $('#' + divId).height();
+    var width = 400;
+    var height = 400;
+
     var label_offset = 40;
     var padding = {'top': 40, 'right': 40, 'bottom': 40, 'left': 40};
 
@@ -90,8 +93,9 @@ function SpectrumPlot(divId, spectrum) {
 
     var svg = d3.select('#' + divId)
         .append('svg')
-        .attr('width', width)
-        .attr('height', height);
+        .attr('viewBox', '0 0 400 400');
+        // .attr('width', width)
+        // .attr('height', height);
 
     var gButton = svg.append("g")
         .attr('class', 'button_g desktop')
