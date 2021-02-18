@@ -146,18 +146,14 @@ public class MultipartFileUtils {
         Map<String, List<Spectrum>> idToSpectraMap = new HashMap<>();
 
         // Add all spectra from `spectra1` to the map
-        for (Spectrum spectrum : spectra1) {
-            List<Spectrum> spectrumList = idToSpectraMap.computeIfAbsent(
-                    spectrum.getExternalId(), k -> new ArrayList<>());
-            spectrumList.add(spectrum);
-        }
+        spectra1.forEach(s -> idToSpectraMap
+                .computeIfAbsent(s.getExternalId(), k -> new ArrayList<>())
+                .add(s));
 
         // Add all spectra from `spectra2` to the map
-        for (Spectrum spectrum : spectra2) {
-            List<Spectrum> spectrumList = idToSpectraMap.computeIfAbsent(
-                    spectrum.getExternalId(), k -> new ArrayList<>());
-            spectrumList.add(spectrum);
-        }
+        spectra2.forEach(s -> idToSpectraMap
+                .computeIfAbsent(s.getExternalId(), k -> new ArrayList<>())
+                .add(s));
 
         // Merge spectra with the same external ID
         for (Map.Entry<String, List<Spectrum>> entry : idToSpectraMap.entrySet()) {
@@ -173,7 +169,7 @@ public class MultipartFileUtils {
             // If all spectra in `spectrumList` are from the same file, don't merge anything
             if (fileToSpectraMap.size() <= 1) continue;
 
-            // If `spectrumList` contains spectra from multiple file, we need to merge them and produce MxN spectra
+            // If `spectrumList` contains spectra from multiple files, we need to merge them and produce MxN spectra
             List<Spectrum> mergedSpectra = null;
             for (List<Spectrum> spectra : fileToSpectraMap.values()) {
                 if (mergedSpectra == null) {
@@ -182,8 +178,7 @@ public class MultipartFileUtils {
                     List<Spectrum> newMergedSpectra = new ArrayList<>(mergedSpectra.size() * spectra.size());
                     for (Spectrum mergedSpectrum : mergedSpectra) {
                         for (Spectrum spectrum : spectra) {
-                            mergedSpectrum.merge(spectrum);
-                            newMergedSpectra.add(mergedSpectrum);
+                            newMergedSpectra.add(Spectrum.merge(mergedSpectrum, spectrum));
                         }
                     }
                     mergedSpectra = newMergedSpectra;

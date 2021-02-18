@@ -349,45 +349,53 @@ public class Spectrum implements Serializable {
     // ***** Other methods *****
     // *************************
 
-    public void merge(Spectrum other) throws IllegalStateException {
-        if (this.externalId == null || other.externalId == null || !this.externalId.equals(other.externalId))
+    public static Spectrum merge(Spectrum s1, Spectrum s2) throws IllegalStateException {
+        if (s1.externalId == null || s2.externalId == null || !s1.externalId.equals(s2.externalId))
             throw new IllegalStateException("Cannot merge two spectra with different external IDs");
 
-        this.setName(mergeStrings(this.name, other.name));
-        this.setPrecursor(mergeDoublesByAverage(this.precursor, other.precursor, 0.01));
-        this.setRetentionTime(mergeDoublesByAverage(this.retentionTime, other.retentionTime, 0.1));
-        this.setSignificance(mergeDoublesByMaximum(this.significance, other.significance, 0.1));
-        this.setMolecularWeight(mergeDoublesByAverage(this.molecularWeight, other.molecularWeight, 0.01));
-        this.setPeaks(mergeLists(this.peaks, other.peaks), true);
-        this.setProperties(mergeLists(this.properties, other.properties));
+        Spectrum mergedSpectrum = new Spectrum();
+        mergedSpectrum.setName(mergeStrings(s1.name, s2.name));
+        mergedSpectrum.setExternalId(s1.externalId);
+        mergedSpectrum.setChromatographyType(s1.chromatographyType);
+        mergedSpectrum.setFile(s1.file);
+        mergedSpectrum.setPrecursor(mergeDoublesByAverage(s1.precursor, s2.precursor, 0.01));
+        mergedSpectrum.setRetentionTime(mergeDoublesByAverage(s1.retentionTime, s2.retentionTime, 0.1));
+        mergedSpectrum.setSignificance(mergeDoublesByMaximum(s1.significance, s2.significance, 0.1));
+        mergedSpectrum.setMolecularWeight(mergeDoublesByAverage(s1.molecularWeight, s2.molecularWeight, 0.01));
+        mergedSpectrum.setPeaks(mergeLists(s1.peaks, s2.peaks), true);
+        mergedSpectrum.setProperties(mergeLists(s1.properties, s2.properties));
+
+        return mergedSpectrum;
     }
 
-    private String mergeStrings(String s1, String s2) {
+    private static String mergeStrings(String s1, String s2) {
         if (s1 == null) return s2;
         if (s2 == null) return s1;
         if (s1.equals(s2)) return s1;
         return String.format("%s | %s", s1, s2);
     }
 
-    private Double mergeDoublesByAverage(Double d1, Double d2, double tolerance) {
+    private static Double mergeDoublesByAverage(Double d1, Double d2, double tolerance) {
         if (d1 == null) return d2;
         if (d2 == null) return d1;
         if (Math.abs(d1 - d2) > tolerance) return d1;
         return (d1 + d2) / 2;
     }
 
-    private Double mergeDoublesByMaximum(Double d1, Double d2, double tolerance) {
+    private static Double mergeDoublesByMaximum(Double d1, Double d2, double tolerance) {
         if (d1 == null) return d2;
         if (d2 == null) return d1;
         if (Math.abs(d1 - d2) > tolerance) return d1;
         return Math.max(d1, d2);
     }
 
-    private <E> List<E> mergeLists(List<E> l1, List<E> l2) {
+    private static <E> List<E> mergeLists(List<E> l1, List<E> l2) {
         if (l1 == null) return l2;
         if (l2 == null) return l1;
-        l1.addAll(l2);
-        return l1;
+        List<E> list = new ArrayList<>(l1.size() + l2.size());
+        list.addAll(l1);
+        list.addAll(l2);
+        return list;
     }
 
     private static Double parseDouble(String string) {

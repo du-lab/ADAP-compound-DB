@@ -3,14 +3,6 @@
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<%--<c:choose>--%>
-<%--    <c:when test="${spectrum.file.submission.id > 0}">--%>
-<%--        <c:set var="submissionUrl">/submission/${spectrum.file.submission.id}/</c:set>--%>
-<%--    </c:when>--%>
-<%--    <c:otherwise>--%>
-<%--        <c:set var="submissionUrl">/file/</c:set>--%>
-<%--    </c:otherwise>--%>
-<%--</c:choose>--%>
 
 <div class="container">
 
@@ -92,25 +84,6 @@
                             </div>
                         </div>
                     </div>
-<%--                    <div id="properties" class="tab-pane active" role="tabpanel">--%>
-<%--                        <table id="property_table" class="display compact">--%>
-<%--                            <thead>--%>
-<%--                            <tr>--%>
-<%--                                <th>Property</th>--%>
-<%--                                <th>Value</th>--%>
-<%--                            </tr>--%>
-<%--                            </thead>--%>
-<%--                            <tbody>--%>
-
-<%--                            <c:forEach items="${spectrum.properties}" var="property">--%>
-<%--                                <tr>--%>
-<%--                                    <td><strong>${property.name}:</strong></td>--%>
-<%--                                    <td>${property.value}</td>--%>
-<%--                                </tr>--%>
-<%--                            </c:forEach>--%>
-<%--                            </tbody>--%>
-<%--                        </table>--%>
-<%--                    </div>--%>
 
                     <div id="peaks" class="tab-pane" role="tabpanel">
                         <div class="container-fluid">
