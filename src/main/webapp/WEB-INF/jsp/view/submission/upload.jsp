@@ -20,36 +20,48 @@
 </div>
 
 <div class="container">
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header card-header-single">
-                    Upload File
-                </div>
-                <div class="card-body">
-                    <div class="container">
-                        <%--@elvariable id="message" type="java.lang.String"--%>
-                        <c:if test="${message}">
-                            <div class="row">
-                                <div class="col-md-8 offset-md-2">
-                                    <p class="text-danger">${message}</p>
-                                </div>
-                            </div>
-                        </c:if>
-                        <%--@elvariable id="validationErrors" type="java.util.Set<javax.validation.ConstraintViolation>"--%>
-                        <c:if test="${validationErrors}">
-                            <div class="row">
-                                <div class="col-md-8 offset-md-2">
-                                    <ul class="text-danger">
-                                        <c:forEach items="${validationErrors}" var="error">
-                                            <li><c:out value="${error.message}"/></li>
-                                        </c:forEach>
-                                    </ul>
-                                </div>
-                            </div>
-                        </c:if>
+    <form:form method="POST" modelAttribute="fileUploadForm" enctype="multipart/form-data">
 
-                        <form:form method="POST" modelAttribute="fileUploadForm" enctype="multipart/form-data">
+        <div class="row row-content">
+            <div class="col">
+                <div class="btn-toolbar justify-content-between" role="toolbar">
+                    <div class="btn btn-secondary" data-toggle="collapse"
+                         data-target="#metaFields">Edit Metadata Fields
+                    </div>
+                    <input type="submit" name="submit" value="Upload" class="btn btn-primary"/>
+                </div>
+            </div>
+        </div>
+
+        <div class="row row-content">
+            <div class="col">
+                <div class="card">
+                    <div class="card-header card-header-single">
+                        Upload File
+                    </div>
+                    <div class="card-body">
+                        <div class="container">
+                                <%--@elvariable id="message" type="java.lang.String"--%>
+                            <c:if test="${message}">
+                                <div class="row">
+                                    <div class="col-md-8 offset-md-2">
+                                        <p class="text-danger">${message}</p>
+                                    </div>
+                                </div>
+                            </c:if>
+                                <%--@elvariable id="validationErrors" type="java.util.Set<javax.validation.ConstraintViolation>"--%>
+                            <c:if test="${validationErrors}">
+                                <div class="row">
+                                    <div class="col-md-8 offset-md-2">
+                                        <ul class="text-danger">
+                                            <c:forEach items="${validationErrors}" var="error">
+                                                <li><c:out value="${error.message}"/></li>
+                                            </c:forEach>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </c:if>
+
                             <form:errors path="" cssClass="errors"/>
                             <div class="row">
                                 <div class="col-md-8">
@@ -167,23 +179,12 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="row">
-                                <div class="col">
-                                    <div class="btn-toolbar justify-content-between" role="toolbar">
-                                        <div class="btn btn-secondary" data-toggle="collapse"
-                                             data-target="#metaFields">Edit Metadata Fields
-                                        </div>
-                                        <input type="submit" name="submit" value="Upload" class="btn btn-primary"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </form:form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </form:form>
 </div>
 
 <script src="<c:url value="/resources/npm/node_modules/jquery/dist/jquery.min.js"/>"></script>
