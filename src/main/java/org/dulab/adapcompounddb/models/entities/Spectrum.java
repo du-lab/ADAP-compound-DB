@@ -2,25 +2,27 @@ package org.dulab.adapcompounddb.models.entities;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.dulab.adapcompounddb.models.MetaDataMapping;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 
 @Entity
-@SqlResultSetMapping(name = "SpectrumScoreMapping", columns = { @ColumnResult(name = "SpectrumId", type = Long.class),
-        @ColumnResult(name = "Score", type = Double.class) })
+@SqlResultSetMapping(name = "SpectrumScoreMapping", columns = {@ColumnResult(name = "SpectrumId", type = Long.class),
+        @ColumnResult(name = "Score", type = Double.class)})
 public class Spectrum implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final String NAME_PROPERTY_NAME = "Name";
-    private static final String PRECURSOR_MASS_PROPERTY_NAME = "PrecursorMZ";
-    private static final String RETENTION_TIME_PROPERTY_NAME = "RT";
-    private static final String SIGNIFICANCE_PROPERTY_NAME = "ANOVA_P_VALUE";
+    private static final Pattern NUMBER_PATTERN = Pattern.compile("([0-9]+.?[0-9]+)");
 
     // *************************
     // ***** Entity fields *****
@@ -31,6 +33,8 @@ public class Spectrum implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
+    private String externalId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "FileId", referencedColumnName = "Id")
@@ -86,6 +90,14 @@ public class Spectrum implements Serializable {
         this.id = id;
     }
 
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
+    }
+
     public String getName() {
         String fullName = name;
         if (fullName == null) {
@@ -120,6 +132,13 @@ public class Spectrum implements Serializable {
         setPeaks(peaks, false);
     }
 
+    /** Setter method for the field `peaks`. If `normalize` is true, this method also
+     * - normalized peaks' intensities so that their sum is equal to one,
+     * - sets attribute `integerMz` to true if all peaks' m/z values are integer
+     *
+     * @param peaks list of peaks
+     * @param normalize determined whether the normalization is performed
+     */
     public void setPeaks(final List<Peak> peaks, final boolean normalize) {
 
         this.peaks = peaks;
@@ -143,32 +162,60 @@ public class Spectrum implements Serializable {
         return properties;
     }
 
-    public void setProperties(final List<SpectrumProperty> properties) {
+    public void setProperties(List<SpectrumProperty> properties) {
+        this.setProperties(properties, null);
+    }
+
+    /**
+     * Setter method for the field `properties`. If `mapping` is given, this methods also tries to fill out other
+     * fields like `name`, `precursorMz`, `retentionTime`, etc.
+     *
+     * @param properties list of properties
+     * @param mapping instance of {@link MetaDataMapping} that contains the property names containing meta information
+     */
+    public void setProperties(List<SpectrumProperty> properties, MetaDataMapping mapping) {
         this.properties = properties;
+
+        if (mapping != null) {
+            for (SpectrumProperty property : properties) {
+                String propertyName = property.getName();
+                String propertyValue = property.getValue();
+                if (propertyName.equalsIgnoreCase(mapping.getNameField()))
+                    this.setName(propertyValue);
+                else if (propertyName.equalsIgnoreCase(mapping.getExternalIdField()))
+                    this.setExternalId(propertyValue);
+                else if (propertyName.equalsIgnoreCase(mapping.getPrecursorMzField()))
+                    this.setPrecursor(parseDouble(propertyValue));
+                else if (propertyName.equalsIgnoreCase(mapping.getRetTimeField()))
+                    this.setRetentionTime(parseDouble(propertyValue));
+                else if (propertyName.equalsIgnoreCase(mapping.getMolecularWeight()))
+                    this.setMolecularWeight(parseDouble(propertyValue));
+            }
+        }
     }
 
-    public void addProperty(final String name, final String value) {
-
-        if (properties == null) {
-            properties = new ArrayList<>();
-        }
-
-        if (name.equalsIgnoreCase(NAME_PROPERTY_NAME)) {
-            setName(value);
-        } else if (name.equalsIgnoreCase(PRECURSOR_MASS_PROPERTY_NAME)) {
-            setPrecursor(Double.valueOf(value));
-        } else if (name.equalsIgnoreCase(SIGNIFICANCE_PROPERTY_NAME)) {
-            setSignificance(Double.valueOf(value));
-        } else if (name.equalsIgnoreCase(RETENTION_TIME_PROPERTY_NAME)) {
-            setRetentionTime(Double.valueOf(value));
-        }
-
-        final SpectrumProperty property = new SpectrumProperty();
-        property.setName(name);
-        property.setValue(value);
-        property.setSpectrum(this);
-        properties.add(property);
-    }
+//    public void addProperty(String name, String value) {
+//
+//        if (properties == null) properties = new ArrayList<>();
+//
+//        SpectrumProperty property = new SpectrumProperty();
+//        property.setName(name);
+//        property.setValue(value);
+//        property.setSpectrum(this);
+//        properties.add(property);
+//
+////        if (name.equalsIgnoreCase(NAME_PROPERTY_NAME)) {
+////            setName(value);
+////        } else if (name.equalsIgnoreCase(PRECURSOR_MASS_PROPERTY_NAME)) {
+////            setPrecursor(Double.valueOf(value));
+////        } else if (name.equalsIgnoreCase(SIGNIFICANCE_PROPERTY_NAME)) {
+////            setSignificance(Double.valueOf(value));
+////        } else if (name.equalsIgnoreCase(RETENTION_TIME_PROPERTY_NAME)) {
+////            setRetentionTime(Double.valueOf(value));
+////        }
+//
+//
+//    }
 
     public List<SpectrumMatch> getMatches() {
         return matches;
@@ -278,7 +325,7 @@ public class Spectrum implements Serializable {
         if (!(other instanceof Spectrum)) {
             return false;
         }
-        if(id == 0) {
+        if (id == 0) {
             return super.equals(other);
         }
         return id == ((Spectrum) other).id;
@@ -286,7 +333,7 @@ public class Spectrum implements Serializable {
 
     @Override
     public int hashCode() {
-        if(id == 0) {
+        if (id == 0) {
             return super.hashCode();
         } else {
             return Long.hashCode(id);
@@ -296,5 +343,58 @@ public class Spectrum implements Serializable {
     @Override
     public String toString() {
         return getName();
+    }
+
+    // *************************
+    // ***** Other methods *****
+    // *************************
+
+    public void merge(Spectrum other) throws IllegalStateException {
+        if (this.externalId == null || other.externalId == null || !this.externalId.equals(other.externalId))
+            throw new IllegalStateException("Cannot merge two spectra with different external IDs");
+
+        this.setName(mergeStrings(this.name, other.name));
+        this.setPrecursor(mergeDoublesByAverage(this.precursor, other.precursor, 0.01));
+        this.setRetentionTime(mergeDoublesByAverage(this.retentionTime, other.retentionTime, 0.1));
+        this.setSignificance(mergeDoublesByMaximum(this.significance, other.significance, 0.1));
+        this.setMolecularWeight(mergeDoublesByAverage(this.molecularWeight, other.molecularWeight, 0.01));
+        this.setPeaks(mergeLists(this.peaks, other.peaks), true);
+        this.setProperties(mergeLists(this.properties, other.properties));
+    }
+
+    private String mergeStrings(String s1, String s2) {
+        if (s1 == null) return s2;
+        if (s2 == null) return s1;
+        if (s1.equals(s2)) return s1;
+        return String.format("%s | %s", s1, s2);
+    }
+
+    private Double mergeDoublesByAverage(Double d1, Double d2, double tolerance) {
+        if (d1 == null) return d2;
+        if (d2 == null) return d1;
+        if (Math.abs(d1 - d2) > tolerance) return d1;
+        return (d1 + d2) / 2;
+    }
+
+    private Double mergeDoublesByMaximum(Double d1, Double d2, double tolerance) {
+        if (d1 == null) return d2;
+        if (d2 == null) return d1;
+        if (Math.abs(d1 - d2) > tolerance) return d1;
+        return Math.max(d1, d2);
+    }
+
+    private <E> List<E> mergeLists(List<E> l1, List<E> l2) {
+        if (l1 == null) return l2;
+        if (l2 == null) return l1;
+        l1.addAll(l2);
+        return l1;
+    }
+
+    private static Double parseDouble(String string) {
+        try {
+            return Double.parseDouble(string);
+        } catch (NullPointerException | NumberFormatException e) {
+            return null;
+        }
     }
 }

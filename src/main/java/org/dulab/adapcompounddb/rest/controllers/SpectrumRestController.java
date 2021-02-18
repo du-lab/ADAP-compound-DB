@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.SpectrumDTO;
+import org.dulab.adapcompounddb.models.entities.File;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
@@ -29,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -141,7 +143,8 @@ public class SpectrumRestController extends BaseController {
                                        final String orderDirection) {
 
         final List<Spectrum> spectrumList = submission.getFiles().stream()
-                .flatMap(file -> file.getSpectra().stream())
+                .map(File::getSpectra).filter(Objects::nonNull)
+                .flatMap(List::stream)
                 .collect(Collectors.toList());
         final ObjectMapperUtils objectMapper = new ObjectMapperUtils();
 

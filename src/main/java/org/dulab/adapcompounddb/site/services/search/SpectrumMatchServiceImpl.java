@@ -326,7 +326,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         consensusSpectrum.setReference(false);
         consensusSpectrum.setCluster(cluster);
         consensusSpectrum.setPeaks(consensusPeaks);
-        consensusSpectrum.addProperty("Name", getName(cluster));
+        consensusSpectrum.setName(getName(cluster));
 
         cluster.setConsensusSpectrum(consensusSpectrum);
     }

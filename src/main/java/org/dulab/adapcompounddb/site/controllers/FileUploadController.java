@@ -7,8 +7,8 @@ import org.dulab.adapcompounddb.models.enums.FileType;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.site.controllers.forms.FileUploadForm;
 import org.dulab.adapcompounddb.site.controllers.utils.MultipartFileUtils;
-import org.dulab.adapcompounddb.site.services.FileReaderService;
-import org.dulab.adapcompounddb.site.services.MspFileReaderService;
+import org.dulab.adapcompounddb.site.services.io.FileReaderService;
+import org.dulab.adapcompounddb.site.services.io.MspFileReaderService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -62,7 +62,6 @@ public class FileUploadController {
             form = new FileUploadForm();
         }
 
-//        form.setFileType(FileType.MSP);
         model.addAttribute("fileUploadForm", form);
         return "submission/upload";
     }
@@ -81,7 +80,8 @@ public class FileUploadController {
 
         Submission submission = new Submission();
         try {
-            MultipartFileUtils.readMultipartFile(submission, form.getFiles(), FileType.MSP, form.getChromatographyType());
+            MultipartFileUtils.readMultipartFile(submission, form.getFiles(), form.getChromatographyType(),
+                    form.getMetaDataMappings(), form.isMergeFiles());
         } catch (IllegalStateException e) {
             LOG.warn(e.getMessage(), e);
             model.addAttribute("message", e.getMessage());
@@ -96,5 +96,4 @@ public class FileUploadController {
 
         return "redirect:/file/";
     }
-
 }

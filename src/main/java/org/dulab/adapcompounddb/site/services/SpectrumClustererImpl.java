@@ -351,7 +351,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
         consensusSpectrum.setChromatographyType(type);
         consensusSpectrum.setConsensus(true);
         consensusSpectrum.setReference(false);
-        consensusSpectrum.addProperty("Name", getName(spectra));
+        consensusSpectrum.setName(getName(spectra));
 
         consensusPeaks.forEach(p -> p.setSpectrum(consensusSpectrum));
         consensusSpectrum.setPeaks(consensusPeaks, true);

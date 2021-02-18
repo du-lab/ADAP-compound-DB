@@ -6,12 +6,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
+import org.dulab.adapcompounddb.models.enums.FileType;
+import org.dulab.adapcompounddb.models.MetaDataMapping;
 import org.dulab.adapcompounddb.validation.ContainsFiles;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FileUploadForm {
 
@@ -27,9 +31,11 @@ public class FileUploadForm {
 
     private boolean mergeFiles;
 
+    private String mspNameField;
     private String mspExternalIdField;
     private String mspRetentionTimeField;
     private String mspMolecularWeightField;
+    private String csvNameField;
     private String csvExternalIdField;
     private String csvRetentionTimeField;
     private String csvMolecularWeightField;
@@ -64,6 +70,14 @@ public class FileUploadForm {
         this.mergeFiles = mergeFiles;
     }
 
+    public String getMspNameField() {
+        return mspNameField;
+    }
+
+    public void setMspNameField(String mspNameField) {
+        this.mspNameField = mspNameField;
+    }
+
     public String getMspExternalIdField() {
         return mspExternalIdField;
     }
@@ -86,6 +100,14 @@ public class FileUploadForm {
 
     public void setMspMolecularWeightField(String mspMolecularWeightField) {
         this.mspMolecularWeightField = mspMolecularWeightField;
+    }
+
+    public String getCsvNameField() {
+        return csvNameField;
+    }
+
+    public void setCsvNameField(String csvNameField) {
+        this.csvNameField = csvNameField;
     }
 
     public String getCsvExternalIdField() {
@@ -118,6 +140,15 @@ public class FileUploadForm {
 
     public void setFiles(final List<MultipartFile> files) {
         this.files = files;
+    }
+
+    public Map<FileType, MetaDataMapping> getMetaDataMappings() {
+        Map<FileType, MetaDataMapping> mappings = new HashMap<>();
+        mappings.put(FileType.MSP, new MetaDataMapping(
+                mspNameField, mspExternalIdField, null, mspRetentionTimeField, mspMolecularWeightField));
+        mappings.put(FileType.CSV, new MetaDataMapping(
+                csvNameField, csvExternalIdField, null, csvRetentionTimeField, csvMolecularWeightField));
+        return mappings;
     }
 
     public byte[] toJsonBytes() {

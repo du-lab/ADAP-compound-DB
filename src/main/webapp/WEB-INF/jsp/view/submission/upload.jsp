@@ -51,53 +51,65 @@
 
                         <form:form method="POST" modelAttribute="fileUploadForm" enctype="multipart/form-data">
                             <form:errors path="" cssClass="errors"/>
-                            <div class="row form-group">
-                                <form:label path="chromatographyType"
-                                            cssClass="col-12 col-md-3 offset-md-2 col-form-label">Chromatography type</form:label>&nbsp;
-                                <div class="col-12 col-md-5">
-                                    <form:select path="chromatographyType" cssClass="form-control">
-                                        <form:option id="typeValue" value="" label="Please select..."/>
-                                        <form:options items="${chromatographyTypeList}" itemLabel="label"/>
-                                    </form:select>
-                                    <form:errors path="chromatographyType" cssClass="text-danger form-control-sm"/>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="container-fluid">
+                                        <div class="row form-group">
+                                            <div class="col-md-4">
+                                                <form:label path="chromatographyType"
+                                                            cssClass="col-form-label">Chromatography type</form:label>&nbsp;
+                                            </div>
+                                            <div class="col-md-8">
+                                                <form:select path="chromatographyType" cssClass="form-control">
+                                                    <form:option id="typeValue" value="" label="Please select..."/>
+                                                    <form:options items="${chromatographyTypeList}" itemLabel="label"/>
+                                                </form:select>
+                                                <form:errors path="chromatographyType"
+                                                             cssClass="text-danger form-control-sm"/>
+                                            </div>
+                                        </div>
+                                        <div class="row form-group">
+                                            <div class="col-md-4">
+                                                <form:label path="mergeFiles"
+                                                            cssClass="col-form-label">Merge Files</form:label>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <form:checkbox path="mergeFiles" data-toggle="toggle" data-on="Yes"
+                                                               data-off="No"
+                                                               data-size="sm"/>
+                                                <form:errors path="mergeFiles" cssClass="text-danger form-control-sm"/>
+                                            </div>
+                                        </div>
+                                        <div class="row form-group">
+                                            <div class="col-md-4">
+                                                <form:label path="files" cssClass="col-form-label">File</form:label>&nbsp;
+                                            </div>
+                                            <div class="col-md-8">
+                                                <input type="file" name="files" accept=".msp,.csv"
+                                                       class="form-control-file"
+                                                       multiple/>
+                                                <form:errors path="files" cssClass="text-danger form-control-sm"/>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <%--                            <fieldset class="form-group">--%>
-                            <%--                                <div class="row">--%>
-                            <%--                                    <form:label path="fileType"--%>
-                            <%--                                                cssClass="col-12 col-md-3 offset-md-2 col-form-label">File type</form:label>--%>
-                            <%--                                    <div class="col-md-5">--%>
-                            <%--                                            &lt;%&ndash;@elvariable id="fileTypeList" type="org.dulab.adapcompounddb.models.enums.FileType[]"&ndash;%&gt;--%>
-                            <%--                                        <c:forEach items="${fileTypeList}" var="type">--%>
-                            <%--                                            <div class="form-check">--%>
-                            <%--                                                <form:radiobutton path="fileType" label="${type.label}" value="${type}"--%>
-                            <%--                                                                  cssClass="form-check-input"/>--%>
-                            <%--                                            </div>--%>
-                            <%--                                        </c:forEach>--%>
-                            <%--                                        <form:errors path="fileType" cssClass="text-danger form-control-sm"/>--%>
-                            <%--                                    </div>--%>
-                            <%--                                </div>--%>
-                            <%--                            </fieldset>--%>
-                            <div class="row form-group">
-                                <form:label path="mergeFiles"
-                                            cssClass="col-md-3 offset-md-2 col-form-label">Merge Files</form:label>
-                                <div class="col-md-5">
-                                    <form:checkbox path="mergeFiles" data-toggle="toggle" data-on="Yes" data-off="No"
-                                                   data-size="sm"/>
-                                    <form:errors path="mergeFiles" cssClass="text-danger form-control-sm"/>
-                                </div>
-                            </div>
-                            <div class="row form-group">
-                                <form:label path="files"
-                                            cssClass="col-md-3 offset-md-2 col-form-label">File</form:label>&nbsp;
-                                <div class="col-md-5">
-                                    <input type="file" name="files" accept=".msp,.csv" class="form-control-file"
-                                           multiple/>
-                                    <form:errors path="files" cssClass="text-danger form-control-sm"/>
+
+                                <div class="col-md-4">
+                                    <div class="card card-body small">
+                                        <p>When option <span class="text-primary">Merge Files</span> is selected,
+                                            data from multiple files are merged together.</p>
+                                        <p>During merging, corresponding features from different files are determined
+                                            based on values of the <span class="text-primary">ID Fields</span>. These
+                                            ID Fields must be specified in the
+                                            <a href="#metaFields" data-toggle="collapse">Metadata Fields</a>
+                                            panel for each file type.
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="row form-group">
+
+                            <div class="row row-content">
                                 <div class="col">
                                     <div id="metaFields" class="collapse">
                                         <div class="card card-body">
@@ -105,6 +117,16 @@
                                                 <div class="row form-group">
                                                     <div class="col-md-4 offset-md-4">MSP Files</div>
                                                     <div class="col-md-4">CSV Files</div>
+                                                </div>
+                                                <div class="row form-group">
+                                                    <form:label path="mspNameField"
+                                                                cssClass="col-md-4 col-form-label">Name Field</form:label>
+                                                    <div class="col-md-4">
+                                                        <form:input path="mspNameField" cssClass="form-control"/>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <form:input path="csvNameField" cssClass="form-control"/>
+                                                    </div>
                                                 </div>
                                                 <div class="row form-group">
                                                     <form:label path="mspExternalIdField"

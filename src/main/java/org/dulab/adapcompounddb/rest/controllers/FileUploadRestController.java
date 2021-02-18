@@ -59,7 +59,7 @@ public class FileUploadRestController {
             submission.setDateTime(new Date());
             submission.getTags().forEach(tag -> tag.setSubmission(submission));
 
-            MultipartFileUtils.readMultipartFile(submission, files, fileType, chromatographyType);
+            MultipartFileUtils.readMultipartFile(submission, files, chromatographyType, null, false);
 
             submissionService.saveSubmission(submission);
 

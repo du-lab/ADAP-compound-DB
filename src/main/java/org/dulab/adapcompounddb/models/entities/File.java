@@ -122,14 +122,14 @@ public class File implements Serializable {
         if (!(other instanceof File)) {
             return false;
         }
-        if(id == 0) {
-            super.equals(other);
+        if(id == null || id == 0) {
+            return super.equals(other);
         }
-        return id == ((File) other).id;
+        return id.equals(((File) other).id);
     }
 
     @Override
     public int hashCode() {
-        return Long.hashCode(id);
+        return (id != null) ? Long.hashCode(id) : super.hashCode();
     }
 }
