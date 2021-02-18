@@ -34,7 +34,9 @@ public class StudySearchServiceImpl implements StudySearchService {
 
         int querySubmissionSpectraCount = 0;
         for (File file : submission.getFiles()) {
-            for (Spectrum spectrum : file.getSpectra()) {
+            List<Spectrum> spectra = file.getSpectra();
+            if (spectra == null) continue;
+            for (Spectrum spectrum : spectra) {
                 SearchParameters searchParameters =
                         SearchParameters.getDefaultParameters(spectrum.getChromatographyType());
                 List<SpectrumMatch> matches = MappingUtils.toList(spectrumRepository.matchAgainstClusterableSpectra(
@@ -87,7 +89,9 @@ public class StudySearchServiceImpl implements StudySearchService {
 
             int matchSubmissionSpectraCount = 0;
             for (File file : matchSubmission.getFiles()) {
-                matchSubmissionSpectraCount += file.getSpectra().size();
+                List<Spectrum> spectra = file.getSpectra();
+                if (spectra != null)
+                    matchSubmissionSpectraCount += spectra.size();
             }
             sj = matchSubmissionSpectraCount;
 

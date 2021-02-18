@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Future;
 
@@ -60,7 +61,10 @@ public class GroupSearchServiceImpl implements GroupSearchService {
             session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
 
             // Calculate total number of spectra
-            long totalSteps = files.stream().mapToInt(file -> file.getSpectra().size()).sum();
+            long totalSteps = files.stream()
+                    .map(File::getSpectra).filter(Objects::nonNull)
+                    .mapToInt(List::size)
+                    .sum();
 
             if (totalSteps == 0) {
                 LOGGER.warn("No query spectra for performing a group search");
@@ -74,6 +78,7 @@ public class GroupSearchServiceImpl implements GroupSearchService {
             for (int fileIndex = 0; fileIndex < files.size(); ++fileIndex) {
                 File file = files.get(fileIndex);
                 List<Spectrum> spectra = file.getSpectra();
+                if (spectra == null) continue;
                 for (int spectrumIndex = 0; spectrumIndex < spectra.size(); ++spectrumIndex) {  // Spectrum querySpectrum : file.getSpectra()
                     Spectrum querySpectrum = spectra.get(spectrumIndex);
 
@@ -82,9 +87,6 @@ public class GroupSearchServiceImpl implements GroupSearchService {
                     IndividualSearchService spectrumSearchService = searchServiceSelector
                             .findByChromatographyType(querySpectrum.getChromatographyType());
 
-//                    SearchParameters parameters = new SearchParameters();
-//                    parameters.setScoreThreshold(0.5);
-//                    parameters.setMzTolerance(0.01);
                     SearchParameters parameters =
                             SearchParameters.getDefaultParameters(querySpectrum.getChromatographyType());
                     parameters.setSpecies(species);

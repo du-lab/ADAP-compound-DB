@@ -179,6 +179,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
         for (int i = 0; i < fileList.size(); i++) {
             final List<Spectrum> spectra = fileList.get(i).getSpectra();
+            if (spectra == null) continue;
             spectrumList.addAll(spectra);
             for (int j = 0; j < spectra.size(); j++) {
                 if (i != 0 || j != 0) {

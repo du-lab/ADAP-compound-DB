@@ -9,10 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
-import org.dulab.adapcompounddb.models.entities.File;
-import org.dulab.adapcompounddb.models.entities.Submission;
-import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
-import org.dulab.adapcompounddb.models.entities.UserPrincipal;
+import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.repositories.SubmissionCategoryRepository;
@@ -103,10 +100,15 @@ public class SubmissionServiceImpl implements SubmissionService {
         final Submission submissionObj = submissionRepository.save(submission);
 
         final List<Long> savedFileIds = new ArrayList<>();
-        submissionObj.getFiles().stream().forEach(f -> savedFileIds.add(f.getId()));
+        submissionObj.getFiles().forEach(f -> savedFileIds.add(f.getId()));
 
-
-        if (fileList.get(0).getSpectra().get(0).getId() == 0) {
+        Set<Long> ids = fileList.stream()
+                .map(File::getSpectra).filter(Objects::nonNull)
+                .flatMap(List::stream)
+                .map(Spectrum::getId)
+                .collect(Collectors.toSet());
+//        if (fileList.get(0).getSpectra().get(0).getId() == 0) {
+        if (ids.contains(0L)) {
             spectrumRepository.saveSpectrumAndPeaks(fileList, savedFileIds);
         }
     }

@@ -164,7 +164,10 @@
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
-                        return row.querySpectrumName;
+                        const href = (row.querySpectrumId !== 0)
+                            ? `${pageContext.request.contextPath}/spectrum/\${row.querySpectrumId}/`
+                            : `${pageContext.request.contextPath}/file/\${row.queryFileIndex}/\${row.querySpectrumIndex}/`;
+                        return `<a href="\${href}">\${row.querySpectrumName}</a>`;
                     }
                 },
                 {

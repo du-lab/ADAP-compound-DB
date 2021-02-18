@@ -135,9 +135,12 @@ public class GroupSearchController extends BaseController {
         Collection<ChromatographyType> chromatographyTypes;
         if (submission.getId() == 0) {
             chromatographyTypes = new HashSet<>();
-            for (File file : submission.getFiles())
-                for (Spectrum spectrum : file.getSpectra())
+            for (File file : submission.getFiles()) {
+                List<Spectrum> spectra = file.getSpectra();
+                if (spectra == null) continue;
+                for (Spectrum spectrum : spectra)
                     chromatographyTypes.add(spectrum.getChromatographyType());
+            }
         } else {
             Map<Long, List<ChromatographyType>> map =
                     submissionService.findChromatographyTypeBySubmissionIds(Collections.singletonList(submission));
