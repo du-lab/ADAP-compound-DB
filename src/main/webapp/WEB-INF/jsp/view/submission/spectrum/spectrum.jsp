@@ -44,7 +44,8 @@
                                         <li class="list-group-item py-1">
                                             <strong>Submission:</strong>&nbsp;
                                             <c:if test="${spectrum.file != null && spectrum.file.submission != null}">
-                                                <a href="${(spectrum.file.submission.id != 0) ? "/submission/" + spectrum.file.submission.id + "/" : "/file/"}">
+                                                <c:set var="submissionUrl">${pageContext.request.contextPath.concat('/submission/').concat(spectrum.file.submission.id).concat('/')}</c:set>
+                                                <a href="${(spectrum.file.submission.id != 0) ? submissionUrl : '/file'}">
                                                         ${spectrum.file.submission.name}
                                                 </a>
                                             </c:if>

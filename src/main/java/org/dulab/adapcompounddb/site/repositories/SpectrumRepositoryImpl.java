@@ -7,12 +7,16 @@ import java.util.List;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.site.services.admin.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
 
 public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
+
+    private static final Logger LOGGER = LogManager.getLogger(SpectrumRepositoryImpl.class);
 
     private static final String PEAK_INSERT_SQL_STRING = "INSERT INTO `Peak`(`Mz`, `Intensity`, `SpectrumId`) VALUES ";
     private static final String PROPERTY_INSERT_SQL_STRING = "INSERT INTO `SpectrumProperty`(`SpectrumId`, `Name`, `Value`) VALUES ";
@@ -110,12 +114,18 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                     .withMolecularWeight(querySpectrum.getMolecularWeight(), molecularWeightTolerance);
 
         String query;
-        if (classOfE == SpectrumClusterView.class)
-            query = builder.buildSpectrumClusterViewQuery();
-        else if (classOfE == SpectrumMatch.class)
-            query = builder.buildSpectrumMatchQuery();
-        else
-            throw new IllegalStateException("Unknown class: " + classOfE);
+        try {
+            if (classOfE == SpectrumClusterView.class)
+                query = builder.buildSpectrumClusterViewQuery();
+            else if (classOfE == SpectrumMatch.class)
+                query = builder.buildSpectrumMatchQuery();
+            else
+                throw new IllegalStateException("Unknown class: " + classOfE);
+
+        } catch (QueryBuilderException e) {
+            LOGGER.warn(e.getMessage());
+            return new ArrayList<>(0);
+        }
 
         @SuppressWarnings("unchecked")
         List<E> resultList = entityManager

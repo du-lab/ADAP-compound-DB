@@ -137,11 +137,11 @@
                     data.search = data.search["value"];
                 },
                 dataSrc: function (d) {
-                    // // Hide columns with no data
+                    // Hide columns with no data
                     table.column(3).visible(d.data.map(row => row['molecularWeight']).join(''));
                     table.column(4).visible(d.data.map(row => row['size']).join(''));
-                    table.column(5).visible(d.data.map(row => row['score']).join(''));
-                    table.column(6).visible(d.data.map(row => row['error']).join(''));
+                    // table.column(5).visible(d.data.map(row => row['score']).join(''));
+                    // table.column(6).visible(d.data.map(row => row['error']).join(''));
                     table.column(7).visible(d.data.map(row => row['aveSignificance']).join(''));
                     table.column(8).visible(d.data.map(row => row['minSignificance']).join(''));
                     table.column(9).visible(d.data.map(row => row['maxSignificance']).join(''));

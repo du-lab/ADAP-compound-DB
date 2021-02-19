@@ -111,7 +111,7 @@ public class SpectrumQueryBuilderAlt {
         String query = Stream.of(new String[]{consensusSpectraQuery, referenceSpectraQuery, clusterableSpectraQuery})
                 .filter(Objects::nonNull)
                 .collect(Collectors.joining("\nUNION ALL\n"));
-        query += "\nORDER BY Score DESC";
+        query += "\nORDER BY Score DESC, Error ASC LIMIT 100";
 
         return query;
     }
@@ -175,6 +175,9 @@ public class SpectrumQueryBuilderAlt {
      * @return SQL string with the condition
      */
     private String getScoreTable(boolean isConsensus, boolean isReference, boolean isClusterable) {
+
+        if (peaks == null && precursorMz == null && molecularWeight == null)
+            throw new QueryBuilderException("No search conditions provided");
 
         String spectrumSelector = String.format(
                 "Spectrum.Consensus IS %s AND Spectrum.Reference IS %s AND Spectrum.Clusterable IS %s",
