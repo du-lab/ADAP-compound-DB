@@ -237,9 +237,10 @@
                                         <td></td>
                                         <td>Name</td>
                                         <td>Ret Time (min)</td>
-                                        <td>Precursor mass</td>
+                                        <td>Precursor m/z</td>
+                                        <td>Precursor type</td>
                                         <td>Significance</td>
-                                        <td>Molecular Weight</td>
+                                        <td>Neutral mass</td>
                                         <td>Integer m/z</td>
                                         <td>Type</td>
                                         <td></td>
@@ -330,8 +331,9 @@
                 // Hide columns without data
                 table.column(2).visible(d.data.map(row => row['retentionTime']).join(''));
                 table.column(3).visible(d.data.map(row => row['precursor']).join(''));
-                table.column(4).visible(d.data.map(row => row['significance']).join(''));
-                table.column(5).visible(d.data.map(row => row['molecularWeight']).join(''));
+                table.column(4).visible(d.data.map(row => row['precursorType']).join(''));
+                table.column(5).visible(d.data.map(row => row['significance']).join(''));
+                table.column(6).visible(d.data.map(row => row['molecularWeight']).join(''));
                 return d.data;
             }
         },
@@ -364,28 +366,33 @@
                     let x = row.precursor;
                     return (x != null && !isNaN(x)) ? x.toFixed(3) : x;
                 }
+            }, {
+                "targets": 4,
+                "render": function (data, type, row, meta) {
+                    return row.precursorType;
+                }
             },
             {
-                "targets": 4,
+                "targets": 5,
                 "render": function (data, type, row, meta) {
                     let x = row.significance;
                     return (x != null && !isNaN(x)) ? x.toFixed(3) : x;
                 }
             }, {
-                "targets": 5,
+                "targets": 6,
                 "render": function (data, type, row, meta) {
                     let x = row.molecularWeight;
                     return (x != null && !isNaN(x)) ? x.toFixed(3) : x;
                 }
             }, {
-                "targets": 6,
+                "targets": 7,
                 "render": function (data, type, row, meta) {
                     return (row.integerMz) ? 'Yes' : 'No';
                 }
             },
             {
                 // "orderable": true,
-                "targets": 7,
+                "targets": 8,
                 "render": function (data, type, row, meta) {
                     content = '<img' +
                         ' src="${pageContext.request.contextPath}/' + row.chromatographyTypeIconPath + '"'
@@ -398,7 +405,7 @@
             },
             {
                 "orderable": false,
-                "targets": 8,
+                "targets": 9,
                 "render": function (data, type, row, meta) {
                     let href = (row.id > 0) ? `spectrum/\${row.id}/` : `\${row.fileIndex}/\${row.spectrumIndex}/`;
                     let content = `<a href="\${href}"><i class="material-icons" title="View spectrum">&#xE5D3;</i></a>`;

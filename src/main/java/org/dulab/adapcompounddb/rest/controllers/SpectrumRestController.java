@@ -42,9 +42,9 @@ public class SpectrumRestController extends BaseController {
 
     private enum ColumnInformation {
         ID(0, null), NAME(1, "name"), RETENTION_TIME(2, "retentionTime"),
-        PRECURSOR(3, "precursor"), SIGNIFICANCE(4, "significance"),
-        MOLECULAR_WEIGHT(5, "molecularWeight"),
-        CHROMATOGRAPHY_TYPE(6, "chromatographyType");
+        PRECURSOR(3, "precursor"), PRECURSOR_TYPE(4, "precursorType"),
+        SIGNIFICANCE(5, "significance"), MOLECULAR_WEIGHT(6, "molecularWeight"),
+        CHROMATOGRAPHY_TYPE(7, "chromatographyType");
 
         private final int position;
         private final String sortColumnName;

@@ -68,6 +68,8 @@ public class Spectrum implements Serializable {
 
     private Double precursor;
 
+    private String precursorType;
+
     private Double retentionTime;
 
     private Double significance;
@@ -186,6 +188,8 @@ public class Spectrum implements Serializable {
                     this.setExternalId(propertyValue);
                 else if (propertyName.equalsIgnoreCase(mapping.getPrecursorMzField()))
                     this.setPrecursor(parseDouble(propertyValue));
+                else if (propertyName.equalsIgnoreCase(mapping.getPrecursorTypeField()))
+                    this.setPrecursorType(propertyValue);
                 else if (propertyName.equalsIgnoreCase(mapping.getRetTimeField()))
                     this.setRetentionTime(parseDouble(propertyValue));
                 else if (propertyName.equalsIgnoreCase(mapping.getMolecularWeight()))
@@ -281,6 +285,14 @@ public class Spectrum implements Serializable {
         this.precursor = precursor;
     }
 
+    public String getPrecursorType() {
+        return precursorType;
+    }
+
+    public void setPrecursorType(String precursorType) {
+        this.precursorType = precursorType;
+    }
+
     public Double getRetentionTime() {
         return retentionTime;
     }
@@ -359,6 +371,7 @@ public class Spectrum implements Serializable {
         mergedSpectrum.setChromatographyType(s1.chromatographyType);
         mergedSpectrum.setFile(s1.file);
         mergedSpectrum.setPrecursor(mergeDoublesByAverage(s1.precursor, s2.precursor, 0.01));
+        mergedSpectrum.setPrecursorType(s1.precursorType != null ? s1.precursorType : s2.precursorType);
         mergedSpectrum.setRetentionTime(mergeDoublesByAverage(s1.retentionTime, s2.retentionTime, 0.1));
         mergedSpectrum.setSignificance(mergeDoublesByMaximum(s1.significance, s2.significance, 0.1));
         mergedSpectrum.setMolecularWeight(mergeDoublesByAverage(s1.molecularWeight, s2.molecularWeight, 0.01));

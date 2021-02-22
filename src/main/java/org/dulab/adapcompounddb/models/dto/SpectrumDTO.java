@@ -12,6 +12,7 @@ public class SpectrumDTO implements Serializable {
     private boolean reference;
     private boolean integerMz;
     private Double precursor;
+    private String precursorType;
     private Double retentionTime;
     private String chromatographyTypeLabel;
     private String chromatographyTypeIconPath;
@@ -96,6 +97,14 @@ public class SpectrumDTO implements Serializable {
 
     public void setPrecursor(final Double precursor) {
         this.precursor = precursor;
+    }
+
+    public String getPrecursorType() {
+        return precursorType;
+    }
+
+    public void setPrecursorType(String precursorType) {
+        this.precursorType = precursorType;
     }
 
     public Double getRetentionTime() {
