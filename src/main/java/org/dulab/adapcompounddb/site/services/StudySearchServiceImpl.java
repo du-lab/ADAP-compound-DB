@@ -37,6 +37,7 @@ public class StudySearchServiceImpl implements StudySearchService {
             for (Spectrum spectrum : file.getSpectra()) {
                 SearchParameters searchParameters =
                         SearchParameters.getDefaultParameters(spectrum.getChromatographyType());
+                //TODO Add a call for method `preScreenSpectrum` and retrieve the IDs of selected spectra
                 List<SpectrumMatch> matches = MappingUtils.toList(spectrumRepository.matchAgainstClusterableSpectra(
                         submissionIds,
                         spectrum,
