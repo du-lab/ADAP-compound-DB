@@ -34,6 +34,8 @@ public class StudySearchServiceImpl implements StudySearchService {
         List<SpectrumMatch> spectrumMatches = new ArrayList<>();
 
         int querySubmissionSpectraCount = 0;
+
+        System.out.println("Start matching: " + java.time.LocalTime.now());
         for (File file : submission.getFiles()) {
             List<SpectrumMatch> matches = spectrumRepository.multiSpectrumSearch(file.getSpectra());
             spectrumMatches.addAll(matches);
@@ -45,6 +47,7 @@ public class StudySearchServiceImpl implements StudySearchService {
 //                querySubmissionSpectraCount++;
 //            }
         }
+        System.out.println("Finish matching: " +java.time.LocalTime.now());
 
         Set<Submission> matchSubmissions = new HashSet<>();
 

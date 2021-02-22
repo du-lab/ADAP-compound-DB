@@ -26,7 +26,7 @@ public class MultiSpectrumQueryBuilder {
 
         String query;
 
-        query = "select Id, SpectrumId, sum(Product) as Score from(\n";
+        query = "select Id, SpectrumId, power(sum(Product), 2) as Score from(\n";
         int index = 0;
         for (Spectrum s: querySpectra) {
            int n = index;
@@ -40,7 +40,8 @@ public class MultiSpectrumQueryBuilder {
                     .map(p -> String.format("\tselect %d as Id, SpectrumId, SQRT(Intensity * %f) "
                             + "as Product from Peak join Spectrum on Spectrum.Id = Peak.SpectrumId "
                             + "where Peak.Mz < %f and %f < Peak.Mz "
-                            + "and Spectrum.Consensus is False and Spectrum.Reference is False",
+                            + "and Spectrum.Consensus is False and Spectrum.Reference is False "
+                            + "and Spectrum.ChromatographyType = 'GAS'",
                             n,
                             p.getIntensity(),
                             p.getMz() + 0.01,
@@ -48,7 +49,7 @@ public class MultiSpectrumQueryBuilder {
                     ).collect(Collectors.joining("\tUNION ALL\n"));
             index++;
         }
-        query += ") AS Result group by Id, SpectrumId having Score > 0.5\n";
+        query += ") AS Result group by Id, SpectrumId having Score > 0.5 order by Score desc\n";
 
         return query;
     }
