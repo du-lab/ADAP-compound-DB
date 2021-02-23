@@ -63,7 +63,8 @@ public class SpectrumSearchServiceImpl implements IndividualSearchService {
         List<SearchResultDTO> searchResults = new ArrayList<>();
         for (SpectrumClusterView view : spectrumRepository.matchAgainstConsensusAndReferenceSpectra(
                 submissionIds, querySpectrum, parameters.getScoreThreshold(), parameters.getMzTolerance(),
-                parameters.getPrecursorTolerance(), parameters.getMolecularWeightTolerance())) {
+                parameters.getPrecursorTolerance(), parameters.getNeutralMassTolerance(),
+                parameters.getRetTimeTolerance())) {
 
             SearchResultDTO searchResult = new SearchResultDTO(querySpectrum, view);
 

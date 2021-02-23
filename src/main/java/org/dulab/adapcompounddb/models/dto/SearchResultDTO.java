@@ -54,7 +54,8 @@ public class SearchResultDTO implements Serializable {
     // Other
     private int position;
     private Double score;
-    private Double error;
+    private Double massError;
+    private Double retTimeError;
 
 
     public SearchResultDTO() {}
@@ -71,7 +72,8 @@ public class SearchResultDTO implements Serializable {
             this.name = (isReference ? "[Ref Spec] " : "[Con Spec] ") + view.getName();
             this.size = view.getSize();
             this.score = view.getScore();
-            this.error = view.getError();
+            this.massError = view.getMassError();
+            this.retTimeError = view.getRetTimeError();
             this.aveSignificance = view.getAverageSignificance();
             this.minSignificance = view.getMinimumSignificance();
             this.maxSignificance = view.getMaximumSignificance();
@@ -102,7 +104,7 @@ public class SearchResultDTO implements Serializable {
             this.chromatographyTypeLabel = massSearchResult.getChromatographyType().getLabel();
             this.chromatographyTypePath = massSearchResult.getChromatographyType().getIconPath();
             this.molecularWeight = massSearchResult.getMolecularWeight();
-            this.error = massSearchResult.getError();
+            this.massError = massSearchResult.getError();
         }
     }
 
@@ -253,12 +255,20 @@ public class SearchResultDTO implements Serializable {
         this.molecularWeight = molecularWeight;
     }
 
-    public Double getError() {
-        return error;
+    public Double getMassError() {
+        return massError;
     }
 
-    public void setError(Double error) {
-        this.error = error;
+    public void setMassError(Double massError) {
+        this.massError = massError;
+    }
+
+    public Double getRetTimeError() {
+        return retTimeError;
+    }
+
+    public void setRetTimeError(Double retTimeError) {
+        this.retTimeError = retTimeError;
     }
 
     public int getPosition() {

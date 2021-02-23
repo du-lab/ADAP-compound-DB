@@ -9,7 +9,8 @@ public class SearchParameters {
     private Double scoreThreshold;
     private Double mzTolerance;
     private Double precursorTolerance;
-    private Double molecularWeightTolerance;
+    private Double neutralMassTolerance;
+    private Double retTimeTolerance;
     private String species;
     private String source;
     private String disease;
@@ -39,12 +40,20 @@ public class SearchParameters {
         this.precursorTolerance = precursorTolerance;
     }
 
-    public Double getMolecularWeightTolerance() {
-        return molecularWeightTolerance;
+    public Double getNeutralMassTolerance() {
+        return neutralMassTolerance;
     }
 
-    public void setMolecularWeightTolerance(Double molecularWeightTolerance) {
-        this.molecularWeightTolerance = molecularWeightTolerance;
+    public void setNeutralMassTolerance(Double neutralMassTolerance) {
+        this.neutralMassTolerance = neutralMassTolerance;
+    }
+
+    public Double getRetTimeTolerance() {
+        return retTimeTolerance;
+    }
+
+    public void setRetTimeTolerance(Double retTimeTolerance) {
+        this.retTimeTolerance = retTimeTolerance;
     }
 
     public String getSpecies() {
@@ -96,7 +105,7 @@ public class SearchParameters {
                 parameters.setPrecursorTolerance(0.01);
                 break;
             case NONE:
-                parameters.setMolecularWeightTolerance(0.01);
+                parameters.setNeutralMassTolerance(0.01);
                 break;
         }
         return parameters;

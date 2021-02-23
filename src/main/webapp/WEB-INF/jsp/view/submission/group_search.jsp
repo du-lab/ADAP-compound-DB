@@ -87,17 +87,18 @@
                 <div class="card-header card-header-single">
                     Group Search Results
                 </div>
-                <div class="card-body">
+                <div class="card-body small">
                     <table id="match_table" class="display compact" style="width: 100%; clear:none;">
                         <thead>
                         <tr>
                             <th>Id</th>
-                            <th>Query Spectrum</th>
-                            <th title="Match spectra">Match Spectrum</th>
+                            <th>Query</th>
+                            <th title="Match spectra">Match</th>
                             <th title="Molecular weight">Molecular weight</th>
                             <th title="Number of studies" class="Count">Studies</th>
                             <th title="Minimum matching score between all spectra in a cluster">Score</th>
-                            <th title="Difference between query and library molecular weights">Error</th>
+                            <th title="Difference between query and library neutral masses">Mass Error</th>
+                            <th title="Difference between query and library retention times">Ret Time Error</th>
                             <th title="Average P-value of ANOVA tests">Average P-value</th>
                             <th title="Minimum P-value of ANOVA tests">Minimum P-value</th>
                             <th title="Maximum P-value of ANOVA tests">Maximum P-value</th>
@@ -141,10 +142,11 @@
                     table.column(3).visible(d.data.map(row => row['molecularWeight']).join(''));
                     table.column(4).visible(d.data.map(row => row['size']).join(''));
                     // table.column(5).visible(d.data.map(row => row['score']).join(''));
-                    // table.column(6).visible(d.data.map(row => row['error']).join(''));
-                    table.column(7).visible(d.data.map(row => row['aveSignificance']).join(''));
-                    table.column(8).visible(d.data.map(row => row['minSignificance']).join(''));
-                    table.column(9).visible(d.data.map(row => row['maxSignificance']).join(''));
+                    // table.column(6).visible(d.data.map(row => row['massError']).join(''));
+                    // table.column(7).visible(d.data.map(row => row['retTimeError']).join(''));
+                    table.column(8).visible(d.data.map(row => row['aveSignificance']).join(''));
+                    table.column(9).visible(d.data.map(row => row['minSignificance']).join(''));
+                    table.column(10).visible(d.data.map(row => row['maxSignificance']).join(''));
                     return d.data;
                 }
             },
@@ -212,11 +214,18 @@
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row) {
-                        return (row.error != null) ? row.error.toFixed(3) : '';
+                        return (row.massError != null) ? row.massError.toFixed(3) : '';
+                    }
+                },{
+                    "targets": 7,
+                    "bSortable": true,
+                    "bVisible": true,
+                    "render": function (data, type, row) {
+                        return (row.retTimeError != null) ? row.retTimeError.toFixed(3) : '';
                     }
                 },
                 {
-                    "targets": 7,
+                    "targets": 8,
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
@@ -228,7 +237,7 @@
                     }
                 },
                 {
-                    "targets": 8,
+                    "targets": 9,
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
@@ -240,7 +249,7 @@
                     }
                 },
                 {
-                    "targets": 9,
+                    "targets": 10,
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
@@ -252,7 +261,7 @@
                     }
                 },
                 {
-                    "targets": 10,
+                    "targets": 11,
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
@@ -268,7 +277,7 @@
                     }
                 },
                 {
-                    "targets": 11,
+                    "targets": 12,
                     "bSortable": false,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {

@@ -82,12 +82,14 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         ID(0, "id"),QUERY_SPECTRUM(1, "querySpectrumName"),
         MATCH_SPECTRUM(2, "consensusSpectrumName"),
         MOLECULAR_WEIGHT(3, "molecularWeight"),
-        COUNT(4, "size"), SCORE(5, "diameter"),
-        ERROR(6, "error"),
-        AVERAGE_SIGNIFICANCE(7, "averageSignificance"),
-        MINIMUM_SIGNIFICANCE(8, "minimumSignificance"),
-        MAXIMUM_SIGNIFICANCE(9, "maximumSignificance"),
-        CHROMATOGRAPHY_TYPE(10, "chromatographyType");
+        COUNT(4, "size"),
+        SCORE(5, "diameter"),
+        MASS_ERROR(6, "massError"),
+        RET_TIME_ERROR(7, "retTimeError"),
+        AVERAGE_SIGNIFICANCE(8, "averageSignificance"),
+        MINIMUM_SIGNIFICANCE(9, "minimumSignificance"),
+        MAXIMUM_SIGNIFICANCE(10, "maximumSignificance"),
+        CHROMATOGRAPHY_TYPE(11, "chromatographyType");
 
         private int position;
         private String sortColumnName;
@@ -441,8 +443,11 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
                 case "diameter":
                     spectrumList.sort(getComparator(SearchResultDTO::getScore, sortDirection));
                     break;
-                case "error":
-                    spectrumList.sort(getComparator(SearchResultDTO::getError, sortDirection));
+                case "massError":
+                    spectrumList.sort(getComparator(SearchResultDTO::getMassError, sortDirection));
+                    break;
+                case "retTimeError":
+                    spectrumList.sort(getComparator(SearchResultDTO::getRetTimeError, sortDirection));
                     break;
                 case "averageSignificance":
                     spectrumList.sort(getComparator(SearchResultDTO::getAveSignificance, sortDirection));

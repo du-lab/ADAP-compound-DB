@@ -2,8 +2,6 @@ package org.dulab.adapcompounddb.site.services;
 
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
-import org.dulab.adapcompounddb.site.services.admin.QueryParameters;
-import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.dto.SubmissionMatchDTO;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters;
@@ -45,7 +43,8 @@ public class StudySearchServiceImpl implements StudySearchService {
                         searchParameters.getScoreThreshold(),
                         searchParameters.getMzTolerance(),
                         searchParameters.getPrecursorTolerance(),
-                        searchParameters.getMolecularWeightTolerance()));
+                        searchParameters.getNeutralMassTolerance(),
+                        searchParameters.getRetTimeTolerance()));
                 spectrumMatches.addAll(matches);
                 querySubmissionSpectraCount++;
             }

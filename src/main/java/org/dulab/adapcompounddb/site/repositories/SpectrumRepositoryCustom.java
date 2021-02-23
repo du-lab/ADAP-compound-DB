@@ -15,11 +15,11 @@ public interface SpectrumRepositoryCustom {
 
     Iterable<SpectrumClusterView> matchAgainstConsensusAndReferenceSpectra(
             Iterable<BigInteger> submissionIds, Spectrum querySpectrum, Double scoreThreshold, Double mzTolerance,
-            Double precursorTolerance, Double molecularWeightTolerance);
+            Double precursorTolerance, Double neutralMassTolerance, Double retTimeTolerance);
 
     Iterable<SpectrumMatch> matchAgainstClusterableSpectra(
             Iterable<BigInteger> submissionIds, Spectrum querySpectrum, Double scoreThreshold, Double mzTolerance,
-            Double precursorTolerance, Double molecularWeightTolerance);
+            Double precursorTolerance, Double neutralMassTolerance, Double retTimeTolerance);
 
     void savePeaksAndPropertiesQuery(List<Spectrum> spectrumList, List<Long> savedSpectrumIdList);
 

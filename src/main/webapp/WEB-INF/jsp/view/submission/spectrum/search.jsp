@@ -133,7 +133,8 @@
                             <th title="Molecular weight">Molecular weight</th>
                             <th title="Number of studies" class="Count">Studies</th>
                             <th title="Minimum matching score between all spectra in a cluster">Score</th>
-                            <th title="Error">Error</th>
+                            <th title="Mass Error">Mass Error</th>
+                            <th title="Retention Time Error"> Ret Time Error</th>
                             <th title="Average P-value of ANOVA tests">Average P-value</th>
                             <th title="Minimum P-value of ANOVA tests">Minimum P-value</th>
                             <th title="Maximum P-value of ANOVA tests">Maximum P-value</th>
@@ -156,7 +157,8 @@
                                     <td>${searchResult.molecularWeight}</td>
                                     <td>${searchResult.size}</td>
                                     <td>${searchResult.getNISTScore()}</td>
-                                    <td>${dulab:formatDouble(searchResult.error)}</td>
+                                    <td>${dulab:formatDouble(searchResult.massError)}</td>
+                                    <td>${dulab:formatDouble(searchResult.retTimeError)}</td>
                                     <td>${dulab:formatDouble(searchResult.aveSignificance)}</td>
                                     <td>${dulab:formatDouble(searchResult.minSignificance)}</td>
                                     <td>${dulab:formatDouble(searchResult.maxSignificance)}</td>
