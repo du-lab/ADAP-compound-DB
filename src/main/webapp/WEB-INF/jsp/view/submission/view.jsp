@@ -329,11 +329,11 @@
             },
             dataSrc: function (d) {
                 // Hide columns without data
-                table.column(2).visible(d.data.map(row => row['retentionTime']).join(''));
-                table.column(3).visible(d.data.map(row => row['precursor']).join(''));
-                table.column(4).visible(d.data.map(row => row['precursorType']).join(''));
+                // table.column(2).visible(d.data.map(row => row['retentionTime']).join(''));
+                // table.column(3).visible(d.data.map(row => row['precursor']).join(''));
+                // table.column(4).visible(d.data.map(row => row['precursorType']).join(''));
                 table.column(5).visible(d.data.map(row => row['significance']).join(''));
-                table.column(6).visible(d.data.map(row => row['molecularWeight']).join(''));
+                // table.column(6).visible(d.data.map(row => row['molecularWeight']).join(''));
                 return d.data;
             }
         },
