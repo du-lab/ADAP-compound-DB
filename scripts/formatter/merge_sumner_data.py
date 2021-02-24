@@ -4,7 +4,8 @@ import pandas as pd
 import sys
 
 from os.path import splitext
-from rdkit.Chem import PandasTools
+from rdkit import Chem
+from rdkit.Chem import Descriptors, PandasTools
 from typing import List, Tuple
 
 
@@ -68,23 +69,25 @@ def get_modified_spectrum_lines(spectrum_lines: List[str], meta_row: pd.Series, 
     ret_time = meta_row['Retention time (min)']
     ret_time_line = 'RETENTION_TIME: {:s}\n'.format(ret_time)
 
-    matched = False
-    molecular_mass = None
-    for column in ['PUBCHEM_EXACT_MASS', 'EXACT_MASS', 'EXACT MASS']:
-        if column not in structure_row.index.values:
-            continue
-        molecular_mass = structure_row[column]
-        if molecular_mass is not None and len(str(molecular_mass)) > 0 and str(molecular_mass) != 'nan':
-            matched = True
-            break
-
-    if not matched:
-        return []
+    # matched = False
+    # molecular_mass = None
+    # for column in ['PUBCHEM_EXACT_MASS', 'EXACT_MASS', 'EXACT MASS']:
+    #     if column not in structure_row.index.values:
+    #         continue
+    #     molecular_mass = structure_row[column]
+    #     if molecular_mass is not None and len(str(molecular_mass)) > 0 and str(molecular_mass) != 'nan':
+    #         matched = True
+    #         break
+    #
+    # if not matched:
+    #     return []
 
     # molecular_mass = structure_row['PUBCHEM_EXACT_MASS']
     # if molecular_mass is None or (isinstance(molecular_mass, str) and len(molecular_mass) == 0) or (isinstance(molecular_mass, float) and np.isnan(molecular_mass)):
     #     # raise ValueError('Unknown molecular mass: ' + str(structure_row.values))
     #     return []
+
+    molecular_mass = Descriptors.ExactMolWt(structure_row['Molecule'])
 
     molecular_mass_line = 'NEUTRAL_MASS: {:s}\n'.format(str(molecular_mass))
 
@@ -99,7 +102,7 @@ def merge_sumner_data(path_to_msp: str, path_to_csv: str, path_to_sdf: str):
     meta_data = pd.read_csv(path_to_csv, header=0)
     meta_data = meta_data.astype(str)
 
-    structure_data = PandasTools.LoadSDF(path_to_sdf)
+    structure_data = PandasTools.LoadSDF(path_to_sdf, molColName='Molecule')
 
     filename, extension = splitext(path_to_msp)
     path_to_output = filename + '.merged' + extension
