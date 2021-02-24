@@ -9,7 +9,7 @@ public class SearchParameters {
     private Double scoreThreshold;
     private Double mzTolerance;
     private Double precursorTolerance;
-    private Double neutralMassTolerance;
+    private Double massTolerance;
     private Double retTimeTolerance;
     private String species;
     private String source;
@@ -20,72 +20,81 @@ public class SearchParameters {
         return scoreThreshold;
     }
 
-    public void setScoreThreshold(Double scoreThreshold) {
+    public SearchParameters setScoreThreshold(Double scoreThreshold) {
         this.scoreThreshold = scoreThreshold;
+        return this;
     }
 
     public Double getMzTolerance() {
         return mzTolerance;
     }
 
-    public void setMzTolerance(Double mzTolerance) {
+    public SearchParameters setMzTolerance(Double mzTolerance) {
         this.mzTolerance = mzTolerance;
+        return this;
     }
 
     public Double getPrecursorTolerance() {
         return precursorTolerance;
     }
 
-    public void setPrecursorTolerance(Double precursorTolerance) {
+    public SearchParameters setPrecursorTolerance(Double precursorTolerance) {
         this.precursorTolerance = precursorTolerance;
+        return this;
     }
 
-    public Double getNeutralMassTolerance() {
-        return neutralMassTolerance;
+    public Double getMassTolerance() {
+        return massTolerance;
     }
 
-    public void setNeutralMassTolerance(Double neutralMassTolerance) {
-        this.neutralMassTolerance = neutralMassTolerance;
+    public SearchParameters setMassTolerance(Double massTolerance) {
+        this.massTolerance = massTolerance;
+        return this;
     }
 
     public Double getRetTimeTolerance() {
         return retTimeTolerance;
     }
 
-    public void setRetTimeTolerance(Double retTimeTolerance) {
+    public SearchParameters setRetTimeTolerance(Double retTimeTolerance) {
         this.retTimeTolerance = retTimeTolerance;
+        return this;
     }
 
     public String getSpecies() {
         return species;
     }
 
-    public void setSpecies(String species) {
+    public SearchParameters setSpecies(String species) {
         this.species = species;
+        return this;
     }
 
     public String getSource() {
         return source;
     }
 
-    public void setSource(String source) {
+    public SearchParameters setSource(String source) {
         this.source = source;
+        return this;
     }
 
     public String getDisease() {
         return disease;
     }
 
-    public void setDisease(String disease) {
+    public SearchParameters setDisease(String disease) {
         this.disease = disease;
+        return this;
     }
 
     public Set<Long> getSubmissionIds() {
         return submissionIds;
     }
 
-    public void setSubmissionIds(Set<Long> submissionIds) {
+    public SearchParameters setSubmissionIds(Set<Long> submissionIds) {
         this.submissionIds = submissionIds;
+        return this;
     }
 
 
@@ -105,7 +114,7 @@ public class SearchParameters {
                 parameters.setPrecursorTolerance(0.01);
                 break;
             case NONE:
-                parameters.setNeutralMassTolerance(0.01);
+                parameters.setMassTolerance(0.01);
                 break;
         }
         return parameters;

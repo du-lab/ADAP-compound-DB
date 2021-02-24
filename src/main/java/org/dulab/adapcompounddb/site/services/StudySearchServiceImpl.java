@@ -43,7 +43,7 @@ public class StudySearchServiceImpl implements StudySearchService {
                         searchParameters.getScoreThreshold(),
                         searchParameters.getMzTolerance(),
                         searchParameters.getPrecursorTolerance(),
-                        searchParameters.getNeutralMassTolerance(),
+                        searchParameters.getMassTolerance(),
                         searchParameters.getRetTimeTolerance()));
                 spectrumMatches.addAll(matches);
                 querySubmissionSpectraCount++;

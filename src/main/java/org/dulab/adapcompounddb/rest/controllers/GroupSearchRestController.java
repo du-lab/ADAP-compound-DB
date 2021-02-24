@@ -8,6 +8,7 @@ import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.site.controllers.ControllerUtils;
 import org.dulab.adapcompounddb.site.services.search.GroupSearchService;
 import org.dulab.adapcompounddb.site.services.search.SpectrumMatchService;
+import org.dulab.adapcompounddb.site.services.search.SpectrumMatchServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.function.Function;
 
 @RestController
 public class GroupSearchRestController {
@@ -54,7 +57,7 @@ public class GroupSearchRestController {
         } else {
             matches = new ArrayList<>(EMPTY_LIST);
         }
-        final DataTableResponse response = spectrumMatchService.groupSearchSort(searchStr, start, length, column, sortDirection, matches);
+        final DataTableResponse response = groupSearchSort(searchStr, start, length, column, sortDirection, matches);
         final ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         final String jsonString = mapper.writeValueAsString(response);
@@ -73,4 +76,140 @@ public class GroupSearchRestController {
         return Math.round(100 * groupSearchService.getProgress());
     }
 
+
+    private DataTableResponse groupSearchSort(final String searchStr, final Integer start, final Integer length,
+                                             final Integer column, final String sortDirection,
+                                             List<SearchResultDTO> spectrumList) {
+
+        String sortColumn = GroupSearchColumnInformation.getColumnNameFromPosition(column);
+
+        // sorting each column
+        if (sortColumn != null) {
+            switch (sortColumn) {
+                case "id":
+                    spectrumList.sort(getComparator(SearchResultDTO::getPosition, sortDirection));
+                    break;
+                case "querySpectrumName":
+                    spectrumList.sort(getComparator(SearchResultDTO::getQuerySpectrumName, sortDirection));
+                    break;
+                case "consensusSpectrumName":
+                    spectrumList.sort(getComparator(SearchResultDTO::getName, sortDirection));
+                    break;
+                case "molecularWeight":
+                    spectrumList.sort(getComparator(SearchResultDTO::getMolecularWeight, sortDirection));
+                    break;
+                case "size":
+                    spectrumList.sort(getComparator(SearchResultDTO::getSize, sortDirection));
+                    break;
+                case "diameter":
+                    spectrumList.sort(getComparator(SearchResultDTO::getScore, sortDirection));
+                    break;
+                case "massError":
+                    spectrumList.sort(getComparator(SearchResultDTO::getMassError, sortDirection));
+                    break;
+                case "retTimeError":
+                    spectrumList.sort(getComparator(SearchResultDTO::getRetTimeError, sortDirection));
+                    break;
+                case "averageSignificance":
+                    spectrumList.sort(getComparator(SearchResultDTO::getAveSignificance, sortDirection));
+                    break;
+                case "minimumSignificance":
+                    spectrumList.sort(getComparator(SearchResultDTO::getMinSignificance, sortDirection));
+                    break;
+                case "maximumSignificance":
+                    spectrumList.sort(getComparator(SearchResultDTO::getMaxSignificance, sortDirection));
+                    break;
+                case "ontologyLevel":
+                    spectrumList.sort(getComparator(
+                            x -> x.getOntologyLevel() != null ? x.getOntologyLevel().getPriority() : null,
+                            sortDirection));
+                    break;
+                case "chromatographyType":
+                    spectrumList.sort(getComparator(SearchResultDTO::getChromatographyTypeLabel, sortDirection));
+                    break;
+            }
+        }
+
+        final List<SearchResultDTO> spectrumMatchList = new ArrayList<>();
+        for (int i = 0; i < spectrumList.size(); i++) {
+
+            if (i < start || spectrumMatchList.size() >= length)
+                continue;
+            spectrumMatchList.add(spectrumList.get(i));
+
+        }
+
+        DataTableResponse response = new DataTableResponse(spectrumMatchList);
+        response.setRecordsTotal((long) spectrumList.size());
+        response.setRecordsFiltered((long) spectrumList.size());
+
+        return response;
+    }
+
+    // function for sorting the column
+
+    private <T extends Comparable> Comparator<SearchResultDTO> getComparator(
+            Function<SearchResultDTO, T> function, String sortDirection) {
+
+        return (o1, o2) -> {
+
+            if (function.apply(o1) == null) {
+                return (function.apply(o2) == null) ? 0 : 1;
+            }
+            if (function.apply(o2) == null) {
+                return -1;
+            }
+
+            @SuppressWarnings("unchecked")
+            int comparison = function.apply(o2).compareTo(function.apply(o1));
+
+            if (sortDirection.equalsIgnoreCase("asc")) {
+                return comparison;
+            } else {
+                return -comparison;
+            }
+        };
+    }
+
+
+    private enum GroupSearchColumnInformation {
+        ID(0, "id"),QUERY_SPECTRUM(1, "querySpectrumName"),
+        MATCH_SPECTRUM(2, "consensusSpectrumName"),
+        MOLECULAR_WEIGHT(3, "molecularWeight"),
+        COUNT(4, "size"),
+        SCORE(5, "diameter"),
+        MASS_ERROR(6, "massError"),
+        RET_TIME_ERROR(7, "retTimeError"),
+        AVERAGE_SIGNIFICANCE(8, "averageSignificance"),
+        MINIMUM_SIGNIFICANCE(9, "minimumSignificance"),
+        MAXIMUM_SIGNIFICANCE(10, "maximumSignificance"),
+        ONTOLOGY_LEVEL(11, "ontologyLevel"),
+        CHROMATOGRAPHY_TYPE(12, "chromatographyType");
+
+        private int position;
+        private String sortColumnName;
+
+        GroupSearchColumnInformation(final int position, final String sortColumnName) {
+            this.position = position;
+            this.sortColumnName = sortColumnName;
+        }
+
+        public int getPosition() {
+            return position;
+        }
+
+        public String getSortColumnName() {
+            return sortColumnName;
+        }
+
+        public static String getColumnNameFromPosition(final int position) {
+            String columnName = null;
+            for (final GroupSearchColumnInformation groupSearchColumnInformation : GroupSearchColumnInformation.values()) {
+                if (position == groupSearchColumnInformation.getPosition()) {
+                    columnName = groupSearchColumnInformation.getSortColumnName();
+                }
+            }
+            return columnName;
+        }
+    }
 }

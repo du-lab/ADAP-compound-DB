@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.models.entities.views;
 
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
+import org.dulab.adapcompounddb.models.enums.OntologyLevel;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;

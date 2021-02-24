@@ -12,5 +12,6 @@ public interface IndividualSearchService {
 
     List<SpectrumMatch> search(Spectrum spectrum, QueryParameters parameters);
 
-    List<SearchResultDTO> searchConsensusSpectra(UserPrincipal user, Spectrum querySpectrum, SearchParameters parameters);
+    List<SearchResultDTO> searchConsensusSpectra(
+            UserPrincipal user, Spectrum querySpectrum, SearchParameters parameters, boolean withOntologyLevels);
 }

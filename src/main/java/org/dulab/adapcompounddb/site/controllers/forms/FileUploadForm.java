@@ -23,6 +23,7 @@ public class FileUploadForm {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
 
+    @JsonIgnore
     @NotNull(message = "Chromatography type must be selected.")
     private ChromatographyType chromatographyType;
 

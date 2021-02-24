@@ -102,6 +102,7 @@
                             <th title="Average P-value of ANOVA tests">Average P-value</th>
                             <th title="Minimum P-value of ANOVA tests">Minimum P-value</th>
                             <th title="Maximum P-value of ANOVA tests">Maximum P-value</th>
+                            <th title="Ontology level">Ontology Level</th>
                             <th title="Chromatography type">Type</th>
                             <th></th>
                         </tr>
@@ -259,9 +260,16 @@
                             return '';
                         }
                     }
+                },{
+                    "targets": 11,
+                    "bSortable": true,
+                    "bVisible": true,
+                    "render": function (data, type, row) {
+                        return row.ontologyLevel;
+                    }
                 },
                 {
-                    "targets": 11,
+                    "targets": 12,
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
@@ -277,7 +285,7 @@
                     }
                 },
                 {
-                    "targets": 12,
+                    "targets": 13,
                     "bSortable": false,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {

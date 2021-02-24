@@ -78,45 +78,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     }
 
 
-    private enum GroupSearchColumnInformation {
-        ID(0, "id"),QUERY_SPECTRUM(1, "querySpectrumName"),
-        MATCH_SPECTRUM(2, "consensusSpectrumName"),
-        MOLECULAR_WEIGHT(3, "molecularWeight"),
-        COUNT(4, "size"),
-        SCORE(5, "diameter"),
-        MASS_ERROR(6, "massError"),
-        RET_TIME_ERROR(7, "retTimeError"),
-        AVERAGE_SIGNIFICANCE(8, "averageSignificance"),
-        MINIMUM_SIGNIFICANCE(9, "minimumSignificance"),
-        MAXIMUM_SIGNIFICANCE(10, "maximumSignificance"),
-        CHROMATOGRAPHY_TYPE(11, "chromatographyType");
 
-        private int position;
-        private String sortColumnName;
-
-        GroupSearchColumnInformation(final int position, final String sortColumnName) {
-            this.position = position;
-            this.sortColumnName = sortColumnName;
-        }
-
-        public int getPosition() {
-            return position;
-        }
-
-        public String getSortColumnName() {
-            return sortColumnName;
-        }
-
-        public static String getColumnNameFromPosition(final int position) {
-            String columnName = null;
-            for (final GroupSearchColumnInformation groupSearchColumnInformation : GroupSearchColumnInformation.values()) {
-                if (position == groupSearchColumnInformation.getPosition()) {
-                    columnName = groupSearchColumnInformation.getSortColumnName();
-                }
-            }
-            return columnName;
-        }
-    }
 
 
     @Autowired
@@ -413,96 +375,6 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         response.setRecordsTotal(spectrumPage.getTotalElements());
         response.setRecordsFiltered(spectrumPage.getTotalElements());
         return response;
-    }
-
-    @Override
-    public DataTableResponse groupSearchSort(final String searchStr, final Integer start, final Integer length,
-                                             final Integer column, final String sortDirection,
-                                             List<SearchResultDTO> spectrumList) {
-
-        String sortColumn = GroupSearchColumnInformation.getColumnNameFromPosition(column);
-
-        // sorting each column
-        if (sortColumn != null) {
-            switch (sortColumn) {
-                case "id":
-                    spectrumList.sort(getComparator(SearchResultDTO::getPosition, sortDirection));
-                    break;
-                case "querySpectrumName":
-                    spectrumList.sort(getComparator(SearchResultDTO::getQuerySpectrumName, sortDirection));
-                    break;
-                case "consensusSpectrumName":
-                    spectrumList.sort(getComparator(SearchResultDTO::getName, sortDirection));
-                    break;
-                case "molecularWeight":
-                    spectrumList.sort(getComparator(SearchResultDTO::getMolecularWeight, sortDirection));
-                    break;
-                case "size":
-                    spectrumList.sort(getComparator(SearchResultDTO::getSize, sortDirection));
-                    break;
-                case "diameter":
-                    spectrumList.sort(getComparator(SearchResultDTO::getScore, sortDirection));
-                    break;
-                case "massError":
-                    spectrumList.sort(getComparator(SearchResultDTO::getMassError, sortDirection));
-                    break;
-                case "retTimeError":
-                    spectrumList.sort(getComparator(SearchResultDTO::getRetTimeError, sortDirection));
-                    break;
-                case "averageSignificance":
-                    spectrumList.sort(getComparator(SearchResultDTO::getAveSignificance, sortDirection));
-                    break;
-                case "minimumSignificance":
-                    spectrumList.sort(getComparator(SearchResultDTO::getMinSignificance, sortDirection));
-                    break;
-                case "maximumSignificance":
-                    spectrumList.sort(getComparator(SearchResultDTO::getMaxSignificance, sortDirection));
-                    break;
-                case "chromatographyType":
-                    spectrumList.sort(getComparator(SearchResultDTO::getChromatographyTypeLabel, sortDirection));
-                    break;
-            }
-        }
-
-        final List<SearchResultDTO> spectrumMatchList = new ArrayList<>();
-        for (int i = 0; i < spectrumList.size(); i++) {
-
-            if (i < start || spectrumMatchList.size() >= length)
-                continue;
-            spectrumMatchList.add(spectrumList.get(i));
-
-        }
-
-        DataTableResponse response = new DataTableResponse(spectrumMatchList);
-        response.setRecordsTotal((long) spectrumList.size());
-        response.setRecordsFiltered((long) spectrumList.size());
-
-        return response;
-    }
-
-    // function for sorting the column
-
-    private <T extends Comparable> Comparator<SearchResultDTO> getComparator(
-            Function<SearchResultDTO, T> function, String sortDirection) {
-
-        return (o1, o2) -> {
-
-            if (function.apply(o1) == null) {
-                return (function.apply(o2) == null) ? 0 : 1;
-            }
-            if (function.apply(o2) == null) {
-                return -1;
-            }
-
-            @SuppressWarnings("unchecked")
-            Integer comparison = function.apply(o2).compareTo(function.apply(o1));
-
-            if (sortDirection.equalsIgnoreCase("asc")) {
-                return comparison;
-            } else {
-                return -comparison;
-            }
-        };
     }
 
     @Override

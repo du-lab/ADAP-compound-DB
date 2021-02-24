@@ -26,9 +26,9 @@ public interface SpectrumMatchService {
                                       String searchStr, String species, String source, String disease,
                                       Integer start, Integer length, Integer column, String sortDirection);
 
-    DataTableResponse groupSearchSort(final String searchStr, final Integer start, final Integer length,
-                                      final Integer column, final String sortDirection,
-                                      List<SearchResultDTO> spectrumList);
+//    DataTableResponse groupSearchSort(final String searchStr, final Integer start, final Integer length,
+//                                      final Integer column, final String sortDirection,
+//                                      List<SearchResultDTO> spectrumList);
 
     void loadTagsofCluster(SpectrumCluster cluster);
 

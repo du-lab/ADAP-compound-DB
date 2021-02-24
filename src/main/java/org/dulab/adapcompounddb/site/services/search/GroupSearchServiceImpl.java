@@ -95,7 +95,7 @@ public class GroupSearchServiceImpl implements GroupSearchService {
                     parameters.setSubmissionIds(submissionIds);
 
                     List<SearchResultDTO> individualSearchResults =
-                            spectrumSearchService.searchConsensusSpectra(userPrincipal, querySpectrum, parameters);
+                            spectrumSearchService.searchConsensusSpectra(userPrincipal, querySpectrum, parameters, true);
 
                     // get the best match if the match is not null
                     SearchResultDTO topSearchResult = individualSearchResults.size() > 0
