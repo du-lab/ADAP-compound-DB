@@ -69,7 +69,7 @@ public class ApplicationContextConfiguration {
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean() {
         final HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
-        adapter.setDatabasePlatform("org.hibernate.dialect.MySQL5InnoDBDialect");
+        adapter.setDatabasePlatform("org.hibernate.dialect.MySQL5Dialect");
 
         final LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
         factory.setJpaVendorAdapter(adapter);
@@ -80,12 +80,16 @@ public class ApplicationContextConfiguration {
 
         final Map<String, Object> jpaPropertyMap = new HashMap<>();
         jpaPropertyMap.put("javax.persistence.schema-generation.database.action", "none");
+        jpaPropertyMap.put("hibernate.dialect.storage_engine", "innodb");
         jpaPropertyMap.put("hibernate.order_by.default_null_ordering", "last");
         jpaPropertyMap.put("hibernate.enable_lazy_load_no_trans", true);
 //                jpaPropertyMap.put("hibernate.format_sql", true);
 //                jpaPropertyMap.put("hibernate.use_sql_comments", true);
 //                jpaPropertyMap.put("hibernate.show_sql", true);
 //                jpaPropertyMap.put("hibernate.generate_statistics", true);
+//                jpaPropertyMap.put("hibernate.SQL", "DEBUG");
+//                jpaPropertyMap.put("hibernate.type.descriptor.sql.BasicBinder", "TRACE");
+//                jpaPropertyMap.put("org.hibernate.cache", "DEBUG");
         factory.setJpaPropertyMap(jpaPropertyMap);
 
         return factory;

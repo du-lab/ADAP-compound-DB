@@ -14,6 +14,7 @@ import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
 
+
 public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
     private static final Logger LOGGER = LogManager.getLogger(SpectrumRepositoryImpl.class);

@@ -1,17 +1,13 @@
 package org.dulab.adapcompounddb.models.entities.views;
 
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
-import org.dulab.adapcompounddb.models.enums.OntologyLevel;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class SpectrumClusterView {
 
-    @Id
+    private long uniqueId;
     private long id;
     private Long clusterId;
     private String name;
@@ -22,9 +18,17 @@ public class SpectrumClusterView {
     private Double averageSignificance;
     private Double minimumSignificance;
     private Double maximumSignificance;
-
-    @Enumerated(EnumType.STRING)
     private ChromatographyType chromatographyType;
+
+
+    @Id
+    public long getUniqueId() {
+        return uniqueId;
+    }
+
+    public void setUniqueId(long uniqueId) {
+        this.uniqueId = uniqueId;
+    }
 
     public long getId() {
         return id;
@@ -106,6 +110,7 @@ public class SpectrumClusterView {
         this.maximumSignificance = maximumSignificance;
     }
 
+    @Enumerated(EnumType.STRING)
     public ChromatographyType getChromatographyType() {
         return chromatographyType;
     }

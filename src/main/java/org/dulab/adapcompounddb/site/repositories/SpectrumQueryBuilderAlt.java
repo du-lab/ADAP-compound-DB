@@ -12,17 +12,17 @@ import org.dulab.adapcompounddb.models.entities.Peak;
 
 public class SpectrumQueryBuilderAlt {
 
-    private static final String AGGREGATED_SPECTRUM_CLUSTER_VIEW_OUTPUT = "Spectrum.Id, Spectrum.ClusterId, " +
+    private static final String AGGREGATED_SPECTRUM_CLUSTER_VIEW_OUTPUT = "UUID_SHORT() AS UniqueId, Spectrum.Id, Spectrum.ClusterId, " +
             "Spectrum.Name, COUNT(DISTINCT File.SubmissionId) AS Size, Score, MassError, RetTimeError, " +
             "AVG(Spectrum.Significance) AS AverageSignificance, MIN(Spectrum.Significance) AS MinimumSignificance, " +
             "MAX(Spectrum.Significance) AS MaximumSignificance, Spectrum.ChromatographyType";
 
-    private static final String SIMPLE_SPECTRUM_CLUSTER_VIEW_OUTPUT = "Spectrum.Id, Spectrum.ClusterId, " +
+    private static final String SIMPLE_SPECTRUM_CLUSTER_VIEW_OUTPUT = "UUID_SHORT() AS UniqueId, Spectrum.Id, Spectrum.ClusterId, " +
             "Spectrum.Name, 1 AS Size, Score, MassError, RetTimeError, " +
             "Spectrum.Significance AS AverageSignificance, Spectrum.Significance AS MinimumSignificance, " +
             "Spectrum.Significance AS MaximumSignificance, Spectrum.ChromatographyType";
 
-    private static final String EMPTY_SPECTRUM_CLUSTER_VIEW_OUTPUT = "Spectrum.Id, Spectrum.ClusterId, " +
+    private static final String EMPTY_SPECTRUM_CLUSTER_VIEW_OUTPUT = "UUID_SHORT() AS UniqueId, Spectrum.Id, Spectrum.ClusterId, " +
             "Spectrum.Name, 0 AS Size, 0 AS Score, NULL AS MassError, NULL AS RetTimeError, " +
             "Spectrum.Significance AS AverageSignificance, Spectrum.Significance AS MinimumSignificance, " +
             "Spectrum.Significance AS MaximumSignificance, Spectrum.ChromatographyType";
@@ -203,14 +203,16 @@ public class SpectrumQueryBuilderAlt {
 
         String scoreTable = "";
         if (peaks != null && mzTolerance != null && scoreThreshold != null) {
-            scoreTable += "SELECT SpectrumId, POWER(SUM(Product), 2) AS Score, MAX(MassError) AS MassError, MAX(RetTimeError) AS RetTimeError FROM (\n";
+            scoreTable += String.format(
+                    "SELECT SpectrumId, POWER(SUM(Product), 2) AS Score, MAX(ABS(MolecularWeight - %f)) AS MassError, MAX(ABS(RetentionTime - %f)) AS RetTimeError FROM (\n",
+                    neutralMass, retTime);
             String finalSpectrumSelector = spectrumSelector;
             scoreTable += peaks.stream()
                     .map(p -> String.format(
-                            "\tSELECT SpectrumId, SQRT(Intensity * %f) AS Product, ABS(MolecularWeight - %f) AS MassError, ABS(RetentionTime - %f) AS RetTimeError " +
+                            "\tSELECT SpectrumId, SQRT(Intensity * %f) AS Product, MolecularWeight, RetentionTime " +
                                     "FROM Spectrum INNER JOIN Peak ON Peak.SpectrumId = Spectrum.Id " +
                                     "WHERE %s AND Mz > %f AND Mz < %f\n",
-                            p.getIntensity(), neutralMass, retTime,
+                            p.getIntensity(),
                             finalSpectrumSelector, p.getMz() - mzTolerance, p.getMz() + mzTolerance))
                     .collect(Collectors.joining("\tUNION ALL\n"));
             scoreTable += ") AS SearchTable ";
