@@ -38,13 +38,7 @@ public class StudySearchServiceImpl implements StudySearchService {
                 SearchParameters searchParameters =
                         SearchParameters.getDefaultParameters(spectrum.getChromatographyType());
                 List<SpectrumMatch> matches = MappingUtils.toList(spectrumRepository.matchAgainstClusterableSpectra(
-                        submissionIds,
-                        spectrum,
-                        searchParameters.getScoreThreshold(),
-                        searchParameters.getMzTolerance(),
-                        searchParameters.getPrecursorTolerance(),
-                        searchParameters.getMassTolerance(),
-                        searchParameters.getRetTimeTolerance()));
+                        submissionIds, spectrum, searchParameters));
                 spectrumMatches.addAll(matches);
                 querySubmissionSpectraCount++;
             }

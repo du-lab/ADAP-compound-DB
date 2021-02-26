@@ -101,9 +101,7 @@ public class SpectrumSearchServiceImpl implements IndividualSearchService {
 
         List<SearchResultDTO> searchResults = new ArrayList<>();
         for (SpectrumClusterView view : spectrumRepository.matchAgainstConsensusAndReferenceSpectra(
-                submissionIds, querySpectrum, parameters.getScoreThreshold(), parameters.getMzTolerance(),
-                parameters.getPrecursorTolerance(), parameters.getMassTolerance(),
-                parameters.getRetTimeTolerance())) {
+                submissionIds, querySpectrum, parameters)) {
 
             SearchResultDTO searchResult = new SearchResultDTO(querySpectrum, view);
 
@@ -118,7 +116,8 @@ public class SpectrumSearchServiceImpl implements IndividualSearchService {
         return searchResults;
     }
 
-    private List<SearchResultDTO> searchWithOntologyLevels(Set<BigInteger> submissionIds, SearchParameters parameters, Spectrum spectrum, int priority) {
+    private List<SearchResultDTO> searchWithOntologyLevels(
+            Set<BigInteger> submissionIds, SearchParameters parameters, Spectrum spectrum, int priority) {
 
         OntologyLevel[] ontologyLevels =
                 OntologySupplier.findByChromatographyTypeAndPriority(spectrum.getChromatographyType(), priority);
@@ -139,7 +138,7 @@ public class SpectrumSearchServiceImpl implements IndividualSearchService {
                 continue;
 
             // Modify search parameters
-            SearchParameters modifiedParameters = null;
+            SearchParameters modifiedParameters;
             try {
                 modifiedParameters = parameters.clone();
             } catch (CloneNotSupportedException e) {
@@ -153,10 +152,8 @@ public class SpectrumSearchServiceImpl implements IndividualSearchService {
 
             // Perform search
             List<SearchResultDTO> results = MappingUtils.toList(
-                    spectrumRepository.matchAgainstConsensusAndReferenceSpectra(submissionIds, spectrum,
-                            modifiedParameters.getScoreThreshold(), modifiedParameters.getMzTolerance(),
-                            modifiedParameters.getPrecursorTolerance(), modifiedParameters.getMassTolerance(),
-                            modifiedParameters.getRetTimeTolerance()))
+                    spectrumRepository.matchAgainstConsensusAndReferenceSpectra(
+                            submissionIds, spectrum, modifiedParameters))
                     .stream()
                     .map(x -> new SearchResultDTO(spectrum, x))
                     .collect(Collectors.toList());

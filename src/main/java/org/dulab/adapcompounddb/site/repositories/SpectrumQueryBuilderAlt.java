@@ -35,6 +35,7 @@ public class SpectrumQueryBuilderAlt {
 
 
     private final Collection<BigInteger> submissionIds;
+    private final int limit;
     private final boolean searchConsensusSpectra;
     private final boolean searchReferenceSpectra;
     private final boolean searchClusterableSpectra;
@@ -51,10 +52,11 @@ public class SpectrumQueryBuilderAlt {
     private Double scoreThreshold = null;
 
 
-    public SpectrumQueryBuilderAlt(Collection<BigInteger> submissionIds, boolean searchConsensusSpectra,
+    public SpectrumQueryBuilderAlt(Collection<BigInteger> submissionIds, int limit,  boolean searchConsensusSpectra,
                                    boolean searchReferenceSpectra, boolean searchClusterableSpectra) {
 
         this.submissionIds = submissionIds;
+        this.limit = limit;
         this.searchConsensusSpectra = searchConsensusSpectra;
         this.searchReferenceSpectra = searchReferenceSpectra;
         this.searchClusterableSpectra = searchClusterableSpectra;
@@ -111,7 +113,7 @@ public class SpectrumQueryBuilderAlt {
         String query = Stream.of(new String[]{consensusSpectraQuery, referenceSpectraQuery, clusterableSpectraQuery})
                 .filter(Objects::nonNull)
                 .collect(Collectors.joining("\nUNION ALL\n"));
-        query += "\nORDER BY Score DESC, MassError ASC, RetTimeError ASC LIMIT 100";
+        query += String.format("\nORDER BY Score DESC, MassError ASC, RetTimeError ASC LIMIT %d", limit);
 
         return query;
     }

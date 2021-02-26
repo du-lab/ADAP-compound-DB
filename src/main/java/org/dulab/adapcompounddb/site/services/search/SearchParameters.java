@@ -16,6 +16,7 @@ public class SearchParameters implements Cloneable {
     private String source;
     private String disease;
     private Set<Long> submissionIds;
+    private int limit = 100;
 
     public Double getScoreThreshold() {
         return scoreThreshold;
@@ -119,6 +120,14 @@ public class SearchParameters implements Cloneable {
                 break;
         }
         return parameters;
+    }
+
+    public int getLimit() {
+        return limit;
+    }
+
+    public void setLimit(int limit) {
+        this.limit = limit;
     }
 
     @Override

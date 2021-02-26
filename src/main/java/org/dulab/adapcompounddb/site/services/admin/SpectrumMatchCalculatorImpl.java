@@ -13,6 +13,7 @@ import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
+import org.dulab.adapcompounddb.site.services.search.SearchParameters;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -148,9 +149,16 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
     @Async
     public void match(Iterable<BigInteger> submissionIds, Spectrum querySpectrum, QueryParameters params) {
         try {
+            SearchParameters parameters = new SearchParameters();
+            parameters.setMzTolerance(params.getMzTolerance());
+            parameters.setScoreThreshold(params.getScoreThreshold());
+            parameters.setPrecursorTolerance(params.getPrecursorTolerance());
+            parameters.setMassTolerance(params.getMolecularWeightThreshold());
+            parameters.setRetTimeTolerance(params.getRetTimeTolerance());
+            parameters.setLimit(Integer.MAX_VALUE);
+
             List<SpectrumMatch> matches = MappingUtils.toList(spectrumRepository.matchAgainstClusterableSpectra(
-                    submissionIds, querySpectrum, params.getScoreThreshold(), params.getMzTolerance(),
-                    params.getPrecursorTolerance(), params.getMolecularWeightThreshold(), params.getRetTimeTolerance()));
+                    submissionIds, querySpectrum, parameters));
             spectrumMatchRepository.saveAll(matches);
             spectrumMatchRepository.flush();
         } catch (Throwable t) {

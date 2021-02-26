@@ -13,6 +13,7 @@ import org.dulab.adapcompounddb.site.services.admin.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
+import org.dulab.adapcompounddb.site.services.search.SearchParameters;
 
 
 public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
@@ -76,44 +77,38 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
     @Override
     public Iterable<SpectrumClusterView> matchAgainstConsensusAndReferenceSpectra(
-            @NotNull Iterable<BigInteger> submissionIds, Spectrum querySpectrum, Double scoreThreshold,
-            Double mzTolerance, Double precursorTolerance, Double neutralMassTolerance, Double retTimeTolerance) {
+            @NotNull Iterable<BigInteger> submissionIds, Spectrum querySpectrum, SearchParameters parameters) {
 
-        return searchSpectra(submissionIds, querySpectrum,
-                scoreThreshold, mzTolerance, precursorTolerance, neutralMassTolerance, retTimeTolerance,
+        return searchSpectra(submissionIds, querySpectrum, parameters,
                 true, true, false,
                 SpectrumClusterView.class);
     }
 
     @Override
     public Iterable<SpectrumMatch> matchAgainstClusterableSpectra(
-            @NotNull Iterable<BigInteger> submissionIds, Spectrum querySpectrum, Double scoreThreshold,
-            Double mzTolerance, Double precursorTolerance, Double neutralMassTolerance, Double retTimeTolerance) {
+            @NotNull Iterable<BigInteger> submissionIds, Spectrum querySpectrum, SearchParameters parameters) {
 
-        Iterable<SpectrumMatch> matches = searchSpectra(submissionIds, querySpectrum,
-                scoreThreshold, mzTolerance, precursorTolerance, neutralMassTolerance, retTimeTolerance,
+        Iterable<SpectrumMatch> matches = searchSpectra(submissionIds, querySpectrum, parameters,
                 false, false, true, SpectrumMatch.class);
         matches.forEach(m -> m.setQuerySpectrum(querySpectrum));
         return matches;
     }
 
     private <E> Iterable<E> searchSpectra(@NotNull Iterable<BigInteger> submissionIds, Spectrum querySpectrum,
-                                          Double scoreThreshold, Double mzTolerance,
-                                          Double precursorTolerance, Double neutralMassTolerance, Double retTimeTolerance,
-                                          boolean searchConsensusSpectra, boolean searchReferenceSpectra,
-                                          boolean searchClusterableSpectr, Class<E> classOfE) {
+                                          SearchParameters parameters, boolean searchConsensusSpectra, boolean searchReferenceSpectra,
+                                          boolean searchClusterableSpectra, Class<E> classOfE) {
 
         List<BigInteger> submissionIdList = new ArrayList<>();
         submissionIds.forEach(submissionIdList::add);
 
-        SpectrumQueryBuilderAlt builder = new SpectrumQueryBuilderAlt(submissionIdList,
-                searchConsensusSpectra, searchReferenceSpectra, searchClusterableSpectr);
+        SpectrumQueryBuilderAlt builder = new SpectrumQueryBuilderAlt(submissionIdList, parameters.getLimit(),
+                searchConsensusSpectra, searchReferenceSpectra, searchClusterableSpectra);
         if (querySpectrum != null)
             builder = builder.withChromatographyType(querySpectrum.getChromatographyType())
-                    .withQuerySpectrum(querySpectrum.getPeaks(), mzTolerance, scoreThreshold)
-                    .withPrecursor(querySpectrum.getPrecursor(), precursorTolerance)
-                    .withNeutralMass(querySpectrum.getMolecularWeight(), neutralMassTolerance)
-                    .withRetTime(querySpectrum.getRetentionTime(), retTimeTolerance);
+                    .withQuerySpectrum(querySpectrum.getPeaks(), parameters.getMzTolerance(), parameters.getScoreThreshold())
+                    .withPrecursor(querySpectrum.getPrecursor(), parameters.getPrecursorTolerance())
+                    .withNeutralMass(querySpectrum.getMolecularWeight(), parameters.getMassTolerance())
+                    .withRetTime(querySpectrum.getRetentionTime(), parameters.getRetTimeTolerance());
 
         String query;
         try {
