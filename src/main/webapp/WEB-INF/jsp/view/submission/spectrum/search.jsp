@@ -5,6 +5,8 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="font" uri="http://www.springframework.org/tags/form" %>
 
+<%--@elvariable id="querySpectrum" type="org.dulab.adapcompounddb.models.entities.Spectrum"--%>
+
 <div id="filterModal" class="modal fade" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
@@ -24,7 +26,8 @@
                             <div class="col-md-6">
                                 <div class="row form-group">
                                     <form:label path="submissionIds" cssClass="col-form-label">Libraries:</form:label>
-                                    <form:select path="submissionIds" cssClass="custom-select" multiple="multiple" size="10">
+                                    <form:select path="submissionIds" cssClass="custom-select" multiple="multiple"
+                                                 size="10">
                                         <c:forEach items="${filterOptions.submissions}" var="entry">
                                             <form:option value="${entry.key}"
                                                          selected="${filterForm.submissionIds.contains(entry.key) ? 'selected' : ''}">
@@ -59,7 +62,6 @@
                             </div>
                         </div>
                     </form:form>
-
                 </div>
             </div>
             <div class="modal-footer">
@@ -82,45 +84,43 @@
     </div>
 
     <div class="row row-content">
-        <div class="col col-md-4 px-2">
+        <div class="col">
+            <div class="card">
+                <div class="card-header card-header-single">Query</div>
+                <div class="card-body small overflow-auto" style="height: 300px">
+                    <div id="queryInfo"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
             <%--@elvariable id="searchResults" type="java.util.List<org.dulab.adapcompounddb.models.dto.SearchResultDTO>"--%>
             <c:if test="${searchResults != null && searchResults.size() > 0}">
                 <div id="chartRow" class="row mb-1">
                     <div class="col-12 px-0">
                         <div class="card">
                             <div class="card-header card-header-single">Plot</div>
-                            <div class="card-body p-1">
+                            <div class="card-body p-1" style="height: 300px">
                                 <div id="chartSection">
-                                    <div id="plot" style="max-width: 100%; height: auto"></div>
+                                    <div id="plot" style="height: 300px"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </c:if>
-            <div class="row">
-                <div class="col col-12 px-0">
-                    <div class="card">
-                        <div class="card-header card-header-single">Query Spectrum</div>
-                        <div class="card-body small overflow-auto" style="max-height: 400px">
-                            <%--@elvariable id="querySpectrum" type="org.dulab.adapcompounddb.models.entities.Spectrum"--%>
-                            <strong>${querySpectrum.name}</strong>&nbsp;
-                            <span class="badge badge-info">${querySpectrum.chromatographyType.label}</span><br/>
-                            ${querySpectrum.file.submission.name}
-                            <ul class="list-group list-group-flush">
-                                <c:forEach items="${querySpectrum.properties}" var="property">
-                                    <li class="list-group-item py-1">
-                                        <strong>${property.name}:</strong>&nbsp;
-                                        <span style="word-break: break-all">${property.value}</span>
-                                    </li>
-                                </c:forEach>
-                            </ul>
-                        </div>
-                    </div>
+        </div>
+        <div class="col">
+            <div class="card">
+                <div class="card-header card-header-single">Match</div>
+                <div class="card-body small overflow-auto" style="height: 300px">
+                    <div id="matchInfo"></div>
                 </div>
             </div>
         </div>
-        <div class="col col-md-8 px-2">
+    </div>
+
+    <div class="row row-content">
+        <div class="col">
             <div class="card">
                 <div class="card-header card-header-single">Matching Hits</div>
                 <div class="card-body small">
@@ -128,8 +128,8 @@
                         <thead>
                         <tr>
                             <th>Id</th>
-                            <th>Query Spectrum</th>
-                            <th title="Match spectra">Match Spectrum</th>
+                            <th>Query</th>
+                            <th title="Match spectra">Match</th>
                             <th title="Molecular weight">Molecular weight</th>
                             <th title="Number of studies" class="Count">Studies</th>
                             <th title="Minimum matching score between all spectra in a cluster">Score</th>
@@ -138,7 +138,7 @@
                             <th title="Average P-value of ANOVA tests">Average P-value</th>
                             <th title="Minimum P-value of ANOVA tests">Minimum P-value</th>
                             <th title="Maximum P-value of ANOVA tests">Maximum P-value</th>
-                            <th title="Chromatography type">Type</th>
+                            <th title="Ontology Level">Ontology Level</th>
                             <th></th>
                         </tr>
                         </thead>
@@ -146,7 +146,7 @@
                         <%--@elvariable id="searchResults" type="java.util.List<org.dulab.adapcompounddb.models.dto.SearchResultDTO>"--%>
                         <c:if test="${searchResults != null}">
                             <c:forEach items="${searchResults}" var="searchResult" varStatus="status">
-                                <tr data-spectrum='${searchResult.json}'>
+                                <tr data-id="${searchResult.id}">
                                     <td>${status.index + 1}</td>
                                     <td>${searchResult.querySpectrumName}</td>
                                     <td>
@@ -162,53 +162,21 @@
                                     <td>${dulab:formatDouble(searchResult.aveSignificance)}</td>
                                     <td>${dulab:formatDouble(searchResult.minSignificance)}</td>
                                     <td>${dulab:formatDouble(searchResult.maxSignificance)}</td>
-                                    <td><img
-                                            src="${pageContext.request.contextPath}/${searchResult.chromatographyTypePath}"
-                                            alt="${searchResult.chromatographyTypeLabel}"
-                                            title="${searchResult.chromatographyTypeLabel}"/></td>
+                                    <td><span class="badge badge-info">${searchResult.ontologyLevel}</span></td>
                                     <td>
                                         <a href="${pageContext.request.contextPath}/${fn:toLowerCase(searchResult.matchType)}/${searchResult.id}/">
                                             <i class="material-icons" title="View">&#xE5D3;</i>
-                                        </a></td>
+                                        </a>
+                                    </td>
                                 </tr>
                             </c:forEach>
                         </c:if>
                         </tbody>
                     </table>
-
-                    <%--                    &lt;%&ndash;@elvariable id="filterForm" type="org.dulab.adapcompounddb.site.controllers.forms.FilterForm"&ndash;%&gt;--%>
-                    <%--                    &lt;%&ndash;@elvariable id="filterOptions" type="org.dulab.adapcompounddb.site.controllers.forms.FilterOptions"&ndash;%&gt;--%>
-                    <%--                    <form:form modelAttribute="filterForm" method="post">--%>
-                    <%--                        <div class="table-dropdown">--%>
-                    <%--                            <form:label path="species">Species:</form:label>--%>
-                    <%--                            <form:select path="species">--%>
-                    <%--                                <form:option value="all">All</form:option>--%>
-                    <%--                                <form:options items="${filterOptions.speciesList}"/>--%>
-                    <%--                            </form:select>--%>
-                    <%--                        </div>--%>
-                    <%--                        <div class="table-dropdown">--%>
-                    <%--                            <form:label path="source">Source:</form:label>--%>
-                    <%--                            <form:select path="source">--%>
-                    <%--                                <form:option value="all">All</form:option>--%>
-                    <%--                                <form:options items="${filterOptions.sourceList}"/>--%>
-                    <%--                            </form:select>--%>
-                    <%--                        </div>--%>
-                    <%--                        <div class="table-dropdown">--%>
-                    <%--                            <form:label path="disease">Disease:</form:label>--%>
-                    <%--                            <form:select path="disease">--%>
-                    <%--                                <form:option value="all">All</form:option>--%>
-                    <%--                                <form:options items="${filterOptions.diseaseList}"/>--%>
-                    <%--                            </form:select>--%>
-                    <%--                        </div>--%>
-                    <%--                    </form:form>--%>
                 </div>
             </div>
         </div>
     </div>
-
-    <%--    <div align="center">--%>
-    <%--        <a id="searchButton" class="btn btn-primary" onclick="$('#filterForm').submit()">Search</a>--%>
-    <%--    </div>--%>
 </div>
 
 <script src="<c:url value="/resources/npm/node_modules/jquery/dist/jquery.min.js"/>"></script>
@@ -218,8 +186,16 @@
 <script src="<c:url value="/resources/DataTables/Select-1.3.1/js/dataTables.select.min.js"/>"></script>
 <script src="<c:url value="/resources/d3/d3.min.js"/>"></script>
 <script src="<c:url value="/resources/AdapCompoundDb/js/twospectraplot.js"/>"></script>
+<script src="<c:url value="/resources/AdapCompoundDb/js/spectrumInfo.js"/>"></script>
 <script>
     $(document).ready(function () {
+
+        <%--$('#queryInfo').spectrumInfo(--%>
+        <%--    ${pageContext.request.contextPath},--%>
+        <%--    ${querySpectrum.id},--%>
+        <%--    ${dulab:getFileIndexFromURL(requestScope['javax.servlet.forward.request_uri'])},--%>
+        <%--    ${dulab:getSpectrumIndexFromURL(requestScope['javax.servlet.forward.request_uri'])});--%>
+        $('#queryInfo').spectrumInfo('info.json');
 
         let table = $('#table').DataTable({
             // dom: 'lfrtip',
@@ -250,18 +226,23 @@
 
         table.on('select', function (e, dt, type, indexes) {
 
-            let chartRow = $('#chartRow');
-            chartRow.hide();
+            // let chartRow = $('#chartRow');
+            // chartRow.hide();
 
             let row = table.row(indexes).node();
-            let spectrum = $(row).attr('data-spectrum');
-            if (spectrum == null) return;
+            let spectrumId = $(row).attr('data-id');
+            $('#matchInfo').spectrumInfo(`${pageContext.request.contextPath}/spectrum/\${spectrumId}/search/info.json`);
 
-            let spectrumJson = JSON.parse(spectrum);
-            if (spectrumJson["peaks"].length === 0) return;
 
-            plot.update(spectrumJson);
-            chartRow.show();
+            // if (spectrum == null) return;
+            //
+            //
+            //
+            // let spectrumJson = JSON.parse(spectrum);
+            // if (spectrumJson["peaks"].length === 0) return;
+            //
+            // plot.update(spectrumJson);
+            // chartRow.show();
         });
 
         table.rows(':eq(0)').select();

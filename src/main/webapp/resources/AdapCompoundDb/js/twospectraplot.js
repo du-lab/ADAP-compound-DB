@@ -39,7 +39,8 @@ function TwoSpectraPlot(divId, topSpectrum) {
 
     var svg = d3.select('#' + divId)
         .append('svg')
-        .attr('viewBox', '0 0 400 400');
+        .attr('viewBox', '0 0 400 400')
+        .attr("preserveAspectRatio", "none");
         // .attr('width', width)
         // .attr('height', height);
     var gButton = svg.append("g")

@@ -1,0 +1,87 @@
+package org.dulab.adapcompounddb.site.controllers;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.dulab.adapcompounddb.models.entities.Spectrum;
+import org.dulab.adapcompounddb.models.entities.SpectrumProperty;
+import org.dulab.adapcompounddb.models.entities.Submission;
+import org.dulab.adapcompounddb.site.services.SpectrumService;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpSession;
+
+@RestController
+public class SpectrumRestController1 {
+
+    private static final Logger LOGGER = LogManager.getLogger(SpectrumRestController1.class);
+
+    private final SpectrumService spectrumService;
+
+
+    @Autowired
+    public SpectrumRestController1(SpectrumService spectrumService) {
+        this.spectrumService = spectrumService;
+    }
+
+    @RequestMapping(value = "/spectrum/{spectrumId:\\d+}/search/info", produces = "application/json")
+    public String spectrumSearchInfo(@PathVariable("spectrumId") long spectrumId) {
+        Spectrum spectrum = spectrumService.find(spectrumId);
+        return spectrumToInfoJson(spectrum, null, null);
+    }
+
+    @RequestMapping(value = "/file/{fileIndex:\\d+}/{spectrumIndex:\\d+}/search/info", produces = "application/json")
+    public String spectrumSearchInfo(@PathVariable("fileIndex") int fileIndex,
+                                     @PathVariable("spectrumIndex") int spectrumIndex, HttpSession session) {
+
+        Submission submission = Submission.from(session);
+        Spectrum spectrum;
+        try {
+            spectrum = submission.getFiles().get(fileIndex).getSpectra().get(spectrumIndex);
+        } catch (IndexOutOfBoundsException e) {
+            LOGGER.warn(e.getMessage(), e);
+            return "";
+        }
+
+        return spectrumToInfoJson(spectrum, fileIndex, spectrumIndex);
+    }
+
+    private String spectrumToInfoJson(Spectrum spectrum, Integer fileIndex, Integer spectrumIndex) {
+
+        JSONObject root = new JSONObject();
+        root.put("name", spectrum.getName());
+        root.put("id", spectrum.getId());
+        root.put("fileIndex", fileIndex);
+        root.put("spectrumIndex", spectrumIndex);
+        root.put("chromatographyType", spectrum.getChromatographyType().getLabel());
+
+        JSONArray standardProperties = new JSONArray();
+        standardProperties.put(propertyToJsonObject("Precursor m/z", spectrum.getPrecursor()));
+        standardProperties.put(propertyToJsonObject("Precursor type", spectrum.getPrecursorType()));
+        standardProperties.put(propertyToJsonObject("Neutral mass", spectrum.getMolecularWeight()));
+        standardProperties.put(propertyToJsonObject("Retention time", spectrum.getRetentionTime()));
+        root.put("standardProperties", standardProperties);
+
+        JSONArray otherProperties = new JSONArray();
+        for (SpectrumProperty property : spectrum.getProperties())
+            otherProperties.put(propertyToJsonObject(property));
+        root.put("otherProperties", otherProperties);
+
+        return root.toString();
+    }
+
+    private <E> JSONObject propertyToJsonObject(String name, E value) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("name", name);
+        jsonObject.put("value", value.toString());
+        return jsonObject;
+    }
+
+    private JSONObject propertyToJsonObject(SpectrumProperty spectrumProperty) {
+        return propertyToJsonObject(spectrumProperty.getName(), spectrumProperty.getValue());
+    }
+}
