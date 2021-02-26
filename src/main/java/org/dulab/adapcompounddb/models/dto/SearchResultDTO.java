@@ -4,7 +4,7 @@ import org.dulab.adapcompounddb.models.MatchType;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.views.MassSearchResult;
 import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
-import org.dulab.adapcompounddb.models.enums.OntologyLevel;
+import org.dulab.adapcompounddb.models.ontology.OntologyLevel;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -47,7 +47,7 @@ public class SearchResultDTO implements Serializable {
     private Double aveSignificance;
     private Double minSignificance;
     private Double maxSignificance;
-    private OntologyLevel ontologyLevel;
+    private String ontologyLevel;
     private String chromatographyTypeLabel;
     private String chromatographyTypePath;
     private String json;
@@ -177,12 +177,16 @@ public class SearchResultDTO implements Serializable {
         this.maxSignificance = maxSignificance;
     }
 
-    public OntologyLevel getOntologyLevel() {
+    public String getOntologyLevel() {
         return ontologyLevel;
     }
 
-    public void setOntologyLevel(OntologyLevel ontologyLevel) {
+    public void setOntologyLevel(String ontologyLevel) {
         this.ontologyLevel = ontologyLevel;
+    }
+
+    public void setOntologyLevel(OntologyLevel ontologyLevel) {
+        this.setOntologyLevel(ontologyLevel.getLabel());
     }
 
     public String getQuerySpectrumName() {

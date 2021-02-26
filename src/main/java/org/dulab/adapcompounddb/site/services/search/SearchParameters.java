@@ -2,9 +2,10 @@ package org.dulab.adapcompounddb.site.services.search;
 
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 
+import java.util.HashSet;
 import java.util.Set;
 
-public class SearchParameters {
+public class SearchParameters implements Cloneable {
 
     private Double scoreThreshold;
     private Double mzTolerance;
@@ -117,6 +118,13 @@ public class SearchParameters {
                 parameters.setMassTolerance(0.01);
                 break;
         }
+        return parameters;
+    }
+
+    @Override
+    public SearchParameters clone() throws CloneNotSupportedException {
+        SearchParameters parameters = (SearchParameters) super.clone();
+        parameters.setSubmissionIds(new HashSet<>(this.getSubmissionIds()));
         return parameters;
     }
 }

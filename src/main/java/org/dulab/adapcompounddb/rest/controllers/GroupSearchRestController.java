@@ -120,9 +120,7 @@ public class GroupSearchRestController {
                     spectrumList.sort(getComparator(SearchResultDTO::getMaxSignificance, sortDirection));
                     break;
                 case "ontologyLevel":
-                    spectrumList.sort(getComparator(
-                            x -> x.getOntologyLevel() != null ? x.getOntologyLevel().getPriority() : null,
-                            sortDirection));
+                    spectrumList.sort(getComparator(SearchResultDTO::getOntologyLevel, sortDirection));
                     break;
                 case "chromatographyType":
                     spectrumList.sort(getComparator(SearchResultDTO::getChromatographyTypeLabel, sortDirection));

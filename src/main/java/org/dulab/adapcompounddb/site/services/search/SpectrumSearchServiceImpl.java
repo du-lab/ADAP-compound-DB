@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.site.services.search;
 
-import org.dulab.adapcompounddb.models.enums.OntologyLevel;
+import org.dulab.adapcompounddb.models.ontology.OntologyLevel;
+import org.dulab.adapcompounddb.models.ontology.OntologySupplier;
 import org.dulab.adapcompounddb.site.services.admin.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
@@ -62,9 +63,20 @@ public class SpectrumSearchServiceImpl implements IndividualSearchService {
             submissionIds.remove(BigInteger.ZERO);
         }
 
-        List<SearchResultDTO> searchResults = withOntologyLevels
-                ? searchWithOntologyLevels(submissionIds, querySpectrum)
-                : searchWithoutOntologyLevels(submissionIds, querySpectrum, parameters);
+        // Check if there are ontology levels for a given chromatography type
+        int[] priorities = OntologySupplier.findPrioritiesByChromatographyType(querySpectrum.getChromatographyType());
+        if (priorities == null) {
+            // There is no ontology levels. Perform simple search.
+            return searchWithoutOntologyLevels(submissionIds, querySpectrum, parameters);
+        } else {
+            // There are ontology levels. Perform a search for each ontology level until the there any matches
+            for (int priority : priorities) {
+                List<SearchResultDTO> searchResults =
+                        searchWithOntologyLevels(submissionIds, parameters, querySpectrum, priority);
+                if (!searchResults.isEmpty())
+                    return searchResults;
+            }
+        }
 
 //        List<SearchResultDTO> searchResults = new ArrayList<>();
 //        for (SpectrumClusterView view : spectrumRepository.matchAgainstConsensusAndReferenceSpectra(
@@ -81,7 +93,7 @@ public class SpectrumSearchServiceImpl implements IndividualSearchService {
 //
 //            searchResults.add(searchResult);
 //        }
-        return searchResults;
+        return new ArrayList<>(0);
     }
 
     private List<SearchResultDTO> searchWithoutOntologyLevels(
@@ -106,37 +118,52 @@ public class SpectrumSearchServiceImpl implements IndividualSearchService {
         return searchResults;
     }
 
-    private List<SearchResultDTO> searchWithOntologyLevels(Set<BigInteger> submissionIds, Spectrum spectrum) {
-        for (int priority : OntologyLevel.priorities()) {
-            OntologyLevel[] ontologyLevels = OntologyLevel.findByPriority(priority);
-            List<SearchResultDTO> searchResults = new ArrayList<>();
-            for (OntologyLevel ontologyLevel : ontologyLevels) {
-                SearchParameters params = ontologyLevel.getSearchParameters();
-                // Check the presence of necessary properties
-                if (params.getMzTolerance() != null && params.getScoreThreshold() != null && spectrum.getPeaks() == null)
-                    continue;
-                if (params.getPrecursorTolerance() != null && spectrum.getPrecursor() == null)
-                    continue;
-                if (params.getRetTimeTolerance() != null && spectrum.getRetentionTime() == null)
-                    continue;
-                if (params.getMassTolerance() != null && spectrum.getMolecularWeight() == null)
-                    continue;
+    private List<SearchResultDTO> searchWithOntologyLevels(Set<BigInteger> submissionIds, SearchParameters parameters, Spectrum spectrum, int priority) {
 
-                // Perform search
-                List<SearchResultDTO> results = MappingUtils.toList(
-                        spectrumRepository.matchAgainstConsensusAndReferenceSpectra(
-                                submissionIds, spectrum, params.getScoreThreshold(), params.getMzTolerance(),
-                                params.getPrecursorTolerance(), params.getMassTolerance(), params.getRetTimeTolerance()))
-                        .stream()
-                        .map(x -> new SearchResultDTO(spectrum, x))
-                        .collect(Collectors.toList());
-                results.forEach(x -> x.setOntologyLevel(ontologyLevel));
-                searchResults.addAll(results);
+        OntologyLevel[] ontologyLevels =
+                OntologySupplier.findByChromatographyTypeAndPriority(spectrum.getChromatographyType(), priority);
+        if (ontologyLevels == null)
+            return new ArrayList<>(0);
+
+        List<SearchResultDTO> searchResults = new ArrayList<>();
+        for (OntologyLevel ontologyLevel : ontologyLevels) {
+
+            // Check the presence of necessary properties
+            if (ontologyLevel.getMzTolerance() != null && ontologyLevel.getScoreThreshold() != null && spectrum.getPeaks() == null)
+                continue;
+            if (ontologyLevel.getPrecursorTolerance() != null && spectrum.getPrecursor() == null)
+                continue;
+            if (ontologyLevel.getRetTimeTolerance() != null && spectrum.getRetentionTime() == null)
+                continue;
+            if (ontologyLevel.getMassTolerance() != null && spectrum.getMolecularWeight() == null)
+                continue;
+
+            // Modify search parameters
+            SearchParameters modifiedParameters = null;
+            try {
+                modifiedParameters = parameters.clone();
+            } catch (CloneNotSupportedException e) {
+                throw new IllegalStateException(e.getMessage(), e);
             }
-            if (!searchResults.isEmpty())
-                return searchResults;
+            modifiedParameters.setMzTolerance(ontologyLevel.getMzTolerance());
+            modifiedParameters.setScoreThreshold(ontologyLevel.getScoreThreshold());
+            modifiedParameters.setPrecursorTolerance(ontologyLevel.getPrecursorTolerance());
+            modifiedParameters.setMassTolerance(ontologyLevel.getMassTolerance());
+            modifiedParameters.setRetTimeTolerance(ontologyLevel.getRetTimeTolerance());
+
+            // Perform search
+            List<SearchResultDTO> results = MappingUtils.toList(
+                    spectrumRepository.matchAgainstConsensusAndReferenceSpectra(submissionIds, spectrum,
+                            modifiedParameters.getScoreThreshold(), modifiedParameters.getMzTolerance(),
+                            modifiedParameters.getPrecursorTolerance(), modifiedParameters.getMassTolerance(),
+                            modifiedParameters.getRetTimeTolerance()))
+                    .stream()
+                    .map(x -> new SearchResultDTO(spectrum, x))
+                    .collect(Collectors.toList());
+            results.forEach(x -> x.setOntologyLevel(ontologyLevel));
+            searchResults.addAll(results);
         }
 
-        return new ArrayList<>(0);
+        return searchResults;
     }
 }
