@@ -93,21 +93,10 @@
             </div>
         </div>
         <div class="col">
-            <%--@elvariable id="searchResults" type="java.util.List<org.dulab.adapcompounddb.models.dto.SearchResultDTO>"--%>
-            <c:if test="${searchResults != null && searchResults.size() > 0}">
-                <div id="chartRow" class="row mb-1">
-                    <div class="col-12 px-0">
-                        <div class="card">
-                            <div class="card-header card-header-single">Plot</div>
-                            <div class="card-body p-1" style="height: 300px">
-                                <div id="chartSection">
-                                    <div id="plot" style="height: 300px"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </c:if>
+            <div class="card">
+                <div class="card-header card-header-single">Plot</div>
+                <div id="plot" style="height: 300px"></div>
+            </div>
         </div>
         <div class="col">
             <div class="card">
@@ -184,9 +173,11 @@
 <script src="<c:url value="/resources/npm/node_modules/bootstrap/dist/js/bootstrap.min.js"/>"></script>
 <script src="<c:url value="/resources/DataTables/DataTables-1.10.23/js/jquery.dataTables.min.js"/>"></script>
 <script src="<c:url value="/resources/DataTables/Select-1.3.1/js/dataTables.select.min.js"/>"></script>
-<script src="<c:url value="/resources/d3/d3.min.js"/>"></script>
+<script src="<c:url value="/resources/npm/node_modules/d3/d3.min.js"/>"></script>
+<script src="<c:url value="/resources/SpeckTackle/st.js"/>"></script>
 <script src="<c:url value="/resources/AdapCompoundDb/js/twospectraplot.js"/>"></script>
 <script src="<c:url value="/resources/AdapCompoundDb/js/spectrumInfo.js"/>"></script>
+<script src="<c:url value="/resources/AdapCompoundDb/js/spectrumPlot.js"/>"></script>
 <script>
     $(document).ready(function () {
 
@@ -222,7 +213,7 @@
             // }
         });
 
-        let plot = new TwoSpectraPlot('plot', JSON.parse('${dulab:spectrumToJson(querySpectrum)}'));
+        <%--let plot = new TwoSpectraPlot('plot', JSON.parse('${dulab:spectrumToJson(querySpectrum)}'));--%>
 
         table.on('select', function (e, dt, type, indexes) {
 
@@ -232,7 +223,9 @@
             let row = table.row(indexes).node();
             let spectrumId = $(row).attr('data-id');
             $('#matchInfo').spectrumInfo(`${pageContext.request.contextPath}/spectrum/\${spectrumId}/search/info.json`);
-
+            $('#plot').spectrumPlot(indexes,
+                'positive/peaks.json',
+                `${pageContext.request.contextPath}/spectrum/\${spectrumId}/search/negative/peaks.json`);
 
             // if (spectrum == null) return;
             //

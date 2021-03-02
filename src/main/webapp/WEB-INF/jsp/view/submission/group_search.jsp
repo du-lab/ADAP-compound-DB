@@ -19,7 +19,8 @@
                             <div class="col-md-6">
                                 <div class="row form-group">
                                     <form:label path="submissionIds" cssClass="col-form-label">Libraries:</form:label>
-                                    <form:select path="submissionIds" cssClass="custom-select" multiple="multiple" size="10">
+                                    <form:select path="submissionIds" cssClass="custom-select" multiple="multiple"
+                                                 size="10">
                                         <c:forEach items="${filterOptions.submissions}" var="entry">
                                             <form:option value="${entry.key}"
                                                          selected="${filterForm.submissionIds.contains(entry.key) ? 'selected' : ''}">
@@ -67,7 +68,7 @@
     </div>
 </div>
 
-<div class="container">
+<div class="container-fluid">
     <div class="row row-content">
         <div class="col">
             <div class="btn-toolbar justify-content-end" role="toolbar">
@@ -81,6 +82,34 @@
             </div>
         </div>
     </div>
+
+    <div class="row row-content">
+        <div class="col">
+            <div class="card">
+                <div class="card-header card-header-single">Query</div>
+                <div class="card-body small overflow-auto" style="height: 300px">
+                    <div id="queryInfo"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card">
+                <div class="card-header card-header-single">Plot</div>
+<%--                <div class="card-body small overflow-auto" style="height: 300px">--%>
+                    <div id="plot" style="height: 300px"></div>
+<%--                </div>--%>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card">
+                <div class="card-header card-header-single">Match</div>
+                <div class="card-body small overflow-auto" style="height: 300px">
+                    <div id="matchInfo"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row row-content">
         <div class="col">
             <div class="card">
@@ -120,6 +149,11 @@
 <script src="<c:url value="/resources/npm/node_modules/popper.js/dist/umd/popper.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/bootstrap/dist/js/bootstrap.min.js"/>"></script>
 <script src="<c:url value="/resources/DataTables/DataTables-1.10.23/js/jquery.dataTables.min.js"/>"></script>
+<script src="<c:url value="/resources/DataTables/Select-1.3.1/js/dataTables.select.min.js"/>"></script>
+<script src="<c:url value="/resources/npm/node_modules/d3/d3.min.js"/>"></script>
+<script src="<c:url value="/resources/SpeckTackle/st.js"/>"></script>
+<script src="<c:url value="/resources/AdapCompoundDb/js/spectrumInfo.js"/>"></script>
+<script src="<c:url value="/resources/AdapCompoundDb/js/spectrumPlot.js"/>"></script>
 <script>
     $(document).ready(function () {
 
@@ -130,7 +164,9 @@
             processing: true,
             responsive: true,
             scrollX: true,
+            select: {style: 'single'},
             // scroller: true,
+            rowId: 'position',
             ajax: {
                 url: "${pageContext.request.contextPath}/file/group_search/data.json",
                 data: function (data) {
@@ -150,6 +186,13 @@
                     table.column(10).visible(d.data.map(row => row['maxSignificance']).join(''));
                     return d.data;
                 }
+            },
+            fnCreatedRow: function (row, data, dataIndex) {
+                $(row).attr('data-position', data.position);
+                $(row).attr('data-matchId', data.id);
+                $(row).attr('data-queryId', data.querySpectrumId);
+                $(row).attr('data-queryFileIndex', data.queryFileIndex);
+                $(row).attr('data-querySpectrumIndex', data.querySpectrumIndex);
             },
             "aoColumnDefs": [
                 {
@@ -217,7 +260,7 @@
                     "render": function (data, type, row) {
                         return (row.massError != null) ? row.massError.toFixed(3) : '';
                     }
-                },{
+                }, {
                     "targets": 7,
                     "bSortable": true,
                     "bVisible": true,
@@ -260,7 +303,7 @@
                             return '';
                         }
                     }
-                },{
+                }, {
                     "targets": 11,
                     "bSortable": true,
                     "bVisible": true,
@@ -297,6 +340,23 @@
                 },
                 // {"className": "dt-center", "targets": "_all"}
             ],
+        });
+
+        table.on('select', function (e, dt, type, indexes) {
+
+            let row = table.row(indexes).node();
+            let position = $(row).attr('data-position');
+            let queryId = $(row).attr('data-queryId');
+            let queryFileIndex = $(row).attr('data-queryFileIndex');
+            let querySpectrumIndex = $(row).attr('data-querySpectrumIndex');
+            let matchId = $(row).attr('data-matchId');
+
+            let queryUrl = `${pageContext.request.contextPath}/file/\${queryFileIndex}/\${querySpectrumIndex}/search/`;
+            let matchUrl = `${pageContext.request.contextPath}/spectrum/\${matchId}/search/`;
+
+            $('#queryInfo').spectrumInfo(queryUrl + 'info.json');
+            $('#matchInfo').spectrumInfo(matchUrl + 'info.json');
+            $('#plot').spectrumPlot(position, queryUrl + 'positive/peaks.json', matchUrl + 'negative/peaks.json');
         });
 
         // refresh the datatable and progress bar every 1 second

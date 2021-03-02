@@ -12,8 +12,11 @@ jQuery.fn.spectrumInfo = function (restURL) {
             const jsonInfo = data.responseJSON
 
             // Remove all child elements
+            div.text(null);
             while (div.firstChild)
                 div.firstChild.remove();
+
+            if (!jsonInfo) return;
 
             div.append($('<strong/>').text(jsonInfo['name']));
             div.append('&nbsp;');

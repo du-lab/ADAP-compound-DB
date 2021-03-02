@@ -2,6 +2,7 @@ package org.dulab.adapcompounddb.site.controllers;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumProperty;
 import org.dulab.adapcompounddb.models.entities.Submission;
@@ -28,10 +29,54 @@ public class SpectrumRestController1 {
         this.spectrumService = spectrumService;
     }
 
+    @RequestMapping(value = "/spectrum/{spectrumId:\\d+}/search/{sign}/peaks", produces = "application/json")
+    public String spectrumSearchPeaks(@PathVariable("spectrumId") long spectrumId,
+                                      @PathVariable("sign") String sign) {
+        Spectrum spectrum = spectrumService.find(spectrumId);
+        return spectrumToJsonPeaks(spectrum, sign);
+    }
+
+    @RequestMapping(value = "/file/{fileIndex:\\d+}/{spectrumIndex:\\d+}/search/{sign}/peaks", produces = "application/json")
+    public String spectrumSearchPeaks(@PathVariable("fileIndex") int fileIndex,
+                                      @PathVariable("spectrumIndex") int spectrumIndex,
+                                      @PathVariable("sign") String sign, HttpSession session) {
+        Submission submission = Submission.from(session);
+        Spectrum spectrum;
+        try {
+            spectrum = submission.getFiles().get(fileIndex).getSpectra().get(spectrumIndex);
+        } catch (IndexOutOfBoundsException e) {
+            LOGGER.warn(e.getMessage(), e);
+            return "";
+        }
+
+        return spectrumToJsonPeaks(spectrum, sign);
+    }
+
+    private String spectrumToJsonPeaks(Spectrum spectrum, String sign) {
+
+        int intensityFactor = sign.equals("negative") ? -1 : 1;
+
+        JSONObject root = new JSONObject();
+        root.put("name", spectrum.getName());
+
+        JSONArray peaks = new JSONArray();
+        if (spectrum.getPeaks() != null) {
+            for (Peak peak : spectrum.getPeaks()) {
+                JSONObject p = new JSONObject();
+                p.put("mz", peak.getMz());
+                p.put("intensity", intensityFactor * peak.getIntensity());
+                peaks.put(p);
+            }
+        }
+        root.put("peaks", peaks);
+
+        return root.toString();
+    }
+
     @RequestMapping(value = "/spectrum/{spectrumId:\\d+}/search/info", produces = "application/json")
     public String spectrumSearchInfo(@PathVariable("spectrumId") long spectrumId) {
         Spectrum spectrum = spectrumService.find(spectrumId);
-        return spectrumToInfoJson(spectrum, null, null);
+        return spectrumToJsonInfo(spectrum, null, null);
     }
 
     @RequestMapping(value = "/file/{fileIndex:\\d+}/{spectrumIndex:\\d+}/search/info", produces = "application/json")
@@ -47,10 +92,10 @@ public class SpectrumRestController1 {
             return "";
         }
 
-        return spectrumToInfoJson(spectrum, fileIndex, spectrumIndex);
+        return spectrumToJsonInfo(spectrum, fileIndex, spectrumIndex);
     }
 
-    private String spectrumToInfoJson(Spectrum spectrum, Integer fileIndex, Integer spectrumIndex) {
+    private String spectrumToJsonInfo(Spectrum spectrum, Integer fileIndex, Integer spectrumIndex) {
 
         JSONObject root = new JSONObject();
         root.put("name", spectrum.getName());
@@ -77,7 +122,7 @@ public class SpectrumRestController1 {
     private <E> JSONObject propertyToJsonObject(String name, E value) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("name", name);
-        jsonObject.put("value", value.toString());
+        jsonObject.put("value", (value != null) ? value.toString() : null);
         return jsonObject;
     }
 

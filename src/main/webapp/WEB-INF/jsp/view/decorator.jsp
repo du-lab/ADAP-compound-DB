@@ -28,18 +28,13 @@
     <link rel="stylesheet" href="<c:url value="/resources/custom-bootstrap.css"/>">
     <link rel="stylesheet"
           href="<c:url value="/resources/npm/node_modules/bootstrap4-toggle/css/bootstrap4-toggle.min.css"/>">
-    <%--    <link rel="stylesheet" href="<c:url value="/resources/DataTables/DataTables-1.10.23/css/jquery.dataTables.min.css"/>">--%>
-    <%--    <link rel="stylesheet" href="<c:url value="/resources/DataTables/DataTables-1.10.23/css/dataTables.bootstrap4.min.css"/>">--%>
     <link rel="stylesheet"
           href="<c:url value="/resources/DataTables/DataTables-1.10.23/css/jquery.dataTables.min.css"/>">
-    <%--    <link rel="stylesheet" href="<c:url value="/resources/DataTables/datatables.css"/>">--%>
     <link rel="stylesheet" type="text/css" media="(max-width: 480px)"
           href="<c:url value="/resources/AdapCompoundDb/css/main_mobile_portrait.css"/>">
     <link rel="stylesheet" type="text/css" media="(min-width: 481px)"
           href="<c:url value="/resources/AdapCompoundDb/css/main.css"/>">
 
-    <%--    <link rel="stylesheet" href="<c:url value="/resources/DataTables-1.10.16/css/jquery.dataTables.min.css"/>">--%>
-    <%--    <link rel="stylesheet" href="<c:url value="/resources/Select-1.2.5/css/select.dataTables.min.css"/>">--%>
     <link rel="stylesheet" href="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.theme.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.structure.min.css"/>">
@@ -50,6 +45,7 @@
     <link rel="stylesheet"
           href="<c:url value="https://fonts.googleapis.com/css?family=Crimson+Text|Proza+Libre|Lato:300,400"/>">
     <link rel="stylesheet" href="<c:url value="/resources/tagify-master/tagify.css"/>">
+    <link rel="stylesheet" href="<c:url value="/resources/SpeckTackle/st.css"/>">
 
     <%--    <script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>--%>
     <%--    <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>--%>
