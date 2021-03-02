@@ -164,22 +164,54 @@ public class Spectrum implements Serializable {
                     .sorted(Comparator.comparingDouble(Peak::getIntensity).reversed())
                     .collect(Collectors.toList());
             // assign m/z values of the top 16 highest peaks
-            this.setTopMz1(peakList.get(0).getMz());
-            this.setTopMz2(peakList.get(1).getMz());
-            this.setTopMz3(peakList.get(2).getMz());
-            this.setTopMz4(peakList.get(3).getMz());
-            this.setTopMz5(peakList.get(4).getMz());
-            this.setTopMz6(peakList.get(5).getMz());
-            this.setTopMz7(peakList.get(6).getMz());
-            this.setTopMz8(peakList.get(7).getMz());
-            this.setTopMz9(peakList.get(8).getMz());
-            this.setTopMz10(peakList.get(9).getMz());
-            this.setTopMz11(peakList.get(10).getMz());
-            this.setTopMz12(peakList.get(11).getMz());
-            this.setTopMz13(peakList.get(12).getMz());
-            this.setTopMz14(peakList.get(13).getMz());
-            this.setTopMz15(peakList.get(14).getMz());
-            this.setTopMz16(peakList.get(15).getMz());
+            if (peakList.size() >= 1){
+                this.setTopMz1(peakList.get(0).getMz());
+            }
+            if (peakList.size() >= 2){
+                this.setTopMz2(peakList.get(1).getMz());
+            }
+            if (peakList.size() >= 3){
+                this.setTopMz3(peakList.get(2).getMz());
+            }
+            if (peakList.size() >= 4){
+                this.setTopMz4(peakList.get(3).getMz());
+            }
+            if (peakList.size() >= 5){
+                this.setTopMz5(peakList.get(4).getMz());
+            }
+            if (peakList.size() >= 6){
+                this.setTopMz6(peakList.get(5).getMz());
+            }
+            if (peakList.size() >= 7){
+                this.setTopMz7(peakList.get(6).getMz());
+            }
+            if (peakList.size() >= 8){
+                this.setTopMz8(peakList.get(7).getMz());
+            }
+            if (peakList.size() >= 9){
+                this.setTopMz9(peakList.get(8).getMz());
+            }
+            if (peakList.size() >= 10){
+                this.setTopMz10(peakList.get(9).getMz());
+            }
+            if (peakList.size() >= 11){
+                this.setTopMz11(peakList.get(10).getMz());
+            }
+            if (peakList.size() >= 12){
+                this.setTopMz12(peakList.get(11).getMz());
+            }
+            if (peakList.size() >= 13){
+                this.setTopMz12(peakList.get(12).getMz());
+            }
+            if (peakList.size() >= 14){
+                this.setTopMz12(peakList.get(13).getMz());
+            }
+            if (peakList.size() >= 15){
+                this.setTopMz12(peakList.get(14).getMz());
+            }
+            if (peakList.size() >= 16){
+                this.setTopMz12(peakList.get(15).getMz());
+            }
 
             final double totalIntensity = peaks.stream()
                     .mapToDouble(Peak::getIntensity)
