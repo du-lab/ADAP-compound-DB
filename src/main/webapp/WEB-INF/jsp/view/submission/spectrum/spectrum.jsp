@@ -9,7 +9,7 @@
     <div class="row row-content">
         <div class="col">
             <div class="btn-toolbar justify-content-end" role="toolbar">
-                <a href="<c:url value="search/"/>" type="button" class="btn btn-primary">Search</a>
+                <a id="searchButton" href="<c:url value="search/"/>" type="button" class="btn btn-primary">Search</a>
             </div>
         </div>
     </div>
