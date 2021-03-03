@@ -3,6 +3,7 @@ package org.dulab.adapcompounddb.models.entities.views;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class SpectrumClusterView {
@@ -117,6 +118,17 @@ public class SpectrumClusterView {
 
     public void setChromatographyType(ChromatographyType chromatographyType) {
         this.chromatographyType = chromatographyType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(uniqueId);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof SpectrumClusterView)) return false;
+        return this.uniqueId == ((SpectrumClusterView) obj).uniqueId;
     }
 }
 

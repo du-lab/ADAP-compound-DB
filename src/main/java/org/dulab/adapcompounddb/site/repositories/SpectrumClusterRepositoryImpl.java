@@ -75,8 +75,8 @@ public class SpectrumClusterRepositoryImpl implements SpectrumClusterRepositoryC
         if (submissionIds == null || !submissionIds.iterator().hasNext())
             return new PageImpl<>(new ArrayList<>(0), pageable, 0);
 
-        String sqlQuery = "select ConsensusSpectrum.Id as Id, SpectrumCluster.Id as ClusterId, ConsensusSpectrum.Name, " +
-                "count(distinct File.SubmissionId) as Size, SpectrumCluster.Diameter as Score, NULL AS Error, " +
+        String sqlQuery = "select UUID_SHORT() as uniqueId, ConsensusSpectrum.Id as Id, SpectrumCluster.Id as ClusterId, ConsensusSpectrum.Name, " +
+                "count(distinct File.SubmissionId) as Size, SpectrumCluster.Diameter as Score, NULL AS MassError, NULL AS RetTimeError, " +
                 "avg(Spectrum.Significance) as AverageSignificance, " +
                 "min(Spectrum.Significance) as MinimumSignificance, max(Spectrum.Significance) as MaximumSignificance, " +
                 "SpectrumCluster.ChromatographyType from SpectrumCluster " +
@@ -87,7 +87,7 @@ public class SpectrumClusterRepositoryImpl implements SpectrumClusterRepositoryC
                 "and (:type is null or ConsensusSpectrum.ChromatographyType = :type) " +
                 "and File.SubmissionId in (:submissionIds) group by SpectrumCluster.Id " +
                 "union all " +
-                "select Spectrum.Id, null, Spectrum.Name, 1, null, null, null, null, null, Spectrum.ChromatographyType from Spectrum " +
+                "select UUID_SHORT() as uniqueId, Spectrum.Id, null, Spectrum.Name, 1, null, null, null, null, null, null, Spectrum.ChromatographyType from Spectrum " +
                 "join File on Spectrum.FileId=File.Id " +
                 "where Spectrum.Reference is true and Spectrum.Name like :search " +
                 "and (:type is null or Spectrum.ChromatographyType = :type) and File.SubmissionId in (:submissionIds)";

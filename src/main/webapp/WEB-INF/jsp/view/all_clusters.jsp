@@ -192,12 +192,16 @@
                 },
                 {
                     "targets": 1,
-                    "data": "id"
+                    "data": "clusterId"
                 },
                 {
                     "targets": 2,
                     "render": function (data, type, row, meta) {
-                        return `<a href="${pageContext.request.contextPath}/\${row.matchType.toLowerCase()}/\${row.id}/">\${row.name}</a>`;
+                        if (row.matchType === 'CLUSTER')
+                            return `<a href="${pageContext.request.contextPath}/cluster/\${row.clusterId}/">\${row.name}</a>`;
+                        if (row.matchType === 'SPECTRUM')
+                            return `<a href="${pageContext.request.contextPath}/spectrum/\${row.spectrumId}/">\${row.name}</a>`;
+                        return '';
                     }
                 },
                 {
@@ -244,8 +248,13 @@
                     "targets": 9,
                     "bSortable": false,
                     "render": function (data, type, row, meta) {
-                        return `<a href="${pageContext.request.contextPath}/\${row.matchType.toLowerCase()}/\${row.id}/">
+                        if (row.matchType === 'CLUSTER')
+                            return `<a href="${pageContext.request.contextPath}/cluster/\${row.clusterId}/">
                                 <i class="material-icons" title="view">&#xE5D3;</i></a>`;
+                        if (row.matchType === 'SPECTRUM')
+                            return `<a href="${pageContext.request.contextPath}/spectrum/\${row.spectrumId}/">
+                                <i class="material-icons" title="view">&#xE5D3;</i></a>`;
+                        return '';
                     }
                 },
                 {"className": "dt-center", "targets": "_all"}

@@ -135,11 +135,11 @@
                         <%--@elvariable id="searchResults" type="java.util.List<org.dulab.adapcompounddb.models.dto.SearchResultDTO>"--%>
                         <c:if test="${searchResults != null}">
                             <c:forEach items="${searchResults}" var="searchResult" varStatus="status">
-                                <tr data-id="${searchResult.id}">
+                                <tr data-id="${searchResult.spectrumId}">
                                     <td>${status.index + 1}</td>
                                     <td>${searchResult.querySpectrumName}</td>
                                     <td>
-                                        <a href="${pageContext.request.contextPath}/${fn:toLowerCase(searchResult.matchType)}/${searchResult.id}/">
+                                        <a href="${pageContext.request.contextPath}${searchResult.getHRef()}">
                                                 ${searchResult.name}
                                         </a>
                                     </td>
@@ -153,7 +153,7 @@
                                     <td>${dulab:formatDouble(searchResult.maxSignificance)}</td>
                                     <td><span class="badge badge-info">${searchResult.ontologyLevel}</span></td>
                                     <td>
-                                        <a href="${pageContext.request.contextPath}/${fn:toLowerCase(searchResult.matchType)}/${searchResult.id}/">
+                                        <a href="${pageContext.request.contextPath}${searchResult.getHRef()}">
                                             <i class="material-icons" title="View">&#xE5D3;</i>
                                         </a>
                                     </td>

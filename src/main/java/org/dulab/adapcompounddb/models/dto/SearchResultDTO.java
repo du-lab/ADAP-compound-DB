@@ -41,7 +41,8 @@ public class SearchResultDTO implements Serializable {
 
     // Match
     private MatchType matchType;
-    private long id;
+    private long spectrumId;
+    private Long clusterId;
     private String name;
     private Integer size;
     private Double aveSignificance;
@@ -65,12 +66,11 @@ public class SearchResultDTO implements Serializable {
     public SearchResultDTO(Spectrum querySpectrum, SpectrumClusterView view) {
         this(querySpectrum);
 
-        matchType = MatchType.CLUSTER;
-
         if (view != null) {
             boolean isReference = view.getClusterId() == null;
             this.matchType = (isReference) ? MatchType.SPECTRUM : MatchType.CLUSTER;
-            this.id = (isReference) ? view.getId() : view.getClusterId();
+            this.spectrumId = view.getId();
+            this.clusterId = view.getClusterId();
             this.name = (isReference ? "[Ref Spec] " : "[Con Spec] ") + view.getName();
             this.size = view.getSize();
             this.score = view.getScore();
@@ -89,6 +89,7 @@ public class SearchResultDTO implements Serializable {
     }
 
     public SearchResultDTO(Spectrum querySpectrum) {
+        matchType = MatchType.SPECTRUM;
         if (querySpectrum != null) {
             this.querySpectrumId = querySpectrum.getId();
             this.querySpectrumName = querySpectrum.getName();
@@ -101,7 +102,7 @@ public class SearchResultDTO implements Serializable {
         matchType = MatchType.SPECTRUM;
 
         if (massSearchResult != null) {
-            this.id = massSearchResult.getId();
+            this.spectrumId = massSearchResult.getId();
             this.name = massSearchResult.getName();
             this.chromatographyTypeLabel = massSearchResult.getChromatographyType().getLabel();
             this.chromatographyTypePath = massSearchResult.getChromatographyType().getIconPath();
@@ -122,15 +123,23 @@ public class SearchResultDTO implements Serializable {
         if (!(other instanceof SearchResultDTO)) {
             return false;
         }
-        return id == ((SearchResultDTO) other).id;
+        return spectrumId == ((SearchResultDTO) other).spectrumId;
     }
 
-    public long getId() {
-        return id;
+    public long getSpectrumId() {
+        return spectrumId;
     }
 
-    public void setId(final long id) {
-        this.id = id;
+    public void setSpectrumId(final long spectrumId) {
+        this.spectrumId = spectrumId;
+    }
+
+    public Long getClusterId() {
+        return clusterId;
+    }
+
+    public void setClusterId(Long clusterId) {
+        this.clusterId = clusterId;
     }
 
     public Integer getSize() {
@@ -293,13 +302,26 @@ public class SearchResultDTO implements Serializable {
         this.position = position;
     }
 
+    public String getHRef() {
+        return String.format("/%s/%d/",
+                matchType.name().toLowerCase(),
+                (matchType == MatchType.CLUSTER) ? this.getClusterId() : this.getSpectrumId());
+    }
+
+    public String getQueryHRef() {
+        if (querySpectrumId != null && querySpectrumId > 0)
+            return String.format("/spectrum/%d/", querySpectrumId);
+        else
+            return String.format("/file/%d/%d/", queryFileIndex, querySpectrumIndex);
+    }
+
     @Override
     public int hashCode() {
-        return Long.hashCode(id);
+        return Long.hashCode(spectrumId);
     }
 
     @Override
     public String toString() {
-        return "Search Result ID = " + getId();
+        return "Search Result ID = " + getSpectrumId();
     }
 }

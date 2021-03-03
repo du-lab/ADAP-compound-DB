@@ -29,7 +29,10 @@ public class SpectrumRestController1 {
         this.spectrumService = spectrumService;
     }
 
-    @RequestMapping(value = "/spectrum/{spectrumId:\\d+}/search/{sign}/peaks", produces = "application/json")
+    @RequestMapping(value = {
+            "/spectrum/{spectrumId:\\d+}/search/{sign}/peaks",
+            "/submission/*/spectrum/{spectrumId:\\d+}/search/{sign}/peaks"},
+            produces = "application/json")
     public String spectrumSearchPeaks(@PathVariable("spectrumId") long spectrumId,
                                       @PathVariable("sign") String sign) {
         Spectrum spectrum = spectrumService.find(spectrumId);
@@ -73,7 +76,10 @@ public class SpectrumRestController1 {
         return root.toString();
     }
 
-    @RequestMapping(value = "/spectrum/{spectrumId:\\d+}/search/info", produces = "application/json")
+    @RequestMapping(value = {
+            "/spectrum/{spectrumId:\\d+}/search/info",
+            "/submission/*/spectrum/{spectrumId:\\d+}/search/info"},
+            produces = "application/json")
     public String spectrumSearchInfo(@PathVariable("spectrumId") long spectrumId) {
         Spectrum spectrum = spectrumService.find(spectrumId);
         return spectrumToJsonInfo(spectrum, null, null);

@@ -189,7 +189,8 @@
             },
             fnCreatedRow: function (row, data, dataIndex) {
                 $(row).attr('data-position', data.position);
-                $(row).attr('data-matchId', data.id);
+                $(row).attr('data-matchId', data.spectrumId);
+                $(row).attr('data-queryHRef', data.queryHRef);
                 $(row).attr('data-queryId', data.querySpectrumId);
                 $(row).attr('data-queryFileIndex', data.queryFileIndex);
                 $(row).attr('data-querySpectrumIndex', data.querySpectrumIndex);
@@ -223,8 +224,7 @@
                     "render": function (data, type, row, meta) {
                         let content = '';
                         if (row.name != null) {
-                            content = '<a href="${pageContext.request.contextPath}/' + row.matchType.toLowerCase() + '/'
-                                + row.id + '/">' + row.name + '</a>';
+                            content = `<a href="${pageContext.request.contextPath}\${row.href}">\${row.name}</a>`;
                         }
                         return content;
                     }
@@ -346,12 +346,14 @@
 
             let row = table.row(indexes).node();
             let position = $(row).attr('data-position');
+            let queryHRef = $(row).attr('data-queryHRef');
             let queryId = $(row).attr('data-queryId');
             let queryFileIndex = $(row).attr('data-queryFileIndex');
             let querySpectrumIndex = $(row).attr('data-querySpectrumIndex');
             let matchId = $(row).attr('data-matchId');
 
-            let queryUrl = `${pageContext.request.contextPath}/file/\${queryFileIndex}/\${querySpectrumIndex}/search/`;
+            <%--let queryUrl = `${pageContext.request.contextPath}/file/\${queryFileIndex}/\${querySpectrumIndex}/search/`;--%>
+            let queryUrl = `${pageContext.request.contextPath}\${queryHRef}search/`;
             let matchUrl = `${pageContext.request.contextPath}/spectrum/\${matchId}/search/`;
 
             $('#queryInfo').spectrumInfo(queryUrl + 'info.json');

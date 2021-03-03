@@ -105,10 +105,10 @@ public class SpectrumSearchServiceImpl implements IndividualSearchService {
 
             SearchResultDTO searchResult = new SearchResultDTO(querySpectrum, view);
 
-            spectrumRepository.findById(view.getId())
-                    .ifPresent(c -> searchResult.setJson(ControllerUtils
-                            .spectrumToJson(c)
-                            .toString()));
+//            spectrumRepository.findById(view.getId())
+//                    .ifPresent(c -> searchResult.setJson(ControllerUtils
+//                            .spectrumToJson(c)
+//                            .toString()));
 
             searchResults.add(searchResult);
         }

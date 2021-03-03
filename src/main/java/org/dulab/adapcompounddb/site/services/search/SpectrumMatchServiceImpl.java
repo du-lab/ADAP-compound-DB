@@ -27,7 +27,6 @@ import smile.clustering.linkage.Linkage;
 
 import java.math.BigInteger;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -409,7 +408,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
             // Match cluster
             SpectrumCluster matchedCluster = match.getMatchSpectrum().getCluster();
-            cluster.setId(matchedCluster.getId());
+            cluster.setSpectrumId(matchedCluster.getId());
             cluster.setName(match.getMatchSpectrum().getName());
             cluster.setSize((int) matchedCluster.getSpectra().stream()
                     .map(Spectrum::getFile).filter(Objects::nonNull)
