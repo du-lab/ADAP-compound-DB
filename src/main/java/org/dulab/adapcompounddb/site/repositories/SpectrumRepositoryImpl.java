@@ -171,6 +171,9 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     public void saveSpectrumAndPeaks(final List<File> fileList, final List<Long> savedFileIdList) {
         final List<Spectrum> spectrumList = new ArrayList<>();
 
+        //TODO: Modify this method to save values for TopMz1, TopMz2,... Currently, they are not save to the database
+        // Check whether it works.
+
         final StringBuilder insertSql = new StringBuilder("INSERT INTO `Spectrum`(" +
                 "`Name`, `Precursor`, `RetentionTime`, `Significance`, " +
                 "`ClusterId`, `Consensus`, `Reference`, `IntegerMz`, " +
