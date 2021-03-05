@@ -98,18 +98,18 @@ public class GroupSearchServiceImpl implements GroupSearchService {
                     List<SearchResultDTO> individualSearchResults =
                             spectrumSearchService.searchConsensusSpectra(userPrincipal, querySpectrum, parameters, true);
 
-                    // get the best match if the match is not null
-                    SearchResultDTO topSearchResult = individualSearchResults.size() > 0
-                            ? individualSearchResults.get(0)
-                            : new SearchResultDTO(querySpectrum);
+                    if (individualSearchResults.isEmpty())
+                        individualSearchResults.add(new SearchResultDTO(querySpectrum));
 
-                    topSearchResult.setPosition(1 + position++);
-                    topSearchResult.setQueryFileIndex(fileIndex);
-                    topSearchResult.setQuerySpectrumIndex(spectrumIndex);
+                    for (SearchResultDTO searchResult : individualSearchResults) {
+                        searchResult.setPosition(1 + position++);
+                        searchResult.setQueryFileIndex(fileIndex);
+                        searchResult.setQuerySpectrumIndex(spectrumIndex);
+                    }
 
                     if (Thread.currentThread().isInterrupted()) break;
 
-                    groupSearchDTOList.add(topSearchResult);
+                    groupSearchDTOList.addAll(individualSearchResults);
                     session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
                     progress = (float) ++progressStep / totalSteps;
                 }
