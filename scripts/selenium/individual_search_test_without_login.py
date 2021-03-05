@@ -36,7 +36,7 @@ def individual_search_test(homepage_url, msp_path):
         spectrum_link.click()
 
         # click search button on spectrum page
-        search_button = driver.find_element_by_class_name('button')
+        search_button = driver.find_element_by_id('searchButton')
         search_button.click()
 
         # click search button on single search page
