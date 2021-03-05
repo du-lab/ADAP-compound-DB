@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @RestController
 public class GroupSearchRestController {
@@ -78,8 +79,14 @@ public class GroupSearchRestController {
 
 
     private DataTableResponse groupSearchSort(final String searchStr, final Integer start, final Integer length,
-                                             final Integer column, final String sortDirection,
-                                             List<SearchResultDTO> spectrumList) {
+                                              final Integer column, final String sortDirection,
+                                              List<SearchResultDTO> spectrumList) {
+
+        if (searchStr != null && searchStr.trim().length() > 0)
+            spectrumList = spectrumList.stream()
+                    .filter(s -> (s.getQuerySpectrumName() != null && s.getQuerySpectrumName().contains(searchStr))
+                            || (s.getName() != null && s.getName().contains(searchStr)))
+                    .collect(Collectors.toList());
 
         String sortColumn = GroupSearchColumnInformation.getColumnNameFromPosition(column);
 
@@ -171,7 +178,7 @@ public class GroupSearchRestController {
 
 
     private enum GroupSearchColumnInformation {
-        ID(0, "id"),QUERY_SPECTRUM(1, "querySpectrumName"),
+        ID(0, "id"), QUERY_SPECTRUM(1, "querySpectrumName"),
         MATCH_SPECTRUM(2, "consensusSpectrumName"),
         MOLECULAR_WEIGHT(3, "molecularWeight"),
         COUNT(4, "size"),
