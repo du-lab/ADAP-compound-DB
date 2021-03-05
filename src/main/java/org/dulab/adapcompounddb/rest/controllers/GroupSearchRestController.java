@@ -114,6 +114,9 @@ public class GroupSearchRestController {
                 case "massError":
                     spectrumList.sort(getComparator(SearchResultDTO::getMassError, sortDirection));
                     break;
+                case "massErrorPPM":
+                    spectrumList.sort(getComparator(SearchResultDTO::getMassErrorPPM, sortDirection));
+                    break;
                 case "retTimeError":
                     spectrumList.sort(getComparator(SearchResultDTO::getRetTimeError, sortDirection));
                     break;
@@ -184,12 +187,13 @@ public class GroupSearchRestController {
         COUNT(4, "size"),
         SCORE(5, "diameter"),
         MASS_ERROR(6, "massError"),
-        RET_TIME_ERROR(7, "retTimeError"),
-        AVERAGE_SIGNIFICANCE(8, "averageSignificance"),
-        MINIMUM_SIGNIFICANCE(9, "minimumSignificance"),
-        MAXIMUM_SIGNIFICANCE(10, "maximumSignificance"),
-        ONTOLOGY_LEVEL(11, "ontologyLevel"),
-        CHROMATOGRAPHY_TYPE(12, "chromatographyType");
+        MASS_ERROR_PPM(7, "massErrorPPM"),
+        RET_TIME_ERROR(8, "retTimeError"),
+        AVERAGE_SIGNIFICANCE(9, "averageSignificance"),
+        MINIMUM_SIGNIFICANCE(10, "minimumSignificance"),
+        MAXIMUM_SIGNIFICANCE(11, "maximumSignificance"),
+        ONTOLOGY_LEVEL(12, "ontologyLevel"),
+        CHROMATOGRAPHY_TYPE(13, "chromatographyType");
 
         private int position;
         private String sortColumnName;

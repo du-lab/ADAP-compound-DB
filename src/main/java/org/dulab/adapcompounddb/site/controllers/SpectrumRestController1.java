@@ -2,6 +2,7 @@ package org.dulab.adapcompounddb.site.controllers;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumProperty;
@@ -10,6 +11,7 @@ import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,7 +37,12 @@ public class SpectrumRestController1 {
             produces = "application/json")
     public String spectrumSearchPeaks(@PathVariable("spectrumId") long spectrumId,
                                       @PathVariable("sign") String sign) {
-        Spectrum spectrum = spectrumService.find(spectrumId);
+        Spectrum spectrum = null;
+        try {
+            spectrum = spectrumService.find(spectrumId);
+        } catch (EmptySearchResultException e) {
+            LOGGER.warn("Cannot find spectrum with ID = " + spectrumId);
+        }
         return spectrumToJsonPeaks(spectrum, sign);
     }
 
@@ -55,7 +62,10 @@ public class SpectrumRestController1 {
         return spectrumToJsonPeaks(spectrum, sign);
     }
 
-    private String spectrumToJsonPeaks(Spectrum spectrum, String sign) {
+    private String spectrumToJsonPeaks(@Nullable Spectrum spectrum, String sign) {
+
+        if (spectrum == null)
+            return "";
 
         int intensityFactor = sign.equals("negative") ? -1 : 1;
 
@@ -81,7 +91,12 @@ public class SpectrumRestController1 {
             "/submission/*/spectrum/{spectrumId:\\d+}/search/info"},
             produces = "application/json")
     public String spectrumSearchInfo(@PathVariable("spectrumId") long spectrumId) {
-        Spectrum spectrum = spectrumService.find(spectrumId);
+        Spectrum spectrum = null;
+        try {
+            spectrum = spectrumService.find(spectrumId);
+        } catch (EmptySearchResultException e) {
+            LOGGER.warn("Cannot find spectrum with ID = " + spectrumId);
+        }
         return spectrumToJsonInfo(spectrum, null, null);
     }
 
@@ -101,7 +116,10 @@ public class SpectrumRestController1 {
         return spectrumToJsonInfo(spectrum, fileIndex, spectrumIndex);
     }
 
-    private String spectrumToJsonInfo(Spectrum spectrum, Integer fileIndex, Integer spectrumIndex) {
+    private String spectrumToJsonInfo(@Nullable Spectrum spectrum, Integer fileIndex, Integer spectrumIndex) {
+
+        if (spectrum == null)
+            return "";
 
         JSONObject root = new JSONObject();
         root.put("name", spectrum.getName());

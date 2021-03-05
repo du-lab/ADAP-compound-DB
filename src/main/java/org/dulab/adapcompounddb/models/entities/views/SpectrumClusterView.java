@@ -15,6 +15,7 @@ public class SpectrumClusterView {
     private int size;
     private Double score;
     private Double massError;
+    private Double massErrorPPM;
     private Double retTimeError;
     private Double averageSignificance;
     private Double minimumSignificance;
@@ -77,6 +78,14 @@ public class SpectrumClusterView {
 
     public void setMassError(Double error) {
         this.massError = error;
+    }
+
+    public Double getMassErrorPPM() {
+        return massErrorPPM;
+    }
+
+    public void setMassErrorPPM(Double massErrorPPM) {
+        this.massErrorPPM = massErrorPPM;
     }
 
     public Double getRetTimeError() {

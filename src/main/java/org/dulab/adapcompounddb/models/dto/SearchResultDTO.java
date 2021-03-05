@@ -58,6 +58,7 @@ public class SearchResultDTO implements Serializable {
     private int position;
     private Double score;
     private Double massError;
+    private Double massErrorPPM;
     private Double retTimeError;
 
 
@@ -75,6 +76,7 @@ public class SearchResultDTO implements Serializable {
             this.size = view.getSize();
             this.score = view.getScore();
             this.massError = view.getMassError();
+            this.massErrorPPM = view.getMassErrorPPM();
             this.retTimeError = view.getRetTimeError();
             this.aveSignificance = view.getAverageSignificance();
             this.minSignificance = view.getMinimumSignificance();
@@ -284,6 +286,14 @@ public class SearchResultDTO implements Serializable {
 
     public void setMassError(Double massError) {
         this.massError = massError;
+    }
+
+    public Double getMassErrorPPM() {
+        return massErrorPPM;
+    }
+
+    public void setMassErrorPPM(Double massErrorPPM) {
+        this.massErrorPPM = massErrorPPM;
     }
 
     public Double getRetTimeError() {

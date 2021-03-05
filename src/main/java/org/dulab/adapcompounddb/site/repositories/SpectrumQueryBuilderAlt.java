@@ -13,17 +13,17 @@ import org.dulab.adapcompounddb.models.entities.Peak;
 public class SpectrumQueryBuilderAlt {
 
     private static final String AGGREGATED_SPECTRUM_CLUSTER_VIEW_OUTPUT = "UUID_SHORT() AS UniqueId, Spectrum.Id, Spectrum.ClusterId, " +
-            "Spectrum.Name, COUNT(DISTINCT File.SubmissionId) AS Size, Score, MassError, RetTimeError, " +
+            "Spectrum.Name, COUNT(DISTINCT File.SubmissionId) AS Size, Score, MassError, MassErrorPPM, RetTimeError, " +
             "AVG(Spectrum.Significance) AS AverageSignificance, MIN(Spectrum.Significance) AS MinimumSignificance, " +
             "MAX(Spectrum.Significance) AS MaximumSignificance, Spectrum.ChromatographyType";
 
     private static final String SIMPLE_SPECTRUM_CLUSTER_VIEW_OUTPUT = "UUID_SHORT() AS UniqueId, Spectrum.Id, Spectrum.ClusterId, " +
-            "Spectrum.Name, 1 AS Size, Score, MassError, RetTimeError, " +
+            "Spectrum.Name, 1 AS Size, Score, MassError, MassErrorPPM, RetTimeError, " +
             "Spectrum.Significance AS AverageSignificance, Spectrum.Significance AS MinimumSignificance, " +
             "Spectrum.Significance AS MaximumSignificance, Spectrum.ChromatographyType";
 
     private static final String EMPTY_SPECTRUM_CLUSTER_VIEW_OUTPUT = "UUID_SHORT() AS UniqueId, Spectrum.Id, Spectrum.ClusterId, " +
-            "Spectrum.Name, 0 AS Size, 0 AS Score, NULL AS MassError, NULL AS RetTimeError, " +
+            "Spectrum.Name, 0 AS Size, 0 AS Score, NULL AS MassError, NULL AS MassErrorPPM, NULL AS RetTimeError, " +
             "Spectrum.Significance AS AverageSignificance, Spectrum.Significance AS MinimumSignificance, " +
             "Spectrum.Significance AS MaximumSignificance, Spectrum.ChromatographyType";
 
@@ -205,9 +205,12 @@ public class SpectrumQueryBuilderAlt {
 
         String scoreTable = "";
         if (peaks != null && mzTolerance != null && scoreThreshold != null) {
-            scoreTable += String.format(
-                    "SELECT SpectrumId, POWER(SUM(Product), 2) AS Score, MAX(ABS(MolecularWeight - %f)) AS MassError, MAX(ABS(RetentionTime - %f)) AS RetTimeError FROM (\n",
-                    neutralMass, retTime);
+            scoreTable += String.format("SELECT SpectrumId, POWER(SUM(Product), 2) AS Score, MAX(ABS(MolecularWeight - %f)) AS MassError, ", neutralMass);
+            scoreTable += String.format("1E6 * MAX(ABS(MolecularWeight - %f) / MolecularWeight) AS MassErrorPPM, ", neutralMass);
+            scoreTable += String.format("MAX(ABS(RetentionTime - %f)) AS RetTimeError FROM (\n", retTime);
+//            scoreTable += String.format(
+//                    "SELECT SpectrumId, POWER(SUM(Product), 2) AS Score, MAX(ABS(MolecularWeight - %f)) AS MassError, MAX(ABS(RetentionTime - %f)) AS RetTimeError FROM (\n",
+//                    neutralMass, retTime);
             String finalSpectrumSelector = spectrumSelector;
             scoreTable += peaks.stream()
                     .map(p -> String.format(
@@ -221,9 +224,13 @@ public class SpectrumQueryBuilderAlt {
             scoreTable += String.format("GROUP BY SpectrumId HAVING Score > %f\n", scoreThreshold);
 
         } else {
-            scoreTable += String.format("\tSELECT Id AS SpectrumId, NULL AS Score, ABS(MolecularWeight - %f) AS MassError, ABS(RetentionTime - %f) AS RetTimeError " +
-                            "FROM Spectrum WHERE %s\n",
-                    neutralMass, retTime, spectrumSelector);
+            scoreTable += String.format("\tSELECT Id AS SpectrumId, NULL AS Score, ABS(MolecularWeight - %f) AS MassError, ", neutralMass);
+            scoreTable += String.format("1E6 * ABS(MolecularWeight - %f) / MolecularWeight AS MassErrorPPM, ", neutralMass);
+            scoreTable += String.format("ABS(RetentionTime - %f) AS RetTimeError ", retTime);
+            scoreTable += String.format("FROM Spectrum WHERE %s\n", spectrumSelector);
+//            scoreTable += String.format("\tSELECT Id AS SpectrumId, NULL AS Score, ABS(MolecularWeight - %f) AS MassError, ABS(RetentionTime - %f) AS RetTimeError " +
+//                            "FROM Spectrum WHERE %s\n",
+//                    neutralMass, retTime, spectrumSelector);
         }
         return scoreTable;
     }
