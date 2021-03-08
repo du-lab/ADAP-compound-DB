@@ -45,14 +45,15 @@ public class SpectrumQueryBuilderAlt {
     private Double precursorTolerance = null;
     private Double retTime = null;
     private Double retTimeTolerance = null;
-    private Double neutralMass = null;
-    private Double neutralMassTolerance = null;
+    private Double mass = null;
+    private Double massTolerance = null;
+    private Double massTolerancePPM = null;
     private List<Peak> peaks = null;
     private Double mzTolerance = null;
     private Double scoreThreshold = null;
 
 
-    public SpectrumQueryBuilderAlt(Collection<BigInteger> submissionIds, int limit,  boolean searchConsensusSpectra,
+    public SpectrumQueryBuilderAlt(Collection<BigInteger> submissionIds, int limit, boolean searchConsensusSpectra,
                                    boolean searchReferenceSpectra, boolean searchClusterableSpectra) {
 
         this.submissionIds = submissionIds;
@@ -62,7 +63,7 @@ public class SpectrumQueryBuilderAlt {
         this.searchClusterableSpectra = searchClusterableSpectra;
     }
 
-    public  SpectrumQueryBuilderAlt withChromatographyType(ChromatographyType chromatographyType) {
+    public SpectrumQueryBuilderAlt withChromatographyType(ChromatographyType chromatographyType) {
         this.chromatographyType = chromatographyType;
         return this;
     }
@@ -79,9 +80,15 @@ public class SpectrumQueryBuilderAlt {
         return this;
     }
 
-    public SpectrumQueryBuilderAlt withNeutralMass(Double weight, Double tolerance) {
-        this.neutralMass = weight;
-        this.neutralMassTolerance = tolerance;
+    public SpectrumQueryBuilderAlt withMass(Double mass, Double tolerance) {
+        this.mass = mass;
+        this.massTolerance = tolerance;
+        return this;
+    }
+
+    public SpectrumQueryBuilderAlt withMassPPM(Double mass, Double ppm) {
+        this.mass = mass;
+        this.massTolerancePPM = ppm;
         return this;
     }
 
@@ -178,7 +185,7 @@ public class SpectrumQueryBuilderAlt {
      */
     private String getScoreTable(boolean isConsensus, boolean isReference, boolean isClusterable) {
 
-        if (peaks == null && precursorMz == null && neutralMass == null)
+        if (peaks == null && precursorMz == null && mass == null)
             throw new QueryBuilderException("No search conditions provided");
 
         String spectrumSelector = String.format(
@@ -188,25 +195,28 @@ public class SpectrumQueryBuilderAlt {
         if (chromatographyType != null)
             spectrumSelector += String.format(" AND Spectrum.ChromatographyType = '%s'", chromatographyType);
 
-        if (this.precursorMz != null && this.precursorTolerance != null)
+        if (precursorMz != null && precursorTolerance != null)
             spectrumSelector += String.format(" AND Spectrum.Precursor > %f AND Spectrum.Precursor < %f",
-                    this.precursorMz - this.precursorTolerance,
-                    this.precursorMz + this.precursorTolerance);
+                    precursorMz - precursorTolerance, precursorMz + precursorTolerance);
 
-        if (this.neutralMass != null && this.neutralMassTolerance != null)
+        if (mass != null && massTolerance != null)
             spectrumSelector += String.format(" AND Spectrum.MolecularWeight > %f AND Spectrum.MolecularWeight < %f",
-                    this.neutralMass - this.neutralMassTolerance,
-                    this.neutralMass + this.neutralMassTolerance);
+                    mass - massTolerance, mass + massTolerance);
 
-        if (this.retTime != null && this.retTimeTolerance != null)
+        if (mass != null && massTolerancePPM != null) {
+            double x = 1e-6 * massTolerancePPM;
+            spectrumSelector += String.format(" AND Spectrum.MolecularWeight > %f AND Spectrum.MolecularWeight < %f",
+                    mass / (1 + x), mass / (1 - x));
+        }
+
+        if (retTime != null && retTimeTolerance != null)
             spectrumSelector += String.format(" AND Spectrum.RetentionTime > %f AND Spectrum.RetentionTime < %f",
-                    this.retTime - this.retTimeTolerance,
-                    this.retTime + this.retTimeTolerance);
+                    retTime - retTimeTolerance, retTime + retTimeTolerance);
 
         String scoreTable = "";
         if (peaks != null && mzTolerance != null && scoreThreshold != null) {
-            scoreTable += String.format("SELECT SpectrumId, POWER(SUM(Product), 2) AS Score, MAX(ABS(MolecularWeight - %f)) AS MassError, ", neutralMass);
-            scoreTable += String.format("1E6 * MAX(ABS(MolecularWeight - %f) / MolecularWeight) AS MassErrorPPM, ", neutralMass);
+            scoreTable += String.format("SELECT SpectrumId, POWER(SUM(Product), 2) AS Score, MAX(ABS(MolecularWeight - %f)) AS MassError, ", mass);
+            scoreTable += String.format("1E6 * MAX(ABS(MolecularWeight - %f) / MolecularWeight) AS MassErrorPPM, ", mass);
             scoreTable += String.format("MAX(ABS(RetentionTime - %f)) AS RetTimeError FROM (\n", retTime);
 //            scoreTable += String.format(
 //                    "SELECT SpectrumId, POWER(SUM(Product), 2) AS Score, MAX(ABS(MolecularWeight - %f)) AS MassError, MAX(ABS(RetentionTime - %f)) AS RetTimeError FROM (\n",
@@ -224,8 +234,8 @@ public class SpectrumQueryBuilderAlt {
             scoreTable += String.format("GROUP BY SpectrumId HAVING Score > %f\n", scoreThreshold);
 
         } else {
-            scoreTable += String.format("\tSELECT Id AS SpectrumId, NULL AS Score, ABS(MolecularWeight - %f) AS MassError, ", neutralMass);
-            scoreTable += String.format("1E6 * ABS(MolecularWeight - %f) / MolecularWeight AS MassErrorPPM, ", neutralMass);
+            scoreTable += String.format("\tSELECT Id AS SpectrumId, NULL AS Score, ABS(MolecularWeight - %f) AS MassError, ", mass);
+            scoreTable += String.format("1E6 * ABS(MolecularWeight - %f) / MolecularWeight AS MassErrorPPM, ", mass);
             scoreTable += String.format("ABS(RetentionTime - %f) AS RetTimeError ", retTime);
             scoreTable += String.format("FROM Spectrum WHERE %s\n", spectrumSelector);
 //            scoreTable += String.format("\tSELECT Id AS SpectrumId, NULL AS Score, ABS(MolecularWeight - %f) AS MassError, ABS(RetentionTime - %f) AS RetTimeError " +

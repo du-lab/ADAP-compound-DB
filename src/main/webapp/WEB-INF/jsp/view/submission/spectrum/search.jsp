@@ -147,7 +147,7 @@
                                     <td>${searchResult.molecularWeight}</td>
                                     <td>${searchResult.size}</td>
                                     <td>${searchResult.getNISTScore()}</td>
-                                    <td>${dulab:formatDouble(1000 * searchResult.massError)}</td>
+                                    <td>${(searchResult.massError != null) ? dulab:formatDouble(1000 * searchResult.massError) : ''}</td>
                                     <td>${dulab:formatDouble(searchResult.massErrorPPM)}</td>
                                     <td>${dulab:formatDouble(searchResult.retTimeError)}</td>
                                     <td>${dulab:formatDouble(searchResult.aveSignificance)}</td>

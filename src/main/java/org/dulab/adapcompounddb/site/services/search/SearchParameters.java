@@ -11,6 +11,7 @@ public class SearchParameters implements Cloneable {
     private Double mzTolerance;
     private Double precursorTolerance;
     private Double massTolerance;
+    private Double massTolerancePPM;
     private Double retTimeTolerance;
     private String species;
     private String source;
@@ -51,6 +52,15 @@ public class SearchParameters implements Cloneable {
 
     public SearchParameters setMassTolerance(Double massTolerance) {
         this.massTolerance = massTolerance;
+        return this;
+    }
+
+    public Double getMassTolerancePPM() {
+        return massTolerancePPM;
+    }
+
+    public SearchParameters setMassTolerancePPM(Double massTolerancePPM) {
+        this.massTolerancePPM = massTolerancePPM;
         return this;
     }
 

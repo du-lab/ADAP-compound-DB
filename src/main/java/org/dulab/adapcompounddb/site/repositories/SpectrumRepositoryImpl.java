@@ -107,7 +107,8 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
             builder = builder.withChromatographyType(querySpectrum.getChromatographyType())
                     .withQuerySpectrum(querySpectrum.getPeaks(), parameters.getMzTolerance(), parameters.getScoreThreshold())
                     .withPrecursor(querySpectrum.getPrecursor(), parameters.getPrecursorTolerance())
-                    .withNeutralMass(querySpectrum.getMolecularWeight(), parameters.getMassTolerance())
+                    .withMass(querySpectrum.getMolecularWeight(), parameters.getMassTolerance())
+                    .withMassPPM(querySpectrum.getMolecularWeight(), parameters.getMassTolerancePPM())
                     .withRetTime(querySpectrum.getRetentionTime(), parameters.getRetTimeTolerance());
 
         String query;

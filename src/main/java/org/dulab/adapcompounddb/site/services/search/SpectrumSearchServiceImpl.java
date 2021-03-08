@@ -9,7 +9,6 @@ import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
-import org.dulab.adapcompounddb.site.controllers.ControllerUtils;
 import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
@@ -78,21 +77,6 @@ public class SpectrumSearchServiceImpl implements IndividualSearchService {
             }
         }
 
-//        List<SearchResultDTO> searchResults = new ArrayList<>();
-//        for (SpectrumClusterView view : spectrumRepository.matchAgainstConsensusAndReferenceSpectra(
-//                submissionIds, querySpectrum, parameters.getScoreThreshold(), parameters.getMzTolerance(),
-//                parameters.getPrecursorTolerance(), parameters.getMassTolerance(),
-//                parameters.getRetTimeTolerance())) {
-//
-//            SearchResultDTO searchResult = new SearchResultDTO(querySpectrum, view);
-//
-//            spectrumRepository.findById(view.getId())
-//                    .ifPresent(c -> searchResult.setJson(ControllerUtils
-//                            .spectrumToJson(c)
-//                            .toString()));
-//
-//            searchResults.add(searchResult);
-//        }
         return new ArrayList<>(0);
     }
 
@@ -102,14 +86,7 @@ public class SpectrumSearchServiceImpl implements IndividualSearchService {
         List<SearchResultDTO> searchResults = new ArrayList<>();
         for (SpectrumClusterView view : spectrumRepository.matchAgainstConsensusAndReferenceSpectra(
                 submissionIds, querySpectrum, parameters)) {
-
             SearchResultDTO searchResult = new SearchResultDTO(querySpectrum, view);
-
-//            spectrumRepository.findById(view.getId())
-//                    .ifPresent(c -> searchResult.setJson(ControllerUtils
-//                            .spectrumToJson(c)
-//                            .toString()));
-
             searchResults.add(searchResult);
         }
 
@@ -134,7 +111,7 @@ public class SpectrumSearchServiceImpl implements IndividualSearchService {
                 continue;
             if (ontologyLevel.getRetTimeTolerance() != null && spectrum.getRetentionTime() == null)
                 continue;
-            if (ontologyLevel.getMassTolerance() != null && spectrum.getMolecularWeight() == null)
+            if (ontologyLevel.getMassTolerancePPM() != null && spectrum.getMolecularWeight() == null)
                 continue;
 
             // Modify search parameters
@@ -147,7 +124,8 @@ public class SpectrumSearchServiceImpl implements IndividualSearchService {
             modifiedParameters.setMzTolerance(ontologyLevel.getMzTolerance());
             modifiedParameters.setScoreThreshold(ontologyLevel.getScoreThreshold());
             modifiedParameters.setPrecursorTolerance(ontologyLevel.getPrecursorTolerance());
-            modifiedParameters.setMassTolerance(ontologyLevel.getMassTolerance());
+            modifiedParameters.setMassTolerance(null);
+            modifiedParameters.setMassTolerancePPM(ontologyLevel.getMassTolerancePPM());
             modifiedParameters.setRetTimeTolerance(ontologyLevel.getRetTimeTolerance());
 
             // Perform search

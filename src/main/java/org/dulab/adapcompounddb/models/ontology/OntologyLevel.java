@@ -9,18 +9,18 @@ public class OntologyLevel {
     private final Double mzTolerance;
     private final Double scoreThreshold;
     private final Double precursorTolerance;
-    private final Double massTolerance;
+    private final Double massTolerancePPM;
     private final Double retTimeTolerance;
 
 
     public OntologyLevel(String label, int priority, boolean inHouseLibrary, Double mzTolerance, Double scoreThreshold,
-                         Double precursorTolerance, Double massTolerance, Double retTimeTolerance) {
+                         Double precursorTolerance, Double massTolerancePPM, Double retTimeTolerance) {
         this.label = label;
         this.priority = priority;
         this.inHouseLibrary = inHouseLibrary;
         this.mzTolerance = mzTolerance;
         this.scoreThreshold = scoreThreshold;
-        this.massTolerance = massTolerance;
+        this.massTolerancePPM = massTolerancePPM;
         this.precursorTolerance = precursorTolerance;
         this.retTimeTolerance = retTimeTolerance;
     }
@@ -45,8 +45,8 @@ public class OntologyLevel {
         return scoreThreshold;
     }
 
-    public Double getMassTolerance() {
-        return massTolerance;
+    public Double getMassTolerancePPM() {
+        return massTolerancePPM;
     }
 
     public Double getPrecursorTolerance() {
