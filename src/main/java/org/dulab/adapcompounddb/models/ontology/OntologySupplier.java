@@ -34,10 +34,10 @@ public class OntologySupplier {
         chromatographyTypeToOntologyLevelsMap.get(ChromatographyType.LC_MSMS_POS).add(ol2b);
         chromatographyTypeToOntologyLevelsMap.get(ChromatographyType.LC_MSMS_NEG).add(ol2b);
 
-        OntologyLevel pda = new OntologyLevel("PD_A", 2, false, Parameters.MZ_TOLERANCE,
-                Parameters.SCORE_THRESHOLD, Parameters.PRECURSOR_TOLERANCE, Parameters.MASS_TOLERANCE_PPM, null);
-        chromatographyTypeToOntologyLevelsMap.get(ChromatographyType.LC_MSMS_POS).add(pda);
-        chromatographyTypeToOntologyLevelsMap.get(ChromatographyType.LC_MSMS_NEG).add(pda);
+//        OntologyLevel pda = new OntologyLevel("PD_A", 2, false, Parameters.MZ_TOLERANCE,
+//                Parameters.SCORE_THRESHOLD, Parameters.PRECURSOR_TOLERANCE, Parameters.MASS_TOLERANCE_PPM, null);
+//        chromatographyTypeToOntologyLevelsMap.get(ChromatographyType.LC_MSMS_POS).add(pda);
+//        chromatographyTypeToOntologyLevelsMap.get(ChromatographyType.LC_MSMS_NEG).add(pda);
     }
 
 
