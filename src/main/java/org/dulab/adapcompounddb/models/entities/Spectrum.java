@@ -201,16 +201,17 @@ public class Spectrum implements Serializable {
                 this.setTopMz12(peakList.get(11).getMz());
             }
             if (peakList.size() >= 13){
-                this.setTopMz12(peakList.get(12).getMz());
+                //TODO: there should be `setTopMz13`, `setTopMz14`,... here and after
+                this.setTopMz13(peakList.get(12).getMz());
             }
             if (peakList.size() >= 14){
-                this.setTopMz12(peakList.get(13).getMz());
+                this.setTopMz14(peakList.get(13).getMz());
             }
             if (peakList.size() >= 15){
-                this.setTopMz12(peakList.get(14).getMz());
+                this.setTopMz15(peakList.get(14).getMz());
             }
             if (peakList.size() >= 16){
-                this.setTopMz12(peakList.get(15).getMz());
+                this.setTopMz16(peakList.get(15).getMz());
             }
 
             final double totalIntensity = peaks.stream()

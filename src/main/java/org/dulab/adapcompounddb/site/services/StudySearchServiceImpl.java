@@ -1,9 +1,8 @@
 package org.dulab.adapcompounddb.site.services;
 
 import org.dulab.adapcompounddb.models.entities.*;
+import org.dulab.adapcompounddb.site.repositories.SpectrumRepositoryCustom;
 import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
-import org.dulab.adapcompounddb.site.services.admin.QueryParameters;
-import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.dto.SubmissionMatchDTO;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters;
@@ -34,10 +33,12 @@ public class StudySearchServiceImpl implements StudySearchService {
 
         int querySubmissionSpectraCount = 0;
         for (File file : submission.getFiles()) {
+
             for (Spectrum spectrum : file.getSpectra()) {
                 SearchParameters searchParameters =
                         SearchParameters.getDefaultParameters(spectrum.getChromatographyType());
                 //TODO Add a call for method `preScreenSpectrum` and retrieve the IDs of selected spectra
+                Iterable<Long> matchSpectraIds = spectrumRepository.preScreenSpectrum(spectrum);
                 List<SpectrumMatch> matches = MappingUtils.toList(spectrumRepository.matchAgainstClusterableSpectra(
                         submissionIds,
                         spectrum,
