@@ -40,16 +40,14 @@ public class PreScreenQueryBuilder {
              String indexOfTopMz = "TopMz" + (numberOfTopMz - 8 + 1);
              String topMzNumber = "TopMz" + i;
              //check if Top m/z value is null
-             if(mapKeys.contains(indexOfTopMz) & topMzValueMap.get(indexOfTopMz) != null){
-                 queryBlock += String.format("(" + topMzNumber + "\t> %f and\t" + topMzNumber + "\t< %f)",
-                         Double.parseDouble(topMzValueMap.get(indexOfTopMz).toString()) - 0.1,
-                         Double.parseDouble(topMzValueMap.get(indexOfTopMz).toString()) + 0.1);
-                 //make sure the last line do not contain "or" keyword
-                 if(i != numberOfTopMz){
-                     queryBlock += "\tor\n";
-                 }else{
-                     queryBlock += ")\n";
-                 }
+             queryBlock += String.format("(" + topMzNumber + "\t> %f and\t" + topMzNumber + "\t< %f)",
+                     Double.parseDouble(topMzValueMap.get(indexOfTopMz).toString()) - 0.1,
+                     Double.parseDouble(topMzValueMap.get(indexOfTopMz).toString()) + 0.1);
+             //make sure the last line do not contain "or" keyword
+             if(i != numberOfTopMz){
+                 queryBlock += "\tor\n";
+             }else{
+                 queryBlock += ")\n";
              }
          }
         return queryBlock;
@@ -91,12 +89,12 @@ public class PreScreenQueryBuilder {
             query += "union all\n";
             query = query + buildQueryBlock(15, querySpectrum);
         }
-        if(querySpectrum.getTopMz16()!=null) {
-            query += "union all\n";
-            query = query + buildQueryBlock(16, querySpectrum);
-        }
+//        if(querySpectrum.getTopMz16()!=null) {
+//            query += "union all\n";
+//            query = query + buildQueryBlock(16, querySpectrum);
+//        }
         query += ") as TempTable\n";
-        query += "group by Id order by Common desc;";
+        query += "group by Id order by Common desc";
     return query;
     }
 }
