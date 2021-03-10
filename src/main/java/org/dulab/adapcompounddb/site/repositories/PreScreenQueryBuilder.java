@@ -2,9 +2,12 @@ package org.dulab.adapcompounddb.site.repositories;
 
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class PreScreenQueryBuilder {
     private Spectrum querySpectrum;
@@ -21,7 +24,9 @@ public class PreScreenQueryBuilder {
         this.querySpectrum = querySpectrum;
     }
 
+    //TODO Change parameter 'Spectrum s' to 'Double queryMz'
     public String buildQueryBlock(int numberOfTopMz, Spectrum s){
+
         String queryBlock;
         queryBlock = "select * from Spectrum where (";
         // create a map to map String variable to each topMz value of query sepctrum
@@ -36,11 +41,17 @@ public class PreScreenQueryBuilder {
         topMzValueMap.put("TopMz8", s.getTopMz8());
         Set mapKeys = topMzValueMap.keySet();
 
+        //TODO: Use this pattern to generate combine multiple strings
+        // String query = IntStream.range(1, numberOfTopMz + 1)
+        //        .map(i -> 'Generate a string')
+        //        .collect(Collectors.joining(" or "));
+
          for(int i = 1; i <= numberOfTopMz; i++){
              String indexOfTopMz = "TopMz" + (numberOfTopMz - 8 + 1);
              String topMzNumber = "TopMz" + i;
              //check if Top m/z value is null
              queryBlock += String.format("(" + topMzNumber + "\t> %f and\t" + topMzNumber + "\t< %f)",
+                     //TODO Use queryMz instead of 'Double.parseDouble(topMzValueMap.get(indexOfTopMz).toString())'
                      Double.parseDouble(topMzValueMap.get(indexOfTopMz).toString()) - 0.1,
                      Double.parseDouble(topMzValueMap.get(indexOfTopMz).toString()) + 0.1);
              //make sure the last line do not contain "or" keyword
@@ -56,6 +67,7 @@ public class PreScreenQueryBuilder {
     public String build(){
         String query;
         query = "select Id, Count(*) as Common from (\n";
+        //TODO: Don't need to check all 8 topMz values. Check only topMz1
         if(querySpectrum.getTopMz1()!=null & querySpectrum.getTopMz2()!=null & querySpectrum.getTopMz3()!=null
                 & querySpectrum.getTopMz4()!=null & querySpectrum.getTopMz5()!=null & querySpectrum.getTopMz6()!=null
                 & querySpectrum.getTopMz7()!=null & querySpectrum.getTopMz8()!=null){
