@@ -172,9 +172,6 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     public void saveSpectrumAndPeaks(final List<File> fileList, final List<Long> savedFileIdList) {
         final List<Spectrum> spectrumList = new ArrayList<>();
 
-        //TODO: Modify this method to save values for TopMz1, TopMz2,... Currently, they are not save to the database
-        // Check whether it works.
-
         final StringBuilder insertSql = new StringBuilder("INSERT INTO `Spectrum`(" +
                 "`Name`, `Precursor`, `RetentionTime`, `Significance`, " +
                 "`ClusterId`, `Consensus`, `Reference`, `IntegerMz`, " +
@@ -206,6 +203,8 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                         String.format("\"%s\"", spectrum.getChromatographyType().name()),
                         savedFileIdList.get(i),
                         spectrum.getMolecularWeight(),
+                        //TODO: Expression `y = (x != null) ? x : null` must be equivalent to `y = x`.
+                        // Will this work if you just put spectrum.getTopMz1(),... without any conditions?
                         spectrum.getTopMz1() != null ? spectrum.getTopMz1() : null,
                         spectrum.getTopMz2() != null ? spectrum.getTopMz2() : null,
                         spectrum.getTopMz3() != null ? spectrum.getTopMz3() : null,
@@ -271,11 +270,13 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     }
 
     @Override
-    public Iterable<Long> preScreenSpectrum(Spectrum querySpectrum){
-        PreScreenQueryBuilder preScreenQueryBuilder = new PreScreenQueryBuilder(querySpectrum);
+    public Iterable<Long> preScreenSpectrum(Spectrum querySpectrum, double mzTolerance){
+        PreScreenQueryBuilder preScreenQueryBuilder = new PreScreenQueryBuilder(querySpectrum, mzTolerance);
 
         final String sqlQuery = preScreenQueryBuilder.build();
 
+        //TODO: The SQL query returns two columns: Id and Common. It's completely wrong to assign it to a list of Long.
+        // Can you modify the SQL query to select columns Common and Id (in that order!) and return List<Object[]> from `preScreenSpectrum`
         final Iterable<Long> resultList = entityManager
                 .createNativeQuery(sqlQuery)
                 .getResultList();

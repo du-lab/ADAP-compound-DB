@@ -37,8 +37,12 @@ public class StudySearchServiceImpl implements StudySearchService {
             for (Spectrum spectrum : file.getSpectra()) {
                 SearchParameters searchParameters =
                         SearchParameters.getDefaultParameters(spectrum.getChromatographyType());
-                //TODO Add a call for method `preScreenSpectrum` and retrieve the IDs of selected spectra
-                Iterable<Long> matchSpectraIds = spectrumRepository.preScreenSpectrum(spectrum);
+                //TODO Change the next line to something like
+                // `Map<Long, List<Long>> commonToSpectrumIdsMap = MappingUtils.toMapOfLists(spectrumRepository.preScreenSpectrum(spectrum, searchParameters.getMzTolerance())`
+                // Here, the map key will be equal to the number of common peaks, and its value is the list of corresponding spectrum IDs
+                //TODO Be careful with conversions from BigInteger to Long
+                Iterable<Long> matchSpectraIds = spectrumRepository.preScreenSpectrum(spectrum, searchParameters.getMzTolerance());
+                //TODO Add `List<Long> preScreenedSpectrumIds = getSpectrumIdsWithCommonPeaksAboveThreshold(commonToSpectrumIdsMap, 50)`
                 List<SpectrumMatch> matches = MappingUtils.toList(spectrumRepository.matchAgainstClusterableSpectra(
                         submissionIds,
                         spectrum,
@@ -104,5 +108,15 @@ public class StudySearchServiceImpl implements StudySearchService {
         submissionMatchDTOs.sort(Comparator.comparingDouble(m -> -1 * m.getScore()));
 
         return submissionMatchDTOs;
+    }
+
+    //TODO Write this method to perform this logic:
+    // Get IDs of the library spectra with 8 common peaks.
+    // If the number of those spectra exceeds 50, then stop.
+    // Otherwise, get IDs of the library spectra with 7 common peaks and combine them with the the IDs for 8 common peaks
+    // If the total number of the IDs exceeds 50, the stop.
+    // Otherwise, get IDs of the library spectra with 6 common peaks...
+    private List<Long> getSpectrumIdsWithCommonPeaksAboveThreshold(Map<Long, List<Long>> commonToSpectrumIdsMap, long commonThreshold) {
+        return null;
     }
 }

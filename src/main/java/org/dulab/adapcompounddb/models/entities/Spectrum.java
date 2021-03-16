@@ -201,7 +201,6 @@ public class Spectrum implements Serializable {
                 this.setTopMz12(peakList.get(11).getMz());
             }
             if (peakList.size() >= 13){
-                //TODO: there should be `setTopMz13`, `setTopMz14`,... here and after
                 this.setTopMz13(peakList.get(12).getMz());
             }
             if (peakList.size() >= 14){

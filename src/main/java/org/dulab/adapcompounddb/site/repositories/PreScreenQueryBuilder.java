@@ -1,14 +1,18 @@
 package org.dulab.adapcompounddb.site.repositories;
 
 import org.dulab.adapcompounddb.models.entities.Spectrum;
+
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class PreScreenQueryBuilder {
-    private Spectrum querySpectrum;
 
-    PreScreenQueryBuilder(Spectrum querySpectrum){
+    private Spectrum querySpectrum;
+    private double mzTolerance;
+
+    PreScreenQueryBuilder(Spectrum querySpectrum, double mzTolerance) {
         this.querySpectrum = querySpectrum;
+        this.mzTolerance = mzTolerance;
     }
 
     public Spectrum getQuerySpectrum() {
@@ -19,64 +23,57 @@ public class PreScreenQueryBuilder {
         this.querySpectrum = querySpectrum;
     }
 
-    //TODO Change parameter 'Spectrum s' to 'Double queryMz'
-    public String buildQueryBlock(int numberOfTopMz, Double queryMz){
+    public String buildQueryBlock(int numberOfTopMz, Double queryMz) {
 
         String queryBlock;
         queryBlock = "select * from Spectrum where (";
-
-        //TODO: Use this pattern to generate combine multiple strings
-        // String query = IntStream.range(1, numberOfTopMz + 1)
-        //        .map(i -> 'Generate a string')
-        //        .collect(Collectors.joining(" or "));
-
         queryBlock += IntStream.range(1, numberOfTopMz + 1)
                 .mapToObj(i -> String.format("(TopMz" + i + "\t> %f and TopMz" + i + "\t< %f)",
-                        queryMz - 0.1,
-                        queryMz + 0.1))
+                        queryMz - mzTolerance,
+                        queryMz + mzTolerance))
                 .collect(Collectors.joining(" or\n"));
         queryBlock += ")\n";
 
         return queryBlock;
     }
 
-    public String build(){
+    public String build() {
         String query;
         query = "select Id, Count(*) as Common from (\n";
-        //TODO: Don't need to check all 8 topMz values. Check only topMz1
-        if(querySpectrum.getTopMz1()!=null){
+
+        if (querySpectrum.getTopMz1() != null) {
             query = query + buildQueryBlock(8, querySpectrum.getTopMz1());
         }
-        if(querySpectrum.getTopMz2()!=null){
+        if (querySpectrum.getTopMz2() != null) {
             query += "union all\n";
             query = query + buildQueryBlock(9, querySpectrum.getTopMz2());
         }
-        if(querySpectrum.getTopMz3()!=null) {
+        if (querySpectrum.getTopMz3() != null) {
             query += "union all\n";
             query = query + buildQueryBlock(10, querySpectrum.getTopMz3());
         }
-        if(querySpectrum.getTopMz4()!=null) {
+        if (querySpectrum.getTopMz4() != null) {
             query += "union all\n";
             query = query + buildQueryBlock(11, querySpectrum.getTopMz4());
         }
-        if(querySpectrum.getTopMz5()!=null) {
+        if (querySpectrum.getTopMz5() != null) {
             query += "union all\n";
             query = query + buildQueryBlock(12, querySpectrum.getTopMz5());
         }
-        if(querySpectrum.getTopMz6()!=null) {
+        if (querySpectrum.getTopMz6() != null) {
             query += "union all\n";
             query = query + buildQueryBlock(13, querySpectrum.getTopMz6());
         }
-        if(querySpectrum.getTopMz7()!=null) {
+        if (querySpectrum.getTopMz7() != null) {
             query += "union all\n";
             query = query + buildQueryBlock(14, querySpectrum.getTopMz7());
         }
-        if(querySpectrum.getTopMz8()!=null) {
+        if (querySpectrum.getTopMz8() != null) {
             query += "union all\n";
             query = query + buildQueryBlock(15, querySpectrum.getTopMz8());
         }
         query += ") as TempTable\n";
         query += "group by Id order by Common desc";
-    return query;
+        return query;
     }
 }
