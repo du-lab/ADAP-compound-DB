@@ -17,6 +17,7 @@ public class SearchParameters implements Cloneable {
     private String source;
     private String disease;
     private Set<Long> submissionIds;
+    private double[] masses;
     private int limit = 100;
 
     public Double getScoreThreshold() {
@@ -61,6 +62,15 @@ public class SearchParameters implements Cloneable {
 
     public SearchParameters setMassTolerancePPM(Double massTolerancePPM) {
         this.massTolerancePPM = massTolerancePPM;
+        return this;
+    }
+
+    public double[] getMasses() {
+        return masses;
+    }
+
+    public SearchParameters setMasses(double[] masses) {
+        this.masses = masses;
         return this;
     }
 

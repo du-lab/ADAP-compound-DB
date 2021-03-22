@@ -1,9 +1,7 @@
 package org.dulab.adapcompounddb.site.repositories;
 
 import java.math.BigInteger;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -46,6 +44,7 @@ public class SpectrumQueryBuilderAlt {
     private Double retTime = null;
     private Double retTimeTolerance = null;
     private Double mass = null;
+    private double[] masses = null;
     private Double massTolerance = null;
     private Double massTolerancePPM = null;
     private List<Peak> peaks = null;
@@ -88,6 +87,18 @@ public class SpectrumQueryBuilderAlt {
 
     public SpectrumQueryBuilderAlt withMassPPM(Double mass, Double ppm) {
         this.mass = mass;
+        this.massTolerancePPM = ppm;
+        return this;
+    }
+
+    public SpectrumQueryBuilderAlt withMasses(double[] masses, Double tolerance) {
+        this.masses = masses;
+        this.massTolerance = tolerance;
+        return this;
+    }
+
+    public SpectrumQueryBuilderAlt withMassesPPM(double[] masses, Double ppm) {
+        this.masses = masses;
         this.massTolerancePPM = ppm;
         return this;
     }
@@ -209,18 +220,32 @@ public class SpectrumQueryBuilderAlt {
                     mass / (1 + x), mass / (1 - x));
         }
 
+        if (mass == null && masses != null && massTolerance != null)
+            spectrumSelector += String.format(" AND (%s)", Arrays.stream(masses)
+                    .mapToObj(mass -> String.format(
+                            "(Spectrum.MolecularWeight > %f AND Spectrum.MolecularWeight < %f)",
+                            mass - massTolerance, mass + massTolerance))
+                    .collect(Collectors.joining(" OR ")));
+
+        if (mass == null && masses != null && massTolerancePPM != null) {
+            double x = 1e-6 * massTolerancePPM;
+            spectrumSelector += String.format(" AND (%s)", Arrays.stream(masses)
+                    .mapToObj(mass -> String.format(
+                            "(Spectrum.MolecularWeight > %f AND Spectrum.MolecularWeight < %f)",
+                            mass / (1 + x), mass / (1 - x)))
+                    .collect(Collectors.joining(" OR ")));
+        }
+
         if (retTime != null && retTimeTolerance != null)
             spectrumSelector += String.format(" AND Spectrum.RetentionTime > %f AND Spectrum.RetentionTime < %f",
                     retTime - retTimeTolerance, retTime + retTimeTolerance);
 
         String scoreTable = "";
         if (peaks != null && mzTolerance != null && scoreThreshold != null) {
-            scoreTable += String.format("SELECT SpectrumId, POWER(SUM(Product), 2) AS Score, MAX(ABS(MolecularWeight - %f)) AS MassError, ", mass);
-            scoreTable += String.format("1E6 * MAX(ABS(MolecularWeight - %f) / MolecularWeight) AS MassErrorPPM, ", mass);
+            scoreTable += "SELECT SpectrumId, POWER(SUM(Product), 2) AS Score, ";
+            scoreTable += String.format("MAX(%s) AS MassError, ", getMassError());
+            scoreTable += String.format("MAX(%s) AS MassErrorPPM, ", getMassErrorPPM());
             scoreTable += String.format("MAX(ABS(RetentionTime - %f)) AS RetTimeError FROM (\n", retTime);
-//            scoreTable += String.format(
-//                    "SELECT SpectrumId, POWER(SUM(Product), 2) AS Score, MAX(ABS(MolecularWeight - %f)) AS MassError, MAX(ABS(RetentionTime - %f)) AS RetTimeError FROM (\n",
-//                    neutralMass, retTime);
             String finalSpectrumSelector = spectrumSelector;
             scoreTable += peaks.stream()
                     .map(p -> String.format(
@@ -234,14 +259,34 @@ public class SpectrumQueryBuilderAlt {
             scoreTable += String.format("GROUP BY SpectrumId HAVING Score > %f\n", scoreThreshold);
 
         } else {
-            scoreTable += String.format("\tSELECT Id AS SpectrumId, NULL AS Score, ABS(MolecularWeight - %f) AS MassError, ", mass);
-            scoreTable += String.format("1E6 * ABS(MolecularWeight - %f) / MolecularWeight AS MassErrorPPM, ", mass);
+            scoreTable += "\tSELECT Id AS SpectrumId, NULL AS Score, ";
+            scoreTable += String.format("%s AS MassError, ", getMassError());
+            scoreTable += String.format("%s AS MassErrorPPM, ", getMassErrorPPM());
             scoreTable += String.format("ABS(RetentionTime - %f) AS RetTimeError ", retTime);
             scoreTable += String.format("FROM Spectrum WHERE %s\n", spectrumSelector);
-//            scoreTable += String.format("\tSELECT Id AS SpectrumId, NULL AS Score, ABS(MolecularWeight - %f) AS MassError, ABS(RetentionTime - %f) AS RetTimeError " +
-//                            "FROM Spectrum WHERE %s\n",
-//                    neutralMass, retTime, spectrumSelector);
         }
         return scoreTable;
+    }
+
+    private String getMassError() {
+        if (mass != null) {
+            return String.format("ABS(MolecularWeight - %f)", mass);
+        } else if (masses != null) {
+            return String.format("LEAST(%s)", Arrays.stream(masses)
+                    .mapToObj(mass -> String.format("ABS(MolecularWeight - %f)", mass))
+                    .collect(Collectors.joining(",")));
+        }
+        return "NULL AS MassError, ";
+    }
+
+    private String getMassErrorPPM() {
+        if (mass != null) {
+            return String.format("1E6 * ABS(MolecularWeight - %f) / MolecularWeight", mass);
+        } else if (masses != null) {
+            return String.format("LEAST(%s)", Arrays.stream(masses)
+                    .mapToObj(mass -> String.format("1E6 * ABS(MolecularWeight - %f) / MolecularWeight", mass))
+                    .collect(Collectors.joining(",")));
+        }
+        return "NULL AS MassErrorPPM, ";
     }
 }

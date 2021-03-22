@@ -1,7 +1,10 @@
 package org.dulab.adapcompounddb.site.services.search;
 
+import org.dulab.adapcompounddb.models.entities.Adduct;
 import org.dulab.adapcompounddb.models.ontology.OntologyLevel;
 import org.dulab.adapcompounddb.models.ontology.OntologySupplier;
+import org.dulab.adapcompounddb.site.repositories.AdductRepository;
+import org.dulab.adapcompounddb.site.services.AdductService;
 import org.dulab.adapcompounddb.site.services.admin.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
@@ -30,14 +33,17 @@ public class SpectrumSearchServiceImpl implements IndividualSearchService {
     private final SpectrumRepository spectrumRepository;
     private final SpectrumClusterRepository spectrumClusterRepository;
     private final SubmissionRepository submissionRepository;
+    private final AdductService adductService;
 
     @Autowired
     public SpectrumSearchServiceImpl(SpectrumRepository spectrumRepository,
                                      SpectrumClusterRepository spectrumClusterRepository,
-                                     SubmissionRepository submissionRepository) {
+                                     SubmissionRepository submissionRepository,
+                                     AdductService adductService) {
         this.spectrumRepository = spectrumRepository;
         this.spectrumClusterRepository = spectrumClusterRepository;
         this.submissionRepository = submissionRepository;
+        this.adductService = adductService;
     }
 
     @Override
@@ -101,6 +107,8 @@ public class SpectrumSearchServiceImpl implements IndividualSearchService {
         if (ontologyLevels == null)
             return new ArrayList<>(0);
 
+        List<Adduct> adducts = adductService.findAdductsByChromatography(spectrum.getChromatographyType());
+
         List<SearchResultDTO> searchResults = new ArrayList<>();
         for (OntologyLevel ontologyLevel : ontologyLevels) {
 
@@ -111,8 +119,19 @@ public class SpectrumSearchServiceImpl implements IndividualSearchService {
                 continue;
             if (ontologyLevel.getRetTimeTolerance() != null && spectrum.getRetentionTime() == null)
                 continue;
-            if (ontologyLevel.getMassTolerancePPM() != null && spectrum.getMolecularWeight() == null)
-                continue;
+//            if (ontologyLevel.getMassTolerancePPM() != null && spectrum.getMolecularWeight() == null)
+//                continue;
+//            if (ontologyLevel.getMassTolerancePPM() != null && spectrum.getMolecularWeight() == null) {
+//                List<Adduct> adducts = adductService.findAdductsByChromatography(spectrum.getChromatographyType());
+//                if (adducts != null && spectrum.getPrecursor() != null) {
+//                    for (Adduct adduct : adducts) {
+//                        spectrum.setMolecularWeight(adduct.calculateNeutralMass(spectrum.getPrecursor()));
+//                        searchResults.addAll(searchForOntologyLevel(submissionIds, parameters, spectrum, ontologyLevel));
+//                    }
+//                    spectrum.setMolecularWeight(null);
+//                }
+//                continue;
+//            }
 
             // Modify search parameters
             SearchParameters modifiedParameters;
@@ -127,6 +146,10 @@ public class SpectrumSearchServiceImpl implements IndividualSearchService {
             modifiedParameters.setMassTolerance(null);
             modifiedParameters.setMassTolerancePPM(ontologyLevel.getMassTolerancePPM());
             modifiedParameters.setRetTimeTolerance(ontologyLevel.getRetTimeTolerance());
+            if (spectrum.getMolecularWeight() == null && adducts != null && spectrum.getPrecursor() != null)
+                modifiedParameters.setMasses(adducts.stream()
+                        .mapToDouble(adduct -> adduct.calculateNeutralMass(spectrum.getPrecursor()))
+                        .toArray());
 
             // Perform search
             List<SearchResultDTO> results = MappingUtils.toList(
@@ -136,6 +159,8 @@ public class SpectrumSearchServiceImpl implements IndividualSearchService {
                     .map(x -> new SearchResultDTO(spectrum, x))
                     .collect(Collectors.toList());
             results.forEach(x -> x.setOntologyLevel(ontologyLevel));
+//            return results;
+
             searchResults.addAll(results);
         }
 

@@ -82,6 +82,11 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         return searchSpectra(submissionIds, querySpectrum, parameters,
                 true, true, false,
                 SpectrumClusterView.class);
+//        for (SpectrumClusterView match : matches) {
+//            if (match.getMassError() == null && match.getMassErrorPPM() == null && parameters.getMasses() != null) {
+//                match.
+//            }
+//        }
     }
 
     @Override
@@ -103,13 +108,19 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
         SpectrumQueryBuilderAlt builder = new SpectrumQueryBuilderAlt(submissionIdList, parameters.getLimit(),
                 searchConsensusSpectra, searchReferenceSpectra, searchClusterableSpectra);
-        if (querySpectrum != null)
+        if (querySpectrum != null) {
             builder = builder.withChromatographyType(querySpectrum.getChromatographyType())
                     .withQuerySpectrum(querySpectrum.getPeaks(), parameters.getMzTolerance(), parameters.getScoreThreshold())
                     .withPrecursor(querySpectrum.getPrecursor(), parameters.getPrecursorTolerance())
-                    .withMass(querySpectrum.getMolecularWeight(), parameters.getMassTolerance())
-                    .withMassPPM(querySpectrum.getMolecularWeight(), parameters.getMassTolerancePPM())
                     .withRetTime(querySpectrum.getRetentionTime(), parameters.getRetTimeTolerance());
+            if (querySpectrum.getMolecularWeight() != null) {
+                builder = builder.withMass(querySpectrum.getMolecularWeight(), parameters.getMassTolerance())
+                        .withMassPPM(querySpectrum.getMolecularWeight(), parameters.getMassTolerancePPM());
+            } else {
+                builder = builder.withMasses(parameters.getMasses(), parameters.getMassTolerance())
+                        .withMassesPPM(parameters.getMasses(), parameters.getMassTolerancePPM());
+            }
+        }
 
         String query;
         try {
