@@ -276,7 +276,7 @@ public class SpectrumQueryBuilderAlt {
                     .mapToObj(mass -> String.format("ABS(MolecularWeight - %f)", mass))
                     .collect(Collectors.joining(",")));
         }
-        return "NULL AS MassError, ";
+        return "NULL";
     }
 
     private String getMassErrorPPM() {
@@ -287,6 +287,6 @@ public class SpectrumQueryBuilderAlt {
                     .mapToObj(mass -> String.format("1E6 * ABS(MolecularWeight - %f) / MolecularWeight", mass))
                     .collect(Collectors.joining(",")));
         }
-        return "NULL AS MassErrorPPM, ";
+        return "NULL";
     }
 }
