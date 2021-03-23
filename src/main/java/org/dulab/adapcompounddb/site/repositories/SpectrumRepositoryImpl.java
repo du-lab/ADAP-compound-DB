@@ -203,8 +203,6 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                         String.format("\"%s\"", spectrum.getChromatographyType().name()),
                         savedFileIdList.get(i),
                         spectrum.getMolecularWeight(),
-                        //TODO: Expression `y = (x != null) ? x : null` must be equivalent to `y = x`.
-                        // Will this work if you just put spectrum.getTopMz1(),... without any conditions?
                         spectrum.getTopMz1(),
                         spectrum.getTopMz2(),
                         spectrum.getTopMz3(),
@@ -275,8 +273,6 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
         final String sqlQuery = preScreenQueryBuilder.build();
 
-        //TODO: The SQL query returns two columns: Id and Common. It's completely wrong to assign it to a list of Long.
-        // Can you modify the SQL query to select columns Common and Id (in that order!) and return List<Object[]> from `preScreenSpectrum`
         final Iterable<Object[]> resultList = entityManager
                 .createNativeQuery(sqlQuery)
                 .getResultList();

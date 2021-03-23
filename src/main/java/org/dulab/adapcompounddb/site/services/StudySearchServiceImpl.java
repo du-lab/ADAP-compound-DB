@@ -36,13 +36,9 @@ public class StudySearchServiceImpl implements StudySearchService {
             for (Spectrum spectrum : file.getSpectra()) {
                 SearchParameters searchParameters =
                         SearchParameters.getDefaultParameters(spectrum.getChromatographyType());
-                //TODO Change the next line to something like
-                // `Map<Long, List<Long>> commonToSpectrumIdsMap = MappingUtils.toMapOfLists(spectrumRepository.preScreenSpectrum(spectrum, searchParameters.getMzTolerance())`
-                // Here, the map key will be equal to the number of common peaks, and its value is the list of corresponding spectrum IDs
-                //TODO Be careful with conversions from BigInteger to Long
-                Map<Long, List<Long>> commonToSpectrumIdsMap = MappingUtils.toMapBigIntegerOfLists(spectrumRepository.preScreenSpectrum(spectrum, searchParameters.getMzTolerance()));
+                Map<Long, List<Long>> commonToSpectrumIdsMap = MappingUtils.toMapBigIntegerOfLists(
+                        spectrumRepository.preScreenSpectrum(spectrum, searchParameters.getMzTolerance()));
 
-                //TODO Add `List<Long> preScreenedSpectrumIds = getSpectrumIdsWithCommonPeaksAboveThreshold(commonToSpectrumIdsMap, 50)`
                 List<Long> preScreenedSpectrumIds = getSpectrumIdsWithCommonPeaksAboveThreshold(commonToSpectrumIdsMap, 50);
                 List<SpectrumMatch> matches = MappingUtils.toList(spectrumRepository.matchAgainstClusterableSpectra(
                         submissionIds,
@@ -111,20 +107,21 @@ public class StudySearchServiceImpl implements StudySearchService {
         return submissionMatchDTOs;
     }
 
-    //TODO Write this method to perform this logic:
-    // Get IDs of the library spectra with 8 common peaks.
-    // If the number of those spectra exceeds 50, then stop.
-    // Otherwise, get IDs of the library spectra with 7 common peaks and combine them with the the IDs for 8 common peaks
-    // If the total number of the IDs exceeds 50, the stop.
-    // Otherwise, get IDs of the library spectra with 6 common peaks...
     private List<Long> getSpectrumIdsWithCommonPeaksAboveThreshold(Map<Long, List<Long>> commonToSpectrumIdsMap, long commonThreshold) {
         int spectraNumber = 0;
         List<Long> spectraList = new ArrayList<>();
+        //TODO you can replace `int i=8; i>0; i--` with `long i=8L; i>0L; i--` and you won't need to convert int to long in line 125
         for (int i=8; i>0; i--) {
             Long keyValue = new Long(i);
+            //TODO We want to make this function as fast as possible. In your code, when calling commonToSpectrumIdsMap.containsKey(keyValue) and
+            // two-times calling commonToSpectrumIdsMap.get(keyValue), you essentially do the same thing three times!
+            // Instead, you can call `List<Long> spectra = commonToSpectrumIdsMap.containsKey(keyValue)`
+            // and replace `commonToSpectrumIdsMap.containsKey(keyValue)` with `spectra != null`,
+            // and replace `commonToSpectrumIdsMap.get(keyValue)` with `spectra`
             if (commonToSpectrumIdsMap.containsKey(keyValue)) {
                 spectraNumber = commonToSpectrumIdsMap.get(keyValue).size() + spectraNumber;
                 spectraList.addAll(commonToSpectrumIdsMap.get(keyValue));
+                //TODO change 50 to `commonThreshold`. Also you can replace `spectraNumber` with `spectraList.size()` and completely get rid of `spectraNumber`
                 if (spectraNumber > 50) {
                     break;
                 }
