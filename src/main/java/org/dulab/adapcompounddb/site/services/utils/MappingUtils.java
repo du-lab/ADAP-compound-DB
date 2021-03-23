@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.services.utils;
 
+import java.math.BigInteger;
 import java.util.*;
 
 public class MappingUtils {
@@ -20,6 +21,17 @@ public class MappingUtils {
         Map<Long, List<E>> map = new HashMap<>();
         for (Object[] it : iterable) {
             Long key = (Long) it[0];
+            E value = (E) it[1];
+            map.computeIfAbsent(key, k -> new ArrayList<>())
+                    .add(value);
+        }
+        return map;
+    }
+
+    public static <E> Map<Long, List<E>> toMapBigIntegerOfLists(Iterable<Object[]> iterable) {
+        Map<Long, List<E>> map = new HashMap<>();
+        for (Object[] it : iterable) {
+            Long key = ((BigInteger) it[0]).longValue();
             E value = (E) it[1];
             map.computeIfAbsent(key, k -> new ArrayList<>())
                     .add(value);

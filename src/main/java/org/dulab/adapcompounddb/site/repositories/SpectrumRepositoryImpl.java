@@ -205,22 +205,22 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                         spectrum.getMolecularWeight(),
                         //TODO: Expression `y = (x != null) ? x : null` must be equivalent to `y = x`.
                         // Will this work if you just put spectrum.getTopMz1(),... without any conditions?
-                        spectrum.getTopMz1() != null ? spectrum.getTopMz1() : null,
-                        spectrum.getTopMz2() != null ? spectrum.getTopMz2() : null,
-                        spectrum.getTopMz3() != null ? spectrum.getTopMz3() : null,
-                        spectrum.getTopMz4() != null ? spectrum.getTopMz4() : null,
-                        spectrum.getTopMz5() != null ? spectrum.getTopMz5() : null,
-                        spectrum.getTopMz6() != null ? spectrum.getTopMz6() : null,
-                        spectrum.getTopMz7() != null ? spectrum.getTopMz7() : null,
-                        spectrum.getTopMz8() != null ? spectrum.getTopMz8() : null,
-                        spectrum.getTopMz9() != null ? spectrum.getTopMz9() : null,
-                        spectrum.getTopMz10() != null ? spectrum.getTopMz10() : null,
-                        spectrum.getTopMz11() != null ? spectrum.getTopMz11() : null,
-                        spectrum.getTopMz12() != null ? spectrum.getTopMz12() : null,
-                        spectrum.getTopMz13() != null ? spectrum.getTopMz13() : null,
-                        spectrum.getTopMz14() != null ? spectrum.getTopMz14() : null,
-                        spectrum.getTopMz15() != null ? spectrum.getTopMz15() : null,
-                        spectrum.getTopMz16() != null ? spectrum.getTopMz16() : null
+                        spectrum.getTopMz1(),
+                        spectrum.getTopMz2(),
+                        spectrum.getTopMz3(),
+                        spectrum.getTopMz4(),
+                        spectrum.getTopMz5(),
+                        spectrum.getTopMz6(),
+                        spectrum.getTopMz7(),
+                        spectrum.getTopMz8(),
+                        spectrum.getTopMz9(),
+                        spectrum.getTopMz10(),
+                        spectrum.getTopMz11(),
+                        spectrum.getTopMz12(),
+                        spectrum.getTopMz13(),
+                        spectrum.getTopMz14(),
+                        spectrum.getTopMz15(),
+                        spectrum.getTopMz16()
                 ));
             }
         }
@@ -270,14 +270,14 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     }
 
     @Override
-    public Iterable<Long> preScreenSpectrum(Spectrum querySpectrum, double mzTolerance){
+    public Iterable<Object[]> preScreenSpectrum(Spectrum querySpectrum, double mzTolerance){
         PreScreenQueryBuilder preScreenQueryBuilder = new PreScreenQueryBuilder(querySpectrum, mzTolerance);
 
         final String sqlQuery = preScreenQueryBuilder.build();
 
         //TODO: The SQL query returns two columns: Id and Common. It's completely wrong to assign it to a list of Long.
         // Can you modify the SQL query to select columns Common and Id (in that order!) and return List<Object[]> from `preScreenSpectrum`
-        final Iterable<Long> resultList = entityManager
+        final Iterable<Object[]> resultList = entityManager
                 .createNativeQuery(sqlQuery)
                 .getResultList();
         return resultList;

@@ -39,7 +39,7 @@ public class PreScreenQueryBuilder {
 
     public String build() {
         String query;
-        query = "select Id, Count(*) as Common from (\n";
+        query = "select Count(*), Id as Common from (\n";
 
         if (querySpectrum.getTopMz1() != null) {
             query = query + buildQueryBlock(8, querySpectrum.getTopMz1());

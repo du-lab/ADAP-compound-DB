@@ -1,7 +1,6 @@
 package org.dulab.adapcompounddb.site.services;
 
 import org.dulab.adapcompounddb.models.entities.*;
-import org.dulab.adapcompounddb.site.repositories.SpectrumRepositoryCustom;
 import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
 import org.dulab.adapcompounddb.models.dto.SubmissionMatchDTO;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
@@ -41,8 +40,10 @@ public class StudySearchServiceImpl implements StudySearchService {
                 // `Map<Long, List<Long>> commonToSpectrumIdsMap = MappingUtils.toMapOfLists(spectrumRepository.preScreenSpectrum(spectrum, searchParameters.getMzTolerance())`
                 // Here, the map key will be equal to the number of common peaks, and its value is the list of corresponding spectrum IDs
                 //TODO Be careful with conversions from BigInteger to Long
-                Iterable<Long> matchSpectraIds = spectrumRepository.preScreenSpectrum(spectrum, searchParameters.getMzTolerance());
+                Map<Long, List<Long>> commonToSpectrumIdsMap = MappingUtils.toMapBigIntegerOfLists(spectrumRepository.preScreenSpectrum(spectrum, searchParameters.getMzTolerance()));
+
                 //TODO Add `List<Long> preScreenedSpectrumIds = getSpectrumIdsWithCommonPeaksAboveThreshold(commonToSpectrumIdsMap, 50)`
+                List<Long> preScreenedSpectrumIds = getSpectrumIdsWithCommonPeaksAboveThreshold(commonToSpectrumIdsMap, 50);
                 List<SpectrumMatch> matches = MappingUtils.toList(spectrumRepository.matchAgainstClusterableSpectra(
                         submissionIds,
                         spectrum,
@@ -117,6 +118,18 @@ public class StudySearchServiceImpl implements StudySearchService {
     // If the total number of the IDs exceeds 50, the stop.
     // Otherwise, get IDs of the library spectra with 6 common peaks...
     private List<Long> getSpectrumIdsWithCommonPeaksAboveThreshold(Map<Long, List<Long>> commonToSpectrumIdsMap, long commonThreshold) {
-        return null;
+        int spectraNumber = 0;
+        List<Long> spectraList = new ArrayList<>();
+        for (int i=8; i>0; i--) {
+            Long keyValue = new Long(i);
+            if (commonToSpectrumIdsMap.containsKey(keyValue)) {
+                spectraNumber = commonToSpectrumIdsMap.get(keyValue).size() + spectraNumber;
+                spectraList.addAll(commonToSpectrumIdsMap.get(keyValue));
+                if (spectraNumber > 50) {
+                    break;
+                }
+            }
+        }
+        return spectraList;
     }
 }
