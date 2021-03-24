@@ -40,38 +40,38 @@ public class PreScreenQueryBuilder {
     public String build() {
         String query;
         //TODO It should be `select Count(*) as Common, Id from...`. Your code would work but the column names would be confusing.
-        query = "select Count(*), Id as Common from (\n";
+        query = "select Count(*) as Common, Id from (\n";
 
         if (querySpectrum.getTopMz1() != null) {
-            query = query + buildQueryBlock(8, querySpectrum.getTopMz1());
+            query += buildQueryBlock(8, querySpectrum.getTopMz1());
         }
         if (querySpectrum.getTopMz2() != null) {
             query += "union all\n";
-            query = query + buildQueryBlock(9, querySpectrum.getTopMz2());
+            query += buildQueryBlock(9, querySpectrum.getTopMz2());
         }
         if (querySpectrum.getTopMz3() != null) {
             query += "union all\n";
-            query = query + buildQueryBlock(10, querySpectrum.getTopMz3());
+            query += buildQueryBlock(10, querySpectrum.getTopMz3());
         }
         if (querySpectrum.getTopMz4() != null) {
             query += "union all\n";
-            query = query + buildQueryBlock(11, querySpectrum.getTopMz4());
+            query += buildQueryBlock(11, querySpectrum.getTopMz4());
         }
         if (querySpectrum.getTopMz5() != null) {
             query += "union all\n";
-            query = query + buildQueryBlock(12, querySpectrum.getTopMz5());
+            query += buildQueryBlock(12, querySpectrum.getTopMz5());
         }
         if (querySpectrum.getTopMz6() != null) {
             query += "union all\n";
-            query = query + buildQueryBlock(13, querySpectrum.getTopMz6());
+            query += buildQueryBlock(13, querySpectrum.getTopMz6());
         }
         if (querySpectrum.getTopMz7() != null) {
             query += "union all\n";
-            query = query + buildQueryBlock(14, querySpectrum.getTopMz7());
+            query += buildQueryBlock(14, querySpectrum.getTopMz7());
         }
         if (querySpectrum.getTopMz8() != null) {
             query += "union all\n";
-            query = query + buildQueryBlock(15, querySpectrum.getTopMz8());
+            query += buildQueryBlock(15, querySpectrum.getTopMz8());
         }
         query += ") as TempTable\n";
         query += "group by Id order by Common desc";

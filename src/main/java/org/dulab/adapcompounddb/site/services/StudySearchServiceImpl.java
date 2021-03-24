@@ -108,21 +108,19 @@ public class StudySearchServiceImpl implements StudySearchService {
     }
 
     private List<Long> getSpectrumIdsWithCommonPeaksAboveThreshold(Map<Long, List<Long>> commonToSpectrumIdsMap, long commonThreshold) {
-        int spectraNumber = 0;
         List<Long> spectraList = new ArrayList<>();
         //TODO you can replace `int i=8; i>0; i--` with `long i=8L; i>0L; i--` and you won't need to convert int to long in line 125
-        for (int i=8; i>0; i--) {
-            Long keyValue = new Long(i);
+        for (long i = 8L; i > 0L; i--) {
             //TODO We want to make this function as fast as possible. In your code, when calling commonToSpectrumIdsMap.containsKey(keyValue) and
             // two-times calling commonToSpectrumIdsMap.get(keyValue), you essentially do the same thing three times!
             // Instead, you can call `List<Long> spectra = commonToSpectrumIdsMap.containsKey(keyValue)`
             // and replace `commonToSpectrumIdsMap.containsKey(keyValue)` with `spectra != null`,
             // and replace `commonToSpectrumIdsMap.get(keyValue)` with `spectra`
-            if (commonToSpectrumIdsMap.containsKey(keyValue)) {
-                spectraNumber = commonToSpectrumIdsMap.get(keyValue).size() + spectraNumber;
-                spectraList.addAll(commonToSpectrumIdsMap.get(keyValue));
+            List<Long> spectra = commonToSpectrumIdsMap.get(i);
+            if (spectra != null) {
+                spectraList.addAll(commonToSpectrumIdsMap.get(i));
                 //TODO change 50 to `commonThreshold`. Also you can replace `spectraNumber` with `spectraList.size()` and completely get rid of `spectraNumber`
-                if (spectraNumber > 50) {
+                if (spectraList.size() > commonThreshold) {
                     break;
                 }
             }
