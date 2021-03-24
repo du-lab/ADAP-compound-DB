@@ -33,7 +33,7 @@ public class SpectrumQueryBuilderAlt {
     private static final String EMPTY_SPECTRUM_MATCH_OUTPUT =
             "0 AS Id, NULL AS QuerySpectrumId, Spectrum.Id AS MatchSpectrumId, 0 AS Score";
 
-    //TODO Add variable spectrumIds
+    //TODO Add variable private final Collection<BigInteger> spectrumIds
     private final Collection<BigInteger> submissionIds;
     private final boolean searchConsensusSpectra;
     private final boolean searchReferenceSpectra;
@@ -51,6 +51,7 @@ public class SpectrumQueryBuilderAlt {
     private Double scoreThreshold = null;
 
 
+    //TODO Add variable private final Collection<BigInteger> spectrumIds
     public SpectrumQueryBuilderAlt(Collection<BigInteger> submissionIds, boolean searchConsensusSpectra,
                                    boolean searchReferenceSpectra, boolean searchClusterableSpectra) {
 
@@ -180,6 +181,9 @@ public class SpectrumQueryBuilderAlt {
                 "Spectrum.Consensus IS %s AND Spectrum.Reference IS %s AND Spectrum.Clusterable IS %s",
                 isConsensus, isReference, isClusterable);
 
+        //TODO If spectrumIds != null, then add condition ` AND Spectrum.Id IN (ID1,ID2,ID3,...)` to `spectrumSelector`,
+        // where ID1, ID2, ... are the IDs from `spectrumIds`
+
         if (chromatographyType != null)
             spectrumSelector += String.format(" AND Spectrum.ChromatographyType = '%s'", chromatographyType);
 
@@ -199,7 +203,6 @@ public class SpectrumQueryBuilderAlt {
             String finalSpectrumSelector = spectrumSelector;
             scoreTable += peaks.stream()
                     .map(p -> String.format(
-                            //TODO Add condition `AND Spectrum.Id IN (ID1,ID2,ID3,...)`, where ID1, ID2, ... are the IDs from `spectrumIds`
                             "\tSELECT SpectrumId, SQRT(Intensity * %f) AS Product, ABS(MolecularWeight - %f) AS Error " +
                                     "FROM Spectrum INNER JOIN Peak ON Peak.SpectrumId = Spectrum.Id " +
                                     "WHERE %s AND Mz > %f AND Mz < %f\n",

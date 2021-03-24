@@ -40,6 +40,7 @@ public class StudySearchServiceImpl implements StudySearchService {
                         spectrumRepository.preScreenSpectrum(spectrum, searchParameters.getMzTolerance()));
 
                 List<Long> preScreenedSpectrumIds = getSpectrumIdsWithCommonPeaksAboveThreshold(commonToSpectrumIdsMap, 50);
+                //TODO Pass variable `preScreenedSpectrumIds` tp `matchAgainstClusterableSpectra`
                 List<SpectrumMatch> matches = MappingUtils.toList(spectrumRepository.matchAgainstClusterableSpectra(
                         submissionIds,
                         spectrum,
