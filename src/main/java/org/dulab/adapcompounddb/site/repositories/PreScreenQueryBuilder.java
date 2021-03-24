@@ -39,7 +39,6 @@ public class PreScreenQueryBuilder {
 
     public String build() {
         String query;
-        //TODO It should be `select Count(*) as Common, Id from...`. Your code would work but the column names would be confusing.
         query = "select Count(*) as Common, Id from (\n";
 
         if (querySpectrum.getTopMz1() != null) {

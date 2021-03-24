@@ -93,6 +93,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         return matches;
     }
 
+    //TODO Add parameter List<BigInteger> spectrumIds
     private <E> Iterable<E> searchSpectra(@NotNull Iterable<BigInteger> submissionIds, Spectrum querySpectrum,
                                           Double scoreThreshold, Double mzTolerance,
                                           Double precursorTolerance, Double molecularWeightTolerance,
