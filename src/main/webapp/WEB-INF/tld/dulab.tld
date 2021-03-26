@@ -132,4 +132,11 @@
         <function-class>org.dulab.adapcompounddb.site.controllers.utils.URLUtils</function-class>
         <function-signature>java.lang.Integer getSpectrumIndexFromURL(java.lang.String)</function-signature>
     </function>
+
+    <function>
+        <description>Returns attribute name of the group search results</description>
+        <name>groupSearchResultsAttributeName</name>
+        <function-class>org.dulab.adapcompounddb.site.controllers.ControllerUtils</function-class>
+        <function-signature>java.lang.String groupSearchResultsAttributeName()</function-signature>
+    </function>
 </taglib>

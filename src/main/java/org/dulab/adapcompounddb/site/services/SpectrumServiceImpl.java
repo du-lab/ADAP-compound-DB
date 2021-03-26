@@ -8,8 +8,11 @@ import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.SpectrumDTO;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
+import org.dulab.adapcompounddb.models.entities.SpectrumProperty;
+import org.dulab.adapcompounddb.site.repositories.SpectrumPropertyRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.services.utils.DataUtils;
+import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.dulab.adapcompounddb.utils.ObjectMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,6 +26,8 @@ public class SpectrumServiceImpl implements SpectrumService {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final SpectrumRepository spectrumRepository;
+    private final SpectrumPropertyRepository spectrumPropertyRepository;
+
 
     private enum ColumnInformation {
         NAME(1, "name"), RETENTIONTIME(2, "retentionTime"),
@@ -58,8 +63,11 @@ public class SpectrumServiceImpl implements SpectrumService {
     }
 
     @Autowired
-    public SpectrumServiceImpl(final SpectrumRepository spectrumRepository) {
+    public SpectrumServiceImpl(SpectrumRepository spectrumRepository,
+                               SpectrumPropertyRepository spectrumPropertyRepository) {
+
         this.spectrumRepository = spectrumRepository;
+        this.spectrumPropertyRepository = spectrumPropertyRepository;
     }
 
     @Override
@@ -115,5 +123,10 @@ public class SpectrumServiceImpl implements SpectrumService {
     @Transactional
     public void updateClusterableBySubmissionId(long submissionId, boolean clusterable) {
         spectrumRepository.updateClusterableBySubmissionId(submissionId, clusterable);
+    }
+
+    @Override
+    public List<SpectrumProperty> findSpectrumPropertiesBySpectrumId(long... spectrumIds) {
+        return MappingUtils.toList(spectrumPropertyRepository.findBySpectrumId(spectrumIds));
     }
 }

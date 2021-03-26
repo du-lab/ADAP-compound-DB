@@ -38,6 +38,7 @@ public class SearchResultDTO implements Serializable {
     private Integer querySpectrumIndex;
     private Integer queryFileIndex;
     private String querySpectrumName;
+    private String queryExternalId;
 
     // Match
     private MatchType matchType;
@@ -95,6 +96,7 @@ public class SearchResultDTO implements Serializable {
         if (querySpectrum != null) {
             this.querySpectrumId = querySpectrum.getId();
             this.querySpectrumName = querySpectrum.getName();
+            this.queryExternalId = querySpectrum.getExternalId();
         }
     }
 
@@ -230,6 +232,14 @@ public class SearchResultDTO implements Serializable {
 
     public void setQueryFileIndex(Integer queryFileIndex) {
         this.queryFileIndex = queryFileIndex;
+    }
+
+    public String getQueryExternalId() {
+        return queryExternalId;
+    }
+
+    public void setQueryExternalId(String queryExternalId) {
+        this.queryExternalId = queryExternalId;
     }
 
     public String getChromatographyTypeLabel() {

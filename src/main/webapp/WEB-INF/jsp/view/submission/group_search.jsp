@@ -72,6 +72,10 @@
     <div class="row row-content">
         <div class="col">
             <div class="btn-toolbar justify-content-end" role="toolbar">
+                <a id="exportButton" type="button" class="btn btn-primary"
+                   href="${pageContext.request.contextPath}/export/session/${dulab:groupSearchResultsAttributeName()}/csv">
+                    Export...
+                </a>
                 <div class="progress flex-grow-1 align-self-center mx-2">
                     <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow="0"
                          aria-valuemin="0" aria-valuemax="100"></div>

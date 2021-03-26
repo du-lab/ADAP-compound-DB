@@ -2,8 +2,11 @@ package org.dulab.adapcompounddb.site.services;
 
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
+import org.dulab.adapcompounddb.models.entities.SpectrumProperty;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.springframework.validation.annotation.Validated;
+
+import java.util.List;
 
 @Validated
 public interface SpectrumService {
@@ -20,4 +23,6 @@ public interface SpectrumService {
     void updateReferenceBySubmissionId(long submissionId, boolean reference);
 
     void updateClusterableBySubmissionId(long submissionId, boolean clusterable);
+
+    List<SpectrumProperty> findSpectrumPropertiesBySpectrumId(long... spectrumIds);
 }

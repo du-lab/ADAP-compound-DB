@@ -93,7 +93,7 @@ public class GroupSearchServiceImpl implements GroupSearchService {
                     parameters.setSource(source);
                     parameters.setDisease(disease);
                     parameters.setSubmissionIds(submissionIds);
-                    parameters.setLimit(1);
+                    parameters.setLimit(10);
 
                     List<SearchResultDTO> individualSearchResults =
                             spectrumSearchService.searchConsensusSpectra(userPrincipal, querySpectrum, parameters, true);
