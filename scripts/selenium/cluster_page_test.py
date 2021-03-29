@@ -40,16 +40,15 @@ def cluster_page_test(homepage_url):
         assert(driver.current_url.__str__().startswith(urljoin(urljoin(homepage_url, 'cluster/'), cluster_id)))
 
         # get the Spectrum Plot span
-        span_list = driver.find_elements_by_css_selector("section>div>span")
-        spectrum_plot_span = span_list[1]
-        spectrum_plot_span.click()
+        spectrum_plot_tab = driver.find_element_by_css_selector('a[href="#spectrum_plot"]')
+        spectrum_plot_tab.click()
 
         # check if there is a spectrum plot
         assert(driver.find_element_by_id('plot'))
 
         # get the Distributions span
-        distributions_span = span_list[2]
-        distributions_span.click()
+        distributions_tab = driver.find_element_by_css_selector('a[href="#tag_distributions"]')
+        distributions_tab.click()
 
         # get the number of div tag in Distributions span, and test if exsit any figure.
         # if there is no figure, the total number of div tag will be 2
@@ -57,16 +56,16 @@ def cluster_page_test(homepage_url):
         assert(len(div_list) > 2)
 
         # get the Pie Chart span
-        pie_chart_span = span_list[3]
-        pie_chart_span.click()
+        pie_chart_tab = driver.find_element_by_css_selector('a[href="#pie_chart"]')
+        pie_chart_tab.click()
 
         # get the number of pie chart and check if there is at least one pie chart
         pie_chart_list = driver.find_element_by_id("pie_chart").find_elements_by_css_selector("div>div>div")
         assert(len(pie_chart_list) > 0)
 
         # get Spectrum List span
-        spectrum_list_span = span_list[4]
-        spectrum_list_span.click()
+        spectrum_list_tab = driver.find_element_by_css_selector('a[href="#spectrum_list"]')
+        spectrum_list_tab.click()
 
         # check if there is any records in the spectrum list table
         spectrum_table = driver.find_element_by_id('big_spectrum_table')
