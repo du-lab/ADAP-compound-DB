@@ -89,26 +89,6 @@
 
 <body>
 
-<div align="center" class="cookie-banner" style="display: none">
-    <p>
-        By using our website, you agree to our
-        <a href="${pageContext.request.contextPath}/resources/cookie-policy.txt" target="_blank">cookie policy</a>
-        <button class="close">&times;</button>
-    </p>
-</div>
-
-<script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
-<script>
-    if (localStorage.getItem("cookieSeen") != "shown") {
-        $(".cookie-banner").delay(2000).fadeIn();
-        localStorage.setItem("cookieSeen", "shown")
-    }
-    ;
-    $(".close").click(function () {
-        $(".cookie-banner").fadeOut();
-    })
-</script>
-
 <header class="jambotron fixed-top">
     <div class="container-fluid">
         <div class="row row-header">
@@ -219,6 +199,31 @@
         <decorator:body/>
     </article>
 </div>
+
+<div class="cookie-banner" style="display: none">
+    <div class="container">
+        <div class="row row-content">
+            <div class="col">
+                By using this website, you agree to our
+                <a href="${pageContext.request.contextPath}/resources/cookie-policy.txt" target="_blank">cookie
+                    policy</a>.
+            </div>
+            <button id="closeBannerButton" class="btn btn-secondary">&times;</button>
+        </div>
+    </div>
+</div>
+
+<script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
+<script>
+    if (localStorage.getItem("cookieSeen") !== "shown") {
+        $(".cookie-banner").delay(2000).fadeIn();
+        localStorage.setItem("cookieSeen", "shown")
+    }
+
+    $("#closeBannerButton").click(function () {
+        $(".cookie-banner").fadeOut();
+    })
+</script>
 
 </body>
 

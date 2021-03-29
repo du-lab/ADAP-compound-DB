@@ -704,15 +704,15 @@ progress:after {
     border-radius: 5px;
     box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.2);
 }
-.close {
-    position:fixed;
-    bottom: 60px;
-    left: 90%;
-    right: 10%;
-    height: 20px;
-    background-color: #777;
-    border: none;
-    color: white;
-    border-radius: 2px;
-    cursor: pointer;
-}
+/*.close {*/
+/*    position:fixed;*/
+/*    bottom: 60px;*/
+/*    left: 90%;*/
+/*    right: 10%;*/
+/*    height: 20px;*/
+/*    background-color: #777;*/
+/*    border: none;*/
+/*    color: white;*/
+/*    border-radius: 2px;*/
+/*    cursor: pointer;*/
+/*}*/
