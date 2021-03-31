@@ -70,9 +70,6 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         return matches;
     }
 
-
-
-    //TODO Add parameter List<BigInteger> spectrumIds
     @Override
     public Iterable<SpectrumClusterView> matchAgainstConsensusAndReferenceSpectra(
             List<BigInteger> spectrumIds,
@@ -85,7 +82,6 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                 SpectrumClusterView.class);
     }
 
-    //TODO Add parameter List<BigInteger> spectrumIds
     @Override
     public Iterable<SpectrumMatch> matchAgainstClusterableSpectra(
             List<BigInteger> spectrumIds, Iterable<BigInteger> submissionIds, Spectrum querySpectrum,
@@ -98,7 +94,6 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         return matches;
     }
 
-    //TODO Add parameter List<BigInteger> spectrumIds
     private <E> Iterable<E> searchSpectra(List<BigInteger> spectrumIds,
                                           @NotNull Iterable<BigInteger> submissionIds, Spectrum querySpectrum,
                                           Double scoreThreshold, Double mzTolerance,

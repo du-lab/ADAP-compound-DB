@@ -33,7 +33,6 @@ public class SpectrumQueryBuilderAlt {
     private static final String EMPTY_SPECTRUM_MATCH_OUTPUT =
             "0 AS Id, NULL AS QuerySpectrumId, Spectrum.Id AS MatchSpectrumId, 0 AS Score";
 
-    //TODO Add variable private final Collection<BigInteger> spectrumIds
     private final Collection<BigInteger> spectrumIds;
     private final Collection<BigInteger> submissionIds;
     private final boolean searchConsensusSpectra;
@@ -52,7 +51,6 @@ public class SpectrumQueryBuilderAlt {
     private Double scoreThreshold = null;
 
 
-    //TODO Add variable private final Collection<BigInteger> spectrumIds
     public SpectrumQueryBuilderAlt(Collection<BigInteger> spectrumIds, Collection<BigInteger> submissionIds, boolean searchConsensusSpectra,
                                    boolean searchReferenceSpectra, boolean searchClusterableSpectra) {
 
@@ -183,12 +181,10 @@ public class SpectrumQueryBuilderAlt {
                 "Spectrum.Consensus IS %s AND Spectrum.Reference IS %s AND Spectrum.Clusterable IS %s",
                 isConsensus, isReference, isClusterable);
 
-        //TODO If spectrumIds != null, then add condition ` AND Spectrum.Id IN (ID1,ID2,ID3,...)` to `spectrumSelector`,
-        // where ID1, ID2, ... are the IDs from `spectrumIds`
-
-
+        //TODO You need to learn the difference between & and &&. You should use && here.
         if(spectrumIds != null & !spectrumIds.isEmpty()) {
 //            spectrumSelector += String.format(" And Spectrum.Id in (%s)", spectrumIds.stream());
+            //TODO I don't like these loops and conditions. Let's use streams instead. They are more readable.
             spectrumSelector += String.format(" And Spectrum.Id in (");
             int n = 1;
             for(BigInteger s: spectrumIds){
