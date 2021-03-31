@@ -34,6 +34,7 @@ public class SpectrumQueryBuilderAlt {
             "0 AS Id, NULL AS QuerySpectrumId, Spectrum.Id AS MatchSpectrumId, 0 AS Score";
 
     //TODO Add variable private final Collection<BigInteger> spectrumIds
+    private final Collection<BigInteger> spectrumIds;
     private final Collection<BigInteger> submissionIds;
     private final boolean searchConsensusSpectra;
     private final boolean searchReferenceSpectra;
@@ -52,9 +53,10 @@ public class SpectrumQueryBuilderAlt {
 
 
     //TODO Add variable private final Collection<BigInteger> spectrumIds
-    public SpectrumQueryBuilderAlt(Collection<BigInteger> submissionIds, boolean searchConsensusSpectra,
+    public SpectrumQueryBuilderAlt(Collection<BigInteger> spectrumIds, Collection<BigInteger> submissionIds, boolean searchConsensusSpectra,
                                    boolean searchReferenceSpectra, boolean searchClusterableSpectra) {
 
+        this.spectrumIds = spectrumIds;
         this.submissionIds = submissionIds;
         this.searchConsensusSpectra = searchConsensusSpectra;
         this.searchReferenceSpectra = searchReferenceSpectra;
@@ -183,6 +185,22 @@ public class SpectrumQueryBuilderAlt {
 
         //TODO If spectrumIds != null, then add condition ` AND Spectrum.Id IN (ID1,ID2,ID3,...)` to `spectrumSelector`,
         // where ID1, ID2, ... are the IDs from `spectrumIds`
+
+
+        if(spectrumIds != null & !spectrumIds.isEmpty()) {
+//            spectrumSelector += String.format(" And Spectrum.Id in (%s)", spectrumIds.stream());
+            spectrumSelector += String.format(" And Spectrum.Id in (");
+            int n = 1;
+            for(BigInteger s: spectrumIds){
+                if (n == spectrumIds.size()){
+                    spectrumSelector += String.format("%d)", s);
+                }
+                if (n < spectrumIds.size()){
+                    spectrumSelector += String.format("%d, ", s);
+                }
+                n++;
+            }
+        }
 
         if (chromatographyType != null)
             spectrumSelector += String.format(" AND Spectrum.ChromatographyType = '%s'", chromatographyType);

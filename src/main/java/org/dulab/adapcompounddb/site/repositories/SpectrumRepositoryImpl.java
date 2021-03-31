@@ -70,13 +70,16 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         return matches;
     }
 
+
+
     //TODO Add parameter List<BigInteger> spectrumIds
     @Override
     public Iterable<SpectrumClusterView> matchAgainstConsensusAndReferenceSpectra(
+            List<BigInteger> spectrumIds,
             @NotNull Iterable<BigInteger> submissionIds, Spectrum querySpectrum,
             Double scoreThreshold, Double mzTolerance, Double precursorTolerance, Double molecularWeightTolerance) {
 
-        return searchSpectra(submissionIds, querySpectrum,
+        return searchSpectra(spectrumIds, submissionIds, querySpectrum,
                 scoreThreshold, mzTolerance, precursorTolerance, molecularWeightTolerance,
                 true, true, false,
                 SpectrumClusterView.class);
@@ -85,10 +88,10 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     //TODO Add parameter List<BigInteger> spectrumIds
     @Override
     public Iterable<SpectrumMatch> matchAgainstClusterableSpectra(
-            @NotNull Iterable<BigInteger> submissionIds, Spectrum querySpectrum,
+            List<BigInteger> spectrumIds, Iterable<BigInteger> submissionIds, Spectrum querySpectrum,
             Double scoreThreshold, Double mzTolerance, Double precursorTolerance, Double molecularWeightTolerance) {
 
-        Iterable<SpectrumMatch> matches = searchSpectra(submissionIds, querySpectrum,
+        Iterable<SpectrumMatch> matches = searchSpectra(spectrumIds, submissionIds, querySpectrum,
                 scoreThreshold, mzTolerance, precursorTolerance, molecularWeightTolerance,
                 false, false, true, SpectrumMatch.class);
         matches.forEach(m -> m.setQuerySpectrum(querySpectrum));
@@ -96,7 +99,8 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     }
 
     //TODO Add parameter List<BigInteger> spectrumIds
-    private <E> Iterable<E> searchSpectra(@NotNull Iterable<BigInteger> submissionIds, Spectrum querySpectrum,
+    private <E> Iterable<E> searchSpectra(List<BigInteger> spectrumIds,
+                                          @NotNull Iterable<BigInteger> submissionIds, Spectrum querySpectrum,
                                           Double scoreThreshold, Double mzTolerance,
                                           Double precursorTolerance, Double molecularWeightTolerance,
                                           boolean searchConsensusSpectra, boolean searchReferenceSpectra,
@@ -105,7 +109,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         List<BigInteger> submissionIdList = new ArrayList<>();
         submissionIds.forEach(submissionIdList::add);
 
-        SpectrumQueryBuilderAlt builder = new SpectrumQueryBuilderAlt(submissionIdList,
+        SpectrumQueryBuilderAlt builder = new SpectrumQueryBuilderAlt(spectrumIds, submissionIdList,
                 searchConsensusSpectra, searchReferenceSpectra, searchClusterableSpectr);
         if (querySpectrum != null)
             builder = builder.withChromatographyType(querySpectrum.getChromatographyType())

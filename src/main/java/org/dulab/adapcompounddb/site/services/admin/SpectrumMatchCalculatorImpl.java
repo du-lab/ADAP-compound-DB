@@ -149,6 +149,7 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
     public void match(Iterable<BigInteger> submissionIds, Spectrum querySpectrum, QueryParameters params) {
         try {
             List<SpectrumMatch> matches = MappingUtils.toList(spectrumRepository.matchAgainstClusterableSpectra(
+                    null,
                     submissionIds, querySpectrum, params.getScoreThreshold(), params.getMzTolerance(),
                     params.getPrecursorTolerance(), params.getMolecularWeightThreshold()));
             spectrumMatchRepository.saveAll(matches);

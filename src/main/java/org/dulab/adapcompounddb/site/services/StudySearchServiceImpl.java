@@ -36,12 +36,13 @@ public class StudySearchServiceImpl implements StudySearchService {
             for (Spectrum spectrum : file.getSpectra()) {
                 SearchParameters searchParameters =
                         SearchParameters.getDefaultParameters(spectrum.getChromatographyType());
-                Map<Long, List<Long>> commonToSpectrumIdsMap = MappingUtils.toMapBigIntegerOfLists(
+                Map<BigInteger, List<BigInteger>> commonToSpectrumIdsMap = MappingUtils.toMapBigIntegerOfLists(
                         spectrumRepository.preScreenSpectrum(spectrum, searchParameters.getMzTolerance()));
 
-                List<Long> preScreenedSpectrumIds = getSpectrumIdsWithCommonPeaksAboveThreshold(commonToSpectrumIdsMap, 50);
+                List<BigInteger> preScreenedSpectrumIds = getSpectrumIdsWithCommonPeaksAboveThreshold(commonToSpectrumIdsMap, 50);
                 //TODO Pass variable `preScreenedSpectrumIds` tp `matchAgainstClusterableSpectra`
                 List<SpectrumMatch> matches = MappingUtils.toList(spectrumRepository.matchAgainstClusterableSpectra(
+                        preScreenedSpectrumIds,
                         submissionIds,
                         spectrum,
                         searchParameters.getScoreThreshold(),
@@ -108,12 +109,12 @@ public class StudySearchServiceImpl implements StudySearchService {
         return submissionMatchDTOs;
     }
 
-    private List<Long> getSpectrumIdsWithCommonPeaksAboveThreshold(
-            Map<Long, List<Long>> commonToSpectrumIdsMap, long threshold) {
+    private List<BigInteger> getSpectrumIdsWithCommonPeaksAboveThreshold(
+            Map<BigInteger, List<BigInteger>> commonToSpectrumIdsMap, long threshold) {
 
-        List<Long> spectraList = new ArrayList<>();
-        for (long i = 8L; i > 0L; i--) {
-            List<Long> spectra = commonToSpectrumIdsMap.get(i);
+        List<BigInteger> spectraList = new ArrayList<>();
+        for (BigInteger i = BigInteger.valueOf(8);i.compareTo(BigInteger.ZERO) > 0; i = i.subtract(BigInteger.ONE)) {
+            List<BigInteger> spectra = commonToSpectrumIdsMap.get(i);
             if (spectra != null) {
                 //TODO Replace commonToSpectrumIdsMap.get(i) to `spectra`
                 spectraList.addAll(commonToSpectrumIdsMap.get(i));

@@ -28,10 +28,10 @@ public class MappingUtils {
         return map;
     }
 
-    public static <E> Map<Long, List<E>> toMapBigIntegerOfLists(Iterable<Object[]> iterable) {
-        Map<Long, List<E>> map = new HashMap<>();
+    public static <E> Map<BigInteger, List<E>> toMapBigIntegerOfLists(Iterable<Object[]> iterable) {
+        Map<BigInteger, List<E>> map = new HashMap<>();
         for (Object[] it : iterable) {
-            Long key = ((BigInteger) it[0]).longValue();
+            BigInteger key = (BigInteger) it[0];
             E value = (E) it[1];
             map.computeIfAbsent(key, k -> new ArrayList<>())
                     .add(value);

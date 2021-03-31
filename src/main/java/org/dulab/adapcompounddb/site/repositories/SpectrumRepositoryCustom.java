@@ -14,10 +14,12 @@ public interface SpectrumRepositoryCustom {
     List<SpectrumMatch> spectrumSearch(SearchType searchType, Spectrum querySpectrum, QueryParameters params);
 
     Iterable<SpectrumClusterView> matchAgainstConsensusAndReferenceSpectra(
+            List<BigInteger> spectrumIds,
             Iterable<BigInteger> submissionIds, Spectrum querySpectrum, Double scoreThreshold, Double mzTolerance,
             Double precursorTolerance, Double molecularWeightTolerance);
 
     Iterable<SpectrumMatch> matchAgainstClusterableSpectra(
+            List<BigInteger> preScreenedSpectrumIds,
             Iterable<BigInteger> submissionIds, Spectrum querySpectrum, Double scoreThreshold, Double mzTolerance,
             Double precursorTolerance, Double molecularWeightTolerance);
 
