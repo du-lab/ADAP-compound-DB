@@ -40,6 +40,9 @@ public class StudySearchServiceImpl implements StudySearchService {
                         spectrumRepository.preScreenSpectrum(spectrum, searchParameters.getMzTolerance()));
 
                 List<BigInteger> preScreenedSpectrumIds = getSpectrumIdsWithCommonPeaksAboveThreshold(commonToSpectrumIdsMap, 50);
+                //TODO In the next few lines, replace `spectrumRepository.matchAgainstClusterableSpectra` with
+                // call of `spectrumRepository.findSpectraWithPeaksById` to retrieve the prescreened library spectra,
+                // and then call of `JavaSpectrumSimilarityService.calculateSpectrumSimilarity` to get a list of matches
                 List<SpectrumMatch> matches = MappingUtils.toList(spectrumRepository.matchAgainstClusterableSpectra(
                         preScreenedSpectrumIds,
                         submissionIds,
