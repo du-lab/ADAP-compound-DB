@@ -703,6 +703,7 @@ progress:after {
     background-color: #fdfd96;
     border-radius: 5px;
     box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.2);
+    z-index: 1;
 }
 /*.close {*/
 /*    position:fixed;*/

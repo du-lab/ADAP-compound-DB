@@ -46,48 +46,34 @@
           href="<c:url value="https://fonts.googleapis.com/css?family=Crimson+Text|Proza+Libre|Lato:300,400"/>">
     <link rel="stylesheet" href="<c:url value="/resources/tagify-master/tagify.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/SpeckTackle/st.css"/>">
-
-    <%--    <script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>--%>
-    <%--    <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>--%>
-    <%--    <script src="<c:url value="/resources/Select-1.2.5/js/dataTables.select.min.js"/>"></script>--%>
-    <%--    <script type="text/javascript" src="<c:url value="/resources/AdapCompoundDb/js/tabs.js"/>"></script>--%>
-    <%--    <script src="http://d3js.org/d3.v4.min.js"></script>--%>
-    <%--    <script type="text/javascript">--%>
-    <%--        $(document).ready(function () {--%>
-    <%--            $(document).click(function (e) {--%>
-    <%--                var side = $(".side");--%>
-    <%--                if ($(side).hasClass("menu") && e.target.id != "menu") {--%>
-    <%--                    var menu = $(e.target).closest(".side");--%>
-    <%--                    if (menu.length == 0) {--%>
-    <%--                        $(".side").removeClass("menu");--%>
-    <%--                        animateIcon("view_headline");--%>
-    <%--                    }--%>
-    <%--                }--%>
-    <%--            });--%>
-
-    <%--            var animateIcon = function (content) {--%>
-    <%--                $('#menu').animate({--%>
-    <%--                    'opacity': 0--%>
-    <%--                }, 100, function () {--%>
-    <%--                    $(this).html(content).animate({'opacity': 1}, 100);--%>
-    <%--                });--%>
-    <%--            };--%>
-
-    <%--            $("#menu").click(function () {--%>
-    <%--                if ($("#menu").html() == 'view_headline') {--%>
-    <%--                    animateIcon("clear");--%>
-    <%--                    $(".side").addClass("menu");--%>
-    <%--                } else {--%>
-    <%--                    animateIcon("view_headline");--%>
-    <%--                    $(".side").removeClass("menu");--%>
-    <%--                }--%>
-    <%--            });--%>
-    <%--        });--%>
-    <%--    </script>--%>
-
 </head>
 
 <body>
+
+<div class="cookie-banner" style="display: none">
+    <div class="container">
+        <div class="row row-content">
+            <div class="col">
+                By using this website, you agree to our
+                <a href="${pageContext.request.contextPath}/resources/cookie-policy.txt" target="_blank">cookie
+                    policy</a>.
+            </div>
+            <button id="closeBannerButton" class="btn btn-secondary">&times;</button>
+        </div>
+    </div>
+</div>
+
+<script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
+<script>
+    if (localStorage.getItem("cookieSeen") !== "shown") {
+        $(".cookie-banner").delay(2000).fadeIn();
+        localStorage.setItem("cookieSeen", "shown")
+    }
+
+    $("#closeBannerButton").click(function () {
+        $(".cookie-banner").fadeOut();
+    })
+</script>
 
 <header class="jambotron fixed-top">
     <div class="container-fluid">
@@ -185,45 +171,11 @@
             </div>
         </div>
     </nav>
-    <%--                </div>--%>
-    <%--                <div class="row">--%>
-    <%--                    <div class="col-12">--%>
-    <%--                    <a class="feedback" href="https://forms.gle/zYPXt463DC1WjJMy8" target="_blank"><strong>Leave Feedback</strong></a>--%>
-    <%--                    </div>--%>
-    <%--                </div>--%>
-    <%--        </aside>--%>
-
-    <%--    </div>--%>
 
     <article style="margin: 0 auto; width: 100%">
         <decorator:body/>
     </article>
 </div>
-
-<div class="cookie-banner" style="display: none">
-    <div class="container">
-        <div class="row row-content">
-            <div class="col">
-                By using this website, you agree to our
-                <a href="${pageContext.request.contextPath}/resources/cookie-policy.txt" target="_blank">cookie
-                    policy</a>.
-            </div>
-            <button id="closeBannerButton" class="btn btn-secondary">&times;</button>
-        </div>
-    </div>
-</div>
-
-<script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
-<script>
-    if (localStorage.getItem("cookieSeen") !== "shown") {
-        $(".cookie-banner").delay(2000).fadeIn();
-        localStorage.setItem("cookieSeen", "shown")
-    }
-
-    $("#closeBannerButton").click(function () {
-        $(".cookie-banner").fadeOut();
-    })
-</script>
 
 </body>
 
