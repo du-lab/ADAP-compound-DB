@@ -182,20 +182,22 @@ public class SpectrumQueryBuilderAlt {
                 isConsensus, isReference, isClusterable);
 
         //TODO You need to learn the difference between & and &&. You should use && here.
-        if(spectrumIds != null & !spectrumIds.isEmpty()) {
-//            spectrumSelector += String.format(" And Spectrum.Id in (%s)", spectrumIds.stream());
+        if(spectrumIds != null && !spectrumIds.isEmpty()) {
+            spectrumSelector += String.format(" And Spectrum.Id in (%s)", spectrumIds.stream().map(s -> s.toString())
+                    .collect(Collectors.joining(",")));
+
             //TODO I don't like these loops and conditions. Let's use streams instead. They are more readable.
-            spectrumSelector += String.format(" And Spectrum.Id in (");
-            int n = 1;
-            for(BigInteger s: spectrumIds){
-                if (n == spectrumIds.size()){
-                    spectrumSelector += String.format("%d)", s);
-                }
-                if (n < spectrumIds.size()){
-                    spectrumSelector += String.format("%d, ", s);
-                }
-                n++;
-            }
+//            spectrumSelector += String.format(" And Spectrum.Id in (");
+//            int n = 1;
+//            for(BigInteger s: spectrumIds){
+//                if (n == spectrumIds.size()){
+//                    spectrumSelector += String.format("%d)", s);
+//                }
+//                if (n < spectrumIds.size()){
+//                    spectrumSelector += String.format("%d, ", s);
+//                }
+//                n++;
+//            }
         }
 
         if (chromatographyType != null)
@@ -216,6 +218,7 @@ public class SpectrumQueryBuilderAlt {
             scoreTable += "SELECT SpectrumId, POWER(SUM(Product), 2) AS Score, MAX(Error) AS Error FROM (\n";
             String finalSpectrumSelector = spectrumSelector;
             scoreTable += peaks.stream()
+//                    .filter(p -> p.getIntensity() > 0.01)
                     .map(p -> String.format(
                             "\tSELECT SpectrumId, SQRT(Intensity * %f) AS Product, ABS(MolecularWeight - %f) AS Error " +
                                     "FROM Spectrum INNER JOIN Peak ON Peak.SpectrumId = Spectrum.Id " +

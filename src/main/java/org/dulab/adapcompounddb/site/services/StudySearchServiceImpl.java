@@ -4,12 +4,14 @@ import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
 import org.dulab.adapcompounddb.models.dto.SubmissionMatchDTO;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
+import org.dulab.adapcompounddb.site.services.search.JavaSpectrumSimilarityService;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class StudySearchServiceImpl implements StudySearchService {
@@ -43,14 +45,23 @@ public class StudySearchServiceImpl implements StudySearchService {
                 //TODO In the next few lines, replace `spectrumRepository.matchAgainstClusterableSpectra` with
                 // call of `spectrumRepository.findSpectraWithPeaksById` to retrieve the prescreened library spectra,
                 // and then call of `JavaSpectrumSimilarityService.calculateSpectrumSimilarity` to get a list of matches
-                List<SpectrumMatch> matches = MappingUtils.toList(spectrumRepository.matchAgainstClusterableSpectra(
-                        preScreenedSpectrumIds,
-                        submissionIds,
-                        spectrum,
-                        searchParameters.getScoreThreshold(),
-                        searchParameters.getMzTolerance(),
-                        searchParameters.getPrecursorTolerance(),
-                        searchParameters.getMolecularWeightTolerance()));
+//                List<SpectrumMatch> matches = MappingUtils.toList(spectrumRepository.matchAgainstClusterableSpectra(
+//                        preScreenedSpectrumIds,
+//                        submissionIds,
+//                        spectrum,
+//                        searchParameters.getScoreThreshold(),
+//                        searchParameters.getMzTolerance(),
+//                        searchParameters.getPrecursorTolerance(),
+//                        searchParameters.getMolecularWeightTolerance()));
+                Set<Long> prescreenedSpectrumIdsSet = preScreenedSpectrumIds.stream()
+                        .mapToLong(BigInteger::longValue)
+                        .boxed()
+                        .collect(Collectors.toSet());
+                Iterable<Spectrum> prescreenSpectraList = spectrumRepository.findSpectraWithPeaksById(prescreenedSpectrumIdsSet);
+
+                List<SpectrumMatch> matches =
+                        JavaSpectrumSimilarityService.calculateSpectrumSimilarity(spectrum, prescreenSpectraList, searchParameters);
+
                 spectrumMatches.addAll(matches);
                 querySubmissionSpectraCount++;
             }
