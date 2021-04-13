@@ -181,24 +181,9 @@ public class SpectrumQueryBuilderAlt {
                 "Spectrum.Consensus IS %s AND Spectrum.Reference IS %s AND Spectrum.Clusterable IS %s",
                 isConsensus, isReference, isClusterable);
 
-        //TODO You need to learn the difference between & and &&. You should use && here.
-        if(spectrumIds != null && !spectrumIds.isEmpty()) {
-            spectrumSelector += String.format(" And Spectrum.Id in (%s)", spectrumIds.stream().map(s -> s.toString())
+        if(spectrumIds != null && !spectrumIds.isEmpty())
+            spectrumSelector += String.format(" And Spectrum.Id in (%s)", spectrumIds.stream().map(BigInteger::toString)
                     .collect(Collectors.joining(",")));
-
-            //TODO I don't like these loops and conditions. Let's use streams instead. They are more readable.
-//            spectrumSelector += String.format(" And Spectrum.Id in (");
-//            int n = 1;
-//            for(BigInteger s: spectrumIds){
-//                if (n == spectrumIds.size()){
-//                    spectrumSelector += String.format("%d)", s);
-//                }
-//                if (n < spectrumIds.size()){
-//                    spectrumSelector += String.format("%d, ", s);
-//                }
-//                n++;
-//            }
-        }
 
         if (chromatographyType != null)
             spectrumSelector += String.format(" AND Spectrum.ChromatographyType = '%s'", chromatographyType);
