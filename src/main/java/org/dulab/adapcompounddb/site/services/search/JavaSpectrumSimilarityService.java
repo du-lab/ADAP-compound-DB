@@ -16,13 +16,9 @@ public class JavaSpectrumSimilarityService {
         List<SpectrumMatch> matchSpectrumList = new ArrayList<>();
 
         // iterate each spectrum in the adap-kdb library
-        //TODO It should work without n and sizeOfLibrarySpectra. I don't think you need these.
         while (librarySpectrumIterator.hasNext() ) {
-            //TODO Replace `librarySpectra.iterator()` with `librarySpectrumIterator`
-            // Every time when you call `librarySpectra.iterator()`, a new iterator is created pointing to the first library spectrum.
-            // So `librarySpectra.iterator().next()` gives you the same spectrum every time.
             Spectrum librarySpectrum = librarySpectrumIterator.next();
-            //TODO Replace `List<Double> productList` with `double sum = 0.0`
+
             double sum = 0.0;
             // iterate each peak of query spectrum and current library spectrum, and calculate the product value
             for (Peak p1 : querySpectrum.getPeaks()) {
@@ -31,18 +27,15 @@ public class JavaSpectrumSimilarityService {
                 for (Peak p2 : librarySpectrum.getPeaks()) {
                     double libraryIntensity = p2.getIntensity();
                     double libraryMz = p2.getMz();
-                    //TODO You can move the product calculation inside the if-statement. It's a waste of time to calculate this product for unmatched peaks
 
                     // if ABS(Mz - 𝑚𝑧𝑛) < MzTolerance, then add it to the product list for calculate similarity score later
                     if (Math.abs(libraryMz - queryMz) < parameters.getMzTolerance()) {
                         double product = Math.sqrt(queryIntensity * libraryIntensity);
-                        //TODO Replace this line with `sum += product`
                         sum += product;
                     }
                 }
             }
             // calculate the similarity score
-            //TODO Replace `productList.stream().mapToDouble(Double::doubleValue).sum()` with `sum`
             double similarityScore = Math.pow(sum, 2);
 
             // if the similarity score > ScoreThreshold, then return the MatchSpectrum
@@ -54,6 +47,9 @@ public class JavaSpectrumSimilarityService {
                 matchSpectrumList.add(matchSpectrum);
             }
         }
+
+        //TODO Sort matchSpectrumList by Score
+
         return matchSpectrumList;
     }
 }

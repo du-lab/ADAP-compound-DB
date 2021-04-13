@@ -38,6 +38,9 @@ public class StudySearchServiceImpl implements StudySearchService {
             for (Spectrum spectrum : file.getSpectra()) {
                 SearchParameters searchParameters =
                         SearchParameters.getDefaultParameters(spectrum.getChromatographyType());
+
+                long time = System.currentTimeMillis();
+
                 Map<BigInteger, List<BigInteger>> commonToSpectrumIdsMap = MappingUtils.toMapBigIntegerOfLists(
                         spectrumRepository.preScreenSpectrum(spectrum, searchParameters.getMzTolerance()));
 
@@ -61,6 +64,9 @@ public class StudySearchServiceImpl implements StudySearchService {
 
                 List<SpectrumMatch> matches =
                         JavaSpectrumSimilarityService.calculateSpectrumSimilarity(spectrum, prescreenSpectraList, searchParameters);
+
+                long diff = System.currentTimeMillis() - time;
+                System.out.println((double) diff / 1000);
 
                 spectrumMatches.addAll(matches);
                 querySubmissionSpectraCount++;
