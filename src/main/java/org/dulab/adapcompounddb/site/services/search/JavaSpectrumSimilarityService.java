@@ -30,6 +30,8 @@ public class JavaSpectrumSimilarityService {
                     double libraryIntensity = p2.getIntensity();
                     double libraryMz = p2.getMz();
 
+                    //TODO Modify this code to make sure that only one peak is matched
+
                     // if ABS(Mz - 𝑚𝑧𝑛) < MzTolerance, then add it to the product list for calculate similarity score later
                     if (Math.abs(libraryMz - queryMz) < parameters.getMzTolerance()) {
                         double product = Math.sqrt(queryIntensity * libraryIntensity);
