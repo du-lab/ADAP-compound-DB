@@ -5,6 +5,7 @@ import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class JavaSpectrumSimilarityService {
 
@@ -49,7 +50,8 @@ public class JavaSpectrumSimilarityService {
         }
 
         //TODO Sort matchSpectrumList by Score
-
-        return matchSpectrumList;
+        return matchSpectrumList.stream()
+                .sorted(Comparator.comparing(SpectrumMatch::getScore))
+                .collect(Collectors.toList());
     }
 }
