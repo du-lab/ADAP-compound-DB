@@ -3,14 +3,15 @@ package org.dulab.adapcompounddb.site.services.search;
 import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Service
 public class JavaSpectrumSimilarityService {
 
-    //TODO Remove `static`
-    public static List<SpectrumMatch> calculateSpectrumSimilarity(
+    public List<SpectrumMatch> calculateSpectrumSimilarity(
             Spectrum querySpectrum, Iterable<Spectrum> librarySpectra, SearchParameters parameters) {
 
         Iterator<Spectrum> librarySpectrumIterator = librarySpectra.iterator();
@@ -26,19 +27,23 @@ public class JavaSpectrumSimilarityService {
             for (Peak p1 : querySpectrum.getPeaks()) {
                 double queryIntensity = p1.getIntensity();
                 double queryMz = p1.getMz();
+                double minDifference = Double.MAX_VALUE;
+                double product = 0.0;
                 for (Peak p2 : librarySpectrum.getPeaks()) {
                     double libraryIntensity = p2.getIntensity();
                     double libraryMz = p2.getMz();
 
-                    //TODO Modify this code to make sure that only one peak is matched
-
                     // if ABS(Mz - 𝑚𝑧𝑛) < MzTolerance, then add it to the product list for calculate similarity score later
-                    if (Math.abs(libraryMz - queryMz) < parameters.getMzTolerance()) {
-                        double product = Math.sqrt(queryIntensity * libraryIntensity);
-                        sum += product;
+                    double difference = Math.abs(libraryMz - queryMz);
+                    if (difference < parameters.getMzTolerance() && difference < minDifference) {
+                        minDifference = difference;
+                        product = Math.sqrt(queryIntensity * libraryIntensity);
                     }
                 }
+
+                sum += product;
             }
+
             // calculate the similarity score
             double similarityScore = Math.pow(sum, 2);
 
@@ -52,11 +57,7 @@ public class JavaSpectrumSimilarityService {
             }
         }
 
-        //TODO You don't need to use stream here. You can just call `matchSpectrumList.sort(Comparator.comparing(SpectrumMatch::getScore))`
-        // Also, this command will sort the list in the score-ascending order. We need to sort the list in the descending order
-        // so that the match with highest score is at the beginning of the list.
-        return matchSpectrumList.stream()
-                .sorted(Comparator.comparing(SpectrumMatch::getScore))
-                .collect(Collectors.toList());
+        matchSpectrumList.sort(Comparator.comparing(SpectrumMatch::getScore).reversed());
+        return matchSpectrumList;
     }
 }

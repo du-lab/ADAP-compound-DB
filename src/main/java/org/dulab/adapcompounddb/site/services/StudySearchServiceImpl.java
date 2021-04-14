@@ -7,6 +7,7 @@ import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.services.search.JavaSpectrumSimilarityService;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
@@ -18,10 +19,15 @@ public class StudySearchServiceImpl implements StudySearchService {
 
     private final SpectrumRepository spectrumRepository;
     private final SubmissionRepository submissionRepository;
+    private final JavaSpectrumSimilarityService javaSpectrumSimilarityService;
 
-    public StudySearchServiceImpl(SpectrumRepository spectrumRepository, SubmissionRepository submissionRepository) {
+    @Autowired
+    public StudySearchServiceImpl(SpectrumRepository spectrumRepository, SubmissionRepository submissionRepository,
+                                  JavaSpectrumSimilarityService javaSpectrumSimilarityService) {
+
         this.spectrumRepository = spectrumRepository;
         this.submissionRepository = submissionRepository;
+        this.javaSpectrumSimilarityService = javaSpectrumSimilarityService;
     }
 
     @Override
@@ -60,9 +66,8 @@ public class StudySearchServiceImpl implements StudySearchService {
                         .collect(Collectors.toSet());
                 Iterable<Spectrum> prescreenSpectraList = spectrumRepository.findSpectraWithPeaksById(prescreenedSpectrumIdsSet);
 
-                //TODO Replace JavaSpectrumSimilarityService with variable javaSpectrumSimilarityService
                 List<SpectrumMatch> matches =
-                        JavaSpectrumSimilarityService.calculateSpectrumSimilarity(spectrum, prescreenSpectraList, searchParameters);
+                        javaSpectrumSimilarityService.calculateSpectrumSimilarity(spectrum, prescreenSpectraList, searchParameters);
 
                 spectrumMatches.addAll(matches);
                 querySubmissionSpectraCount++;
