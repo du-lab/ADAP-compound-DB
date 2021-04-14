@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 public class JavaSpectrumSimilarityService {
 
+    //TODO Remove `static`
     public static List<SpectrumMatch> calculateSpectrumSimilarity(
             Spectrum querySpectrum, Iterable<Spectrum> librarySpectra, SearchParameters parameters) {
 
@@ -49,7 +50,9 @@ public class JavaSpectrumSimilarityService {
             }
         }
 
-        //TODO Sort matchSpectrumList by Score
+        //TODO You don't need to use stream here. You can just call `matchSpectrumList.sort(Comparator.comparing(SpectrumMatch::getScore))`
+        // Also, this command will sort the list in the score-ascending order. We need to sort the list in the descending order
+        // so that the match with highest score is at the beginning of the list.
         return matchSpectrumList.stream()
                 .sorted(Comparator.comparing(SpectrumMatch::getScore))
                 .collect(Collectors.toList());

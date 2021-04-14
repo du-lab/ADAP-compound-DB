@@ -39,8 +39,6 @@ public class StudySearchServiceImpl implements StudySearchService {
                 SearchParameters searchParameters =
                         SearchParameters.getDefaultParameters(spectrum.getChromatographyType());
 
-                long time = System.currentTimeMillis();
-
                 Map<BigInteger, List<BigInteger>> commonToSpectrumIdsMap = MappingUtils.toMapBigIntegerOfLists(
                         spectrumRepository.preScreenSpectrum(spectrum, searchParameters.getMzTolerance()));
 
@@ -62,11 +60,9 @@ public class StudySearchServiceImpl implements StudySearchService {
                         .collect(Collectors.toSet());
                 Iterable<Spectrum> prescreenSpectraList = spectrumRepository.findSpectraWithPeaksById(prescreenedSpectrumIdsSet);
 
+                //TODO Replace JavaSpectrumSimilarityService with variable javaSpectrumSimilarityService
                 List<SpectrumMatch> matches =
                         JavaSpectrumSimilarityService.calculateSpectrumSimilarity(spectrum, prescreenSpectraList, searchParameters);
-
-                long diff = System.currentTimeMillis() - time;
-                System.out.println((double) diff / 1000);
 
                 spectrumMatches.addAll(matches);
                 querySubmissionSpectraCount++;
