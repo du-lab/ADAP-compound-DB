@@ -91,7 +91,7 @@ public class SpectrumSearchServiceImpl implements IndividualSearchService {
 
         List<SearchResultDTO> searchResults = new ArrayList<>();
         for (SpectrumClusterView view : spectrumRepository.matchAgainstConsensusAndReferenceSpectra(
-                submissionIds, querySpectrum, parameters)) {
+                null, submissionIds, querySpectrum, parameters)) {
             SearchResultDTO searchResult = new SearchResultDTO(querySpectrum, view);
             searchResults.add(searchResult);
         }
@@ -154,7 +154,7 @@ public class SpectrumSearchServiceImpl implements IndividualSearchService {
             // Perform search
             List<SearchResultDTO> results = MappingUtils.toList(
                     spectrumRepository.matchAgainstConsensusAndReferenceSpectra(
-                            submissionIds, spectrum, modifiedParameters))
+                            null, submissionIds, spectrum, modifiedParameters))
                     .stream()
                     .map(x -> new SearchResultDTO(spectrum, x))
                     .collect(Collectors.toList());

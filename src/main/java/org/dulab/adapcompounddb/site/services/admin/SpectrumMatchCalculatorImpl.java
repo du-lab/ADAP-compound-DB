@@ -158,7 +158,7 @@ public class SpectrumMatchCalculatorImpl implements SpectrumMatchCalculator {
             parameters.setLimit(Integer.MAX_VALUE);
 
             List<SpectrumMatch> matches = MappingUtils.toList(spectrumRepository.matchAgainstClusterableSpectra(
-                    submissionIds, querySpectrum, parameters));
+                    null, submissionIds, querySpectrum, parameters));
             spectrumMatchRepository.saveAll(matches);
             spectrumMatchRepository.flush();
         } catch (Throwable t) {

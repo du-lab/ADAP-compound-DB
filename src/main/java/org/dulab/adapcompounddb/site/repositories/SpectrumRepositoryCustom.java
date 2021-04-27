@@ -15,14 +15,18 @@ public interface SpectrumRepositoryCustom {
     List<SpectrumMatch> spectrumSearch(SearchType searchType, Spectrum querySpectrum, QueryParameters params);
 
     Iterable<SpectrumClusterView> matchAgainstConsensusAndReferenceSpectra(
-            Iterable<BigInteger> submissionIds, Spectrum querySpectrum, SearchParameters parameters);
+            List<BigInteger> spectrumIds, Iterable<BigInteger> submissionIds, Spectrum querySpectrum,
+            SearchParameters parameters);
 
     Iterable<SpectrumMatch> matchAgainstClusterableSpectra(
-            Iterable<BigInteger> submissionIds, Spectrum querySpectrum, SearchParameters parameters);
+            List<BigInteger> preScreenedSpectrumIds, Iterable<BigInteger> submissionIds, Spectrum querySpectrum,
+            SearchParameters parameters);
 
     void savePeaksAndPropertiesQuery(List<Spectrum> spectrumList, List<Long> savedSpectrumIdList);
 
     void saveSpectrumAndPeaks(final List<File> fileList, final List<Long> savedFileIdList);
 
     void savePeaksAndProperties(Long spectrumId, List<Peak> peaks, List<SpectrumProperty> properties);
+
+    Iterable<Object[]> preScreenSpectrum(Spectrum querySpectrum, double mzTolerance);
 }
