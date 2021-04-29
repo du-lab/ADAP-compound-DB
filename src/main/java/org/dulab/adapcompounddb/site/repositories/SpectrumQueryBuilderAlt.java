@@ -12,8 +12,8 @@ public class SpectrumQueryBuilderAlt {
 
     private static final String AGGREGATED_SPECTRUM_CLUSTER_VIEW_OUTPUT = "UUID_SHORT() AS UniqueId, Spectrum.Id, Spectrum.ClusterId, " +
             "Spectrum.Name, COUNT(DISTINCT File.SubmissionId) AS Size, Score, MassError, MassErrorPPM, RetTimeError, " +
-            "AVG(Spectrum.Significance) AS AverageSignificance, MIN(Spectrum.Significance) AS MinimumSignificance, " +
-            "MAX(Spectrum.Significance) AS MaximumSignificance, Spectrum.ChromatographyType";
+            "AVG(ClusteredSpectrum.Significance) AS AverageSignificance, MIN(ClusteredSpectrum.Significance) AS MinimumSignificance, " +
+            "MAX(ClusteredSpectrum.Significance) AS MaximumSignificance, Spectrum.ChromatographyType";
 
     private static final String SIMPLE_SPECTRUM_CLUSTER_VIEW_OUTPUT = "UUID_SHORT() AS UniqueId, Spectrum.Id, Spectrum.ClusterId, " +
             "Spectrum.Name, 1 AS Size, Score, MassError, MassErrorPPM, RetTimeError, " +
