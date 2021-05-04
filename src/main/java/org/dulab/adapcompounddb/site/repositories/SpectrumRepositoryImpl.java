@@ -290,15 +290,39 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         propertyQuery.executeUpdate();
     }
 
+    /**
+     * Returns Spectrum IDs and the number of common m/z peaks
+     *
+     * @param querySpectrum     query spectrum
+     * @param parameters        search parameters
+     * @param greedy            if true, then all spectra are returned without matching the top m/z values
+     * @param searchConsensus   if true, then consensus spectra are returned
+     * @param searchReference   if true, then reference spectra are returned
+     * @param searchClusterable if true then clusterable spectra are returned
+     * @return collection of Spectrum IDs and the number of common m/z peaks
+     */
     @Override
-    public Iterable<Object[]> preScreenSpectrum(Spectrum querySpectrum, double mzTolerance){
-        PreScreenQueryBuilder preScreenQueryBuilder = new PreScreenQueryBuilder(querySpectrum, mzTolerance);
+    public Iterable<Object[]> preScreenSpectra(Spectrum querySpectrum, SearchParameters parameters, boolean greedy,
+                                               boolean searchConsensus, boolean searchReference,
+                                               boolean searchClusterable) {
 
-        final String sqlQuery = preScreenQueryBuilder.build();
+        PreScreenQueryBuilder queryBuilder =
+                new PreScreenQueryBuilder(searchConsensus, searchReference, searchClusterable)
+                        .withChromatographyType(querySpectrum.getChromatographyType())
+                        .withPrecursor(querySpectrum.getPrecursor(), parameters.getPrecursorTolerance())
+                        .withRetTime(querySpectrum.getRetentionTime(), parameters.getRetTimeTolerance())
+                        .withMass(querySpectrum.getMolecularWeight(), parameters.getMassTolerance())
+                        .withMassPPM(querySpectrum.getMolecularWeight(), parameters.getMassTolerancePPM());
 
-        final Iterable<Object[]> resultList = entityManager
+        if (!greedy)
+            queryBuilder = queryBuilder.withQuerySpectrum(querySpectrum, parameters.getMzTolerance());
+
+        final String sqlQuery = queryBuilder.build();
+
+        @SuppressWarnings("unchecked") final Iterable<Object[]> resultList = entityManager
                 .createNativeQuery(sqlQuery)
                 .getResultList();
+
         return resultList;
     }
 }

@@ -28,5 +28,7 @@ public interface SpectrumRepositoryCustom {
 
     void savePeaksAndProperties(Long spectrumId, List<Peak> peaks, List<SpectrumProperty> properties);
 
-    Iterable<Object[]> preScreenSpectrum(Spectrum querySpectrum, double mzTolerance);
+    Iterable<Object[]> preScreenSpectra(Spectrum querySpectrum, SearchParameters parameters, boolean greedy,
+                                        boolean searchConsensus, boolean searchReference,
+                                        boolean searchClusterable);
 }

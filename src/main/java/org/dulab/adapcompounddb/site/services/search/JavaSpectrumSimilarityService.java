@@ -3,6 +3,7 @@ package org.dulab.adapcompounddb.site.services.search;
 import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
+import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.springframework.stereotype.Service;
@@ -21,10 +22,23 @@ public class JavaSpectrumSimilarityService {
         this.spectrumRepository = spectrumRepository;
     }
 
-    public List<SpectrumMatch> search(Spectrum querySpectrum, SearchParameters parameters) {
+    public List<SpectrumMatch> searchConsensusAndReference(Spectrum querySpectrum, SearchParameters parameters) {
+        return search(querySpectrum, parameters, true, true, false);
+    }
+
+    public List<SpectrumMatch> searchClusterable(Spectrum querySpectrum, SearchParameters parameters) {
+        return search(querySpectrum, parameters, false, false, true);
+    }
+
+    public List<SpectrumMatch> search(Spectrum querySpectrum, SearchParameters parameters,
+                                      boolean searchConsensus, boolean searchReference, boolean searchClusterable) {
+
+        boolean greedy = querySpectrum.getChromatographyType() == ChromatographyType.LC_MSMS_POS
+                || querySpectrum.getChromatographyType() == ChromatographyType.LC_MSMS_NEG;
 
         Map<BigInteger, List<BigInteger>> commonToSpectrumIdsMap = MappingUtils.toMapBigIntegerOfLists(
-                spectrumRepository.preScreenSpectrum(querySpectrum, parameters.getMzTolerance()));
+                spectrumRepository.preScreenSpectra(querySpectrum, parameters, greedy,
+                        searchConsensus, searchReference, searchClusterable));
 
         List<BigInteger> preScreenedSpectrumIds =
                 getSpectrumIdsWithCommonPeaksAboveThreshold(commonToSpectrumIdsMap, 50);

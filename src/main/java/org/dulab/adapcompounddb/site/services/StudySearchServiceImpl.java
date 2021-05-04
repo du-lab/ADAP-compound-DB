@@ -35,8 +35,8 @@ public class StudySearchServiceImpl implements StudySearchService {
 
         List<SpectrumMatch> spectrumMatches = new ArrayList<>();
 
-        Iterable<BigInteger> submissionIds = submissionRepository.findSubmissionIdsByUserAndSubmissionTags(
-                user != null ? user.getId() : null, null, null, null);
+//        Iterable<BigInteger> submissionIds = submissionRepository.findSubmissionIdsByUserAndSubmissionTags(
+//                user != null ? user.getId() : null, null, null, null);
 
         int querySubmissionSpectraCount = 0;
         for (File file : submission.getFiles()) {
@@ -72,7 +72,8 @@ public class StudySearchServiceImpl implements StudySearchService {
 //                List<SpectrumMatch> matches =
 //                        javaSpectrumSimilarityService.calculateSpectrumSimilarity(spectrum, prescreenSpectraList, searchParameters);
 
-                List<SpectrumMatch> matches = javaSpectrumSimilarityService.search(spectrum, searchParameters);
+                List<SpectrumMatch> matches =
+                        javaSpectrumSimilarityService.searchClusterable(spectrum, searchParameters);
 
                 spectrumMatches.addAll(matches);
                 querySubmissionSpectraCount++;
