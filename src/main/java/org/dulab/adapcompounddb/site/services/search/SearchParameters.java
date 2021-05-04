@@ -10,6 +10,7 @@ public class SearchParameters implements Cloneable {
 
     private Double scoreThreshold;
     private Double mzTolerance;
+    private Double mzTolerancePPM;
     private Double precursorTolerance;
     private Double massTolerance;
     private Double massTolerancePPM;
@@ -38,6 +39,14 @@ public class SearchParameters implements Cloneable {
     public SearchParameters setMzTolerance(Double mzTolerance) {
         this.mzTolerance = mzTolerance;
         return this;
+    }
+
+    public Double getMzTolerancePPM() {
+        return mzTolerancePPM;
+    }
+
+    public void setMzTolerancePPM(Double mzTolerancePPM) {
+        this.mzTolerancePPM = mzTolerancePPM;
     }
 
     public Double getPrecursorTolerance() {

@@ -48,29 +48,31 @@ public class StudySearchServiceImpl implements StudySearchService {
 //                List<SpectrumMatch> matches = MappingUtils.toList(spectrumRepository.matchAgainstClusterableSpectra(
 //                        null, submissionIds, spectrum, searchParameters));
 
-                Map<BigInteger, List<BigInteger>> commonToSpectrumIdsMap = MappingUtils.toMapBigIntegerOfLists(
-                        spectrumRepository.preScreenSpectrum(spectrum, searchParameters.getMzTolerance()));
+//                Map<BigInteger, List<BigInteger>> commonToSpectrumIdsMap = MappingUtils.toMapBigIntegerOfLists(
+//                        spectrumRepository.preScreenSpectrum(spectrum, searchParameters.getMzTolerance()));
+//
+//                List<BigInteger> preScreenedSpectrumIds = getSpectrumIdsWithCommonPeaksAboveThreshold(commonToSpectrumIdsMap, 50);
+//                //TODO In the next few lines, replace `spectrumRepository.matchAgainstClusterableSpectra` with
+//                // call of `spectrumRepository.findSpectraWithPeaksById` to retrieve the prescreened library spectra,
+//                // and then call of `JavaSpectrumSimilarityService.calculateSpectrumSimilarity` to get a list of matches
+////                List<SpectrumMatch> matches = MappingUtils.toList(spectrumRepository.matchAgainstClusterableSpectra(
+////                        preScreenedSpectrumIds,
+////                        submissionIds,
+////                        spectrum,
+////                        searchParameters.getScoreThreshold(),
+////                        searchParameters.getMzTolerance(),
+////                        searchParameters.getPrecursorTolerance(),
+////                        searchParameters.getMolecularWeightTolerance()));
+//                Set<Long> prescreenedSpectrumIdsSet = preScreenedSpectrumIds.stream()
+//                        .mapToLong(BigInteger::longValue)
+//                        .boxed()
+//                        .collect(Collectors.toSet());
+//                Iterable<Spectrum> prescreenSpectraList = spectrumRepository.findSpectraWithPeaksById(prescreenedSpectrumIdsSet);
+//
+//                List<SpectrumMatch> matches =
+//                        javaSpectrumSimilarityService.calculateSpectrumSimilarity(spectrum, prescreenSpectraList, searchParameters);
 
-                List<BigInteger> preScreenedSpectrumIds = getSpectrumIdsWithCommonPeaksAboveThreshold(commonToSpectrumIdsMap, 50);
-                //TODO In the next few lines, replace `spectrumRepository.matchAgainstClusterableSpectra` with
-                // call of `spectrumRepository.findSpectraWithPeaksById` to retrieve the prescreened library spectra,
-                // and then call of `JavaSpectrumSimilarityService.calculateSpectrumSimilarity` to get a list of matches
-//                List<SpectrumMatch> matches = MappingUtils.toList(spectrumRepository.matchAgainstClusterableSpectra(
-//                        preScreenedSpectrumIds,
-//                        submissionIds,
-//                        spectrum,
-//                        searchParameters.getScoreThreshold(),
-//                        searchParameters.getMzTolerance(),
-//                        searchParameters.getPrecursorTolerance(),
-//                        searchParameters.getMolecularWeightTolerance()));
-                Set<Long> prescreenedSpectrumIdsSet = preScreenedSpectrumIds.stream()
-                        .mapToLong(BigInteger::longValue)
-                        .boxed()
-                        .collect(Collectors.toSet());
-                Iterable<Spectrum> prescreenSpectraList = spectrumRepository.findSpectraWithPeaksById(prescreenedSpectrumIdsSet);
-
-                List<SpectrumMatch> matches =
-                        javaSpectrumSimilarityService.calculateSpectrumSimilarity(spectrum, prescreenSpectraList, searchParameters);
+                List<SpectrumMatch> matches = javaSpectrumSimilarityService.search(spectrum, searchParameters);
 
                 spectrumMatches.addAll(matches);
                 querySubmissionSpectraCount++;
@@ -132,21 +134,5 @@ public class StudySearchServiceImpl implements StudySearchService {
         submissionMatchDTOs.sort(Comparator.comparingDouble(m -> -1 * m.getScore()));
 
         return submissionMatchDTOs;
-    }
-
-    private List<BigInteger> getSpectrumIdsWithCommonPeaksAboveThreshold(
-            Map<BigInteger, List<BigInteger>> commonToSpectrumIdsMap, long threshold) {
-
-        List<BigInteger> spectraList = new ArrayList<>();
-        for (BigInteger i = BigInteger.valueOf(8);i.compareTo(BigInteger.ZERO) > 0; i = i.subtract(BigInteger.ONE)) {
-            List<BigInteger> spectra = commonToSpectrumIdsMap.get(i);
-            if (spectra != null) {
-                spectraList.addAll(commonToSpectrumIdsMap.get(i));
-                if (spectraList.size() > threshold) {
-                    break;
-                }
-            }
-        }
-        return spectraList;
     }
 }
