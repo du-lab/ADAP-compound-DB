@@ -31,19 +31,20 @@ import java.util.stream.Collectors;
 public class SpectrumSearchServiceImpl implements IndividualSearchService {
 
     private final SpectrumRepository spectrumRepository;
-    private final SpectrumClusterRepository spectrumClusterRepository;
     private final SubmissionRepository submissionRepository;
     private final AdductService adductService;
+    private final JavaSpectrumSimilarityService javaSpectrumSimilarityService;
 
     @Autowired
     public SpectrumSearchServiceImpl(SpectrumRepository spectrumRepository,
-                                     SpectrumClusterRepository spectrumClusterRepository,
                                      SubmissionRepository submissionRepository,
-                                     AdductService adductService) {
+                                     AdductService adductService,
+                                     JavaSpectrumSimilarityService javaSpectrumSimilarityService) {
+
         this.spectrumRepository = spectrumRepository;
-        this.spectrumClusterRepository = spectrumClusterRepository;
         this.submissionRepository = submissionRepository;
         this.adductService = adductService;
+        this.javaSpectrumSimilarityService = javaSpectrumSimilarityService;
     }
 
     @Override
@@ -58,7 +59,7 @@ public class SpectrumSearchServiceImpl implements IndividualSearchService {
                                                         SearchParameters parameters, boolean withOntologyLevels) {
 
         Set<BigInteger> submissionIds = (parameters.getSubmissionIds() != null)
-                ? parameters.getSubmissionIds().stream().map(BigInteger::valueOf).collect(Collectors.toSet())
+                ? parameters.getSubmissionIds()
                 : new HashSet<>();
 
         if (submissionIds.isEmpty() || submissionIds.contains(BigInteger.ZERO)) {
@@ -90,8 +91,14 @@ public class SpectrumSearchServiceImpl implements IndividualSearchService {
             Set<BigInteger> submissionIds, Spectrum querySpectrum, SearchParameters parameters) {
 
         List<SearchResultDTO> searchResults = new ArrayList<>();
-        for (SpectrumClusterView view : spectrumRepository.matchAgainstConsensusAndReferenceSpectra(
-                null, submissionIds, querySpectrum, parameters)) {
+//        for (SpectrumClusterView view : spectrumRepository.matchAgainstConsensusAndReferenceSpectra(
+//                null, submissionIds, querySpectrum, parameters)) {
+//            SearchResultDTO searchResult = new SearchResultDTO(querySpectrum, view);
+//            searchResults.add(searchResult);
+//        }
+        for (SpectrumMatch match : javaSpectrumSimilarityService.searchConsensusAndReference(querySpectrum, parameters)) {
+            SpectrumClusterView view = MappingUtils.mapSpectrumMatchToSpectrumClusterView(
+                    match, parameters.getSpecies(), parameters.getSource(), parameters.getDisease());
             SearchResultDTO searchResult = new SearchResultDTO(querySpectrum, view);
             searchResults.add(searchResult);
         }

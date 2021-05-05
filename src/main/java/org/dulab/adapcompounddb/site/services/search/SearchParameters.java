@@ -12,13 +12,14 @@ public class SearchParameters implements Cloneable {
     private Double mzTolerance;
     private Double mzTolerancePPM;
     private Double precursorTolerance;
+    private Double precursorTolerancePPM;
     private Double massTolerance;
     private Double massTolerancePPM;
     private Double retTimeTolerance;
     private String species;
     private String source;
     private String disease;
-    private Set<Long> submissionIds;
+    private Set<BigInteger> submissionIds;
     private Iterable<BigInteger> spectrumIds;
     private double[] masses;
     private int limit = 100;
@@ -55,6 +56,15 @@ public class SearchParameters implements Cloneable {
 
     public SearchParameters setPrecursorTolerance(Double precursorTolerance) {
         this.precursorTolerance = precursorTolerance;
+        return this;
+    }
+
+    public Double getPrecursorTolerancePPM() {
+        return precursorTolerancePPM;
+    }
+
+    public SearchParameters setPrecursorTolerancePPM(Double precursorTolerancePPM) {
+        this.precursorTolerancePPM = precursorTolerancePPM;
         return this;
     }
 
@@ -121,11 +131,11 @@ public class SearchParameters implements Cloneable {
         return this;
     }
 
-    public Set<Long> getSubmissionIds() {
+    public Set<BigInteger> getSubmissionIds() {
         return submissionIds;
     }
 
-    public SearchParameters setSubmissionIds(Set<Long> submissionIds) {
+    public SearchParameters setSubmissionIds(Set<BigInteger> submissionIds) {
         this.submissionIds = submissionIds;
         return this;
     }

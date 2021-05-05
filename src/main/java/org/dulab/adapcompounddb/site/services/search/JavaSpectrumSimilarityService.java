@@ -49,7 +49,9 @@ public class JavaSpectrumSimilarityService {
                 .collect(Collectors.toSet());
         Iterable<Spectrum> preScreenedSpectra = spectrumRepository.findSpectraWithPeaksById(preScreenedSpectrumIdsSet);
 
-        return calculateSpectrumSimilarity(querySpectrum, preScreenedSpectra, parameters);
+        List<SpectrumMatch> matches = calculateSpectrumSimilarity(querySpectrum, preScreenedSpectra, parameters);
+
+        return matches.subList(0, Math.min(parameters.getLimit(), matches.size()));
     }
 
     private List<SpectrumMatch> calculateSpectrumSimilarity(

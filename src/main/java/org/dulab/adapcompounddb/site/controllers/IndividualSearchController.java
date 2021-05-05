@@ -23,7 +23,9 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.math.BigInteger;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 public class IndividualSearchController extends BaseController {
@@ -206,7 +208,7 @@ public class IndividualSearchController extends BaseController {
         parameters.setSpecies(filterForm.getSpecies());
         parameters.setSource(filterForm.getSource());
         parameters.setDisease(filterForm.getDisease());
-        parameters.setSubmissionIds(filterForm.getSubmissionIds());
+        parameters.setSubmissionIds(filterForm.getSubmissionIds().stream().map(BigInteger::valueOf).collect(Collectors.toSet()));
 
         List<SearchResultDTO> searchResults = individualSearchService.searchConsensusSpectra(
                 this.getCurrentUserPrincipal(), querySpectrum, parameters, true);

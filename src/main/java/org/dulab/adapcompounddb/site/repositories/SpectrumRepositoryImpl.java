@@ -294,7 +294,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
      * Returns Spectrum IDs and the number of common m/z peaks
      *
      * @param querySpectrum     query spectrum
-     * @param parameters        search parameters
+     * @param params            search parameters
      * @param greedy            if true, then all spectra are returned without matching the top m/z values
      * @param searchConsensus   if true, then consensus spectra are returned
      * @param searchReference   if true, then reference spectra are returned
@@ -302,20 +302,22 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
      * @return collection of Spectrum IDs and the number of common m/z peaks
      */
     @Override
-    public Iterable<Object[]> preScreenSpectra(Spectrum querySpectrum, SearchParameters parameters, boolean greedy,
+    public Iterable<Object[]> preScreenSpectra(Spectrum querySpectrum, SearchParameters params, boolean greedy,
                                                boolean searchConsensus, boolean searchReference,
                                                boolean searchClusterable) {
 
         PreScreenQueryBuilder queryBuilder =
-                new PreScreenQueryBuilder(searchConsensus, searchReference, searchClusterable)
+                new PreScreenQueryBuilder(params.getSubmissionIds(), searchConsensus, searchReference, searchClusterable)
                         .withChromatographyType(querySpectrum.getChromatographyType())
-                        .withPrecursor(querySpectrum.getPrecursor(), parameters.getPrecursorTolerance())
-                        .withRetTime(querySpectrum.getRetentionTime(), parameters.getRetTimeTolerance())
-                        .withMass(querySpectrum.getMolecularWeight(), parameters.getMassTolerance())
-                        .withMassPPM(querySpectrum.getMolecularWeight(), parameters.getMassTolerancePPM());
+                        .withPrecursor(params.getPrecursorTolerance(), params.getPrecursorTolerancePPM(), querySpectrum.getPrecursor())
+                        .withRetTime(params.getRetTimeTolerance(), querySpectrum.getRetentionTime());
+
+        queryBuilder = (querySpectrum.getMolecularWeight() != null)
+                ? queryBuilder.withMass(params.getMassTolerance(), params.getMassTolerancePPM(), querySpectrum.getMolecularWeight())
+                : queryBuilder.withMass(params.getMassTolerance(), params.getMassTolerancePPM(), params.getMasses());
 
         if (!greedy)
-            queryBuilder = queryBuilder.withQuerySpectrum(querySpectrum, parameters.getMzTolerance());
+            queryBuilder = queryBuilder.withQuerySpectrum(params.getMzTolerance(), params.getMzTolerancePPM(), querySpectrum);
 
         final String sqlQuery = queryBuilder.build();
 

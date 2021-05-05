@@ -3,34 +3,46 @@ package org.dulab.adapcompounddb.site.repositories;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 
+import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class PreScreenQueryBuilder {
 
-    private final boolean searchConsensusSpectra;
-    private final boolean searchReferenceSpectra;
-    private final boolean searchClusterableSpectra;
+    private final boolean searchConsensus;
+    private final boolean searchReference;
+    private final boolean searchClusterable;
+
+    private final Collection<BigInteger> submissionIds;
 
     private ChromatographyType chromatographyType;
+
     private Spectrum querySpectrum;
     private Double mzTolerance = null;
+    private Double mzTolerancePPM = null;
+
     private Double precursorMz = null;
     private Double precursorTolerance = null;
+    private Double precursorTolerancePPM = null;
+
     private Double retTime = null;
     private Double retTimeTolerance = null;
-    private Double mass = null;
+
     private double[] masses = null;
     private Double massTolerance = null;
     private Double massTolerancePPM = null;
 
 
-    public PreScreenQueryBuilder(
-            boolean searchConsensusSpectra, boolean searchReferenceSpectra, boolean searchClusterableSpectra) {
+    public PreScreenQueryBuilder(Collection<BigInteger> submissionIds,
+            boolean searchConsensus, boolean searchReference, boolean searchClusterable) {
 
-        this.searchConsensusSpectra = searchConsensusSpectra;
-        this.searchReferenceSpectra = searchReferenceSpectra;
-        this.searchClusterableSpectra = searchClusterableSpectra;
+        this.submissionIds = submissionIds;
+        this.searchConsensus = searchConsensus;
+        this.searchReference = searchReference;
+        this.searchClusterable = searchClusterable;
     }
 
     public PreScreenQueryBuilder withChromatographyType(ChromatographyType chromatographyType) {
@@ -38,45 +50,30 @@ public class PreScreenQueryBuilder {
         return this;
     }
 
-    public PreScreenQueryBuilder withPrecursor(Double mz, Double tolerance) {
+    public PreScreenQueryBuilder withPrecursor(Double tolerance, Double ppm, Double mz) {
         this.precursorMz = mz;
         this.precursorTolerance = tolerance;
+        this.precursorTolerancePPM = ppm;
         return this;
     }
 
-    public PreScreenQueryBuilder withRetTime(Double retTime, Double tolerance) {
+    public PreScreenQueryBuilder withRetTime(Double tolerance, Double retTime) {
         this.retTime = retTime;
         this.retTimeTolerance = tolerance;
         return this;
     }
 
-    public PreScreenQueryBuilder withMass(Double mass, Double tolerance) {
-        this.mass = mass;
+    public PreScreenQueryBuilder withMass(Double tolerance, Double ppm, double... masses) {
+        this.masses = masses;
         this.massTolerance = tolerance;
-        return this;
-    }
-
-    public PreScreenQueryBuilder withMassPPM(Double mass, Double ppm) {
-        this.mass = mass;
         this.massTolerancePPM = ppm;
         return this;
     }
 
-    public PreScreenQueryBuilder withMasses(double[] masses, Double tolerance) {
-        this.masses = masses;
-        this.massTolerance = tolerance;
-        return this;
-    }
-
-    public PreScreenQueryBuilder withMassesPPM(double[] masses, Double ppm) {
-        this.masses = masses;
-        this.massTolerancePPM = ppm;
-        return this;
-    }
-
-    public PreScreenQueryBuilder withQuerySpectrum(Spectrum querySpectrum, Double mzTolerance) {
+    public PreScreenQueryBuilder withQuerySpectrum(Double mzTolerance, Double ppm, Spectrum querySpectrum) {
         this.querySpectrum = querySpectrum;
         this.mzTolerance = mzTolerance;
+        this.mzTolerancePPM = ppm;
         return this;
     }
 
@@ -92,8 +89,8 @@ public class PreScreenQueryBuilder {
     public String buildQueryBlock(int numberOfTopMz, Double queryMz) {
 
         String queryBlock = String.format(
-                "SELECT * FROM Spectrum WHERE Consensus IS %b AND Reference IS %b AND Clusterable IS %b",
-                searchConsensusSpectra, searchReferenceSpectra, searchClusterableSpectra);
+                "SELECT Id FROM Spectrum WHERE (Consensus IS %b OR Reference IS %b OR Clusterable IS %b)",
+                searchConsensus, searchReference, searchClusterable);
 
         if (chromatographyType != null)
             queryBlock += String.format(" AND Spectrum.ChromatographyType = '%s'", chromatographyType);
@@ -102,52 +99,53 @@ public class PreScreenQueryBuilder {
             queryBlock += String.format(" AND Spectrum.Precursor > %f AND Spectrum.Precursor < %f",
                     precursorMz - precursorTolerance, precursorMz + precursorTolerance);
 
-        if (mass != null && massTolerance != null)
-            queryBlock += String.format(" AND Spectrum.MolecularWeight > %f AND Spectrum.MolecularWeight < %f",
-                    mass - massTolerance, mass + massTolerance);
+        if (precursorMz != null && precursorTolerancePPM != null)
+            queryBlock += String.format(" AND Spectrum.Precursor > %f AND Spectrum.Precursor < %f",
+                    getLowerLimit(precursorMz, precursorTolerancePPM),
+                    getUpperLimit(precursorMz, precursorTolerancePPM));
 
-        if (mass != null && massTolerancePPM != null) {
-            double x = 1e-6 * massTolerancePPM;
-            queryBlock += String.format(" AND Spectrum.MolecularWeight > %f AND Spectrum.MolecularWeight < %f",
-                    mass / (1 + x), mass / (1 - x));
-        }
+        if (masses != null && massTolerance != null)
+            queryBlock += String.format(" AND (%s)", Arrays.stream(masses)
+                    .mapToObj(mass -> String.format(
+                            "(Spectrum.MolecularWeight > %f AND Spectrum.MolecularWeight < %f)",
+                            mass - massTolerance, mass + massTolerance))
+                    .collect(Collectors.joining(" OR ")));
 
-//        if (mass == null && masses != null && massTolerance != null)
-//            spectrumSelector += String.format(" AND (%s)", Arrays.stream(masses)
-//                    .mapToObj(mass -> String.format(
-//                            "(Spectrum.MolecularWeight > %f AND Spectrum.MolecularWeight < %f)",
-//                            mass - massTolerance, mass + massTolerance))
-//                    .collect(Collectors.joining(" OR ")));
-//
-//        if (mass == null && masses != null && massTolerancePPM != null) {
-//            double x = 1e-6 * massTolerancePPM;
-//            spectrumSelector += String.format(" AND (%s)", Arrays.stream(masses)
-//                    .mapToObj(mass -> String.format(
-//                            "(Spectrum.MolecularWeight > %f AND Spectrum.MolecularWeight < %f)",
-//                            mass / (1 + x), mass / (1 - x)))
-//                    .collect(Collectors.joining(" OR ")));
-//        }
+        if (masses != null && massTolerancePPM != null)
+            queryBlock += String.format(" AND (%s)", Arrays.stream(masses)
+                    .mapToObj(mass -> String.format(
+                            "(Spectrum.MolecularWeight > %f AND Spectrum.MolecularWeight < %f)",
+                            getLowerLimit(mass, massTolerancePPM), getUpperLimit(mass, massTolerancePPM)))
+                    .collect(Collectors.joining(" OR ")));
 
         if (retTime != null && retTimeTolerance != null)
             queryBlock += String.format(" AND Spectrum.RetentionTime > %f AND Spectrum.RetentionTime < %f",
                     retTime - retTimeTolerance, retTime + retTimeTolerance);
 
         if (querySpectrum != null && mzTolerance != null) {
-            queryBlock += IntStream.range(1, numberOfTopMz + 1)
-                    .mapToObj(i -> String.format("(TopMz" + i + "\t> %f and TopMz" + i + "\t< %f)",
-                            queryMz - mzTolerance,
-                            queryMz + mzTolerance))
-                    .collect(Collectors.joining(" or\n"));
+            queryBlock += String.format(" AND (%s)", IntStream.range(1, numberOfTopMz + 1)
+                    .mapToObj(i -> String.format("(TopMz%d > %f AND TopMz%d < %f)",
+                            i, queryMz - mzTolerance,
+                            i, queryMz + mzTolerance))
+                    .collect(Collectors.joining(" OR ")));
         }
 
-        queryBlock += ")\n";
+        if (querySpectrum != null && mzTolerancePPM != null) {
+            queryBlock += String.format(" AND (%s)", IntStream.range(1, numberOfTopMz + 1)
+                    .mapToObj(i -> String.format("(TopMz%d > %f AND TopMz%d < %f)",
+                            i, getLowerLimit(queryMz, mzTolerancePPM),
+                            i, getUpperLimit(queryMz, mzTolerancePPM)))
+                    .collect(Collectors.joining(" OR ")));
+        }
+
+        queryBlock += "\n";
 
         return queryBlock;
     }
 
     public String build() {
         String query;
-        query = "SELECT COUNT(*) as Common, Id FROM (\n";
+        query = "SELECT COUNT(*) as Common, TempTable.Id FROM (\n";
 
         if (querySpectrum != null && mzTolerance != null) {
             if (querySpectrum.getTopMz1() != null) {
@@ -186,7 +184,23 @@ public class PreScreenQueryBuilder {
             query += buildQueryBlock(0, null);
         }
         query += ") AS TempTable\n";
+
+        query += "JOIN Spectrum ON TempTable.Id = Spectrum.Id LEFT JOIN File ON Spectrum.FileId = File.Id\n";
+
+        if (submissionIds != null)
+            query += String.format("WHERE Spectrum.FileId IS NULL OR File.SubmissionId IN (%s)\n",
+                    submissionIds.stream().map(BigInteger::toString).collect(Collectors.joining(",")));
+
         query += "GROUP BY Id ORDER BY Common DESC";
+
         return query;
+    }
+
+    private static double getLowerLimit(double x, double ppm) {
+        return x * (1 - ppm * 1E-6);
+    }
+
+    private static double getUpperLimit(double x, double ppm) {
+        return x * (1 + ppm * 1E-6);
     }
 }
