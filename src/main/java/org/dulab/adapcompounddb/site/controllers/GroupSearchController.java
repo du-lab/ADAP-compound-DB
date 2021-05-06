@@ -121,12 +121,12 @@ public class GroupSearchController extends BaseController {
             asyncResult.cancel(true);
         }
 
-//        List<Spectrum> querySpectra = submission.getFiles().stream()
-//                .flatMap(file -> file.getSpectra().stream())
-//                .collect(Collectors.toList());
+        String species = form.getSpecies().equalsIgnoreCase("all") ? null : form.getSpecies();
+        String source = form.getSource().equalsIgnoreCase("all") ? null : form.getSource();
+        String disease = form.getDisease().equalsIgnoreCase("all") ? null : form.getDisease();
 
         asyncResult = groupSearchService.groupSearch(this.getCurrentUserPrincipal(), submission.getFiles(), session,
-                form.getSubmissionIds(), form.getSpecies(), form.getSource(), form.getDisease());
+                form.getSubmissionIds(), species, source, disease);
 
         return new ModelAndView("submission/group_search");
     }
