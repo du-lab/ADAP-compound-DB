@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 public class FilterQueryBuilder {
 
     private final String tagQueryBlock;
+    private final long minNumberOfTags;
 
     public FilterQueryBuilder(String species, String source, String disease) {
 
@@ -19,23 +20,27 @@ public class FilterQueryBuilder {
         String diseaseBlock = (disease != null && !disease.equalsIgnoreCase("all"))
                 ? String.format(pattern, "disease", disease) : null;
 
-        String queryBlock = Arrays.stream(new String[]{speciesBlock, sourceBlock, diseaseBlock})
+        String[] tagBlocks = new String[]{speciesBlock, sourceBlock, diseaseBlock};
+
+        String queryBlock = Arrays.stream(tagBlocks)
                 .filter(Objects::nonNull)
                 .collect(Collectors.joining(" OR "));
 
         if (queryBlock.length() > 0)
-            queryBlock = "AND " + queryBlock;
+            queryBlock = String.format("AND (%s)", queryBlock);
 
         tagQueryBlock = queryBlock;
+        minNumberOfTags = Arrays.stream(tagBlocks).filter(Objects::nonNull).count();
     }
 
     public String build(Map<BigInteger, List<BigInteger>> countToSpectrumIdsMap) {
 
-        return String.format("SELECT Common, Id FROM (\n%s\n) AS CombinedTable WHERE Tags > 0 GROUP BY Common, Id",
+        return String.format("SELECT Common, Id FROM (\n%s\n) AS CombinedTable WHERE Tags >= %d GROUP BY Common, Id",
                 countToSpectrumIdsMap.entrySet()
                         .stream()
                         .map(e -> buildQueryBlock(e.getKey(), e.getValue()))
-                        .collect(Collectors.joining("\nUNION ALL\n")));
+                        .collect(Collectors.joining("\nUNION ALL\n")),
+                minNumberOfTags);
     }
 
     private String buildQueryBlock(BigInteger count, List<BigInteger> spectrumIds) {
