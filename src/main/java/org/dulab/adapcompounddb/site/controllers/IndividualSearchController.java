@@ -205,9 +205,9 @@ public class IndividualSearchController extends BaseController {
         }
 
         SearchParameters parameters = SearchParameters.getDefaultParameters(querySpectrum.getChromatographyType());
-        parameters.setSpecies(filterForm.getSpecies());
-        parameters.setSource(filterForm.getSource());
-        parameters.setDisease(filterForm.getDisease());
+        parameters.setSpecies(filterForm.getSpecies().equalsIgnoreCase("all") ? null : filterForm.getSpecies());
+        parameters.setSource(filterForm.getSource().equalsIgnoreCase("all") ? null : filterForm.getSource());
+        parameters.setDisease(filterForm.getDisease().equalsIgnoreCase("all") ? null : filterForm.getDisease());
         parameters.setSubmissionIds(filterForm.getSubmissionIds().stream().map(BigInteger::valueOf).collect(Collectors.toSet()));
 
         List<SearchResultDTO> searchResults = individualSearchService.searchConsensusSpectra(

@@ -2,6 +2,7 @@ package org.dulab.adapcompounddb.site.repositories;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Map;
 
 import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
 import org.dulab.adapcompounddb.site.services.admin.QueryParameters;
@@ -31,4 +32,6 @@ public interface SpectrumRepositoryCustom {
     Iterable<Object[]> preScreenSpectra(Spectrum querySpectrum, SearchParameters parameters, boolean greedy,
                                         boolean searchConsensus, boolean searchReference,
                                         boolean searchClusterable);
+
+    Iterable<Object[]> filterSpectra(Map<BigInteger, List<BigInteger>> countToSpectrumIdMap, SearchParameters params);
 }

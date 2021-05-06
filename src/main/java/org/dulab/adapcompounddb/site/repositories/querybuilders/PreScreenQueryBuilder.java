@@ -1,12 +1,9 @@
-package org.dulab.adapcompounddb.site.repositories;
+package org.dulab.adapcompounddb.site.repositories.querybuilders;
 
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 
-import java.math.BigInteger;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -15,8 +12,6 @@ public class PreScreenQueryBuilder {
     private final boolean searchConsensus;
     private final boolean searchReference;
     private final boolean searchClusterable;
-
-    private final Collection<BigInteger> submissionIds;
 
     private ChromatographyType chromatographyType;
 
@@ -36,10 +31,8 @@ public class PreScreenQueryBuilder {
     private Double massTolerancePPM = null;
 
 
-    public PreScreenQueryBuilder(Collection<BigInteger> submissionIds,
-            boolean searchConsensus, boolean searchReference, boolean searchClusterable) {
+    public PreScreenQueryBuilder(boolean searchConsensus, boolean searchReference, boolean searchClusterable) {
 
-        this.submissionIds = submissionIds;
         this.searchConsensus = searchConsensus;
         this.searchReference = searchReference;
         this.searchClusterable = searchClusterable;
@@ -184,13 +177,6 @@ public class PreScreenQueryBuilder {
             query += buildQueryBlock(0, null);
         }
         query += ") AS TempTable\n";
-
-        query += "JOIN Spectrum ON TempTable.Id = Spectrum.Id LEFT JOIN File ON Spectrum.FileId = File.Id\n";
-
-        if (submissionIds != null)
-            query += String.format("WHERE Spectrum.FileId IS NULL OR File.SubmissionId IN (%s)\n",
-                    submissionIds.stream().map(BigInteger::toString).collect(Collectors.joining(",")));
-
         query += "GROUP BY Id ORDER BY Common DESC";
 
         return query;

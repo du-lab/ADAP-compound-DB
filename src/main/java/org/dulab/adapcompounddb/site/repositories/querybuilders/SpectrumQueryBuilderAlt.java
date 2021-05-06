@@ -1,4 +1,4 @@
-package org.dulab.adapcompounddb.site.repositories;
+package org.dulab.adapcompounddb.site.repositories.querybuilders;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.entities.Peak;
+import org.dulab.adapcompounddb.site.repositories.QueryBuilderException;
 
 public class SpectrumQueryBuilderAlt {
 
@@ -26,7 +27,7 @@ public class SpectrumQueryBuilderAlt {
             "Spectrum.Significance AS MaximumSignificance, Spectrum.ChromatographyType";
 
     private static final String SPECTRUM_MATCH_OUTPUT =
-            "0 AS Id, NULL AS QuerySpectrumId, Spectrum.Id AS MatchSpectrumId, Score";
+            "UUID_SHORT() AS Id, NULL AS QuerySpectrumId, Spectrum.Id AS MatchSpectrumId, Score";
 
     private static final String EMPTY_SPECTRUM_MATCH_OUTPUT =
             "0 AS Id, NULL AS QuerySpectrumId, Spectrum.Id AS MatchSpectrumId, 0 AS Score";

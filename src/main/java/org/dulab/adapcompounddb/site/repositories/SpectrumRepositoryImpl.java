@@ -3,12 +3,17 @@ package org.dulab.adapcompounddb.site.repositories;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dulab.adapcompounddb.site.repositories.querybuilders.FilterQueryBuilder;
+import org.dulab.adapcompounddb.site.repositories.querybuilders.PreScreenQueryBuilder;
+import org.dulab.adapcompounddb.site.repositories.querybuilders.SpectrumQueryBuilder;
+import org.dulab.adapcompounddb.site.repositories.querybuilders.SpectrumQueryBuilderAlt;
 import org.dulab.adapcompounddb.site.services.admin.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.entities.*;
@@ -307,7 +312,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                                                boolean searchClusterable) {
 
         PreScreenQueryBuilder queryBuilder =
-                new PreScreenQueryBuilder(params.getSubmissionIds(), searchConsensus, searchReference, searchClusterable)
+                new PreScreenQueryBuilder(searchConsensus, searchReference, searchClusterable)
                         .withChromatographyType(querySpectrum.getChromatographyType())
                         .withPrecursor(params.getPrecursorTolerance(), params.getPrecursorTolerancePPM(), querySpectrum.getPrecursor())
                         .withRetTime(params.getRetTimeTolerance(), querySpectrum.getRetentionTime());
@@ -322,6 +327,23 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         final String sqlQuery = queryBuilder.build();
 
         @SuppressWarnings("unchecked") final Iterable<Object[]> resultList = entityManager
+                .createNativeQuery(sqlQuery)
+                .getResultList();
+
+        return resultList;
+    }
+
+    @Override
+    public Iterable<Object[]> filterSpectra(
+            Map<BigInteger, List<BigInteger>> countToSpectrumIdMap, SearchParameters params) {
+
+        FilterQueryBuilder builder = new FilterQueryBuilder(
+                params.getSpecies(), params.getSource(), params.getDisease());
+
+        String sqlQuery = builder.build(countToSpectrumIdMap);
+
+        @SuppressWarnings("unchecked")
+        Iterable<Object[]> resultList = entityManager
                 .createNativeQuery(sqlQuery)
                 .getResultList();
 

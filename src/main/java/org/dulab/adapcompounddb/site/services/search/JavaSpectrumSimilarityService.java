@@ -40,6 +40,10 @@ public class JavaSpectrumSimilarityService {
                 spectrumRepository.preScreenSpectra(querySpectrum, parameters, greedy,
                         searchConsensus, searchReference, searchClusterable));
 
+        if (parameters.getSpecies() != null || parameters.getSource() != null || parameters.getDisease() != null)
+            commonToSpectrumIdsMap = MappingUtils.toMapBigIntegerOfLists(
+                    spectrumRepository.filterSpectra(commonToSpectrumIdsMap, parameters));
+
         List<BigInteger> preScreenedSpectrumIds =
                 getSpectrumIdsWithCommonPeaksAboveThreshold(commonToSpectrumIdsMap, 50);
 
