@@ -15,15 +15,15 @@ public class SearchServiceSelector {
     private final Map<ChromatographyType, IndividualSearchService> spectrumSearchServiceMap;
 
     @Autowired
-    public SearchServiceSelector(@Qualifier("spectrumSearchServiceImpl") IndividualSearchService spectrumSearchService) {
+    public SearchServiceSelector(IndividualSearchService individualSearchService) {  // @Qualifier("spectrumSearchServiceImpl")
 
         this.spectrumSearchServiceMap = new HashMap<>();
-        this.spectrumSearchServiceMap.put(ChromatographyType.GAS, spectrumSearchService);
-        this.spectrumSearchServiceMap.put(ChromatographyType.LIQUID_POSITIVE, spectrumSearchService);
-        this.spectrumSearchServiceMap.put(ChromatographyType.LIQUID_NEGATIVE, spectrumSearchService);
-        this.spectrumSearchServiceMap.put(ChromatographyType.LC_MSMS_POS, spectrumSearchService);
-        this.spectrumSearchServiceMap.put(ChromatographyType.LC_MSMS_NEG, spectrumSearchService);
-        this.spectrumSearchServiceMap.put(ChromatographyType.NONE, spectrumSearchService);
+        this.spectrumSearchServiceMap.put(ChromatographyType.GAS, individualSearchService);
+        this.spectrumSearchServiceMap.put(ChromatographyType.LIQUID_POSITIVE, individualSearchService);
+        this.spectrumSearchServiceMap.put(ChromatographyType.LIQUID_NEGATIVE, individualSearchService);
+        this.spectrumSearchServiceMap.put(ChromatographyType.LC_MSMS_POS, individualSearchService);
+        this.spectrumSearchServiceMap.put(ChromatographyType.LC_MSMS_NEG, individualSearchService);
+        this.spectrumSearchServiceMap.put(ChromatographyType.NONE, individualSearchService);
     }
 
     public IndividualSearchService findByChromatographyType(ChromatographyType chromatographyType) {

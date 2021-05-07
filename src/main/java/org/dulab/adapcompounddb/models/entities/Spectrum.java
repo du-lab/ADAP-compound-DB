@@ -148,6 +148,10 @@ public class Spectrum implements Serializable {
         return fullName;
     }
 
+    public String getShortName() {
+        return name;
+    }
+
     public void setName(final String name) {
         this.name = name;
     }

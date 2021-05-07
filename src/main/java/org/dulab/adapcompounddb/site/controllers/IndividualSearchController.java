@@ -39,7 +39,7 @@ public class IndividualSearchController extends BaseController {
     public IndividualSearchController(SubmissionService submissionService,
                                       SubmissionTagService submissionTagService,
                                       @Qualifier("spectrumServiceImpl") SpectrumService spectrumService,
-                                      @Qualifier("spectrumSearchServiceImpl") IndividualSearchService individualSearchService) {
+                                      IndividualSearchService individualSearchService) {  // @Qualifier("spectrumSearchServiceImpl")
 
         this.submissionService = submissionService;
         this.spectrumService = spectrumService;

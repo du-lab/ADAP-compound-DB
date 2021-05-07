@@ -28,7 +28,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class SpectrumSearchServiceImpl implements IndividualSearchService {
+public class IndividualSearchServiceImpl implements IndividualSearchService {
 
     private final SpectrumRepository spectrumRepository;
     private final SubmissionRepository submissionRepository;
@@ -36,10 +36,10 @@ public class SpectrumSearchServiceImpl implements IndividualSearchService {
     private final JavaSpectrumSimilarityService javaSpectrumSimilarityService;
 
     @Autowired
-    public SpectrumSearchServiceImpl(SpectrumRepository spectrumRepository,
-                                     SubmissionRepository submissionRepository,
-                                     AdductService adductService,
-                                     JavaSpectrumSimilarityService javaSpectrumSimilarityService) {
+    public IndividualSearchServiceImpl(SpectrumRepository spectrumRepository,
+                                       SubmissionRepository submissionRepository,
+                                       AdductService adductService,
+                                       JavaSpectrumSimilarityService javaSpectrumSimilarityService) {
 
         this.spectrumRepository = spectrumRepository;
         this.submissionRepository = submissionRepository;
@@ -168,6 +168,8 @@ public class SpectrumSearchServiceImpl implements IndividualSearchService {
                                     modifiedParameters.getDisease()))
                             .map(view -> new SearchResultDTO(spectrum, view))
                             .collect(Collectors.toList());
+
+            results.forEach(r -> r.setOntologyLevel(ontologyLevel));
 
             searchResults.addAll(results);
         }

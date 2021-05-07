@@ -77,7 +77,7 @@ public class SpectrumRestController extends BaseController {
     @Autowired
     public SpectrumRestController(SpectrumService spectrumService,
                                   SpectrumMatchService spectrumMatchService,
-                                  @Qualifier("spectrumSearchServiceImpl") IndividualSearchService individualSearchService) {
+                                  IndividualSearchService individualSearchService) {  // @Qualifier("spectrumSearchServiceImpl")
         this.spectrumService = spectrumService;
         this.spectrumMatchService = spectrumMatchService;
         this.individualSearchService = individualSearchService;

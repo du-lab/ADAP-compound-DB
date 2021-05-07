@@ -60,11 +60,12 @@ public class MappingUtils {
         Spectrum matchSpectrum = match.getMatchSpectrum();
         if (matchSpectrum != null) {
             view.setId(matchSpectrum.getId());
-            view.setName(matchSpectrum.getName());
+            view.setName(matchSpectrum.getShortName());
             view.setScore(match.getScore());
             view.setMassError(match.getMassError());
             view.setMassErrorPPM(match.getMassErrorPPM());
             view.setRetTimeError(match.getRetTimeError());
+            view.setSize(1);
 
             if (matchSpectrum.isConsensus()) {
                 SpectrumCluster cluster = matchSpectrum.getCluster();
