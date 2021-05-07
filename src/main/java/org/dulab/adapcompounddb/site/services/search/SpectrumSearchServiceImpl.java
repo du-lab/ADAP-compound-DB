@@ -73,12 +73,12 @@ public class SpectrumSearchServiceImpl implements IndividualSearchService {
         int[] priorities = OntologySupplier.findPrioritiesByChromatographyType(querySpectrum.getChromatographyType());
         if (priorities == null) {
             // There is no ontology levels. Perform simple search.
-            return searchWithoutOntologyLevels(submissionIds, querySpectrum, parameters);
+            return searchWithoutOntologyLevels(submissionIds, querySpectrum, parameters, user);
         } else {
             // There are ontology levels. Perform a search for each ontology level until the there any matches
             for (int priority : priorities) {
                 List<SearchResultDTO> searchResults =
-                        searchWithOntologyLevels(submissionIds, parameters, querySpectrum, priority);
+                        searchWithOntologyLevels(submissionIds, parameters, querySpectrum, user, priority);
                 if (!searchResults.isEmpty())
                     return searchResults;
             }
@@ -88,7 +88,7 @@ public class SpectrumSearchServiceImpl implements IndividualSearchService {
     }
 
     private List<SearchResultDTO> searchWithoutOntologyLevels(
-            Set<BigInteger> submissionIds, Spectrum querySpectrum, SearchParameters parameters) {
+            Set<BigInteger> submissionIds, Spectrum querySpectrum, SearchParameters parameters, UserPrincipal user) {
 
         List<SearchResultDTO> searchResults = new ArrayList<>();
 //        for (SpectrumClusterView view : spectrumRepository.matchAgainstConsensusAndReferenceSpectra(
@@ -96,7 +96,9 @@ public class SpectrumSearchServiceImpl implements IndividualSearchService {
 //            SearchResultDTO searchResult = new SearchResultDTO(querySpectrum, view);
 //            searchResults.add(searchResult);
 //        }
-        for (SpectrumMatch match : javaSpectrumSimilarityService.searchConsensusAndReference(querySpectrum, parameters)) {
+        for (SpectrumMatch match
+                : javaSpectrumSimilarityService.searchConsensusAndReference(querySpectrum, parameters, user)) {
+
             SpectrumClusterView view = MappingUtils.mapSpectrumMatchToSpectrumClusterView(
                     match, parameters.getSpecies(), parameters.getSource(), parameters.getDisease());
             SearchResultDTO searchResult = new SearchResultDTO(querySpectrum, view);
@@ -106,8 +108,8 @@ public class SpectrumSearchServiceImpl implements IndividualSearchService {
         return searchResults;
     }
 
-    private List<SearchResultDTO> searchWithOntologyLevels(
-            Set<BigInteger> submissionIds, SearchParameters parameters, Spectrum spectrum, int priority) {
+    private List<SearchResultDTO> searchWithOntologyLevels(Set<BigInteger> submissionIds, SearchParameters parameters,
+                                                           Spectrum spectrum, UserPrincipal user, int priority) {
 
         OntologyLevel[] ontologyLevels =
                 OntologySupplier.findByChromatographyTypeAndPriority(spectrum.getChromatographyType(), priority);
@@ -126,19 +128,6 @@ public class SpectrumSearchServiceImpl implements IndividualSearchService {
                 continue;
             if (ontologyLevel.getRetTimeTolerance() != null && spectrum.getRetentionTime() == null)
                 continue;
-//            if (ontologyLevel.getMassTolerancePPM() != null && spectrum.getMolecularWeight() == null)
-//                continue;
-//            if (ontologyLevel.getMassTolerancePPM() != null && spectrum.getMolecularWeight() == null) {
-//                List<Adduct> adducts = adductService.findAdductsByChromatography(spectrum.getChromatographyType());
-//                if (adducts != null && spectrum.getPrecursor() != null) {
-//                    for (Adduct adduct : adducts) {
-//                        spectrum.setMolecularWeight(adduct.calculateNeutralMass(spectrum.getPrecursor()));
-//                        searchResults.addAll(searchForOntologyLevel(submissionIds, parameters, spectrum, ontologyLevel));
-//                    }
-//                    spectrum.setMolecularWeight(null);
-//                }
-//                continue;
-//            }
 
             // Modify search parameters
             SearchParameters modifiedParameters;
@@ -158,15 +147,27 @@ public class SpectrumSearchServiceImpl implements IndividualSearchService {
                         .mapToDouble(adduct -> adduct.calculateNeutralMass(spectrum.getPrecursor()))
                         .toArray());
 
+            if (ontologyLevel.getMassTolerancePPM() != null && spectrum.getMolecularWeight() == null
+                    && modifiedParameters.getMasses() == null)
+                continue;
+
             // Perform search
-            List<SearchResultDTO> results = MappingUtils.toList(
-                    spectrumRepository.matchAgainstConsensusAndReferenceSpectra(
-                            null, submissionIds, spectrum, modifiedParameters))
-                    .stream()
-                    .map(x -> new SearchResultDTO(spectrum, x))
-                    .collect(Collectors.toList());
-            results.forEach(x -> x.setOntologyLevel(ontologyLevel));
-//            return results;
+//            List<SearchResultDTO> results = MappingUtils.toList(
+//                    spectrumRepository.matchAgainstConsensusAndReferenceSpectra(
+//                            null, submissionIds, spectrum, modifiedParameters))
+//                    .stream()
+//                    .map(x -> new SearchResultDTO(spectrum, x))
+//                    .collect(Collectors.toList());
+
+            List<SearchResultDTO> results =
+                    javaSpectrumSimilarityService.searchConsensusAndReference(spectrum, modifiedParameters, user)
+                            .stream()
+                            .map(match -> MappingUtils.mapSpectrumMatchToSpectrumClusterView(match,
+                                    modifiedParameters.getSpecies(),
+                                    modifiedParameters.getSource(),
+                                    modifiedParameters.getDisease()))
+                            .map(view -> new SearchResultDTO(spectrum, view))
+                            .collect(Collectors.toList());
 
             searchResults.addAll(results);
         }

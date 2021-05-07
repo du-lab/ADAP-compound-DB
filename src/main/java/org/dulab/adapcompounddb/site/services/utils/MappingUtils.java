@@ -50,6 +50,7 @@ public class MappingUtils {
 
     public static SpectrumClusterView mapSpectrumMatchToSpectrumClusterView(
             SpectrumMatch match, String species, String source, String disease) {
+
         SpectrumClusterView view = new SpectrumClusterView();
         view.setUniqueId(match.getId());
 
@@ -61,16 +62,9 @@ public class MappingUtils {
             view.setId(matchSpectrum.getId());
             view.setName(matchSpectrum.getName());
             view.setScore(match.getScore());
-
-            if (querySpectrum.getMolecularWeight() != null && matchSpectrum.getMolecularWeight() != null) {
-                double d = Math.abs(querySpectrum.getMolecularWeight() - matchSpectrum.getMolecularWeight());
-                view.setMassError(d);
-                view.setMassErrorPPM(1E6 * d / matchSpectrum.getMolecularWeight());
-            }
-
-            if (querySpectrum.getRetentionTime() != null && matchSpectrum.getRetentionTime() != null) {
-                view.setRetTimeError(Math.abs(querySpectrum.getRetentionTime() - matchSpectrum.getRetentionTime()));
-            }
+            view.setMassError(match.getMassError());
+            view.setMassErrorPPM(match.getMassErrorPPM());
+            view.setRetTimeError(match.getRetTimeError());
 
             if (matchSpectrum.isConsensus()) {
                 SpectrumCluster cluster = matchSpectrum.getCluster();

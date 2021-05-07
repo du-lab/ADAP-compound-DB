@@ -1,8 +1,11 @@
 package org.dulab.adapcompounddb.site.services.search;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
+import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
@@ -15,6 +18,8 @@ import java.util.stream.Collectors;
 @Service
 public class JavaSpectrumSimilarityService {
 
+    private static final Logger LOGGER = LogManager.getLogger(JavaSpectrumSimilarityService.class);
+
     private final SpectrumRepository spectrumRepository;
 
 
@@ -22,22 +27,24 @@ public class JavaSpectrumSimilarityService {
         this.spectrumRepository = spectrumRepository;
     }
 
-    public List<SpectrumMatch> searchConsensusAndReference(Spectrum querySpectrum, SearchParameters parameters) {
-        return search(querySpectrum, parameters, true, true, false);
+    public List<SpectrumMatch> searchConsensusAndReference(
+            Spectrum querySpectrum, SearchParameters parameters, UserPrincipal user) {
+        return search(querySpectrum, parameters, user,true, true, false);
     }
 
-    public List<SpectrumMatch> searchClusterable(Spectrum querySpectrum, SearchParameters parameters) {
-        return search(querySpectrum, parameters, false, false, true);
+    public List<SpectrumMatch> searchClusterable(
+            Spectrum querySpectrum, SearchParameters parameters, UserPrincipal user) {
+        return search(querySpectrum, parameters, user, false, false, true);
     }
 
-    public List<SpectrumMatch> search(Spectrum querySpectrum, SearchParameters parameters,
+    public List<SpectrumMatch> search(Spectrum querySpectrum, SearchParameters parameters, UserPrincipal user,
                                       boolean searchConsensus, boolean searchReference, boolean searchClusterable) {
 
         boolean greedy = querySpectrum.getChromatographyType() == ChromatographyType.LC_MSMS_POS
                 || querySpectrum.getChromatographyType() == ChromatographyType.LC_MSMS_NEG;
 
         Map<BigInteger, List<BigInteger>> commonToSpectrumIdsMap = MappingUtils.toMapBigIntegerOfLists(
-                spectrumRepository.preScreenSpectra(querySpectrum, parameters, greedy,
+                spectrumRepository.preScreenSpectra(querySpectrum, parameters, user, greedy,
                         searchConsensus, searchReference, searchClusterable));
 
         if (parameters.getSpecies() != null || parameters.getSource() != null || parameters.getDisease() != null)
@@ -53,42 +60,88 @@ public class JavaSpectrumSimilarityService {
                 .collect(Collectors.toSet());
         Iterable<Spectrum> preScreenedSpectra = spectrumRepository.findSpectraWithPeaksById(preScreenedSpectrumIdsSet);
 
-        List<SpectrumMatch> matches = calculateSpectrumSimilarity(querySpectrum, preScreenedSpectra, parameters);
+        List<SpectrumMatch> matches = calculateSimilarity(querySpectrum, preScreenedSpectra, parameters);
 
         return matches.subList(0, Math.min(parameters.getLimit(), matches.size()));
     }
 
-    private List<SpectrumMatch> calculateSpectrumSimilarity(
-            Spectrum querySpectrum, Iterable<Spectrum> librarySpectra, SearchParameters parameters) {
+    private List<SpectrumMatch> calculateSimilarity(
+            Spectrum querySpectrum, Iterable<Spectrum> librarySpectra, SearchParameters params) {
 
         List<SpectrumMatch> matches = new ArrayList<>();
 
-        Double tolerance;
+        Double mzTolerance;
         boolean ppm;
-        if (parameters.getMzTolerancePPM() != null) {
-            tolerance = parameters.getMzTolerancePPM();
+        if (params.getMzTolerancePPM() != null) {
+            mzTolerance = params.getMzTolerancePPM();
             ppm = true;
         } else {
-            tolerance = parameters.getMzTolerance();
+            mzTolerance = params.getMzTolerance();
             ppm = false;
         }
 
         // iterate each spectrum in the adap-kdb library
         for (Spectrum librarySpectrum : librarySpectra) {
 
-            double similarityScore = calculateCosineSimilarity(querySpectrum.getPeaks(), librarySpectrum.getPeaks(), tolerance, ppm);
+            double precursorError = Double.MAX_VALUE;
+            double precursorErrorPPM = Double.MAX_VALUE;
+            if (querySpectrum.getPrecursor() != null && librarySpectrum.getPrecursor() != null) {
+                precursorError = Math.abs(querySpectrum.getPrecursor() - librarySpectrum.getPrecursor());
+                precursorErrorPPM = 1E6 * precursorError / librarySpectrum.getPrecursor();
+            }
+
+            double similarityScore = 0.0;
+            if (mzTolerance != null && querySpectrum.getPeaks() != null && librarySpectrum.getPeaks() != null)
+                similarityScore = calculateCosineSimilarity(
+                        querySpectrum.getPeaks(), librarySpectrum.getPeaks(), mzTolerance, ppm);
+
+            double massError = Double.MAX_VALUE;
+            double massErrorPPM = Double.MAX_VALUE;
+            if ((params.getMasses() != null || querySpectrum.getMolecularWeight() != null)
+                    && librarySpectrum.getMolecularWeight() != null) {
+
+                if (querySpectrum.getMolecularWeight() != null) {
+                    massError = Math.abs(querySpectrum.getMolecularWeight() - librarySpectrum.getMolecularWeight());
+                    massErrorPPM = 1E6 * massError / librarySpectrum.getMolecularWeight();
+                } else {
+                    massError = Arrays.stream(params.getMasses())
+                            .map(mass -> Math.abs(mass - librarySpectrum.getMolecularWeight()))
+                            .min()
+                            .orElse(Double.MAX_VALUE);
+                    massErrorPPM = Arrays.stream(params.getMasses())
+                            .map(mass -> 1E6 * Math.abs(mass - librarySpectrum.getMolecularWeight()) / librarySpectrum.getMolecularWeight())
+                            .min()
+                            .orElse(Double.MAX_VALUE);
+                }
+            }
+
+            double retTimeError = Double.MAX_VALUE;
+            if (querySpectrum.getRetentionTime() != null && librarySpectrum.getRetentionTime() != null)
+                retTimeError = Math.abs(querySpectrum.getRetentionTime() - librarySpectrum.getRetentionTime());
 
             // if the similarity score > ScoreThreshold, then return the MatchSpectrum
-            if (similarityScore > parameters.getScoreThreshold()) {
-                SpectrumMatch matchSpectrum = new SpectrumMatch();
-                matchSpectrum.setScore(similarityScore);
-                matchSpectrum.setQuerySpectrum(querySpectrum);
-                matchSpectrum.setMatchSpectrum(librarySpectrum);
-                matches.add(matchSpectrum);
+            if ((params.getPrecursorTolerance() == null || precursorError < params.getPrecursorTolerance())
+                    && (params.getPrecursorTolerancePPM() == null || precursorErrorPPM < params.getPrecursorTolerancePPM())
+                    && (params.getScoreThreshold() == null || similarityScore > params.getScoreThreshold())
+                    && (params.getMassTolerance() == null || massError < params.getMassTolerance())
+                    && (params.getMassTolerancePPM() == null || massErrorPPM < params.getMassTolerancePPM())
+                    && (params.getRetTimeTolerance() == null || retTimeError < params.getRetTimeTolerance())) {
+
+                SpectrumMatch match = new SpectrumMatch();
+                match.setQuerySpectrum(querySpectrum);
+                match.setMatchSpectrum(librarySpectrum);
+                match.setScore(similarityScore > 0 ? similarityScore : null);
+                match.setMassError(massError < Double.MAX_VALUE ? massError : null);
+                match.setMassErrorPPM(massErrorPPM < Double.MAX_VALUE ? massErrorPPM : null);
+                match.setRetTimeError(retTimeError < Double.MAX_VALUE ? retTimeError : null);
+                matches.add(match);
             }
         }
 
-        matches.sort(Comparator.comparing(SpectrumMatch::getScore).reversed());
+        matches.sort(Comparator.comparing(SpectrumMatch::getScore, Comparator.nullsFirst(Comparator.reverseOrder()))
+                .thenComparing(SpectrumMatch::getMassError, Comparator.nullsLast(Comparator.naturalOrder()))
+                .thenComparing(SpectrumMatch::getRetTimeError, Comparator.nullsLast(Comparator.naturalOrder())));
+
         return matches;
     }
 
@@ -96,7 +149,7 @@ public class JavaSpectrumSimilarityService {
             Map<BigInteger, List<BigInteger>> commonToSpectrumIdsMap, long threshold) {
 
         List<BigInteger> spectraList = new ArrayList<>();
-        for (BigInteger i = BigInteger.valueOf(8);i.compareTo(BigInteger.ZERO) > 0; i = i.subtract(BigInteger.ONE)) {
+        for (BigInteger i = BigInteger.valueOf(8); i.compareTo(BigInteger.ZERO) > 0; i = i.subtract(BigInteger.ONE)) {
             List<BigInteger> spectra = commonToSpectrumIdsMap.get(i);
             if (spectra != null) {
                 spectraList.addAll(commonToSpectrumIdsMap.get(i));

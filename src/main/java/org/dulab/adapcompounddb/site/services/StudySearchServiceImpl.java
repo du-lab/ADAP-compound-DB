@@ -73,7 +73,7 @@ public class StudySearchServiceImpl implements StudySearchService {
 //                        javaSpectrumSimilarityService.calculateSpectrumSimilarity(spectrum, prescreenSpectraList, searchParameters);
 
                 List<SpectrumMatch> matches =
-                        javaSpectrumSimilarityService.searchClusterable(spectrum, searchParameters);
+                        javaSpectrumSimilarityService.searchClusterable(spectrum, searchParameters, user);
 
                 spectrumMatches.addAll(matches);
                 querySubmissionSpectraCount++;

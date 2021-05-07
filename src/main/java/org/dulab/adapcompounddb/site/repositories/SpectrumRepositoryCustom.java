@@ -29,8 +29,8 @@ public interface SpectrumRepositoryCustom {
 
     void savePeaksAndProperties(Long spectrumId, List<Peak> peaks, List<SpectrumProperty> properties);
 
-    Iterable<Object[]> preScreenSpectra(Spectrum querySpectrum, SearchParameters parameters, boolean greedy,
-                                        boolean searchConsensus, boolean searchReference,
+    Iterable<Object[]> preScreenSpectra(Spectrum querySpectrum, SearchParameters parameters, UserPrincipal user,
+                                        boolean greedy, boolean searchConsensus, boolean searchReference,
                                         boolean searchClusterable);
 
     Iterable<Object[]> filterSpectra(Map<BigInteger, List<BigInteger>> countToSpectrumIdMap, SearchParameters params);

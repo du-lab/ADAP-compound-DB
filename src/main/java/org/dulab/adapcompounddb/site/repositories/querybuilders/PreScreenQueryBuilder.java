@@ -1,21 +1,23 @@
 package org.dulab.adapcompounddb.site.repositories.querybuilders;
 
 import org.dulab.adapcompounddb.models.entities.Spectrum;
+import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class PreScreenQueryBuilder {
 
-    private final boolean searchConsensus;
-    private final boolean searchReference;
-    private final boolean searchClusterable;
+    private final String spectrumTypeQuery;
 
     private ChromatographyType chromatographyType;
 
-    private Spectrum querySpectrum;
+    private UserPrincipal user = null;
+
+    private Spectrum querySpectrum = null;
     private Double mzTolerance = null;
     private Double mzTolerancePPM = null;
 
@@ -33,9 +35,12 @@ public class PreScreenQueryBuilder {
 
     public PreScreenQueryBuilder(boolean searchConsensus, boolean searchReference, boolean searchClusterable) {
 
-        this.searchConsensus = searchConsensus;
-        this.searchReference = searchReference;
-        this.searchClusterable = searchClusterable;
+        spectrumTypeQuery = Arrays.stream(
+                new String[]{
+                        searchConsensus ? "Consensus IS TRUE" : null,
+                        searchReference ? "Reference IS TRUE" : null,
+                        searchClusterable ? "Clusterable IS TRUE" : null})
+                .filter(Objects::nonNull).collect(Collectors.joining(" OR "));
     }
 
     public PreScreenQueryBuilder withChromatographyType(ChromatographyType chromatographyType) {
@@ -70,6 +75,11 @@ public class PreScreenQueryBuilder {
         return this;
     }
 
+    public PreScreenQueryBuilder withUser(UserPrincipal user) {
+        this.user = user;
+        return this;
+    }
+
 
     public Spectrum getQuerySpectrum() {
         return querySpectrum;
@@ -81,9 +91,7 @@ public class PreScreenQueryBuilder {
 
     public String buildQueryBlock(int numberOfTopMz, Double queryMz) {
 
-        String queryBlock = String.format(
-                "SELECT Id FROM Spectrum WHERE (Consensus IS %b OR Reference IS %b OR Clusterable IS %b)",
-                searchConsensus, searchReference, searchClusterable);
+        String queryBlock = String.format("SELECT Id FROM Spectrum WHERE (%s)", spectrumTypeQuery);
 
         if (chromatographyType != null)
             queryBlock += String.format(" AND Spectrum.ChromatographyType = '%s'", chromatographyType);
@@ -177,7 +185,16 @@ public class PreScreenQueryBuilder {
             query += buildQueryBlock(0, null);
         }
         query += ") AS TempTable\n";
-        query += "GROUP BY Id ORDER BY Common DESC";
+
+        query += "JOIN Spectrum ON Spectrum.Id = TempTable.Id ";
+        query += "LEFT JOIN File ON File.Id = Spectrum.FileId ";
+        query += "LEFT JOIN Submission ON Submission.Id = File.SubmissionId ";
+        query += "LEFT JOIN UserPrincipal ON UserPrincipal.Id = Submission.UserPrincipalId\n";
+        query += "WHERE Spectrum.FileId IS NULL OR Submission.IsPrivate IS FALSE";
+        if (user != null)
+            query += String.format(" OR UserPrincipal.Id = %d", user.getId());
+
+        query += "\nGROUP BY Id ORDER BY Common DESC";
 
         return query;
     }

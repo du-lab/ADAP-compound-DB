@@ -307,12 +307,13 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
      * @return collection of Spectrum IDs and the number of common m/z peaks
      */
     @Override
-    public Iterable<Object[]> preScreenSpectra(Spectrum querySpectrum, SearchParameters params, boolean greedy,
-                                               boolean searchConsensus, boolean searchReference,
+    public Iterable<Object[]> preScreenSpectra(Spectrum querySpectrum, SearchParameters params, UserPrincipal user,
+                                               boolean greedy, boolean searchConsensus, boolean searchReference,
                                                boolean searchClusterable) {
 
         PreScreenQueryBuilder queryBuilder =
                 new PreScreenQueryBuilder(searchConsensus, searchReference, searchClusterable)
+                        .withUser(user)
                         .withChromatographyType(querySpectrum.getChromatographyType())
                         .withPrecursor(params.getPrecursorTolerance(), params.getPrecursorTolerancePPM(), querySpectrum.getPrecursor())
                         .withRetTime(params.getRetTimeTolerance(), querySpectrum.getRetentionTime());
