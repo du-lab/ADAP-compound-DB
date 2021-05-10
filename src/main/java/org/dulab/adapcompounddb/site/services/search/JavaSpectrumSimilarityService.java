@@ -138,7 +138,7 @@ public class JavaSpectrumSimilarityService {
             }
         }
 
-        matches.sort(Comparator.comparing(SpectrumMatch::getScore, Comparator.nullsFirst(Comparator.reverseOrder()))
+        matches.sort(Comparator.comparing(SpectrumMatch::getScore, Comparator.nullsLast(Comparator.reverseOrder()))
                 .thenComparing(SpectrumMatch::getMassError, Comparator.nullsLast(Comparator.naturalOrder()))
                 .thenComparing(SpectrumMatch::getRetTimeError, Comparator.nullsLast(Comparator.naturalOrder())));
 

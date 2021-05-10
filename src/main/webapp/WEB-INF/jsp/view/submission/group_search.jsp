@@ -72,10 +72,23 @@
     <div class="row row-content">
         <div class="col">
             <div class="btn-toolbar justify-content-end" role="toolbar">
-                <a id="exportButton" type="button" class="btn btn-primary"
-                   href="${pageContext.request.contextPath}/export/session/${dulab:groupSearchResultsAttributeName()}/csv">
-                    Export...
-                </a>
+                <div class="dropdown">
+                    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                        Export
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item"
+                           href="${pageContext.request.contextPath}/export/session/${dulab:groupSearchResultsAttributeName()}/simple_csv"
+                           title="Exports the top match for each query feature">
+                            Simple export...
+                        </a>
+                        <a class="dropdown-item"
+                           href="${pageContext.request.contextPath}/export/session/${dulab:groupSearchResultsAttributeName()}/advanced_csv"
+                           title="Exports all matches for each query feature">
+                            Advanced export...
+                        </a>
+                    </div>
+                </div>
                 <div class="progress flex-grow-1 align-self-center mx-2">
                     <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow="0"
                          aria-valuemin="0" aria-valuemax="100"></div>
