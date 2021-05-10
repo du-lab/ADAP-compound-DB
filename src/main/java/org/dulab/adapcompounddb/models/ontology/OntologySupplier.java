@@ -18,8 +18,8 @@ public class OntologySupplier {
         chromatographyTypeToOntologyLevelsMap.put(ChromatographyType.LC_MSMS_POS, new ArrayList<>());
         chromatographyTypeToOntologyLevelsMap.put(ChromatographyType.LC_MSMS_NEG, new ArrayList<>());
 
-        OntologyLevel ol1 = new OntologyLevel("OL_1", 1, true, Parameters.MZ_TOLERANCE,
-                Parameters.SCORE_THRESHOLD, Parameters.PRECURSOR_TOLERANCE, Parameters.MASS_TOLERANCE_PPM,
+        OntologyLevel ol1 = new OntologyLevel("OL_1", 1, true, Parameters.MZ_TOLERANCE_PPM,
+                Parameters.SCORE_THRESHOLD, Parameters.PRECURSOR_TOLERANCE_PPM, Parameters.MASS_TOLERANCE_PPM,
                 Parameters.RET_TIME_TOLERANCE);
         chromatographyTypeToOntologyLevelsMap.get(ChromatographyType.LC_MSMS_POS).add(ol1);
         chromatographyTypeToOntologyLevelsMap.get(ChromatographyType.LC_MSMS_NEG).add(ol1);
@@ -29,8 +29,8 @@ public class OntologySupplier {
         chromatographyTypeToOntologyLevelsMap.get(ChromatographyType.LC_MSMS_POS).add(ol2a);
         chromatographyTypeToOntologyLevelsMap.get(ChromatographyType.LC_MSMS_NEG).add(ol2a);
 
-        OntologyLevel ol2b = new OntologyLevel("OL_2b", 2, true, Parameters.MZ_TOLERANCE,
-                Parameters.SCORE_THRESHOLD, Parameters.PRECURSOR_TOLERANCE, Parameters.MASS_TOLERANCE_PPM, null);
+        OntologyLevel ol2b = new OntologyLevel("OL_2b", 2, true, Parameters.MZ_TOLERANCE_PPM,
+                Parameters.SCORE_THRESHOLD, Parameters.PRECURSOR_TOLERANCE_PPM, Parameters.MASS_TOLERANCE_PPM, null);
         chromatographyTypeToOntologyLevelsMap.get(ChromatographyType.LC_MSMS_POS).add(ol2b);
         chromatographyTypeToOntologyLevelsMap.get(ChromatographyType.LC_MSMS_NEG).add(ol2b);
 

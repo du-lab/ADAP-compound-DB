@@ -3,7 +3,6 @@ package org.dulab.adapcompounddb.site.services.search;
 import org.dulab.adapcompounddb.models.entities.Adduct;
 import org.dulab.adapcompounddb.models.ontology.OntologyLevel;
 import org.dulab.adapcompounddb.models.ontology.OntologySupplier;
-import org.dulab.adapcompounddb.site.repositories.AdductRepository;
 import org.dulab.adapcompounddb.site.services.AdductService;
 import org.dulab.adapcompounddb.site.services.admin.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
@@ -12,7 +11,6 @@ import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
-import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
@@ -122,9 +120,9 @@ public class IndividualSearchServiceImpl implements IndividualSearchService {
         for (OntologyLevel ontologyLevel : ontologyLevels) {
 
             // Check the presence of necessary properties
-            if (ontologyLevel.getMzTolerance() != null && ontologyLevel.getScoreThreshold() != null && spectrum.getPeaks() == null)
+            if (ontologyLevel.getMzTolerancePPM() != null && ontologyLevel.getScoreThreshold() != null && spectrum.getPeaks() == null)
                 continue;
-            if (ontologyLevel.getPrecursorTolerance() != null && spectrum.getPrecursor() == null)
+            if (ontologyLevel.getPrecursorTolerancePPM() != null && spectrum.getPrecursor() == null)
                 continue;
             if (ontologyLevel.getRetTimeTolerance() != null && spectrum.getRetentionTime() == null)
                 continue;
@@ -136,11 +134,10 @@ public class IndividualSearchServiceImpl implements IndividualSearchService {
             } catch (CloneNotSupportedException e) {
                 throw new IllegalStateException(e.getMessage(), e);
             }
-            modifiedParameters.setMzTolerance(ontologyLevel.getMzTolerance());
+            modifiedParameters.setMzTolerance(null, ontologyLevel.getMzTolerancePPM());
             modifiedParameters.setScoreThreshold(ontologyLevel.getScoreThreshold());
-            modifiedParameters.setPrecursorTolerance(ontologyLevel.getPrecursorTolerance());
-            modifiedParameters.setMassTolerance(null);
-            modifiedParameters.setMassTolerancePPM(ontologyLevel.getMassTolerancePPM());
+            modifiedParameters.setPrecursorTolerance(null, ontologyLevel.getPrecursorTolerancePPM());
+            modifiedParameters.setMassTolerance(null, ontologyLevel.getMassTolerancePPM());
             modifiedParameters.setRetTimeTolerance(ontologyLevel.getRetTimeTolerance());
             if (spectrum.getMolecularWeight() == null && adducts != null && spectrum.getPrecursor() != null)
                 modifiedParameters.setMasses(adducts.stream()
