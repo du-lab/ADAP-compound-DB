@@ -1,4 +1,4 @@
-package org.dulab.adapcompounddb.site.repositories;
+package org.dulab.adapcompounddb.site.repositories.querybuilders;
 
 import java.util.Set;
 import java.util.stream.Collectors;

@@ -3,12 +3,17 @@ package org.dulab.adapcompounddb.site.repositories;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dulab.adapcompounddb.site.repositories.querybuilders.FilterQueryBuilder;
+import org.dulab.adapcompounddb.site.repositories.querybuilders.PreScreenQueryBuilder;
+import org.dulab.adapcompounddb.site.repositories.querybuilders.SpectrumQueryBuilder;
+import org.dulab.adapcompounddb.site.repositories.querybuilders.SpectrumQueryBuilderAlt;
 import org.dulab.adapcompounddb.site.services.admin.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.entities.*;
@@ -24,7 +29,8 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     private static final String PROPERTY_INSERT_SQL_STRING = "INSERT INTO `SpectrumProperty`(`SpectrumId`, `Name`, `Value`) VALUES ";
     private static final String PEAK_VALUE_SQL_STRING = "(%f,%f,%d)";
     private static final String PROPERTY_VALUE_SQL_STRING = "(%d, %s, %s)";
-    private static final String SPECTRUM_VALUE_SQL_STRING = "(%s, %f, %s, %f, %f, %d, %b, %b, %b, %s, %d, %f)";
+    private static final String SPECTRUM_VALUE_SQL_STRING = "(%s, %f, %f, %f, %d, %b, %b, %b, %s, %d, %f, %f, %f, %f, %f, " +
+            "%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f)";
 
     public static final String DOUBLE_QUOTE = "\"";
     public static final String COMMA = ",";
@@ -77,9 +83,10 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
     @Override
     public Iterable<SpectrumClusterView> matchAgainstConsensusAndReferenceSpectra(
+            List<BigInteger> spectrumIds,
             @NotNull Iterable<BigInteger> submissionIds, Spectrum querySpectrum, SearchParameters parameters) {
 
-        return searchSpectra(submissionIds, querySpectrum, parameters,
+        return searchSpectra(spectrumIds, submissionIds, querySpectrum, parameters,
                 true, true, false,
                 SpectrumClusterView.class);
 //        for (SpectrumClusterView match : matches) {
@@ -91,22 +98,23 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
     @Override
     public Iterable<SpectrumMatch> matchAgainstClusterableSpectra(
-            @NotNull Iterable<BigInteger> submissionIds, Spectrum querySpectrum, SearchParameters parameters) {
+            List<BigInteger> spectrumIds, Iterable<BigInteger> submissionIds, Spectrum querySpectrum, SearchParameters parameters) {
 
-        Iterable<SpectrumMatch> matches = searchSpectra(submissionIds, querySpectrum, parameters,
+        Iterable<SpectrumMatch> matches = searchSpectra(spectrumIds, submissionIds, querySpectrum, parameters,
                 false, false, true, SpectrumMatch.class);
         matches.forEach(m -> m.setQuerySpectrum(querySpectrum));
         return matches;
     }
 
-    private <E> Iterable<E> searchSpectra(@NotNull Iterable<BigInteger> submissionIds, Spectrum querySpectrum,
+    private <E> Iterable<E> searchSpectra(List<BigInteger> spectrumIds,
+                                          @NotNull Iterable<BigInteger> submissionIds, Spectrum querySpectrum,
                                           SearchParameters parameters, boolean searchConsensusSpectra, boolean searchReferenceSpectra,
                                           boolean searchClusterableSpectra, Class<E> classOfE) {
 
         List<BigInteger> submissionIdList = new ArrayList<>();
         submissionIds.forEach(submissionIdList::add);
 
-        SpectrumQueryBuilderAlt builder = new SpectrumQueryBuilderAlt(submissionIdList, parameters.getLimit(),
+        SpectrumQueryBuilderAlt builder = new SpectrumQueryBuilderAlt(spectrumIds, submissionIdList, parameters.getLimit(),
                 searchConsensusSpectra, searchReferenceSpectra, searchClusterableSpectra);
         if (querySpectrum != null) {
             builder = builder.withChromatographyType(querySpectrum.getChromatographyType())
@@ -193,7 +201,9 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         final StringBuilder insertSql = new StringBuilder("INSERT INTO `Spectrum`(" +
                 "`Name`, `Precursor`, `PrecursorType`, `RetentionTime`, `Significance`, " +
                 "`ClusterId`, `Consensus`, `Reference`, `IntegerMz`, " +
-                "`ChromatographyType`, `FileId`, `MolecularWeight`" +
+                "`ChromatographyType`, `FileId`, `MolecularWeight`, " +
+                "`TopMz1`, `TopMz2`, `TopMz3`, `TopMz4`, `TopMz5`, `TopMz6`, `TopMz7`, `TopMz8`, `TopMz9`, " +
+                "`TopMz10`, `TopMz11`, `TopMz12`, `TopMz13`, `TopMz14`, `TopMz15`, `TopMz16`" +
                 ") VALUES ");
 
         for (int i = 0; i < fileList.size(); i++) {
@@ -220,7 +230,23 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                         spectrum.isIntegerMz(),
                         String.format("\"%s\"", spectrum.getChromatographyType().name()),
                         savedFileIdList.get(i),
-                        spectrum.getMolecularWeight()
+                        spectrum.getMolecularWeight(),
+                        spectrum.getTopMz1(),
+                        spectrum.getTopMz2(),
+                        spectrum.getTopMz3(),
+                        spectrum.getTopMz4(),
+                        spectrum.getTopMz5(),
+                        spectrum.getTopMz6(),
+                        spectrum.getTopMz7(),
+                        spectrum.getTopMz8(),
+                        spectrum.getTopMz9(),
+                        spectrum.getTopMz10(),
+                        spectrum.getTopMz11(),
+                        spectrum.getTopMz12(),
+                        spectrum.getTopMz13(),
+                        spectrum.getTopMz14(),
+                        spectrum.getTopMz15(),
+                        spectrum.getTopMz16()
                 ));
             }
         }
@@ -267,5 +293,61 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         peakQuery.executeUpdate();
         final Query propertyQuery = entityManager.createNativeQuery(propertySql.toString());
         propertyQuery.executeUpdate();
+    }
+
+    /**
+     * Returns Spectrum IDs and the number of common m/z peaks
+     *
+     * @param querySpectrum     query spectrum
+     * @param params            search parameters
+     * @param greedy            if true, then all spectra are returned without matching the top m/z values
+     * @param searchConsensus   if true, then consensus spectra are returned
+     * @param searchReference   if true, then reference spectra are returned
+     * @param searchClusterable if true then clusterable spectra are returned
+     * @return collection of Spectrum IDs and the number of common m/z peaks
+     */
+    @Override
+    public Iterable<Object[]> preScreenSpectra(Spectrum querySpectrum, SearchParameters params, UserPrincipal user,
+                                               boolean greedy, boolean searchConsensus, boolean searchReference,
+                                               boolean searchClusterable) {
+
+        PreScreenQueryBuilder queryBuilder =
+                new PreScreenQueryBuilder(searchConsensus, searchReference, searchClusterable)
+                        .withUser(user)
+                        .withChromatographyType(querySpectrum.getChromatographyType())
+                        .withPrecursor(params.getPrecursorTolerance(), params.getPrecursorTolerancePPM(), querySpectrum.getPrecursor())
+                        .withRetTime(params.getRetTimeTolerance(), querySpectrum.getRetentionTime());
+
+        queryBuilder = (querySpectrum.getMolecularWeight() != null)
+                ? queryBuilder.withMass(params.getMassTolerance(), params.getMassTolerancePPM(), querySpectrum.getMolecularWeight())
+                : queryBuilder.withMass(params.getMassTolerance(), params.getMassTolerancePPM(), params.getMasses());
+
+        if (!greedy)
+            queryBuilder = queryBuilder.withQuerySpectrum(params.getMzTolerance(), params.getMzTolerancePPM(), querySpectrum);
+
+        final String sqlQuery = queryBuilder.build();
+
+        @SuppressWarnings("unchecked") final Iterable<Object[]> resultList = entityManager
+                .createNativeQuery(sqlQuery)
+                .getResultList();
+
+        return resultList;
+    }
+
+    @Override
+    public Iterable<Object[]> filterSpectra(
+            Map<BigInteger, List<BigInteger>> countToSpectrumIdMap, SearchParameters params) {
+
+        FilterQueryBuilder builder = new FilterQueryBuilder(
+                params.getSpecies(), params.getSource(), params.getDisease());
+
+        String sqlQuery = builder.build(countToSpectrumIdMap);
+
+        @SuppressWarnings("unchecked")
+        Iterable<Object[]> resultList = entityManager
+                .createNativeQuery(sqlQuery)
+                .getResultList();
+
+        return resultList;
     }
 }

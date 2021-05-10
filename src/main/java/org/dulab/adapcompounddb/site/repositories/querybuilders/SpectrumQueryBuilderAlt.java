@@ -1,4 +1,4 @@
-package org.dulab.adapcompounddb.site.repositories;
+package org.dulab.adapcompounddb.site.repositories.querybuilders;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.entities.Peak;
+import org.dulab.adapcompounddb.site.repositories.QueryBuilderException;
 
 public class SpectrumQueryBuilderAlt {
 
@@ -26,12 +27,12 @@ public class SpectrumQueryBuilderAlt {
             "Spectrum.Significance AS MaximumSignificance, Spectrum.ChromatographyType";
 
     private static final String SPECTRUM_MATCH_OUTPUT =
-            "0 AS Id, NULL AS QuerySpectrumId, Spectrum.Id AS MatchSpectrumId, Score";
+            "UUID_SHORT() AS Id, NULL AS QuerySpectrumId, Spectrum.Id AS MatchSpectrumId, Score";
 
     private static final String EMPTY_SPECTRUM_MATCH_OUTPUT =
             "0 AS Id, NULL AS QuerySpectrumId, Spectrum.Id AS MatchSpectrumId, 0 AS Score";
 
-
+    private final Collection<BigInteger> spectrumIds;
     private final Collection<BigInteger> submissionIds;
     private final int limit;
     private final boolean searchConsensusSpectra;
@@ -52,9 +53,11 @@ public class SpectrumQueryBuilderAlt {
     private Double scoreThreshold = null;
 
 
-    public SpectrumQueryBuilderAlt(Collection<BigInteger> submissionIds, int limit, boolean searchConsensusSpectra,
-                                   boolean searchReferenceSpectra, boolean searchClusterableSpectra) {
+    public SpectrumQueryBuilderAlt(Collection<BigInteger> spectrumIds, Collection<BigInteger> submissionIds,
+                                   int limit, boolean searchConsensusSpectra, boolean searchReferenceSpectra,
+                                   boolean searchClusterableSpectra) {
 
+        this.spectrumIds = spectrumIds;
         this.submissionIds = submissionIds;
         this.limit = limit;
         this.searchConsensusSpectra = searchConsensusSpectra;
@@ -202,6 +205,10 @@ public class SpectrumQueryBuilderAlt {
         String spectrumSelector = String.format(
                 "Spectrum.Consensus IS %s AND Spectrum.Reference IS %s AND Spectrum.Clusterable IS %s",
                 isConsensus, isReference, isClusterable);
+
+        if(spectrumIds != null && !spectrumIds.isEmpty())
+            spectrumSelector += String.format(" And Spectrum.Id in (%s)", spectrumIds.stream().map(BigInteger::toString)
+                    .collect(Collectors.joining(",")));
 
         if (chromatographyType != null)
             spectrumSelector += String.format(" AND Spectrum.ChromatographyType = '%s'", chromatographyType);

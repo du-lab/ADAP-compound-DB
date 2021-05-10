@@ -4,22 +4,25 @@ import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
 import org.dulab.adapcompounddb.models.dto.SubmissionMatchDTO;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
+import org.dulab.adapcompounddb.site.services.search.JavaSpectrumSimilarityService;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class StudySearchServiceImpl implements StudySearchService {
 
-    private final SpectrumRepository spectrumRepository;
-    private final SubmissionRepository submissionRepository;
+    private final JavaSpectrumSimilarityService javaSpectrumSimilarityService;
 
-    public StudySearchServiceImpl(SpectrumRepository spectrumRepository, SubmissionRepository submissionRepository) {
-        this.spectrumRepository = spectrumRepository;
-        this.submissionRepository = submissionRepository;
+    @Autowired
+    public StudySearchServiceImpl(JavaSpectrumSimilarityService javaSpectrumSimilarityService) {
+
+        this.javaSpectrumSimilarityService = javaSpectrumSimilarityService;
     }
 
     @Override
@@ -27,18 +30,19 @@ public class StudySearchServiceImpl implements StudySearchService {
 
         List<SpectrumMatch> spectrumMatches = new ArrayList<>();
 
-        Iterable<BigInteger> submissionIds = submissionRepository.findSubmissionIdsByUserAndSubmissionTags(
-                user != null ? user.getId() : null, null, null, null);
-
         int querySubmissionSpectraCount = 0;
         for (File file : submission.getFiles()) {
             List<Spectrum> spectra = file.getSpectra();
             if (spectra == null) continue;
+
             for (Spectrum spectrum : spectra) {
+
                 SearchParameters searchParameters =
                         SearchParameters.getDefaultParameters(spectrum.getChromatographyType());
-                List<SpectrumMatch> matches = MappingUtils.toList(spectrumRepository.matchAgainstClusterableSpectra(
-                        submissionIds, spectrum, searchParameters));
+
+                List<SpectrumMatch> matches =
+                        javaSpectrumSimilarityService.searchClusterable(spectrum, searchParameters, user);
+
                 spectrumMatches.addAll(matches);
                 querySubmissionSpectraCount++;
             }

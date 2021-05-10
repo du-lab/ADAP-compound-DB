@@ -2,6 +2,7 @@ package org.dulab.adapcompounddb.site.services.search;
 
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 
+import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -9,14 +10,17 @@ public class SearchParameters implements Cloneable {
 
     private Double scoreThreshold;
     private Double mzTolerance;
+    private Double mzTolerancePPM;
     private Double precursorTolerance;
+    private Double precursorTolerancePPM;
     private Double massTolerance;
     private Double massTolerancePPM;
     private Double retTimeTolerance;
     private String species;
     private String source;
     private String disease;
-    private Set<Long> submissionIds;
+    private Set<BigInteger> submissionIds;
+    private Iterable<BigInteger> spectrumIds;
     private double[] masses;
     private int limit = 100;
 
@@ -38,6 +42,20 @@ public class SearchParameters implements Cloneable {
         return this;
     }
 
+    public SearchParameters setMzTolerance(Double mzTolerance, Double mzTolerancePPM) {
+        this.mzTolerance = mzTolerance;
+        this.mzTolerancePPM = mzTolerancePPM;
+        return this;
+    }
+
+    public Double getMzTolerancePPM() {
+        return mzTolerancePPM;
+    }
+
+    public void setMzTolerancePPM(Double mzTolerancePPM) {
+        this.mzTolerancePPM = mzTolerancePPM;
+    }
+
     public Double getPrecursorTolerance() {
         return precursorTolerance;
     }
@@ -47,12 +65,33 @@ public class SearchParameters implements Cloneable {
         return this;
     }
 
+    public SearchParameters setPrecursorTolerance(Double tolerance, Double ppm) {
+        this.precursorTolerance = tolerance;
+        this.precursorTolerancePPM = ppm;
+        return this;
+    }
+
+    public Double getPrecursorTolerancePPM() {
+        return precursorTolerancePPM;
+    }
+
+    public SearchParameters setPrecursorTolerancePPM(Double precursorTolerancePPM) {
+        this.precursorTolerancePPM = precursorTolerancePPM;
+        return this;
+    }
+
     public Double getMassTolerance() {
         return massTolerance;
     }
 
     public SearchParameters setMassTolerance(Double massTolerance) {
         this.massTolerance = massTolerance;
+        return this;
+    }
+
+    public SearchParameters setMassTolerance(Double tolerance, Double ppm) {
+        this.massTolerance = tolerance;
+        this.massTolerancePPM = ppm;
         return this;
     }
 
@@ -110,15 +149,22 @@ public class SearchParameters implements Cloneable {
         return this;
     }
 
-    public Set<Long> getSubmissionIds() {
+    public Set<BigInteger> getSubmissionIds() {
         return submissionIds;
     }
 
-    public SearchParameters setSubmissionIds(Set<Long> submissionIds) {
+    public SearchParameters setSubmissionIds(Set<BigInteger> submissionIds) {
         this.submissionIds = submissionIds;
         return this;
     }
 
+    public Iterable<BigInteger> getSpectrumIds() {
+        return spectrumIds;
+    }
+
+    public void setSpectrumIds(Iterable<BigInteger> spectrumIds) {
+        this.spectrumIds = spectrumIds;
+    }
 
     public static SearchParameters getDefaultParameters(ChromatographyType type) {
         SearchParameters parameters = new SearchParameters();

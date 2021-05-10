@@ -2,8 +2,10 @@ package org.dulab.adapcompounddb.models.entities;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -76,6 +78,38 @@ public class Spectrum implements Serializable {
 
     private Double molecularWeight;
 
+    private Double topMz1;
+
+    private Double topMz2;
+
+    private Double topMz3;
+
+    private Double topMz4;
+
+    private Double topMz5;
+
+    private Double topMz6;
+
+    private Double topMz7;
+
+    private Double topMz8;
+
+    private Double topMz9;
+
+    private Double topMz10;
+
+    private Double topMz11;
+
+    private Double topMz12;
+
+    private Double topMz13;
+
+    private Double topMz14;
+
+    private Double topMz15;
+
+    private Double topMz16;
+
     @NotNull(message = "Spectrum: the field Chromatography Type is required.")
     @Enumerated(EnumType.STRING)
     private ChromatographyType chromatographyType;
@@ -114,6 +148,10 @@ public class Spectrum implements Serializable {
         return fullName;
     }
 
+    public String getShortName() {
+        return name;
+    }
+
     public void setName(final String name) {
         this.name = name;
     }
@@ -146,6 +184,59 @@ public class Spectrum implements Serializable {
         this.peaks = peaks;
 
         if (peaks != null && normalize) {
+            // order peaks by the intensity in descendant order
+            List<Peak> peakList = peaks.stream()
+                    .sorted(Comparator.comparingDouble(Peak::getIntensity).reversed())
+                    .collect(Collectors.toList());
+            // assign m/z values of the top 16 highest peaks
+            if (peakList.size() >= 1){
+                this.setTopMz1(peakList.get(0).getMz());
+            }
+            if (peakList.size() >= 2){
+                this.setTopMz2(peakList.get(1).getMz());
+            }
+            if (peakList.size() >= 3){
+                this.setTopMz3(peakList.get(2).getMz());
+            }
+            if (peakList.size() >= 4){
+                this.setTopMz4(peakList.get(3).getMz());
+            }
+            if (peakList.size() >= 5){
+                this.setTopMz5(peakList.get(4).getMz());
+            }
+            if (peakList.size() >= 6){
+                this.setTopMz6(peakList.get(5).getMz());
+            }
+            if (peakList.size() >= 7){
+                this.setTopMz7(peakList.get(6).getMz());
+            }
+            if (peakList.size() >= 8){
+                this.setTopMz8(peakList.get(7).getMz());
+            }
+            if (peakList.size() >= 9){
+                this.setTopMz9(peakList.get(8).getMz());
+            }
+            if (peakList.size() >= 10){
+                this.setTopMz10(peakList.get(9).getMz());
+            }
+            if (peakList.size() >= 11){
+                this.setTopMz11(peakList.get(10).getMz());
+            }
+            if (peakList.size() >= 12){
+                this.setTopMz12(peakList.get(11).getMz());
+            }
+            if (peakList.size() >= 13){
+                this.setTopMz13(peakList.get(12).getMz());
+            }
+            if (peakList.size() >= 14){
+                this.setTopMz14(peakList.get(13).getMz());
+            }
+            if (peakList.size() >= 15){
+                this.setTopMz15(peakList.get(14).getMz());
+            }
+            if (peakList.size() >= 16){
+                this.setTopMz16(peakList.get(15).getMz());
+            }
 
             final double totalIntensity = peaks.stream()
                     .mapToDouble(Peak::getIntensity)
@@ -159,6 +250,7 @@ public class Spectrum implements Serializable {
             }
         }
     }
+
 
     public List<SpectrumProperty> getProperties() {
         return properties;
@@ -323,6 +415,134 @@ public class Spectrum implements Serializable {
 
     public void setMolecularWeight(Double molecularWeight) {
         this.molecularWeight = molecularWeight;
+    }
+
+    public Double getTopMz1() {
+        return topMz1;
+    }
+
+    public void setTopMz1(Double topMz1) {
+        this.topMz1 = topMz1;
+    }
+
+    public Double getTopMz2() {
+        return topMz2;
+    }
+
+    public void setTopMz2(Double topMz2) {
+        this.topMz2 = topMz2;
+    }
+
+    public Double getTopMz3() {
+        return topMz3;
+    }
+
+    public void setTopMz3(Double topMz3) {
+        this.topMz3 = topMz3;
+    }
+
+    public Double getTopMz4() {
+        return topMz4;
+    }
+
+    public void setTopMz4(Double topMz4) {
+        this.topMz4 = topMz4;
+    }
+
+    public Double getTopMz5() {
+        return topMz5;
+    }
+
+    public void setTopMz5(Double topMz5) {
+        this.topMz5 = topMz5;
+    }
+
+    public Double getTopMz6() {
+        return topMz6;
+    }
+
+    public void setTopMz6(Double topMz6) {
+        this.topMz6 = topMz6;
+    }
+
+    public Double getTopMz7() {
+        return topMz7;
+    }
+
+    public void setTopMz7(Double topMz7) {
+        this.topMz7 = topMz7;
+    }
+
+    public Double getTopMz8() {
+        return topMz8;
+    }
+
+    public void setTopMz8(Double topMz8) {
+        this.topMz8 = topMz8;
+    }
+
+    public Double getTopMz9() {
+        return topMz9;
+    }
+
+    public void setTopMz9(Double topMz9) {
+        this.topMz9 = topMz9;
+    }
+
+    public Double getTopMz10() {
+        return topMz10;
+    }
+
+    public void setTopMz10(Double topMz10) {
+        this.topMz10 = topMz10;
+    }
+
+    public Double getTopMz11() {
+        return topMz11;
+    }
+
+    public void setTopMz11(Double topMz11) {
+        this.topMz11 = topMz11;
+    }
+
+    public Double getTopMz12() {
+        return topMz12;
+    }
+
+    public void setTopMz12(Double topMz12) {
+        this.topMz12 = topMz12;
+    }
+
+    public Double getTopMz13() {
+        return topMz13;
+    }
+
+    public void setTopMz13(Double topMz13) {
+        this.topMz13 = topMz13;
+    }
+
+    public Double getTopMz14() {
+        return topMz14;
+    }
+
+    public void setTopMz14(Double topMz14) {
+        this.topMz14 = topMz14;
+    }
+
+    public Double getTopMz15() {
+        return topMz15;
+    }
+
+    public void setTopMz15(Double topMz15) {
+        this.topMz15 = topMz15;
+    }
+
+    public Double getTopMz16() {
+        return topMz16;
+    }
+
+    public void setTopMz16(Double topMz16) {
+        this.topMz16 = topMz16;
     }
 
     // ****************************

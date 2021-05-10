@@ -28,7 +28,7 @@ public class IndividualSearchRestController extends BaseController {
     private final IndividualSearchService spectrumSearchService;
 
     public IndividualSearchRestController(SpectrumMatchService spectrumMatchService,
-                                          @Qualifier("spectrumSearchServiceImpl") IndividualSearchService gcSpectrumSearchService) {
+                                          IndividualSearchService gcSpectrumSearchService) {  // @Qualifier("spectrumSearchServiceImpl")
         this.spectrumMatchService = spectrumMatchService;
         this.spectrumSearchService = gcSpectrumSearchService;
     }

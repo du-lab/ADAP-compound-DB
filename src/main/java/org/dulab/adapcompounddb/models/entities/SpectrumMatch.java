@@ -16,31 +16,21 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.transaction.annotation.Transactional;
 
 @Entity
-//@SqlResultSetMapping(
-//        name = "SpectrumMatchMapping",
-//        entities = @EntityResult(
-//                entityClass = SpectrumMatch.class,
-//                fields = {
-//                        @FieldResult(name = "id", column = "id"),
-//                        @FieldResult(name = "querySpectrumId", column = "querySpectrumId"),
-//                        @FieldResult(name = "matchSpectrumId", column = "matchSpectrumId"),
-//                        @FieldResult(name = "score", column = "score")
-//                }
-//        )
-//)
 public class SpectrumMatch implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private long id;
 
-    //    @NotNull(message = "Query spectrum is required.")
     private Spectrum querySpectrum;
 
     @NotNull(message = "Match Spectrum is required.")
     private Spectrum matchSpectrum;
 
-    private double score;
+    private Double score;
+    private Double massError;
+    private Double massErrorPPM;
+    private Double retTimeError;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -74,12 +64,36 @@ public class SpectrumMatch implements Serializable {
         this.matchSpectrum = matchSpectrum;
     }
 
-    public double getScore() {
+    public Double getScore() {
         return score;
     }
 
-    public void setScore(final double score) {
+    public void setScore(final Double score) {
         this.score = score;
+    }
+
+    public Double getMassError() {
+        return massError;
+    }
+
+    public void setMassError(Double massError) {
+        this.massError = massError;
+    }
+
+    public Double getMassErrorPPM() {
+        return massErrorPPM;
+    }
+
+    public void setMassErrorPPM(Double massErrorPPM) {
+        this.massErrorPPM = massErrorPPM;
+    }
+
+    public Double getRetTimeError() {
+        return retTimeError;
+    }
+
+    public void setRetTimeError(Double retTimeError) {
+        this.retTimeError = retTimeError;
     }
 
     @Override

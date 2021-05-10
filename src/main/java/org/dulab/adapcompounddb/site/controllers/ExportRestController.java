@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
@@ -20,6 +19,7 @@ import java.io.OutputStreamWriter;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @RestController
 public class ExportRestController {
@@ -34,12 +34,30 @@ public class ExportRestController {
     }
 
 
-    @RequestMapping(value = "/export/session/{attribute}/csv", produces = MediaType.TEXT_PLAIN_VALUE)
-    public void export(@PathVariable("attribute") String attributeName,
-                       HttpSession session, HttpServletResponse response) {
+    @RequestMapping(value = "/export/session/{attribute}/simple_csv", produces = MediaType.TEXT_PLAIN_VALUE)
+    public void simpleExport(@PathVariable("attribute") String attributeName,
+                             HttpSession session, HttpServletResponse response) {
+        export(attributeName, session, response, false);
+    }
 
+    @RequestMapping(value = "/export/session/{attribute}/advanced_csv", produces = MediaType.TEXT_PLAIN_VALUE)
+    public void advancedExport(@PathVariable("attribute") String attributeName,
+                               HttpSession session, HttpServletResponse response) {
+        export(attributeName, session, response, true);
+    }
+
+    /**
+     * Exports a list stored in the current session into CSV file
+     *
+     * @param attributeName session attribute name that is used to store the list
+     * @param session       current session
+     * @param response      HTTP Servlet response
+     * @param advanced      if true, all matched are exported. Otherwise, only the best match is exported for each feature
+     */
+    private void export(String attributeName, HttpSession session, HttpServletResponse response, boolean advanced) {
         response.setContentType(MediaType.TEXT_PLAIN_VALUE);
-        response.setHeader("Content-Disposition", "attachment; filename=\"export.csv\"");
+        response.setHeader("Content-Disposition",
+                String.format("attachment; filename=\"%s.csv\"", advanced ? "advanced_export" : "simple_export"));
 
         Object attribute = session.getAttribute(attributeName);
         if (!(attribute instanceof List)) {
@@ -47,13 +65,19 @@ public class ExportRestController {
             return;
         }
 
-        List<?> list = (List<?>) attribute;
-        long[] matchIds = list.stream()
-                .filter(o -> o instanceof SearchResultDTO)
-                .map(o -> (SearchResultDTO) o)
+        List<SearchResultDTO> searchResults = ((List<?>) attribute).stream()
+                .filter(object -> object instanceof SearchResultDTO)
+                .map(object -> (SearchResultDTO) object)
+                .collect(Collectors.toList());
+
+        if (!advanced)
+            searchResults = selectTopResults(searchResults);
+
+        long[] matchIds = searchResults.stream()
                 .mapToLong(SearchResultDTO::getSpectrumId)
                 .toArray();
 
+        // Retrieve spectrum properties
         SortedSet<String> propertyNames = new TreeSet<>();
         Map<Long, List<SpectrumProperty>> spectrumIdToPropertiesMap = new HashMap<>();
         if (matchIds != null && matchIds.length > 0) {
@@ -69,13 +93,8 @@ public class ExportRestController {
         try (CSVWriter csvWriter = new CSVWriter(new OutputStreamWriter(response.getOutputStream()))) {
 
             csvWriter.writeNext(createHeader(propertyNames));
-            for (Object element : (List<?>) attribute) {
-                if (!(element instanceof SearchResultDTO)) {
-                    LOGGER.warn(String.format("Element of %s is not of type SearchResultDTO", attributeName));
-                    return;
-                }
-
-                csvWriter.writeNext(createRow(propertyNames, spectrumIdToPropertiesMap, (SearchResultDTO) element));
+            for (SearchResultDTO searchResult : searchResults) {
+                csvWriter.writeNext(createRow(propertyNames, spectrumIdToPropertiesMap, searchResult));
             }
 
         } catch (IOException e) {
@@ -116,12 +135,63 @@ public class ExportRestController {
         return values.toArray(new String[0]);
     }
 
+    private List<SearchResultDTO> selectTopResults(List<SearchResultDTO> searchResults) {
+
+        long[] queryIds = searchResults.stream()
+                .mapToLong(ExportRestController::getQueryId)
+                .distinct()
+                .sorted()
+                .toArray();
+
+        List<SearchResultDTO> topResults = new ArrayList<>();
+        for (long queryId : queryIds) {
+
+            List<SearchResultDTO> selectedSearchResults = searchResults.stream()
+                    .filter(r -> queryId == getQueryId(r))
+                    .collect(Collectors.toList());
+
+            if (selectedSearchResults.isEmpty()) continue;
+
+            selectedSearchResults.sort(Comparator
+                    .comparing(SearchResultDTO::getOntologyPriority, Comparator.nullsLast(Comparator.naturalOrder()))
+                    .thenComparing(SearchResultDTO::getScore, Comparator.nullsLast(Comparator.reverseOrder()))
+                    .thenComparing(SearchResultDTO::getMassErrorPPM, Comparator.nullsLast(Comparator.naturalOrder()))
+                    .thenComparing(SearchResultDTO::getMassError, Comparator.nullsLast(Comparator.naturalOrder()))
+                    .thenComparing(SearchResultDTO::getRetTimeError, Comparator.nullsLast(Comparator.naturalOrder())));
+
+            topResults.add(selectedSearchResults.get(0));
+        }
+
+//        IntStream.range(0, topResults.size())
+//                .forEach(i -> topResults.get(i).setPosition(i));
+
+        return topResults;
+    }
+
+    /**
+     * Returns QuerySpectrumId if it exists. Otherwise, returns a unique integer corresponding to the QueryFileIndex
+     * and QuerySpectrumIndex
+     *
+     * @param searchResult search result
+     * @return query ID
+     */
+    private static long getQueryId(SearchResultDTO searchResult) {
+        if (searchResult.getQuerySpectrumId() != null && searchResult.getQuerySpectrumId() > 0)
+            return searchResult.getQuerySpectrumId();
+
+        // Cantor pairing function
+        return searchResult.getQuerySpectrumIndex()
+                + (searchResult.getQueryFileIndex() + searchResult.getQuerySpectrumIndex())
+                * (searchResult.getQueryFileIndex() + searchResult.getQuerySpectrumIndex() + 1) / 2;
+    }
+
+
     /**
      * Standard fields that we export in every CSV files
      */
     private enum ExportField {
 
-        POSITION("Position", r -> Integer.toString(r.getPosition())),
+        //        POSITION("Position", r -> Integer.toString(r.getPosition())),
         QUERY_FILE_ID("File", r -> r.getQueryFileIndex() != null ? Integer.toString(r.getQueryFileIndex() + 1) : null),
         QUERY_SPECTRUM_ID("Feature", r -> r.getQuerySpectrumIndex() != null ? Integer.toString(r.getQuerySpectrumIndex() + 1) : null),
         QUERY_EXTERNAL_ID("ID", SearchResultDTO::getQueryExternalId),

@@ -14,11 +14,13 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 @Service
 public class GroupSearchServiceImpl implements GroupSearchService {
@@ -92,7 +94,7 @@ public class GroupSearchServiceImpl implements GroupSearchService {
                     parameters.setSpecies(species);
                     parameters.setSource(source);
                     parameters.setDisease(disease);
-                    parameters.setSubmissionIds(submissionIds);
+                    parameters.setSubmissionIds(submissionIds.stream().map(BigInteger::valueOf).collect(Collectors.toSet()));
                     parameters.setLimit(10);
 
                     List<SearchResultDTO> individualSearchResults =

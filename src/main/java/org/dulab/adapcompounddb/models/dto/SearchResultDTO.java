@@ -50,6 +50,7 @@ public class SearchResultDTO implements Serializable {
     private Double minSignificance;
     private Double maxSignificance;
     private String ontologyLevel;
+    private Integer ontologyPriority;
     private String chromatographyTypeLabel;
     private String chromatographyTypePath;
     private String json;
@@ -198,8 +199,17 @@ public class SearchResultDTO implements Serializable {
         this.ontologyLevel = ontologyLevel;
     }
 
+    public Integer getOntologyPriority() {
+        return ontologyPriority;
+    }
+
+    public void setOntologyPriority(Integer ontologyPriority) {
+        this.ontologyPriority = ontologyPriority;
+    }
+
     public void setOntologyLevel(OntologyLevel ontologyLevel) {
         this.setOntologyLevel(ontologyLevel.getLabel());
+        this.setOntologyPriority(ontologyLevel.getPriority());
     }
 
     public String getQuerySpectrumName() {

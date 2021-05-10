@@ -23,7 +23,9 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.math.BigInteger;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 public class IndividualSearchController extends BaseController {
@@ -37,7 +39,7 @@ public class IndividualSearchController extends BaseController {
     public IndividualSearchController(SubmissionService submissionService,
                                       SubmissionTagService submissionTagService,
                                       @Qualifier("spectrumServiceImpl") SpectrumService spectrumService,
-                                      @Qualifier("spectrumSearchServiceImpl") IndividualSearchService individualSearchService) {
+                                      IndividualSearchService individualSearchService) {  // @Qualifier("spectrumSearchServiceImpl")
 
         this.submissionService = submissionService;
         this.spectrumService = spectrumService;
@@ -203,10 +205,10 @@ public class IndividualSearchController extends BaseController {
         }
 
         SearchParameters parameters = SearchParameters.getDefaultParameters(querySpectrum.getChromatographyType());
-        parameters.setSpecies(filterForm.getSpecies());
-        parameters.setSource(filterForm.getSource());
-        parameters.setDisease(filterForm.getDisease());
-        parameters.setSubmissionIds(filterForm.getSubmissionIds());
+        parameters.setSpecies(filterForm.getSpecies().equalsIgnoreCase("all") ? null : filterForm.getSpecies());
+        parameters.setSource(filterForm.getSource().equalsIgnoreCase("all") ? null : filterForm.getSource());
+        parameters.setDisease(filterForm.getDisease().equalsIgnoreCase("all") ? null : filterForm.getDisease());
+        parameters.setSubmissionIds(filterForm.getSubmissionIds().stream().map(BigInteger::valueOf).collect(Collectors.toSet()));
 
         List<SearchResultDTO> searchResults = individualSearchService.searchConsensusSpectra(
                 this.getCurrentUserPrincipal(), querySpectrum, parameters, true);
