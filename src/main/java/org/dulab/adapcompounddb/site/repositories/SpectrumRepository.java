@@ -23,7 +23,9 @@ public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, Spec
 //            + "AND s.clusterable=TRUE AND s.consensus=FALSE AND s.reference=FALSE AND s.chromatographyType = ?1")
 //    Iterable<Spectrum> findUnmatchedByChromatographyType(ChromatographyType chromatographyType);
 
-    Iterable<Spectrum> findByMatchesEmptyAndClusterableTrueAndConsensusFalseAndReferenceFalseAndChromatographyType(ChromatographyType type);
+    @Query("SELECT s FROM Spectrum s WHERE s.matches IS EMPTY " +
+            "AND s.clusterable=true AND s.consensus=false AND s.reference=false AND s.chromatographyType=:type")
+    Iterable<Spectrum> findUnmatchedSpectra(@Param("type") ChromatographyType type);
 
 //    @Query("SELECT COUNT(s) FROM Spectrum s WHERE s.matches IS EMPTY AND s.consensus=FALSE AND s.reference=FALSE")
 //    long countUnmatched();

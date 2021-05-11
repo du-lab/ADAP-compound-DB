@@ -29,7 +29,7 @@ public class JavaSpectrumSimilarityService {
 
     public List<SpectrumMatch> searchConsensusAndReference(
             Spectrum querySpectrum, SearchParameters parameters, UserPrincipal user) {
-        return search(querySpectrum, parameters, user,true, true, false);
+        return search(querySpectrum, parameters, user, true, true, false);
     }
 
     public List<SpectrumMatch> searchClusterable(
@@ -40,8 +40,12 @@ public class JavaSpectrumSimilarityService {
     public List<SpectrumMatch> search(Spectrum querySpectrum, SearchParameters parameters, UserPrincipal user,
                                       boolean searchConsensus, boolean searchReference, boolean searchClusterable) {
 
-        boolean greedy = querySpectrum.getChromatographyType() == ChromatographyType.LC_MSMS_POS
-                || querySpectrum.getChromatographyType() == ChromatographyType.LC_MSMS_NEG;
+        boolean greedy;
+        if (parameters.getGreedy() != null)
+            greedy = parameters.getGreedy();
+        else
+            greedy = querySpectrum.getChromatographyType() == ChromatographyType.LC_MSMS_POS
+                    || querySpectrum.getChromatographyType() == ChromatographyType.LC_MSMS_NEG;
 
         Map<BigInteger, List<BigInteger>> commonToSpectrumIdsMap = MappingUtils.toMapBigIntegerOfLists(
                 spectrumRepository.preScreenSpectra(querySpectrum, parameters, user, greedy,
@@ -52,7 +56,7 @@ public class JavaSpectrumSimilarityService {
                     spectrumRepository.filterSpectra(commonToSpectrumIdsMap, parameters));
 
         List<BigInteger> preScreenedSpectrumIds =
-                getSpectrumIdsWithCommonPeaksAboveThreshold(commonToSpectrumIdsMap, 50);
+                getSpectrumIdsWithCommonPeaksAboveThreshold(commonToSpectrumIdsMap, greedy ? Integer.MAX_VALUE : 50);
 
         Set<Long> preScreenedSpectrumIdsSet = preScreenedSpectrumIds.stream()
                 .mapToLong(BigInteger::longValue)
@@ -62,7 +66,7 @@ public class JavaSpectrumSimilarityService {
 
         List<SpectrumMatch> matches = calculateSimilarity(querySpectrum, preScreenedSpectra, parameters);
 
-        return matches.subList(0, Math.min(parameters.getLimit(), matches.size()));
+        return new ArrayList<>(matches.subList(0, Math.min(parameters.getLimit(), matches.size())));
     }
 
     private List<SpectrumMatch> calculateSimilarity(

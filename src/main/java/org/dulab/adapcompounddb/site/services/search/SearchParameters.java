@@ -8,6 +8,7 @@ import java.util.Set;
 
 public class SearchParameters implements Cloneable {
 
+    private Boolean greedy;
     private Double scoreThreshold;
     private Double mzTolerance;
     private Double mzTolerancePPM;
@@ -23,6 +24,14 @@ public class SearchParameters implements Cloneable {
     private Iterable<BigInteger> spectrumIds;
     private double[] masses;
     private int limit = 100;
+
+    public Boolean getGreedy() {
+        return greedy;
+    }
+
+    public void setGreedy(Boolean greedy) {
+        this.greedy = greedy;
+    }
 
     public Double getScoreThreshold() {
         return scoreThreshold;

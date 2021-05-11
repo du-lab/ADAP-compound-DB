@@ -4,6 +4,7 @@ import org.dulab.adapcompounddb.models.entities.Spectrum;
 
 import java.util.Set;
 
+@Deprecated
 public class QueryParameters {
 
     private Double retTimeTolerance = null;
