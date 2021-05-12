@@ -290,6 +290,25 @@ public class Spectrum implements Serializable {
         }
     }
 
+    public void addProperty(String name, String value, MetaDataMapping mapping) {
+
+        if (properties == null)
+            properties = new ArrayList<>();
+
+        SpectrumProperty property = new SpectrumProperty();
+        property.setName(name);
+        property.setValue(value);
+        property.setSpectrum(this);
+
+        properties.add(property);
+
+        this.setProperties(properties, mapping);
+    }
+
+    public void addProperty(String name, String value) {
+        addProperty(name, value, null);
+    }
+
 //    public void addProperty(String name, String value) {
 //
 //        if (properties == null) properties = new ArrayList<>();

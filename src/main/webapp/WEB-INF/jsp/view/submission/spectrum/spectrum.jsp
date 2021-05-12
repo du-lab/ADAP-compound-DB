@@ -53,7 +53,7 @@
                                         <li class="list-group-item py-1">
                                             <strong>Cluster:</strong>&nbsp;
                                             <c:if test="${spectrum.cluster != null}">
-                                                <a href="/cluster/${spectrum.cluster.id}/">${spectrum.cluster}</a>
+                                                <a href="${pageContext.request.contextPath}/cluster/${spectrum.cluster.id}/">${spectrum.cluster}</a>
                                             </c:if>
                                         </li>
                                         <li class="list-group-item py-1">

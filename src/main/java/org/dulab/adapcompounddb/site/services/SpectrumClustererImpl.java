@@ -158,8 +158,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                     clusterTotalSize += spectrumIds.size();
 
                     long time = System.currentTimeMillis();
-                    final SpectrumCluster cluster = createCluster(
-                            spectrumIds, highResDbCountMaps, lowResDbCountMaps);
+                    final SpectrumCluster cluster = createCluster(spectrumIds, highResDbCountMaps, lowResDbCountMaps);
                     createClusterTotalTime += System.currentTimeMillis() - time;
 
                     final Spectrum consensusSpectrum = cluster.getConsensusSpectrum();
@@ -245,10 +244,8 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
         }
 
         // Calculate the significance statistics
-        final DoubleSummaryStatistics significanceStats = spectra
-                .stream()
-                .map(Spectrum::getSignificance)
-                .filter(Objects::nonNull)
+        final DoubleSummaryStatistics significanceStats = spectra.stream()
+                .map(Spectrum::getSignificance).filter(Objects::nonNull)
                 .map(Math::abs)
                 .collect(Collectors.summarizingDouble(Double::doubleValue));
 
@@ -265,24 +262,33 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
         final List<TagInfo> tagInfoList = ControllerUtils.getDiversityIndices(submissions);
 
         if (!tagInfoList.isEmpty()) {
-            Double minDiversity = Double.MAX_VALUE;
-            Double maxDiversity = 0.0;
-            Double avgDiversity = 0.0;
-            for (final TagInfo tagInfo : tagInfoList) {
-                final Double diversity = tagInfo.getDiversity();
 
-                avgDiversity += diversity;
-                if (diversity > maxDiversity) {
-                    maxDiversity = diversity;
-                }
-                if (diversity < minDiversity) {
-                    minDiversity = diversity;
-                }
-            }
-            avgDiversity = avgDiversity / tagInfoList.size();
-            cluster.setMinDiversity(minDiversity);
-            cluster.setMaxDiversity(maxDiversity);
-            cluster.setAveDiversity(avgDiversity);
+            DoubleSummaryStatistics diversityStatistics = tagInfoList.stream()
+                    .map(TagInfo::getDiversity)
+                    .collect(Collectors.summarizingDouble(Double::doubleValue));
+
+            cluster.setMinDiversity(diversityStatistics.getMin());
+            cluster.setAveDiversity(diversityStatistics.getAverage());
+            cluster.setMaxDiversity(diversityStatistics.getMax());
+
+//            Double minDiversity = Double.MAX_VALUE;
+//            Double maxDiversity = 0.0;
+//            Double avgDiversity = 0.0;
+//            for (final TagInfo tagInfo : tagInfoList) {
+//                final Double diversity = tagInfo.getDiversity();
+//
+//                avgDiversity += diversity;
+//                if (diversity > maxDiversity) {
+//                    maxDiversity = diversity;
+//                }
+//                if (diversity < minDiversity) {
+//                    minDiversity = diversity;
+//                }
+//            }
+//            avgDiversity = avgDiversity / tagInfoList.size();
+//            cluster.setMinDiversity(minDiversity);
+//            cluster.setMaxDiversity(maxDiversity);
+//            cluster.setAveDiversity(avgDiversity);
         }
 
         final Spectrum consensusSpectrum = createConsensusSpectrum(spectra, MZ_TOLERANCE);
@@ -351,7 +357,11 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
         consensusSpectrum.setChromatographyType(type);
         consensusSpectrum.setConsensus(true);
         consensusSpectrum.setReference(false);
-        consensusSpectrum.setName(getName(spectra));
+        consensusSpectrum.setClusterable(false);
+
+        String name = getName(spectra);
+        consensusSpectrum.setName(name);
+        consensusSpectrum.addProperty("Name", name);
 
         consensusPeaks.forEach(p -> p.setSpectrum(consensusSpectrum));
         consensusSpectrum.setPeaks(consensusPeaks, true);
