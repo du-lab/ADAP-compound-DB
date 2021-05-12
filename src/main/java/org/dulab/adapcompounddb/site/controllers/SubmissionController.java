@@ -6,7 +6,6 @@ import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.controllers.forms.SubmissionForm;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
-import org.hibernate.validator.constraints.URL;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +18,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Controller
 //@SessionAttributes({"availableTags"})
@@ -107,7 +103,7 @@ public class SubmissionController extends BaseController {
 
         // User is authorized to edit the submission
         final boolean authorized = submission.isAuthorized(getCurrentUserPrincipal());
-        if (!authorized && edit) {
+        if (!authorized && (edit || submission.isPrivate())) {
             return "redirect:/error?errorMsg=" + ACCESS_DENIED_MESSAGE;
         }
         final SubmissionForm submissionForm = new SubmissionForm(submission);

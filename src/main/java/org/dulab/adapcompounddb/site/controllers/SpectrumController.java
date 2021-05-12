@@ -1,7 +1,9 @@
 package org.dulab.adapcompounddb.site.controllers;
 
+import org.dulab.adapcompounddb.models.entities.File;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.Submission;
+import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import javax.servlet.http.HttpSession;
 
 @Controller
-public class SpectrumController {
+public class SpectrumController extends BaseController {
 
     private final SpectrumService spectrumService;
     private final SubmissionService submissionService;
@@ -63,6 +65,14 @@ public class SpectrumController {
     }
 
     public String spectrum(final Spectrum spectrum, final Model model) {
+
+        File file = spectrum.getFile();
+        if (file != null) {
+            Submission submission = file.getSubmission();
+            if (submission.isPrivate() && !submission.getUser().equals(this.getCurrentUserPrincipal()))
+                return "redirect:/error?errorMsg=" + ACCESS_DENIED_MESSAGE;
+        }
+
         model.addAttribute("spectrum", spectrum);
         return "submission/spectrum/spectrum";
     }
