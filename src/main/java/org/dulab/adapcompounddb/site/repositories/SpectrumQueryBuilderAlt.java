@@ -28,7 +28,7 @@ public class SpectrumQueryBuilderAlt {
             "Spectrum.Significance AS MaximumSignificance, Spectrum.ChromatographyType";
 
     private static final String SPECTRUM_MATCH_OUTPUT =
-            "0 AS Id, NULL AS QuerySpectrumId, Spectrum.Id AS MatchSpectrumId, Score";
+            "UUID_SHORT() AS Id, NULL AS QuerySpectrumId, Spectrum.Id AS MatchSpectrumId, Score";
 
     private static final String EMPTY_SPECTRUM_MATCH_OUTPUT =
             "0 AS Id, NULL AS QuerySpectrumId, Spectrum.Id AS MatchSpectrumId, 0 AS Score";
