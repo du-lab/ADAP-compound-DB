@@ -6,7 +6,7 @@ public class MetaDataMapping {
     private String precursorMzField;
     private String precursorTypeField;
     private String retTimeField;
-    private String molecularWeight;
+    private String massField;
 
 
     public MetaDataMapping() {
@@ -14,12 +14,12 @@ public class MetaDataMapping {
     }
 
     public MetaDataMapping(String nameField, String externalIdField, String precursorMzField, String precursorTypeField,
-                           String retTimeField, String molecularWeight) {
+                           String retTimeField, String massField) {
         this.nameField = nameField;
         this.externalIdField = externalIdField;
         this.precursorMzField = precursorMzField;
         this.retTimeField = retTimeField;
-        this.molecularWeight = molecularWeight;
+        this.massField = massField;
     }
 
     public String getNameField() {
@@ -42,8 +42,8 @@ public class MetaDataMapping {
         return retTimeField;
     }
 
-    public String getMolecularWeight() {
-        return molecularWeight;
+    public String getMassField() {
+        return massField;
     }
 
     public void setNameField(String nameField) {
@@ -66,7 +66,7 @@ public class MetaDataMapping {
         this.retTimeField = retTimeField;
     }
 
-    public void setMolecularWeight(String molecularWeight) {
-        this.molecularWeight = molecularWeight;
+    public void setMassField(String massField) {
+        this.massField = massField;
     }
 }

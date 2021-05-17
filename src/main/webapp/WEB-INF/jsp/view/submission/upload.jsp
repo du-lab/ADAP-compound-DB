@@ -163,14 +163,14 @@
                                                     </div>
                                                 </div>
                                                 <div class="row form-group">
-                                                    <form:label path="mspMolecularWeightField"
+                                                    <form:label path="mspMassField"
                                                                 cssClass="col-md-4 col-form-label">Neutral Mass Field</form:label>
                                                     <div class="col-md-4">
-                                                        <form:input path="mspMolecularWeightField"
+                                                        <form:input path="mspMassField"
                                                                     cssClass="form-control"/>
                                                     </div>
                                                     <div class="col-md-4">
-                                                        <form:input path="csvMolecularWeightField"
+                                                        <form:input path="csvMassField"
                                                                     cssClass="form-control"/>
                                                     </div>
                                                 </div>

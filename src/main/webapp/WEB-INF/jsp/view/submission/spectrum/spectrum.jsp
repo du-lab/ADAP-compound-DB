@@ -66,7 +66,7 @@
                                             <strong>Retention time:</strong>&nbsp;${spectrum.retentionTime}
                                         </li>
                                         <li class="list-group-item py-1">
-                                            <strong>Molecular mass:</strong>&nbsp;${spectrum.molecularWeight}
+                                            <strong>Molecular mass:</strong>&nbsp;${spectrum.mass}
                                         </li>
                                     </ul>
                                 </div>

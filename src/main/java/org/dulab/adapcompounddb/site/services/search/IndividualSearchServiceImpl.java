@@ -139,12 +139,12 @@ public class IndividualSearchServiceImpl implements IndividualSearchService {
             modifiedParameters.setPrecursorTolerance(null, ontologyLevel.getPrecursorTolerancePPM());
             modifiedParameters.setMassTolerance(null, ontologyLevel.getMassTolerancePPM());
             modifiedParameters.setRetTimeTolerance(ontologyLevel.getRetTimeTolerance());
-            if (spectrum.getMolecularWeight() == null && adducts != null && spectrum.getPrecursor() != null)
+            if (spectrum.getMass() == null && adducts != null && spectrum.getPrecursor() != null)
                 modifiedParameters.setMasses(adducts.stream()
                         .mapToDouble(adduct -> adduct.calculateNeutralMass(spectrum.getPrecursor()))
                         .toArray());
 
-            if (ontologyLevel.getMassTolerancePPM() != null && spectrum.getMolecularWeight() == null
+            if (ontologyLevel.getMassTolerancePPM() != null && spectrum.getMass() == null
                     && modifiedParameters.getMasses() == null)
                 continue;
 

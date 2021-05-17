@@ -20,7 +20,7 @@ public class SpectrumDTO implements Serializable {
     private Integer fileIndex;
     private Integer spectrumIndex;
     private Double significance;
-    private Double molecularWeight;
+    private Double mass;
 
     // ****************************
     // ***** Standard methods *****
@@ -163,11 +163,11 @@ public class SpectrumDTO implements Serializable {
         this.significance = significance;
     }
 
-    public Double getMolecularWeight() {
-        return molecularWeight;
+    public Double getMass() {
+        return mass;
     }
 
-    public void setMolecularWeight(Double molecularWeight) {
-        this.molecularWeight = molecularWeight;
+    public void setMass(Double mass) {
+        this.mass = mass;
     }
 }

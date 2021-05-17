@@ -101,19 +101,19 @@ public class JavaSpectrumSimilarityService {
 
             double massError = Double.MAX_VALUE;
             double massErrorPPM = Double.MAX_VALUE;
-            if ((params.getMasses() != null || querySpectrum.getMolecularWeight() != null)
-                    && librarySpectrum.getMolecularWeight() != null) {
+            if ((params.getMasses() != null || querySpectrum.getMass() != null)
+                    && librarySpectrum.getMass() != null) {
 
-                if (querySpectrum.getMolecularWeight() != null) {
-                    massError = Math.abs(querySpectrum.getMolecularWeight() - librarySpectrum.getMolecularWeight());
-                    massErrorPPM = 1E6 * massError / librarySpectrum.getMolecularWeight();
+                if (querySpectrum.getMass() != null) {
+                    massError = Math.abs(querySpectrum.getMass() - librarySpectrum.getMass());
+                    massErrorPPM = 1E6 * massError / librarySpectrum.getMass();
                 } else {
                     massError = Arrays.stream(params.getMasses())
-                            .map(mass -> Math.abs(mass - librarySpectrum.getMolecularWeight()))
+                            .map(mass -> Math.abs(mass - librarySpectrum.getMass()))
                             .min()
                             .orElse(Double.MAX_VALUE);
                     massErrorPPM = Arrays.stream(params.getMasses())
-                            .map(mass -> 1E6 * Math.abs(mass - librarySpectrum.getMolecularWeight()) / librarySpectrum.getMolecularWeight())
+                            .map(mass -> 1E6 * Math.abs(mass - librarySpectrum.getMass()) / librarySpectrum.getMass())
                             .min()
                             .orElse(Double.MAX_VALUE);
                 }

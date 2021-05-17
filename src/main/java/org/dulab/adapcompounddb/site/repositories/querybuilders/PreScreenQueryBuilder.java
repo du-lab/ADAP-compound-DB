@@ -108,14 +108,14 @@ public class PreScreenQueryBuilder {
         if (masses != null && massTolerance != null)
             queryBlock += String.format(" AND (%s)", Arrays.stream(masses)
                     .mapToObj(mass -> String.format(
-                            "(Spectrum.MolecularWeight > %f AND Spectrum.MolecularWeight < %f)",
+                            "(Spectrum.Mass > %f AND Spectrum.Mass < %f)",
                             mass - massTolerance, mass + massTolerance))
                     .collect(Collectors.joining(" OR ")));
 
         if (masses != null && massTolerancePPM != null)
             queryBlock += String.format(" AND (%s)", Arrays.stream(masses)
                     .mapToObj(mass -> String.format(
-                            "(Spectrum.MolecularWeight > %f AND Spectrum.MolecularWeight < %f)",
+                            "(Spectrum.Mass > %f AND Spectrum.Mass < %f)",
                             getLowerLimit(mass, massTolerancePPM), getUpperLimit(mass, massTolerancePPM)))
                     .collect(Collectors.joining(" OR ")));
 

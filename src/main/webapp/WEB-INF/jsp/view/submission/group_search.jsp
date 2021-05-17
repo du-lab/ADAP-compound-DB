@@ -194,7 +194,7 @@
                 },
                 dataSrc: function (d) {
                     // Hide columns with no data
-                    table.column(3).visible(d.data.map(row => row['molecularWeight']).join(''));
+                    table.column(3).visible(d.data.map(row => row['mass']).join(''));
                     table.column(4).visible(d.data.map(row => row['size']).join(''));
                     // table.column(5).visible(d.data.map(row => row['score']).join(''));
                     // table.column(6).visible(d.data.map(row => row['massError']).join(''));
@@ -252,7 +252,7 @@
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row) {
-                        return (row.molecularWeight != null) ? row.molecularWeight.toFixed(3) : '';
+                        return (row.mass != null) ? row.mass.toFixed(3) : '';
                     }
                 },
                 {

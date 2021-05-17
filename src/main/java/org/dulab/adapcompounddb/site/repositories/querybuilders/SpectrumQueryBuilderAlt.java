@@ -218,19 +218,19 @@ public class SpectrumQueryBuilderAlt {
                     precursorMz - precursorTolerance, precursorMz + precursorTolerance);
 
         if (mass != null && massTolerance != null)
-            spectrumSelector += String.format(" AND Spectrum.MolecularWeight > %f AND Spectrum.MolecularWeight < %f",
+            spectrumSelector += String.format(" AND Spectrum.Mass > %f AND Spectrum.Mass < %f",
                     mass - massTolerance, mass + massTolerance);
 
         if (mass != null && massTolerancePPM != null) {
             double x = 1e-6 * massTolerancePPM;
-            spectrumSelector += String.format(" AND Spectrum.MolecularWeight > %f AND Spectrum.MolecularWeight < %f",
+            spectrumSelector += String.format(" AND Spectrum.Mass > %f AND Spectrum.Mass < %f",
                     mass / (1 + x), mass / (1 - x));
         }
 
         if (mass == null && masses != null && massTolerance != null)
             spectrumSelector += String.format(" AND (%s)", Arrays.stream(masses)
                     .mapToObj(mass -> String.format(
-                            "(Spectrum.MolecularWeight > %f AND Spectrum.MolecularWeight < %f)",
+                            "(Spectrum.Mass > %f AND Spectrum.Mass < %f)",
                             mass - massTolerance, mass + massTolerance))
                     .collect(Collectors.joining(" OR ")));
 
@@ -238,7 +238,7 @@ public class SpectrumQueryBuilderAlt {
             double x = 1e-6 * massTolerancePPM;
             spectrumSelector += String.format(" AND (%s)", Arrays.stream(masses)
                     .mapToObj(mass -> String.format(
-                            "(Spectrum.MolecularWeight > %f AND Spectrum.MolecularWeight < %f)",
+                            "(Spectrum.Mass > %f AND Spectrum.Mass < %f)",
                             mass / (1 + x), mass / (1 - x)))
                     .collect(Collectors.joining(" OR ")));
         }
@@ -256,7 +256,7 @@ public class SpectrumQueryBuilderAlt {
             String finalSpectrumSelector = spectrumSelector;
             scoreTable += peaks.stream()
                     .map(p -> String.format(
-                            "\tSELECT SpectrumId, SQRT(Intensity * %f) AS Product, MolecularWeight, RetentionTime " +
+                            "\tSELECT SpectrumId, SQRT(Intensity * %f) AS Product, Mass, RetentionTime " +
                                     "FROM Spectrum INNER JOIN Peak ON Peak.SpectrumId = Spectrum.Id " +
                                     "WHERE %s AND Mz > %f AND Mz < %f\n",
                             p.getIntensity(),
@@ -277,10 +277,10 @@ public class SpectrumQueryBuilderAlt {
 
     private String getMassError() {
         if (mass != null) {
-            return String.format("ABS(MolecularWeight - %f)", mass);
+            return String.format("ABS(Mass - %f)", mass);
         } else if (masses != null) {
             return String.format("LEAST(%s)", Arrays.stream(masses)
-                    .mapToObj(mass -> String.format("ABS(MolecularWeight - %f)", mass))
+                    .mapToObj(mass -> String.format("ABS(Mass - %f)", mass))
                     .collect(Collectors.joining(",")));
         }
         return "NULL";
@@ -288,10 +288,10 @@ public class SpectrumQueryBuilderAlt {
 
     private String getMassErrorPPM() {
         if (mass != null) {
-            return String.format("1E6 * ABS(MolecularWeight - %f) / MolecularWeight", mass);
+            return String.format("1E6 * ABS(Mass - %f) / Mass", mass);
         } else if (masses != null) {
             return String.format("LEAST(%s)", Arrays.stream(masses)
-                    .mapToObj(mass -> String.format("1E6 * ABS(MolecularWeight - %f) / MolecularWeight", mass))
+                    .mapToObj(mass -> String.format("1E6 * ABS(Mass - %f) / Mass", mass))
                     .collect(Collectors.joining(",")));
         }
         return "NULL";

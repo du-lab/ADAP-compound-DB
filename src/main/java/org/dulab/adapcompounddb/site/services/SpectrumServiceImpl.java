@@ -32,7 +32,7 @@ public class SpectrumServiceImpl implements SpectrumService {
     private enum ColumnInformation {
         NAME(1, "name"), RETENTIONTIME(2, "retentionTime"),
         PRECURSOR(3, "precursor"), SIGNIFICANCE(4, "significance"),
-        MOLECULARWEIGHT(5, "molecularWeight"),
+        MASS(5, "mass"),
         CHROMATOGRAPHYTYPE(6, "chromatographyType");
 
         private final int position;

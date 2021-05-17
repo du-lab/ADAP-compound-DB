@@ -8,7 +8,6 @@ import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.site.controllers.ControllerUtils;
 import org.dulab.adapcompounddb.site.services.search.GroupSearchService;
 import org.dulab.adapcompounddb.site.services.search.SpectrumMatchService;
-import org.dulab.adapcompounddb.site.services.search.SpectrumMatchServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -102,8 +101,8 @@ public class GroupSearchRestController {
                 case "consensusSpectrumName":
                     spectrumList.sort(getComparator(SearchResultDTO::getName, sortDirection));
                     break;
-                case "molecularWeight":
-                    spectrumList.sort(getComparator(SearchResultDTO::getMolecularWeight, sortDirection));
+                case "mass":
+                    spectrumList.sort(getComparator(SearchResultDTO::getMass, sortDirection));
                     break;
                 case "size":
                     spectrumList.sort(getComparator(SearchResultDTO::getSize, sortDirection));
@@ -183,7 +182,7 @@ public class GroupSearchRestController {
     private enum GroupSearchColumnInformation {
         ID(0, "id"), QUERY_SPECTRUM(1, "querySpectrumName"),
         MATCH_SPECTRUM(2, "consensusSpectrumName"),
-        MOLECULAR_WEIGHT(3, "molecularWeight"),
+        MASS(3, "mass"),
         COUNT(4, "size"),
         SCORE(5, "diameter"),
         MASS_ERROR(6, "massError"),

@@ -3,11 +3,8 @@ package org.dulab.adapcompounddb.models.entities;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.function.BiFunction;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.persistence.*;
@@ -76,7 +73,9 @@ public class Spectrum implements Serializable {
 
     private Double significance;
 
-    private Double molecularWeight;
+    private Double mass;
+
+    private String formula;
 
     private Double topMz1;
 
@@ -162,6 +161,14 @@ public class Spectrum implements Serializable {
 
     public void setFile(final File file) {
         this.file = file;
+    }
+
+    public String getFormula() {
+        return formula;
+    }
+
+    public void setFormula(String formula) {
+        this.formula = formula;
     }
 
     public List<Peak> getPeaks() {
@@ -284,8 +291,8 @@ public class Spectrum implements Serializable {
                     this.setPrecursorType(propertyValue);
                 else if (propertyName.equalsIgnoreCase(mapping.getRetTimeField()))
                     this.setRetentionTime(parseDouble(propertyValue));
-                else if (propertyName.equalsIgnoreCase(mapping.getMolecularWeight()))
-                    this.setMolecularWeight(parseDouble(propertyValue));
+                else if (propertyName.equalsIgnoreCase(mapping.getMassField()))
+                    this.setMass(parseDouble(propertyValue));
             }
         }
     }
@@ -428,12 +435,12 @@ public class Spectrum implements Serializable {
         this.significance = significance;
     }
 
-    public Double getMolecularWeight() {
-        return molecularWeight;
+    public Double getMass() {
+        return mass;
     }
 
-    public void setMolecularWeight(Double molecularWeight) {
-        this.molecularWeight = molecularWeight;
+    public void setMass(Double mass) {
+        this.mass = mass;
     }
 
     public Double getTopMz1() {
@@ -613,7 +620,7 @@ public class Spectrum implements Serializable {
         mergedSpectrum.setPrecursorType(s1.precursorType != null ? s1.precursorType : s2.precursorType);
         mergedSpectrum.setRetentionTime(mergeDoublesByAverage(s1.retentionTime, s2.retentionTime, 0.1));
         mergedSpectrum.setSignificance(mergeDoublesByMaximum(s1.significance, s2.significance, 0.1));
-        mergedSpectrum.setMolecularWeight(mergeDoublesByAverage(s1.molecularWeight, s2.molecularWeight, 0.01));
+        mergedSpectrum.setMass(mergeDoublesByAverage(s1.mass, s2.mass, 0.01));
         mergedSpectrum.setPeaks(mergeLists(s1.peaks, s2.peaks), true);
         mergedSpectrum.setProperties(mergeLists(s1.properties, s2.properties));
 

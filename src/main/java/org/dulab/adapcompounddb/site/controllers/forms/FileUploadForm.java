@@ -35,11 +35,11 @@ public class FileUploadForm {
     private String mspNameField;
     private String mspExternalIdField;
     private String mspRetentionTimeField;
-    private String mspMolecularWeightField;
+    private String mspMassField;
     private String csvNameField;
     private String csvExternalIdField;
     private String csvRetentionTimeField;
-    private String csvMolecularWeightField;
+    private String csvMassField;
 
     @JsonIgnore
     @ContainsFiles
@@ -95,12 +95,12 @@ public class FileUploadForm {
         this.mspRetentionTimeField = mspRetentionTimeField;
     }
 
-    public String getMspMolecularWeightField() {
-        return mspMolecularWeightField;
+    public String getMspMassField() {
+        return mspMassField;
     }
 
-    public void setMspMolecularWeightField(String mspMolecularWeightField) {
-        this.mspMolecularWeightField = mspMolecularWeightField;
+    public void setMspMassField(String mspMassField) {
+        this.mspMassField = mspMassField;
     }
 
     public String getCsvNameField() {
@@ -127,12 +127,12 @@ public class FileUploadForm {
         this.csvRetentionTimeField = csvRetentionTimeField;
     }
 
-    public String getCsvMolecularWeightField() {
-        return csvMolecularWeightField;
+    public String getCsvMassField() {
+        return csvMassField;
     }
 
-    public void setCsvMolecularWeightField(String csvMolecularWeightField) {
-        this.csvMolecularWeightField = csvMolecularWeightField;
+    public void setCsvMassField(String csvMassField) {
+        this.csvMassField = csvMassField;
     }
 
     public List<MultipartFile> getFiles() {
@@ -146,9 +146,9 @@ public class FileUploadForm {
     public Map<FileType, MetaDataMapping> getMetaDataMappings() {
         Map<FileType, MetaDataMapping> mappings = new HashMap<>();
         mappings.put(FileType.MSP, new MetaDataMapping(
-                mspNameField, mspExternalIdField, null, null, mspRetentionTimeField, mspMolecularWeightField));
+                mspNameField, mspExternalIdField, null, null, mspRetentionTimeField, mspMassField));
         mappings.put(FileType.CSV, new MetaDataMapping(
-                csvNameField, csvExternalIdField, null, null, csvRetentionTimeField, csvMolecularWeightField));
+                csvNameField, csvExternalIdField, null, null, csvRetentionTimeField, csvMassField));
         return mappings;
     }
 

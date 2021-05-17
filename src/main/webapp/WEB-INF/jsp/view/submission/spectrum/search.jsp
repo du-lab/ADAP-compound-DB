@@ -144,7 +144,7 @@
                                                 ${searchResult.name}
                                         </a>
                                     </td>
-                                    <td>${searchResult.molecularWeight}</td>
+                                    <td>${searchResult.mass}</td>
                                     <td>${searchResult.size}</td>
                                     <td>${searchResult.getNISTScore()}</td>
                                     <td>${(searchResult.massError != null) ? dulab:formatDouble(1000 * searchResult.massError) : ''}</td>

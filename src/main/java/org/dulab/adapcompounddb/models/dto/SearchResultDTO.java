@@ -54,7 +54,7 @@ public class SearchResultDTO implements Serializable {
     private String chromatographyTypeLabel;
     private String chromatographyTypePath;
     private String json;
-    private Double molecularWeight;
+    private Double mass;
 
     // Other
     private int position;
@@ -111,7 +111,7 @@ public class SearchResultDTO implements Serializable {
             this.name = massSearchResult.getName();
             this.chromatographyTypeLabel = massSearchResult.getChromatographyType().getLabel();
             this.chromatographyTypePath = massSearchResult.getChromatographyType().getIconPath();
-            this.molecularWeight = massSearchResult.getMolecularWeight();
+            this.mass = massSearchResult.getMolecularWeight();
             this.massError = massSearchResult.getError();
         }
     }
@@ -292,12 +292,12 @@ public class SearchResultDTO implements Serializable {
         this.matchType = matchType;
     }
 
-    public Double getMolecularWeight() {
-        return molecularWeight;
+    public Double getMass() {
+        return mass;
     }
 
-    public void setMolecularWeight(Double molecularWeight) {
-        this.molecularWeight = molecularWeight;
+    public void setMass(Double mass) {
+        this.mass = mass;
     }
 
     public Double getMassError() {

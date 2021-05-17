@@ -381,7 +381,7 @@
             }, {
                 "targets": 6,
                 "render": function (data, type, row, meta) {
-                    let x = row.molecularWeight;
+                    let x = row.mass;
                     return (x != null && !isNaN(x)) ? x.toFixed(3) : x;
                 }
             }, {

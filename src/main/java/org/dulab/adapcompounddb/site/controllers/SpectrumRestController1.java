@@ -131,7 +131,7 @@ public class SpectrumRestController1 {
         JSONArray standardProperties = new JSONArray();
         standardProperties.put(propertyToJsonObject("Precursor m/z", spectrum.getPrecursor()));
         standardProperties.put(propertyToJsonObject("Precursor type", spectrum.getPrecursorType()));
-        standardProperties.put(propertyToJsonObject("Neutral mass", spectrum.getMolecularWeight()));
+        standardProperties.put(propertyToJsonObject("Neutral mass", spectrum.getMass()));
         standardProperties.put(propertyToJsonObject("Retention time", spectrum.getRetentionTime()));
         root.put("standardProperties", standardProperties);
 

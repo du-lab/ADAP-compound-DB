@@ -29,8 +29,8 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     private static final String PROPERTY_INSERT_SQL_STRING = "INSERT INTO `SpectrumProperty`(`SpectrumId`, `Name`, `Value`) VALUES ";
     private static final String PEAK_VALUE_SQL_STRING = "(%f,%f,%d)";
     private static final String PROPERTY_VALUE_SQL_STRING = "(%d, %s, %s)";
-    private static final String SPECTRUM_VALUE_SQL_STRING = "(%s, %f, %f, %f, %d, %b, %b, %b, %s, %d, %f, %f, %f, %f, %f, " +
-            "%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f)";
+    private static final String SPECTRUM_VALUE_SQL_STRING = "(%s, %f, %f, %f, %d, %b, %b, %b, %s, %d, %f, %s, %f, %f, " +
+            "%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f)";
 
     public static final String DOUBLE_QUOTE = "\"";
     public static final String COMMA = ",";
@@ -121,9 +121,9 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                     .withQuerySpectrum(querySpectrum.getPeaks(), parameters.getMzTolerance(), parameters.getScoreThreshold())
                     .withPrecursor(querySpectrum.getPrecursor(), parameters.getPrecursorTolerance())
                     .withRetTime(querySpectrum.getRetentionTime(), parameters.getRetTimeTolerance());
-            if (querySpectrum.getMolecularWeight() != null) {
-                builder = builder.withMass(querySpectrum.getMolecularWeight(), parameters.getMassTolerance())
-                        .withMassPPM(querySpectrum.getMolecularWeight(), parameters.getMassTolerancePPM());
+            if (querySpectrum.getMass() != null) {
+                builder = builder.withMass(querySpectrum.getMass(), parameters.getMassTolerance())
+                        .withMassPPM(querySpectrum.getMass(), parameters.getMassTolerancePPM());
             } else {
                 builder = builder.withMasses(parameters.getMasses(), parameters.getMassTolerance())
                         .withMassesPPM(parameters.getMasses(), parameters.getMassTolerancePPM());
@@ -201,7 +201,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         final StringBuilder insertSql = new StringBuilder("INSERT INTO `Spectrum`(" +
                 "`Name`, `Precursor`, `PrecursorType`, `RetentionTime`, `Significance`, " +
                 "`ClusterId`, `Consensus`, `Reference`, `IntegerMz`, " +
-                "`ChromatographyType`, `FileId`, `MolecularWeight`, " +
+                "`ChromatographyType`, `FileId`, `Mass`, `Formula`, " +
                 "`TopMz1`, `TopMz2`, `TopMz3`, `TopMz4`, `TopMz5`, `TopMz6`, `TopMz7`, `TopMz8`, `TopMz9`, " +
                 "`TopMz10`, `TopMz11`, `TopMz12`, `TopMz13`, `TopMz14`, `TopMz15`, `TopMz16`" +
                 ") VALUES ");
@@ -230,7 +230,8 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                         spectrum.isIntegerMz(),
                         String.format("\"%s\"", spectrum.getChromatographyType().name()),
                         savedFileIdList.get(i),
-                        spectrum.getMolecularWeight(),
+                        spectrum.getMass(),
+                        spectrum.getFormula(),
                         spectrum.getTopMz1(),
                         spectrum.getTopMz2(),
                         spectrum.getTopMz3(),
@@ -318,8 +319,8 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                         .withPrecursor(params.getPrecursorTolerance(), params.getPrecursorTolerancePPM(), querySpectrum.getPrecursor())
                         .withRetTime(params.getRetTimeTolerance(), querySpectrum.getRetentionTime());
 
-        queryBuilder = (querySpectrum.getMolecularWeight() != null)
-                ? queryBuilder.withMass(params.getMassTolerance(), params.getMassTolerancePPM(), querySpectrum.getMolecularWeight())
+        queryBuilder = (querySpectrum.getMass() != null)
+                ? queryBuilder.withMass(params.getMassTolerance(), params.getMassTolerancePPM(), querySpectrum.getMass())
                 : queryBuilder.withMass(params.getMassTolerance(), params.getMassTolerancePPM(), params.getMasses());
 
         if (!greedy)
