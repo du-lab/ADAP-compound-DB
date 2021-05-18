@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.services.utils;
 
+import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
 
@@ -48,28 +49,24 @@ public class MappingUtils {
         return list.size() > n ? list.subList(0, n) : list;
     }
 
-    public static SpectrumClusterView mapSpectrumMatchToSpectrumClusterView(
+    public static Double parseDouble(String string) {
+        try {
+            return Double.parseDouble(string);
+        } catch (NullPointerException | NumberFormatException e) {
+            return null;
+        }
+    }
+
+    public static SearchResultDTO mapSpectrumMatchToSpectrumClusterView(
             SpectrumMatch match, String species, String source, String disease) {
 
-        SpectrumClusterView view = new SpectrumClusterView();
-        view.setUniqueId(match.getId());
-
-        Spectrum querySpectrum = match.getQuerySpectrum();
-        view.setChromatographyType(querySpectrum.getChromatographyType());
+        SearchResultDTO searchResult = new SearchResultDTO(match);
 
         Spectrum matchSpectrum = match.getMatchSpectrum();
         if (matchSpectrum != null) {
-            view.setId(matchSpectrum.getId());
-            view.setName(matchSpectrum.getShortName());
-            view.setScore(match.getScore());
-            view.setMassError(match.getMassError());
-            view.setMassErrorPPM(match.getMassErrorPPM());
-            view.setRetTimeError(match.getRetTimeError());
-            view.setSize(1);
-
-            if (matchSpectrum.isConsensus()) {
-                SpectrumCluster cluster = matchSpectrum.getCluster();
-                view.setClusterId(cluster.getId());
+            SpectrumCluster cluster = matchSpectrum.getCluster();
+            if (cluster != null) {
+                searchResult.setClusterId(cluster.getId());
 
                 List<Spectrum> spectra = cluster.getSpectra().stream()
                         .filter(spectrum -> spectrum.getFile() != null)
@@ -97,7 +94,7 @@ public class MappingUtils {
                                             && tag.getTagValue().equalsIgnoreCase(disease)))
                             .collect(Collectors.toList());
 
-                view.setSize((int) spectra.stream()
+                searchResult.setSize((int) spectra.stream()
                         .map(Spectrum::getFile).filter(Objects::nonNull)
                         .map(File::getSubmission).filter(Objects::nonNull)
                         .distinct().count());
@@ -106,22 +103,22 @@ public class MappingUtils {
                         .map(Spectrum::getSignificance).filter(Objects::nonNull)
                         .mapToDouble(Double::doubleValue)
                         .min()
-                        .ifPresent(view::setMinimumSignificance);
+                        .ifPresent(searchResult::setMinSignificance);
 
                 spectra.stream()
                         .map(Spectrum::getSignificance).filter(Objects::nonNull)
                         .mapToDouble(Double::doubleValue)
                         .max()
-                        .ifPresent(view::setMaximumSignificance);
+                        .ifPresent(searchResult::setMaxSignificance);
 
                 spectra.stream()
                         .map(Spectrum::getSignificance).filter(Objects::nonNull)
                         .mapToDouble(Double::doubleValue)
                         .average()
-                        .ifPresent(view::setAverageSignificance);
+                        .ifPresent(searchResult::setAveSignificance);
             }
         }
 
-        return view;
+        return searchResult;
     }
 }

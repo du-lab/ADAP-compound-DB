@@ -54,17 +54,16 @@ public class ExportService {
 
     private List<SearchResultDTO> selectTopResults(List<SearchResultDTO> searchResults) {
 
-        long[] queryIds = searchResults.stream()
-                .mapToLong(ExportService::getQueryId)
+        Object[] queryIds = searchResults.stream()
+                .map(ExportService::getQueryId)
                 .distinct()
-                .sorted()
                 .toArray();
 
         List<SearchResultDTO> topResults = new ArrayList<>();
-        for (long queryId : queryIds) {
+        for (Object queryId : queryIds) {
 
             List<SearchResultDTO> selectedSearchResults = searchResults.stream()
-                    .filter(r -> queryId == getQueryId(r))
+                    .filter(r -> queryId.equals(getQueryId(r)))
                     .collect(Collectors.toList());
 
             if (selectedSearchResults.isEmpty()) continue;
@@ -76,7 +75,15 @@ public class ExportService {
                     .thenComparing(SearchResultDTO::getMassError, Comparator.nullsLast(Comparator.naturalOrder()))
                     .thenComparing(SearchResultDTO::getRetTimeError, Comparator.nullsLast(Comparator.naturalOrder())));
 
-            topResults.add(selectedSearchResults.get(0));
+            SearchResultDTO topResult = selectedSearchResults.get(0);
+            topResult.setQueryPrecursorMzs(selectedSearchResults.stream()
+                    .map(SearchResultDTO::getQueryPrecursorMz).filter(Objects::nonNull)
+                    .distinct().mapToDouble(Double::doubleValue).toArray());
+            topResult.setQueryPrecursorTypes(selectedSearchResults.stream()
+                    .map(SearchResultDTO::getQueryPrecursorType).filter(Objects::nonNull)
+                    .distinct().toArray(String[]::new));
+
+            topResults.add(topResult);
         }
 
 //        IntStream.range(0, topResults.size())
@@ -92,11 +99,16 @@ public class ExportService {
      * @param searchResult search result
      * @return query ID
      */
-    private static long getQueryId(SearchResultDTO searchResult) {
+    private static Object getQueryId(SearchResultDTO searchResult) {
+        // Use ExternalId if available
+        if (searchResult.getQueryExternalId() != null)
+            return searchResult.getQueryExternalId();
+
+        // Use QuerySpectrumId if available
         if (searchResult.getQuerySpectrumId() != null && searchResult.getQuerySpectrumId() > 0)
             return searchResult.getQuerySpectrumId();
 
-        // Cantor pairing function
+        // Otherwise, use the Cantor pairing function
         return searchResult.getQuerySpectrumIndex()
                 + (searchResult.getQueryFileIndex() + searchResult.getQuerySpectrumIndex())
                 * (searchResult.getQueryFileIndex() + searchResult.getQuerySpectrumIndex() + 1) / 2;
@@ -106,7 +118,7 @@ public class ExportService {
         List<String> fields = Arrays.stream(ExportField.values())
                 .map(field -> field.name)
                 .collect(Collectors.toList());
-        fields.addAll(propertyNames);
+//        fields.addAll(propertyNames);
         return fields.toArray(new String[0]);
     }
 
@@ -118,19 +130,19 @@ public class ExportService {
                 .map(field -> field.getter.apply(searchResult))
                 .collect(Collectors.toList());
 
-        List<SpectrumProperty> properties = spectrumIdToPropertiesMap.get(searchResult.getSpectrumId());
-        for (String propertyName : propertyNames) {
-            String value = null;
-            if (properties != null) {
-                for (SpectrumProperty property : properties) {
-                    if (property.getName().equals(propertyName)) {
-                        value = property.getValue();
-                        break;
-                    }
-                }
-            }
-            values.add(value);
-        }
+//        List<SpectrumProperty> properties = spectrumIdToPropertiesMap.get(searchResult.getSpectrumId());
+//        for (String propertyName : propertyNames) {
+//            String value = null;
+//            if (properties != null) {
+//                for (SpectrumProperty property : properties) {
+//                    if (property.getName().equals(propertyName)) {
+//                        value = property.getValue();
+//                        break;
+//                    }
+//                }
+//            }
+//            values.add(value);
+//        }
 
         return values.toArray(new String[0]);
     }
@@ -145,13 +157,20 @@ public class ExportService {
         QUERY_FILE_ID("File", r -> r.getQueryFileIndex() != null ? Integer.toString(r.getQueryFileIndex() + 1) : null),
         QUERY_SPECTRUM_ID("Feature", r -> r.getQuerySpectrumIndex() != null ? Integer.toString(r.getQuerySpectrumIndex() + 1) : null),
         QUERY_EXTERNAL_ID("Signal ID", SearchResultDTO::getQueryExternalId),
-        QUERY_NAME("Query", SearchResultDTO::getQuerySpectrumName),
-        MATCH_NAME("Match", SearchResultDTO::getName),
+        QUERY_NAME("Signal Name", SearchResultDTO::getQuerySpectrumName),
+        QUERY_PRECURSOR_MZ("Precursor m/z", r -> formatDoubleArray(r.getQueryPrecursorMzs())),
+        QUERY_PRECURSOR_TYPE("Adduct", r -> formatStringArray(r.getQueryPrecursorTypes())),
+        MATCH_NAME("Compound Name", SearchResultDTO::getName),
+        MATCH_EXTERNAL_ID("Compound ID", SearchResultDTO::getExternalId),
         SCORE("Fragmentation Score", r -> r.getScore() != null ? Double.toString(r.getNISTScore()) : null),
         //        MASS_ERROR("Mass Error (Da)", r -> r.getMassError() != null ? Double.toString(r.getMassError()) : null),
         MASS_ERROR_PPM("Mass Error (PPM)", r -> formatDouble(r.getMassErrorPPM())),
-        RET_TIME_ERROR("Ret Time Error", r -> formatDouble(r.getRetTimeError())),
-        ONTOLOGY_LEVEL("Ontology Level", SearchResultDTO::getOntologyLevel);
+        RET_TIME_ERROR("Ret Time Error (min)", r -> formatDouble(r.getRetTimeError())),
+        ONTOLOGY_LEVEL("Ontology Level", SearchResultDTO::getOntologyLevel),
+        FORMULA("Formula", SearchResultDTO::getFormula),
+        MASS("Mass", r -> formatDouble(r.getMass())),
+        RET_TIME("Ret Time (min)", r -> formatDouble(r.getRetTime())),
+        SUBMISSION_NAME("Library", SearchResultDTO::getSubmissionName);
 
 
         private final String name;
@@ -166,6 +185,19 @@ public class ExportService {
             if (x == null)
                 return null;
             return String.format("%.4f", x);
+        }
+
+        private static String formatDoubleArray(double[] xs) {
+            if (xs == null)
+                return null;
+            return Arrays.stream(xs).mapToObj(ExportField::formatDouble)
+                    .collect(Collectors.joining(", "));
+        }
+
+        private static String formatStringArray(String[] strings) {
+            if (strings == null)
+                return null;
+            return String.join(", ", strings);
         }
     }
 }

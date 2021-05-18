@@ -1,7 +1,7 @@
 package org.dulab.adapcompounddb.models.dto;
 
 import org.dulab.adapcompounddb.models.MatchType;
-import org.dulab.adapcompounddb.models.entities.Spectrum;
+import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.entities.views.MassSearchResult;
 import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
 import org.dulab.adapcompounddb.models.ontology.OntologyLevel;
@@ -39,11 +39,14 @@ public class SearchResultDTO implements Serializable {
     private Integer queryFileIndex;
     private String querySpectrumName;
     private String queryExternalId;
+    private double[] queryPrecursorMzs;
+    private String[] queryPrecursorTypes;
 
     // Match
     private MatchType matchType;
     private long spectrumId;
     private Long clusterId;
+    private String externalId;
     private String name;
     private Integer size;
     private Double aveSignificance;
@@ -55,6 +58,9 @@ public class SearchResultDTO implements Serializable {
     private String chromatographyTypePath;
     private String json;
     private Double mass;
+    private Double retTime;
+    private String formula;
+    private String submissionName;
 
     // Other
     private int position;
@@ -98,6 +104,46 @@ public class SearchResultDTO implements Serializable {
             this.querySpectrumId = querySpectrum.getId();
             this.querySpectrumName = querySpectrum.getName();
             this.queryExternalId = querySpectrum.getExternalId();
+            this.setQueryPrecursorMz(querySpectrum.getPrecursor());
+            this.setQueryPrecursorType(querySpectrum.getPrecursorType());
+            this.chromatographyTypeLabel = querySpectrum.getChromatographyType().getLabel();
+            this.chromatographyTypePath = querySpectrum.getChromatographyType().getIconPath();
+        }
+    }
+
+    public SearchResultDTO(SpectrumMatch spectrumMatch) {
+        this(spectrumMatch.getQuerySpectrum());
+
+        Spectrum matchSpectrum = spectrumMatch.getMatchSpectrum();
+        if (matchSpectrum != null) {
+            this.matchType = matchSpectrum.isConsensus() ? MatchType.CLUSTER : MatchType.SPECTRUM;
+            this.spectrumId = matchSpectrum.getId();
+            this.name = (matchSpectrum.isConsensus() ? "[Con Spec] " : "[Ref Spec] ") + matchSpectrum.getName();
+            this.externalId = matchSpectrum.getExternalId();
+            this.size = 1;
+            this.mass = matchSpectrum.getMass();
+            this.retTime = matchSpectrum.getRetentionTime();
+            this.formula = matchSpectrum.getFormula();
+            this.score = spectrumMatch.getScore();
+            this.massError = spectrumMatch.getMassError();
+            this.massErrorPPM = spectrumMatch.getMassErrorPPM();
+            this.retTimeError = spectrumMatch.getRetTimeError();
+
+            SpectrumCluster cluster = matchSpectrum.getCluster();
+            if (cluster != null) {
+                this.clusterId = cluster.getId();
+                this.size = cluster.getSize();
+                this.aveSignificance = cluster.getAveSignificance();
+                this.minSignificance = cluster.getMinSignificance();
+                this.maxSignificance = cluster.getMaxSignificance();
+            }
+
+            File file = matchSpectrum.getFile();
+            if (file != null) {
+                Submission submission = file.getSubmission();
+                if (submission != null)
+                    this.submissionName = submission.getName();
+            }
         }
     }
 
@@ -145,6 +191,14 @@ public class SearchResultDTO implements Serializable {
 
     public void setClusterId(Long clusterId) {
         this.clusterId = clusterId;
+    }
+
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
     }
 
     public Integer getSize() {
@@ -212,6 +266,22 @@ public class SearchResultDTO implements Serializable {
         this.setOntologyPriority(ontologyLevel.getPriority());
     }
 
+    public String getFormula() {
+        return formula;
+    }
+
+    public void setFormula(String formula) {
+        this.formula = formula;
+    }
+
+    public String getSubmissionName() {
+        return submissionName;
+    }
+
+    public void setSubmissionName(String submissionName) {
+        this.submissionName = submissionName;
+    }
+
     public String getQuerySpectrumName() {
         return querySpectrumName;
     }
@@ -250,6 +320,42 @@ public class SearchResultDTO implements Serializable {
 
     public void setQueryExternalId(String queryExternalId) {
         this.queryExternalId = queryExternalId;
+    }
+
+    public Double getQueryPrecursorMz() {
+        if (queryPrecursorMzs != null && queryPrecursorMzs.length > 0)
+            return queryPrecursorMzs[0];
+        return null;
+    }
+
+    public void setQueryPrecursorMz(Double precursorMz) {
+        this.queryPrecursorMzs = precursorMz != null ? new double[]{precursorMz} : null;
+    }
+
+    public double[] getQueryPrecursorMzs() {
+        return queryPrecursorMzs;
+    }
+
+    public void setQueryPrecursorMzs(double[] queryPrecursorMzs) {
+        this.queryPrecursorMzs = queryPrecursorMzs;
+    }
+
+    public String getQueryPrecursorType() {
+        if (queryPrecursorTypes != null && queryPrecursorTypes.length > 0)
+            return queryPrecursorTypes[0];
+        return null;
+    }
+
+    public void setQueryPrecursorType(String precursorType) {
+        this.queryPrecursorTypes = precursorType != null ? new String[]{precursorType} : null;
+    }
+
+    public String[] getQueryPrecursorTypes() {
+        return queryPrecursorTypes;
+    }
+
+    public void setQueryPrecursorTypes(String[] queryPrecursorTypes) {
+        this.queryPrecursorTypes = queryPrecursorTypes;
     }
 
     public String getChromatographyTypeLabel() {
@@ -298,6 +404,14 @@ public class SearchResultDTO implements Serializable {
 
     public void setMass(Double mass) {
         this.mass = mass;
+    }
+
+    public Double getRetTime() {
+        return retTime;
+    }
+
+    public void setRetTime(Double retTime) {
+        this.retTime = retTime;
     }
 
     public Double getMassError() {

@@ -98,6 +98,8 @@ public class MspFileReaderService implements FileReaderService {
             mapping.setPrecursorMzField("PrecursorMZ");
         if (mapping.getPrecursorTypeField() == null || mapping.getPrecursorTypeField().isEmpty())
             mapping.setPrecursorTypeField("Precursor_type");
+        if (mapping.getFormulaField() == null || mapping.getFormulaField().isEmpty())
+            mapping.setFormulaField("Formula");
         return mapping;
     }
 }

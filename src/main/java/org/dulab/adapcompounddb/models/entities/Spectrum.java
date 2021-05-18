@@ -278,22 +278,7 @@ public class Spectrum implements Serializable {
         this.properties = properties;
 
         if (mapping != null) {
-            for (SpectrumProperty property : properties) {
-                String propertyName = property.getName();
-                String propertyValue = property.getValue();
-                if (propertyName.equalsIgnoreCase(mapping.getNameField()))
-                    this.setName(propertyValue);
-                else if (propertyName.equalsIgnoreCase(mapping.getExternalIdField()))
-                    this.setExternalId(propertyValue);
-                else if (propertyName.equalsIgnoreCase(mapping.getPrecursorMzField()))
-                    this.setPrecursor(parseDouble(propertyValue));
-                else if (propertyName.equalsIgnoreCase(mapping.getPrecursorTypeField()))
-                    this.setPrecursorType(propertyValue);
-                else if (propertyName.equalsIgnoreCase(mapping.getRetTimeField()))
-                    this.setRetentionTime(parseDouble(propertyValue));
-                else if (propertyName.equalsIgnoreCase(mapping.getMassField()))
-                    this.setMass(parseDouble(propertyValue));
-            }
+            properties.forEach(p -> mapping.map(p, this));
         }
     }
 
@@ -655,13 +640,5 @@ public class Spectrum implements Serializable {
         list.addAll(l1);
         list.addAll(l2);
         return list;
-    }
-
-    private static Double parseDouble(String string) {
-        try {
-            return Double.parseDouble(string);
-        } catch (NullPointerException | NumberFormatException e) {
-            return null;
-        }
     }
 }

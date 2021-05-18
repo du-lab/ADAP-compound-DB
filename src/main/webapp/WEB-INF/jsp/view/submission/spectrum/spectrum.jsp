@@ -60,6 +60,9 @@
                                             <strong>External ID:</strong>&nbsp;${spectrum.externalId}
                                         </li>
                                         <li class="list-group-item py-1">
+                                            <strong>Formula:</strong>&nbsp;${spectrum.formula}
+                                        </li>
+                                        <li class="list-group-item py-1">
                                             <strong>Precursor m/z:</strong>&nbsp;${spectrum.precursor}
                                         </li>
                                         <li class="list-group-item py-1">

@@ -97,9 +97,8 @@ public class IndividualSearchServiceImpl implements IndividualSearchService {
         for (SpectrumMatch match
                 : javaSpectrumSimilarityService.searchConsensusAndReference(querySpectrum, parameters, user)) {
 
-            SpectrumClusterView view = MappingUtils.mapSpectrumMatchToSpectrumClusterView(
+            SearchResultDTO searchResult = MappingUtils.mapSpectrumMatchToSpectrumClusterView(
                     match, parameters.getSpecies(), parameters.getSource(), parameters.getDisease());
-            SearchResultDTO searchResult = new SearchResultDTO(querySpectrum, view);
             searchResults.add(searchResult);
         }
 
@@ -163,7 +162,6 @@ public class IndividualSearchServiceImpl implements IndividualSearchService {
                                     modifiedParameters.getSpecies(),
                                     modifiedParameters.getSource(),
                                     modifiedParameters.getDisease()))
-                            .map(view -> new SearchResultDTO(spectrum, view))
                             .collect(Collectors.toList());
 
             results.forEach(r -> r.setOntologyLevel(ontologyLevel));

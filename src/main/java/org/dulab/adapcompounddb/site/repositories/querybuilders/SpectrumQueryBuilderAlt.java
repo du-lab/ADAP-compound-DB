@@ -9,6 +9,7 @@ import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.site.repositories.QueryBuilderException;
 
+@Deprecated
 public class SpectrumQueryBuilderAlt {
 
     private static final String AGGREGATED_SPECTRUM_CLUSTER_VIEW_OUTPUT = "UUID_SHORT() AS UniqueId, Spectrum.Id, Spectrum.ClusterId, " +

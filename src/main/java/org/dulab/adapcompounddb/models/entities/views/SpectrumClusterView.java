@@ -6,6 +6,7 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
+@Deprecated
 public class SpectrumClusterView {
 
     private long uniqueId;
