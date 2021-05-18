@@ -69,6 +69,9 @@ def get_modified_spectrum_lines(spectrum_lines: List[str], meta_row: pd.Series, 
     ret_time = meta_row['Retention time (min)']
     ret_time_line = 'RETENTION_TIME: {:s}\n'.format(ret_time)
 
+    compound_id = meta_row['Compound ID']
+    compound_id_line = 'COMPOUND_ID: {:s}\n'.format(compound_id)
+
     # matched = False
     # molecular_mass = None
     # for column in ['PUBCHEM_EXACT_MASS', 'EXACT_MASS', 'EXACT MASS']:
@@ -94,6 +97,7 @@ def get_modified_spectrum_lines(spectrum_lines: List[str], meta_row: pd.Series, 
     spectrum_lines = spectrum_lines.copy()
     spectrum_lines.insert(1, ret_time_line)
     spectrum_lines.insert(2, molecular_mass_line)
+    spectrum_lines.insert(3, compound_id_line)
     return spectrum_lines
 
 
@@ -101,7 +105,6 @@ def merge_sumner_data(path_to_msp: str, path_to_csv: str, path_to_sdf: str):
 
     meta_data = pd.read_csv(path_to_csv, header=0)
     meta_data = meta_data.astype(str)
-
     structure_data = PandasTools.LoadSDF(path_to_sdf, molColName='Molecule')
 
     filename, extension = splitext(path_to_msp)
