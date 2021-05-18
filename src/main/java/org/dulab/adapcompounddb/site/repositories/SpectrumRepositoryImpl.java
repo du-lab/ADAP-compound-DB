@@ -29,7 +29,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     private static final String PROPERTY_INSERT_SQL_STRING = "INSERT INTO `SpectrumProperty`(`SpectrumId`, `Name`, `Value`) VALUES ";
     private static final String PEAK_VALUE_SQL_STRING = "(%f,%f,%d)";
     private static final String PROPERTY_VALUE_SQL_STRING = "(%d, %s, %s)";
-    private static final String SPECTRUM_VALUE_SQL_STRING = "(%s, %f, %s, %f, %f, %d, %b, %b, %b, %s, %d, %f, %s, %f, %f, " +
+    private static final String SPECTRUM_VALUE_SQL_STRING = "(%s, %s, %f, %s, %f, %f, %d, %b, %b, %b, %s, %d, %f, %s, %f, %f, " +
             "%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f)";
 
     public static final String DOUBLE_QUOTE = "\"";
@@ -199,7 +199,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         final List<Spectrum> spectrumList = new ArrayList<>();
 
         final StringBuilder insertSql = new StringBuilder("INSERT INTO `Spectrum`(" +
-                "`Name`, `Precursor`, `PrecursorType`, `RetentionTime`, `Significance`, " +
+                "`Name`, `ExternalId`, `Precursor`, `PrecursorType`, `RetentionTime`, `Significance`, " +
                 "`ClusterId`, `Consensus`, `Reference`, `IntegerMz`, " +
                 "`ChromatographyType`, `FileId`, `Mass`, `Formula`, " +
                 "`TopMz1`, `TopMz2`, `TopMz3`, `TopMz4`, `TopMz5`, `TopMz6`, `TopMz7`, `TopMz8`, `TopMz9`, " +
@@ -220,6 +220,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                         spectrum.getName() != null
                                 ? String.format("\"%s\"", spectrum.getName().replace("\"", "\"\""))
                                 : null,
+                        spectrum.getExternalId() != null ? String.format("\"%s\"", spectrum.getExternalId()) : null,
                         spectrum.getPrecursor(),
                         spectrum.getPrecursorType() != null ? String.format("\"%s\"", spectrum.getPrecursorType()) : null,
                         spectrum.getRetentionTime(),
