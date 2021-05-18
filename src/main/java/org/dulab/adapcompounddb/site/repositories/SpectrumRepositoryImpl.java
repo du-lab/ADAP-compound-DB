@@ -29,7 +29,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     private static final String PROPERTY_INSERT_SQL_STRING = "INSERT INTO `SpectrumProperty`(`SpectrumId`, `Name`, `Value`) VALUES ";
     private static final String PEAK_VALUE_SQL_STRING = "(%f,%f,%d)";
     private static final String PROPERTY_VALUE_SQL_STRING = "(%d, %s, %s)";
-    private static final String SPECTRUM_VALUE_SQL_STRING = "(%s, %f, %f, %f, %d, %b, %b, %b, %s, %d, %f, %s, %f, %f, " +
+    private static final String SPECTRUM_VALUE_SQL_STRING = "(%s, %f, %s, %f, %f, %d, %b, %b, %b, %s, %d, %f, %s, %f, %f, " +
             "%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f)";
 
     public static final String DOUBLE_QUOTE = "\"";
@@ -231,7 +231,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                         String.format("\"%s\"", spectrum.getChromatographyType().name()),
                         savedFileIdList.get(i),
                         spectrum.getMass(),
-                        spectrum.getFormula(),
+                        spectrum.getFormula() != null ? String.format("\"%s\"", spectrum.getFormula()) : null,
                         spectrum.getTopMz1(),
                         spectrum.getTopMz2(),
                         spectrum.getTopMz3(),
