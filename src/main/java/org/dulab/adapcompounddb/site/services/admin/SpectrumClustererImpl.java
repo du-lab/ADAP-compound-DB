@@ -1,4 +1,4 @@
-package org.dulab.adapcompounddb.site.services;
+package org.dulab.adapcompounddb.site.services.admin;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,6 +10,7 @@ import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.enums.MassSpectrometryType;
 import org.dulab.adapcompounddb.site.controllers.ControllerUtils;
 import org.dulab.adapcompounddb.site.repositories.*;
+import org.dulab.adapcompounddb.site.services.DistributionService;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.dulab.jsparcehc.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
     private static final float MZ_TOLERANCE = 0.01F;
 
-    private static final float SCORE_TOLERANCE = 0.2F;
+    private static final float SCORE_TOLERANCE = 1F;  // 0.2F
 
     private static final int MIN_NUM_SPECTRA = 1;
 

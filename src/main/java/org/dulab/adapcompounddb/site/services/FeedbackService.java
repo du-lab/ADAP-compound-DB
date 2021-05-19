@@ -6,6 +6,7 @@ import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.FeedbackDTO;
 import org.dulab.adapcompounddb.models.entities.Feedback;
 
+@Deprecated
 public interface FeedbackService {
 
     void saveFeedback(@Valid FeedbackDTO form);

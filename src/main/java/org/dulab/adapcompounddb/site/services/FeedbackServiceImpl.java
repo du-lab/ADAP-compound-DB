@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
+@Deprecated
 public class FeedbackServiceImpl implements FeedbackService {
 
     private static final Logger LOGGER = LogManager.getLogger();

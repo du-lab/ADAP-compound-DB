@@ -8,7 +8,7 @@ import org.dulab.adapcompounddb.models.SearchForm;
 import org.dulab.adapcompounddb.models.enums.UserRole;
 import org.dulab.adapcompounddb.models.dto.TagInfo;
 import org.dulab.adapcompounddb.models.entities.*;
-import org.dulab.adapcompounddb.site.services.SpectrumClusterer;
+import org.dulab.adapcompounddb.site.services.admin.SpectrumClusterer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;

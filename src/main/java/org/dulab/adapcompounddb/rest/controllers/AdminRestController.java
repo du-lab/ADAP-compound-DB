@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.site.repositories.DistributionRepository;
 import org.dulab.adapcompounddb.site.services.DistributionService;
-import org.dulab.adapcompounddb.site.services.SpectrumClusterer;
+import org.dulab.adapcompounddb.site.services.admin.SpectrumClusterer;
 import org.dulab.adapcompounddb.site.services.admin.SpectrumMatchCalculator;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.springframework.data.domain.PageRequest;
