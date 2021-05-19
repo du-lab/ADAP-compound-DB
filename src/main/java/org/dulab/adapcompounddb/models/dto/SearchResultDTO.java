@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.models.dto;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.dulab.adapcompounddb.models.MatchType;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.entities.views.MassSearchResult;
@@ -118,7 +119,7 @@ public class SearchResultDTO implements Serializable {
         if (matchSpectrum != null) {
             this.matchType = matchSpectrum.isConsensus() ? MatchType.CLUSTER : MatchType.SPECTRUM;
             this.spectrumId = matchSpectrum.getId();
-            this.name = (matchSpectrum.isConsensus() ? "[Con Spec] " : "[Ref Spec] ") + matchSpectrum.getName();
+            this.name = matchSpectrum.getName();
             this.externalId = matchSpectrum.getExternalId();
             this.size = 1;
             this.mass = matchSpectrum.getMass();
@@ -467,5 +468,10 @@ public class SearchResultDTO implements Serializable {
     @Override
     public String toString() {
         return "Search Result ID = " + getSpectrumId();
+    }
+
+    @Override
+    public SearchResultDTO clone() {
+        return SerializationUtils.clone(this);
     }
 }

@@ -6,6 +6,7 @@ import org.dulab.adapcompounddb.models.entities.SpectrumProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.*;
@@ -22,11 +23,11 @@ public class ExportService {
         this.spectrumService = spectrumService;
     }
 
-    public void exportToCSV(OutputStream outputStream, List<SearchResultDTO> searchResults) {
+    public void exportToCSV(OutputStream outputStream, List<SearchResultDTO> searchResults) throws IOException {
         exportAllToCSV(outputStream, selectTopResults(searchResults));
     }
 
-    public void exportAllToCSV(OutputStream outputStream, List<SearchResultDTO> searchResults) {
+    public void exportAllToCSV(OutputStream outputStream, List<SearchResultDTO> searchResults) throws IOException {
 
         long[] matchIds = searchResults.stream()
                 .mapToLong(SearchResultDTO::getSpectrumId)
@@ -50,6 +51,8 @@ public class ExportService {
         for (SearchResultDTO searchResult : searchResults) {
             csvWriter.writeNext(createRow(propertyNames, spectrumIdToPropertiesMap, searchResult));
         }
+        csvWriter.close();
+
     }
 
     private List<SearchResultDTO> selectTopResults(List<SearchResultDTO> searchResults) {
@@ -75,7 +78,7 @@ public class ExportService {
                     .thenComparing(SearchResultDTO::getMassError, Comparator.nullsLast(Comparator.naturalOrder()))
                     .thenComparing(SearchResultDTO::getRetTimeError, Comparator.nullsLast(Comparator.naturalOrder())));
 
-            SearchResultDTO topResult = selectedSearchResults.get(0);
+            SearchResultDTO topResult = selectedSearchResults.get(0).clone();
             topResult.setQueryPrecursorMzs(selectedSearchResults.stream()
                     .map(SearchResultDTO::getQueryPrecursorMz).filter(Objects::nonNull)
                     .distinct().mapToDouble(Double::doubleValue).toArray());
