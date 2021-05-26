@@ -1,16 +1,17 @@
 package org.dulab.adapcompounddb.site.services.search;
 
+import com.opencsv.CSVWriter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dulab.adapcompounddb.models.entities.Peak;
-import org.dulab.adapcompounddb.models.entities.Spectrum;
-import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
-import org.dulab.adapcompounddb.models.entities.UserPrincipal;
+import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.springframework.stereotype.Service;
+import java.io.File;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -47,17 +48,16 @@ public class JavaSpectrumSimilarityService {
             greedy = querySpectrum.getChromatographyType() == ChromatographyType.LC_MSMS_POS
                     || querySpectrum.getChromatographyType() == ChromatographyType.LC_MSMS_NEG;
 
+        long time1 = System.currentTimeMillis();
         Map<BigInteger, List<BigInteger>> commonToSpectrumIdsMap = MappingUtils.toMapBigIntegerOfLists(
                 spectrumRepository.preScreenSpectra(querySpectrum, parameters, user, greedy,
                         searchConsensus, searchReference, searchClusterable));
-
         if (parameters.getSpecies() != null || parameters.getSource() != null || parameters.getDisease() != null)
             commonToSpectrumIdsMap = MappingUtils.toMapBigIntegerOfLists(
                     spectrumRepository.filterSpectra(commonToSpectrumIdsMap, parameters));
 
         List<BigInteger> preScreenedSpectrumIds =
                 getSpectrumIdsWithCommonPeaksAboveThreshold(commonToSpectrumIdsMap, greedy ? Integer.MAX_VALUE : 50);
-
         Set<Long> preScreenedSpectrumIdsSet = preScreenedSpectrumIds.stream()
                 .mapToLong(BigInteger::longValue)
                 .boxed()
@@ -65,6 +65,30 @@ public class JavaSpectrumSimilarityService {
         Iterable<Spectrum> preScreenedSpectra = spectrumRepository.findSpectraWithPeaksById(preScreenedSpectrumIdsSet);
 
         List<SpectrumMatch> matches = calculateSimilarity(querySpectrum, preScreenedSpectra, parameters);
+        long time2 = System.currentTimeMillis();
+        long timeCost = time2 - time1;
+        try {
+
+            File myFile = new File("/Users/yliao13/Desktop/prescreen_origin_search_comparison/time_cost.csv");
+            if (myFile.createNewFile()){
+                System.out.println("create time cost file");
+                FileWriter writer = new FileWriter("/Users/yliao13/Desktop/prescreen_origin_search_comparison/time_cost.csv");
+                writer.append("time");
+                writer.append("\n");
+                writer.close();
+            } else {
+                FileWriter writer = new FileWriter("/Users/yliao13/Desktop/prescreen_origin_search_comparison/time_cost.csv",true);
+                writer.append(",");
+                writer.append(Long.toString(timeCost));
+                writer.append("\n");
+                writer.close();
+            }
+
+//            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
         return new ArrayList<>(matches.subList(0, Math.min(parameters.getLimit(), matches.size())));
     }
