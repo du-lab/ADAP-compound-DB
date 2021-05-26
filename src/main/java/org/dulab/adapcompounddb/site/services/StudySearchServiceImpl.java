@@ -32,6 +32,8 @@ public class StudySearchServiceImpl implements StudySearchService {
 
         int querySubmissionSpectraCount = 0;
         for (File file : submission.getFiles()) {
+            long sum_time=0l;
+            List<Long> time_list = new ArrayList<>();
             List<Spectrum> spectra = file.getSpectra();
             if (spectra == null) continue;
 
@@ -39,10 +41,13 @@ public class StudySearchServiceImpl implements StudySearchService {
 
                 SearchParameters searchParameters =
                         SearchParameters.getDefaultParameters(spectrum.getChromatographyType());
-
+                long time1 = System.currentTimeMillis();
                 List<SpectrumMatch> matches =
                         javaSpectrumSimilarityService.searchClusterable(spectrum, searchParameters, user);
-
+                long time2 = System.currentTimeMillis();
+                long time_cost = time2 - time1;
+                time_list.add(time_cost);
+                sum_time = sum_time + time_cost;
                 spectrumMatches.addAll(matches);
                 querySubmissionSpectraCount++;
             }
