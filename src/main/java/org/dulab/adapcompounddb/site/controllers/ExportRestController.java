@@ -3,8 +3,9 @@ package org.dulab.adapcompounddb.site.controllers;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
-import org.dulab.adapcompounddb.site.services.ExportService;
+import org.dulab.adapcompounddb.site.services.io.ExportService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +25,7 @@ public class ExportRestController {
     private final ExportService exportService;
 
     @Autowired
-    public ExportRestController(ExportService exportService) {
+    public ExportRestController(@Qualifier("excelExportService") ExportService exportService) {
         this.exportService = exportService;
     }
 
@@ -52,7 +53,7 @@ public class ExportRestController {
     private void export(String attributeName, HttpSession session, HttpServletResponse response, boolean advanced) {
         response.setContentType(MediaType.TEXT_PLAIN_VALUE);
         response.setHeader("Content-Disposition",
-                String.format("attachment; filename=\"%s.csv\"", advanced ? "advanced_export" : "simple_export"));
+                String.format("attachment; filename=\"%s.xlsx\"", advanced ? "advanced_export" : "simple_export"));
 
         Object attribute = session.getAttribute(attributeName);
         if (!(attribute instanceof List)) {
@@ -67,9 +68,9 @@ public class ExportRestController {
 
         try {
             if (advanced)
-                exportService.exportAllToCSV(response.getOutputStream(), searchResults);
+                exportService.exportAll(response.getOutputStream(), searchResults);
             else
-                exportService.exportToCSV(response.getOutputStream(), searchResults);
+                exportService.export(response.getOutputStream(), searchResults);
         } catch (IOException e) {
             LOGGER.warn("Error while writing to a CSV file: " + e.getMessage(), e);
         }
