@@ -42,6 +42,7 @@ public class SearchResultDTO implements Serializable {
     private String queryExternalId;
     private double[] queryPrecursorMzs;
     private String[] queryPrecursorTypes;
+    private Double queryMass;
 
     // Match
     private MatchType matchType;
@@ -49,6 +50,7 @@ public class SearchResultDTO implements Serializable {
     private Long clusterId;
     private String externalId;
     private String name;
+    private String precursorType;
     private Integer size;
     private Double aveSignificance;
     private Double minSignificance;
@@ -107,6 +109,7 @@ public class SearchResultDTO implements Serializable {
             this.queryExternalId = querySpectrum.getExternalId();
             this.setQueryPrecursorMz(querySpectrum.getPrecursor());
             this.setQueryPrecursorType(querySpectrum.getPrecursorType());
+            this.queryMass = querySpectrum.getMass();
             this.chromatographyTypeLabel = querySpectrum.getChromatographyType().getLabel();
             this.chromatographyTypePath = querySpectrum.getChromatographyType().getIconPath();
         }
@@ -122,6 +125,7 @@ public class SearchResultDTO implements Serializable {
             this.name = matchSpectrum.getName();
             this.externalId = matchSpectrum.getExternalId();
             this.size = 1;
+            this.precursorType = matchSpectrum.getPrecursorType();
             this.mass = matchSpectrum.getMass();
             this.retTime = matchSpectrum.getRetentionTime();
             this.formula = matchSpectrum.getFormula();
@@ -208,6 +212,14 @@ public class SearchResultDTO implements Serializable {
 
     public void setSize(final Integer size) {
         this.size = size;
+    }
+
+    public String getPrecursorType() {
+        return precursorType;
+    }
+
+    public void setPrecursorType(String precursorType) {
+        this.precursorType = precursorType;
     }
 
     public Double getScore() {
@@ -357,6 +369,10 @@ public class SearchResultDTO implements Serializable {
 
     public void setQueryPrecursorTypes(String[] queryPrecursorTypes) {
         this.queryPrecursorTypes = queryPrecursorTypes;
+    }
+
+    public Double getQueryMass() {
+        return queryMass;
     }
 
     public String getChromatographyTypeLabel() {

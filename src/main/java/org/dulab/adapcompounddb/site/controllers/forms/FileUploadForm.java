@@ -34,10 +34,12 @@ public class FileUploadForm {
 
     private String mspNameField;
     private String mspExternalIdField;
+    private String mspPrecursorMzField;
     private String mspRetentionTimeField;
     private String mspMassField;
     private String csvNameField;
     private String csvExternalIdField;
+    private String csvPrecursorMzField;
     private String csvRetentionTimeField;
     private String csvMassField;
 
@@ -87,6 +89,14 @@ public class FileUploadForm {
         this.mspExternalIdField = mspExternalIdField;
     }
 
+    public String getMspPrecursorMzField() {
+        return mspPrecursorMzField;
+    }
+
+    public void setMspPrecursorMzField(String mspPrecursorMzField) {
+        this.mspPrecursorMzField = mspPrecursorMzField;
+    }
+
     public String getMspRetentionTimeField() {
         return mspRetentionTimeField;
     }
@@ -119,6 +129,14 @@ public class FileUploadForm {
         this.csvExternalIdField = csvExternalIdField;
     }
 
+    public String getCsvPrecursorMzField() {
+        return csvPrecursorMzField;
+    }
+
+    public void setCsvPrecursorMzField(String csvPrecursorMzField) {
+        this.csvPrecursorMzField = csvPrecursorMzField;
+    }
+
     public String getCsvRetentionTimeField() {
         return csvRetentionTimeField;
     }
@@ -146,9 +164,9 @@ public class FileUploadForm {
     public Map<FileType, MetaDataMapping> getMetaDataMappings() {
         Map<FileType, MetaDataMapping> mappings = new HashMap<>();
         mappings.put(FileType.MSP, new MetaDataMapping(
-                mspNameField, mspExternalIdField, null, null, mspRetentionTimeField, mspMassField, null));
+                mspNameField, mspExternalIdField, mspPrecursorMzField, null, mspRetentionTimeField, mspMassField, null));
         mappings.put(FileType.CSV, new MetaDataMapping(
-                csvNameField, csvExternalIdField, null, null, csvRetentionTimeField, csvMassField, null));
+                csvNameField, csvExternalIdField, csvPrecursorMzField, null, csvRetentionTimeField, csvMassField, null));
         return mappings;
     }
 

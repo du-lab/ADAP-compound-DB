@@ -90,18 +90,20 @@ public interface ExportService {
         QUERY_SPECTRUM_ID("Feature", null, r -> r.getQuerySpectrumIndex() != null ? Integer.toString(r.getQuerySpectrumIndex() + 1) : null),
         QUERY_EXTERNAL_ID("Signal ID", ExportCategory.MEASURED, SearchResultDTO::getQueryExternalId),
         QUERY_NAME("Signal Name", ExportCategory.MEASURED, SearchResultDTO::getQuerySpectrumName),
-        QUERY_PRECURSOR_MZ("Precursor m/z", ExportCategory.MEASURED, r -> formatDoubleArray(r.getQueryPrecursorMzs())),
+        QUERY_PRECURSOR_MZ("Precursor m/z", ExportCategory.MEASURED, r -> formatDoubleArray(r.getQueryPrecursorMzs(), 4)),
         QUERY_PRECURSOR_TYPE("Adduct", ExportCategory.MEASURED, r -> formatStringArray(r.getQueryPrecursorTypes())),
+        QUERY_MASS("Mass (Da)", ExportCategory.MATCHED, r -> formatDouble(r.getQueryMass(), 4)),
         MATCH_NAME("Compound Name", ExportCategory.MATCHED, SearchResultDTO::getName),
         MATCH_EXTERNAL_ID("Compound ID", ExportCategory.MATCHED, SearchResultDTO::getExternalId),
         SCORE("Fragmentation Score", ExportCategory.DIFFERENCE, r -> r.getScore() != null ? Double.toString(r.getNISTScore()) : null),
         //        MASS_ERROR("Mass Error (Da)", r -> r.getMassError() != null ? Double.toString(r.getMassError()) : null),
-        MASS_ERROR_PPM("Mass Error (PPM)", ExportCategory.DIFFERENCE, r -> formatDouble(r.getMassErrorPPM())),
-        RET_TIME_ERROR("Ret Time Error (min)", ExportCategory.DIFFERENCE, r -> formatDouble(r.getRetTimeError())),
+        MASS_ERROR_PPM("Mass Error (PPM)", ExportCategory.DIFFERENCE, r -> formatDouble(r.getMassErrorPPM(), 4)),
+        RET_TIME_ERROR("Ret Time Error (min)", ExportCategory.DIFFERENCE, r -> formatDouble(r.getRetTimeError(), 3)),
         ONTOLOGY_LEVEL("Ontology Level", ExportCategory.DIFFERENCE, SearchResultDTO::getOntologyLevel),
         FORMULA("Formula", ExportCategory.MATCHED, SearchResultDTO::getFormula),
-        MASS("Mass", ExportCategory.MATCHED, r -> formatDouble(r.getMass())),
-        RET_TIME("Ret Time (min)", ExportCategory.MATCHED, r -> formatDouble(r.getRetTime())),
+        MASS("Mass (Da)", ExportCategory.MATCHED, r -> formatDouble(r.getMass(), 4)),
+        RET_TIME("Ret Time (min)", ExportCategory.MATCHED, r -> formatDouble(r.getRetTime(), 3)),
+        PRECURSOR_TYPE("Adduct", ExportCategory.MATCHED, SearchResultDTO::getPrecursorType),
         SUBMISSION_NAME("Library", ExportCategory.MATCHED, SearchResultDTO::getSubmissionName);
 
 
@@ -121,16 +123,17 @@ public interface ExportService {
                     .toArray(ExportField[]::new);
         }
 
-        private static String formatDouble(Double x) {
+        private static String formatDouble(Double x, int digits) {
             if (x == null)
                 return null;
-            return String.format("%.4f", x);
+            String format = String.format("%%.%df", digits);
+            return String.format(format, x);
         }
 
-        private static String formatDoubleArray(double[] xs) {
+        private static String formatDoubleArray(double[] xs, int digits) {
             if (xs == null)
                 return null;
-            return Arrays.stream(xs).mapToObj(ExportField::formatDouble)
+            return Arrays.stream(xs).mapToObj(x -> formatDouble(x, digits))
                     .collect(Collectors.joining(", "));
         }
 
