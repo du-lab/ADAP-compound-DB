@@ -57,7 +57,7 @@ public class JavaSpectrumSimilarityService {
                     spectrumRepository.filterSpectra(commonToSpectrumIdsMap, parameters));
 
         List<BigInteger> preScreenedSpectrumIds =
-                getSpectrumIdsWithCommonPeaksAboveThreshold(commonToSpectrumIdsMap, greedy ? Integer.MAX_VALUE : 50);
+                getSpectrumIdsWithCommonPeaksAboveThreshold(commonToSpectrumIdsMap, greedy ? Integer.MAX_VALUE : 100);
         Set<Long> preScreenedSpectrumIdsSet = preScreenedSpectrumIds.stream()
                 .mapToLong(BigInteger::longValue)
                 .boxed()
@@ -69,15 +69,15 @@ public class JavaSpectrumSimilarityService {
         long timeCost = time2 - time1;
         try {
 
-            File myFile = new File("/Users/yliao13/Desktop/prescreen_origin_search_comparison/time_cost.csv");
+            File myFile = new File("/Users/ericliao/Desktop/compare_similarity_score_between_original_and_new/new study/match_spectra_list/threshold_100_8_15_time_cost.csv");
             if (myFile.createNewFile()){
                 System.out.println("create time cost file");
-                FileWriter writer = new FileWriter("/Users/yliao13/Desktop/prescreen_origin_search_comparison/time_cost.csv");
+                FileWriter writer = new FileWriter("/Users/ericliao/Desktop/compare_similarity_score_between_original_and_new/new study/match_spectra_list/threshold_100_8_15_time_cost.csv");
                 writer.append("time");
                 writer.append("\n");
                 writer.close();
             } else {
-                FileWriter writer = new FileWriter("/Users/yliao13/Desktop/prescreen_origin_search_comparison/time_cost.csv",true);
+                FileWriter writer = new FileWriter("/Users/ericliao/Desktop/compare_similarity_score_between_original_and_new/new study/match_spectra_list/threshold_100_8_15_time_cost.csv",true);
                 writer.append(",");
                 writer.append(Long.toString(timeCost));
                 writer.append("\n");
@@ -177,7 +177,7 @@ public class JavaSpectrumSimilarityService {
             Map<BigInteger, List<BigInteger>> commonToSpectrumIdsMap, long threshold) {
 
         List<BigInteger> spectraList = new ArrayList<>();
-        for (BigInteger i = BigInteger.valueOf(8); i.compareTo(BigInteger.ZERO) > 0; i = i.subtract(BigInteger.ONE)) {
+        for (BigInteger i = BigInteger.valueOf(16); i.compareTo(BigInteger.ZERO) > 0; i = i.subtract(BigInteger.ONE)) {
             List<BigInteger> spectra = commonToSpectrumIdsMap.get(i);
             if (spectra != null) {
                 spectraList.addAll(commonToSpectrumIdsMap.get(i));

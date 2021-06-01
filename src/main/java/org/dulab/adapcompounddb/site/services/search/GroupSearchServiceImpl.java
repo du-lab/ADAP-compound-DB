@@ -120,7 +120,8 @@ public class GroupSearchServiceImpl implements GroupSearchService {
                 }
             }
             try {
-                FileWriter writer = new FileWriter("/Users/yliao13/Desktop/prescreen_origin_search_comparison/prescreen_threshold_50_query_8_to_library_15_matches.csv");
+                FileWriter writer =
+                        new FileWriter("/Users/ericliao/Desktop/compare_similarity_score_between_original_and_new/new study/match_spectra_list/prescreen_threshold_100_query_8_to_library_15_matches.csv");
                 writer.append("Query Spectrum ID");
                 writer.append(",");
                 writer.append("Match Spectrum ID");

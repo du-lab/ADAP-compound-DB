@@ -180,7 +180,6 @@ public class PreScreenQueryBuilder {
                 query += "union all\n";
                 query += buildQueryBlock(15, querySpectrum.getTopMz8());
             }
-
         } else {
             query += buildQueryBlock(0, null);
         }
