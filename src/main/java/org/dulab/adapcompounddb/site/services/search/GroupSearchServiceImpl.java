@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -111,6 +113,30 @@ public class GroupSearchServiceImpl implements GroupSearchService {
                     progress = (float) ++progressStep / totalSteps;
                 }
             }
+            try {
+                FileWriter writer = new FileWriter("/Users/yliao13/Desktop/prescreen_origin_search_comparison/prescreen_threshold_50_query_8_to_library_15_matches.csv");
+                writer.append("Query Spectrum ID");
+                writer.append(",");
+                writer.append("Match Spectrum ID");
+                writer.append(",");
+                writer.append("Score");
+                writer.append("\n");
+
+                for (SearchResultDTO matchSpectrum : groupSearchDTOList) {
+                    writer.append(",");
+                    writer.append(String.valueOf(matchSpectrum.getQuerySpectrumIndex()));
+                    writer.append(",");
+                    writer.append(String.valueOf(matchSpectrum.getId()));
+                    writer.append(",");
+                    writer.append(String.valueOf(String.valueOf(matchSpectrum.getScore())));
+                    writer.append("\n");
+                }
+                writer.flush();
+                writer.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         } catch (Throwable t) {
             LOGGER.error(String.format("Error during the group search (species: %s, source: %s, disease: %s): %s",
                     species != null ? species : "all",
