@@ -34,9 +34,12 @@ public class StudySearchServiceImpl implements StudySearchService {
 
         int querySubmissionSpectraCount = 0;
         for (File file : submission.getFiles()) {
+            long sumTime=0l;
+            List<Long> timeList = new ArrayList<>();
             for (Spectrum spectrum : file.getSpectra()) {
                 SearchParameters searchParameters =
                         SearchParameters.getDefaultParameters(spectrum.getChromatographyType());
+                long time1 = System.currentTimeMillis();
                 List<SpectrumMatch> matches = MappingUtils.toList(spectrumRepository.matchAgainstClusterableSpectra(
                         submissionIds,
                         spectrum,
@@ -44,9 +47,15 @@ public class StudySearchServiceImpl implements StudySearchService {
                         searchParameters.getMzTolerance(),
                         searchParameters.getPrecursorTolerance(),
                         searchParameters.getMolecularWeightTolerance()));
+                long time2 = System.currentTimeMillis();
+                long timeCost = time2 - time1;
+                timeList.add(timeCost);
+                sumTime = sumTime + timeCost;
                 spectrumMatches.addAll(matches);
                 querySubmissionSpectraCount++;
             }
+            System.out.println("total time cost: " + sumTime);
+            System.out.println("Average time for each spectrum is " + sumTime / file.getSpectra().size());
         }
 
         Set<Submission> matchSubmissions = new HashSet<>();
