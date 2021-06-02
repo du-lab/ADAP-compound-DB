@@ -74,6 +74,8 @@ public class GroupSearchServiceImpl implements GroupSearchService {
             progress = 0F;
             int position = 0;
             for (int fileIndex = 0; fileIndex < files.size(); ++fileIndex) {
+                long time_sum = 0l;
+                List<Long> timeList = new ArrayList<>();
                 File file = files.get(fileIndex);
                 List<Spectrum> spectra = file.getSpectra();
                 for (int spectrumIndex = 0; spectrumIndex < spectra.size(); ++spectrumIndex) {  // Spectrum querySpectrum : file.getSpectra()
@@ -94,6 +96,7 @@ public class GroupSearchServiceImpl implements GroupSearchService {
                     parameters.setDisease(disease);
                     parameters.setSubmissionIds(submissionIds);
 
+                    long time1 = System.currentTimeMillis();
                     List<SearchResultDTO> individualSearchResults =
                             spectrumSearchService.searchConsensusSpectra(userPrincipal, querySpectrum, parameters);
 
@@ -105,16 +108,21 @@ public class GroupSearchServiceImpl implements GroupSearchService {
                     topSearchResult.setPosition(1 + position++);
                     topSearchResult.setQueryFileIndex(fileIndex);
                     topSearchResult.setQuerySpectrumIndex(spectrumIndex);
-
+                    long time2 = System.currentTimeMillis();
+                    long timeCost = time2 - time1;
+                    time_sum = time_sum + timeCost;
+                    timeList.add(timeCost);
                     if (Thread.currentThread().isInterrupted()) break;
 
                     groupSearchDTOList.add(topSearchResult);
                     session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
                     progress = (float) ++progressStep / totalSteps;
                 }
+                System.out.println("Total time cost is : " + time_sum);
+                System.out.println("Average time cost for each spectrum is: " + time_sum / file.getSpectra().size());
             }
             try {
-                FileWriter writer = new FileWriter("/Users/yliao13/Desktop/prescreen_origin_search_comparison/prescreen_threshold_50_query_8_to_library_15_matches.csv");
+                FileWriter writer = new FileWriter("/Users/yliao13/Desktop/prescreen_origin_search_comparison/originals.csv");
                 writer.append("Query Spectrum ID");
                 writer.append(",");
                 writer.append("Match Spectrum ID");
@@ -126,7 +134,7 @@ public class GroupSearchServiceImpl implements GroupSearchService {
                     writer.append(",");
                     writer.append(String.valueOf(matchSpectrum.getQuerySpectrumIndex()));
                     writer.append(",");
-                    writer.append(String.valueOf(matchSpectrum.getId()));
+                    writer.append(String.valueOf(matchSpectrum.getMatchSpectumId()));
                     writer.append(",");
                     writer.append(String.valueOf(String.valueOf(matchSpectrum.getScore())));
                     writer.append("\n");

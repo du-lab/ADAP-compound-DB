@@ -51,6 +51,16 @@ public class SearchResultDTO implements Serializable {
     private String json;
     private Double molecularWeight;
 
+    public long getMatchSpectumId() {
+        return matchSpectumId;
+    }
+
+    public void setMatchSpectumId(long matchSpectumId) {
+        this.matchSpectumId = matchSpectumId;
+    }
+
+    private long matchSpectumId;
+
     // Other
     private int position;
     private Double score;
@@ -77,6 +87,7 @@ public class SearchResultDTO implements Serializable {
             this.maxSignificance = view.getMaximumSignificance();
             this.chromatographyTypeLabel = view.getChromatographyType().getLabel();
             this.chromatographyTypePath = view.getChromatographyType().getIconPath();
+            this.matchSpectumId = view.getId();
         }
     }
 
