@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.services;
 
+import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
 import org.dulab.adapcompounddb.models.dto.SubmissionMatchDTO;
@@ -8,6 +9,8 @@ import org.dulab.adapcompounddb.site.services.search.SearchParameters;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.springframework.stereotype.Service;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.*;
 
@@ -53,6 +56,30 @@ public class StudySearchServiceImpl implements StudySearchService {
         // For each library submission, this map will contain unique spectra from the
         // user submission that matches a spectrum from the that library submission
         Map<Submission, Set<Spectrum>> matchSubmissionToQuerySpectraMap = new HashMap<>();
+
+        try{
+            FileWriter writer = new FileWriter("/Users/ericliao/Desktop/compare_similarity_score_between_original_and_new/new study/match_spectra_list/original.csv");
+            writer.append("Query Spectrum ID");
+            writer.append(",");
+            writer.append("Match Spectrum ID");
+            writer.append(",");
+            writer.append("Score");
+            writer.append("\n");
+
+            for (SpectrumMatch matchSpectrum: spectrumMatches){
+                writer.append(",");
+                writer.append(String.valueOf(matchSpectrum.getQuerySpectrum().getFile().getSpectra().indexOf(matchSpectrum.getQuerySpectrum())));
+                writer.append(",");
+                writer.append(String.valueOf(matchSpectrum.getMatchSpectrum().getId()));
+                writer.append(",");
+                writer.append(String.valueOf(matchSpectrum.getScore()));
+                writer.append("\n");
+            }
+            writer.flush();
+            writer.close();
+        } catch(IOException e){
+            e.printStackTrace();
+        }
 
         for (SpectrumMatch match : spectrumMatches) {
 
