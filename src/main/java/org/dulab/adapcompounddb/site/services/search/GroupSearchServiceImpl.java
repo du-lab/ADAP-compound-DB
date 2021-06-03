@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -76,6 +78,8 @@ public class GroupSearchServiceImpl implements GroupSearchService {
             progress = 0F;
             int position = 0;
             for (int fileIndex = 0; fileIndex < files.size(); ++fileIndex) {
+                long timeSum = 0l;
+                List<Long> timeList = new ArrayList<>();
                 File file = files.get(fileIndex);
                 List<Spectrum> spectra = file.getSpectra();
                 if (spectra == null) continue;
@@ -95,6 +99,8 @@ public class GroupSearchServiceImpl implements GroupSearchService {
                     parameters.setSubmissionIds(submissionIds);
                     parameters.setLimit(10);
 
+                    long time1 = System.currentTimeMillis();
+
                     List<SearchResultDTO> individualSearchResults =
                             spectrumSearchService.searchConsensusSpectra(userPrincipal, querySpectrum, parameters, true);
 
@@ -107,12 +113,42 @@ public class GroupSearchServiceImpl implements GroupSearchService {
                         searchResult.setQuerySpectrumIndex(spectrumIndex);
                     }
 
+                    long time2 = System.currentTimeMillis();
+                    long timeCost = time2 - time1;
+                    timeSum = timeSum + timeCost;
+                    timeList.add(timeCost);
+
                     if (Thread.currentThread().isInterrupted()) break;
 
                     groupSearchDTOList.addAll(individualSearchResults);
                     session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
                     progress = (float) ++progressStep / totalSteps;
                 }
+                System.out.println("Total tim cost is: " + timeSum);
+                System.out.println("Average time cost for each spectrum is: " + timeSum / file.getSpectra().size());
+            }
+            try{
+                FileWriter writer = new FileWriter("/Users/ericliao/Desktop/compare_similarity_score_between_original_and_new/new study/match_spectra_list/original.csv");
+                writer.append("Query Spectrum ID");
+                writer.append(",");
+                writer.append("Match Spectrum ID");
+                writer.append(",");
+                writer.append("Score");
+                writer.append("\n");
+
+                for (SearchResultDTO matchSpectrum: groupSearchDTOList){
+                    writer.append(",");
+                    writer.append(String.valueOf(matchSpectrum.getQuerySpectrumIndex()));
+                    writer.append(",");
+                    writer.append(String.valueOf(matchSpectrum.getMatchSpectrumId()));
+                    writer.append(",");
+                    writer.append(String.valueOf(matchSpectrum.getScore()));
+                    writer.append("\n");
+                }
+                writer.flush();
+                writer.close();
+            } catch(IOException e){
+                e.printStackTrace();
             }
         } catch (Throwable t) {
             LOGGER.error(String.format("Error during the group search (species: %s, source: %s, disease: %s): %s",
