@@ -6,7 +6,7 @@ import sys
 from os.path import splitext
 from rdkit import Chem
 from rdkit.Chem import Descriptors, PandasTools
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 
 def get_meta_lines(data: pd.DataFrame, id: str) -> List[str]:
@@ -65,6 +65,15 @@ def get_rows(data: pd.DataFrame, id: str, name: str, id_columns: List[str], name
 #     return rows
 
 
+def get_exact_mass(row: pd.Series) -> Optional[float]:
+    for column in ['PUBCHEM_EXACT_MASS', 'EXACT_MASS', 'EXACT MASS']:
+        molecular_mass = row.get(column)
+        molecular_mass = float(molecular_mass)
+        if molecular_mass is not None and not np.isnan(molecular_mass):
+            return molecular_mass
+    return None
+
+
 def get_modified_spectrum_lines(spectrum_lines: List[str], meta_row: pd.Series, structure_row: pd.Series) -> List[str]:
     ret_time = meta_row['Retention time (min)']
     ret_time_line = 'RETENTION_TIME: {:s}\n'.format(ret_time)
@@ -90,7 +99,10 @@ def get_modified_spectrum_lines(spectrum_lines: List[str], meta_row: pd.Series, 
     #     # raise ValueError('Unknown molecular mass: ' + str(structure_row.values))
     #     return []
 
-    molecular_mass = Descriptors.ExactMolWt(structure_row['Molecule'])
+    molecular_mass = get_exact_mass(structure_row)
+    if molecular_mass is None:
+        return []
+        # molecular_mass = Descriptors.ExactMolWt(structure_row['Molecule'])
 
     molecular_mass_line = 'NEUTRAL_MASS: {:s}\n'.format(str(molecular_mass))
 
