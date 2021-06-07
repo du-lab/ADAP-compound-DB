@@ -69,15 +69,15 @@ public class JavaSpectrumSimilarityService {
         long timeCost = time2 - time1;
         try {
 
-            File myFile = new File("/Users/ericliao/Desktop/compare_similarity_score_between_original_and_new/new study/match_spectra_list/threshold_100_8_15_time_cost.csv");
+            File myFile = new File("/Users/ericliao/Desktop/compare_similarity_score_between_original_and_new/new study/new_modified/threshold_50_8_15_time_cost.csv");
             if (myFile.createNewFile()){
                 System.out.println("create time cost file");
-                FileWriter writer = new FileWriter("/Users/ericliao/Desktop/compare_similarity_score_between_original_and_new/new study/match_spectra_list/threshold_100_8_15_time_cost.csv");
+                FileWriter writer = new FileWriter("/Users/ericliao/Desktop/compare_similarity_score_between_original_and_new/new study/new_modified/threshold_50_8_15_time_cost.csv");
                 writer.append("time");
                 writer.append("\n");
                 writer.close();
             } else {
-                FileWriter writer = new FileWriter("/Users/ericliao/Desktop/compare_similarity_score_between_original_and_new/new study/match_spectra_list/threshold_100_8_15_time_cost.csv",true);
+                FileWriter writer = new FileWriter("/Users/ericliao/Desktop/compare_similarity_score_between_original_and_new/new study/new_modified/threshold_50_8_15_time_cost.csv",true);
                 writer.append(",");
                 writer.append(Long.toString(timeCost));
                 writer.append("\n");
@@ -191,60 +191,54 @@ public class JavaSpectrumSimilarityService {
 
     private double calculateCosineSimilarity(List<Peak> queryPeaks, List<Peak> libraryPeaks,
                                              double tolerance, boolean ppm) {
-
         double lowerFactor = 1.0 - 1E-6 * tolerance;
         double upperFactor = 1.0 + 1E-6 * tolerance;
-
-        Iterator<Peak> queryPeakIterator = queryPeaks.iterator();
-        Iterator<Peak> libraryPeakIterator = libraryPeaks.iterator();
-
         double dotProduct = 0.0;
         double queryNorm2 = 0.0;
         double libraryNorm2 = 0.0;
-        Peak queryPeak = null;
-        Peak libraryPeak = null;
-        while (queryPeakIterator.hasNext() && libraryPeakIterator.hasNext()) {
-
-            if (queryPeak == null) {
-                queryPeak = queryPeakIterator.next();
+        int queryIndex = 0;
+        int libraryIndex = 0;
+        while (queryIndex < queryPeaks.size() || libraryIndex < libraryPeaks.size()) {
+            if (queryIndex >= queryPeaks.size()) {
+                double y = scale(libraryPeaks.get(libraryIndex));
+                libraryNorm2 += y * y;
+                libraryIndex++;
                 continue;
             }
-
-            if (libraryPeak == null) {
-                libraryPeak = libraryPeakIterator.next();
+            if (libraryIndex >= libraryPeaks.size()) {
+                double x = scale(queryPeaks.get(queryIndex));
+                queryNorm2 += x * x;
+                queryIndex++;
                 continue;
             }
-
+            Peak queryPeak = queryPeaks.get(queryIndex);
+            Peak libraryPeak = libraryPeaks.get(libraryIndex);
             double queryMz = queryPeak.getMz();
             double libraryMz = libraryPeak.getMz();
             boolean queryMzLessThanLibraryMz = ppm ? queryMz < libraryMz * lowerFactor : queryMz < libraryMz - tolerance;
             boolean queryMzGreaterThanLibraryMz = ppm ? libraryMz * upperFactor < queryMz : queryMz > libraryMz + tolerance;
-
             if (queryMzLessThanLibraryMz) {
                 double x = scale(queryPeak);
                 queryNorm2 += x * x;
-                queryPeak = queryPeakIterator.next();
-
+                queryIndex++;
             } else if (queryMzGreaterThanLibraryMz) {
                 double y = scale(libraryPeak);
                 libraryNorm2 += y * y;
-                libraryPeak = libraryPeakIterator.next();
-
+                libraryIndex++;
             } else {  // queryMz and libraryMz are withing the tolerance
                 double x = scale(queryPeak);
                 double y = scale(libraryPeak);
                 dotProduct += x * y;
                 queryNorm2 += x * x;
                 libraryNorm2 += y * y;
-                queryPeak = queryPeakIterator.next();
-                libraryPeak = libraryPeakIterator.next();
+                queryIndex++;
+                libraryIndex++;
             }
         }
-
         return dotProduct * dotProduct / (queryNorm2 * libraryNorm2);
     }
 
     private double scale(Peak peak) {
-        return Math.pow(peak.getIntensity(), 0.4) * Math.pow(peak.getMz(), 0.25);
+        return Math.pow(peak.getIntensity(), 0.5) * Math.pow(peak.getMz(), 0.0);
     }
 }
