@@ -118,14 +118,8 @@ public class JavaSpectrumSimilarityService {
 
             double similarityScore = 0.0;
             if (mzTolerance != null && querySpectrum.getPeaks() != null && librarySpectrum.getPeaks() != null)
-                if (librarySpectrum.getId() == 2156883 || librarySpectrum.getId() == 2156884){
-                    similarityScore = calculateCosineSimilarity(
-                            querySpectrum.getPeaks(), librarySpectrum.getPeaks(), mzTolerance, ppm);
-                }else{
-                    similarityScore = calculateCosineSimilarity(
-                            querySpectrum.getPeaks(), librarySpectrum.getPeaks(), mzTolerance, ppm);
-                }
-
+                similarityScore = calculateCosineSimilarity(
+                        querySpectrum.getPeaks(), librarySpectrum.getPeaks(), mzTolerance, ppm);
 
             double massError = Double.MAX_VALUE;
             double massErrorPPM = Double.MAX_VALUE;
