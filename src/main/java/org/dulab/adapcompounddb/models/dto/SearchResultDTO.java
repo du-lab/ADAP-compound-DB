@@ -1,19 +1,22 @@
 package org.dulab.adapcompounddb.models.dto;
 
 import org.apache.commons.lang3.SerializationUtils;
+import org.apache.logging.log4j.util.PropertySource;
 import org.dulab.adapcompounddb.models.MatchType;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.entities.views.MassSearchResult;
 import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
 import org.dulab.adapcompounddb.models.ontology.OntologyLevel;
+import org.springframework.lang.Nullable;
 
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
 
-public class SearchResultDTO implements Serializable {
+public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO> {
 
     private static final long serialVersionUID = 1L;
 
@@ -71,6 +74,7 @@ public class SearchResultDTO implements Serializable {
     private Double massError;
     private Double massErrorPPM;
     private Double retTimeError;
+    private boolean marked;
 
 
     public SearchResultDTO() {}
@@ -274,9 +278,14 @@ public class SearchResultDTO implements Serializable {
         this.ontologyPriority = ontologyPriority;
     }
 
-    public void setOntologyLevel(OntologyLevel ontologyLevel) {
-        this.setOntologyLevel(ontologyLevel.getLabel());
-        this.setOntologyPriority(ontologyLevel.getPriority());
+    public void setOntologyLevel(@Nullable OntologyLevel ontologyLevel) {
+        if (ontologyLevel != null) {
+            this.setOntologyLevel(ontologyLevel.getLabel());
+            this.setOntologyPriority(ontologyLevel.getPriority());
+        } else {
+            this.setOntologyLevel((String) null);
+            this.setOntologyPriority(null);
+        }
     }
 
     public String getFormula() {
@@ -476,6 +485,14 @@ public class SearchResultDTO implements Serializable {
             return String.format("/file/%d/%d/", queryFileIndex, querySpectrumIndex);
     }
 
+    public boolean isMarked() {
+        return marked;
+    }
+
+    public void setMarked(boolean marked) {
+        this.marked = marked;
+    }
+
     @Override
     public int hashCode() {
         return Long.hashCode(spectrumId);
@@ -489,5 +506,33 @@ public class SearchResultDTO implements Serializable {
     @Override
     public SearchResultDTO clone() {
         return SerializationUtils.clone(this);
+    }
+
+    @Override
+    public int compareTo(SearchResultDTO other) {
+        int scoreComparison = compareDoubleOrNull(this.score, other.score);
+        int massComparison = -compareDoubleOrNull(this.massError, other.massError);
+        int retTimeComparison = -compareDoubleOrNull(this.retTimeError, other.retTimeError);
+        int ontologyComparison = -compareDoubleOrNull(this.ontologyPriority, other.ontologyPriority);
+
+        if (scoreComparison == 0 && massComparison == 0 && retTimeComparison == 0 && ontologyComparison == 0)
+            return 0;
+        if (scoreComparison >= 0 && massComparison >= 0 && retTimeComparison >= 0 && ontologyComparison >= 0)
+            return 1;
+        else if (scoreComparison <= 0 && massComparison <= 0 && retTimeComparison <= 0 && ontologyComparison <= 0)
+            return -1;
+        else
+            return 0;
+    }
+
+    private static int compareDoubleOrNull(Number x, Number y) {
+        if (x == null && y == null)
+            return 0;
+        else if (x != null && y == null)
+            return 1;
+        else if (x == null && y != null)
+            return -1;
+        else
+            return Double.compare(x.doubleValue(), y.doubleValue());
     }
 }

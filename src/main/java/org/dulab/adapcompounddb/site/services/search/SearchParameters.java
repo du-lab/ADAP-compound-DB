@@ -3,7 +3,9 @@ package org.dulab.adapcompounddb.site.services.search;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class SearchParameters implements Cloneable {
@@ -209,6 +211,10 @@ public class SearchParameters implements Cloneable {
     public SearchParameters clone() throws CloneNotSupportedException {
         SearchParameters parameters = (SearchParameters) super.clone();
         parameters.setSubmissionIds(new HashSet<>(this.getSubmissionIds()));
+        parameters.setMasses(this.getMasses().clone());
+        List<BigInteger> spectrumIds = new ArrayList<>();
+        this.getSpectrumIds().forEach(spectrumIds::add);
+        parameters.setSpectrumIds(spectrumIds);
         return parameters;
     }
 }

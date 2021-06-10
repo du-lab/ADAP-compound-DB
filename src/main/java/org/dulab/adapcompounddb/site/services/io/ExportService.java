@@ -14,7 +14,8 @@ public interface ExportService {
     void exportAll(OutputStream outputStream, List<SearchResultDTO> searchResults) throws IOException;
 
     default void export(OutputStream outputStream, List<SearchResultDTO> searchResults) throws IOException {
-        exportAll(outputStream, selectTopResults(searchResults));
+//        exportAll(outputStream, selectTopResults(searchResults));
+        exportAll(outputStream, searchResults);
     }
 
     static List<SearchResultDTO> selectTopResults(List<SearchResultDTO> searchResults) {
@@ -100,6 +101,7 @@ public interface ExportService {
         MASS_ERROR_PPM("Mass Error (PPM)", ExportCategory.DIFFERENCE, r -> formatDouble(r.getMassErrorPPM(), 4)),
         RET_TIME_ERROR("Ret Time Error (min)", ExportCategory.DIFFERENCE, r -> formatDouble(r.getRetTimeError(), 3)),
         ONTOLOGY_LEVEL("Ontology Level", ExportCategory.DIFFERENCE, SearchResultDTO::getOntologyLevel),
+        MARKED("Best Match", ExportCategory.DIFFERENCE, r -> formatBoolean(r.isMarked())),
         FORMULA("Formula", ExportCategory.MATCHED, SearchResultDTO::getFormula),
         MASS("Mass (Da)", ExportCategory.MATCHED, r -> formatDouble(r.getMass(), 4)),
         RET_TIME("Ret Time (min)", ExportCategory.MATCHED, r -> formatDouble(r.getRetTime(), 3)),
@@ -121,6 +123,10 @@ public interface ExportService {
             return Arrays.stream(ExportField.values())
                     .filter(field -> field.exportCategory == exportCategory)
                     .toArray(ExportField[]::new);
+        }
+
+        private static String formatBoolean(boolean x) {
+            return x ? "Best" : null;
         }
 
         private static String formatDouble(Double x, int digits) {

@@ -168,6 +168,9 @@ public class JavaSpectrumSimilarityService {
     private double calculateCosineSimilarity(List<Peak> queryPeaks, List<Peak> libraryPeaks,
                                              double tolerance, boolean ppm) {
 
+        queryPeaks.sort(Comparator.comparingDouble(Peak::getMz));
+        libraryPeaks.sort(Comparator.comparingDouble(Peak::getMz));
+
         double lowerFactor = 1.0 - 1E-6 * tolerance;
         double upperFactor = 1.0 + 1E-6 * tolerance;
 

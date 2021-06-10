@@ -25,7 +25,7 @@ public class OntologySupplier {
         chromatographyTypeToOntologyLevelsMap.get(ChromatographyType.LC_MSMS_NEG).add(ol1);
 
         OntologyLevel ol2a = new OntologyLevel("OL_2a", 2, true, null,
-                null, null,  Parameters.MASS_TOLERANCE_PPM, Parameters.RET_TIME_TOLERANCE);
+                null, null, Parameters.MASS_TOLERANCE_PPM, Parameters.RET_TIME_TOLERANCE);
         chromatographyTypeToOntologyLevelsMap.get(ChromatographyType.LC_MSMS_POS).add(ol2a);
         chromatographyTypeToOntologyLevelsMap.get(ChromatographyType.LC_MSMS_NEG).add(ol2a);
 
@@ -78,5 +78,41 @@ public class OntologySupplier {
         return ontologyLevels.stream()
                 .filter(l -> l.getPriority() == priority)
                 .toArray(OntologyLevel[]::new);
+    }
+
+    /**
+     * Selects the ontology levels based on the provided score and error values
+     * @param chromatographyType chromatography type
+     * @param score fragmentation score
+     * @param precursorErrorPPM precursor error in PPM
+     * @param massErrorPPM mass error in PPM
+     * @param retTimeError retention time error
+     * @return ontology level or null
+     */
+    @Nullable
+    public static OntologyLevel select(ChromatographyType chromatographyType,
+                                       Double score, Double precursorErrorPPM,
+                                       Double massErrorPPM, Double retTimeError) {
+
+        int[] priorities = findPrioritiesByChromatographyType(chromatographyType);
+        if (priorities == null)
+            return null;
+
+        for (int priority : priorities) {
+            OntologyLevel[] ontologyLevels = findByChromatographyTypeAndPriority(chromatographyType, priority);
+            if (ontologyLevels == null)
+                continue;
+
+            for (OntologyLevel level : ontologyLevels) {
+                if ((level.getScoreThreshold() == null || score > level.getScoreThreshold())
+                        && (level.getPrecursorTolerancePPM() == null || precursorErrorPPM < level.getPrecursorTolerancePPM())
+                        && (level.getMassTolerancePPM() == null || massErrorPPM < level.getMassTolerancePPM())
+                        && (level.getRetTimeTolerance() == null || retTimeError < level.getRetTimeTolerance())) {
+                    return level;
+                }
+            }
+        }
+
+        return null;
     }
 }
