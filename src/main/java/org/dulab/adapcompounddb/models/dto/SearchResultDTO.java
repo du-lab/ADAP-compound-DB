@@ -71,6 +71,8 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
     // Other
     private int position;
     private Double score;
+    private Double precursorError;
+    private Double precursorErrorPPM;
     private Double massError;
     private Double massErrorPPM;
     private Double retTimeError;
@@ -133,7 +135,10 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
             this.mass = matchSpectrum.getMass();
             this.retTime = matchSpectrum.getRetentionTime();
             this.formula = matchSpectrum.getFormula();
+
             this.score = spectrumMatch.getScore();
+            this.precursorError = spectrumMatch.getPrecursorError();
+            this.precursorErrorPPM = spectrumMatch.getPrecursorErrorPPM();
             this.massError = spectrumMatch.getMassError();
             this.massErrorPPM = spectrumMatch.getMassErrorPPM();
             this.retTimeError = spectrumMatch.getRetTimeError();
@@ -438,6 +443,22 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
 
     public void setRetTime(Double retTime) {
         this.retTime = retTime;
+    }
+
+    public Double getPrecursorError() {
+        return precursorError;
+    }
+
+    public void setPrecursorError(Double precursorError) {
+        this.precursorError = precursorError;
+    }
+
+    public Double getPrecursorErrorPPM() {
+        return precursorErrorPPM;
+    }
+
+    public void setPrecursorErrorPPM(Double precursorErrorPPM) {
+        this.precursorErrorPPM = precursorErrorPPM;
     }
 
     public Double getMassError() {

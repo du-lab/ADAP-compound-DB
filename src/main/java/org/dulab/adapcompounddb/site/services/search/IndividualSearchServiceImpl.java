@@ -3,6 +3,7 @@ package org.dulab.adapcompounddb.site.services.search;
 import org.dulab.adapcompounddb.models.entities.Adduct;
 import org.dulab.adapcompounddb.models.ontology.OntologyLevel;
 import org.dulab.adapcompounddb.models.ontology.OntologySupplier;
+import org.dulab.adapcompounddb.models.ontology.Parameters;
 import org.dulab.adapcompounddb.site.services.AdductService;
 import org.dulab.adapcompounddb.site.services.admin.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
@@ -146,7 +147,15 @@ public class IndividualSearchServiceImpl implements IndividualSearchService {
         }
 
         modifiedParameters.setScoreThreshold(null);
+        modifiedParameters.setPrecursorTolerance(null, null);
         modifiedParameters.setRetTimeTolerance(null);
+        modifiedParameters.setMassTolerance(null, Parameters.MASS_TOLERANCE_PPM);
+
+        List<Adduct> adducts = adductService.findAdductsByChromatography(spectrum.getChromatographyType());
+        if (spectrum.getMass() == null && adducts != null && spectrum.getPrecursor() != null)
+                modifiedParameters.setMasses(adducts.stream()
+                        .mapToDouble(adduct -> adduct.calculateNeutralMass(spectrum.getPrecursor()))
+                        .toArray());
 
         List<SearchResultDTO> results =
                 javaSpectrumSimilarityService.searchConsensusAndReference(spectrum, modifiedParameters, user)
@@ -157,10 +166,15 @@ public class IndividualSearchServiceImpl implements IndividualSearchService {
                                 modifiedParameters.getDisease()))
                         .collect(Collectors.toList());
 
-        for (SearchResultDTO result : results) {
-            result.setOntologyLevel(OntologySupplier.select(spectrum.getChromatographyType(), result.getScore(),
-                    null, result.getMassErrorPPM(), result.getRetTimeError()));
-        }
+        List<SearchResultDTO> resultsWithOntology = results.stream()
+                .peek(r -> r.setOntologyLevel(OntologySupplier.select(spectrum.getChromatographyType(),
+                        r.getScore(), r.getPrecursorErrorPPM(), r.getMassErrorPPM(), r.getRetTimeError())))
+                .filter(r -> r.getOntologyLevel() != null)
+                .collect(Collectors.toList());
+//        for (SearchResultDTO result : massErrorResults) {
+//            result.setOntologyLevel(OntologySupplier.select(spectrum.getChromatographyType(), result.getScore(),
+//                    result.getPrecursorErrorPPM(), result.getMassErrorPPM(), result.getRetTimeError()));
+//        }
 
 
 //        OntologyLevel[] ontologyLevels =
@@ -223,6 +237,6 @@ public class IndividualSearchServiceImpl implements IndividualSearchService {
 //
 //            searchResults.addAll(results);
 
-        return results;
+        return resultsWithOntology;
     }
 }

@@ -211,10 +211,12 @@ public class SearchParameters implements Cloneable {
     public SearchParameters clone() throws CloneNotSupportedException {
         SearchParameters parameters = (SearchParameters) super.clone();
         parameters.setSubmissionIds(new HashSet<>(this.getSubmissionIds()));
-        parameters.setMasses(this.getMasses().clone());
-        List<BigInteger> spectrumIds = new ArrayList<>();
-        this.getSpectrumIds().forEach(spectrumIds::add);
-        parameters.setSpectrumIds(spectrumIds);
+        parameters.setMasses(this.getMasses() != null ? this.getMasses().clone() : null);
+        if (this.getSpectrumIds() != null) {
+            List<BigInteger> spectrumIds = new ArrayList<>();
+            this.getSpectrumIds().forEach(spectrumIds::add);
+            parameters.setSpectrumIds(spectrumIds);
+        }
         return parameters;
     }
 }

@@ -91,8 +91,8 @@ public class OntologySupplier {
      */
     @Nullable
     public static OntologyLevel select(ChromatographyType chromatographyType,
-                                       Double score, Double precursorErrorPPM,
-                                       Double massErrorPPM, Double retTimeError) {
+                                       @Nullable Double score, @Nullable Double precursorErrorPPM,
+                                       @Nullable Double massErrorPPM, @Nullable Double retTimeError) {
 
         int[] priorities = findPrioritiesByChromatographyType(chromatographyType);
         if (priorities == null)
@@ -104,6 +104,12 @@ public class OntologySupplier {
                 continue;
 
             for (OntologyLevel level : ontologyLevels) {
+
+                if (level.getScoreThreshold() != null && score == null) continue;
+                if (level.getPrecursorTolerancePPM() != null && precursorErrorPPM == null) continue;
+                if (level.getMassTolerancePPM() != null && massErrorPPM == null) continue;
+                if (level.getRetTimeTolerance() != null && retTimeError == null) continue;
+
                 if ((level.getScoreThreshold() == null || score > level.getScoreThreshold())
                         && (level.getPrecursorTolerancePPM() == null || precursorErrorPPM < level.getPrecursorTolerancePPM())
                         && (level.getMassTolerancePPM() == null || massErrorPPM < level.getMassTolerancePPM())
