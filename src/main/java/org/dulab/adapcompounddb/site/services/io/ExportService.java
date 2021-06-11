@@ -93,7 +93,7 @@ public interface ExportService {
         QUERY_NAME("Signal Name", ExportCategory.MEASURED, SearchResultDTO::getQuerySpectrumName),
         QUERY_PRECURSOR_MZ("Precursor m/z", ExportCategory.MEASURED, r -> formatDoubleArray(r.getQueryPrecursorMzs(), 4)),
         QUERY_PRECURSOR_TYPE("Adduct", ExportCategory.MEASURED, r -> formatStringArray(r.getQueryPrecursorTypes())),
-        QUERY_MASS("Mass (Da)", ExportCategory.MATCHED, r -> formatDouble(r.getQueryMass(), 4)),
+        QUERY_MASS("Mass (Da)", ExportCategory.MEASURED, r -> formatDouble(r.getQueryMass(), 4)),
         MATCH_NAME("Compound Name", ExportCategory.MATCHED, SearchResultDTO::getName),
         MATCH_EXTERNAL_ID("Compound ID", ExportCategory.MATCHED, SearchResultDTO::getExternalId),
         SCORE("Fragmentation Score", ExportCategory.DIFFERENCE, r -> r.getScore() != null ? Double.toString(r.getNISTScore()) : null),
@@ -126,7 +126,7 @@ public interface ExportService {
         }
 
         private static String formatBoolean(boolean x) {
-            return x ? "Best" : null;
+            return x ? "Best match" : null;
         }
 
         private static String formatDouble(Double x, int digits) {

@@ -529,12 +529,17 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
         return SerializationUtils.clone(this);
     }
 
+    /**
+     * Returns 1 if this is better than the other, -1 if this is worse than the other, and 0 otherwise
+     * @param other instance of SearchResultDTO
+     * @return 1 if this is better than the other, -1 if this is worse than the other, and 0 otherwise
+     */
     @Override
     public int compareTo(SearchResultDTO other) {
-        int scoreComparison = compareDoubleOrNull(this.score, other.score);
-        int massComparison = -compareDoubleOrNull(this.massError, other.massError);
-        int retTimeComparison = -compareDoubleOrNull(this.retTimeError, other.retTimeError);
-        int ontologyComparison = -compareDoubleOrNull(this.ontologyPriority, other.ontologyPriority);
+        int scoreComparison = compareDoubleOrNull(this.score, other.score, 1);
+        int massComparison = compareDoubleOrNull(this.massError, other.massError, -1);
+        int retTimeComparison = compareDoubleOrNull(this.retTimeError, other.retTimeError, -1);
+        int ontologyComparison = compareDoubleOrNull(this.ontologyPriority, other.ontologyPriority, -1);
 
         if (scoreComparison == 0 && massComparison == 0 && retTimeComparison == 0 && ontologyComparison == 0)
             return 0;
@@ -546,7 +551,13 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
             return 0;
     }
 
-    private static int compareDoubleOrNull(Number x, Number y) {
+    /**
+     * Returns 1 if x is "higher" then y, -1 if y is "higher" then x, and 0 otherwise
+     * @param x number
+     * @param y number
+     * @return 1 if x is "higher" then y, -1 if y is "higher" then x, and 0 otherwise
+     */
+    private static int compareDoubleOrNull(Number x, Number y, int factor) {
         if (x == null && y == null)
             return 0;
         else if (x != null && y == null)
@@ -554,6 +565,6 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
         else if (x == null && y != null)
             return -1;
         else
-            return Double.compare(x.doubleValue(), y.doubleValue());
+            return factor * Double.compare(x.doubleValue(), y.doubleValue());
     }
 }

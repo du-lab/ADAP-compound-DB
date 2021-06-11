@@ -166,11 +166,26 @@ public class IndividualSearchServiceImpl implements IndividualSearchService {
                                 modifiedParameters.getDisease()))
                         .collect(Collectors.toList());
 
-        List<SearchResultDTO> resultsWithOntology = results.stream()
-                .peek(r -> r.setOntologyLevel(OntologySupplier.select(spectrum.getChromatographyType(),
-                        r.getScore(), r.getPrecursorErrorPPM(), r.getMassErrorPPM(), r.getRetTimeError())))
-                .filter(r -> r.getOntologyLevel() != null)
-                .collect(Collectors.toList());
+        List<SearchResultDTO> resultsWithOntology = new ArrayList<>();
+        for (SearchResultDTO result : results) {
+
+            OntologyLevel ontologyLevel = OntologySupplier.select(spectrum.getChromatographyType(),
+                    result.getScore(), result.getPrecursorErrorPPM(), result.getMassErrorPPM(), result.getRetTimeError());
+            if (ontologyLevel == null)
+                continue;
+
+            if (ontologyLevel.getScoreThreshold() == null)
+                result.setScore(null);
+            if (ontologyLevel.getRetTimeTolerance() == null)
+                result.setRetTimeError(null);
+            if (ontologyLevel.getMassTolerancePPM() == null)
+                result.setMassErrorPPM(null);
+
+            result.setOntologyLevel(ontologyLevel);
+            resultsWithOntology.add(result);
+        }
+
+
 //        for (SearchResultDTO result : massErrorResults) {
 //            result.setOntologyLevel(OntologySupplier.select(spectrum.getChromatographyType(), result.getScore(),
 //                    result.getPrecursorErrorPPM(), result.getMassErrorPPM(), result.getRetTimeError()));
