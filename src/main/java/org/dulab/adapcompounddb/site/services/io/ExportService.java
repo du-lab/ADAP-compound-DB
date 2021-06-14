@@ -87,10 +87,12 @@ public interface ExportService {
     enum ExportField {
 
         //        POSITION("Position", r -> Integer.toString(r.getPosition())),
-        QUERY_FILE_ID("File", null, r -> r.getQueryFileIndex() != null ? Integer.toString(r.getQueryFileIndex() + 1) : null),
-        QUERY_SPECTRUM_ID("Feature", null, r -> r.getQuerySpectrumIndex() != null ? Integer.toString(r.getQuerySpectrumIndex() + 1) : null),
+        QUERY_FILE_ID("File #", null, r -> r.getQueryFileIndex() != null ? Integer.toString(r.getQueryFileIndex() + 1) : null),
+        QUERY_SPECTRUM_ID("Feature #", null, r -> r.getQuerySpectrumIndex() != null ? Integer.toString(r.getQuerySpectrumIndex() + 1) : null),
+        MATCH_INDEX("Match #", null, r -> r.getMatchIndex() !=  null ? Integer.toString(r.getMatchIndex() + 1) : null),
         QUERY_EXTERNAL_ID("Signal ID", ExportCategory.MEASURED, SearchResultDTO::getQueryExternalId),
-        QUERY_NAME("Signal Name", ExportCategory.MEASURED, SearchResultDTO::getQuerySpectrumName),
+        QUERY_NAME("Signal Name", ExportCategory.MEASURED, SearchResultDTO::getQuerySpectrumShortName),
+        QUERY_RET_TIME("Ret time (min)", ExportCategory.MEASURED, r -> formatDouble(r.getQueryRetTime(), 3)),
         QUERY_PRECURSOR_MZ("Precursor m/z", ExportCategory.MEASURED, r -> formatDoubleArray(r.getQueryPrecursorMzs(), 4)),
         QUERY_PRECURSOR_TYPE("Adduct", ExportCategory.MEASURED, r -> formatStringArray(r.getQueryPrecursorTypes())),
         QUERY_MASS("Mass (Da)", ExportCategory.MEASURED, r -> formatDouble(r.getQueryMass(), 4)),
@@ -152,9 +154,9 @@ public interface ExportService {
 
     enum ExportCategory {
 
-        MEASURED("Measured values", IndexedColors.LIGHT_TURQUOISE),
-        DIFFERENCE("", IndexedColors.LIGHT_YELLOW),
-        MATCHED("Matched values", IndexedColors.LIGHT_GREEN);
+        MEASURED("Signal information measured by instrument or calculated from the measured data", IndexedColors.LIGHT_TURQUOISE),
+        DIFFERENCE("Library matching values", IndexedColors.LIGHT_YELLOW),
+        MATCHED("Compound information", IndexedColors.LIGHT_GREEN);
 
         final String label;
         final IndexedColors color;

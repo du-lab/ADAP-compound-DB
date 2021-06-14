@@ -1,7 +1,6 @@
 package org.dulab.adapcompounddb.models.dto;
 
 import org.apache.commons.lang3.SerializationUtils;
-import org.apache.logging.log4j.util.PropertySource;
 import org.dulab.adapcompounddb.models.MatchType;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.entities.views.MassSearchResult;
@@ -10,7 +9,6 @@ import org.dulab.adapcompounddb.models.ontology.OntologyLevel;
 import org.springframework.lang.Nullable;
 
 import java.io.Serializable;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -42,13 +40,16 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
     private Integer querySpectrumIndex;
     private Integer queryFileIndex;
     private String querySpectrumName;
+    private String querySpectrumShortName;
     private String queryExternalId;
     private double[] queryPrecursorMzs;
     private String[] queryPrecursorTypes;
     private Double queryMass;
+    private Double queryRetTime;
 
     // Match
     private MatchType matchType;
+    private Integer matchIndex;
     private long spectrumId;
     private Long clusterId;
     private String externalId;
@@ -112,21 +113,24 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
         if (querySpectrum != null) {
             this.querySpectrumId = querySpectrum.getId();
             this.querySpectrumName = querySpectrum.getName();
+            this.querySpectrumShortName = querySpectrum.getShortName();
             this.queryExternalId = querySpectrum.getExternalId();
             this.setQueryPrecursorMz(querySpectrum.getPrecursor());
             this.setQueryPrecursorType(querySpectrum.getPrecursorType());
             this.queryMass = querySpectrum.getMass();
+            this.queryRetTime = querySpectrum.getRetentionTime();
             this.chromatographyTypeLabel = querySpectrum.getChromatographyType().getLabel();
             this.chromatographyTypePath = querySpectrum.getChromatographyType().getIconPath();
         }
     }
 
-    public SearchResultDTO(SpectrumMatch spectrumMatch) {
+    public SearchResultDTO(SpectrumMatch spectrumMatch, Integer matchIndex) {
         this(spectrumMatch.getQuerySpectrum());
 
         Spectrum matchSpectrum = spectrumMatch.getMatchSpectrum();
         if (matchSpectrum != null) {
             this.matchType = matchSpectrum.isConsensus() ? MatchType.CLUSTER : MatchType.SPECTRUM;
+            this.matchIndex = matchIndex;
             this.spectrumId = matchSpectrum.getId();
             this.name = matchSpectrum.getName();
             this.externalId = matchSpectrum.getExternalId();
@@ -180,15 +184,12 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
     // ***** Getters and setters *****
     // *******************************
 
-    @Override
-    public boolean equals(final Object other) {
-        if (this == other) {
-            return true;
-        }
-        if (!(other instanceof SearchResultDTO)) {
-            return false;
-        }
-        return spectrumId == ((SearchResultDTO) other).spectrumId;
+    public Integer getMatchIndex() {
+        return matchIndex;
+    }
+
+    public void setMatchIndex(Integer matchIndex) {
+        this.matchIndex = matchIndex;
     }
 
     public long getSpectrumId() {
@@ -317,6 +318,14 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
         this.querySpectrumName = querySpectrumName;
     }
 
+    public String getQuerySpectrumShortName() {
+        return querySpectrumShortName;
+    }
+
+    public void setQuerySpectrumShortName(String querySpectrumShortName) {
+        this.querySpectrumShortName = querySpectrumShortName;
+    }
+
     public Long getQuerySpectrumId() {
         return querySpectrumId;
     }
@@ -387,6 +396,14 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
 
     public Double getQueryMass() {
         return queryMass;
+    }
+
+    public Double getQueryRetTime() {
+        return queryRetTime;
+    }
+
+    public void setQueryRetTime(Double queryRetTime) {
+        this.queryRetTime = queryRetTime;
     }
 
     public String getChromatographyTypeLabel() {
@@ -512,6 +529,17 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
 
     public void setMarked(boolean marked) {
         this.marked = marked;
+    }
+
+    @Override
+    public boolean equals(final Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof SearchResultDTO)) {
+            return false;
+        }
+        return spectrumId == ((SearchResultDTO) other).spectrumId;
     }
 
     @Override

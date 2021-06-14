@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 public class IndividualSearchServiceImpl implements IndividualSearchService {
@@ -125,11 +126,12 @@ public class IndividualSearchServiceImpl implements IndividualSearchService {
 //            SearchResultDTO searchResult = new SearchResultDTO(querySpectrum, view);
 //            searchResults.add(searchResult);
 //        }
+        int matchIndex = 0;
         for (SpectrumMatch match
                 : javaSpectrumSimilarityService.searchConsensusAndReference(querySpectrum, parameters, user)) {
 
             SearchResultDTO searchResult = MappingUtils.mapSpectrumMatchToSpectrumClusterView(
-                    match, parameters.getSpecies(), parameters.getSource(), parameters.getDisease());
+                    match, matchIndex++, parameters.getSpecies(), parameters.getSource(), parameters.getDisease());
             searchResults.add(searchResult);
         }
 
@@ -157,10 +159,11 @@ public class IndividualSearchServiceImpl implements IndividualSearchService {
                         .mapToDouble(adduct -> adduct.calculateNeutralMass(spectrum.getPrecursor()))
                         .toArray());
 
-        List<SearchResultDTO> results =
-                javaSpectrumSimilarityService.searchConsensusAndReference(spectrum, modifiedParameters, user)
-                        .stream()
-                        .map(match -> MappingUtils.mapSpectrumMatchToSpectrumClusterView(match,
+        List<SpectrumMatch> matches =
+                javaSpectrumSimilarityService.searchConsensusAndReference(spectrum, modifiedParameters, user);
+
+        List<SearchResultDTO> results = IntStream.range(0, matches.size())
+                        .mapToObj(i -> MappingUtils.mapSpectrumMatchToSpectrumClusterView(matches.get(i), i,
                                 modifiedParameters.getSpecies(),
                                 modifiedParameters.getSource(),
                                 modifiedParameters.getDisease()))
@@ -185,6 +188,8 @@ public class IndividualSearchServiceImpl implements IndividualSearchService {
             resultsWithOntology.add(result);
         }
 
+        IntStream.range(0, resultsWithOntology.size())
+                .forEach(i -> resultsWithOntology.get(i).setMatchIndex(i));
 
 //        for (SearchResultDTO result : massErrorResults) {
 //            result.setOntologyLevel(OntologySupplier.select(spectrum.getChromatographyType(), result.getScore(),

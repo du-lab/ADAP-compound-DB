@@ -33,6 +33,11 @@ public class ExcelExportService implements ExportService {
             styles.put(exportCategory, style);
         }
 
+        CellStyle highlightStyle = workbook.createCellStyle();
+        Font highlightFont = workbook.createFont();
+        highlightFont.setColor(IndexedColors.RED.getIndex());
+        highlightStyle.setFont(highlightFont);
+
         Sheet indexSheet = workbook.createSheet("Index");
         Sheet dataSheet = workbook.createSheet("Data");
 
@@ -43,7 +48,7 @@ public class ExcelExportService implements ExportService {
 
         for (SearchResultDTO searchResult : searchResults) {
             Row row = dataSheet.createRow(rowCount++);
-            createRow(row, searchResult, styles);
+            createRow(row, searchResult, searchResult.isMarked(), styles);
         }
 
         workbook.write(outputStream);
@@ -171,7 +176,7 @@ public class ExcelExportService implements ExportService {
         return rowCount + 1;
     }
 
-    private void createRow(Row row, SearchResultDTO searchResult, Map<ExportCategory, CellStyle> styles) {
+    private void createRow(Row row, SearchResultDTO searchResult, boolean highlight, Map<ExportCategory, CellStyle> styles) {
         int columnCount = 0;
         for (ExportCategory exportCategory : ExportCategory.valuesWithNull()) {
             for (ExportField field : ExportField.values(exportCategory)) {
@@ -184,8 +189,16 @@ public class ExcelExportService implements ExportService {
                 else
                     cell.setCellValue(value);
 
-                if (field.exportCategory != null)
-                    cell.setCellStyle(styles.get(field.exportCategory));
+                CellStyle style = row.getSheet().getWorkbook().createCellStyle();
+                if (field.exportCategory != null) {
+                    style.cloneStyleFrom(styles.get(field.exportCategory));
+                }
+                if (highlight) {
+                    Font font = row.getSheet().getWorkbook().createFont();
+                    font.setColor(IndexedColors.RED.getIndex());
+                    style.setFont(font);
+                }
+                cell.setCellStyle(style);
             }
         }
     }
