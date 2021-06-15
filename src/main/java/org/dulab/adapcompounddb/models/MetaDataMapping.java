@@ -2,7 +2,6 @@ package org.dulab.adapcompounddb.models;
 
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumProperty;
-import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 
 import static org.dulab.adapcompounddb.site.services.utils.MappingUtils.parseDouble;
 

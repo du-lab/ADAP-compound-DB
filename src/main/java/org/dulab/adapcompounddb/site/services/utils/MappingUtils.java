@@ -58,9 +58,9 @@ public class MappingUtils {
     }
 
     public static SearchResultDTO mapSpectrumMatchToSpectrumClusterView(
-            SpectrumMatch match, String species, String source, String disease) {
+            SpectrumMatch match, Integer matchIndex, String species, String source, String disease) {
 
-        SearchResultDTO searchResult = new SearchResultDTO(match);
+        SearchResultDTO searchResult = new SearchResultDTO(match, matchIndex);
 
         Spectrum matchSpectrum = match.getMatchSpectrum();
         if (matchSpectrum != null) {

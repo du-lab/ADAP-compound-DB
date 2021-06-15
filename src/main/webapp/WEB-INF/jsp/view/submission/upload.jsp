@@ -151,6 +151,16 @@
                                                     </div>
                                                 </div>
                                                 <div class="row form-group">
+                                                    <form:label path="mspPrecursorMzField"
+                                                                cssClass="col-md-4 col-form-label">Precursor m/z Field</form:label>
+                                                    <div class="col-md-4">
+                                                        <form:input path="mspPrecursorMzField" cssClass="form-control"/>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <form:input path="csvPrecursorMzField" cssClass="form-control"/>
+                                                    </div>
+                                                </div>
+                                                <div class="row form-group">
                                                     <form:label path="mspRetentionTimeField"
                                                                 cssClass="col-md-4 col-form-label">Retention Time Field</form:label>
                                                     <div class="col-md-4">

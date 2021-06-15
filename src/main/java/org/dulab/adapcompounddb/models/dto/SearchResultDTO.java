@@ -6,6 +6,7 @@ import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.entities.views.MassSearchResult;
 import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
 import org.dulab.adapcompounddb.models.ontology.OntologyLevel;
+import org.springframework.lang.Nullable;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -13,7 +14,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 
-public class SearchResultDTO implements Serializable {
+public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO> {
 
     private static final long serialVersionUID = 1L;
 
@@ -39,16 +40,21 @@ public class SearchResultDTO implements Serializable {
     private Integer querySpectrumIndex;
     private Integer queryFileIndex;
     private String querySpectrumName;
+    private String querySpectrumShortName;
     private String queryExternalId;
     private double[] queryPrecursorMzs;
     private String[] queryPrecursorTypes;
+    private Double queryMass;
+    private Double queryRetTime;
 
     // Match
     private MatchType matchType;
+    private Integer matchIndex;
     private long spectrumId;
     private Long clusterId;
     private String externalId;
     private String name;
+    private String precursorType;
     private Integer size;
     private Double aveSignificance;
     private Double minSignificance;
@@ -66,9 +72,12 @@ public class SearchResultDTO implements Serializable {
     // Other
     private int position;
     private Double score;
+    private Double precursorError;
+    private Double precursorErrorPPM;
     private Double massError;
     private Double massErrorPPM;
     private Double retTimeError;
+    private boolean marked;
 
 
     public SearchResultDTO() {}
@@ -104,28 +113,36 @@ public class SearchResultDTO implements Serializable {
         if (querySpectrum != null) {
             this.querySpectrumId = querySpectrum.getId();
             this.querySpectrumName = querySpectrum.getName();
+            this.querySpectrumShortName = querySpectrum.getShortName();
             this.queryExternalId = querySpectrum.getExternalId();
             this.setQueryPrecursorMz(querySpectrum.getPrecursor());
             this.setQueryPrecursorType(querySpectrum.getPrecursorType());
+            this.queryMass = querySpectrum.getMass();
+            this.queryRetTime = querySpectrum.getRetentionTime();
             this.chromatographyTypeLabel = querySpectrum.getChromatographyType().getLabel();
             this.chromatographyTypePath = querySpectrum.getChromatographyType().getIconPath();
         }
     }
 
-    public SearchResultDTO(SpectrumMatch spectrumMatch) {
+    public SearchResultDTO(SpectrumMatch spectrumMatch, Integer matchIndex) {
         this(spectrumMatch.getQuerySpectrum());
 
         Spectrum matchSpectrum = spectrumMatch.getMatchSpectrum();
         if (matchSpectrum != null) {
             this.matchType = matchSpectrum.isConsensus() ? MatchType.CLUSTER : MatchType.SPECTRUM;
+            this.matchIndex = matchIndex;
             this.spectrumId = matchSpectrum.getId();
             this.name = matchSpectrum.getName();
             this.externalId = matchSpectrum.getExternalId();
             this.size = 1;
+            this.precursorType = matchSpectrum.getPrecursorType();
             this.mass = matchSpectrum.getMass();
             this.retTime = matchSpectrum.getRetentionTime();
             this.formula = matchSpectrum.getFormula();
+
             this.score = spectrumMatch.getScore();
+            this.precursorError = spectrumMatch.getPrecursorError();
+            this.precursorErrorPPM = spectrumMatch.getPrecursorErrorPPM();
             this.massError = spectrumMatch.getMassError();
             this.massErrorPPM = spectrumMatch.getMassErrorPPM();
             this.retTimeError = spectrumMatch.getRetTimeError();
@@ -167,15 +184,12 @@ public class SearchResultDTO implements Serializable {
     // ***** Getters and setters *****
     // *******************************
 
-    @Override
-    public boolean equals(final Object other) {
-        if (this == other) {
-            return true;
-        }
-        if (!(other instanceof SearchResultDTO)) {
-            return false;
-        }
-        return spectrumId == ((SearchResultDTO) other).spectrumId;
+    public Integer getMatchIndex() {
+        return matchIndex;
+    }
+
+    public void setMatchIndex(Integer matchIndex) {
+        this.matchIndex = matchIndex;
     }
 
     public long getSpectrumId() {
@@ -208,6 +222,14 @@ public class SearchResultDTO implements Serializable {
 
     public void setSize(final Integer size) {
         this.size = size;
+    }
+
+    public String getPrecursorType() {
+        return precursorType;
+    }
+
+    public void setPrecursorType(String precursorType) {
+        this.precursorType = precursorType;
     }
 
     public Double getScore() {
@@ -262,9 +284,14 @@ public class SearchResultDTO implements Serializable {
         this.ontologyPriority = ontologyPriority;
     }
 
-    public void setOntologyLevel(OntologyLevel ontologyLevel) {
-        this.setOntologyLevel(ontologyLevel.getLabel());
-        this.setOntologyPriority(ontologyLevel.getPriority());
+    public void setOntologyLevel(@Nullable OntologyLevel ontologyLevel) {
+        if (ontologyLevel != null) {
+            this.setOntologyLevel(ontologyLevel.getLabel());
+            this.setOntologyPriority(ontologyLevel.getPriority());
+        } else {
+            this.setOntologyLevel((String) null);
+            this.setOntologyPriority(null);
+        }
     }
 
     public String getFormula() {
@@ -289,6 +316,14 @@ public class SearchResultDTO implements Serializable {
 
     public void setQuerySpectrumName(String querySpectrumName) {
         this.querySpectrumName = querySpectrumName;
+    }
+
+    public String getQuerySpectrumShortName() {
+        return querySpectrumShortName;
+    }
+
+    public void setQuerySpectrumShortName(String querySpectrumShortName) {
+        this.querySpectrumShortName = querySpectrumShortName;
     }
 
     public Long getQuerySpectrumId() {
@@ -359,6 +394,18 @@ public class SearchResultDTO implements Serializable {
         this.queryPrecursorTypes = queryPrecursorTypes;
     }
 
+    public Double getQueryMass() {
+        return queryMass;
+    }
+
+    public Double getQueryRetTime() {
+        return queryRetTime;
+    }
+
+    public void setQueryRetTime(Double queryRetTime) {
+        this.queryRetTime = queryRetTime;
+    }
+
     public String getChromatographyTypeLabel() {
         return chromatographyTypeLabel;
     }
@@ -415,6 +462,22 @@ public class SearchResultDTO implements Serializable {
         this.retTime = retTime;
     }
 
+    public Double getPrecursorError() {
+        return precursorError;
+    }
+
+    public void setPrecursorError(Double precursorError) {
+        this.precursorError = precursorError;
+    }
+
+    public Double getPrecursorErrorPPM() {
+        return precursorErrorPPM;
+    }
+
+    public void setPrecursorErrorPPM(Double precursorErrorPPM) {
+        this.precursorErrorPPM = precursorErrorPPM;
+    }
+
     public Double getMassError() {
         return massError;
     }
@@ -460,6 +523,25 @@ public class SearchResultDTO implements Serializable {
             return String.format("/file/%d/%d/", queryFileIndex, querySpectrumIndex);
     }
 
+    public boolean isMarked() {
+        return marked;
+    }
+
+    public void setMarked(boolean marked) {
+        this.marked = marked;
+    }
+
+    @Override
+    public boolean equals(final Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof SearchResultDTO)) {
+            return false;
+        }
+        return spectrumId == ((SearchResultDTO) other).spectrumId;
+    }
+
     @Override
     public int hashCode() {
         return Long.hashCode(spectrumId);
@@ -473,5 +555,44 @@ public class SearchResultDTO implements Serializable {
     @Override
     public SearchResultDTO clone() {
         return SerializationUtils.clone(this);
+    }
+
+    /**
+     * Returns 1 if this is better than the other, -1 if this is worse than the other, and 0 otherwise
+     * @param other instance of SearchResultDTO
+     * @return 1 if this is better than the other, -1 if this is worse than the other, and 0 otherwise
+     */
+    @Override
+    public int compareTo(SearchResultDTO other) {
+        int scoreComparison = compareDoubleOrNull(this.score, other.score, 1);
+        int massComparison = compareDoubleOrNull(this.massError, other.massError, -1);
+        int retTimeComparison = compareDoubleOrNull(this.retTimeError, other.retTimeError, -1);
+        int ontologyComparison = compareDoubleOrNull(this.ontologyPriority, other.ontologyPriority, -1);
+
+        if (scoreComparison == 0 && massComparison == 0 && retTimeComparison == 0 && ontologyComparison == 0)
+            return 0;
+        if (scoreComparison >= 0 && massComparison >= 0 && retTimeComparison >= 0 && ontologyComparison >= 0)
+            return 1;
+        else if (scoreComparison <= 0 && massComparison <= 0 && retTimeComparison <= 0 && ontologyComparison <= 0)
+            return -1;
+        else
+            return 0;
+    }
+
+    /**
+     * Returns 1 if x is "higher" then y, -1 if y is "higher" then x, and 0 otherwise
+     * @param x number
+     * @param y number
+     * @return 1 if x is "higher" then y, -1 if y is "higher" then x, and 0 otherwise
+     */
+    private static int compareDoubleOrNull(Number x, Number y, int factor) {
+        if (x == null && y == null)
+            return 0;
+        else if (x != null && y == null)
+            return 1;
+        else if (x == null && y != null)
+            return -1;
+        else
+            return factor * Double.compare(x.doubleValue(), y.doubleValue());
     }
 }

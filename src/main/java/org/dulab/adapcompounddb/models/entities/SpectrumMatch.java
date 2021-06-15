@@ -28,6 +28,8 @@ public class SpectrumMatch implements Serializable {
     private Spectrum matchSpectrum;
 
     private Double score;
+    private Double precursorError;
+    private Double precursorErrorPPM;
     private Double massError;
     private Double massErrorPPM;
     private Double retTimeError;
@@ -70,6 +72,22 @@ public class SpectrumMatch implements Serializable {
 
     public void setScore(final Double score) {
         this.score = score;
+    }
+
+    public Double getPrecursorError() {
+        return precursorError;
+    }
+
+    public void setPrecursorError(Double precursorError) {
+        this.precursorError = precursorError;
+    }
+
+    public Double getPrecursorErrorPPM() {
+        return precursorErrorPPM;
+    }
+
+    public void setPrecursorErrorPPM(Double precursorErrorPPM) {
+        this.precursorErrorPPM = precursorErrorPPM;
     }
 
     public Double getMassError() {

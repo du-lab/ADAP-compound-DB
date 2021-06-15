@@ -135,6 +135,8 @@ public class JavaSpectrumSimilarityService {
                 match.setQuerySpectrum(querySpectrum);
                 match.setMatchSpectrum(librarySpectrum);
                 match.setScore(similarityScore > 0 ? similarityScore : null);
+                match.setPrecursorError(precursorError < Double.MAX_VALUE ? precursorError : null);
+                match.setPrecursorErrorPPM(precursorErrorPPM < Double.MAX_VALUE ? precursorErrorPPM : null);
                 match.setMassError(massError < Double.MAX_VALUE ? massError : null);
                 match.setMassErrorPPM(massErrorPPM < Double.MAX_VALUE ? massErrorPPM : null);
                 match.setRetTimeError(retTimeError < Double.MAX_VALUE ? retTimeError : null);
@@ -168,28 +170,36 @@ public class JavaSpectrumSimilarityService {
     private double calculateCosineSimilarity(List<Peak> queryPeaks, List<Peak> libraryPeaks,
                                              double tolerance, boolean ppm) {
 
+        queryPeaks.sort(Comparator.comparingDouble(Peak::getMz));
+        libraryPeaks.sort(Comparator.comparingDouble(Peak::getMz));
+
         double lowerFactor = 1.0 - 1E-6 * tolerance;
         double upperFactor = 1.0 + 1E-6 * tolerance;
-
-        Iterator<Peak> queryPeakIterator = queryPeaks.iterator();
-        Iterator<Peak> libraryPeakIterator = libraryPeaks.iterator();
 
         double dotProduct = 0.0;
         double queryNorm2 = 0.0;
         double libraryNorm2 = 0.0;
-        Peak queryPeak = null;
-        Peak libraryPeak = null;
-        while (queryPeakIterator.hasNext() && libraryPeakIterator.hasNext()) {
 
-            if (queryPeak == null) {
-                queryPeak = queryPeakIterator.next();
+        int queryIndex = 0;
+        int libraryIndex = 0;
+        while (queryIndex < queryPeaks.size() || libraryIndex < libraryPeaks.size()) {
+
+            if (queryIndex >= queryPeaks.size()) {
+                double y = scale(libraryPeaks.get(libraryIndex));
+                libraryNorm2 += y * y;
+                libraryIndex++;
                 continue;
             }
 
-            if (libraryPeak == null) {
-                libraryPeak = libraryPeakIterator.next();
+            if (libraryIndex >= libraryPeaks.size()) {
+                double x = scale(queryPeaks.get(queryIndex));
+                queryNorm2 += x * x;
+                queryIndex++;
                 continue;
             }
+
+            Peak queryPeak = queryPeaks.get(queryIndex);
+            Peak libraryPeak = libraryPeaks.get(libraryIndex);
 
             double queryMz = queryPeak.getMz();
             double libraryMz = libraryPeak.getMz();
@@ -199,12 +209,12 @@ public class JavaSpectrumSimilarityService {
             if (queryMzLessThanLibraryMz) {
                 double x = scale(queryPeak);
                 queryNorm2 += x * x;
-                queryPeak = queryPeakIterator.next();
+                queryIndex++;
 
             } else if (queryMzGreaterThanLibraryMz) {
                 double y = scale(libraryPeak);
                 libraryNorm2 += y * y;
-                libraryPeak = libraryPeakIterator.next();
+                libraryIndex++;
 
             } else {  // queryMz and libraryMz are withing the tolerance
                 double x = scale(queryPeak);
@@ -212,8 +222,8 @@ public class JavaSpectrumSimilarityService {
                 dotProduct += x * y;
                 queryNorm2 += x * x;
                 libraryNorm2 += y * y;
-                queryPeak = queryPeakIterator.next();
-                libraryPeak = libraryPeakIterator.next();
+                queryIndex++;
+                libraryIndex++;
             }
         }
 
