@@ -120,7 +120,7 @@ def export_to_mysql(filename: str, arguments: List[str]):
 
     insert_lines = []
     other_lines = []
-    for line in open(filename, encoding='utf-8'):
+    for line in open(filename, encoding='latin'):  # utf-8
         # if line.startswith('DROP TABLE') and len(partial_lines) > 0:
         #     _export_lines(partial_lines, arguments)
         #     partial_lines = []

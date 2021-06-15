@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.services.io;
 
+import org.apache.logging.log4j.util.PropertySource;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 
@@ -14,70 +15,124 @@ public interface ExportService {
     void exportAll(OutputStream outputStream, List<SearchResultDTO> searchResults) throws IOException;
 
     default void export(OutputStream outputStream, List<SearchResultDTO> searchResults) throws IOException {
-//        exportAll(outputStream, selectTopResults(searchResults));
-        exportAll(outputStream, searchResults);
+        exportAll(outputStream, selectTopResults(searchResults));
+//        exportAll(outputStream, searchResults);
     }
 
     static List<SearchResultDTO> selectTopResults(List<SearchResultDTO> searchResults) {
 
         Object[] queryIds = searchResults.stream()
-                .map(ExportService::getQueryId)
+                .map(r -> getId(r.getQueryExternalId(), r.getSpectrumId(), r.getQueryFileIndex(), r.getQuerySpectrumIndex()))
                 .distinct()
                 .toArray();
 
-        List<SearchResultDTO> topResults = new ArrayList<>();
+        List<SearchResultDTO> allTopResults = new ArrayList<>();
+
         for (Object queryId : queryIds) {
 
+            List<SearchResultDTO> topResults = new ArrayList<>();
+
             List<SearchResultDTO> selectedSearchResults = searchResults.stream()
-                    .filter(r -> queryId.equals(getQueryId(r)))
+                    .filter(r -> queryId.equals(getId(r.getQueryExternalId(), r.getSpectrumId(), r.getQueryFileIndex(), r.getQuerySpectrumIndex())))
                     .collect(Collectors.toList());
 
             if (selectedSearchResults.isEmpty()) continue;
 
-            selectedSearchResults.sort(Comparator
-                    .comparing(SearchResultDTO::getOntologyPriority, Comparator.nullsLast(Comparator.naturalOrder()))
-                    .thenComparing(SearchResultDTO::getScore, Comparator.nullsLast(Comparator.reverseOrder()))
-                    .thenComparing(SearchResultDTO::getMassErrorPPM, Comparator.nullsLast(Comparator.naturalOrder()))
-                    .thenComparing(SearchResultDTO::getMassError, Comparator.nullsLast(Comparator.naturalOrder()))
-                    .thenComparing(SearchResultDTO::getRetTimeError, Comparator.nullsLast(Comparator.naturalOrder())));
+            // Collect all different matches
+            Map<Object, List<SearchResultDTO>> matchIdToSearchResultsMap = new HashMap<>();
+            for (SearchResultDTO searchResult : selectedSearchResults) {
+                Object matchSpectrumId = getId(searchResult.getExternalId(), searchResult.getSpectrumId(), null, null);
+                if (matchSpectrumId == null) {
+                    topResults.add(searchResult);
+                    continue;
+                }
 
-            SearchResultDTO topResult = selectedSearchResults.get(0).clone();
-            topResult.setQueryPrecursorMzs(selectedSearchResults.stream()
-                    .map(SearchResultDTO::getQueryPrecursorMz).filter(Objects::nonNull)
-                    .distinct().mapToDouble(Double::doubleValue).toArray());
-            topResult.setQueryPrecursorTypes(selectedSearchResults.stream()
-                    .map(SearchResultDTO::getQueryPrecursorType).filter(Objects::nonNull)
-                    .distinct().toArray(String[]::new));
+                matchIdToSearchResultsMap.computeIfAbsent(matchSpectrumId, k -> new ArrayList<>())
+                        .add(searchResult);
+            }
 
-            topResults.add(topResult);
+            // Merge search results with the identical matches
+            for (List<SearchResultDTO> identicalSearchResults : matchIdToSearchResultsMap.values()) {
+
+                if (identicalSearchResults == null || identicalSearchResults.isEmpty()) continue;
+
+                identicalSearchResults.sort(Comparator
+                        .comparing(SearchResultDTO::getOntologyPriority, Comparator.nullsLast(Comparator.naturalOrder()))
+                        .thenComparing(SearchResultDTO::getScore, Comparator.nullsLast(Comparator.reverseOrder()))
+                        .thenComparing(SearchResultDTO::getMassErrorPPM, Comparator.nullsLast(Comparator.naturalOrder()))
+                        .thenComparing(SearchResultDTO::getMassError, Comparator.nullsLast(Comparator.naturalOrder()))
+                        .thenComparing(SearchResultDTO::getRetTimeError, Comparator.nullsLast(Comparator.naturalOrder())));
+
+                SearchResultDTO topResult = identicalSearchResults.get(0).clone();
+
+                topResult.setQueryPrecursorMzs(identicalSearchResults.stream()
+                        .map(SearchResultDTO::getQueryPrecursorMz).filter(Objects::nonNull)
+                        .distinct().mapToDouble(Double::doubleValue).toArray());
+
+                topResult.setQueryPrecursorTypes(identicalSearchResults.stream()
+                        .map(SearchResultDTO::getQueryPrecursorType).filter(Objects::nonNull)
+                        .distinct().toArray(String[]::new));
+
+                topResult.setMarked(identicalSearchResults.stream()
+                        .map(SearchResultDTO::isMarked)
+                        .reduce(false, (previous, marked) -> previous || marked));
+
+                topResults.add(topResult);
+            }
+
+            topResults.sort(Comparator.comparing(
+                    SearchResultDTO::getMatchIndex, Comparator.nullsLast(Comparator.naturalOrder())));
+
+            allTopResults.addAll(topResults);
+
+//            selectedSearchResults.sort(Comparator
+//                    .comparing(SearchResultDTO::getOntologyPriority, Comparator.nullsLast(Comparator.naturalOrder()))
+//                    .thenComparing(SearchResultDTO::getScore, Comparator.nullsLast(Comparator.reverseOrder()))
+//                    .thenComparing(SearchResultDTO::getMassErrorPPM, Comparator.nullsLast(Comparator.naturalOrder()))
+//                    .thenComparing(SearchResultDTO::getMassError, Comparator.nullsLast(Comparator.naturalOrder()))
+//                    .thenComparing(SearchResultDTO::getRetTimeError, Comparator.nullsLast(Comparator.naturalOrder())));
+//
+//            SearchResultDTO topResult = selectedSearchResults.get(0).clone();
+//            topResult.setQueryPrecursorMzs(selectedSearchResults.stream()
+//                    .map(SearchResultDTO::getQueryPrecursorMz).filter(Objects::nonNull)
+//                    .distinct().mapToDouble(Double::doubleValue).toArray());
+//            topResult.setQueryPrecursorTypes(selectedSearchResults.stream()
+//                    .map(SearchResultDTO::getQueryPrecursorType).filter(Objects::nonNull)
+//                    .distinct().toArray(String[]::new));
+//
+//            topResults.add(topResult);
         }
 
 //        IntStream.range(0, topResults.size())
 //                .forEach(i -> topResults.get(i).setPosition(i));
 
-        return topResults;
+        return allTopResults;
     }
 
     /**
      * Returns QuerySpectrumId if it exists. Otherwise, returns a unique integer corresponding to the QueryFileIndex
      * and QuerySpectrumIndex
      *
-     * @param searchResult search result
+     * @param externalId External ID of a spectrum,
+     * @param spectrumId Spectrum ID of a spectrum,
+     * @param fileIndex index of the file containing that spectrum
+     * @param spectrumIndex index of the spectrum in that file
      * @return query ID
      */
-    static Object getQueryId(SearchResultDTO searchResult) {
+    static Object getId(String externalId, Long spectrumId, Integer fileIndex, Integer spectrumIndex) {
         // Use ExternalId if available
-        if (searchResult.getQueryExternalId() != null)
-            return searchResult.getQueryExternalId();
+        if (externalId != null)
+            return externalId;
 
         // Use QuerySpectrumId if available
-        if (searchResult.getQuerySpectrumId() != null && searchResult.getQuerySpectrumId() > 0)
-            return searchResult.getQuerySpectrumId();
+        if (spectrumId != null && spectrumId > 0)
+            return spectrumId;
 
-        // Otherwise, use the Cantor pairing function
-        return searchResult.getQuerySpectrumIndex()
-                + (searchResult.getQueryFileIndex() + searchResult.getQuerySpectrumIndex())
-                * (searchResult.getQueryFileIndex() + searchResult.getQuerySpectrumIndex() + 1) / 2;
+        // Use the Cantor pairing function
+        if (fileIndex != null && spectrumIndex != null)
+            return spectrumIndex + (fileIndex + spectrumIndex) * (fileIndex + spectrumIndex + 1) / 2;
+
+        return null;
     }
 
 
@@ -89,7 +144,7 @@ public interface ExportService {
         //        POSITION("Position", r -> Integer.toString(r.getPosition())),
         QUERY_FILE_ID("File #", null, r -> r.getQueryFileIndex() != null ? Integer.toString(r.getQueryFileIndex() + 1) : null),
         QUERY_SPECTRUM_ID("Feature #", null, r -> r.getQuerySpectrumIndex() != null ? Integer.toString(r.getQuerySpectrumIndex() + 1) : null),
-        MATCH_INDEX("Match #", null, r -> r.getMatchIndex() !=  null ? Integer.toString(r.getMatchIndex() + 1) : null),
+        MATCH_INDEX("Match #", null, r -> r.getMatchIndex() != null ? Integer.toString(r.getMatchIndex() + 1) : null),
         QUERY_EXTERNAL_ID("Signal ID", ExportCategory.MEASURED, SearchResultDTO::getQueryExternalId),
         QUERY_NAME("Signal Name", ExportCategory.MEASURED, SearchResultDTO::getQuerySpectrumShortName),
         QUERY_RET_TIME("Ret time (min)", ExportCategory.MEASURED, r -> formatDouble(r.getQueryRetTime(), 3)),
