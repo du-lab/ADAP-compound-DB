@@ -122,13 +122,13 @@ public class MultipartFileUtils {
 
         File mergedFile = files.get(0);
         List<Spectrum> mergedSpectra = mergedFile.getSpectra();
-        if (!checkExternalIds(mergedSpectra))
+        if (!checkNames(mergedSpectra))
             throw new IllegalStateException("No ID found for the spectra in file " + mergedFile.getName());
 
         for (int i = 1; i < files.size(); ++i) {
             File file = files.get(i);
             List<Spectrum> spectra = file.getSpectra();
-            if (!checkExternalIds(spectra))
+            if (!checkNames(spectra))
                 throw new IllegalStateException("No ID found for the spectra in file " + mergedFile.getName());
 
             mergedSpectra = mergeSpectra(mergedSpectra, spectra);
@@ -143,20 +143,20 @@ public class MultipartFileUtils {
 
     private static List<Spectrum> mergeSpectra(List<Spectrum> spectra1, List<Spectrum> spectra2) {
 
-        Map<String, List<Spectrum>> idToSpectraMap = new HashMap<>();
+        Map<String, List<Spectrum>> nameToSpectraMap = new HashMap<>();
 
         // Add all spectra from `spectra1` to the map
-        spectra1.forEach(s -> idToSpectraMap
-                .computeIfAbsent(s.getExternalId(), k -> new ArrayList<>())
+        spectra1.forEach(s -> nameToSpectraMap
+                .computeIfAbsent(s.getShortName(), k -> new ArrayList<>())
                 .add(s));
 
         // Add all spectra from `spectra2` to the map
-        spectra2.forEach(s -> idToSpectraMap
-                .computeIfAbsent(s.getExternalId(), k -> new ArrayList<>())
+        spectra2.forEach(s -> nameToSpectraMap
+                .computeIfAbsent(s.getShortName(), k -> new ArrayList<>())
                 .add(s));
 
         // Merge spectra with the same external ID
-        for (Map.Entry<String, List<Spectrum>> entry : idToSpectraMap.entrySet()) {
+        for (Map.Entry<String, List<Spectrum>> entry : nameToSpectraMap.entrySet()) {
 
             List<Spectrum> spectrumList = entry.getValue();
             if (spectrumList.isEmpty()) continue;
@@ -188,7 +188,7 @@ public class MultipartFileUtils {
             entry.setValue(mergedSpectra);
         }
 
-        return idToSpectraMap.values().stream()
+        return nameToSpectraMap.values().stream()
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
 
@@ -207,9 +207,9 @@ public class MultipartFileUtils {
 //        spectra1.addAll(unmergedSpectra);
     }
 
-    private static boolean checkExternalIds(List<Spectrum> spectra) {
+    private static boolean checkNames(List<Spectrum> spectra) {
         for (Spectrum spectrum : spectra)
-            if (spectrum.getExternalId() == null || spectrum.getExternalId().isEmpty())
+            if (spectrum.getShortName() == null || spectrum.getShortName().isEmpty())
                 return false;
         return true;
     }

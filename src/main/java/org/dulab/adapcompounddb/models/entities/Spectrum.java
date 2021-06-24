@@ -593,7 +593,7 @@ public class Spectrum implements Serializable {
     // *************************
 
     public static Spectrum merge(Spectrum s1, Spectrum s2) throws IllegalStateException {
-        if (s1.externalId == null || s2.externalId == null || !s1.externalId.equals(s2.externalId))
+        if (s1.name == null || s2.name == null || !s1.name.equals(s2.name))
             throw new IllegalStateException("Cannot merge two spectra with different external IDs");
 
         Spectrum mergedSpectrum = new Spectrum();

@@ -111,8 +111,8 @@
                                         <p>When option <span class="text-primary">Merge Files</span> is selected,
                                             data from multiple files are merged together.</p>
                                         <p>During merging, corresponding features from different files are determined
-                                            based on values of the <span class="text-primary">ID Fields</span>. These
-                                            ID Fields must be specified in the
+                                            based on values of the <span class="text-primary">Name Fields</span>. These
+                                            Name Fields must be specified in the
                                             <a href="#metaFields" data-toggle="collapse">Metadata Fields</a>
                                             panel for each file type.
                                         </p>
