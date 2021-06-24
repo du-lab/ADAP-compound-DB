@@ -42,6 +42,7 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
     private String querySpectrumName;
     private String querySpectrumShortName;
     private String queryExternalId;
+    private boolean queryWithPeaks;
     private double[] queryPrecursorMzs;
     private String[] queryPrecursorTypes;
     private Double queryMass;
@@ -115,6 +116,7 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
             this.querySpectrumName = querySpectrum.getName();
             this.querySpectrumShortName = querySpectrum.getShortName();
             this.queryExternalId = querySpectrum.getExternalId();
+            this.queryWithPeaks = querySpectrum.getPeaks() != null;
             this.setQueryPrecursorMz(querySpectrum.getPrecursor());
             this.setQueryPrecursorType(querySpectrum.getPrecursorType());
             this.queryMass = querySpectrum.getMass();
@@ -356,6 +358,14 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
 
     public void setQueryExternalId(String queryExternalId) {
         this.queryExternalId = queryExternalId;
+    }
+
+    public boolean isQueryWithPeaks() {
+        return queryWithPeaks;
+    }
+
+    public void setQueryWithPeaks(boolean queryWithPeaks) {
+        this.queryWithPeaks = queryWithPeaks;
     }
 
     public Double getQueryPrecursorMz() {

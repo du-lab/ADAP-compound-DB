@@ -12,6 +12,9 @@ import java.util.stream.Collectors;
 
 public interface ExportService {
 
+    String CHECK_CHARACTER = String.valueOf('\u2713');
+
+
     void exportAll(OutputStream outputStream, List<SearchResultDTO> searchResults) throws IOException;
 
     default void export(OutputStream outputStream, List<SearchResultDTO> searchResults) throws IOException {
@@ -22,7 +25,7 @@ public interface ExportService {
     static List<SearchResultDTO> selectTopResults(List<SearchResultDTO> searchResults) {
 
         Object[] queryIds = searchResults.stream()
-                .map(r -> getId(r.getQueryExternalId(), r.getSpectrumId(), r.getQueryFileIndex(), r.getQuerySpectrumIndex()))
+                .map(r -> getId(r.getQueryExternalId(), r.getQuerySpectrumName(), r.getSpectrumId(), r.getQueryFileIndex(), r.getQuerySpectrumIndex()))
                 .distinct()
                 .toArray();
 
@@ -33,7 +36,7 @@ public interface ExportService {
             List<SearchResultDTO> topResults = new ArrayList<>();
 
             List<SearchResultDTO> selectedSearchResults = searchResults.stream()
-                    .filter(r -> queryId.equals(getId(r.getQueryExternalId(), r.getSpectrumId(), r.getQueryFileIndex(), r.getQuerySpectrumIndex())))
+                    .filter(r -> queryId.equals(getId(r.getQueryExternalId(), r.getQuerySpectrumName(), r.getSpectrumId(), r.getQueryFileIndex(), r.getQuerySpectrumIndex())))
                     .collect(Collectors.toList());
 
             if (selectedSearchResults.isEmpty()) continue;
@@ -41,7 +44,7 @@ public interface ExportService {
             // Collect all different matches
             Map<Object, List<SearchResultDTO>> matchIdToSearchResultsMap = new HashMap<>();
             for (SearchResultDTO searchResult : selectedSearchResults) {
-                Object matchSpectrumId = getId(searchResult.getExternalId(), searchResult.getSpectrumId(), null, null);
+                Object matchSpectrumId = getId(searchResult.getExternalId(), searchResult.getName(), searchResult.getSpectrumId(), null, null);
                 if (matchSpectrumId == null) {
                     topResults.add(searchResult);
                     continue;
@@ -119,10 +122,15 @@ public interface ExportService {
      * @param spectrumIndex index of the spectrum in that file
      * @return query ID
      */
-    static Object getId(String externalId, Long spectrumId, Integer fileIndex, Integer spectrumIndex) {
+    static Object getId(String externalId, String spectrumName, Long spectrumId, Integer fileIndex, Integer spectrumIndex) {
+
         // Use ExternalId if available
-        if (externalId != null)
+        if (externalId != null && !externalId.isEmpty())
             return externalId;
+
+        // Use Name if available
+        if (spectrumName != null && !spectrumName.isEmpty())
+            return spectrumName;
 
         // Use QuerySpectrumId if available
         if (spectrumId != null && spectrumId > 0)
@@ -145,12 +153,13 @@ public interface ExportService {
         QUERY_FILE_ID("File #", null, r -> r.getQueryFileIndex() != null ? Integer.toString(r.getQueryFileIndex() + 1) : null),
         QUERY_SPECTRUM_ID("Feature #", null, r -> r.getQuerySpectrumIndex() != null ? Integer.toString(r.getQuerySpectrumIndex() + 1) : null),
         MATCH_INDEX("Match #", null, r -> r.getMatchIndex() != null ? Integer.toString(r.getMatchIndex() + 1) : null),
-        QUERY_EXTERNAL_ID("Signal ID", ExportCategory.MEASURED, SearchResultDTO::getQueryExternalId),
-        QUERY_NAME("Signal Name", ExportCategory.MEASURED, SearchResultDTO::getQuerySpectrumShortName),
+//        QUERY_EXTERNAL_ID("Signal ID", ExportCategory.MEASURED, SearchResultDTO::getQueryExternalId),
+        QUERY_NAME("Signal", ExportCategory.MEASURED, SearchResultDTO::getQuerySpectrumShortName),
         QUERY_RET_TIME("Ret time (min)", ExportCategory.MEASURED, r -> formatDouble(r.getQueryRetTime(), 3)),
         QUERY_PRECURSOR_MZ("Precursor m/z", ExportCategory.MEASURED, r -> formatDoubleArray(r.getQueryPrecursorMzs(), 4)),
         QUERY_PRECURSOR_TYPE("Adduct", ExportCategory.MEASURED, r -> formatStringArray(r.getQueryPrecursorTypes())),
         QUERY_MASS("Mass (Da)", ExportCategory.MEASURED, r -> formatDouble(r.getQueryMass(), 4)),
+        FRAGMENTATION_SPECTRUM("Fragmentation spectrum", ExportCategory.MEASURED, r -> formatBoolean(r.isQueryWithPeaks())),
         MATCH_NAME("Compound Name", ExportCategory.MATCHED, SearchResultDTO::getName),
         MATCH_EXTERNAL_ID("Compound ID", ExportCategory.MATCHED, SearchResultDTO::getExternalId),
         SCORE("Fragmentation Score", ExportCategory.DIFFERENCE, r -> r.getScore() != null ? Double.toString(r.getNISTScore()) : null),
@@ -183,7 +192,7 @@ public interface ExportService {
         }
 
         private static String formatBoolean(boolean x) {
-            return x ? "Best match" : null;
+            return x ? CHECK_CHARACTER : null;
         }
 
         private static String formatDouble(Double x, int digits) {

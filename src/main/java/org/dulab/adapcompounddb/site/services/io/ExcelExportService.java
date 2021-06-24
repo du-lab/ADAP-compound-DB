@@ -21,22 +21,7 @@ public class ExcelExportService implements ExportService {
 
         Workbook workbook = new XSSFWorkbook();
 
-        Map<ExportCategory, CellStyle> styles = new HashMap<>();
-        for (ExportCategory exportCategory : ExportCategory.values()) {
-            CellStyle style = workbook.createCellStyle();
-            style.setFillForegroundColor(exportCategory.color.getIndex());
-            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-            style.setBorderRight(BorderStyle.HAIR);
-            style.setBorderLeft(BorderStyle.HAIR);
-            style.setBorderTop(BorderStyle.HAIR);
-            style.setBorderBottom(BorderStyle.HAIR);
-            styles.put(exportCategory, style);
-        }
-
-        CellStyle highlightStyle = workbook.createCellStyle();
-        Font highlightFont = workbook.createFont();
-        highlightFont.setColor(IndexedColors.RED.getIndex());
-        highlightStyle.setFont(highlightFont);
+        ExcelCellStyleSupplier styleSupplier = new ExcelCellStyleSupplier(workbook);
 
         Sheet indexSheet = workbook.createSheet("Index");
         Sheet dataSheet = workbook.createSheet("Data");
@@ -44,11 +29,11 @@ public class ExcelExportService implements ExportService {
         fillOutIndexSheet(indexSheet, dataSheet.getSheetName());
 
 
-        int rowCount = createHeader(0, dataSheet, styles);
+        int rowCount = createHeader(0, dataSheet, styleSupplier);
 
         for (SearchResultDTO searchResult : searchResults) {
             Row row = dataSheet.createRow(rowCount++);
-            createRow(row, searchResult, searchResult.isMarked(), styles);
+            createRow(row, searchResult, searchResult.isMarked(), styleSupplier);
         }
 
         workbook.write(outputStream);
@@ -129,10 +114,10 @@ public class ExcelExportService implements ExportService {
         return cell;
     }
 
-    private int createHeader(int rowCount, Sheet sheet, Map<ExportCategory, CellStyle> styles) {
+    private int createHeader(int rowCount, Sheet sheet, ExcelCellStyleSupplier styleSupplier) {
 
         // First row. Contains categories of export fields
-        rowCount = createFirstHeaderRow(rowCount, sheet, styles);
+        rowCount = createFirstHeaderRow(rowCount, sheet, styleSupplier);
 
         // Second row. Contains names of export fields
         Row row = sheet.createRow(rowCount++);
@@ -142,7 +127,8 @@ public class ExcelExportService implements ExportService {
                 Cell cell = row.createCell(columnCount++);
                 cell.setCellValue(field.name);
                 if (field.exportCategory != null) {
-                    CellStyle style = styles.get(field.exportCategory);
+                    CellStyle style = styleSupplier.getCellStyle(
+                            exportCategory.color, BorderStyle.HAIR, IndexedColors.BLACK);
                     cell.setCellStyle(style);
                 }
             }
@@ -151,7 +137,7 @@ public class ExcelExportService implements ExportService {
         return rowCount;
     }
 
-    private int createFirstHeaderRow(int rowCount, Sheet sheet, Map<ExportCategory, CellStyle> styles) {
+    private int createFirstHeaderRow(int rowCount, Sheet sheet, ExcelCellStyleSupplier styleSupplier) {
 
 //        // Create array of categories with the first null value
 //        int numCategories = ExportCategory.values().length;
@@ -168,7 +154,8 @@ public class ExcelExportService implements ExportService {
             if (exportCategory != null) {
                 Cell cell = row.createCell(columnCount);
                 cell.setCellValue(exportCategory.label);
-                cell.setCellStyle(styles.get(exportCategory));
+                cell.setCellStyle(styleSupplier.getCellStyle(
+                        exportCategory.color, BorderStyle.HAIR, IndexedColors.BLACK));
             }
 
             columnCount += numFields;
@@ -176,7 +163,7 @@ public class ExcelExportService implements ExportService {
         return rowCount + 1;
     }
 
-    private void createRow(Row row, SearchResultDTO searchResult, boolean highlight, Map<ExportCategory, CellStyle> styles) {
+    private void createRow(Row row, SearchResultDTO searchResult, boolean highlight, ExcelCellStyleSupplier styleSupplier) {
         int columnCount = 0;
         for (ExportCategory exportCategory : ExportCategory.valuesWithNull()) {
             for (ExportField field : ExportField.values(exportCategory)) {
@@ -189,15 +176,10 @@ public class ExcelExportService implements ExportService {
                 else
                     cell.setCellValue(value);
 
-                CellStyle style = row.getSheet().getWorkbook().createCellStyle();
-                if (field.exportCategory != null) {
-                    style.cloneStyleFrom(styles.get(field.exportCategory));
-                }
-                if (highlight) {
-                    Font font = row.getSheet().getWorkbook().createFont();
-                    font.setColor(IndexedColors.RED.getIndex());
-                    style.setFont(font);
-                }
+                CellStyle style = styleSupplier.getCellStyle(
+                        field.exportCategory != null ? field.exportCategory.color : IndexedColors.WHITE,
+                        BorderStyle.HAIR,
+                        highlight ? IndexedColors.RED : IndexedColors.BLACK);
                 cell.setCellStyle(style);
             }
         }
