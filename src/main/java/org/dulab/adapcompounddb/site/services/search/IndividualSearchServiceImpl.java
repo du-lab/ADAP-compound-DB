@@ -112,9 +112,9 @@ public class IndividualSearchServiceImpl implements IndividualSearchService {
                 bestSearchResults.add(searchResult);
         }
 
-        if (bestSearchResults.size() < searchResults.size()) {
-            bestSearchResults.forEach(r -> r.setMarked(true));
-        }
+//        if (bestSearchResults.size() < searchResults.size()) {
+        bestSearchResults.forEach(r -> r.setMarked(true));
+//        }
     }
 
     private List<SearchResultDTO> searchWithoutOntologyLevels(
@@ -155,19 +155,19 @@ public class IndividualSearchServiceImpl implements IndividualSearchService {
 
         List<Adduct> adducts = adductService.findAdductsByChromatography(spectrum.getChromatographyType());
         if (spectrum.getMass() == null && adducts != null && spectrum.getPrecursor() != null)
-                modifiedParameters.setMasses(adducts.stream()
-                        .mapToDouble(adduct -> adduct.calculateNeutralMass(spectrum.getPrecursor()))
-                        .toArray());
+            modifiedParameters.setMasses(adducts.stream()
+                    .mapToDouble(adduct -> adduct.calculateNeutralMass(spectrum.getPrecursor()))
+                    .toArray());
 
         List<SpectrumMatch> matches =
                 javaSpectrumSimilarityService.searchConsensusAndReference(spectrum, modifiedParameters, user);
 
         List<SearchResultDTO> results = IntStream.range(0, matches.size())
-                        .mapToObj(i -> MappingUtils.mapSpectrumMatchToSpectrumClusterView(matches.get(i), i,
-                                modifiedParameters.getSpecies(),
-                                modifiedParameters.getSource(),
-                                modifiedParameters.getDisease()))
-                        .collect(Collectors.toList());
+                .mapToObj(i -> MappingUtils.mapSpectrumMatchToSpectrumClusterView(matches.get(i), i,
+                        modifiedParameters.getSpecies(),
+                        modifiedParameters.getSource(),
+                        modifiedParameters.getDisease()))
+                .collect(Collectors.toList());
 
         List<SearchResultDTO> resultsWithOntology = new ArrayList<>();
         for (SearchResultDTO result : results) {
