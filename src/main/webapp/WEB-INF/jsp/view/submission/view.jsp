@@ -25,6 +25,8 @@
                     <c:if test="${view_submission && !edit_submission}">
                         <a href="edit" type="button" class="btn btn-primary">Edit</a>
                     </c:if>
+                    <a href="<c:url value="/export/submission/${submission.id}/"><c:param name="name" value="${submission.name}"/></c:url>"
+                       type="button" class="btn btn-primary">Export</a>
                 </div>
                 <div>
                     <a href="<c:url value="group_search/"/>" type="button" class="btn btn-primary">Search all
@@ -216,11 +218,11 @@
                                     </table>
                                 </div>
                             </div>
-<%--                            <div class="row">--%>
-<%--                                <div class="col-md-4 offset-md-4">--%>
-<%--                                    <a href="edit" class="btn btn-primary w-100">Edit Submission</a>--%>
-<%--                                </div>--%>
-<%--                            </div>--%>
+                                <%--                            <div class="row">--%>
+                                <%--                                <div class="col-md-4 offset-md-4">--%>
+                                <%--                                    <a href="edit" class="btn btn-primary w-100">Edit Submission</a>--%>
+                                <%--                                </div>--%>
+                                <%--                            </div>--%>
 
                                 <%--                            </c:otherwise>--%>
                                 <%--                        </c:choose>--%>

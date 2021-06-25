@@ -14,12 +14,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class CsvExportService implements ExportService {
+public class CsvExportSearchResultsService implements ExportSearchResultsService {
 
     private final SpectrumService spectrumService;
 
     @Autowired
-    public CsvExportService(SpectrumService spectrumService) {
+    public CsvExportSearchResultsService(SpectrumService spectrumService) {
         this.spectrumService = spectrumService;
     }
 

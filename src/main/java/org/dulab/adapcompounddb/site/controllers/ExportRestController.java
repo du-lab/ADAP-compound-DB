@@ -3,12 +3,15 @@ package org.dulab.adapcompounddb.site.controllers;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
-import org.dulab.adapcompounddb.site.services.io.ExportService;
+import org.dulab.adapcompounddb.models.entities.Submission;
+import org.dulab.adapcompounddb.site.services.io.ExcelExportSubmissionService;
+import org.dulab.adapcompounddb.site.services.io.ExportSearchResultsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
@@ -22,13 +25,31 @@ public class ExportRestController {
 
     private static final Logger LOGGER = LogManager.getLogger(ExportRestController.class);
 
-    private final ExportService exportService;
+    private final ExportSearchResultsService exportSearchResultsService;
+    private final ExcelExportSubmissionService exportSubmissionService;
 
     @Autowired
-    public ExportRestController(@Qualifier("excelExportService") ExportService exportService) {
-        this.exportService = exportService;
+    public ExportRestController(
+            @Qualifier("excelExportSearchResultsService") ExportSearchResultsService exportSearchResultsService,
+            ExcelExportSubmissionService exportSubmissionService) {
+
+        this.exportSearchResultsService = exportSearchResultsService;
+        this.exportSubmissionService = exportSubmissionService;
     }
 
+    @RequestMapping(value = "/export/submission/{id:\\d+}/", produces = MediaType.TEXT_PLAIN_VALUE)
+    public void exportSubmission(@PathVariable("id") long submissionId, @RequestParam Optional<String> name,
+                                 HttpServletResponse response) {
+        try {
+            response.setContentType(MediaType.TEXT_PLAIN_VALUE);
+            response.setHeader("Content-Disposition",
+                    String.format("attachment; filename=\"%s.xlsx\"", name.orElse("export")));
+            exportSubmissionService.exportSubmission(response.getOutputStream(), submissionId);
+
+        } catch (IOException e) {
+            LOGGER.warn("Error when writing to a file: " + e.getMessage(), e);
+        }
+    }
 
     @RequestMapping(value = "/export/session/{attribute}/simple_csv", produces = MediaType.TEXT_PLAIN_VALUE)
     public void simpleExport(@PathVariable("attribute") String attributeName,
@@ -68,11 +89,11 @@ public class ExportRestController {
 
         try {
             if (advanced)
-                exportService.exportAll(response.getOutputStream(), searchResults);
+                exportSearchResultsService.exportAll(response.getOutputStream(), searchResults);
             else
-                exportService.export(response.getOutputStream(), searchResults);
+                exportSearchResultsService.export(response.getOutputStream(), searchResults);
         } catch (IOException e) {
-            LOGGER.warn("Error while writing to a CSV file: " + e.getMessage(), e);
+            LOGGER.warn("Error when writing to a file: " + e.getMessage(), e);
         }
     }
 }

@@ -12,8 +12,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
 
+import static org.dulab.adapcompounddb.site.services.io.ExportUtils.isDouble;
+import static org.dulab.adapcompounddb.site.services.io.ExportUtils.isInteger;
+
 @Service
-public class ExcelExportService implements ExportService {
+public class ExcelExportSearchResultsService implements ExportSearchResultsService {
 
 
     @Override
@@ -185,21 +188,5 @@ public class ExcelExportService implements ExportService {
         }
     }
 
-    private boolean isDouble(String s) {
-        try {
-            Double.parseDouble(s);
-        } catch (NumberFormatException | NullPointerException e) {
-            return false;
-        }
-        return true;
-    }
 
-    private boolean isInteger(String s) {
-        try {
-            Integer.parseInt(s);
-        } catch (NumberFormatException | NullPointerException e) {
-            return false;
-        }
-        return true;
-    }
 }

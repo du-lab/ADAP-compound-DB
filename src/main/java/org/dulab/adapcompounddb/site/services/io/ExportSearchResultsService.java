@@ -1,6 +1,5 @@
 package org.dulab.adapcompounddb.site.services.io;
 
-import org.apache.logging.log4j.util.PropertySource;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 
@@ -10,9 +9,9 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public interface ExportService {
+import static org.dulab.adapcompounddb.site.services.io.ExportUtils.*;
 
-    String CHECK_CHARACTER = String.valueOf('\u2713');
+public interface ExportSearchResultsService {
 
 
     void exportAll(OutputStream outputStream, List<SearchResultDTO> searchResults) throws IOException;
@@ -189,30 +188,6 @@ public interface ExportService {
             return Arrays.stream(ExportField.values())
                     .filter(field -> field.exportCategory == exportCategory)
                     .toArray(ExportField[]::new);
-        }
-
-        private static String formatBoolean(boolean x) {
-            return x ? CHECK_CHARACTER : null;
-        }
-
-        private static String formatDouble(Double x, int digits) {
-            if (x == null)
-                return null;
-            String format = String.format("%%.%df", digits);
-            return String.format(format, x);
-        }
-
-        private static String formatDoubleArray(double[] xs, int digits) {
-            if (xs == null)
-                return null;
-            return Arrays.stream(xs).mapToObj(x -> formatDouble(x, digits))
-                    .collect(Collectors.joining(", "));
-        }
-
-        private static String formatStringArray(String[] strings) {
-            if (strings == null)
-                return null;
-            return String.join(", ", strings);
         }
     }
 
