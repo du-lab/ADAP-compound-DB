@@ -97,7 +97,7 @@ public class GroupSearchServiceImpl implements GroupSearchService {
                     parameters.setSource(source);
                     parameters.setDisease(disease);
                     parameters.setSubmissionIds(submissionIds);
-                    parameters.setLimit(10);
+                    parameters.setLimit(100);
 
                     long time1 = System.currentTimeMillis();
 
@@ -128,7 +128,7 @@ public class GroupSearchServiceImpl implements GroupSearchService {
                 System.out.println("Average time cost for each spectrum is: " + timeSum / file.getSpectra().size());
             }
             try{
-                FileWriter writer = new FileWriter("/Users/ericliao/Desktop/compare_similarity_score_between_original_and_new/new study/match_spectra_list/original.csv");
+                FileWriter writer = new FileWriter("/Users/yliao13/Desktop/prescreen_origin_search_comparison/original.csv");
                 writer.append("Query Spectrum ID");
                 writer.append(",");
                 writer.append("Match Spectrum ID");
