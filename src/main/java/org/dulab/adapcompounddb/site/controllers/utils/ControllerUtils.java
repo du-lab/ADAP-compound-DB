@@ -1,8 +1,10 @@
-package org.dulab.adapcompounddb.site.controllers;
+package org.dulab.adapcompounddb.site.controllers.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.gson.Gson;
+import org.dulab.adapcompounddb.models.enums.ChromatographyType;
+import org.dulab.adapcompounddb.models.ontology.OntologySupplier;
 import org.dulab.adapcompounddb.site.services.admin.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchForm;
 import org.dulab.adapcompounddb.models.enums.UserRole;
@@ -400,6 +402,33 @@ public class ControllerUtils {
     }
 
 
+    /**
+     * Returns true if ontology levels can be assigned to the spectra in the given submission
+     * @param submission instance of Submission
+     * @return true if ontology levels can be assigned to the spectra in the given submission
+     */
+    public static boolean checkOntologyLevels(Submission submission) {
+        List<File> files = submission.getFiles();
+        if (files == null) return false;
+
+        Iterator<File> fileIterator = files.iterator();
+        ChromatographyType chromatographyType = null;
+        while (fileIterator.hasNext() && chromatographyType == null) {
+            List<Spectrum> spectra = fileIterator.next().getSpectra();
+            if (spectra == null)
+                continue;
+
+            chromatographyType = spectra.stream()
+                    .map(Spectrum::getChromatographyType)
+                    .findAny()
+                    .orElse(null);
+        }
+
+        int[] priorities = OntologySupplier.findPrioritiesByChromatographyType(chromatographyType);
+        return priorities != null;
+    }
+
+
     public static class CategoryForm {
 
         @NotBlank(message = "The field Name is required")
@@ -430,7 +459,7 @@ public class ControllerUtils {
         private final SubmissionCategory category;
         private final long count;
 
-        CategoryWithSubmissionCount(final SubmissionCategory category, final long count) {
+        public CategoryWithSubmissionCount(final SubmissionCategory category, final long count) {
             this.category = category;
             this.count = count;
         }

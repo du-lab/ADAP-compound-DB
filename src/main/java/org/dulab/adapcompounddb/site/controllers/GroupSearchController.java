@@ -8,6 +8,7 @@ import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterForm;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterOptions;
+import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
 import org.dulab.adapcompounddb.site.services.search.GroupSearchService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.dulab.adapcompounddb.site.services.SubmissionTagService;
@@ -15,10 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
@@ -60,7 +58,9 @@ public class GroupSearchController extends BaseController {
     }
 
     @RequestMapping(value = "/file/group_search/", method = RequestMethod.GET)
-    public String groupSearch(final HttpSession session, final Model model, @Valid final FilterForm form) {
+    public String groupSearch(@RequestParam Optional<Boolean> withOntologyLevels, HttpSession session, Model model,
+                              @Valid FilterForm form) {
+
         session.removeAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
 
         final Submission submission = Submission.from(session);
@@ -68,25 +68,27 @@ public class GroupSearchController extends BaseController {
             return "redirect:/file/upload/";
         }
 
-        return groupSearchGet(submission, model, form);
+        return groupSearchGet(withOntologyLevels.orElse(false), submission, model, form);
     }
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/group_search/", method = RequestMethod.GET)
-    public String groupSearch(@PathVariable("submissionId") long submissionId, Model model, @Valid FilterForm form,
+    public String groupSearch(@PathVariable("submissionId") long submissionId,
+                              @RequestParam Optional<Boolean> withOntologyLevels, Model model, @Valid FilterForm form,
                               HttpSession session) {
         session.removeAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
         groupSearchService.setProgress(0F);
 
         Submission submission = submissionService.findSubmission(submissionId);
-        return groupSearchGet(submission, model, form);
+        return groupSearchGet(withOntologyLevels.orElse(false), submission, model, form);
     }
 
-    public String groupSearchGet(Submission submission, Model model, FilterForm form) {
+    public String groupSearchGet(boolean withOntologyLevels, Submission submission, Model model, FilterForm form) {
 
         FilterOptions filterOptions = getFilterOptions(getChromatographyTypes(submission));
         model.addAttribute("filterOptions", filterOptions);
 
         form.setSubmissionIds(filterOptions.getSubmissions().keySet());
+        form.setWithOntologyLevels(withOntologyLevels);
         model.addAttribute("filterForm", form);
         return "submission/group_search";
     }
@@ -126,7 +128,7 @@ public class GroupSearchController extends BaseController {
         String disease = form.getDisease().equalsIgnoreCase("all") ? null : form.getDisease();
 
         asyncResult = groupSearchService.groupSearch(this.getCurrentUserPrincipal(), submission.getFiles(), session,
-                form.getSubmissionIds(), species, source, disease);
+                form.getSubmissionIds(), species, source, disease, form.isWithOntologyLevels());
 
         return new ModelAndView("submission/group_search");
     }

@@ -1,6 +1,5 @@
 package org.dulab.adapcompounddb.site.controllers.forms;
 
-import java.util.Map;
 import java.util.Set;
 
 public class FilterForm {
@@ -9,6 +8,8 @@ public class FilterForm {
     private String source;
     private String disease;
     private Set<Long> submissionIds;
+    private boolean withOntologyLevels;
+
 
     public String getSpecies() {
         return species;
@@ -40,5 +41,13 @@ public class FilterForm {
 
     public void setSubmissionIds(Set<Long> submissionIds) {
         this.submissionIds = submissionIds;
+    }
+
+    public boolean isWithOntologyLevels() {
+        return withOntologyLevels;
+    }
+
+    public void setWithOntologyLevels(boolean withOntologyLevels) {
+        this.withOntologyLevels = withOntologyLevels;
     }
 }

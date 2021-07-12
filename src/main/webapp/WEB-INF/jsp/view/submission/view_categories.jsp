@@ -1,4 +1,4 @@
-<%--@elvariable id="categories" type="java.util.List<org.dulab.adapcompounddb.site.controllers.ControllerUtils.CategoryWithSubmissionCount>"--%>
+<%--@elvariable id="categories" type="java.util.List<org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.CategoryWithSubmissionCount>"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 

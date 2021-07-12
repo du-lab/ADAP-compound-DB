@@ -1,4 +1,4 @@
-<%--@elvariable id="categoryForm" type="org.dulab.adapcompounddb.site.controllers.ControllerUtils.CategoryForm"--%>
+<%--@elvariable id="categoryForm" type="org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.CategoryForm"--%>
 <%--@elvariable id="validationErrors" type="javax.validation.ConstraintViolation"--%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>

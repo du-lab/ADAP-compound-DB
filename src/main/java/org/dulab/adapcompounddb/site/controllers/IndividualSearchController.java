@@ -211,7 +211,7 @@ public class IndividualSearchController extends BaseController {
         parameters.setSubmissionIds(filterForm.getSubmissionIds().stream().map(BigInteger::valueOf).collect(Collectors.toSet()));
 
         List<SearchResultDTO> searchResults = individualSearchService.searchConsensusSpectra(
-                this.getCurrentUserPrincipal(), querySpectrum, parameters, true);
+                this.getCurrentUserPrincipal(), querySpectrum, parameters);
 
         model.addAttribute("querySpectrum", querySpectrum);
         model.addAttribute("filterOptions", getFilterOptions(querySpectrum.getChromatographyType()));

@@ -8,7 +8,7 @@ import org.dulab.adapcompounddb.models.DistanceMatrixWrapper;
 import org.dulab.adapcompounddb.models.dto.TagInfo;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.enums.MassSpectrometryType;
-import org.dulab.adapcompounddb.site.controllers.ControllerUtils;
+import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
 import org.dulab.adapcompounddb.site.repositories.*;
 import org.dulab.adapcompounddb.site.services.DistributionService;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;

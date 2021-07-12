@@ -29,9 +29,26 @@
                        type="button" class="btn btn-primary">Export</a>
                 </div>
                 <div>
-                    <a href="<c:url value="group_search/"/>" type="button" class="btn btn-primary">Search all
-                        spectra</a>
-                    <a href="<c:url value="study_search/"/>" type="button" class="btn btn-primary">Search studies</a>
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                            Search
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <a class="dropdown-item" href="<c:url value="group_search/"/>"
+                               title="Search based on the spectral similarity">
+                                Search for similar spectra
+                            </a>
+                            <a class="dropdown-item <c:if test="${!dulab:checkOntologyLevels(submission)}">disabled</c:if>"
+                               href="<c:url value="group_search/"><c:param name="withOntologyLevels">true</c:param></c:url>"
+                               title="Search based on the mass, retention time, and spectral similarity">
+                                Search for similar spectra (with Ontology Levels)
+                            </a>
+                            <a class="dropdown-item" href="<c:url value="study_search/"/>">Search for similar studies</a>
+                        </div>
+                    </div>
+<%--                    <a href="<c:url value="group_search/"/>" type="button" class="btn btn-primary">Search all--%>
+<%--                        spectra</a>--%>
+<%--                    <a href="<c:url value="study_search/"/>" type="button" class="btn btn-primary">Search studies</a>--%>
                 </div>
             </div>
         </div>
