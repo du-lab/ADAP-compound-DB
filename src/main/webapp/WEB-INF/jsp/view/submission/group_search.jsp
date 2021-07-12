@@ -391,7 +391,7 @@
         // refresh the datatable and progress bar every 1 second
         setInterval(function () {
             table.ajax.reload(null, false);
-            $.getJSON(window.location.href + 'progress', function (x) {
+            $.getJSON(window.location.origin + window.location.pathname + 'progress', function (x) {
                 const width = x + '%';
                 const progressBar = $('#progressBar')
                     .css('width', width)
