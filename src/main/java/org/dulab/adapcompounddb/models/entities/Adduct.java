@@ -69,6 +69,6 @@ public class Adduct {
 
 
     public double calculateNeutralMass(double mz) {
-        return (mz * charge - mass) / numMolecules;
+        return (mz * Math.abs(charge) - mass) / numMolecules;
     }
 }
