@@ -31,7 +31,7 @@
                 </div>
                 <div>
                     <div class="dropdown">
-                        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                        <button id="searchMenu" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
                             Search
                         </button>
                         <div class="dropdown-menu dropdown-menu-right">
