@@ -3,6 +3,7 @@ package org.dulab.adapcompounddb.site.controllers.forms;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
 import org.dulab.adapcompounddb.models.entities.SubmissionTag;
+import org.dulab.adapcompounddb.validation.PrivateLibrary;
 import org.hibernate.validator.constraints.URL;
 import org.json.JSONArray;
 
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@PrivateLibrary.List({@PrivateLibrary(privateField = "isPrivate", libraryField = "isLibrary")})
 public class SubmissionForm {
 
     private Long id;
@@ -23,6 +25,8 @@ public class SubmissionForm {
     private String description;
 
     private boolean isPrivate;
+
+    private boolean isLibrary;
 
     @URL(message = "The field Reference must be a valid URL.")
     private String reference;
@@ -105,6 +109,14 @@ public class SubmissionForm {
 
     public void setIsPrivate(boolean aPrivate) {
         isPrivate = aPrivate;
+    }
+
+    public boolean getIsLibrary() {
+        return isLibrary;
+    }
+
+    public void setIsLibrary(boolean reference) {
+        isLibrary = reference;
     }
 
     public String getReference() {

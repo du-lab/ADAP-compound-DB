@@ -66,6 +66,7 @@ public class SubmissionController extends BaseController {
 
         final SubmissionForm submissionForm = new SubmissionForm(submission);
         submissionForm.setAuthorized(authenticated);
+        submissionForm.setIsLibrary(submission.isLibrary());
         model.addAttribute("submission", submission);
         model.addAttribute("submissionForm", submissionForm);
         model.addAttribute("view_submission", authenticated); // User is logged in
@@ -108,6 +109,7 @@ public class SubmissionController extends BaseController {
         }
         final SubmissionForm submissionForm = new SubmissionForm(submission);
         submissionForm.setAuthorized(authorized);
+        submissionForm.setIsLibrary(submission.isLibrary());
 
         model.addAttribute("submission", submission);
         model.addAttribute("submissionForm", submissionForm);
@@ -238,8 +240,8 @@ public class SubmissionController extends BaseController {
 
         final Submission submission = Submission.from(session);
         if (errors.hasErrors()) {
-            model.addAttribute("view_submission", submissionForm.isAuthorized());
-            model.addAttribute("edit_submission", submissionForm.isAuthorized());
+            model.addAttribute("view_submission", true);
+            model.addAttribute("edit_submission", true);
             model.addAttribute("submissionForm", submissionForm);
             return "submission/view";
         }
@@ -264,7 +266,7 @@ public class SubmissionController extends BaseController {
             model.addAttribute("submissionForm", submissionForm);
             model.addAttribute("submission", submission);
             model.addAttribute("view_submission", true);
-            model.addAttribute("edit_submission", submissionForm.isAuthorized());
+            model.addAttribute("edit_submission", true);
             return "submission/view";
         }
 
@@ -277,6 +279,9 @@ public class SubmissionController extends BaseController {
 
     private String submit(final Submission submission, final Model model, final SubmissionForm submissionForm) {
 
+        if (!submissionForm.getIsPrivate() && submissionForm.getIsLibrary())
+            throw new IllegalStateException("Creating a library is allowed only for private submissions");
+
         submission.setName(submissionForm.getName());
         submission.setExternalId(submissionForm.getExternalId());
         submission.setDescription(submissionForm.getDescription());
@@ -284,6 +289,19 @@ public class SubmissionController extends BaseController {
         submission.setReference(submissionForm.getReference());
         submission.setDateTime(new Date());
 
+        // Set the field isReference of all spectra
+        List<File> files = submission.getFiles();
+        if (files != null) {
+            for (File file : files) {
+                List<Spectrum> spectra = file.getSpectra();
+                if (spectra == null) continue;
+                for (Spectrum spectrum : spectra) {
+                    spectrum.setReference(submissionForm.getIsLibrary());
+                }
+            }
+        }
+
+        // Set submission tags
         List<SubmissionTag> tags = submission.getTags();
         if (tags == null) {
             tags = new ArrayList<>();

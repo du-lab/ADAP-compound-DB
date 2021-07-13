@@ -1,5 +1,6 @@
 <%--@elvariable id="submissionCategoryTypes" type="org.dulab.adapcompounddb.models.SubmissionCategoryType[]"--%>
 <%--@elvariable id="submission" type="org.dulab.adapcompounddb.models.entities.Submission"--%>
+<%--@elvariable id="submissionForm" type="org.dulab.adapcompounddb.site.controllers.forms.SubmissionForm"--%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
@@ -91,7 +92,7 @@
                                     <%--@elvariable id="validationErrors" type="java.util.Set<javax.validation.ConstraintViolation>"--%>
                                 <c:if test="${validationErrors != null}">
                                     <div class="row">
-                                        <div class="col-md-8 offset-md-2 text-danger">
+                                        <div class="col-12 col-md-8 offset-md-2 text-danger">
                                             <ul>
                                                 <c:forEach items="${validationErrors}" var="error">
                                                     <li><c:out value="${error.message}"/></li>
@@ -101,8 +102,11 @@
                                     </div>
                                 </c:if>
 
+                                    <%--@elvariable id="submissionForm" type="org.dulab.adapcompounddb.site.controllers.forms.SubmissionForm"--%>
                                 <form:form method="POST" modelAttribute="submissionForm" cssStyle="width: 100%">
-                                    <form:errors path="" cssClass="errors"/><br/>
+                                    <div class="form-row form-group">
+                                        <form:errors path="" cssClass="col-12 col-md-8 offset-md-2 errors"/><br/>
+                                    </div>
                                     <form:hidden path="id"/><br/>
 
                                     <div class="form-row form-group">
@@ -133,6 +137,14 @@
                                         <form:checkbox path="isPrivate" data-toggle="toggle" data-on="Yes" data-off="No"
                                                        data-size="sm"/>
                                         <form:errors path="isPrivate" cssClass="text-danger"/>
+                                    </div>
+
+                                    <div class="form-row form-group">
+                                        <form:label path="isLibrary"
+                                                    cssClass="col-md-2 col-form-label">Library</form:label>
+                                        <form:checkbox path="isLibrary" data-toggle="toggle" data-on="Yes" data-off="No"
+                                                       data-size="sm"/>
+                                        <form:errors path="isLibrary" cssClass="text-danger"/>
                                     </div>
 
                                     <div class="form-row form-group">
@@ -196,6 +208,10 @@
                                             <td><span
                                                     class="badge badge-info">${submission.isPrivate() ? "Yes" : "No"}</span>
                                             </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Library:</strong></td>
+                                            <td><span class="badge badge-warning">${submission.library ? "Yes" : "No"}</span></td>
                                         </tr>
                                         <c:if test="${submission.reference != null}">
                                             <tr>

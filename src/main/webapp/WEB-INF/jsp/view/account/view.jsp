@@ -62,6 +62,9 @@
                                     <c:if test="${study.isPrivate()}">
                                         <span class="badge badge-info">private</span>
                                     </c:if>
+                                    <c:if test="${study.library}">
+                                        <span class="badge badge-warning">library</span>
+                                    </c:if>
                                 </a><br/>
                                     <%--                        <small>${dulab:abbreviate(study.description, 80)}</small>--%>
                             </td>

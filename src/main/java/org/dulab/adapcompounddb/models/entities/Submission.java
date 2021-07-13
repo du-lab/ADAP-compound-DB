@@ -197,6 +197,19 @@ public class Submission implements Serializable {
     // ***** Other methods *****
     // *************************
 
+    public boolean isLibrary() {
+        if (files != null) {
+            for (File file : files) {
+                List<Spectrum> spectra = file.getSpectra();
+                for (Spectrum spectrum : spectra) {
+                    if (!spectrum.isReference())
+                        return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public boolean isAuthorized(final UserPrincipal user) {
         boolean authorized = false;
         if (user == null) {
