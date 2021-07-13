@@ -29,7 +29,7 @@ def group_search_test(homepage_url, msp_path):
         time.sleep(5)
 
         # choose the first spectrum and go to the spectrum page
-        search_all_button = driver.find_element_by_link_text('Search for similar spectra')
+        search_all_button = driver.find_element_by_id('searchAllSpectra')
         search_all_button.click()
 
         # add 60 seconds

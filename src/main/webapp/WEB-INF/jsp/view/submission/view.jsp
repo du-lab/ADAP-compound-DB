@@ -35,7 +35,7 @@
                             Search
                         </button>
                         <div class="dropdown-menu dropdown-menu-right">
-                            <a class="dropdown-item" href="<c:url value="group_search/"/>"
+                            <a id="searchAllSpectra" class="dropdown-item" href="<c:url value="group_search/"/>"
                                title="Search based on the spectral similarity">
                                 Search for similar spectra
                             </a>
