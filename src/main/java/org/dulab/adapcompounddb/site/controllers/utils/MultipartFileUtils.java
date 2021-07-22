@@ -17,6 +17,9 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.dulab.adapcompounddb.site.controllers.utils.ArchiveUtils.zipBytes;
+
+
 public class MultipartFileUtils {
 
     private static final Map<FileType, FileReaderService> fileReaderServiceMap = new HashMap<>();
@@ -66,7 +69,8 @@ public class MultipartFileUtils {
             file.setFileType(fileType);
             file.setSubmission(submission);
             try {
-                file.setContent(multipartFile.getBytes());
+
+                file.setContent(zipBytes(filename, multipartFile.getBytes()));
                 file.setSpectra(fileReader.read(
                         multipartFile.getInputStream(),
                         metaDataMappings != null ? metaDataMappings.get(fileType) : null));
