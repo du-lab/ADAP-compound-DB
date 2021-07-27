@@ -105,8 +105,10 @@ public class MultipartFileUtils {
         if (files.isEmpty())
             throw new IllegalStateException("Cannot read this file");
 
-        if (mergeFiles)
+        if (mergeFiles) {
+            files.sort(Comparator.comparingInt(f -> -f.getFileType().getPriority()));
             files = mergeFiles(files);
+        }
 
         submission.setFiles(files);
     }

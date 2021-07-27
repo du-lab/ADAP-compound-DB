@@ -601,11 +601,11 @@ public class Spectrum implements Serializable {
         mergedSpectrum.setExternalId(s1.externalId);
         mergedSpectrum.setChromatographyType(s1.chromatographyType);
         mergedSpectrum.setFile(s1.file);
-        mergedSpectrum.setPrecursor(mergeDoublesByAverage(s1.precursor, s2.precursor, 0.01));
+        mergedSpectrum.setPrecursor(mergeDoublesAsAverage(s1.precursor, s2.precursor, 0.01));
         mergedSpectrum.setPrecursorType(s1.precursorType != null ? s1.precursorType : s2.precursorType);
-        mergedSpectrum.setRetentionTime(mergeDoublesByAverage(s1.retentionTime, s2.retentionTime, 0.1));
-        mergedSpectrum.setSignificance(mergeDoublesByMaximum(s1.significance, s2.significance, 0.1));
-        mergedSpectrum.setMass(mergeDoublesByAverage(s1.mass, s2.mass, 0.01));
+        mergedSpectrum.setRetentionTime(mergeDoublesAsAverage(s1.retentionTime, s2.retentionTime, 0.1));
+        mergedSpectrum.setSignificance(mergeDoublesAsMaximum(s1.significance, s2.significance, 0.1));
+        mergedSpectrum.setMass(mergeDoublesAsAverage(s1.mass, s2.mass, 0.01));
         mergedSpectrum.setPeaks(mergeLists(s1.peaks, s2.peaks), true);
         mergedSpectrum.setProperties(mergeLists(s1.properties, s2.properties));
 
@@ -619,14 +619,14 @@ public class Spectrum implements Serializable {
         return String.format("%s | %s", s1, s2);
     }
 
-    private static Double mergeDoublesByAverage(Double d1, Double d2, double tolerance) {
+    private static Double mergeDoublesAsAverage(Double d1, Double d2, double tolerance) {
         if (d1 == null) return d2;
         if (d2 == null) return d1;
         if (Math.abs(d1 - d2) > tolerance) return d1;
         return (d1 + d2) / 2;
     }
 
-    private static Double mergeDoublesByMaximum(Double d1, Double d2, double tolerance) {
+    private static Double mergeDoublesAsMaximum(Double d1, Double d2, double tolerance) {
         if (d1 == null) return d2;
         if (d2 == null) return d1;
         if (Math.abs(d1 - d2) > tolerance) return d1;
