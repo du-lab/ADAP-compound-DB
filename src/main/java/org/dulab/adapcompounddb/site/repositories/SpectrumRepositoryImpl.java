@@ -29,8 +29,8 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     private static final String PROPERTY_INSERT_SQL_STRING = "INSERT INTO `SpectrumProperty`(`SpectrumId`, `Name`, `Value`) VALUES ";
     private static final String PEAK_VALUE_SQL_STRING = "(%f,%f,%d)";
     private static final String PROPERTY_VALUE_SQL_STRING = "(%d, %s, %s)";
-    private static final String SPECTRUM_VALUE_SQL_STRING = "(%s, %s, %f, %s, %f, %f, %d, %b, %b, %b, %s, %d, %f, %s, %f, %f, " +
-            "%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f)";
+    private static final String SPECTRUM_VALUE_SQL_STRING = "(%s, %s, %f, %s, %f, %f, %d, %b, %b, %b, %s, %d, %f, %s, " +
+            "%s, %s, %s, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f)";
 
     public static final String DOUBLE_QUOTE = "\"";
     public static final String COMMA = ",";
@@ -201,7 +201,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         final StringBuilder insertSql = new StringBuilder("INSERT INTO `Spectrum`(" +
                 "`Name`, `ExternalId`, `Precursor`, `PrecursorType`, `RetentionTime`, `Significance`, " +
                 "`ClusterId`, `Consensus`, `Reference`, `IntegerMz`, " +
-                "`ChromatographyType`, `FileId`, `Mass`, `Formula`, " +
+                "`ChromatographyType`, `FileId`, `Mass`, `Formula`, `CanonicalSMILES`, `InChi`, `InChiKey`, " +
                 "`TopMz1`, `TopMz2`, `TopMz3`, `TopMz4`, `TopMz5`, `TopMz6`, `TopMz7`, `TopMz8`, `TopMz9`, " +
                 "`TopMz10`, `TopMz11`, `TopMz12`, `TopMz13`, `TopMz14`, `TopMz15`, `TopMz16`" +
                 ") VALUES ");
@@ -233,6 +233,9 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                         savedFileIdList.get(i),
                         spectrum.getMass(),
                         spectrum.getFormula() != null ? String.format("\"%s\"", spectrum.getFormula()) : null,
+                        spectrum.getCanonicalSmiles() != null ? String.format("\"%s\"", spectrum.getCanonicalSmiles()) : null,
+                        spectrum.getInChi() != null ? String.format("\"%s\"", spectrum.getInChi()) : null,
+                        spectrum.getInChiKey() != null ? String.format("\"%s\"", spectrum.getInChiKey()) : null,
                         spectrum.getTopMz1(),
                         spectrum.getTopMz2(),
                         spectrum.getTopMz3(),
