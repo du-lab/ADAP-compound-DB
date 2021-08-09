@@ -1,0 +1,554 @@
+/Applications/tomcat/bin/catalina.sh: line 471: /Library/Java/JavaVirtualMachines/jdk1.8.0_221.jdk/bin/java: No such file or directory
+26-May-2020 17:16:39.125 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server version name:   Apache Tomcat/9.0.33
+26-May-2020 17:16:39.127 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server built:          Mar 11 2020 09:31:38 UTC
+26-May-2020 17:16:39.128 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Server version number: 9.0.33.0
+26-May-2020 17:16:39.128 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log OS Name:               Mac OS X
+26-May-2020 17:16:39.128 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log OS Version:            10.14.6
+26-May-2020 17:16:39.128 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Architecture:          x86_64
+26-May-2020 17:16:39.128 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Java Home:             /Library/Java/JavaVirtualMachines/jdk1.8.0_221.jdk/Contents/Home/jre
+26-May-2020 17:16:39.129 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log JVM Version:           1.8.0_221-b11
+26-May-2020 17:16:39.129 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log JVM Vendor:            Oracle Corporation
+26-May-2020 17:16:39.129 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_BASE:         /Applications/tomcat
+26-May-2020 17:16:39.129 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_HOME:         /Applications/tomcat
+26-May-2020 17:16:39.137 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.util.logging.config.file=/Applications/tomcat/conf/logging.properties
+26-May-2020 17:16:39.137 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
+26-May-2020 17:16:39.137 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djdk.tls.ephemeralDHKeySize=2048
+26-May-2020 17:16:39.137 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.protocol.handler.pkgs=org.apache.catalina.webresources
+26-May-2020 17:16:39.137 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dorg.apache.catalina.security.SecurityListener.UMASK=0027
+26-May-2020 17:16:39.137 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dignore.endorsed.dirs=
+26-May-2020 17:16:39.137 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcatalina.base=/Applications/tomcat
+26-May-2020 17:16:39.138 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Dcatalina.home=/Applications/tomcat
+26-May-2020 17:16:39.138 INFO [main] org.apache.catalina.startup.VersionLoggerListener.log Command line argument: -Djava.io.tmpdir=/Applications/tomcat/temp
+26-May-2020 17:16:39.139 INFO [main] org.apache.catalina.core.AprLifecycleListener.lifecycleEvent The APR based Apache Tomcat Native library which allows optimal performance in production environments was not found on the java.library.path: [/Users/ericliao/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:.]
+26-May-2020 17:16:39.653 INFO [main] org.apache.coyote.AbstractProtocol.init Initializing ProtocolHandler ["http-nio-8080"]
+26-May-2020 17:16:39.693 INFO [main] org.apache.catalina.startup.Catalina.load Server initialization in [942] milliseconds
+26-May-2020 17:16:39.752 INFO [main] org.apache.catalina.core.StandardService.startInternal Starting service [Catalina]
+26-May-2020 17:16:39.754 INFO [main] org.apache.catalina.core.StandardEngine.startInternal Starting Servlet engine: [Apache Tomcat/9.0.33]
+26-May-2020 17:16:39.768 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Deploying web application directory [/Applications/tomcat/webapps/adap_compound_db_war]
+26-May-2020 17:16:45.035 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+17:16:52.637 [main] INFO  org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 6.1.0.Final
+17:16:53.361 [main] INFO  org.hibernate.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+17:16:53.586 [main] INFO  org.hibernate.Version - HHH000412: Hibernate Core {5.2.16.Final}
+17:16:53.589 [main] INFO  org.hibernate.cfg.Environment - HHH000206: hibernate.properties not found
+17:16:53.672 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.0.1.Final}
+17:16:54.423 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+17:16:57.112 [main] INFO  org.hibernate.hql.internal.QueryTranslatorFactoryInitiator - HHH000397: Using ASTQueryTranslatorFactory
+26-May-2020 17:17:01.207 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Deployment of web application directory [/Applications/tomcat/webapps/adap_compound_db_war] has finished in [21,439] ms
+26-May-2020 17:17:01.208 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Deploying web application directory [/Applications/tomcat/webapps/docs]
+26-May-2020 17:17:01.451 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+26-May-2020 17:17:01.454 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Deployment of web application directory [/Applications/tomcat/webapps/docs] has finished in [246] ms
+26-May-2020 17:17:01.454 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Deploying web application directory [/Applications/tomcat/webapps/manager]
+26-May-2020 17:17:01.755 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+26-May-2020 17:17:01.762 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Deployment of web application directory [/Applications/tomcat/webapps/manager] has finished in [307] ms
+26-May-2020 17:17:01.762 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Deploying web application directory [/Applications/tomcat/webapps/examples]
+26-May-2020 17:17:02.288 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+26-May-2020 17:17:02.311 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Deployment of web application directory [/Applications/tomcat/webapps/examples] has finished in [549] ms
+26-May-2020 17:17:02.312 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Deploying web application directory [/Applications/tomcat/webapps/ROOT]
+26-May-2020 17:17:06.669 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+17:17:14.146 [main] INFO  org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 6.1.0.Final
+17:17:14.721 [main] INFO  org.hibernate.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+17:17:14.892 [main] INFO  org.hibernate.Version - HHH000412: Hibernate Core {5.2.16.Final}
+17:17:14.895 [main] INFO  org.hibernate.cfg.Environment - HHH000206: hibernate.properties not found
+17:17:14.985 [main] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.0.1.Final}
+17:17:15.307 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+17:17:17.847 [main] INFO  org.hibernate.hql.internal.QueryTranslatorFactoryInitiator - HHH000397: Using ASTQueryTranslatorFactory
+26-May-2020 17:17:20.990 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Deployment of web application directory [/Applications/tomcat/webapps/ROOT] has finished in [18,679] ms
+26-May-2020 17:17:20.991 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Deploying web application directory [/Applications/tomcat/webapps/host-manager]
+26-May-2020 17:17:21.211 INFO [main] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+26-May-2020 17:17:21.216 INFO [main] org.apache.catalina.startup.HostConfig.deployDirectory Deployment of web application directory [/Applications/tomcat/webapps/host-manager] has finished in [224] ms
+26-May-2020 17:17:21.220 INFO [main] org.apache.coyote.AbstractProtocol.start Starting ProtocolHandler ["http-nio-8080"]
+26-May-2020 17:17:21.235 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in [41,539] milliseconds
+26-May-2020 17:18:28.257 INFO [http-nio-8080-exec-3] org.apache.catalina.startup.HostConfig.deployWAR Deploying web application archive [/Applications/tomcat/webapps/adap_compound_db_war#.war]
+26-May-2020 17:18:28.258 WARNING [http-nio-8080-exec-3] org.apache.catalina.core.StandardContext.setPath A context path must either be an empty string or start with a '/' and do not end with a '/'. The path [/adap_compound_db_war/] does not meet these criteria and has been changed to [/adap_compound_db_war]
+26-May-2020 17:18:28.266 INFO [http-nio-8080-exec-3] org.apache.catalina.startup.ExpandWar.expand An expanded directory [/Applications/tomcat/webapps/adap_compound_db_war] was found with a last modified time that did not match the associated WAR. It will be deleted.
+26-May-2020 17:18:31.258 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.reload Reloading context [/adap_compound_db_war]
+26-May-2020 17:18:31.259 INFO [Catalina-utility-1] org.apache.catalina.core.StandardContext.reload Reloading Context with name [/adap_compound_db_war] has started
+26-May-2020 17:18:31.307 WARNING [Catalina-utility-1] org.apache.catalina.loader.WebappClassLoaderBase.clearReferencesThreads The web application [adap_compound_db_war] appears to have started a thread named [mysql-cj-abandoned-connection-cleanup] but has failed to stop it. This is very likely to create a memory leak. Stack trace of thread:
+ java.lang.Object.wait(Native Method)
+ java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:144)
+ com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.run(AbandonedConnectionCleanupThread.java:85)
+ java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+ java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+ java.lang.Thread.run(Thread.java:748)
+26-May-2020 17:18:31.709 INFO [http-nio-8080-exec-3] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+26-May-2020 17:18:33.817 INFO [Catalina-utility-1] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+26-May-2020 17:18:36.310 INFO [mysql-cj-abandoned-connection-cleanup] org.apache.catalina.loader.WebappClassLoaderBase.checkStateForResourceLoading Illegal access: this web application instance has been stopped already. Could not load []. The following stack trace is thrown for debugging purposes as well as to attempt to terminate the thread which caused the illegal access.
+	java.lang.IllegalStateException: Illegal access: this web application instance has been stopped already. Could not load []. The following stack trace is thrown for debugging purposes as well as to attempt to terminate the thread which caused the illegal access.
+		at org.apache.catalina.loader.WebappClassLoaderBase.checkStateForResourceLoading(WebappClassLoaderBase.java:1385)
+		at org.apache.catalina.loader.WebappClassLoaderBase.getResource(WebappClassLoaderBase.java:1038)
+		at com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.checkThreadContextClassLoader(AbandonedConnectionCleanupThread.java:117)
+		at com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.run(AbandonedConnectionCleanupThread.java:84)
+		at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+		at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+		at java.lang.Thread.run(Thread.java:748)
+17:18:38.991 [http-nio-8080-exec-3] INFO  org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 6.1.0.Final
+17:18:39.556 [http-nio-8080-exec-3] INFO  org.hibernate.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+17:18:39.712 [http-nio-8080-exec-3] INFO  org.hibernate.Version - HHH000412: Hibernate Core {5.2.16.Final}
+17:18:39.714 [http-nio-8080-exec-3] INFO  org.hibernate.cfg.Environment - HHH000206: hibernate.properties not found
+17:18:39.788 [http-nio-8080-exec-3] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.0.1.Final}
+17:18:40.076 [http-nio-8080-exec-3] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+17:18:42.182 [http-nio-8080-exec-3] INFO  org.hibernate.hql.internal.QueryTranslatorFactoryInitiator - HHH000397: Using ASTQueryTranslatorFactory
+17:18:44.585 [Catalina-utility-1] INFO  org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 6.1.0.Final
+17:18:45.379 [Catalina-utility-1] INFO  org.hibernate.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+17:18:45.640 [Catalina-utility-1] INFO  org.hibernate.Version - HHH000412: Hibernate Core {5.2.16.Final}
+26-May-2020 17:18:45.650 INFO [http-nio-8080-exec-3] org.apache.catalina.startup.HostConfig.deployWAR Deployment of web application archive [/Applications/tomcat/webapps/adap_compound_db_war#.war] has finished in [17,392] ms
+17:18:45.650 [Catalina-utility-1] INFO  org.hibernate.cfg.Environment - HHH000206: hibernate.properties not found
+17:18:45.752 [Catalina-utility-1] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.0.1.Final}
+17:18:46.164 [Catalina-utility-1] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+17:18:48.212 [Catalina-utility-1] INFO  org.hibernate.hql.internal.QueryTranslatorFactoryInitiator - HHH000397: Using ASTQueryTranslatorFactory
+26-May-2020 17:18:51.642 INFO [Catalina-utility-1] org.apache.catalina.core.StandardContext.reload Reloading Context with name [/adap_compound_db_war] is completed
+27-May-2020 08:16:03.595 INFO [http-nio-8080-exec-11] org.apache.catalina.startup.HostConfig.undeploy Undeploying context [/adap_compound_db_war/]
+27-May-2020 08:16:03.655 WARNING [http-nio-8080-exec-11] org.apache.catalina.loader.WebappClassLoaderBase.clearReferencesThreads The web application [adap_compound_db_war] appears to have started a thread named [mysql-cj-abandoned-connection-cleanup] but has failed to stop it. This is very likely to create a memory leak. Stack trace of thread:
+ java.lang.Object.wait(Native Method)
+ java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:144)
+ com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.run(AbandonedConnectionCleanupThread.java:85)
+ java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+ java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+ java.lang.Thread.run(Thread.java:748)
+27-May-2020 08:16:03.660 INFO [http-nio-8080-exec-11] org.apache.catalina.startup.HostConfig.deployWAR Deploying web application archive [/Applications/tomcat/webapps/adap_compound_db_war#.war]
+27-May-2020 08:16:03.661 WARNING [http-nio-8080-exec-11] org.apache.catalina.core.StandardContext.setPath A context path must either be an empty string or start with a '/' and do not end with a '/'. The path [/adap_compound_db_war/] does not meet these criteria and has been changed to [/adap_compound_db_war]
+27-May-2020 08:16:03.666 INFO [http-nio-8080-exec-11] org.apache.catalina.startup.ExpandWar.expand An expanded directory [/Applications/tomcat/webapps/adap_compound_db_war] was found with a last modified time that did not match the associated WAR. It will be deleted.
+27-May-2020 08:16:04.436 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.reload Reloading context [/adap_compound_db_war]
+27-May-2020 08:16:04.436 INFO [Catalina-utility-1] org.apache.catalina.core.StandardContext.reload Reloading Context with name [/adap_compound_db_war] has started
+27-May-2020 08:16:06.641 INFO [http-nio-8080-exec-11] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+27-May-2020 08:16:06.892 INFO [Catalina-utility-1] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+27-May-2020 08:16:08.664 INFO [mysql-cj-abandoned-connection-cleanup] org.apache.catalina.loader.WebappClassLoaderBase.checkStateForResourceLoading Illegal access: this web application instance has been stopped already. Could not load []. The following stack trace is thrown for debugging purposes as well as to attempt to terminate the thread which caused the illegal access.
+	java.lang.IllegalStateException: Illegal access: this web application instance has been stopped already. Could not load []. The following stack trace is thrown for debugging purposes as well as to attempt to terminate the thread which caused the illegal access.
+		at org.apache.catalina.loader.WebappClassLoaderBase.checkStateForResourceLoading(WebappClassLoaderBase.java:1385)
+		at org.apache.catalina.loader.WebappClassLoaderBase.getResource(WebappClassLoaderBase.java:1038)
+		at com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.checkThreadContextClassLoader(AbandonedConnectionCleanupThread.java:117)
+		at com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.run(AbandonedConnectionCleanupThread.java:84)
+		at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+		at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+		at java.lang.Thread.run(Thread.java:748)
+08:16:13.549 [http-nio-8080-exec-11] INFO  org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 6.1.0.Final
+08:16:14.037 [http-nio-8080-exec-11] INFO  org.hibernate.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+08:16:14.191 [http-nio-8080-exec-11] INFO  org.hibernate.Version - HHH000412: Hibernate Core {5.2.16.Final}
+08:16:14.194 [http-nio-8080-exec-11] INFO  org.hibernate.cfg.Environment - HHH000206: hibernate.properties not found
+08:16:14.276 [http-nio-8080-exec-11] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.0.1.Final}
+08:16:14.563 [http-nio-8080-exec-11] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+08:16:16.463 [http-nio-8080-exec-11] INFO  org.hibernate.hql.internal.QueryTranslatorFactoryInitiator - HHH000397: Using ASTQueryTranslatorFactory
+08:16:18.682 [Catalina-utility-1] INFO  org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 6.1.0.Final
+27-May-2020 08:16:19.056 INFO [http-nio-8080-exec-11] org.apache.catalina.startup.HostConfig.deployWAR Deployment of web application archive [/Applications/tomcat/webapps/adap_compound_db_war#.war] has finished in [15,395] ms
+08:16:19.283 [Catalina-utility-1] INFO  org.hibernate.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+08:16:19.427 [Catalina-utility-1] INFO  org.hibernate.Version - HHH000412: Hibernate Core {5.2.16.Final}
+08:16:19.429 [Catalina-utility-1] INFO  org.hibernate.cfg.Environment - HHH000206: hibernate.properties not found
+08:16:19.511 [Catalina-utility-1] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.0.1.Final}
+08:16:19.769 [Catalina-utility-1] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+08:16:21.483 [Catalina-utility-1] INFO  org.hibernate.hql.internal.QueryTranslatorFactoryInitiator - HHH000397: Using ASTQueryTranslatorFactory
+27-May-2020 08:16:24.205 INFO [Catalina-utility-1] org.apache.catalina.core.StandardContext.reload Reloading Context with name [/adap_compound_db_war] is completed
+27-May-2020 11:02:58.396 INFO [http-nio-8080-exec-21] org.apache.catalina.startup.HostConfig.undeploy Undeploying context [/adap_compound_db_war/]
+27-May-2020 11:02:58.460 WARNING [http-nio-8080-exec-21] org.apache.catalina.loader.WebappClassLoaderBase.clearReferencesThreads The web application [adap_compound_db_war] appears to have started a thread named [mysql-cj-abandoned-connection-cleanup] but has failed to stop it. This is very likely to create a memory leak. Stack trace of thread:
+ java.lang.Object.wait(Native Method)
+ java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:144)
+ com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.run(AbandonedConnectionCleanupThread.java:85)
+ java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+ java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+ java.lang.Thread.run(Thread.java:748)
+27-May-2020 11:02:58.466 INFO [http-nio-8080-exec-21] org.apache.catalina.startup.HostConfig.deployWAR Deploying web application archive [/Applications/tomcat/webapps/adap_compound_db_war#.war]
+27-May-2020 11:02:58.466 WARNING [http-nio-8080-exec-21] org.apache.catalina.core.StandardContext.setPath A context path must either be an empty string or start with a '/' and do not end with a '/'. The path [/adap_compound_db_war/] does not meet these criteria and has been changed to [/adap_compound_db_war]
+27-May-2020 11:02:58.470 INFO [http-nio-8080-exec-21] org.apache.catalina.startup.ExpandWar.expand An expanded directory [/Applications/tomcat/webapps/adap_compound_db_war] was found with a last modified time that did not match the associated WAR. It will be deleted.
+27-May-2020 11:03:01.081 INFO [http-nio-8080-exec-21] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+27-May-2020 11:03:03.464 INFO [mysql-cj-abandoned-connection-cleanup] org.apache.catalina.loader.WebappClassLoaderBase.checkStateForResourceLoading Illegal access: this web application instance has been stopped already. Could not load []. The following stack trace is thrown for debugging purposes as well as to attempt to terminate the thread which caused the illegal access.
+	java.lang.IllegalStateException: Illegal access: this web application instance has been stopped already. Could not load []. The following stack trace is thrown for debugging purposes as well as to attempt to terminate the thread which caused the illegal access.
+		at org.apache.catalina.loader.WebappClassLoaderBase.checkStateForResourceLoading(WebappClassLoaderBase.java:1385)
+		at org.apache.catalina.loader.WebappClassLoaderBase.getResource(WebappClassLoaderBase.java:1038)
+		at com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.checkThreadContextClassLoader(AbandonedConnectionCleanupThread.java:117)
+		at com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.run(AbandonedConnectionCleanupThread.java:84)
+		at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+		at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+		at java.lang.Thread.run(Thread.java:748)
+11:03:07.564 [http-nio-8080-exec-21] INFO  org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 6.1.0.Final
+11:03:08.016 [http-nio-8080-exec-21] INFO  org.hibernate.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+11:03:08.169 [http-nio-8080-exec-21] INFO  org.hibernate.Version - HHH000412: Hibernate Core {5.2.16.Final}
+11:03:08.171 [http-nio-8080-exec-21] INFO  org.hibernate.cfg.Environment - HHH000206: hibernate.properties not found
+11:03:08.232 [http-nio-8080-exec-21] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.0.1.Final}
+11:03:08.439 [http-nio-8080-exec-21] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+11:03:10.508 [http-nio-8080-exec-21] INFO  org.hibernate.hql.internal.QueryTranslatorFactoryInitiator - HHH000397: Using ASTQueryTranslatorFactory
+27-May-2020 11:03:13.551 INFO [http-nio-8080-exec-21] org.apache.catalina.startup.HostConfig.deployWAR Deployment of web application archive [/Applications/tomcat/webapps/adap_compound_db_war#.war] has finished in [15,084] ms
+27-May-2020 14:38:59.980 WARNING [main] org.apache.catalina.core.StandardServer.await Invalid shutdown command [] received
+27-May-2020 14:39:09.398 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.reload Reloading context [/adap_compound_db_war]
+27-May-2020 14:39:09.399 INFO [Catalina-utility-1] org.apache.catalina.core.StandardContext.reload Reloading Context with name [/adap_compound_db_war] has started
+27-May-2020 14:39:09.471 WARNING [Catalina-utility-1] org.apache.catalina.loader.WebappClassLoaderBase.clearReferencesThreads The web application [adap_compound_db_war] appears to have started a thread named [mysql-cj-abandoned-connection-cleanup] but has failed to stop it. This is very likely to create a memory leak. Stack trace of thread:
+ java.lang.Object.wait(Native Method)
+ java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:144)
+ com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.run(AbandonedConnectionCleanupThread.java:85)
+ java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+ java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+ java.lang.Thread.run(Thread.java:748)
+27-May-2020 14:39:14.472 INFO [mysql-cj-abandoned-connection-cleanup] org.apache.catalina.loader.WebappClassLoaderBase.checkStateForResourceLoading Illegal access: this web application instance has been stopped already. Could not load []. The following stack trace is thrown for debugging purposes as well as to attempt to terminate the thread which caused the illegal access.
+	java.lang.IllegalStateException: Illegal access: this web application instance has been stopped already. Could not load []. The following stack trace is thrown for debugging purposes as well as to attempt to terminate the thread which caused the illegal access.
+		at org.apache.catalina.loader.WebappClassLoaderBase.checkStateForResourceLoading(WebappClassLoaderBase.java:1385)
+		at org.apache.catalina.loader.WebappClassLoaderBase.getResource(WebappClassLoaderBase.java:1038)
+		at com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.checkThreadContextClassLoader(AbandonedConnectionCleanupThread.java:117)
+		at com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.run(AbandonedConnectionCleanupThread.java:84)
+		at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+		at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+		at java.lang.Thread.run(Thread.java:748)
+27-May-2020 14:39:15.517 INFO [Catalina-utility-1] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+14:39:18.856 [Catalina-utility-1] INFO  org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 6.1.0.Final
+14:39:20.171 [Catalina-utility-1] INFO  org.hibernate.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+14:39:20.623 [Catalina-utility-1] INFO  org.hibernate.Version - HHH000412: Hibernate Core {5.2.16.Final}
+14:39:20.629 [Catalina-utility-1] INFO  org.hibernate.cfg.Environment - HHH000206: hibernate.properties not found
+14:39:20.778 [Catalina-utility-1] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.0.1.Final}
+14:39:21.654 [Catalina-utility-1] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+14:39:26.123 [Catalina-utility-1] INFO  org.hibernate.hql.internal.QueryTranslatorFactoryInitiator - HHH000397: Using ASTQueryTranslatorFactory
+27-May-2020 14:39:30.883 INFO [Catalina-utility-1] org.apache.catalina.core.StandardContext.reload Reloading Context with name [/adap_compound_db_war] is completed
+27-May-2020 15:56:32.989 WARNING [main] org.apache.catalina.core.StandardServer.await Invalid shutdown command [] received
+27-May-2020 15:56:43.310 INFO [Catalina-utility-2] org.apache.catalina.startup.HostConfig.reload Reloading context [/adap_compound_db_war]
+27-May-2020 15:56:43.311 INFO [Catalina-utility-2] org.apache.catalina.core.StandardContext.reload Reloading Context with name [/adap_compound_db_war] has started
+27-May-2020 15:56:43.370 WARNING [Catalina-utility-2] org.apache.catalina.loader.WebappClassLoaderBase.clearReferencesThreads The web application [adap_compound_db_war] appears to have started a thread named [mysql-cj-abandoned-connection-cleanup] but has failed to stop it. This is very likely to create a memory leak. Stack trace of thread:
+ java.lang.Object.wait(Native Method)
+ java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:144)
+ com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.run(AbandonedConnectionCleanupThread.java:85)
+ java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+ java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+ java.lang.Thread.run(Thread.java:748)
+27-May-2020 15:56:48.372 INFO [mysql-cj-abandoned-connection-cleanup] org.apache.catalina.loader.WebappClassLoaderBase.checkStateForResourceLoading Illegal access: this web application instance has been stopped already. Could not load []. The following stack trace is thrown for debugging purposes as well as to attempt to terminate the thread which caused the illegal access.
+	java.lang.IllegalStateException: Illegal access: this web application instance has been stopped already. Could not load []. The following stack trace is thrown for debugging purposes as well as to attempt to terminate the thread which caused the illegal access.
+		at org.apache.catalina.loader.WebappClassLoaderBase.checkStateForResourceLoading(WebappClassLoaderBase.java:1385)
+		at org.apache.catalina.loader.WebappClassLoaderBase.getResource(WebappClassLoaderBase.java:1038)
+		at com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.checkThreadContextClassLoader(AbandonedConnectionCleanupThread.java:117)
+		at com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.run(AbandonedConnectionCleanupThread.java:84)
+		at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+		at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+		at java.lang.Thread.run(Thread.java:748)
+27-May-2020 15:56:50.580 INFO [Catalina-utility-2] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+15:56:54.133 [Catalina-utility-2] INFO  org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 6.1.0.Final
+15:56:55.167 [Catalina-utility-2] INFO  org.hibernate.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+15:56:55.385 [Catalina-utility-2] INFO  org.hibernate.Version - HHH000412: Hibernate Core {5.2.16.Final}
+15:56:55.389 [Catalina-utility-2] INFO  org.hibernate.cfg.Environment - HHH000206: hibernate.properties not found
+15:56:55.544 [Catalina-utility-2] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.0.1.Final}
+15:56:56.272 [Catalina-utility-2] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+15:57:00.659 [Catalina-utility-2] INFO  org.hibernate.hql.internal.QueryTranslatorFactoryInitiator - HHH000397: Using ASTQueryTranslatorFactory
+27-May-2020 15:57:04.134 INFO [Catalina-utility-2] org.apache.catalina.core.StandardContext.reload Reloading Context with name [/adap_compound_db_war] is completed
+27-May-2020 16:00:00.350 WARNING [main] org.apache.catalina.core.StandardServer.await Invalid shutdown command [] received
+27-May-2020 16:02:41.840 WARNING [main] org.apache.catalina.core.StandardServer.await Invalid shutdown command [] received
+27-May-2020 16:04:33.050 WARNING [main] org.apache.catalina.core.StandardServer.await Invalid shutdown command [] received
+16:09:50.659 [http-nio-8080-exec-51] WARN  org.springframework.web.servlet.PageNotFound - No mapping for GET /favicon.ico
+27-May-2020 16:13:12.974 WARNING [main] org.apache.catalina.core.StandardServer.await Invalid shutdown command [] received
+27-May-2020 16:42:11.860 WARNING [main] org.apache.catalina.core.StandardServer.await Invalid shutdown command [] received
+28-May-2020 07:48:35.769 INFO [http-nio-8080-exec-51] org.apache.catalina.startup.HostConfig.undeploy Undeploying context [/adap_compound_db_war/]
+28-May-2020 07:48:35.996 WARNING [http-nio-8080-exec-51] org.apache.catalina.loader.WebappClassLoaderBase.clearReferencesThreads The web application [adap_compound_db_war] appears to have started a thread named [mysql-cj-abandoned-connection-cleanup] but has failed to stop it. This is very likely to create a memory leak. Stack trace of thread:
+ java.lang.Object.wait(Native Method)
+ java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:144)
+ com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.run(AbandonedConnectionCleanupThread.java:85)
+ java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+ java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+ java.lang.Thread.run(Thread.java:748)
+28-May-2020 07:48:36.033 INFO [http-nio-8080-exec-51] org.apache.catalina.startup.HostConfig.deployWAR Deploying web application archive [/Applications/tomcat/webapps/adap_compound_db_war#.war]
+28-May-2020 07:48:36.035 WARNING [http-nio-8080-exec-51] org.apache.catalina.core.StandardContext.setPath A context path must either be an empty string or start with a '/' and do not end with a '/'. The path [/adap_compound_db_war/] does not meet these criteria and has been changed to [/adap_compound_db_war]
+28-May-2020 07:48:36.103 INFO [http-nio-8080-exec-51] org.apache.catalina.startup.ExpandWar.expand An expanded directory [/Applications/tomcat/webapps/adap_compound_db_war] was found with a last modified time that did not match the associated WAR. It will be deleted.
+28-May-2020 07:48:38.312 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.reload Reloading context [/adap_compound_db_war]
+28-May-2020 07:48:38.313 INFO [Catalina-utility-1] org.apache.catalina.core.StandardContext.reload Reloading Context with name [/adap_compound_db_war] has started
+28-May-2020 07:48:38.396 WARNING [Catalina-utility-1] org.apache.catalina.loader.WebappClassLoaderBase.clearReferencesThreads The web application [adap_compound_db_war] appears to have started a thread named [mysql-cj-abandoned-connection-cleanup] but has failed to stop it. This is very likely to create a memory leak. Stack trace of thread:
+ java.lang.Object.wait(Native Method)
+ java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:144)
+ com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.run(AbandonedConnectionCleanupThread.java:85)
+ java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+ java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+ java.lang.Thread.run(Thread.java:748)
+28-May-2020 07:48:40.999 INFO [mysql-cj-abandoned-connection-cleanup] org.apache.catalina.loader.WebappClassLoaderBase.checkStateForResourceLoading Illegal access: this web application instance has been stopped already. Could not load []. The following stack trace is thrown for debugging purposes as well as to attempt to terminate the thread which caused the illegal access.
+	java.lang.IllegalStateException: Illegal access: this web application instance has been stopped already. Could not load []. The following stack trace is thrown for debugging purposes as well as to attempt to terminate the thread which caused the illegal access.
+		at org.apache.catalina.loader.WebappClassLoaderBase.checkStateForResourceLoading(WebappClassLoaderBase.java:1385)
+		at org.apache.catalina.loader.WebappClassLoaderBase.getResource(WebappClassLoaderBase.java:1038)
+		at com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.checkThreadContextClassLoader(AbandonedConnectionCleanupThread.java:117)
+		at com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.run(AbandonedConnectionCleanupThread.java:84)
+		at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+		at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+		at java.lang.Thread.run(Thread.java:748)
+28-May-2020 07:48:43.398 INFO [mysql-cj-abandoned-connection-cleanup] org.apache.catalina.loader.WebappClassLoaderBase.checkStateForResourceLoading Illegal access: this web application instance has been stopped already. Could not load []. The following stack trace is thrown for debugging purposes as well as to attempt to terminate the thread which caused the illegal access.
+	java.lang.IllegalStateException: Illegal access: this web application instance has been stopped already. Could not load []. The following stack trace is thrown for debugging purposes as well as to attempt to terminate the thread which caused the illegal access.
+		at org.apache.catalina.loader.WebappClassLoaderBase.checkStateForResourceLoading(WebappClassLoaderBase.java:1385)
+		at org.apache.catalina.loader.WebappClassLoaderBase.getResource(WebappClassLoaderBase.java:1038)
+		at com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.checkThreadContextClassLoader(AbandonedConnectionCleanupThread.java:117)
+		at com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.run(AbandonedConnectionCleanupThread.java:84)
+		at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+		at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+		at java.lang.Thread.run(Thread.java:748)
+28-May-2020 07:48:45.835 INFO [http-nio-8080-exec-51] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+28-May-2020 07:48:46.730 INFO [Catalina-utility-1] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+07:48:54.402 [http-nio-8080-exec-51] INFO  org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 6.1.0.Final
+07:48:55.037 [http-nio-8080-exec-51] INFO  org.hibernate.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+07:48:55.312 [http-nio-8080-exec-51] INFO  org.hibernate.Version - HHH000412: Hibernate Core {5.2.16.Final}
+07:48:55.317 [http-nio-8080-exec-51] INFO  org.hibernate.cfg.Environment - HHH000206: hibernate.properties not found
+07:48:55.488 [http-nio-8080-exec-51] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.0.1.Final}
+07:48:55.945 [http-nio-8080-exec-51] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+07:49:06.215 [Catalina-utility-1] INFO  org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 6.1.0.Final
+07:49:06.559 [http-nio-8080-exec-51] INFO  org.hibernate.hql.internal.QueryTranslatorFactoryInitiator - HHH000397: Using ASTQueryTranslatorFactory
+07:49:08.346 [Catalina-utility-1] INFO  org.hibernate.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+07:49:09.054 [Catalina-utility-1] INFO  org.hibernate.Version - HHH000412: Hibernate Core {5.2.16.Final}
+07:49:09.060 [Catalina-utility-1] INFO  org.hibernate.cfg.Environment - HHH000206: hibernate.properties not found
+07:49:09.380 [Catalina-utility-1] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.0.1.Final}
+07:49:10.714 [Catalina-utility-1] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+28-May-2020 07:49:16.273 INFO [http-nio-8080-exec-51] org.apache.catalina.startup.HostConfig.deployWAR Deployment of web application archive [/Applications/tomcat/webapps/adap_compound_db_war#.war] has finished in [40,241] ms
+07:49:20.698 [Catalina-utility-1] INFO  org.hibernate.hql.internal.QueryTranslatorFactoryInitiator - HHH000397: Using ASTQueryTranslatorFactory
+28-May-2020 07:49:31.282 INFO [Catalina-utility-1] org.apache.catalina.core.StandardContext.reload Reloading Context with name [/adap_compound_db_war] is completed
+28-May-2020 07:50:47.873 WARNING [main] org.apache.catalina.core.StandardServer.await Invalid shutdown command [] received
+28-May-2020 07:51:01.344 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.reload Reloading context [/adap_compound_db_war]
+28-May-2020 07:51:01.344 INFO [Catalina-utility-1] org.apache.catalina.core.StandardContext.reload Reloading Context with name [/adap_compound_db_war] has started
+28-May-2020 07:51:01.373 WARNING [Catalina-utility-1] org.apache.catalina.loader.WebappClassLoaderBase.clearReferencesThreads The web application [adap_compound_db_war] appears to have started a thread named [mysql-cj-abandoned-connection-cleanup] but has failed to stop it. This is very likely to create a memory leak. Stack trace of thread:
+ com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.run(AbandonedConnectionCleanupThread.java:85)
+ java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+ java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+ java.lang.Thread.run(Thread.java:748)
+28-May-2020 07:51:02.943 INFO [Catalina-utility-1] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+28-May-2020 07:51:06.376 INFO [mysql-cj-abandoned-connection-cleanup] org.apache.catalina.loader.WebappClassLoaderBase.checkStateForResourceLoading Illegal access: this web application instance has been stopped already. Could not load []. The following stack trace is thrown for debugging purposes as well as to attempt to terminate the thread which caused the illegal access.
+	java.lang.IllegalStateException: Illegal access: this web application instance has been stopped already. Could not load []. The following stack trace is thrown for debugging purposes as well as to attempt to terminate the thread which caused the illegal access.
+		at org.apache.catalina.loader.WebappClassLoaderBase.checkStateForResourceLoading(WebappClassLoaderBase.java:1385)
+		at org.apache.catalina.loader.WebappClassLoaderBase.getResource(WebappClassLoaderBase.java:1038)
+		at com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.checkThreadContextClassLoader(AbandonedConnectionCleanupThread.java:117)
+		at com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.run(AbandonedConnectionCleanupThread.java:84)
+		at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+		at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+		at java.lang.Thread.run(Thread.java:748)
+07:51:10.077 [Catalina-utility-1] INFO  org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 6.1.0.Final
+07:51:12.456 [Catalina-utility-1] INFO  org.hibernate.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+07:51:12.686 [Catalina-utility-1] INFO  org.hibernate.Version - HHH000412: Hibernate Core {5.2.16.Final}
+07:51:12.688 [Catalina-utility-1] INFO  org.hibernate.cfg.Environment - HHH000206: hibernate.properties not found
+07:51:12.811 [Catalina-utility-1] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.0.1.Final}
+07:51:13.300 [Catalina-utility-1] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+07:51:16.105 [Catalina-utility-1] INFO  org.hibernate.hql.internal.QueryTranslatorFactoryInitiator - HHH000397: Using ASTQueryTranslatorFactory
+28-May-2020 07:51:18.525 INFO [Catalina-utility-1] org.apache.catalina.core.StandardContext.reload Reloading Context with name [/adap_compound_db_war] is completed
+29-May-2020 05:36:25.000 INFO [http-nio-8080-exec-70] org.apache.catalina.startup.HostConfig.undeploy Undeploying context [/adap_compound_db_war/]
+29-May-2020 05:36:25.095 WARNING [http-nio-8080-exec-70] org.apache.catalina.loader.WebappClassLoaderBase.clearReferencesThreads The web application [adap_compound_db_war] appears to have started a thread named [mysql-cj-abandoned-connection-cleanup] but has failed to stop it. This is very likely to create a memory leak. Stack trace of thread:
+ java.io.File.lastModified(File.java:940)
+ org.apache.catalina.webresources.FileResource.getLastModified(FileResource.java:95)
+ org.apache.catalina.webresources.CachedResource.getLastModified(CachedResource.java:190)
+ org.apache.catalina.webresources.CachedResource.validateResource(CachedResource.java:107)
+ org.apache.catalina.webresources.Cache.getResource(Cache.java:87)
+ org.apache.catalina.webresources.StandardRoot.getResource(StandardRoot.java:217)
+ org.apache.catalina.webresources.StandardRoot.getClassLoaderResource(StandardRoot.java:226)
+ org.apache.catalina.loader.WebappClassLoaderBase.findResource(WebappClassLoaderBase.java:938)
+ org.apache.catalina.loader.WebappClassLoaderBase.getResource(WebappClassLoaderBase.java:1057)
+ com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.checkThreadContextClassLoader(AbandonedConnectionCleanupThread.java:117)
+ com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.run(AbandonedConnectionCleanupThread.java:84)
+ java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+ java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+ java.lang.Thread.run(Thread.java:748)
+29-May-2020 05:36:25.110 INFO [http-nio-8080-exec-70] org.apache.catalina.startup.HostConfig.deployWAR Deploying web application archive [/Applications/tomcat/webapps/adap_compound_db_war#.war]
+29-May-2020 05:36:25.111 WARNING [http-nio-8080-exec-70] org.apache.catalina.core.StandardContext.setPath A context path must either be an empty string or start with a '/' and do not end with a '/'. The path [/adap_compound_db_war/] does not meet these criteria and has been changed to [/adap_compound_db_war]
+29-May-2020 05:36:25.127 INFO [http-nio-8080-exec-70] org.apache.catalina.startup.ExpandWar.expand An expanded directory [/Applications/tomcat/webapps/adap_compound_db_war] was found with a last modified time that did not match the associated WAR. It will be deleted.
+29-May-2020 05:36:29.582 INFO [Catalina-utility-2] org.apache.catalina.startup.HostConfig.reload Reloading context [/adap_compound_db_war]
+29-May-2020 05:36:29.582 INFO [Catalina-utility-2] org.apache.catalina.core.StandardContext.reload Reloading Context with name [/adap_compound_db_war] has started
+29-May-2020 05:36:29.627 WARNING [Catalina-utility-2] org.apache.catalina.loader.WebappClassLoaderBase.clearReferencesThreads The web application [adap_compound_db_war] appears to have started a thread named [mysql-cj-abandoned-connection-cleanup] but has failed to stop it. This is very likely to create a memory leak. Stack trace of thread:
+ java.lang.Object.wait(Native Method)
+ java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:144)
+ com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.run(AbandonedConnectionCleanupThread.java:85)
+ java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+ java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+ java.lang.Thread.run(Thread.java:748)
+29-May-2020 05:36:30.098 INFO [mysql-cj-abandoned-connection-cleanup] org.apache.catalina.loader.WebappClassLoaderBase.checkStateForResourceLoading Illegal access: this web application instance has been stopped already. Could not load []. The following stack trace is thrown for debugging purposes as well as to attempt to terminate the thread which caused the illegal access.
+	java.lang.IllegalStateException: Illegal access: this web application instance has been stopped already. Could not load []. The following stack trace is thrown for debugging purposes as well as to attempt to terminate the thread which caused the illegal access.
+		at org.apache.catalina.loader.WebappClassLoaderBase.checkStateForResourceLoading(WebappClassLoaderBase.java:1385)
+		at org.apache.catalina.loader.WebappClassLoaderBase.getResource(WebappClassLoaderBase.java:1038)
+		at com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.checkThreadContextClassLoader(AbandonedConnectionCleanupThread.java:117)
+		at com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.run(AbandonedConnectionCleanupThread.java:84)
+		at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+		at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+		at java.lang.Thread.run(Thread.java:748)
+29-May-2020 05:36:31.211 INFO [http-nio-8080-exec-70] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+29-May-2020 05:36:33.498 INFO [Catalina-utility-2] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+29-May-2020 05:36:34.628 INFO [mysql-cj-abandoned-connection-cleanup] org.apache.catalina.loader.WebappClassLoaderBase.checkStateForResourceLoading Illegal access: this web application instance has been stopped already. Could not load []. The following stack trace is thrown for debugging purposes as well as to attempt to terminate the thread which caused the illegal access.
+	java.lang.IllegalStateException: Illegal access: this web application instance has been stopped already. Could not load []. The following stack trace is thrown for debugging purposes as well as to attempt to terminate the thread which caused the illegal access.
+		at org.apache.catalina.loader.WebappClassLoaderBase.checkStateForResourceLoading(WebappClassLoaderBase.java:1385)
+		at org.apache.catalina.loader.WebappClassLoaderBase.getResource(WebappClassLoaderBase.java:1038)
+		at com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.checkThreadContextClassLoader(AbandonedConnectionCleanupThread.java:117)
+		at com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.run(AbandonedConnectionCleanupThread.java:84)
+		at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+		at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+		at java.lang.Thread.run(Thread.java:748)
+05:36:38.542 [http-nio-8080-exec-70] INFO  org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 6.1.0.Final
+05:36:39.622 [http-nio-8080-exec-70] INFO  org.hibernate.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+05:36:39.931 [http-nio-8080-exec-70] INFO  org.hibernate.Version - HHH000412: Hibernate Core {5.2.16.Final}
+05:36:39.935 [http-nio-8080-exec-70] INFO  org.hibernate.cfg.Environment - HHH000206: hibernate.properties not found
+05:36:40.049 [http-nio-8080-exec-70] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.0.1.Final}
+05:36:40.458 [http-nio-8080-exec-70] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+05:51:54.510 [http-nio-8080-exec-70] INFO  org.hibernate.hql.internal.QueryTranslatorFactoryInitiator - HHH000397: Using ASTQueryTranslatorFactory
+05:51:54.538 [Catalina-utility-2] INFO  org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 6.1.0.Final
+05:51:55.701 [Catalina-utility-2] INFO  org.hibernate.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+05:51:56.166 [Catalina-utility-2] INFO  org.hibernate.Version - HHH000412: Hibernate Core {5.2.16.Final}
+05:51:56.171 [Catalina-utility-2] INFO  org.hibernate.cfg.Environment - HHH000206: hibernate.properties not found
+05:51:56.457 [Catalina-utility-2] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.0.1.Final}
+05:51:57.187 [Catalina-utility-2] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+29-May-2020 05:51:59.891 INFO [http-nio-8080-exec-70] org.apache.catalina.startup.HostConfig.deployWAR Deployment of web application archive [/Applications/tomcat/webapps/adap_compound_db_war#.war] has finished in [934,781] ms
+05:52:01.956 [Catalina-utility-2] INFO  org.hibernate.hql.internal.QueryTranslatorFactoryInitiator - HHH000397: Using ASTQueryTranslatorFactory
+29-May-2020 05:52:04.743 INFO [Catalina-utility-2] org.apache.catalina.core.StandardContext.reload Reloading Context with name [/adap_compound_db_war] is completed
+29-May-2020 10:31:39.902 WARNING [main] org.apache.catalina.core.StandardServer.await Invalid shutdown command [] received
+29-May-2020 10:31:49.253 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.reload Reloading context [/adap_compound_db_war]
+29-May-2020 10:31:49.253 INFO [Catalina-utility-1] org.apache.catalina.core.StandardContext.reload Reloading Context with name [/adap_compound_db_war] has started
+29-May-2020 10:31:49.448 WARNING [Catalina-utility-1] org.apache.catalina.loader.WebappClassLoaderBase.clearReferencesThreads The web application [adap_compound_db_war] appears to have started a thread named [mysql-cj-abandoned-connection-cleanup] but has failed to stop it. This is very likely to create a memory leak. Stack trace of thread:
+ java.lang.Object.wait(Native Method)
+ java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:144)
+ com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.run(AbandonedConnectionCleanupThread.java:85)
+ java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+ java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+ java.lang.Thread.run(Thread.java:748)
+29-May-2020 10:31:54.450 INFO [mysql-cj-abandoned-connection-cleanup] org.apache.catalina.loader.WebappClassLoaderBase.checkStateForResourceLoading Illegal access: this web application instance has been stopped already. Could not load []. The following stack trace is thrown for debugging purposes as well as to attempt to terminate the thread which caused the illegal access.
+	java.lang.IllegalStateException: Illegal access: this web application instance has been stopped already. Could not load []. The following stack trace is thrown for debugging purposes as well as to attempt to terminate the thread which caused the illegal access.
+		at org.apache.catalina.loader.WebappClassLoaderBase.checkStateForResourceLoading(WebappClassLoaderBase.java:1385)
+		at org.apache.catalina.loader.WebappClassLoaderBase.getResource(WebappClassLoaderBase.java:1038)
+		at com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.checkThreadContextClassLoader(AbandonedConnectionCleanupThread.java:117)
+		at com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.run(AbandonedConnectionCleanupThread.java:84)
+		at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+		at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+		at java.lang.Thread.run(Thread.java:748)
+29-May-2020 10:31:55.387 INFO [Catalina-utility-1] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+10:32:04.030 [Catalina-utility-1] INFO  org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 6.1.0.Final
+10:32:04.899 [Catalina-utility-1] INFO  org.hibernate.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+10:32:05.163 [Catalina-utility-1] INFO  org.hibernate.Version - HHH000412: Hibernate Core {5.2.16.Final}
+10:32:05.167 [Catalina-utility-1] INFO  org.hibernate.cfg.Environment - HHH000206: hibernate.properties not found
+10:32:05.287 [Catalina-utility-1] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.0.1.Final}
+10:32:05.720 [Catalina-utility-1] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+10:32:09.824 [Catalina-utility-1] INFO  org.hibernate.hql.internal.QueryTranslatorFactoryInitiator - HHH000397: Using ASTQueryTranslatorFactory
+29-May-2020 10:32:18.444 INFO [Catalina-utility-1] org.apache.catalina.core.StandardContext.reload Reloading Context with name [/adap_compound_db_war] is completed
+29-May-2020 11:00:29.870 WARNING [main] org.apache.catalina.core.StandardServer.await Invalid shutdown command [] received
+29-May-2020 11:22:06.375 WARNING [main] org.apache.catalina.core.StandardServer.await Invalid shutdown command [] received
+29-May-2020 11:22:41.763 WARNING [main] org.apache.catalina.core.StandardServer.await Invalid shutdown command [] received
+29-May-2020 11:22:50.324 INFO [Catalina-utility-1] org.apache.catalina.startup.HostConfig.reload Reloading context [/adap_compound_db_war]
+29-May-2020 11:22:50.324 INFO [Catalina-utility-1] org.apache.catalina.core.StandardContext.reload Reloading Context with name [/adap_compound_db_war] has started
+29-May-2020 11:22:50.402 WARNING [Catalina-utility-1] org.apache.catalina.loader.WebappClassLoaderBase.clearReferencesThreads The web application [adap_compound_db_war] appears to have started a thread named [mysql-cj-abandoned-connection-cleanup] but has failed to stop it. This is very likely to create a memory leak. Stack trace of thread:
+ java.lang.Object.wait(Native Method)
+ java.lang.ref.ReferenceQueue.remove(ReferenceQueue.java:144)
+ com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.run(AbandonedConnectionCleanupThread.java:85)
+ java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+ java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+ java.lang.Thread.run(Thread.java:748)
+29-May-2020 11:22:50.551 SEVERE [Catalina-utility-1] org.apache.catalina.core.StandardContext.reload Exception starting Context with name [/adap_compound_db_war]
+	org.apache.catalina.LifecycleException: Failed to initialize component [org.apache.catalina.webresources.JarResourceSet@55fb5577]
+		at org.apache.catalina.util.LifecycleBase.handleSubClassException(LifecycleBase.java:440)
+		at org.apache.catalina.util.LifecycleBase.init(LifecycleBase.java:139)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:173)
+		at org.apache.catalina.webresources.StandardRoot.startInternal(StandardRoot.java:727)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:183)
+		at org.apache.catalina.core.StandardContext.resourcesStart(StandardContext.java:4805)
+		at org.apache.catalina.core.StandardContext.startInternal(StandardContext.java:4940)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:183)
+		at org.apache.catalina.core.StandardContext.reload(StandardContext.java:3763)
+		at org.apache.catalina.startup.HostConfig.reload(HostConfig.java:1403)
+		at org.apache.catalina.startup.HostConfig.checkResources(HostConfig.java:1376)
+		at org.apache.catalina.startup.HostConfig.check(HostConfig.java:1611)
+		at org.apache.catalina.startup.HostConfig.lifecycleEvent(HostConfig.java:305)
+		at org.apache.catalina.util.LifecycleBase.fireLifecycleEvent(LifecycleBase.java:123)
+		at org.apache.catalina.core.ContainerBase.backgroundProcess(ContainerBase.java:1151)
+		at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.processChildren(ContainerBase.java:1353)
+		at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.processChildren(ContainerBase.java:1357)
+		at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.run(ContainerBase.java:1335)
+		at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+		at java.util.concurrent.FutureTask.runAndReset(FutureTask.java:308)
+		at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.access$301(ScheduledThreadPoolExecutor.java:180)
+		at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:294)
+		at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+		at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+		at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+		at java.lang.Thread.run(Thread.java:748)
+	Caused by: java.lang.IllegalArgumentException: java.util.zip.ZipException: error in opening zip file
+		at org.apache.catalina.webresources.AbstractSingleArchiveResourceSet.initInternal(AbstractSingleArchiveResourceSet.java:143)
+		at org.apache.catalina.util.LifecycleBase.init(LifecycleBase.java:136)
+		... 24 more
+	Caused by: java.util.zip.ZipException: error in opening zip file
+		at java.util.zip.ZipFile.open(Native Method)
+		at java.util.zip.ZipFile.<init>(ZipFile.java:225)
+		at java.util.zip.ZipFile.<init>(ZipFile.java:155)
+		at java.util.jar.JarFile.<init>(JarFile.java:166)
+		at java.util.jar.JarFile.<init>(JarFile.java:130)
+		at org.apache.tomcat.util.compat.JreCompat.jarFileNewInstance(JreCompat.java:177)
+		at org.apache.tomcat.util.compat.JreCompat.jarFileNewInstance(JreCompat.java:162)
+		at org.apache.catalina.webresources.AbstractSingleArchiveResourceSet.initInternal(AbstractSingleArchiveResourceSet.java:140)
+		... 25 more
+29-May-2020 11:22:50.553 INFO [Catalina-utility-1] org.apache.catalina.core.StandardContext.reload Reloading Context with name [/adap_compound_db_war] is completed
+29-May-2020 11:22:55.405 INFO [mysql-cj-abandoned-connection-cleanup] org.apache.catalina.loader.WebappClassLoaderBase.checkStateForResourceLoading Illegal access: this web application instance has been stopped already. Could not load []. The following stack trace is thrown for debugging purposes as well as to attempt to terminate the thread which caused the illegal access.
+	java.lang.IllegalStateException: Illegal access: this web application instance has been stopped already. Could not load []. The following stack trace is thrown for debugging purposes as well as to attempt to terminate the thread which caused the illegal access.
+		at org.apache.catalina.loader.WebappClassLoaderBase.checkStateForResourceLoading(WebappClassLoaderBase.java:1385)
+		at org.apache.catalina.loader.WebappClassLoaderBase.getResource(WebappClassLoaderBase.java:1038)
+		at com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.checkThreadContextClassLoader(AbandonedConnectionCleanupThread.java:117)
+		at com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.run(AbandonedConnectionCleanupThread.java:84)
+		at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+		at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+		at java.lang.Thread.run(Thread.java:748)
+29-May-2020 11:23:00.560 INFO [Catalina-utility-2] org.apache.catalina.startup.HostConfig.reload Reloading context [/adap_compound_db_war]
+29-May-2020 11:23:00.561 WARNING [Catalina-utility-2] org.apache.catalina.deploy.NamingResourcesImpl.cleanUp Failed to retrieve JNDI naming context for container [StandardEngine[Catalina].StandardHost[localhost].StandardContext[/adap_compound_db_war]] so no cleanup was performed for that container
+	javax.naming.NameNotFoundException: Name [comp/env] is not bound in this Context. Unable to find [comp].
+		at org.apache.naming.NamingContext.lookup(NamingContext.java:833)
+		at org.apache.naming.NamingContext.lookup(NamingContext.java:174)
+		at org.apache.catalina.deploy.NamingResourcesImpl.cleanUp(NamingResourcesImpl.java:1021)
+		at org.apache.catalina.deploy.NamingResourcesImpl.stopInternal(NamingResourcesImpl.java:1003)
+		at org.apache.catalina.util.LifecycleBase.stop(LifecycleBase.java:257)
+		at org.apache.catalina.core.StandardContext.stopInternal(StandardContext.java:5415)
+		at org.apache.catalina.util.LifecycleBase.stop(LifecycleBase.java:257)
+		at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:175)
+		at org.apache.catalina.startup.HostConfig.reload(HostConfig.java:1412)
+		at org.apache.catalina.startup.HostConfig.checkResources(HostConfig.java:1376)
+		at org.apache.catalina.startup.HostConfig.check(HostConfig.java:1611)
+		at org.apache.catalina.startup.HostConfig.lifecycleEvent(HostConfig.java:305)
+		at org.apache.catalina.util.LifecycleBase.fireLifecycleEvent(LifecycleBase.java:123)
+		at org.apache.catalina.core.ContainerBase.backgroundProcess(ContainerBase.java:1151)
+		at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.processChildren(ContainerBase.java:1353)
+		at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.processChildren(ContainerBase.java:1357)
+		at org.apache.catalina.core.ContainerBase$ContainerBackgroundProcessor.run(ContainerBase.java:1335)
+		at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+		at java.util.concurrent.FutureTask.runAndReset(FutureTask.java:308)
+		at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.access$301(ScheduledThreadPoolExecutor.java:180)
+		at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:294)
+		at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+		at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+		at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+		at java.lang.Thread.run(Thread.java:748)
+29-May-2020 11:23:00.563 INFO [Catalina-utility-2] org.apache.catalina.util.LifecycleBase.stop The stop() method was called on component [WebappLoader[StandardEngine[Catalina].StandardHost[localhost].StandardContext[/adap_compound_db_war]]] after stop() had already been called. The second call will be ignored.
+29-May-2020 11:23:09.291 INFO [Catalina-utility-2] org.apache.jasper.servlet.TldScanner.scanJars At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+11:23:16.155 [http-nio-8080-exec-92] WARN  org.springframework.web.servlet.PageNotFound - No mapping for GET /adap_compound_db_war/
+11:23:16.282 [http-nio-8080-exec-90] WARN  org.springframework.web.servlet.PageNotFound - No mapping for GET /adap_compound_db_war/
+11:23:17.545 [Catalina-utility-2] INFO  org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 6.1.0.Final
+11:23:18.050 [Catalina-utility-2] INFO  org.hibernate.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+11:23:18.179 [Catalina-utility-2] INFO  org.hibernate.Version - HHH000412: Hibernate Core {5.2.16.Final}
+11:23:18.182 [Catalina-utility-2] INFO  org.hibernate.cfg.Environment - HHH000206: hibernate.properties not found
+11:23:18.242 [Catalina-utility-2] INFO  org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.0.1.Final}
+11:23:18.455 [Catalina-utility-2] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+11:23:20.327 [Catalina-utility-2] INFO  org.hibernate.hql.internal.QueryTranslatorFactoryInitiator - HHH000397: Using ASTQueryTranslatorFactory
+29-May-2020 11:23:44.036 WARNING [main] org.apache.catalina.core.StandardServer.await Invalid shutdown command [] received
+29-May-2020 11:30:13.139 WARNING [main] org.apache.catalina.core.StandardServer.await Invalid shutdown command [] received
+29-May-2020 11:32:12.380 WARNING [main] org.apache.catalina.core.StandardServer.await Invalid shutdown command [] received
+29-May-2020 11:33:49.953 WARNING [main] org.apache.catalina.core.StandardServer.await Invalid shutdown command [] received
+11:34:44.000 [http-nio-8080-exec-102] WARN  org.hibernate.engine.jdbc.spi.SqlExceptionHelper - SQL Error: 1054, SQLState: 42S22
+11:34:44.003 [http-nio-8080-exec-102] ERROR org.hibernate.engine.jdbc.spi.SqlExceptionHelper - Unknown column 'submission0_.externalId' in 'field list'
+11:35:50.036 [http-nio-8080-exec-99] WARN  org.hibernate.engine.jdbc.spi.SqlExceptionHelper - SQL Error: 1054, SQLState: 42S22
+11:35:50.036 [http-nio-8080-exec-99] ERROR org.hibernate.engine.jdbc.spi.SqlExceptionHelper - Unknown column 'submission0_.externalId' in 'field list'
+11:36:18.635 [http-nio-8080-exec-100] WARN  org.hibernate.engine.jdbc.spi.SqlExceptionHelper - SQL Error: 1054, SQLState: 42S22
+11:36:18.636 [http-nio-8080-exec-100] ERROR org.hibernate.engine.jdbc.spi.SqlExceptionHelper - Unknown column 'submission0_.externalId' in 'field list'
+29-May-2020 11:38:06.625 WARNING [main] org.apache.catalina.core.StandardServer.await Invalid shutdown command [] received
+11:38:53.601 [http-nio-8080-exec-104] WARN  org.hibernate.engine.jdbc.spi.SqlExceptionHelper - SQL Error: 1054, SQLState: 42S22
+11:38:53.602 [http-nio-8080-exec-104] ERROR org.hibernate.engine.jdbc.spi.SqlExceptionHelper - Unknown column 'submission0_.externalId' in 'field list'
+11:39:22.278 [http-nio-8080-exec-104] WARN  org.hibernate.engine.jdbc.spi.SqlExceptionHelper - SQL Error: 1054, SQLState: 42S22
+11:39:22.279 [http-nio-8080-exec-104] ERROR org.hibernate.engine.jdbc.spi.SqlExceptionHelper - Unknown column 'submission0_.externalId' in 'field list'

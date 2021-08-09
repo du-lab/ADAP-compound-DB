@@ -1,0 +1,15 @@
+28-May-2020 07:48:35.776 INFO [http-nio-8080-exec-51] org.apache.catalina.core.ApplicationContext.log Destroying Spring FrameworkServlet 'springDispatcher'
+28-May-2020 07:48:35.814 INFO [http-nio-8080-exec-51] org.apache.catalina.core.ApplicationContext.log Closing Spring root WebApplicationContext
+28-May-2020 07:48:38.317 INFO [Catalina-utility-1] org.apache.catalina.core.ApplicationContext.log Destroying Spring FrameworkServlet 'springDispatcher'
+28-May-2020 07:48:38.342 INFO [Catalina-utility-1] org.apache.catalina.core.ApplicationContext.log Closing Spring root WebApplicationContext
+28-May-2020 07:48:45.912 INFO [http-nio-8080-exec-51] org.apache.catalina.core.ApplicationContext.log 2 Spring WebApplicationInitializers detected on classpath
+28-May-2020 07:48:46.774 INFO [Catalina-utility-1] org.apache.catalina.core.ApplicationContext.log 2 Spring WebApplicationInitializers detected on classpath
+28-May-2020 07:48:52.841 INFO [http-nio-8080-exec-51] org.apache.catalina.core.ApplicationContext.log Initializing Spring root WebApplicationContext
+28-May-2020 07:48:58.851 INFO [Catalina-utility-1] org.apache.catalina.core.ApplicationContext.log Initializing Spring root WebApplicationContext
+28-May-2020 07:49:12.400 INFO [http-nio-8080-exec-51] org.apache.catalina.core.ApplicationContext.log Initializing Spring DispatcherServlet 'springDispatcher'
+28-May-2020 07:49:26.355 INFO [Catalina-utility-1] org.apache.catalina.core.ApplicationContext.log Initializing Spring DispatcherServlet 'springDispatcher'
+28-May-2020 07:51:01.344 INFO [Catalina-utility-1] org.apache.catalina.core.ApplicationContext.log Destroying Spring FrameworkServlet 'springDispatcher'
+28-May-2020 07:51:01.358 INFO [Catalina-utility-1] org.apache.catalina.core.ApplicationContext.log Closing Spring root WebApplicationContext
+28-May-2020 07:51:02.958 INFO [Catalina-utility-1] org.apache.catalina.core.ApplicationContext.log 2 Spring WebApplicationInitializers detected on classpath
+28-May-2020 07:51:08.522 INFO [Catalina-utility-1] org.apache.catalina.core.ApplicationContext.log Initializing Spring root WebApplicationContext
+28-May-2020 07:51:17.460 INFO [Catalina-utility-1] org.apache.catalina.core.ApplicationContext.log Initializing Spring DispatcherServlet 'springDispatcher'

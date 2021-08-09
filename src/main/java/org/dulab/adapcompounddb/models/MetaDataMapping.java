@@ -13,20 +13,35 @@ public class MetaDataMapping {
     private String retTimeField;
     private String massField;
     private String formulaField;
+    private String canonicalSmilesField;
+    private String inchiKeyField;
+    private String inchiField;
 
 
     public MetaDataMapping() {
-        this(null, null, null, null, null, null, null);
+        this(null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
     }
 
     public MetaDataMapping(String nameField, String externalIdField, String precursorMzField, String precursorTypeField,
-                           String retTimeField, String massField, String formulaField) {
+                           String retTimeField, String massField, String formulaField, String canonicalSmilesField, String inchiKeyField, String inchiField) {
         this.nameField = nameField;
         this.externalIdField = externalIdField;
         this.precursorMzField = precursorMzField;
         this.retTimeField = retTimeField;
         this.massField = massField;
         this.formulaField = formulaField;
+        this.canonicalSmilesField = canonicalSmilesField;
+        this.inchiKeyField = inchiKeyField;
+        this.inchiField = inchiField;
     }
 
     public String getNameField() {
@@ -57,6 +72,18 @@ public class MetaDataMapping {
         return formulaField;
     }
 
+    public String getCanonicalSmilesField() {
+        return canonicalSmilesField;
+    }
+
+    public String getInchiKeyField() {
+        return inchiKeyField;
+    }
+
+    public String getInchiField() {
+        return inchiField;
+    }
+
     public void setNameField(String nameField) {
         this.nameField = nameField;
     }
@@ -85,6 +112,18 @@ public class MetaDataMapping {
         this.formulaField = formulaField;
     }
 
+    public void setCanonicalSmilesField(String canonicalSmilesField) {
+        this.canonicalSmilesField = canonicalSmilesField;
+    }
+
+    public void setInchiKeyField(String inchiKeyField) {
+        this.inchiKeyField = inchiKeyField;
+    }
+
+    public void setInchiField(String inchiField) {
+        this.inchiField = inchiField;
+    }
+
     public void map(SpectrumProperty property, Spectrum spectrum) {
         String propertyName = property.getName();
         String propertyValue = property.getValue();
@@ -102,5 +141,11 @@ public class MetaDataMapping {
             spectrum.setMass(parseDouble(propertyValue));
         else if (propertyName.equalsIgnoreCase(this.getFormulaField()))
             spectrum.setFormula(propertyValue);
+        else if (propertyName.equalsIgnoreCase(this.getCanonicalSmilesField()))
+            spectrum.setCanonicalSmiles(propertyValue);
+        else if (propertyName.equalsIgnoreCase(this.getInchiKeyField()))
+            spectrum.setInChiKey(propertyValue);
+        else if (propertyName.equalsIgnoreCase(this.getInchiField()))
+            spectrum.setInChi(propertyValue);
     }
 }

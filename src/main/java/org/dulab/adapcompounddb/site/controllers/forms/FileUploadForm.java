@@ -37,11 +37,17 @@ public class FileUploadForm {
     private String mspPrecursorMzField;
     private String mspRetentionTimeField;
     private String mspMassField;
+    private String mspCanonicalSmilesField;
+    private String mspInChiField;
+    private String mspInChiKeyField;
     private String csvNameField;
     private String csvExternalIdField;
     private String csvPrecursorMzField;
     private String csvRetentionTimeField;
     private String csvMassField;
+    private String csvCanonicalSmilesField;
+    private String csvInChiField;
+    private String csvInChiKeyField;
 
     @JsonIgnore
     @ContainsFiles
@@ -113,6 +119,30 @@ public class FileUploadForm {
         this.mspMassField = mspMassField;
     }
 
+    public String getMspCanonicalSmilesField() {
+        return mspCanonicalSmilesField;
+    }
+
+    public void setMspCanonicalSmilesField(String mspCanonicalSmilesField) {
+        this.mspCanonicalSmilesField = mspCanonicalSmilesField;
+    }
+
+    public String getMspInChiField() {
+        return mspInChiField;
+    }
+
+    public void setMspInChiField(String mspInChiField) {
+        this.mspInChiField = mspInChiField;
+    }
+
+    public String getMspInChiKeyField() {
+        return mspInChiKeyField;
+    }
+
+    public void setMspInChiKeyField(String mspInChiKeyField) {
+        this.mspInChiKeyField = mspInChiKeyField;
+    }
+
     public String getCsvNameField() {
         return csvNameField;
     }
@@ -153,6 +183,30 @@ public class FileUploadForm {
         this.csvMassField = csvMassField;
     }
 
+    public String getCsvCanonicalSmilesField() {
+        return csvCanonicalSmilesField;
+    }
+
+    public void setCsvCanonicalSmilesField(String csvCanonicalSmilesField) {
+        this.csvCanonicalSmilesField = csvCanonicalSmilesField;
+    }
+
+    public String getCsvInChiField() {
+        return csvInChiField;
+    }
+
+    public void setCsvInChiField(String csvInChiField) {
+        this.csvInChiField = csvInChiField;
+    }
+
+    public String getCsvInChiKeyField() {
+        return csvInChiKeyField;
+    }
+
+    public void setCsvInChiKeyField(String csvInChiKeyField) {
+        this.csvInChiKeyField = csvInChiKeyField;
+    }
+
     public List<MultipartFile> getFiles() {
         return files;
     }
@@ -164,9 +218,9 @@ public class FileUploadForm {
     public Map<FileType, MetaDataMapping> getMetaDataMappings() {
         Map<FileType, MetaDataMapping> mappings = new HashMap<>();
         mappings.put(FileType.MSP, new MetaDataMapping(
-                mspNameField, mspExternalIdField, mspPrecursorMzField, null, mspRetentionTimeField, mspMassField, null));
+                mspNameField, mspExternalIdField, mspPrecursorMzField, null, mspRetentionTimeField, mspMassField, null, mspCanonicalSmilesField, mspInChiField, mspInChiKeyField));
         mappings.put(FileType.CSV, new MetaDataMapping(
-                csvNameField, csvExternalIdField, csvPrecursorMzField, null, csvRetentionTimeField, csvMassField, null));
+                csvNameField, csvExternalIdField, csvPrecursorMzField, null, csvRetentionTimeField, csvMassField, null, csvCanonicalSmilesField, csvInChiField, csvInChiKeyField));
         return mappings;
     }
 

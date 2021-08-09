@@ -109,6 +109,12 @@ public class Spectrum implements Serializable {
 
     private Double topMz16;
 
+    private String canonicalSmiles; //CC Edits
+
+    private String inChi; //CC Edits
+
+    private String inChiKey; //CC Edits
+
     @NotNull(message = "Spectrum: the field Chromatography Type is required.")
     @Enumerated(EnumType.STRING)
     private ChromatographyType chromatographyType;
@@ -556,6 +562,29 @@ public class Spectrum implements Serializable {
         this.topMz16 = topMz16;
     }
 
+    public String getCanonicalSmiles() {
+        return canonicalSmiles;
+    } //CC Edits
+
+    public void setCanonicalSmiles(String canonicalSmiles) {
+        this.canonicalSmiles = canonicalSmiles;
+    } //CC Edits
+
+    public String getInChi() {
+        return inChi;
+    } //CC Edits
+
+    public void setInChi(String inChi) {
+        this.inChi = inChi;
+    } //CC Edits
+
+    public String getInChiKey() {
+        return inChiKey;
+    } //CC Edits
+
+    public void setInChiKey(String inChiKey) {
+        this.inChiKey = inChiKey;
+    } //CC Edits
     // ****************************
     // ***** Standard methods *****
     // ****************************

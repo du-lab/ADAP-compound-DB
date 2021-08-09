@@ -1,0 +1,2 @@
+0:0:0:0:0:0:0:1 - admin [26/May/2020:17:17:26 -0400] "GET /manager/html HTTP/1.1" 200 19990
+127.0.0.1 - admin [26/May/2020:17:18:51 -0400] "PUT /manager/text/deploy?path=%2Fadap_compound_db_war%2F&update=true HTTP/1.1" 200 78
