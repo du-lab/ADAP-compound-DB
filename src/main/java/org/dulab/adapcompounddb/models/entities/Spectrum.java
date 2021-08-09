@@ -177,6 +177,30 @@ public class Spectrum implements Serializable {
         this.formula = formula;
     }
 
+    public String getCanonicalSmiles() {
+        return canonicalSmiles;
+    } //CC Edits
+
+    public void setCanonicalSmiles(String canonicalSmiles) {
+        this.canonicalSmiles = canonicalSmiles;
+    } //CC Edits
+
+    public String getInChi() {
+        return inChi;
+    } //CC Edits
+
+    public void setInChi(String inChi) {
+        this.inChi = inChi;
+    } //CC Edits
+
+    public String getInChiKey() {
+        return inChiKey;
+    } //CC Edits
+
+    public void setInChiKey(String inChiKey) {
+        this.inChiKey = inChiKey;
+    } //CC Edits
+
     public List<Peak> getPeaks() {
         return peaks;
     }
@@ -562,7 +586,7 @@ public class Spectrum implements Serializable {
         this.topMz16 = topMz16;
     }
 
-    public String getCanonicalSmiles() {
+    /*public String getCanonicalSmiles() {
         return canonicalSmiles;
     } //CC Edits
 
@@ -584,7 +608,7 @@ public class Spectrum implements Serializable {
 
     public void setInChiKey(String inChiKey) {
         this.inChiKey = inChiKey;
-    } //CC Edits
+    } //CC Edits*/
     // ****************************
     // ***** Standard methods *****
     // ****************************

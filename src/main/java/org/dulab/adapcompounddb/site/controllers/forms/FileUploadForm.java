@@ -218,9 +218,9 @@ public class FileUploadForm {
     public Map<FileType, MetaDataMapping> getMetaDataMappings() {
         Map<FileType, MetaDataMapping> mappings = new HashMap<>();
         mappings.put(FileType.MSP, new MetaDataMapping(
-                mspNameField, mspExternalIdField, mspPrecursorMzField, null, mspRetentionTimeField, mspMassField, null, mspCanonicalSmilesField, mspInChiField, mspInChiKeyField));
+                mspNameField, mspExternalIdField, mspPrecursorMzField, null, mspRetentionTimeField, mspMassField, null, mspCanonicalSmilesField, mspInChiKeyField, mspInChiField));
         mappings.put(FileType.CSV, new MetaDataMapping(
-                csvNameField, csvExternalIdField, csvPrecursorMzField, null, csvRetentionTimeField, csvMassField, null, csvCanonicalSmilesField, csvInChiField, csvInChiKeyField));
+                csvNameField, csvExternalIdField, csvPrecursorMzField, null, csvRetentionTimeField, csvMassField, null, csvCanonicalSmilesField, csvInChiKeyField, csvInChiField));
         return mappings;
     }
 
