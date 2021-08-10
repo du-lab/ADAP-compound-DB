@@ -2,8 +2,11 @@ package org.dulab.adapcompounddb.site.repositories;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -29,11 +32,47 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     private static final String PROPERTY_INSERT_SQL_STRING = "INSERT INTO `SpectrumProperty`(`SpectrumId`, `Name`, `Value`) VALUES ";
     private static final String PEAK_VALUE_SQL_STRING = "(%f,%f,%d)";
     private static final String PROPERTY_VALUE_SQL_STRING = "(%d, %s, %s)";
-    private static final String SPECTRUM_VALUE_SQL_STRING = "(%s, %s, %f, %s, %f, %f, %d, %b, %b, %b, %s, %d, %f, %s, " +
-            "%s, %s, %s, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f)";
 
     public static final String DOUBLE_QUOTE = "\"";
     public static final String COMMA = ",";
+
+
+    private static final SqlField[] spectrumFields = new SqlField[]{
+            new SqlField("Name", "%s", s -> quote(s.getName())),
+            new SqlField("ExternalId", "%s", s -> quote(s.getExternalId())),
+            new SqlField("Precursor", "%f", Spectrum::getPrecursor),
+            new SqlField("PrecursorType", "%s", s -> quote(s.getPrecursorType())),
+            new SqlField("RetentionTime", "%f", Spectrum::getRetentionTime),
+            new SqlField("Significance", "%f", Spectrum::getSignificance),
+            new SqlField("ClusterId", "%d", s -> s.getCluster() != null ? s.getCluster().getId() : null),
+            new SqlField("Consensus", "%b", Spectrum::isConsensus),
+            new SqlField("Reference", "%b", Spectrum::isReference),
+            new SqlField("IntegerMz", "%b", Spectrum::isIntegerMz),
+            new SqlField("ChromatographyType", "%s", s -> quote(s.getChromatographyType().name())),
+            new SqlField("FileId", "%d", s -> s.getFile().getId()),
+            new SqlField("Mass", "%f", Spectrum::getMass),
+            new SqlField("Formula", "%s", s -> quote(s.getFormula())),
+            new SqlField("CanonicalSMILES", "%s", s -> quote(s.getCanonicalSmiles())),
+            new SqlField("InChi", "%s", s -> quote(s.getInChi())),
+            new SqlField("InChiKey", "%s", s -> quote(s.getInChiKey())),
+            new SqlField("TopMz1", "%f", Spectrum::getTopMz1),
+            new SqlField("TopMz2", "%f", Spectrum::getTopMz2),
+            new SqlField("TopMz3", "%f", Spectrum::getTopMz3),
+            new SqlField("TopMz4", "%f", Spectrum::getTopMz4),
+            new SqlField("TopMz5", "%f", Spectrum::getTopMz5),
+            new SqlField("TopMz6", "%f", Spectrum::getTopMz6),
+            new SqlField("TopMz7", "%f", Spectrum::getTopMz7),
+            new SqlField("TopMz8", "%f", Spectrum::getTopMz8),
+            new SqlField("TopMz9", "%f", Spectrum::getTopMz9),
+            new SqlField("TopMz10", "%f", Spectrum::getTopMz10),
+            new SqlField("TopMz11", "%f", Spectrum::getTopMz11),
+            new SqlField("TopMz12", "%f", Spectrum::getTopMz12),
+            new SqlField("TopMz13", "%f", Spectrum::getTopMz13),
+            new SqlField("TopMz14", "%f", Spectrum::getTopMz14),
+            new SqlField("TopMz15", "%f", Spectrum::getTopMz15),
+            new SqlField("TopMz16", "%f", Spectrum::getTopMz16)
+    };
+
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -198,61 +237,29 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     public void saveSpectrumAndPeaks(final List<File> fileList, final List<Long> savedFileIdList) {
         final List<Spectrum> spectrumList = new ArrayList<>();
 
-        final StringBuilder insertSql = new StringBuilder("INSERT INTO `Spectrum`(" +
-                "`Name`, `ExternalId`, `Precursor`, `PrecursorType`, `RetentionTime`, `Significance`, " +
-                "`ClusterId`, `Consensus`, `Reference`, `IntegerMz`, " +
-                "`ChromatographyType`, `FileId`, `Mass`, `Formula`, `CanonicalSMILES`, `InChi`, `InChiKey`, " +
-                "`TopMz1`, `TopMz2`, `TopMz3`, `TopMz4`, `TopMz5`, `TopMz6`, `TopMz7`, `TopMz8`, `TopMz9`, " +
-                "`TopMz10`, `TopMz11`, `TopMz12`, `TopMz13`, `TopMz14`, `TopMz15`, `TopMz16`" +
-                ") VALUES ");
+        StringBuilder insertSql = new StringBuilder(
+                String.format("INSERT INTO `Spectrum`(%s) VALUES ",
+                        Arrays.stream(spectrumFields)
+                                .map(SqlField::getName)
+                                .map(x -> String.format("`%s`", x))
+                                .collect(Collectors.joining(", "))));
 
         for (int i = 0; i < fileList.size(); i++) {
             final List<Spectrum> spectra = fileList.get(i).getSpectra();
             if (spectra == null) continue;
             spectrumList.addAll(spectra);
+
             for (int j = 0; j < spectra.size(); j++) {
                 if (i != 0 || j != 0) {
                     insertSql.append(COMMA);
                 }
                 final Spectrum spectrum = spectra.get(j);
+                spectrum.setFile(fileList.get(i));
 
-                insertSql.append(String.format(SPECTRUM_VALUE_SQL_STRING,
-                        spectrum.getName() != null
-                                ? String.format("\"%s\"", spectrum.getName().replace("\"", "\"\""))
-                                : null,
-                        spectrum.getExternalId() != null ? String.format("\"%s\"", spectrum.getExternalId()) : null,
-                        spectrum.getPrecursor(),
-                        spectrum.getPrecursorType() != null ? String.format("\"%s\"", spectrum.getPrecursorType()) : null,
-                        spectrum.getRetentionTime(),
-                        spectrum.getSignificance(),
-                        spectrum.getCluster() != null ? spectrum.getCluster().getId() : null,
-                        spectrum.isConsensus(),
-                        spectrum.isReference(),
-                        spectrum.isIntegerMz(),
-                        String.format("\"%s\"", spectrum.getChromatographyType().name()),
-                        savedFileIdList.get(i),
-                        spectrum.getMass(),
-                        spectrum.getFormula() != null ? String.format("\"%s\"", spectrum.getFormula()) : null,
-                        spectrum.getCanonicalSmiles() != null ? String.format("\"%s\"", spectrum.getCanonicalSmiles()) : null,
-                        spectrum.getInChi() != null ? String.format("\"%s\"", spectrum.getInChi()) : null,
-                        spectrum.getInChiKey() != null ? String.format("\"%s\"", spectrum.getInChiKey()) : null,
-                        spectrum.getTopMz1(),
-                        spectrum.getTopMz2(),
-                        spectrum.getTopMz3(),
-                        spectrum.getTopMz4(),
-                        spectrum.getTopMz5(),
-                        spectrum.getTopMz6(),
-                        spectrum.getTopMz7(),
-                        spectrum.getTopMz8(),
-                        spectrum.getTopMz9(),
-                        spectrum.getTopMz10(),
-                        spectrum.getTopMz11(),
-                        spectrum.getTopMz12(),
-                        spectrum.getTopMz13(),
-                        spectrum.getTopMz14(),
-                        spectrum.getTopMz15(),
-                        spectrum.getTopMz16()
-                ));
+                insertSql.append(String.format("(%s)",
+                        Arrays.stream(spectrumFields)
+                                .map(field -> String.format(field.format, field.function.apply(spectrum)))
+                                .collect(Collectors.joining(", "))));
             }
         }
         final Query insertQuery = entityManager.createNativeQuery(insertSql.toString());
@@ -354,5 +361,36 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                 .getResultList();
 
         return resultList;
+    }
+
+    private static String quote(String x) {
+        if (x == null) return null;
+        return String.format("\"%s\"", x.replace("\"", "\"\""));
+    }
+
+
+    private static class SqlField {
+
+        private final String name;
+        private final String format;
+        private final Function<Spectrum, Object> function;
+
+        public SqlField(String name, String format, Function<Spectrum, Object> function) {
+            this.name = name;
+            this.format = format;
+            this.function = function;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getFormat() {
+            return format;
+        }
+
+        public Function<Spectrum, Object> getFunction() {
+            return function;
+        }
     }
 }
