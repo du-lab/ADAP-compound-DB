@@ -38,6 +38,13 @@
         <apache.tomcat.path>/</apache.tomcat.path>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>libraries</id>
+            <url>file:///${project.basedir}/libs</url>
+        </repository>
+    </repositories>
+
     <dependencies>
 
         <dependency>
