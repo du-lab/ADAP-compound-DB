@@ -9,6 +9,7 @@ build:
   only:
     - master
   script:
+    - mvn --version
     - mvn clean tomcat7:redeploy -Denvironment=test
 
 test:
