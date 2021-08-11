@@ -37,6 +37,7 @@ public class FileUploadForm {
     private String mspPrecursorMzField;
     private String mspRetentionTimeField;
     private String mspMassField;
+    private String mspFormulaField;
     private String mspCanonicalSmilesField;
     private String mspInChiField;
     private String mspInChiKeyField;
@@ -45,6 +46,7 @@ public class FileUploadForm {
     private String csvPrecursorMzField;
     private String csvRetentionTimeField;
     private String csvMassField;
+    private String csvFormulaField;
     private String csvCanonicalSmilesField;
     private String csvInChiField;
     private String csvInChiKeyField;
@@ -119,6 +121,14 @@ public class FileUploadForm {
         this.mspMassField = mspMassField;
     }
 
+    public String getMspFormulaField(){
+        return mspFormulaField;
+    }
+
+    public void setMspFormulaField(String mspFormulaField){
+        this.mspFormulaField = mspFormulaField;
+    }
+
     public String getMspCanonicalSmilesField() {
         return mspCanonicalSmilesField;
     }
@@ -183,6 +193,14 @@ public class FileUploadForm {
         this.csvMassField = csvMassField;
     }
 
+    public String getCsvFormulaField(){
+        return csvFormulaField;
+    }
+
+    public void setCsvFormulaField(String csvFormulaField){
+        this.csvFormulaField = csvFormulaField;
+    }
+
     public String getCsvCanonicalSmilesField() {
         return csvCanonicalSmilesField;
     }
@@ -218,9 +236,9 @@ public class FileUploadForm {
     public Map<FileType, MetaDataMapping> getMetaDataMappings() {
         Map<FileType, MetaDataMapping> mappings = new HashMap<>();
         mappings.put(FileType.MSP, new MetaDataMapping(
-                mspNameField, mspExternalIdField, mspPrecursorMzField, null, mspRetentionTimeField, mspMassField, null, mspCanonicalSmilesField, mspInChiKeyField, mspInChiField));
+                mspNameField, mspExternalIdField, mspPrecursorMzField, null, mspRetentionTimeField, mspMassField, mspFormulaField, mspCanonicalSmilesField, mspInChiKeyField, mspInChiField));
         mappings.put(FileType.CSV, new MetaDataMapping(
-                csvNameField, csvExternalIdField, csvPrecursorMzField, null, csvRetentionTimeField, csvMassField, null, csvCanonicalSmilesField, csvInChiKeyField, csvInChiField));
+                csvNameField, csvExternalIdField, csvPrecursorMzField, null, csvRetentionTimeField, csvMassField, csvFormulaField, csvCanonicalSmilesField, csvInChiKeyField, csvInChiField));
         return mappings;
     }
 

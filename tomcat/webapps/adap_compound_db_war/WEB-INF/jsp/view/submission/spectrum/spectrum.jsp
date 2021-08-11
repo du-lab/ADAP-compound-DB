@@ -71,6 +71,15 @@
                                         <li class="list-group-item py-1">
                                             <strong>Molecular mass:</strong>&nbsp;${spectrum.mass}
                                         </li>
+                                        <li class="list-group-item py-1">
+                                            <strong>Canonical SMILES:</strong>&nbsp;${spectrum.canonicalSmiles}
+                                        </li>
+                                        <li class="list-group-item py-1">
+                                            <strong>InChi:</strong>&nbsp;${spectrum.inChi}
+                                        </li>
+                                        <li class="list-group-item py-1">
+                                            <strong>InChiKey:</strong>&nbsp;${spectrum.inChiKey}
+                                        </li>
                                     </ul>
                                 </div>
 

@@ -185,6 +185,18 @@
                                                     </div>
                                                 </div>
                                                 <div class="row form-group">
+                                                    <form:label path="mspFormulaField"
+                                                                cssClass="col-md-4 col-form-label">Formula Field</form:label>
+                                                    <div class="col-md-4">
+                                                        <form:input path="mspFormulaField"
+                                                                    cssClass="form-control"/>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <form:input path="csvFormulaField"
+                                                                    cssClass="form-control"/>
+                                                    </div>
+                                                </div>
+                                                <div class="row form-group">
                                                     <form:label path="mspCanonicalSmilesField"
                                                                 cssClass="col-md-4 col-form-label">Canonical Smiles Field</form:label>
                                                     <div class="col-md-4">
