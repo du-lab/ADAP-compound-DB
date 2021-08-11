@@ -10,7 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 
 public class PrivateLibraryValidator implements ConstraintValidator<PrivateLibrary, Object> {
 
-    private static final Logger LOG = LogManager.getLogger();
+    private static final Logger LOG = LogManager.getLogger(PrivateLibraryValidator.class);
 
     private String privateFieldName;
     private String libraryFieldName;

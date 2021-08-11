@@ -28,7 +28,7 @@ import org.springframework.web.servlet.view.RedirectView;
 @Controller
 public class AuthenticationController extends BaseController {
 
-    private static final Logger LOG = LogManager.getLogger();
+    private static final Logger LOG = LogManager.getLogger(AuthenticationController.class);
 
     private final AuthenticationService authenticationService;
 

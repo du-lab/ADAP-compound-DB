@@ -10,6 +10,7 @@ import org.dulab.adapcompounddb.site.services.io.CsvFileReaderService;
 import org.dulab.adapcompounddb.site.services.io.FileReaderService;
 import org.dulab.adapcompounddb.models.MetaDataMapping;
 import org.dulab.adapcompounddb.site.services.io.MspFileReaderService;
+import org.dulab.adapcompounddb.site.services.io.RawFileReaderService;
 import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,6 +28,7 @@ public class MultipartFileUtils {
     static {
         fileReaderServiceMap.put(FileType.MSP, new MspFileReaderService());
         fileReaderServiceMap.put(FileType.CSV, new CsvFileReaderService());
+        fileReaderServiceMap.put(FileType.RAW, new RawFileReaderService());
     }
 
 
@@ -73,7 +75,8 @@ public class MultipartFileUtils {
                 file.setContent(zipBytes(filename, multipartFile.getBytes()));
                 file.setSpectra(fileReader.read(
                         multipartFile.getInputStream(),
-                        metaDataMappings != null ? metaDataMappings.get(fileType) : null));
+                        metaDataMappings != null ? metaDataMappings.get(fileType) : null,
+                        filename));
                 file.getSpectra().forEach(spectrum -> {
                     spectrum.setFile(file);
                     spectrum.setChromatographyType(chromatographyType);
@@ -118,8 +121,15 @@ public class MultipartFileUtils {
         if (substrings.length == 0)
             throw new IllegalArgumentException("Cannot determine the file type: " + filename);
 
-        String extension = substrings[substrings.length - 1];
-        return FileType.valueOf(extension.toUpperCase());
+        String fileExtension = substrings[substrings.length - 1].trim();
+        for (FileType fileType : FileType.values()) {
+            for (String typeExtension : fileType.getExtensions()) {
+                if (fileExtension.equalsIgnoreCase(typeExtension))
+                    return fileType;
+            }
+        }
+
+        throw new IllegalArgumentException("Cannot determine the file type: " + filename);
     }
 
     private static List<File> mergeFiles(List<File> files) {

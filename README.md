@@ -1,7 +1,7 @@
 # ADAP Compound Database
 
 ### Requirements
-- Java 8 EE
+- Java 9
 - Maven
 - Tomcat 8.5
 - MySQL 8.0

@@ -28,8 +28,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>9</maven.compiler.source>
+        <maven.compiler.target>9</maven.compiler.target>
         <spring.version>5.2.4.RELEASE</spring.version>
         <spring-security.version>5.2.2.RELEASE</spring-security.version>
         <spring-data.version>2.1.9.RELEASE</spring-data.version>
@@ -37,6 +37,13 @@
         <apache.tomcat.port>80</apache.tomcat.port>
         <apache.tomcat.path>/</apache.tomcat.path>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>libraries</id>
+            <url>file:///${project.basedir}/libs</url>
+        </repository>
+    </repositories>
 
     <dependencies>
 
@@ -407,6 +414,11 @@
             <version>4.1.2</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.du-lab.adap-big</groupId>
+            <artifactId>input</artifactId>
+            <version>0.1.0</version>
+        </dependency>
     </dependencies>
     <build>
         <finalName>adap-compound-db</finalName>

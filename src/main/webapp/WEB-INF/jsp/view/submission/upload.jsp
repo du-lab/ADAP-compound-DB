@@ -97,7 +97,7 @@
                                                 <form:label path="files" cssClass="col-form-label">File</form:label>&nbsp;
                                             </div>
                                             <div class="col-md-8">
-                                                <input type="file" name="files" accept=".msp,.csv"
+                                                <input type="file" name="files" accept=".msp,.csv,.cdf,.mzml,.mzxml"
                                                        class="form-control-file"
                                                        multiple/>
                                                 <form:errors path="files" cssClass="text-danger form-control-sm"/>
