@@ -18,7 +18,7 @@ import java.util.*;
 @Service
 public class MspFileReaderService implements FileReaderService {
 
-    private static final Logger LOG = LogManager.getLogger();
+    private static final Logger LOG = LogManager.getLogger(MspFileReaderService.class);
 
     @Override
     public List<Spectrum> read(InputStream inputStream, @Nullable MetaDataMapping mapping, String filename)

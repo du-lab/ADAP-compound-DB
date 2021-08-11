@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class SpectrumMatchCalculator {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger(SpectrumMatchCalculator.class);
 
     private final SpectrumRepository spectrumRepository;
     private final SpectrumMatchRepository spectrumMatchRepository;

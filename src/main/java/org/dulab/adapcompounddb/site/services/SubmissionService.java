@@ -26,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class SubmissionService {
 
-    private static final Logger LOG = LogManager.getLogger();
+    private static final Logger LOG = LogManager.getLogger(SubmissionService.class);
 
     //    private static final String DESC = "DESC";
     private final SubmissionRepository submissionRepository;

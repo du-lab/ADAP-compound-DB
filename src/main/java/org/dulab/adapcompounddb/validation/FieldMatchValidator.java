@@ -10,7 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 
 public class FieldMatchValidator implements ConstraintValidator<FieldMatch, Object> {
 
-    private static final Logger LOG = LogManager.getLogger();
+    private static final Logger LOG = LogManager.getLogger(FieldMatchValidator.class);
 
     private String firstFieldName;
     private String secondFieldName;
