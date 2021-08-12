@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 @RestController
 public class SpectrumRestController1 {
@@ -136,8 +137,9 @@ public class SpectrumRestController1 {
         root.put("standardProperties", standardProperties);
 
         JSONArray otherProperties = new JSONArray();
-        for (SpectrumProperty property : spectrum.getProperties())
-            otherProperties.put(propertyToJsonObject(property));
+        List<SpectrumProperty> spectrumProperties = spectrum.getProperties();
+        if (spectrumProperties != null)
+            spectrumProperties.forEach(p -> otherProperties.put(propertyToJsonObject(p)));
         root.put("otherProperties", otherProperties);
 
         return root.toString();

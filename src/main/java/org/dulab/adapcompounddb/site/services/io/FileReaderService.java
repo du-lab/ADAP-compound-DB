@@ -13,7 +13,7 @@ import java.util.List;
 public interface FileReaderService {
 
     @NotNull(message = "FileReader is required to return a list of mass spectra.")
-    List<Spectrum> read(InputStream inputStream, MetaDataMapping mapping) throws IOException;
+    List<Spectrum> read(InputStream inputStream, MetaDataMapping mapping, String filename) throws IOException;
 
     MetaDataMapping validateMetaDataMapping(MetaDataMapping mapping);
 }

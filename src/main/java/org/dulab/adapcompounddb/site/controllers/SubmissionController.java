@@ -103,6 +103,14 @@ public class SubmissionController extends BaseController {
         return view(submission, model, false);
     }
 
+    @RequestMapping(value = "/submission/external_id/{externalId}", method = RequestMethod.GET)
+    public String findSubmissionByExternalId(@PathVariable String externalId) {
+        Submission submission = submissionService.findSubmissionByExternalId(externalId);
+        if (submission != null)
+            return String.format("redirect:/submission/%d/", submission.getId());
+        throw new IllegalStateException(String.format("Cannot find submission with External ID = '%s'", externalId));
+    }
+
     private String view(final Submission submission, final Model model, final boolean edit) {
 
         // User is authorized to edit the submission

@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 public class SpectrumDB {
 
-    private static final Logger LOG = LogManager.getLogger();
+    private static final Logger LOG = LogManager.getLogger(SpectrumDB.class);
 
     public static void selectSpectrum() {
         ConnectionPool pool = ConnectionPool.getInstance();

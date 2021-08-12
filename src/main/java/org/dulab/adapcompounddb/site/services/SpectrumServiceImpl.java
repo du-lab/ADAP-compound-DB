@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class SpectrumServiceImpl implements SpectrumService {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger(SpectrumServiceImpl.class);
 
     private final SpectrumRepository spectrumRepository;
     private final SpectrumPropertyRepository spectrumPropertyRepository;

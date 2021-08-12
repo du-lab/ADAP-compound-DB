@@ -33,7 +33,7 @@ import java.util.stream.IntStream;
 @Service
 public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger(SpectrumMatchServiceImpl.class);
 
     private final SpectrumRepository spectrumRepository;
     private final SpectrumMatchRepository spectrumMatchRepository;

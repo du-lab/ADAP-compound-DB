@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 public class CsvFileReaderService implements FileReaderService {
 
     @Override
-    public List<Spectrum> read(InputStream inputStream, MetaDataMapping mapping) throws IOException {
+    public List<Spectrum> read(InputStream inputStream, MetaDataMapping mapping, String filename) throws IOException {
 
         List<Spectrum> spectra = new ArrayList<>();
 

@@ -31,7 +31,7 @@ public class FileUploadController {
 
     private static final String META_FIELDS_COOKIE_NAME = "metaFields";
 
-    private static final Logger LOG = LogManager.getLogger();
+    private static final Logger LOG = LogManager.getLogger(FileUploadController.class);
 
     private final Map<FileType, FileReaderService> fileReaderServiceMap;
 

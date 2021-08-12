@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class UserPrincipalServiceImpl implements UserPrincipalService {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger(UserPrincipalServiceImpl.class);
 
     private final UserPrincipalRepository userPrincipalRepository;
     private final UserParameterRepository userParameterRepository;

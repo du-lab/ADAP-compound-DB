@@ -1,59 +1,243 @@
 package org.dulab.adapcompounddb.site.services;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.SortedMap;
+import java.util.*;
+import java.util.stream.Collectors;
 
-import javax.validation.constraints.NotNull;
-
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
-import org.dulab.adapcompounddb.models.entities.Submission;
-import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
-import org.dulab.adapcompounddb.models.entities.UserPrincipal;
+import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
+import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
+import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
+import org.dulab.adapcompounddb.site.repositories.SubmissionCategoryRepository;
+import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
+import org.dulab.adapcompounddb.site.repositories.SubmissionTagRepository;
+import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-@Validated
-public interface SubmissionService {
+@Service
+public class SubmissionService {
 
-    Submission findSubmission(long submissionId);
+    private static final Logger LOG = LogManager.getLogger(SubmissionService.class);
 
-    List<Submission> findSubmissionsByUserId(long userId);
+    //    private static final String DESC = "DESC";
+    private final SubmissionRepository submissionRepository;
+    private final SubmissionTagRepository submissionTagRepository;
+    private final SubmissionCategoryRepository submissionCategoryRepository;
+    private final SpectrumRepository spectrumRepository;
 
-    List<Submission> findSubmissionsWithTagsByUserId(long userId);
 
-    void saveSubmission(@NotNull(message = "The submission is required.") Submission submission);
+    @Autowired
+    public SubmissionService(final SubmissionRepository submissionRepository,
+                             final SubmissionTagRepository submissionTagRepository,
+                             final SubmissionCategoryRepository submissionCategoryRepository,
+                             final SpectrumRepository spectrumRepository) {
 
-    void deleteSubmission(Submission submission);
+        this.submissionRepository = submissionRepository;
+        this.submissionTagRepository = submissionTagRepository;
+        this.submissionCategoryRepository = submissionCategoryRepository;
+        this.spectrumRepository = spectrumRepository;
+    }
 
-    void delete(long submissionId);
+    @Transactional
+    public Submission findSubmission(final long submissionId) {
+        return submissionRepository.findById(submissionId).orElseThrow(EmptyStackException::new);
+    }
 
-    List<String> findUniqueTagStrings();
+    @Transactional
+    public List<Submission> findSubmissionsByUserId(final long userId) {
+        return MappingUtils.toList(submissionRepository.findByUserId(userId));
+    }
 
-    List<SubmissionCategory> findAllCategories();
+    @Transactional
+    public DataTableResponse findAllSubmissions(String search, Pageable pageable) {
 
-    List<SubmissionCategory> findAllCategories(SubmissionCategoryType type);
+        Page<Submission> submissionPage = submissionRepository.findAllSubmissions(search, pageable);
+        List<Submission> submissions = submissionPage.getContent();
 
-    long countSubmissionsByCategoryId(long submissionCategoryId);
+        List<SubmissionDTO> submissionDTOs = new ArrayList<>(0);
+        if (!submissions.isEmpty()) {
+            long[] submissionIds = submissions.stream().mapToLong(Submission::getId).toArray();
+            Map<Long, Boolean> references = MappingUtils.toMap(
+                    spectrumRepository.getAllSpectrumReferenceBySubmissionIds(submissionIds));
+            Map<Long, Boolean> clusterables = MappingUtils.toMap(
+                    spectrumRepository.getAllSpectrumClusterableBySubmissionIds(submissionIds));
 
-    Optional<SubmissionCategory> findSubmissionCategory(long submissionCategoryId);
+            submissionDTOs = submissions.stream()
+                    .map(s -> new SubmissionDTO(s, references.get(s.getId()), clusterables.get(s.getId())))
+                    .collect(Collectors.toList());
+        }
 
-    void saveSubmissionCategory(SubmissionCategory category);
+        final DataTableResponse response = new DataTableResponse(submissionDTOs);
+        response.setRecordsTotal(submissionPage.getTotalElements());
+        response.setRecordsFiltered(submissionPage.getTotalElements());
 
-    void deleteSubmissionCategory(long submissionCategoryId);
+        return response;
+    }
 
-    DataTableResponse findAllSubmissions(String searchStr, Pageable pageable);
+    @Transactional
+    public List<Submission> findSubmissionsWithTagsByUserId(final long userId) {
+        return MappingUtils.toList(submissionRepository.findByUserId(userId));
+    }
 
-//    List<String> findTagsFromACluster(Long clusterId);
+    public Submission findSubmissionByExternalId(String externalId) {
+        return submissionRepository.findSubmissionByExternalId(externalId);
+    }
 
-    Map<String, List<String>> groupTags(List<String> tags);
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void saveSubmission(final Submission submission) {
+        final List<File> fileList = submission.getFiles();
 
-    SortedMap<Long, String> findUserPrivateSubmissions(UserPrincipal user, ChromatographyType type);
+        final Submission submissionObj = submissionRepository.save(submission);
 
-    SortedMap<Long, String> findUserPrivateSubmissions(UserPrincipal user);
+        final List<Long> savedFileIds = new ArrayList<>();
+        submissionObj.getFiles().forEach(f -> savedFileIds.add(f.getId()));
 
-    Map<Long, List<ChromatographyType>> findChromatographyTypeBySubmissionIds(List<Submission> submissions);
+        Set<Long> ids = fileList.stream()
+                .map(File::getSpectra).filter(Objects::nonNull)
+                .flatMap(List::stream)
+                .map(Spectrum::getId)
+                .collect(Collectors.toSet());
+//        if (fileList.get(0).getSpectra().get(0).getId() == 0) {
+        if (ids.contains(0L)) {
+            spectrumRepository.saveSpectrumAndPeaks(fileList, savedFileIds);
+        }
+    }
+
+    @Transactional
+    public void deleteSubmission(final Submission submission) {
+        submissionRepository.delete(submission);
+    }
+
+    @Transactional
+    public void delete(final long submissionId) {
+        Optional<Submission> submission = submissionRepository.findById(submissionId);
+        if (submission.isPresent())
+            submissionRepository.delete(submission.get());
+        else
+            LOG.warn(String.format(
+                    "Fail to delete submission %d because this submission is not in the database", submissionId));
+    }
+
+    public List<String> findUniqueTagStrings() {
+        List<String> uniqueTags = MappingUtils.toList(submissionTagRepository.findUniqueTagStrings());
+        uniqueTags.sort(String.CASE_INSENSITIVE_ORDER);
+        return uniqueTags;
+    }
+
+    public List<SubmissionCategory> findAllCategories() {
+        return MappingUtils.toList(submissionCategoryRepository.findAll());
+    }
+
+    public List<SubmissionCategory> findAllCategories(final SubmissionCategoryType categoryType) {
+        return MappingUtils.toList(submissionCategoryRepository.findAllByCategoryType(categoryType));
+    }
+
+    public long countSubmissionsByCategoryId(final long submissionCategoryId) {
+        //        return submissionRepository.countByCategoryId(submissionCategoryId);
+        return submissionCategoryRepository.countSubmissionsBySubmissionCategoryId(submissionCategoryId);
+    }
+
+    public void saveSubmissionCategory(final SubmissionCategory category) {
+        submissionCategoryRepository.save(category);
+    }
+
+    public Optional<SubmissionCategory> findSubmissionCategory(final long submissionCategoryId) {
+        return submissionCategoryRepository.findById(submissionCategoryId);
+    }
+
+    public void deleteSubmissionCategory(final long submissionCategoryId) {
+        submissionCategoryRepository.deleteById(submissionCategoryId);
+    }
+
+//    @Override
+//    public List<String> findTagsFromACluster(final Long clusterId) {
+//        final List<Object[]> tagArr = submissionTagRepository.findTagsFromACluster(clusterId);
+//        final List<String> tagList = new ArrayList<>();
+//        tagArr.forEach(arr -> {
+//            tagList.add((String) arr[1]);
+//        });
+//        return tagList;
+//    }
+
+//    public Map<String, List<String>> generateTagMapOfACluster(final Long clusterId) {
+//        final List<String> tagList = findTagsFromACluster(clusterId)
+//                ;
+//        final Map<String, List<String>> tagMap = new HashMap<>(); // source:<src1, src2, src1, src2>
+//
+//        tagList.forEach(tag -> {
+//            final String[] arr = tag.split(":", 2);
+//            if(arr.length == 2) {
+//                final String key = arr[0].trim();
+//                final String value = arr[1].trim();
+//
+//                List<String> valueList = tagMap.get(key);
+//                if(CollectionUtils.isEmpty(valueList)) {
+//                    valueList = new ArrayList<>();
+//                    tagMap.put(key, valueList);
+//                }
+//                valueList.add(value);
+//            }
+//        });
+//
+//        return tagMap;
+//    }
+
+    public Map<String, List<String>> groupTags(final List<String> tags) {
+        final Map<String, List<String>> tagMap = new HashMap<>();
+
+        tags.forEach(tag -> {
+            final String[] arr = tag.split(":", 2);
+            if (arr.length == 2) {
+                final String key = arr[0].trim();
+                final String value = arr[1].trim();
+
+                List<String> valueList = tagMap.get(key);
+                if (CollectionUtils.isEmpty(valueList)) {
+                    valueList = new ArrayList<>();
+                    tagMap.put(key, valueList);
+                }
+                valueList.add(value);
+            }
+        });
+
+        return tagMap;
+    }
+
+    public SortedMap<Long, String> findUserPrivateSubmissions(UserPrincipal user, ChromatographyType type) {
+        Iterable<Submission> submissions =
+                submissionRepository.findByPrivateTrueAndReferenceTrueAndUserAndChromatographyType(user, type);
+
+        SortedMap<Long, String> submissionIdToNameMap = new TreeMap<>();
+        submissions.forEach(s -> submissionIdToNameMap.put(s.getId(), s.getName()));
+        return submissionIdToNameMap;
+    }
+
+    public SortedMap<Long, String> findUserPrivateSubmissions(UserPrincipal user) {
+        Iterable<Submission> submissions =
+                submissionRepository.findByPrivateTrueAndReferenceTrueAndUser(user);
+
+        SortedMap<Long, String> submissionIdToNameMap = new TreeMap<>();
+        submissions.forEach(s -> submissionIdToNameMap.put(s.getId(), s.getName()));
+        return submissionIdToNameMap;
+    }
+
+    public Map<Long, List<ChromatographyType>> findChromatographyTypeBySubmissionIds(List<Submission> submissions) {
+
+        List<Long> submissionIds = submissions.stream()
+                .map(Submission::getId)
+                .collect(Collectors.toList());
+
+        return MappingUtils.toMapOfLists(submissionIds.isEmpty()
+                ? new ArrayList<>(0)
+                : submissionRepository.findChromatographyTypesBySubmissionId(submissionIds));
+    }
 }

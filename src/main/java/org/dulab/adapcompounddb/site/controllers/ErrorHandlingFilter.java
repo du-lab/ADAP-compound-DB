@@ -14,7 +14,7 @@ import java.net.URLEncoder;
         urlPatterns = "/*")
 public class ErrorHandlingFilter implements Filter {
 
-    private static final Logger LOG = LogManager.getLogger();
+    private static final Logger LOG = LogManager.getLogger(ErrorHandlingFilter.class);
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)

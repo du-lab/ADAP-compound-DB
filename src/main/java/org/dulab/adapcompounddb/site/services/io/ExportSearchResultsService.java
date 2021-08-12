@@ -149,29 +149,32 @@ public interface ExportSearchResultsService {
     enum ExportField {
 
         //        POSITION("Position", r -> Integer.toString(r.getPosition())),
-        QUERY_FILE_ID("File #", null, r -> r.getQueryFileIndex() != null ? Integer.toString(r.getQueryFileIndex() + 1) : null),
-        QUERY_SPECTRUM_ID("Feature #", null, r -> r.getQuerySpectrumIndex() != null ? Integer.toString(r.getQuerySpectrumIndex() + 1) : null),
+        QUERY_FILE_ID("File Index", null, r -> r.getQueryFileIndex() != null ? Integer.toString(r.getQueryFileIndex() + 1) : null),
+        QUERY_SPECTRUM_ID("Numerical Signal ID assigned by ADAP-KDB", null, r -> r.getQuerySpectrumIndex() != null ? Integer.toString(r.getQuerySpectrumIndex() + 1) : null),
         MATCH_INDEX("Match #", null, r -> r.getMatchIndex() != null ? Integer.toString(r.getMatchIndex() + 1) : null),
 //        QUERY_EXTERNAL_ID("Signal ID", ExportCategory.MEASURED, SearchResultDTO::getQueryExternalId),
-        QUERY_NAME("Signal", ExportCategory.MEASURED, SearchResultDTO::getQuerySpectrumShortName),
-        QUERY_RET_TIME("Ret time (min)", ExportCategory.MEASURED, r -> formatDouble(r.getQueryRetTime(), 3)),
+        QUERY_NAME("Query Signal Name", ExportCategory.MEASURED, SearchResultDTO::getQuerySpectrumShortName),
+        QUERY_RET_TIME("Retention time (min)", ExportCategory.MEASURED, r -> formatDouble(r.getQueryRetTime(), 3)),
         QUERY_PRECURSOR_MZ("Precursor m/z", ExportCategory.MEASURED, r -> formatDoubleArray(r.getQueryPrecursorMzs(), 4)),
         QUERY_PRECURSOR_TYPE("Adduct", ExportCategory.MEASURED, r -> formatStringArray(r.getQueryPrecursorTypes())),
-        QUERY_MASS("Mass (Da)", ExportCategory.MEASURED, r -> formatDouble(r.getQueryMass(), 4)),
-        FRAGMENTATION_SPECTRUM("Fragmentation spectrum", ExportCategory.MEASURED, r -> formatBoolean(r.isQueryWithPeaks())),
-        MATCH_NAME("Compound Name", ExportCategory.MATCHED, SearchResultDTO::getName),
-        MATCH_EXTERNAL_ID("Compound ID", ExportCategory.MATCHED, SearchResultDTO::getExternalId),
-        SCORE("Fragmentation Score", ExportCategory.DIFFERENCE, r -> r.getScore() != null ? Double.toString(r.getNISTScore()) : null),
+        QUERY_MASS("Neutral Mass (Da)", ExportCategory.MEASURED, r -> formatDouble(r.getQueryMass(), 4)),
+        FRAGMENTATION_SPECTRUM("With Fragmentation Spectrum or not", ExportCategory.MEASURED, r -> formatBoolean(r.isQueryWithPeaks())),
+        RET_TIME_ERROR("Retention Time Error (min)", ExportCategory.DIFFERENCE, r -> formatDouble(r.getRetTimeError(), 3)),
+        MASS_ERROR_PPM("Precursor Mass Error (ppm)", ExportCategory.DIFFERENCE, r -> formatDouble(r.getMassErrorPPM(), 4)),
+        PRECURSOR_TYPE("Matching Adduct", ExportCategory.DIFFERENCE, SearchResultDTO::getPrecursorType),
+        ISOTOPIC_SIMILARITY("Isotopic Similarity", ExportCategory.DIFFERENCE, r -> null),
+        SCORE("Fragmentation Score by matching with Experimental spectra", ExportCategory.DIFFERENCE, r -> r.getScore() != null ? Double.toString(r.getNISTScore()) : null),
+        THEORETICAL_SCORE("Fragmentation Score by matching with theoretical spectra", ExportCategory.DIFFERENCE, r -> null),
         //        MASS_ERROR("Mass Error (Da)", r -> r.getMassError() != null ? Double.toString(r.getMassError()) : null),
-        MASS_ERROR_PPM("Mass Error (PPM)", ExportCategory.DIFFERENCE, r -> formatDouble(r.getMassErrorPPM(), 4)),
-        RET_TIME_ERROR("Ret Time Error (min)", ExportCategory.DIFFERENCE, r -> formatDouble(r.getRetTimeError(), 3)),
         ONTOLOGY_LEVEL("Ontology Level", ExportCategory.DIFFERENCE, SearchResultDTO::getOntologyLevel),
-        MARKED("Best Match", ExportCategory.DIFFERENCE, r -> formatBoolean(r.isMarked())),
-        FORMULA("Formula", ExportCategory.MATCHED, SearchResultDTO::getFormula),
-        MASS("Mass (Da)", ExportCategory.MATCHED, r -> formatDouble(r.getMass(), 4)),
-        RET_TIME("Ret Time (min)", ExportCategory.MATCHED, r -> formatDouble(r.getRetTime(), 3)),
-        PRECURSOR_TYPE("Adduct", ExportCategory.MATCHED, SearchResultDTO::getPrecursorType),
-        SUBMISSION_NAME("Library", ExportCategory.MATCHED, SearchResultDTO::getSubmissionName);
+        MARKED("Is this the best match", ExportCategory.DIFFERENCE, r -> formatBoolean(r.isMarked())),
+        MATCH_EXTERNAL_ID("Compound ID", ExportCategory.MATCHED, SearchResultDTO::getExternalId),
+        MATCH_NAME("Compound Name", ExportCategory.MATCHED, SearchResultDTO::getName),
+        FORMULA("Chemical Formula", ExportCategory.MATCHED, SearchResultDTO::getFormula),
+        MASS("Library Monoisotopic Mass (Da)", ExportCategory.MATCHED, r -> formatDouble(r.getMass(), 4)),
+        RET_TIME("Library Retention Time (min)", ExportCategory.MATCHED, r -> formatDouble(r.getRetTime(), 3)),
+        SUBMISSION_NAME("Library Category", ExportCategory.MATCHED, SearchResultDTO::getSubmissionName),
+        NOTES("NOTES", ExportCategory.MISC, r -> null);
 
 
         final String name;
@@ -195,7 +198,8 @@ public interface ExportSearchResultsService {
 
         MEASURED("Signal information measured by instrument or calculated from the measured data", IndexedColors.LIGHT_TURQUOISE),
         DIFFERENCE("Library matching values", IndexedColors.LIGHT_YELLOW),
-        MATCHED("Compound information", IndexedColors.LIGHT_GREEN);
+        MATCHED("Compound information", IndexedColors.LIGHT_GREEN),
+        MISC("Misc", IndexedColors.LIGHT_ORANGE);
 
         final String label;
         final IndexedColors color;

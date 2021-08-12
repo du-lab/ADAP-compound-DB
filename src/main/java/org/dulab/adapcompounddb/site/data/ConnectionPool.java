@@ -11,7 +11,7 @@ import java.sql.SQLException;
 
 public class ConnectionPool {
 
-    private static final Logger LOG = LogManager.getLogger();
+    private static final Logger LOG = LogManager.getLogger(ConnectionPool.class);
 
     private static ConnectionPool pool = null;
     private static DataSource dataSource = null;
