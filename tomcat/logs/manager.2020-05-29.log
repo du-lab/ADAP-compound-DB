@@ -1,2 +1,0 @@
-29-May-2020 05:36:18.865 INFO [http-nio-8080-exec-70] org.apache.catalina.core.ApplicationContext.log Manager: deploy: Deploying web application '/adap_compound_db_war/'
-29-May-2020 05:36:18.866 INFO [http-nio-8080-exec-70] org.apache.catalina.core.ApplicationContext.log Manager: Uploading WAR file to /Applications/tomcat/webapps/adap_compound_db_war#.war.tmp
