@@ -1,16 +1,14 @@
 package org.dulab.adapcompounddb.site.services.search;
 
-import org.dulab.adapcompounddb.models.entities.Adduct;
+import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.ontology.OntologyLevel;
 import org.dulab.adapcompounddb.models.ontology.OntologySupplier;
 import org.dulab.adapcompounddb.models.ontology.Parameters;
 import org.dulab.adapcompounddb.site.services.AdductService;
+import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.dulab.adapcompounddb.site.services.admin.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
-import org.dulab.adapcompounddb.models.entities.Spectrum;
-import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
-import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
@@ -19,10 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -30,20 +25,20 @@ import java.util.stream.IntStream;
 public class IndividualSearchService {
 
     private final SpectrumRepository spectrumRepository;
-    private final SubmissionRepository submissionRepository;
+    private final SubmissionService submissionService;
     private final AdductService adductService;
     private final JavaSpectrumSimilarityService javaSpectrumSimilarityService;
 
     @Autowired
     public IndividualSearchService(SpectrumRepository spectrumRepository,
-                                   SubmissionRepository submissionRepository,
                                    AdductService adductService,
-                                   JavaSpectrumSimilarityService javaSpectrumSimilarityService) {
+                                   JavaSpectrumSimilarityService javaSpectrumSimilarityService,
+                                   SubmissionService submissionService) {
 
         this.spectrumRepository = spectrumRepository;
-        this.submissionRepository = submissionRepository;
         this.adductService = adductService;
         this.javaSpectrumSimilarityService = javaSpectrumSimilarityService;
+        this.submissionService = submissionService;
     }
 
     @Transactional
@@ -96,6 +91,10 @@ public class IndividualSearchService {
                     .mapToDouble(adduct -> adduct.calculateNeutralMass(spectrum.getPrecursor()))
                     .toArray());
 
+        Map<Long, String> privateSubmissionIdMap =
+                submissionService.findUserPrivateSubmissions(user, spectrum.getChromatographyType());
+        Set<Long> privateSubmissionIds = privateSubmissionIdMap.keySet();
+
         List<SpectrumMatch> matches =
                 javaSpectrumSimilarityService.searchConsensusAndReference(spectrum, modifiedParameters, user);
 
@@ -110,7 +109,8 @@ public class IndividualSearchService {
         for (SearchResultDTO result : results) {
 
             OntologyLevel ontologyLevel = OntologySupplier.select(spectrum.getChromatographyType(),
-                    result.getScore(), result.getPrecursorErrorPPM(), result.getMassErrorPPM(), result.getRetTimeError());
+                    privateSubmissionIds.contains(result.getSubmissionId()), result.getScore(),
+                    result.getPrecursorErrorPPM(), result.getMassErrorPPM(), result.getRetTimeError());
             if (ontologyLevel == null)
                 continue;
 

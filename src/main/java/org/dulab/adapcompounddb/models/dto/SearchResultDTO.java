@@ -69,6 +69,7 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
     private Double retTime;
     private String formula;
     private String submissionName;
+    private Long submissionId;
 
     // Other
     private int position;
@@ -161,8 +162,10 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
             File file = matchSpectrum.getFile();
             if (file != null) {
                 Submission submission = file.getSubmission();
-                if (submission != null)
+                if (submission != null) {
                     this.submissionName = submission.getName();
+                    this.submissionId = submission.getId();
+                }
             }
         }
     }
@@ -310,6 +313,14 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
 
     public void setSubmissionName(String submissionName) {
         this.submissionName = submissionName;
+    }
+
+    public Long getSubmissionId() {
+        return submissionId;
+    }
+
+    public void setSubmissionId(Long submissionId) {
+        this.submissionId = submissionId;
     }
 
     public String getQuerySpectrumName() {
