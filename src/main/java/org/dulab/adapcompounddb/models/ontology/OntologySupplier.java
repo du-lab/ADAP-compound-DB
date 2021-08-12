@@ -34,10 +34,10 @@ public class OntologySupplier {
         chromatographyTypeToOntologyLevelsMap.get(ChromatographyType.LC_MSMS_POS).add(ol2b);
         chromatographyTypeToOntologyLevelsMap.get(ChromatographyType.LC_MSMS_NEG).add(ol2b);
 
-//        OntologyLevel pda = new OntologyLevel("PD_A", 2, false, Parameters.MZ_TOLERANCE,
-//                Parameters.SCORE_THRESHOLD, Parameters.PRECURSOR_TOLERANCE, Parameters.MASS_TOLERANCE_PPM, null);
-//        chromatographyTypeToOntologyLevelsMap.get(ChromatographyType.LC_MSMS_POS).add(pda);
-//        chromatographyTypeToOntologyLevelsMap.get(ChromatographyType.LC_MSMS_NEG).add(pda);
+        OntologyLevel pda = new OntologyLevel("PD_A", 2, false, Parameters.MZ_TOLERANCE_PPM,
+                Parameters.SCORE_THRESHOLD, Parameters.PRECURSOR_TOLERANCE_PPM, Parameters.MASS_TOLERANCE_PPM, null);
+        chromatographyTypeToOntologyLevelsMap.get(ChromatographyType.LC_MSMS_POS).add(pda);
+        chromatographyTypeToOntologyLevelsMap.get(ChromatographyType.LC_MSMS_NEG).add(pda);
     }
 
 
@@ -90,7 +90,7 @@ public class OntologySupplier {
      * @return ontology level or null
      */
     @Nullable
-    public static OntologyLevel select(ChromatographyType chromatographyType,
+    public static OntologyLevel select(ChromatographyType chromatographyType, boolean inHouseLibrary,
                                        @Nullable Double score, @Nullable Double precursorErrorPPM,
                                        @Nullable Double massErrorPPM, @Nullable Double retTimeError) {
 
@@ -105,6 +105,7 @@ public class OntologySupplier {
 
             for (OntologyLevel level : ontologyLevels) {
 
+                if (level.isInHouseLibrary() ^ inHouseLibrary) continue;
                 if (level.getScoreThreshold() != null && score == null) continue;
                 if (level.getPrecursorTolerancePPM() != null && precursorErrorPPM == null) continue;
                 if (level.getMassTolerancePPM() != null && massErrorPPM == null) continue;
