@@ -94,7 +94,7 @@
                                         </div>
                                         <div class="row form-group">
                                             <div class="col-md-4">
-                                                <form:label path="files" cssClass="col-form-label">File</form:label>&nbsp;
+                                                <form:label path="files" cssClass="col-form-label">File (max 256MB)</form:label>&nbsp;
                                             </div>
                                             <div class="col-md-8">
                                                 <input type="file" name="files" accept=".msp,.csv,.cdf,.mzml,.mzxml"
