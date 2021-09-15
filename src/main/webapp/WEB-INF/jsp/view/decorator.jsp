@@ -21,6 +21,9 @@
 
 
     <title>ADAP Compound Knowledgebase</title>
+    <meta name="keywords" content="ADAP, ADAP-KDB, Spectral Knowledgebase, Spectral Library, Du-Lab, Du Lab, Dulab"/>
+    <meta name="author" content="Du Lab"/>
+    <meta name="description" content="A spectral knowledgebase for searching, tracking, and prioritizing unknown spectra"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="icon" type="image/png" href="<c:url value="/resources/static/favicon-32x32.png"/>" sizes="32x32"/>
     <link rel="icon" type="image/png" href="<c:url value="/resources/static/favicon-16x16.png"/>" sizes="16x16"/>
