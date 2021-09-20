@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dulab.adapcompounddb.models.MetaDataMapping;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.enums.FileType;
 import org.dulab.adapcompounddb.models.enums.UserRole;
@@ -19,7 +20,9 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class FileUploadRestController {
@@ -59,7 +62,20 @@ public class FileUploadRestController {
             submission.setDateTime(new Date());
             submission.getTags().forEach(tag -> tag.setSubmission(submission));
 
-            MultipartFileUtils.readMultipartFile(submission, files, chromatographyType, null, false);
+            MetaDataMapping metaDataMapping = new MetaDataMapping();
+            metaDataMapping.setNameField("Name");
+            metaDataMapping.setMassField("Mass");
+            metaDataMapping.setFormulaField("Formula");
+            metaDataMapping.setExternalIdField("CASNO");
+            metaDataMapping.setInchiKeyField("INCHI_KEY");
+            metaDataMapping.setRetTimeField("RT");
+            metaDataMapping.setPrecursorMzField("PrecursorMz");
+            metaDataMapping.setPrecursorTypeField("Precursor_type");
+
+            Map<FileType, MetaDataMapping> metaDataMappingMap = new HashMap<>();
+            metaDataMappingMap.put(FileType.MSP, metaDataMapping);
+
+            MultipartFileUtils.readMultipartFile(submission, files, chromatographyType, metaDataMappingMap, false);
 
             submissionService.saveSubmission(submission);
 
