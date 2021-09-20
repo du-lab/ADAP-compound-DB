@@ -85,12 +85,12 @@ public class SpectrumClusterRepositoryImpl implements SpectrumClusterRepositoryC
                 "join File on Spectrum.FileId=File.Id " +
                 "where ConsensusSpectrum.Name LIKE :search " +
                 "and (:type is null or ConsensusSpectrum.ChromatographyType = :type) " +
-                "and File.SubmissionId in (:submissionIds) group by SpectrumCluster.Id " +
+                "and File.SubmissionId in (:submissionIds) group by SpectrumCluster.Id "; /* +
                 "union all " +
                 "select UUID_SHORT() as uniqueId, Spectrum.Id, null, Spectrum.Name, 1, null, null, null, null, null, null, null, Spectrum.ChromatographyType from Spectrum " +
                 "join File on Spectrum.FileId=File.Id " +
                 "where Spectrum.Reference is true and Spectrum.Name like :search " +
-                "and (:type is null or Spectrum.ChromatographyType = :type) and File.SubmissionId in (:submissionIds)";
+                "and (:type is null or Spectrum.ChromatographyType = :type) and File.SubmissionId in (:submissionIds)";*/
 
         String findClusterSqlQueryWithSort = pageable.getSort().stream()
                 .map(order -> String.format(
@@ -109,8 +109,8 @@ public class SpectrumClusterRepositoryImpl implements SpectrumClusterRepositoryC
                 .getResultList();
 
         BigInteger consensusSpectraCount = countAllConsensusSpectra(submissionIds, chromatographyType, search);
-        BigInteger referenceSpectraCount = countAllReferenceSpectra(submissionIds, chromatographyType, search);
+//        BigInteger referenceSpectraCount = countAllReferenceSpectra(submissionIds, chromatographyType, search);
 
-        return new PageImpl<>(clusters, pageable, consensusSpectraCount.longValue() + referenceSpectraCount.longValue());
+        return new PageImpl<>(clusters, pageable, consensusSpectraCount.longValue() /*+ referenceSpectraCount.longValue()*/);
     }
 }
