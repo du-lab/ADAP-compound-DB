@@ -113,6 +113,13 @@ public class MultipartFileUtils {
             files = mergeFiles(files);
         }
 
+        //TODO Add code to convert SMILES to Image
+        // Loop over all files in `files`. For each file, loop over all spectra in `file.getSpectra()`.
+        // For each spectrum,
+        // - get SMILES with `spectrum.getCanonicalSmiles()`,
+        // - use RDKit to generate an image,
+        // - assign that image to the spectrum with spectrum.setImage().
+
         submission.setFiles(files);
     }
 
