@@ -28,7 +28,7 @@ public class RawFileReaderService implements FileReaderService {
 
         List<Spectrum> spectra = new ArrayList<>();
 
-        File file = File.createTempFile("ADAP_KDB", filename);
+        File file = File.createTempFile("ADAP_KDB", filename.replace('/', '_'));
 
         try {
             FileUtils.copyInputStreamToFile(inputStream, file);

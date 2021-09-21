@@ -9,20 +9,22 @@ import org.dulab.adapcompounddb.site.controllers.forms.FileUploadForm;
 import org.dulab.adapcompounddb.site.controllers.utils.MultipartFileUtils;
 import org.dulab.adapcompounddb.site.services.io.FileReaderService;
 import org.dulab.adapcompounddb.site.services.io.MspFileReaderService;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,6 +46,38 @@ public class FileUploadController {
     public void addAttributes(final Model model) {
         model.addAttribute("chromatographyTypeList", ChromatographyType.values());
         model.addAttribute("fileTypeList", FileType.values());
+    }
+
+    @RequestMapping(value = "/file/upload/nmdr", method = RequestMethod.GET)
+    public String uploadFromNMDR(@RequestParam String archive, @RequestParam String file,
+                                 @RequestParam String chromatographyType,
+                                 Model model, HttpSession session, HttpServletResponse httpServletResponse) {
+
+        ChromatographyType type;
+        try {
+            type = ChromatographyType.valueOf(chromatographyType);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalStateException(
+                    String.format("Chromatography of type %s is not supported", chromatographyType));
+        }
+
+        String fileUrl = String.format(
+                "https://www.metabolomicsworkbench.org/data/file_extract_7z.php?A=%s&F=%s",
+                archive, file);
+
+        try (BufferedInputStream inputStream = new BufferedInputStream(new URL(fileUrl).openStream())) {
+
+            MultipartFile multipartFile = new MockMultipartFile(file, file, "multipart/form-data", inputStream);
+
+            FileUploadForm fileUploadForm = new FileUploadForm();
+            fileUploadForm.setChromatographyType(type);
+            fileUploadForm.setFiles(Collections.singletonList(multipartFile));
+
+            return upload(model, session, fileUploadForm, null, httpServletResponse);
+
+        } catch (IOException e) {
+            throw new IllegalStateException(String.format("Cannot read NMDR file %s from archive %s", archive, file), e);
+        }
     }
 
     @RequestMapping(value = "/file/upload/", method = RequestMethod.GET)
@@ -74,7 +108,7 @@ public class FileUploadController {
             return "redirect:/file/";
         }
 
-        if (errors.hasErrors()) {
+        if (errors != null && errors.hasErrors()) {
             return "submission/upload";
         }
 
