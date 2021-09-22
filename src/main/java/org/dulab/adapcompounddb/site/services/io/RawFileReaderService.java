@@ -9,6 +9,7 @@ import org.dulab.adapbig.input.InputModule;
 import org.dulab.adapcompounddb.models.MetaDataMapping;
 import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
+import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.springframework.lang.Nullable;
 
 import java.io.File;
@@ -77,6 +78,13 @@ public class RawFileReaderService implements FileReaderService {
         spectrum.setName(scan.getName());
         spectrum.setRetentionTime(scan.getRetTime());
         spectrum.setPrecursor(scan.getPrecursorMz());
+
+        int msLevel = scan.getMsLevel();
+        char polarity = scan.getPolarity();
+        if (msLevel == 2 && polarity == '+')
+            spectrum.setChromatographyType(ChromatographyType.LC_MSMS_POS);
+        if (msLevel == 2 && polarity == '-')
+            spectrum.setChromatographyType(ChromatographyType.LC_MSMS_NEG);
 
         List<Peak> peaks = new ArrayList<>(mzValues.length);
         for (int i = 0; i < mzValues.length; ++i) {

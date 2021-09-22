@@ -50,16 +50,22 @@ public class FileUploadController {
 
     @RequestMapping(value = "/file/upload/nmdr", method = RequestMethod.GET)
     public String uploadFromNMDR(@RequestParam String archive, @RequestParam String file,
-                                 @RequestParam String chromatographyType,
+                                 @RequestParam String chromatography,
                                  Model model, HttpSession session, HttpServletResponse httpServletResponse) {
 
-        ChromatographyType type;
-        try {
-            type = ChromatographyType.valueOf(chromatographyType);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalStateException(
-                    String.format("Chromatography of type %s is not supported", chromatographyType));
+        ChromatographyType chromatographyType = null;
+
+        for (ChromatographyType type : ChromatographyType.values()) {
+            if (chromatography.equalsIgnoreCase(type.name())) {
+                chromatographyType = type;
+                break;
+            }
         }
+
+        // If chromatograhy = "LC_MSMS" then the chromatography will be
+        if (chromatographyType == null && !chromatography.equalsIgnoreCase("LC_MSMS"))
+            throw new IllegalStateException(
+                    String.format("Chromatography of type %s is not supported", chromatography));
 
         String fileUrl = String.format(
                 "https://www.metabolomicsworkbench.org/data/file_extract_7z.php?A=%s&F=%s",
@@ -70,9 +76,10 @@ public class FileUploadController {
             MultipartFile multipartFile = new MockMultipartFile(file, file, "multipart/form-data", inputStream);
 
             FileUploadForm fileUploadForm = new FileUploadForm();
-            fileUploadForm.setChromatographyType(type);
+            fileUploadForm.setChromatographyType(chromatographyType);
             fileUploadForm.setFiles(Collections.singletonList(multipartFile));
 
+            Submission.clear(session);
             return upload(model, session, fileUploadForm, null, httpServletResponse);
 
         } catch (IOException e) {

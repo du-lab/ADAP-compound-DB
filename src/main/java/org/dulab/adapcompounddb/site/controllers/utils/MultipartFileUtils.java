@@ -11,9 +11,9 @@ import org.dulab.adapcompounddb.site.services.io.FileReaderService;
 import org.dulab.adapcompounddb.models.MetaDataMapping;
 import org.dulab.adapcompounddb.site.services.io.MspFileReaderService;
 import org.dulab.adapcompounddb.site.services.io.RawFileReaderService;
-import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -40,7 +40,7 @@ public class MultipartFileUtils {
      * @param chromatographyType chromatography type
      */
     public static void readMultipartFile(Submission submission, List<MultipartFile> multipartFiles,
-                                         ChromatographyType chromatographyType,
+                                         @Nullable ChromatographyType chromatographyType,
                                          @Nullable Map<FileType, MetaDataMapping> metaDataMappings,
                                          boolean mergeFiles) {
 
@@ -77,9 +77,23 @@ public class MultipartFileUtils {
                         multipartFile.getInputStream(),
                         metaDataMappings != null ? metaDataMappings.get(fileType) : null,
                         filename));
+
+                if (chromatographyType == null) {
+                    Set<ChromatographyType> typesFromSpectra = file.getSpectra().stream()
+                            .map(Spectrum::getChromatographyType)
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.toSet());
+
+                    if (typesFromSpectra.size() == 1)
+                        chromatographyType = typesFromSpectra.iterator().next();
+                    else
+                        throw new IllegalStateException("Cannot determine the chromatography type");
+                }
+
+                final ChromatographyType finalChromatographyType = chromatographyType;
                 file.getSpectra().forEach(spectrum -> {
                     spectrum.setFile(file);
-                    spectrum.setChromatographyType(chromatographyType);
+                    spectrum.setChromatographyType(finalChromatographyType);
                 });
 
                 // check if the file exists spectrum has integral m/z value
