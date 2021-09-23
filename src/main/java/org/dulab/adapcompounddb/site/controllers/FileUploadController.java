@@ -130,14 +130,14 @@ public class FileUploadController {
         }
 
         Submission submission = new Submission();
-        try {
-            MultipartFileUtils.readMultipartFile(submission, form.getFiles(), form.getChromatographyType(),
-                    form.getMetaDataMappings(), form.isMergeFiles());
-        } catch (IllegalStateException e) {
-            LOG.warn(e.getMessage(), e);
-            model.addAttribute("message", e.getMessage());
-            return "submission/upload";
-        }
+//        try {
+        MultipartFileUtils.readMultipartFile(submission, form.getFiles(), form.getChromatographyType(),
+                form.getMetaDataMappings(), form.isMergeFiles());
+//        } catch (IllegalStateException e) {
+//            LOG.warn(e.getMessage(), e);
+//            model.addAttribute("message", e.getMessage());
+//            return "submission/upload";
+//        }
 
         Submission.assign(session, submission);
 
