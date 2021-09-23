@@ -66,6 +66,20 @@ public class MultipartFileUtils {
                 throw new IllegalStateException(
                         "Cannot find an implementation of FileReaderService for a file of type " + fileType);
 
+            if (fileReader instanceof RawFileReaderService && chromatographyType != null) {
+                RawFileReaderService rawFileReaderService = (RawFileReaderService) fileReader;
+                rawFileReaderService.setChromatographyType(chromatographyType);
+                switch (chromatographyType) {
+                    case GAS:
+                        rawFileReaderService.setMinMsLevel(1);
+                        break;
+                    case LC_MSMS_POS:
+                    case LC_MSMS_NEG:
+                        rawFileReaderService.setMinMsLevel(2);
+                        break;
+                }
+            }
+
             File file = new File();
             file.setName(filename);
             file.setFileType(fileType);

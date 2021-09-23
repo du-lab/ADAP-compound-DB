@@ -15,6 +15,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -67,11 +69,19 @@ public class FileUploadController {
             throw new IllegalStateException(
                     String.format("Chromatography of type %s is not supported", chromatography));
 
-        String fileUrl = String.format(
-                "https://www.metabolomicsworkbench.org/data/file_extract_7z.php?A=%s&F=%s",
-                archive, file);
+        UriComponents uriComponents = UriComponentsBuilder.newInstance()
+                .scheme("https")
+                .host("www.metabolomicsworkbench.org")
+                .path("/data/file_extract_7z.php")
+                .query(String.format("A=%s", archive))
+                .query(String.format("F=%s", file))
+                .build().encode();
 
-        try (BufferedInputStream inputStream = new BufferedInputStream(new URL(fileUrl).openStream())) {
+//        String fileUrl = String.format(
+//                "https://www.metabolomicsworkbench.org/data/file_extract_7z.php?A=%s&F=%s",
+//                archive, file);
+
+        try (BufferedInputStream inputStream = new BufferedInputStream(new URL(uriComponents.toUriString()).openStream())) {
 
             MultipartFile multipartFile = new MockMultipartFile(file, file, "multipart/form-data", inputStream);
 
