@@ -100,7 +100,7 @@ public class MultipartFileUtils {
 
                     if (typesFromSpectra.size() == 1)
                         chromatographyType = typesFromSpectra.iterator().next();
-                    else
+                    else if (typesFromSpectra.size() > 1)
                         throw new IllegalStateException("Cannot determine the chromatography type");
                 }
 
