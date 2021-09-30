@@ -104,11 +104,16 @@ public class SubmissionController extends BaseController {
     }
 
     @RequestMapping(value = "/submission/external_id/{externalId}", method = RequestMethod.GET)
-    public String findSubmissionByExternalId(@PathVariable String externalId) {
-        Submission submission = submissionService.findSubmissionByExternalId(externalId);
-        if (submission != null)
-            return String.format("redirect:/submission/%d/", submission.getId());
-        throw new IllegalStateException(String.format("Cannot find submission with External ID = '%s'", externalId));
+    public String findSubmissionByExternalId(@PathVariable String externalId, Model model) {
+        List<Submission> submissions = submissionService.findSubmissionsByExternalId(externalId);
+        if (submissions.isEmpty())
+            throw new IllegalStateException(String.format("Cannot find submission with External ID = '%s'", externalId));
+
+        if (submissions.size() == 1)
+            return String.format("redirect:/submission/%d/", submissions.get(0).getId());
+
+        model.addAttribute("submissions", submissions);
+        return "submission/select_submission";
     }
 
     private String view(final Submission submission, final Model model, final boolean edit) {

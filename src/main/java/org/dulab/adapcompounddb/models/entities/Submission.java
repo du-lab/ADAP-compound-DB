@@ -224,6 +224,17 @@ public class Submission implements Serializable {
     }
 
     @Transient
+    public String getTagValue(String key) {
+        SubmissionTag tag = null;
+        if (tags != null)
+            tag = tags.stream()
+                    .filter(t -> t.getTagKey().equalsIgnoreCase(key))
+                    .findAny().orElse(null);
+
+        return tag != null ? tag.getTagValue() : null;
+    }
+
+    @Transient
     public String getTagsAsString() {
         return tags == null ? "" : getTags()
                 .stream()
