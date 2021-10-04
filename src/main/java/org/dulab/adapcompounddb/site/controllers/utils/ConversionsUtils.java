@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.dulab.adapcompounddb.models.entities.Peak;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -34,5 +35,10 @@ public class ConversionsUtils {
     public static String formatDouble(Double x) {
         if (x == null) return null;
         return String.format("%.3f", x);
+    }
+
+    public static String smilesToImage(@Nullable String smiles) {
+        //TODO Add code here
+        return null;
     }
 }
