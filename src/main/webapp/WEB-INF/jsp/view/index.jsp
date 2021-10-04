@@ -2,6 +2,13 @@
 <%--@elvariable id="countConsensusSpectra" type="java.lang.Long"--%>
 <%--@elvariable id="countReferenceSpectra" type="java.lang.Long"--%>
 
+<head>
+    <meta name="keywords" content="ADAP, ADAP-KDB, Spectral Knowledgebase, Spectral Library, Du-Lab, Du Lab, Dulab"/>
+    <meta name="author" content="Du Lab"/>
+    <meta name="description"
+          content="A spectral knowledgebase for searching, tracking, and prioritizing unknown spectra"/>
+</head>
+
 <script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
 <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
 <script src="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.js"/>"></script>
