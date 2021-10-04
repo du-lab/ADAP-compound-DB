@@ -121,30 +121,24 @@ public class MultipartFileUtils {
         for (int i = 0; i < files.size(); ++i) {
             File file = files.get(i);
             file.getSpectra().forEach(spectrum -> {
-                //TODO Clean up the code and delete all unnecessary command like this one:
-                spectrum.getCanonicalSmiles();
 
-                //TODO Define variables close to where they are used. E.g., this variable `s` can be defined in line 156
-                String s = null;
-                String image;
                 String smiles = spectrum.getCanonicalSmiles();
 
                 try {
                     // using the Runtime exec method:
                     String command = String.format("python3 generate_image_for_smiles.py %s", smiles);
-                    //TODO Avoid using short variable names. E.g., use `process` instead of `p`
-                    Process p = Runtime.getRuntime().exec(command);
 
-                    BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                    BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+                    Process process = Runtime.getRuntime().exec(command);
+
+                    BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                    BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
 
                     StringBuilder output = new StringBuilder();
 
-                    // read the output from the command
-                    System.out.println("Here is the standard output of the command:\n");
-                    //TODO Variable `smiles` is used to store a SMILES string. It's confusing if you reuse it for something else
-                    while ((smiles = stdInput.readLine()) != null) {
-                        output.append(smiles);
+                    String image;
+                    String read;
+                    while ((read = stdInput.readLine()) != null) {
+                        output.append(read);
                     }
                     image = output.toString();
 
@@ -152,21 +146,14 @@ public class MultipartFileUtils {
                         spectrum.setImage(image);
 
                     // read any errors from the attempted command
-                    System.out.println("Here is the standard error of the command (if any):\n");
+                    String s = null;
                     while ((s = stdError.readLine()) != null) {
-                        //TODO Replace it with `LOGGER.warn(s)`
-                        System.out.println(s);
+                        LOGGER.warn(s);
                     }
 
-                    //TODO Why we call System.exit()?
-                    System.exit(0);
                 }
                 catch (IOException e) {
-                    //TODO Just log the error but don't exit.
-                    // E.g. `LOGGER.warn("Error while plotting a structure for SMILES", e)`
-                    System.out.println("exception happened - here's what I know: ");
-                    e.printStackTrace();
-                    System.exit(-1);
+                    LOGGER.warn("Error while plotting a structure for SMILES", e);
                 }
             });
             submission.setFiles(files);
