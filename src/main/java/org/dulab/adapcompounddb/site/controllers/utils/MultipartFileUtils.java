@@ -118,10 +118,12 @@ public class MultipartFileUtils {
             files = mergeFiles(files);
         }
 
-        //TODO Let's move all your code to a new function
-        // e.g. `private static void createImagesFromSmiles(List<File> files)`
-        // Then just call this new function.
+        createImagesFromSmiles(files);
 
+        submission.setFiles(files);
+    }
+
+    private static void createImagesFromSmiles(List<File> files){
         for (int i = 0; i < files.size(); ++i) {
             File file = files.get(i);
             file.getSpectra().forEach(spectrum -> {
@@ -160,11 +162,9 @@ public class MultipartFileUtils {
                     LOGGER.warn("Error while plotting a structure for SMILES", e);
                 }
             });
-            //TODO We don't need to execute it in the loop. Move it outside the loop.
-            submission.setFiles(files);
+
         }
     }
-
     private static FileType getFileType(String filename) {
         String[] substrings = filename.split("\\.");
         if (substrings.length == 0)
