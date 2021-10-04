@@ -19,9 +19,7 @@ import javax.servlet.http.HttpSession;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.dulab.adapcompounddb.site.controllers.utils.ArchiveUtils.unzipBytes;
 
@@ -113,6 +111,8 @@ public class SubmissionController extends BaseController {
             return String.format("redirect:/submission/%d/", submissions.get(0).getId());
 
         model.addAttribute("submissions", submissions);
+        model.addAttribute("submissionIdToChromatographyListMap",
+                submissionService.findChromatographyTypes(submissions));
         return "submission/select_submission";
     }
 

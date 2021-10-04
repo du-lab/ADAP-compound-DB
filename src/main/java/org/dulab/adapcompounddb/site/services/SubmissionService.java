@@ -230,7 +230,7 @@ public class SubmissionService {
         return submissionIdToNameMap;
     }
 
-    public Map<Long, List<ChromatographyType>> findChromatographyTypeBySubmissionIds(List<Submission> submissions) {
+    public Map<Long, List<ChromatographyType>> findChromatographyTypes(List<Submission> submissions) {
 
         List<Long> submissionIds = submissions.stream()
                 .map(Submission::getId)

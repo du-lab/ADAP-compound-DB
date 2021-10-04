@@ -18,18 +18,28 @@
                                 <th>Disease</th>
                                 <th>MS Instrument</th>
                                 <th>Chromatography</th>
+                                <th></th>
                             </tr>
                             </thead>
                             <tbody>
                             <%--@elvariable id="submissions" type="java.util.List<org.dulab.adapcompounddb.models.entities.Submission>"--%>
                             <c:forEach items="${submissions}" var="submission">
-                                <tr onclick="window.location='<c:url value="/submission/${submission.id}/"/>'" style="cursor: pointer">
+                                <tr onclick="window.location='<c:url value="/submission/${submission.id}/"/>'"
+                                    style="cursor: pointer">
                                     <td>${submission.name}</td>
                                     <td>${submission.getTagValue("species (common)")}</td>
                                     <td>${submission.getTagValue("sample source")}</td>
                                     <td>${submission.getTagValue("disease")}</td>
                                     <td>${submission.getTagValue("ms instrument name")}</td>
                                     <td>${submission.getTagValue("chromatography system")}</td>
+                                    <td>
+                                            <%--@elvariable id="submissionIdToChromatographyListMap" type="java.util.Map<java.lang.Long, java.util.List<org.dulab.adapcompounddb.models.enums.ChromatographyType>>"--%>
+                                        <c:forEach items="${submissionIdToChromatographyListMap.get(submission.id)}"
+                                                   var="chromatographyType">
+                                            <span class="badge badge-info">${chromatographyType.label}</span>
+                                        </c:forEach>
+                                            <%--                                    <th>${submissionIdToChromatographyTypeMap.get(submission.id).}</th>--%>
+                                    </td>
                                 </tr>
                             </c:forEach>
                             </tbody>
