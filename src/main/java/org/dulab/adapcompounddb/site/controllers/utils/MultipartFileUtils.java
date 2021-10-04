@@ -1,5 +1,7 @@
 package org.dulab.adapcompounddb.site.controllers.utils;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.enums.FileType;
 import org.dulab.adapcompounddb.models.entities.File;
@@ -23,6 +25,8 @@ import static org.dulab.adapcompounddb.site.controllers.utils.ArchiveUtils.zipBy
 
 
 public class MultipartFileUtils {
+
+    private static final Logger LOGGER = LogManager.getLogger(MultipartFileUtils.class);
 
     private static final Map<FileType, FileReaderService> fileReaderServiceMap = new HashMap<>();
 
@@ -114,17 +118,13 @@ public class MultipartFileUtils {
             files = mergeFiles(files);
         }
 
-        //TODO Add code to convert SMILES to Image
-        // Loop over all files in `files`. For each file, loop over all spectra in `file.getSpectra()`.
-        // For each spectrum,
-        // - get SMILES with `spectrum.getCanonicalSmiles()`,
-        // - use RDKit to generate an image,
-        // - assign that image to the spectrum with spectrum.setImage().
-
         for (int i = 0; i < files.size(); ++i) {
             File file = files.get(i);
             file.getSpectra().forEach(spectrum -> {
+                //TODO Clean up the code and delete all unnecessary command like this one:
                 spectrum.getCanonicalSmiles();
+
+                //TODO Define variables close to where they are used. E.g., this variable `s` can be defined in line 156
                 String s = null;
                 String image;
                 String smiles = spectrum.getCanonicalSmiles();
@@ -132,59 +132,42 @@ public class MultipartFileUtils {
                 try {
                     // using the Runtime exec method:
                     String command = String.format("python3 generate_image_for_smiles.py %s", smiles);
+                    //TODO Avoid using short variable names. E.g., use `process` instead of `p`
                     Process p = Runtime.getRuntime().exec(command);
 
-                    BufferedReader stdInput = new BufferedReader(new
-                            InputStreamReader(p.getInputStream()));
-
-                    BufferedReader stdError = new BufferedReader(new
-                            InputStreamReader(p.getErrorStream()));
+                    BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                    BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 
                     StringBuilder output = new StringBuilder();
 
                     // read the output from the command
                     System.out.println("Here is the standard output of the command:\n");
+                    //TODO Variable `smiles` is used to store a SMILES string. It's confusing if you reuse it for something else
                     while ((smiles = stdInput.readLine()) != null) {
                         output.append(smiles);
                     }
                     image = output.toString();
 
-                    spectrum.setImage(image);
+                    if (!image.isEmpty())
+                        spectrum.setImage(image);
+
                     // read any errors from the attempted command
                     System.out.println("Here is the standard error of the command (if any):\n");
                     while ((s = stdError.readLine()) != null) {
+                        //TODO Replace it with `LOGGER.warn(s)`
                         System.out.println(s);
                     }
 
+                    //TODO Why we call System.exit()?
                     System.exit(0);
                 }
                 catch (IOException e) {
+                    //TODO Just log the error but don't exit.
+                    // E.g. `LOGGER.warn("Error while plotting a structure for SMILES", e)`
                     System.out.println("exception happened - here's what I know: ");
                     e.printStackTrace();
                     System.exit(-1);
                 }
-                //RDKit code to generate image goes here
-               /** try {
-                    String filepath = "/Users/kmcdon39/Desktop/adap-kdb/scripts/generate_image_for_smiles.py";
-                    ProcessBuilder process = new ProcessBuilder().command("python3", filepath, spectrum.getCanonicalSmiles()).inheritIO();
-                    Process p = process.start();
-                    p.waitFor();
-                    BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                    String line = "";
-                    StringBuilder output = new StringBuilder();
-                    while ((line = br.readLine()) != null) {
-                        output.append(line);
-                    }
-
-                    String image = output.toString();
-
-                    spectrum.setImage(image);
-
-                    br.close();
-
-                    }catch (final IOException | InterruptedException e){
-                        throw new IllegalStateException("Cannot read this file: " + e.getMessage(), e);
-                    }*/
             });
             submission.setFiles(files);
         }
