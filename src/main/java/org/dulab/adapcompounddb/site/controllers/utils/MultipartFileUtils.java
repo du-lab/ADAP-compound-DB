@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.io.*;
 
 import static org.dulab.adapcompounddb.site.controllers.utils.ArchiveUtils.zipBytes;
 
@@ -120,7 +121,73 @@ public class MultipartFileUtils {
         // - use RDKit to generate an image,
         // - assign that image to the spectrum with spectrum.setImage().
 
-        submission.setFiles(files);
+        for (int i = 0; i < files.size(); ++i) {
+            File file = files.get(i);
+            file.getSpectra().forEach(spectrum -> {
+                spectrum.getCanonicalSmiles();
+                String s = null;
+                String image;
+                String smiles = spectrum.getCanonicalSmiles();
+
+                try {
+                    // using the Runtime exec method:
+                    String command = String.format("python3 generate_image_for_smiles.py %s", smiles);
+                    Process p = Runtime.getRuntime().exec(command);
+
+                    BufferedReader stdInput = new BufferedReader(new
+                            InputStreamReader(p.getInputStream()));
+
+                    BufferedReader stdError = new BufferedReader(new
+                            InputStreamReader(p.getErrorStream()));
+
+                    StringBuilder output = new StringBuilder();
+
+                    // read the output from the command
+                    System.out.println("Here is the standard output of the command:\n");
+                    while ((smiles = stdInput.readLine()) != null) {
+                        output.append(smiles);
+                    }
+                    image = output.toString();
+
+                    spectrum.setImage(image);
+                    // read any errors from the attempted command
+                    System.out.println("Here is the standard error of the command (if any):\n");
+                    while ((s = stdError.readLine()) != null) {
+                        System.out.println(s);
+                    }
+
+                    System.exit(0);
+                }
+                catch (IOException e) {
+                    System.out.println("exception happened - here's what I know: ");
+                    e.printStackTrace();
+                    System.exit(-1);
+                }
+                //RDKit code to generate image goes here
+               /** try {
+                    String filepath = "/Users/kmcdon39/Desktop/adap-kdb/scripts/generate_image_for_smiles.py";
+                    ProcessBuilder process = new ProcessBuilder().command("python3", filepath, spectrum.getCanonicalSmiles()).inheritIO();
+                    Process p = process.start();
+                    p.waitFor();
+                    BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                    String line = "";
+                    StringBuilder output = new StringBuilder();
+                    while ((line = br.readLine()) != null) {
+                        output.append(line);
+                    }
+
+                    String image = output.toString();
+
+                    spectrum.setImage(image);
+
+                    br.close();
+
+                    }catch (final IOException | InterruptedException e){
+                        throw new IllegalStateException("Cannot read this file: " + e.getMessage(), e);
+                    }*/
+            });
+            submission.setFiles(files);
+        }
     }
 
     private static FileType getFileType(String filename) {
