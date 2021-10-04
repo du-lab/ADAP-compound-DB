@@ -66,19 +66,19 @@ public class MultipartFileUtils {
                 throw new IllegalStateException(
                         "Cannot find an implementation of FileReaderService for a file of type " + fileType);
 
-            if (fileReader instanceof RawFileReaderService && chromatographyType != null) {
-                RawFileReaderService rawFileReaderService = (RawFileReaderService) fileReader;
-                rawFileReaderService.setChromatographyType(chromatographyType);
-                switch (chromatographyType) {
-                    case GAS:
-                        rawFileReaderService.setMinMsLevel(1);
-                        break;
-                    case LC_MSMS_POS:
-                    case LC_MSMS_NEG:
-                        rawFileReaderService.setMinMsLevel(2);
-                        break;
-                }
-            }
+//            if (fileReader instanceof RawFileReaderService && chromatographyType != null) {
+//                RawFileReaderService rawFileReaderService = (RawFileReaderService) fileReader;
+//                rawFileReaderService.setChromatographyType(chromatographyType);
+//                switch (chromatographyType) {
+//                    case GAS:
+//                        rawFileReaderService.setMinMsLevel(1);
+//                        break;
+//                    case LC_MSMS_POS:
+//                    case LC_MSMS_NEG:
+//                        rawFileReaderService.setMinMsLevel(2);
+//                        break;
+//                }
+//            }
 
             File file = new File();
             file.setName(filename);
@@ -90,19 +90,17 @@ public class MultipartFileUtils {
                 file.setSpectra(fileReader.read(
                         multipartFile.getInputStream(),
                         metaDataMappings != null ? metaDataMappings.get(fileType) : null,
-                        filename));
+                        filename, chromatographyType));
 
-                if (chromatographyType == null) {
-                    Set<ChromatographyType> typesFromSpectra = file.getSpectra().stream()
-                            .map(Spectrum::getChromatographyType)
-                            .filter(Objects::nonNull)
-                            .collect(Collectors.toSet());
+                // When reading raw data files, the chromatography type is adjusted based on the polarity.
+                // Below, we assign the adjusted chromatography type to every spectrum.
+                Set<ChromatographyType> typesFromSpectra = file.getSpectra().stream()
+                        .map(Spectrum::getChromatographyType)
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toSet());
 
-                    if (typesFromSpectra.size() == 1)
-                        chromatographyType = typesFromSpectra.iterator().next();
-                    else if (typesFromSpectra.size() > 1)
-                        throw new IllegalStateException("Cannot determine the chromatography type");
-                }
+                if (typesFromSpectra.size() == 1)
+                    chromatographyType = typesFromSpectra.iterator().next();
 
                 final ChromatographyType finalChromatographyType = chromatographyType;
                 file.getSpectra().forEach(spectrum -> {

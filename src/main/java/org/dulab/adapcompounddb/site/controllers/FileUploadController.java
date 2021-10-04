@@ -56,16 +56,15 @@ public class FileUploadController {
                                  Model model, HttpSession session, HttpServletResponse httpServletResponse) {
 
         ChromatographyType chromatographyType = null;
-
+        chromatography = chromatography.toLowerCase();
         for (ChromatographyType type : ChromatographyType.values()) {
-            if (chromatography.equalsIgnoreCase(type.name())) {
+            if (type.name().toLowerCase().startsWith(chromatography)) {
                 chromatographyType = type;
                 break;
             }
         }
 
-        // If chromatograhy = "LC_MSMS" then the chromatography will be
-        if (chromatographyType == null && !chromatography.equalsIgnoreCase("LC_MSMS"))
+        if (chromatographyType == null)
             throw new IllegalStateException(
                     String.format("Chromatography of type %s is not supported", chromatography));
 
@@ -76,10 +75,6 @@ public class FileUploadController {
                 .query(String.format("A=%s", archive))
                 .query(String.format("F=%s", file))
                 .build().encode();
-
-//        String fileUrl = String.format(
-//                "https://www.metabolomicsworkbench.org/data/file_extract_7z.php?A=%s&F=%s",
-//                archive, file);
 
         try (BufferedInputStream inputStream = new BufferedInputStream(new URL(uriComponents.toUriString()).openStream())) {
 

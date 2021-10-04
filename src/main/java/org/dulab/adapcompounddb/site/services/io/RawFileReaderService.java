@@ -22,28 +22,9 @@ public class RawFileReaderService implements FileReaderService {
 
     private static final Logger LOGGER = LogManager.getLogger(RawFileReaderService.class);
 
-    private int minMsLevel = 2;
-    private ChromatographyType chromatographyType = null;
-
-
-    public int getMinMsLevel() {
-        return minMsLevel;
-    }
-
-    public void setMinMsLevel(int minMsLevel) {
-        this.minMsLevel = minMsLevel;
-    }
-
-    public ChromatographyType getChromatographyType() {
-        return chromatographyType;
-    }
-
-    public void setChromatographyType(ChromatographyType chromatographyType) {
-        this.chromatographyType = chromatographyType;
-    }
-
     @Override
-    public List<Spectrum> read(InputStream inputStream, @Nullable MetaDataMapping mapping, String filename)
+    public List<Spectrum> read(InputStream inputStream, @Nullable MetaDataMapping mapping, String filename,
+                               ChromatographyType chromatographyType)
             throws IOException {
 
         List<Spectrum> spectra = new ArrayList<>();
@@ -59,7 +40,9 @@ public class RawFileReaderService implements FileReaderService {
             List<Scan> scans = rawDataFile.getScans();
             if (scans == null) return spectra;
 
-            convertScansToSpectra(scans, spectra);
+            int minMsLevel = (chromatographyType == ChromatographyType.LC_MSMS_POS
+                    || chromatographyType == ChromatographyType.LC_MSMS_NEG) ? 2 : 1;
+            convertScansToSpectra(scans, spectra, minMsLevel, chromatographyType);
 
         } finally {
             boolean deleted = file.delete();
@@ -75,32 +58,46 @@ public class RawFileReaderService implements FileReaderService {
         return mapping;
     }
 
-    private void convertScansToSpectra(List<Scan> scans, List<Spectrum> spectra) {
+    private void convertScansToSpectra(List<Scan> scans, List<Spectrum> spectra, int minMsLevel,
+                                       ChromatographyType chromatographyType) {
+
         for (Scan scan : scans) {
             if (scan.getMsLevel() >= minMsLevel)
-                spectra.add(convertScanToSpectrum(scan));
+                spectra.add(convertScanToSpectrum(scan, chromatographyType));
 
             List<Scan> ms2Scans = scan.getMs2Scans();
             if (ms2Scans != null)
-                convertScansToSpectra(ms2Scans, spectra);
+                convertScansToSpectra(ms2Scans, spectra, minMsLevel, chromatographyType);
         }
     }
 
-    private ChromatographyType inferChromatographyType(Scan scan) {
-        int msLevel = scan.getMsLevel();
+    private ChromatographyType adjustPolarity(Scan scan, ChromatographyType chromatographyType) {
+
         char polarity = scan.getPolarity();
 
-        if (msLevel == 1 && polarity == '+')
-            return ChromatographyType.GAS;
-        if (msLevel == 2 && polarity == '+')
-            return ChromatographyType.LC_MSMS_POS;
-        if (msLevel == 2 && polarity == '-')
-            return ChromatographyType.LC_MSMS_NEG;
+        ChromatographyType adjustedChromatographyType = chromatographyType;
 
-        return null;
+        switch (chromatographyType) {
+            case LC_MSMS_POS:
+            case LC_MSMS_NEG:
+                if (polarity == '+')
+                    adjustedChromatographyType = ChromatographyType.LC_MSMS_POS;
+                else if (polarity == '-')
+                    adjustedChromatographyType = ChromatographyType.LC_MSMS_NEG;
+                break;
+            case LIQUID_POSITIVE:
+            case LIQUID_NEGATIVE:
+                if (polarity == '+')
+                    adjustedChromatographyType = ChromatographyType.LIQUID_POSITIVE;
+                else if (polarity == '-')
+                    adjustedChromatographyType = ChromatographyType.LIQUID_NEGATIVE;
+                break;
+        }
+
+        return adjustedChromatographyType;
     }
 
-    private Spectrum convertScanToSpectrum(Scan scan) {
+    private Spectrum convertScanToSpectrum(Scan scan, ChromatographyType chromatographyType) {
         double[] mzValues = scan.getMzValues();
         double[] intensities = scan.getIntensities();
 
@@ -111,7 +108,7 @@ public class RawFileReaderService implements FileReaderService {
         spectrum.setName(scan.getName());
         spectrum.setRetentionTime(scan.getRetTime());
         spectrum.setPrecursor(scan.getPrecursorMz());
-        spectrum.setChromatographyType(chromatographyType != null ? chromatographyType : inferChromatographyType(scan));
+        spectrum.setChromatographyType(adjustPolarity(scan, chromatographyType));
 
         List<Peak> peaks = new ArrayList<>(mzValues.length);
         for (int i = 0; i < mzValues.length; ++i) {

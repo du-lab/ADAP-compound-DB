@@ -6,6 +6,7 @@ import org.dulab.adapcompounddb.models.MetaDataMapping;
 import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumProperty;
+import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,8 @@ public class MspFileReaderService implements FileReaderService {
     private static final Logger LOG = LogManager.getLogger(MspFileReaderService.class);
 
     @Override
-    public List<Spectrum> read(InputStream inputStream, @Nullable MetaDataMapping mapping, String filename)
+    public List<Spectrum> read(InputStream inputStream, @Nullable MetaDataMapping mapping, String filename,
+                               ChromatographyType chromatographyType)
             throws IOException {
 
         mapping = validateMetaDataMapping(mapping);
