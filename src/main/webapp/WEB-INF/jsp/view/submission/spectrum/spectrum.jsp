@@ -85,7 +85,7 @@
 
                                 <div class="col-md-6">
                                     <h4>Molecular Structure</h4>
-                                    <div style = "text-align:center;">${spectrum.image}</div>
+                                    <div style = "text-align:center;">${dulab:smilesToImage(spectrum.canonicalSmiles)}</div>
                                     <h4>Other Properties</h4>
                                     <ul class="list-group list-group-flush">
                                         <c:forEach items="${spectrum.properties}" var="property">

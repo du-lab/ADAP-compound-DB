@@ -19,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.io.*;
 
 import static org.dulab.adapcompounddb.site.controllers.utils.ArchiveUtils.zipBytes;
 
@@ -118,53 +117,10 @@ public class MultipartFileUtils {
             files = mergeFiles(files);
         }
 
-        createImagesFromSmiles(files);
-
         submission.setFiles(files);
     }
 
-    private static void createImagesFromSmiles(List<File> files){
-        for (int i = 0; i < files.size(); ++i) {
-            File file = files.get(i);
-            file.getSpectra().forEach(spectrum -> {
 
-                String smiles = spectrum.getCanonicalSmiles();
-
-                try {
-                    // using the Runtime exec method:
-                    String command = String.format("python3 generate_image_for_smiles.py %s", smiles);
-
-                    Process process = Runtime.getRuntime().exec(command);
-
-                    BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                    BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-
-                    StringBuilder output = new StringBuilder();
-
-                    String image;
-                    String read;
-                    while ((read = stdInput.readLine()) != null) {
-                        output.append(read);
-                    }
-                    image = output.toString();
-
-                    if (!image.isEmpty())
-                        spectrum.setImage(image);
-
-                    // read any errors from the attempted command
-                    String s = null;
-                    while ((s = stdError.readLine()) != null) {
-                        LOGGER.warn(s);
-                    }
-
-                }
-                catch (IOException e) {
-                    LOGGER.warn("Error while plotting a structure for SMILES", e);
-                }
-            });
-
-        }
-    }
     private static FileType getFileType(String filename) {
         String[] substrings = filename.split("\\.");
         if (substrings.length == 0)
