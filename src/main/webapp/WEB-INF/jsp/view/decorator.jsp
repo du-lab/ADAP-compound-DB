@@ -76,7 +76,7 @@
     })
 </script>
 
-<header class="jambotron fixed-top">
+<header class="jambotron fixed-top" style="z-index: 100;">
     <div class="container-fluid">
         <div class="row row-header">
             <div class="col-12 col-lg-8">

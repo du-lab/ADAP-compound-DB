@@ -3,6 +3,7 @@ package org.dulab.adapcompounddb.models.entities;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.persistence.*;
@@ -13,6 +14,7 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
+import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.enums.MassSpectrometryType;
 import org.hibernate.validator.constraints.URL;
 
@@ -82,6 +84,8 @@ public class Submission implements Serializable {
     private String externalId;
 
     private boolean isPrivate;
+
+    private boolean raw;
 
     // *******************************
     // ***** Getters and Setters *****
@@ -193,6 +197,14 @@ public class Submission implements Serializable {
         isPrivate = aPrivate;
     }
 
+    public boolean isRaw() {
+        return raw;
+    }
+
+    public void setRaw(boolean raw) {
+        this.raw = raw;
+    }
+
     // *************************
     // ***** Other methods *****
     // *************************
@@ -241,6 +253,27 @@ public class Submission implements Serializable {
                 .map(SubmissionTag::getTagValue)
                 .collect(Collectors.joining(", "))
                 .trim();
+    }
+
+    /**
+     * Determines whether the submission can be searched with the group search.
+     * @return true for a non-raw submission or when the chromatography type is either LC_MSMS__POS or LC_MSMS_NEG
+     */
+    @Transient
+    public boolean isSearchable() {
+        if (!isRaw()) return true;
+
+        Set<ChromatographyType> chromatographyTypes = files.stream()
+                .flatMap(f -> f.getSpectra().stream())
+                .map(Spectrum::getChromatographyType)
+                .collect(Collectors.toSet());
+
+        if (chromatographyTypes.size() != 1)
+            return false;
+
+        ChromatographyType chromatographyType = chromatographyTypes.iterator().next();
+        return chromatographyType == ChromatographyType.LC_MSMS_POS
+                || chromatographyType == ChromatographyType.LC_MSMS_NEG;
     }
 
     @Override
