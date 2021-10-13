@@ -101,6 +101,14 @@
     </div>
 
     <div class="row row-content">
+        <div class="col" id="queryColumn">
+            <div class="card">
+                <div class="card-header card-header-single">Query Structure</div>
+                <div class="card-body small overflow-auto" style="height: 300px">
+                    <div id="queryStructure"></div>
+                </div>
+            </div>
+        </div>
         <div class="col">
             <div class="card">
                 <div class="card-header card-header-single">Query</div>
@@ -122,6 +130,14 @@
                 <div class="card-header card-header-single">Match</div>
                 <div class="card-body small overflow-auto" style="height: 300px">
                     <div id="matchInfo"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col" id="matchColumn">
+            <div class="card">
+                <div class="card-header card-header-single">Match Structure</div>
+                <div class="card-body small overflow-auto" style="height: 300px">
+                    <div id="matchStructure"></div>
                 </div>
             </div>
         </div>
@@ -172,6 +188,7 @@
 <script src="<c:url value="/resources/SpeckTackle/st.js"/>"></script>
 <script src="<c:url value="/resources/AdapCompoundDb/js/spectrumInfo.js"/>"></script>
 <script src="<c:url value="/resources/AdapCompoundDb/js/spectrumPlot.js"/>"></script>
+<script src="<c:url value="/resources/AdapCompoundDb/js/spectrumStructure.js"/>"></script>
 <script>
     $(document).ready(function () {
 
@@ -386,6 +403,9 @@
             $('#queryInfo').spectrumInfo(queryUrl + 'info.json');
             $('#matchInfo').spectrumInfo(matchUrl + 'info.json');
             $('#plot').spectrumPlot(position, queryUrl + 'positive/peaks.json', matchUrl + 'negative/peaks.json');
+            $('#queryStructure').spectrumStructure(queryUrl + 'structure.json', function (x) {$('#queryColumn').attr('hidden', !x);});
+            $('#matchStructure').spectrumStructure(matchUrl + 'structure.json', function (x) {$('#matchColumn').attr('hidden', !x);});
+
         });
 
         // refresh the datatable and progress bar every 1 second
