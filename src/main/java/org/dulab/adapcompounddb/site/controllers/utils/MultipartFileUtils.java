@@ -1,5 +1,7 @@
 package org.dulab.adapcompounddb.site.controllers.utils;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.enums.FileType;
 import org.dulab.adapcompounddb.models.entities.File;
@@ -22,6 +24,8 @@ import static org.dulab.adapcompounddb.site.controllers.utils.ArchiveUtils.zipBy
 
 
 public class MultipartFileUtils {
+
+    private static final Logger LOGGER = LogManager.getLogger(MultipartFileUtils.class);
 
     private static final Map<FileType, FileReaderService> fileReaderServiceMap = new HashMap<>();
 
@@ -129,6 +133,7 @@ public class MultipartFileUtils {
 
         submission.setFiles(files);
     }
+
 
     private static FileType getFileType(String filename) {
         String[] substrings = filename.split("\\.");

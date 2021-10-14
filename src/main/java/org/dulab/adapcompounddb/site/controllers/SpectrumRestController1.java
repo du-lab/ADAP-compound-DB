@@ -7,6 +7,7 @@ import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumProperty;
 import org.dulab.adapcompounddb.models.entities.Submission;
+import org.dulab.adapcompounddb.site.controllers.utils.ConversionsUtils;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -101,6 +102,26 @@ public class SpectrumRestController1 {
         return spectrumToJsonInfo(spectrum, null, null);
     }
 
+    @RequestMapping(value = {
+            "/spectrum/{spectrumId:\\d+}/search/structure",
+            "/submission/*/spectrum/{spectrumId:\\d+}/search/structure"},
+            produces = "application/json")
+    public String spectrumSearchStructure(@PathVariable("spectrumId") long spectrumId) {
+        Spectrum spectrum = null;
+
+        try {
+            spectrum = spectrumService.find(spectrumId);
+
+            JSONObject smilesImage = new JSONObject();
+            smilesImage.put("image", ConversionsUtils.smilesToImage(spectrum.getCanonicalSmiles()));
+
+            return smilesImage.toString();
+        } catch (EmptySearchResultException e) {
+            LOGGER.warn("Cannot find spectrum with ID = " + spectrumId);
+        }
+        return null;
+    }
+
     @RequestMapping(value = "/file/{fileIndex:\\d+}/{spectrumIndex:\\d+}/search/info", produces = "application/json")
     public String spectrumSearchInfo(@PathVariable("fileIndex") int fileIndex,
                                      @PathVariable("spectrumIndex") int spectrumIndex, HttpSession session) {
@@ -116,6 +137,28 @@ public class SpectrumRestController1 {
 
         return spectrumToJsonInfo(spectrum, fileIndex, spectrumIndex);
     }
+
+    @RequestMapping(value = "/file/{fileIndex:\\d+}/{spectrumIndex:\\d+}/search/structure",
+            produces = "application/json")
+    public String spectrumSearchStructure(@PathVariable("fileIndex") int fileIndex,
+                                          @PathVariable("spectrumIndex") int spectrumIndex, HttpSession session) {
+        Submission submission = Submission.from(session);
+        Spectrum spectrum;
+        try {
+            spectrum = submission.getFiles().get(fileIndex).getSpectra().get(spectrumIndex);
+
+            JSONObject smilesImage = new JSONObject();
+            smilesImage.put("image", ConversionsUtils.smilesToImage(spectrum.getCanonicalSmiles()));
+
+            return smilesImage.toString();
+
+        } catch (IndexOutOfBoundsException e) {
+            LOGGER.warn(e.getMessage(), e);
+        }
+
+        return null;
+    }
+
 
     private String spectrumToJsonInfo(@Nullable Spectrum spectrum, Integer fileIndex, Integer spectrumIndex) {
 

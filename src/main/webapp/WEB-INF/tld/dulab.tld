@@ -146,4 +146,10 @@
         <function-class>org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils</function-class>
         <function-signature>boolean checkOntologyLevels(org.dulab.adapcompounddb.models.entities.Submission)</function-signature>
     </function>
+
+    <function>
+        <name>smilesToImage</name>
+        <function-class>org.dulab.adapcompounddb.site.controllers.utils.ConversionsUtils</function-class>
+        <function-signature>java.lang.String smilesToImage(java.lang.String)</function-signature>
+    </function>
 </taglib>
