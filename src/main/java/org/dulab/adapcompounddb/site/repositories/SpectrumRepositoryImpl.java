@@ -55,7 +55,6 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
             new SqlField("CanonicalSMILES", "%s", s -> quote(s.getCanonicalSmiles())),
             new SqlField("InChi", "%s", s -> quote(s.getInChi())),
             new SqlField("InChiKey", "%s", s -> quote(s.getInChiKey())),
-            new SqlField("Image", "%s", s -> quote(s.getImage())),
             new SqlField("TopMz1", "%f", Spectrum::getTopMz1),
             new SqlField("TopMz2", "%f", Spectrum::getTopMz2),
             new SqlField("TopMz3", "%f", Spectrum::getTopMz3),

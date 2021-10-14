@@ -115,7 +115,6 @@ public class Spectrum implements Serializable {
 
     private String inChiKey; //CC Edits
 
-    private String image;
 
     @NotNull(message = "Spectrum: the field Chromatography Type is required.")
     @Enumerated(EnumType.STRING)
@@ -612,13 +611,6 @@ public class Spectrum implements Serializable {
         this.inChiKey = inChiKey;
     } //CC Edits*/
 
-    public String getImage(){
-        return image;
-    }
-
-    public void setImage(String image){
-     this.image = image;
-    }
 
     // ****************************
     // ***** Standard methods *****
