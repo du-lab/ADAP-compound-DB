@@ -74,6 +74,7 @@ public class ConversionsUtils {
                 String s = null;
                 while ((s = stdError.readLine()) != null) {
                     LOGGER.warn(s);
+                    LOGGER.warn("Working directory: " + System.getProperty("user.dir"));
                 }
 
             }
