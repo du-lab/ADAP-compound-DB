@@ -196,7 +196,7 @@ public class MultipartFileUtils {
             List<Spectrum> spectrumList = entry.getValue();
             if (spectrumList.isEmpty()) continue;
 
-            Map<File, List<Spectrum>> fileToSpectraMap = new HashMap<>();
+            SortedMap<File, List<Spectrum>> fileToSpectraMap = new TreeMap<>();
             spectrumList.forEach(s -> fileToSpectraMap
                     .computeIfAbsent(s.getFile(), k -> new ArrayList<>())
                     .add(s));
@@ -247,5 +247,24 @@ public class MultipartFileUtils {
             if (spectrum.getShortName() == null || spectrum.getShortName().isEmpty())
                 return false;
         return true;
+    }
+
+
+    private static class DoubleList<T> {
+
+        private final List<T> firstList = new ArrayList<>();
+        private final List<T> secondList = new ArrayList<>();
+
+        public boolean isEmpty() {
+            return firstList.isEmpty() && secondList.isEmpty();
+        }
+
+        public List<T> getFirstList() {
+            return firstList;
+        }
+
+        public List<T> getSecondList() {
+            return secondList;
+        }
     }
 }
