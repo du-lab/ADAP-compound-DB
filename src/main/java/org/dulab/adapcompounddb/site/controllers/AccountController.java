@@ -34,7 +34,6 @@ public class AccountController extends BaseController {
         model.addAttribute("user", user);
         model.addAttribute("submissionList", submissions);
         model.addAttribute("submissionIdToChromatographyListMap", submissionIdToChromatographyListMap);
-
         return "account/view";
     }
 }
