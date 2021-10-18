@@ -46,41 +46,41 @@ public class ConversionsUtils {
     }
 
     public static String smilesToImage(@Nullable String smiles) {
-        if (smiles == null){
+
+        if (smiles == null || smiles.isEmpty())
             return null;
+
+        try {
+            // using the Runtime exec method:
+            String command = String.format("python3 generate_image_for_smiles.py %s", smiles);
+
+            Process process = Runtime.getRuntime().exec(command);
+
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+
+            StringBuilder output = new StringBuilder();
+
+            String image;
+            String read;
+            while ((read = stdInput.readLine()) != null) {
+                output.append(read);
+            }
+            image = output.toString();
+
+            if (!image.isEmpty())
+                return image;
+
+            // read any errors from the attempted command
+            String s = null;
+            while ((s = stdError.readLine()) != null) {
+                LOGGER.warn(s);
+                LOGGER.warn("Working directory: " + System.getProperty("user.dir"));
+            }
+
+        } catch (IOException e) {
+            LOGGER.warn("Error while plotting a structure for SMILES", e);
         }
-            try {
-                // using the Runtime exec method:
-                String command = String.format("python3 generate_image_for_smiles.py %s", smiles);
-
-                Process process = Runtime.getRuntime().exec(command);
-
-                BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-
-                StringBuilder output = new StringBuilder();
-
-                String image;
-                String read;
-                while ((read = stdInput.readLine()) != null) {
-                    output.append(read);
-                }
-                image = output.toString();
-
-                if (!image.isEmpty())
-                    return image;
-
-                // read any errors from the attempted command
-                String s = null;
-                while ((s = stdError.readLine()) != null) {
-                    LOGGER.warn(s);
-                    LOGGER.warn("Working directory: " + System.getProperty("user.dir"));
-                }
-
-            }
-            catch (IOException e) {
-                LOGGER.warn("Error while plotting a structure for SMILES", e);
-            }
         return null;
     }
 }
