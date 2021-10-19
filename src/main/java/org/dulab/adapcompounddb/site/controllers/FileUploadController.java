@@ -55,6 +55,8 @@ public class FileUploadController {
                                  @RequestParam String chromatography,
                                  Model model, HttpSession session, HttpServletResponse httpServletResponse) {
 
+        LOG.info(String.format("Uploading NMDR data from archive '%s' file '%s'", archive, file));
+        
         ChromatographyType chromatographyType = null;
         chromatography = chromatography.toLowerCase();
         for (ChromatographyType type : ChromatographyType.values()) {
