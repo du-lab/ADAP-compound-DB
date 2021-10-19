@@ -21,6 +21,8 @@ test:
   only:
     - master
   script:
+    - pwd
+    - python --version
     - python scripts\selenium\initial_test.py
     - cmd /C python scripts\selenium\msp_upload_process_test.py --homepage_url %HOMEPAGE_URL% --msp_path %CI_PROJECT_DIR%\scripts\selenium\combined.msp
     - cmd /C python scripts\selenium\login_register_test.py --homepage_url %HOMEPAGE_URL%
