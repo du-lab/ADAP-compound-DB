@@ -48,7 +48,7 @@ public class GroupSearchService {
                                     Set<Long> submissionIds, String species, String source, String disease,
                                     boolean withOntologyLevels) {
 
-        LOGGER.info(String.format("Group search is started (species: %s, source: %s, disease: %s)",
+        LOGGER.info(String.format("Group search has started (species: %s, source: %s, disease: %s)",
                 species != null ? species : "all",
                 source != null ? source : "all",
                 disease != null ? disease : "all"));
@@ -105,7 +105,12 @@ public class GroupSearchService {
                     if (Thread.currentThread().isInterrupted()) break;
 
                     groupSearchDTOList.addAll(individualSearchResults);
-                    session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
+                    try {
+                        session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
+                    } catch (IllegalStateException e) {
+                        LOGGER.warn("It looks like the session has been closed. Stopping the group search.");
+                        return new AsyncResult<>(null);
+                    }
                     progress = (float) ++progressStep / totalSteps;
                 }
             }
