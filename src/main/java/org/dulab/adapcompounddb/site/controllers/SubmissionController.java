@@ -3,6 +3,7 @@ package org.dulab.adapcompounddb.site.controllers;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.entities.*;
+import org.dulab.adapcompounddb.site.controllers.forms.FilterOptions;
 import org.dulab.adapcompounddb.site.controllers.forms.SubmissionForm;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
@@ -129,6 +130,13 @@ public class SubmissionController extends BaseController {
         model.addAttribute("availableTags", submissionService.findUniqueTagStrings());
 
         return "submission/view";
+    }
+    @RequestMapping(value = "/libraries/", method = RequestMethod.GET)
+    public String publicLibraries(final Model model, Submission submission) {
+
+        model.addAttribute("libraries", submissionService.findAllPublicLibraries(submission));
+
+        return "all_libraries";
     }
 
 //    private SubmissionForm createSubmissionForm(final Submission submission) {

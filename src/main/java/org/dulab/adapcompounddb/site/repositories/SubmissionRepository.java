@@ -70,4 +70,7 @@ public interface SubmissionRepository extends CrudRepository<Submission, Long> {
     Iterable<Object[]> findChromatographyTypesBySubmissionId(@Param("ids") List<Long> submissionIds);
 
     Submission findSubmissionByExternalId(String externalId);
+
+    @Query("select distinct s from Spectrum sp join sp.file.submission s " + "where s.isPrivate = false and sp.reference = true")
+    Iterable<Submission> findByPrivateFalseAndReferenceTrue(Submission submission);
 }

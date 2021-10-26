@@ -84,8 +84,10 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                    <h4>Molecular Structure</h4>
-                                    <div style = "text-align:center";>${dulab:smilesToImage(spectrum.canonicalSmiles)}</div>
+                                    <c:if test="${dulab:smilesToImage(spectrum.canonicalSmiles) != null}">
+                                        <h4>Molecular Structure</h4>
+                                        <div style = "text-align:center";>${dulab:smilesToImage(spectrum.canonicalSmiles)}</div>
+                                    </c:if>
                                     <h4>Other Properties</h4>
                                     <ul class="list-group list-group-flush">
                                         <c:forEach items="${spectrum.properties}" var="property">
@@ -254,6 +256,7 @@
         });
 
         SpectrumPlot('plot', ${dulab:spectrumToJson(spectrum)});
+
     })
 
     // Adjust column widths when a table becomes visible

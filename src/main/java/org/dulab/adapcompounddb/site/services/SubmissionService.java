@@ -82,6 +82,9 @@ public class SubmissionService {
 
         return response;
     }
+    public Iterable<Submission> findAllPublicLibraries(Submission submission){
+        return submissionRepository.findByPrivateFalseAndReferenceTrue(submission);
+    }
 
     @Transactional
     public List<Submission> findSubmissionsWithTagsByUserId(final long userId) {
@@ -240,4 +243,5 @@ public class SubmissionService {
                 ? new ArrayList<>(0)
                 : submissionRepository.findChromatographyTypesBySubmissionId(submissionIds));
     }
+
 }
