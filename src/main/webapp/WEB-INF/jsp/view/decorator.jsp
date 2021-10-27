@@ -119,9 +119,9 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a id="spectraPage" class="nav-link" href="<c:url value="/allClusters/" />">
+                            <a id="spectraPage" class="nav-link" href="<c:url value="/libraries/" />">
                                 <i class="material-icons align-middle">equalizer</i>
-                                <span class="align-middle">Spectra</span>
+                                <span class="align-middle">Libraries</span>
                             </a>
                         </li>
                         <li class="nav-item">
