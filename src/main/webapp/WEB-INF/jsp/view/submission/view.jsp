@@ -62,11 +62,11 @@
                     <ul class="nav nav-tabs nav-fill nav-justified" role="tablist">
                         <c:if test="${view_submission && edit_submission}">
                             <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#submission_edit">
-                                Study Properties</a></li>
+                                Properties</a></li>
                         </c:if>
                         <c:if test="${view_submission && !edit_submission}">
                             <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#submission_view">
-                                Study Properties</a></li>
+                                Properties</a></li>
                         </c:if>
                         <li class="nav-item"><a id="mass_spectra_link"
                                                 class="nav-link ${!view_submission ? "active" : ""}"
