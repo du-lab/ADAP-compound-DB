@@ -29,7 +29,7 @@ public class AccountController extends BaseController {
         UserPrincipal user = getCurrentUserPrincipal();
         List<Submission> submissions = submissionService.findSubmissionsWithTagsByUserId(user.getId());
         Map<Long, List<ChromatographyType>> submissionIdToChromatographyListMap =
-                submissionService.findChromatographyTypeBySubmissionIds(submissions);
+                submissionService.findChromatographyTypes(submissions);
 
         model.addAttribute("user", user);
         model.addAttribute("submissionList", submissions);

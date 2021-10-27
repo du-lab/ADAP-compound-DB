@@ -13,9 +13,9 @@ import org.dulab.adapcompounddb.site.services.io.FileReaderService;
 import org.dulab.adapcompounddb.models.MetaDataMapping;
 import org.dulab.adapcompounddb.site.services.io.MspFileReaderService;
 import org.dulab.adapcompounddb.site.services.io.RawFileReaderService;
-import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -44,7 +44,7 @@ public class MultipartFileUtils {
      * @param chromatographyType chromatography type
      */
     public static void readMultipartFile(Submission submission, List<MultipartFile> multipartFiles,
-                                         ChromatographyType chromatographyType,
+                                         @Nullable ChromatographyType chromatographyType,
                                          @Nullable Map<FileType, MetaDataMapping> metaDataMappings,
                                          boolean mergeFiles) {
 
@@ -65,6 +65,8 @@ public class MultipartFileUtils {
 
             String filename = Objects.requireNonNull(multipartFile.getOriginalFilename());
             FileType fileType = getFileType(filename);
+            submission.setRaw(fileType == FileType.RAW || submission.isRaw());
+
             FileReaderService fileReader = fileReaderServiceMap.get(fileType);
             if (fileReader == null)
                 throw new IllegalStateException(
@@ -80,10 +82,22 @@ public class MultipartFileUtils {
                 file.setSpectra(fileReader.read(
                         multipartFile.getInputStream(),
                         metaDataMappings != null ? metaDataMappings.get(fileType) : null,
-                        filename));
+                        filename, chromatographyType));
+
+                // When reading raw data files, the chromatography type is adjusted based on the polarity.
+                // Below, we assign the adjusted chromatography type to every spectrum.
+                Set<ChromatographyType> typesFromSpectra = file.getSpectra().stream()
+                        .map(Spectrum::getChromatographyType)
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toSet());
+
+                if (typesFromSpectra.size() == 1)
+                    chromatographyType = typesFromSpectra.iterator().next();
+
+                final ChromatographyType finalChromatographyType = chromatographyType;
                 file.getSpectra().forEach(spectrum -> {
                     spectrum.setFile(file);
-                    spectrum.setChromatographyType(chromatographyType);
+                    spectrum.setChromatographyType(finalChromatographyType);
                 });
 
                 // check if the file exists spectrum has integral m/z value
@@ -144,13 +158,17 @@ public class MultipartFileUtils {
         File mergedFile = files.get(0);
         List<Spectrum> mergedSpectra = mergedFile.getSpectra();
         if (!checkNames(mergedSpectra))
-            throw new IllegalStateException("No ID found for the spectra in file " + mergedFile.getName());
+            throw new IllegalStateException(String.format(
+                    "No Name found for the spectra in file %s. Please check whether the Name Field is correct.",
+                    mergedFile.getName()));
 
         for (int i = 1; i < files.size(); ++i) {
             File file = files.get(i);
             List<Spectrum> spectra = file.getSpectra();
             if (!checkNames(spectra))
-                throw new IllegalStateException("No ID found for the spectra in file " + mergedFile.getName());
+                throw new IllegalStateException(String.format(
+                        "No Name found for the spectra in file %s. Please check whether the Name Field is correct.",
+                        mergedFile.getName()));
 
             mergedSpectra = mergeSpectra(mergedSpectra, spectra);
             file.setSpectra(null);
@@ -182,7 +200,7 @@ public class MultipartFileUtils {
             List<Spectrum> spectrumList = entry.getValue();
             if (spectrumList.isEmpty()) continue;
 
-            Map<File, List<Spectrum>> fileToSpectraMap = new HashMap<>();
+            SortedMap<File, List<Spectrum>> fileToSpectraMap = new TreeMap<>();
             spectrumList.forEach(s -> fileToSpectraMap
                     .computeIfAbsent(s.getFile(), k -> new ArrayList<>())
                     .add(s));
@@ -233,5 +251,24 @@ public class MultipartFileUtils {
             if (spectrum.getShortName() == null || spectrum.getShortName().isEmpty())
                 return false;
         return true;
+    }
+
+
+    private static class DoubleList<T> {
+
+        private final List<T> firstList = new ArrayList<>();
+        private final List<T> secondList = new ArrayList<>();
+
+        public boolean isEmpty() {
+            return firstList.isEmpty() && secondList.isEmpty();
+        }
+
+        public List<T> getFirstList() {
+            return firstList;
+        }
+
+        public List<T> getSecondList() {
+            return secondList;
+        }
     }
 }

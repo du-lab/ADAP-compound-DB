@@ -145,7 +145,7 @@ public class GroupSearchController extends BaseController {
             }
         } else {
             Map<Long, List<ChromatographyType>> map =
-                    submissionService.findChromatographyTypeBySubmissionIds(Collections.singletonList(submission));
+                    submissionService.findChromatographyTypes(Collections.singletonList(submission));
             chromatographyTypes = map.get(submission.getId());
         }
         return chromatographyTypes;

@@ -10,6 +10,21 @@
 
 <div class="container">
 
+    <c:if test="${!submission.isSearchable()}">
+        <div class="toast" role="alert" data-autohide="false" aria-live="assertive" aria-atomic="true"
+             style="position: absolute; top: 5pt; right: 5pt; z-index: 101;">
+            <div class="toast-header bg-warning">
+                <strong class="mr-auto">Warning</strong>
+                <button type="button" class="close" data-dismiss="toast" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="toast-body">
+                This submission contains raw data that cannot be searched in the group search.
+            </div>
+        </div>
+    </c:if>
+
     <div class="row row-content">
         <div class="col">
             <div class="btn-toolbar justify-content-between" role="toolbar">
@@ -31,7 +46,9 @@
                 </div>
                 <div>
                     <div class="dropdown">
-                        <button id="searchMenu" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                        <button id="searchMenu"
+                                class="btn btn-primary dropdown-toggle <c:if test="${!submission.isSearchable()}">disabled</c:if>"
+                                type="button" data-toggle="dropdown">
                             Search
                         </button>
                         <div class="dropdown-menu dropdown-menu-right">
@@ -44,12 +61,13 @@
                                title="Search based on the mass, retention time, and spectral similarity">
                                 Search for similar spectra (with Ontology Levels)
                             </a>
-                            <a class="dropdown-item" href="<c:url value="study_search/"/>">Search for similar studies</a>
+                            <a class="dropdown-item" href="<c:url value="study_search/"/>">Search for similar
+                                studies</a>
                         </div>
                     </div>
-<%--                    <a href="<c:url value="group_search/"/>" type="button" class="btn btn-primary">Search all--%>
-<%--                        spectra</a>--%>
-<%--                    <a href="<c:url value="study_search/"/>" type="button" class="btn btn-primary">Search studies</a>--%>
+                    <%--                    <a href="<c:url value="group_search/"/>" type="button" class="btn btn-primary">Search all--%>
+                    <%--                        spectra</a>--%>
+                    <%--                    <a href="<c:url value="study_search/"/>" type="button" class="btn btn-primary">Search studies</a>--%>
                 </div>
             </div>
         </div>
@@ -211,7 +229,9 @@
                                         </tr>
                                         <tr>
                                             <td><strong>Library:</strong></td>
-                                            <td><span class="badge badge-warning">${submission.library ? "Yes" : "No"}</span></td>
+                                            <td><span
+                                                    class="badge badge-warning">${submission.library ? "Yes" : "No"}</span>
+                                            </td>
                                         </tr>
                                         <c:if test="${submission.reference != null}">
                                             <tr>
@@ -347,6 +367,11 @@
 <script src="<c:url value="/resources/DataTables/DataTables-1.10.23/js/jquery.dataTables.min.js"/>"></script>
 <script src="<c:url value="/resources/tagify-master/jQuery.tagify.min.js"/>"></script>
 <script>
+
+    $(document).ready(function () {
+        $('.toast').toast('show');
+    });
+
     // $(document).ready(function () {
     // Table with a list of spectra
     const table = $('#spectrum_table').DataTable({

@@ -21,7 +21,7 @@ import javax.validation.constraints.NotNull;
 import org.dulab.adapcompounddb.models.enums.FileType;
 
 @Entity
-public class File implements Serializable {
+public class File implements Comparable<File>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -113,6 +113,12 @@ public class File implements Serializable {
     // *************************
     // ***** Other methods *****
     // *************************
+
+
+    @Override
+    public int compareTo(@org.jetbrains.annotations.NotNull File o) {
+        return -Integer.compare(this.fileType.getPriority(), o.fileType.getPriority());
+    }
 
     @Override
     public boolean equals(final Object other) {

@@ -5,6 +5,7 @@ import com.opencsv.exceptions.CsvValidationException;
 import org.dulab.adapcompounddb.models.MetaDataMapping;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumProperty;
+import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,7 +20,8 @@ import java.util.regex.Pattern;
 public class CsvFileReaderService implements FileReaderService {
 
     @Override
-    public List<Spectrum> read(InputStream inputStream, MetaDataMapping mapping, String filename) throws IOException {
+    public List<Spectrum> read(InputStream inputStream, MetaDataMapping mapping, String filename,
+                               ChromatographyType chromatographyType) throws IOException {
 
         List<Spectrum> spectra = new ArrayList<>();
 

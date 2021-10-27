@@ -3,7 +3,7 @@ from selenium.webdriver.common.keys import Keys
 
 
 # Open the Chrome browser
-driver = webdriver.Chrome('scripts/selenium/drivers/chromedriver')
+driver = webdriver.Chrome('scripts/selenium/drivers/chromedriver.exe')
 
 # Open a web page
 driver.get("http://localhost:8080/adap_compound_db_war/")
