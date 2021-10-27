@@ -13,7 +13,8 @@
                 </div>
                 <section class="no-background">
                     <div align="center">
-                        <a href="${pageContext.request.contextPath}/allClusters/" class="btn btn-primary">View All Consensus Spectra</a>
+                        <a id="consensusPage" href="${pageContext.request.contextPath}/allClusters/"
+                           class="btn btn-primary">View All Consensus Spectra</a>
                     </div>
                 </section>
             </div>
@@ -36,13 +37,13 @@
 
                         <%--@elvariable id="libraries" type="java.util.List<org.dulab.adapcompounddb.models.entities.Submission>"--%>
                         <c:forEach items="${libraries}" var="study" varStatus="loop">
-                                <tr>
-                                    <td style="text-align: center">
-                                        <a href="${pageContext.request.contextPath}/submission/${study.id}/">${study.name}&nbsp;
-                                        </a><br/>
-                                            <%--                        <small>${dulab:abbreviate(study.description, 80)}</small>--%>
-                                    </td>
-                                </tr>
+                            <tr>
+                                <td style="text-align: center">
+                                    <a href="${pageContext.request.contextPath}/submission/${study.id}/">${study.name}&nbsp;
+                                    </a><br/>
+                                        <%--                        <small>${dulab:abbreviate(study.description, 80)}</small>--%>
+                                </td>
+                            </tr>
                         </c:forEach>
                         </tbody>
                     </table>

@@ -13,11 +13,15 @@ def cluster_page_test(homepage_url):
     try:
         driver.get(homepage_url)
 
-        # go to login page
-        spectrum_page_button = driver.find_element_by_id('spectraPage')
-        spectrum_page_button.click()
+         # go to login page
+        library_page_button = driver.find_element_by_id('libraryPage')
+        library_page_button.click()
 
         # add 5 seconds delay for loading spectrum page before next step
+        time.sleep(5)
+
+        consensus_page_button = driver.find_element_by_id('consensusPage')
+        consensus_page_button.click()
         time.sleep(5)
 
         # choose the first spectrum and go to the spectrum page
