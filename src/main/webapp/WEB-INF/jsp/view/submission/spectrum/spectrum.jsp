@@ -84,9 +84,10 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                    <c:if test="${dulab:smilesToImage(spectrum.canonicalSmiles) != null}">
+                                    <c:set var = "image" scope="session" value = "${dulab:smilesToImage(spectrum.canonicalSmiles)}"/>
+                                    <c:if test="${image != null}">
                                         <h4>Molecular Structure</h4>
-                                        <div style = "text-align:center";>${dulab:smilesToImage(spectrum.canonicalSmiles)}</div>
+                                        <div style = "text-align:center";>${image}</div>
                                     </c:if>
                                     <h4>Other Properties</h4>
                                     <ul class="list-group list-group-flush">
