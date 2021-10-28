@@ -222,6 +222,19 @@ public class Submission implements Serializable {
         return true;
     }
 
+    public boolean isInHouse() {
+        if (files != null) {
+            for (File file : files) {
+                List<Spectrum> spectra = file.getSpectra();
+                for (Spectrum spectrum : spectra) {
+                    if (!spectrum.isInHouseReference())
+                        return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public boolean isAuthorized(final UserPrincipal user) {
         boolean authorized = false;
         if (user == null) {

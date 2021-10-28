@@ -3,7 +3,7 @@ package org.dulab.adapcompounddb.site.controllers.forms;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.models.entities.SubmissionCategory;
 import org.dulab.adapcompounddb.models.entities.SubmissionTag;
-import org.dulab.adapcompounddb.validation.PrivateLibrary;
+import org.dulab.adapcompounddb.validation.LogicalAOrNotB;
 import org.hibernate.validator.constraints.URL;
 import org.json.JSONArray;
 
@@ -12,33 +12,29 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-@PrivateLibrary.List({@PrivateLibrary(privateField = "isPrivate", libraryField = "isLibrary")})
+@LogicalAOrNotB.List({
+        @LogicalAOrNotB(fieldA = "isPrivate", fieldB = "isLibrary", message = "Creating a library is allowed only for private submissions"),
+        @LogicalAOrNotB(fieldA = "isLibrary", fieldB = "isInHouseLibrary", message = "Invalid values of the Library and In-House fields")})
 public class SubmissionForm {
 
     private Long id;
 
     @NotBlank(message = "The field Name is required.")
     private String name;
-
     private String externalId;
-
     private String description;
-
     private boolean isPrivate;
-
     private boolean isLibrary;
-
+    private boolean isInHouseLibrary;
     @URL(message = "The field Reference must be a valid URL.")
     private String reference;
-
     private String tags;
-
     private List<Long> submissionCategoryIds;
-
     private boolean authorized;
 
 
-    public SubmissionForm() {};
+    public SubmissionForm() {
+    }
 
     public SubmissionForm(Submission submission) {
         setId(submission.getId());
@@ -46,6 +42,7 @@ public class SubmissionForm {
         setName(submission.getName());
         setDescription(submission.getDescription());
         setIsPrivate(submission.isPrivate());
+        setIsInHouseLibrary(submission.isInHouse());
         setReference(submission.getReference());
 
         if (submission.getTags() != null) {
@@ -117,6 +114,14 @@ public class SubmissionForm {
 
     public void setIsLibrary(boolean reference) {
         isLibrary = reference;
+    }
+
+    public boolean getIsInHouseLibrary() {
+        return isInHouseLibrary;
+    }
+
+    public void setIsInHouseLibrary(boolean inHouseLibrary) {
+        isInHouseLibrary = inHouseLibrary;
     }
 
     public String getReference() {

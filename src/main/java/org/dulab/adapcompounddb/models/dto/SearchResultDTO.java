@@ -69,6 +69,7 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
     private Double retTime;
     private String formula;
     private String submissionName;
+    private Boolean inHouse;
     private Long submissionId;
 
     // Other
@@ -142,6 +143,7 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
             this.mass = matchSpectrum.getMass();
             this.retTime = matchSpectrum.getRetentionTime();
             this.formula = matchSpectrum.getFormula();
+            this.inHouse = matchSpectrum.isInHouseReference();
 
             this.score = spectrumMatch.getScore();
             this.precursorError = spectrumMatch.getPrecursorError();
@@ -321,6 +323,14 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
 
     public void setSubmissionId(Long submissionId) {
         this.submissionId = submissionId;
+    }
+
+    public Boolean getInHouse() {
+        return inHouse;
+    }
+
+    public void setInHouse(Boolean inHouse) {
+        this.inHouse = inHouse;
     }
 
     public String getQuerySpectrumName() {

@@ -91,9 +91,9 @@ public class IndividualSearchService {
                     .mapToDouble(adduct -> adduct.calculateNeutralMass(spectrum.getPrecursor()))
                     .toArray());
 
-        Map<Long, String> privateSubmissionIdMap =
-                submissionService.findUserPrivateSubmissions(user, spectrum.getChromatographyType());
-        Set<Long> privateSubmissionIds = privateSubmissionIdMap.keySet();
+//        Map<Long, String> privateSubmissionIdMap =
+//                submissionService.findUserPrivateSubmissions(user, spectrum.getChromatographyType());
+//        Set<Long> privateSubmissionIds = privateSubmissionIdMap.keySet();
 
         List<SpectrumMatch> matches =
                 javaSpectrumSimilarityService.searchConsensusAndReference(spectrum, modifiedParameters, user);
@@ -109,8 +109,8 @@ public class IndividualSearchService {
         for (SearchResultDTO result : results) {
 
             OntologyLevel ontologyLevel = OntologySupplier.select(spectrum.getChromatographyType(),
-                    privateSubmissionIds.contains(result.getSubmissionId()), result.getScore(),
-                    result.getPrecursorErrorPPM(), result.getMassErrorPPM(), result.getRetTimeError());
+                    result.getInHouse(), result.getScore(), result.getPrecursorErrorPPM(), result.getMassErrorPPM(),
+                    result.getRetTimeError());
             if (ontologyLevel == null)
                 continue;
 

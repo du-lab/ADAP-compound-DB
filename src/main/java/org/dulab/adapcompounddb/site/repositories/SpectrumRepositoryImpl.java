@@ -47,6 +47,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
             new SqlField("ClusterId", "%d", s -> s.getCluster() != null ? s.getCluster().getId() : null),
             new SqlField("Consensus", "%b", Spectrum::isConsensus),
             new SqlField("Reference", "%b", Spectrum::isReference),
+            new SqlField("InHouseReference", "%b", Spectrum::isInHouseReference),
             new SqlField("IntegerMz", "%b", Spectrum::isIntegerMz),
             new SqlField("ChromatographyType", "%s", s -> quote(s.getChromatographyType().name())),
             new SqlField("FileId", "%d", s -> s.getFile().getId()),

@@ -58,61 +58,37 @@ public class Spectrum implements Serializable {
     private SpectrumCluster cluster;
 
     private boolean consensus;
-
     private boolean reference;
-
+    private boolean inHouseReference;
     private boolean clusterable;
-
     private boolean integerMz;
 
     private Double precursor;
-
     private String precursorType;
-
     private Double retentionTime;
-
     private Double significance;
-
     private Double mass;
-
     private String formula;
 
     private Double topMz1;
-
     private Double topMz2;
-
     private Double topMz3;
-
     private Double topMz4;
-
     private Double topMz5;
-
     private Double topMz6;
-
     private Double topMz7;
-
     private Double topMz8;
-
     private Double topMz9;
-
     private Double topMz10;
-
     private Double topMz11;
-
     private Double topMz12;
-
     private Double topMz13;
-
     private Double topMz14;
-
     private Double topMz15;
-
     private Double topMz16;
 
     private String canonicalSmiles; //CC Edits
-
     private String inChi; //CC Edits
-
     private String inChiKey; //CC Edits
 
 
@@ -393,6 +369,14 @@ public class Spectrum implements Serializable {
 
     public void setReference(final boolean reference) {
         this.reference = reference;
+    }
+
+    public boolean isInHouseReference() {
+        return inHouseReference;
+    }
+
+    public void setInHouseReference(boolean inHouseReference) {
+        this.inHouseReference = inHouseReference;
     }
 
     public boolean isClusterable() {

@@ -306,6 +306,9 @@ public class SubmissionController extends BaseController {
         if (!submissionForm.getIsPrivate() && submissionForm.getIsLibrary())
             throw new IllegalStateException("Creating a library is allowed only for private submissions");
 
+        if (!submissionForm.getIsLibrary() && submissionForm.getIsInHouseLibrary())
+            throw new IllegalStateException("Invalid values of the Library and In-House fields");
+
         submission.setName(submissionForm.getName());
         submission.setExternalId(submissionForm.getExternalId());
         submission.setDescription(submissionForm.getDescription());
@@ -321,6 +324,7 @@ public class SubmissionController extends BaseController {
                 if (spectra == null) continue;
                 for (Spectrum spectrum : spectra) {
                     spectrum.setReference(submissionForm.getIsLibrary());
+                    spectrum.setInHouseReference(submissionForm.getIsInHouseLibrary());
                 }
             }
         }

@@ -150,20 +150,34 @@
                                     </div>
 
                                     <div class="form-row form-group">
-                                        <form:label path="isPrivate"
-                                                    cssClass="col-md-2 col-form-label">Private</form:label>
-                                        <form:checkbox path="isPrivate" data-toggle="toggle" data-on="Yes" data-off="No"
-                                                       data-size="sm"/>
-                                        <form:errors path="isPrivate" cssClass="text-danger"/>
+                                        <div class="col-md-3 offset-md-2">
+                                                <%--                                            <form:label path="isPrivate"--%>
+                                                <%--                                                        cssClass="col-md-6 col-form-label">Private</form:label>--%>
+                                            <form:checkbox path="isPrivate" data-toggle="toggle" data-on="Private"
+                                                           data-off="Public" data-size="sm"/>
+                                            <form:errors path="isPrivate" cssClass="text-danger"/>
+                                        </div>
+                                        <div class="col-md-3">
+                                                <%--                                            <form:label path="isLibrary"--%>
+                                                <%--                                                        cssClass="col-md-6 col-form-label">Library</form:label>--%>
+                                            <form:checkbox path="isLibrary" data-toggle="toggle" data-on="Library"
+                                                           data-off="Study" data-size="sm"/>
+                                            <form:errors path="isLibrary" cssClass="text-danger"/>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <form:checkbox path="isInHouseLibrary" data-toggle="toggle"
+                                                           data-on="In-House" data-off="External" data-size="sm"/>
+                                            <form:errors path="isInHouseLibrary" cssClass="text-danger"/>
+                                        </div>
                                     </div>
 
-                                    <div class="form-row form-group">
-                                        <form:label path="isLibrary"
-                                                    cssClass="col-md-2 col-form-label">Library</form:label>
-                                        <form:checkbox path="isLibrary" data-toggle="toggle" data-on="Yes" data-off="No"
-                                                       data-size="sm"/>
-                                        <form:errors path="isLibrary" cssClass="text-danger"/>
-                                    </div>
+                                    <%--                                    <div class="form-row form-group">--%>
+                                    <%--                                        <form:label path="isLibrary"--%>
+                                    <%--                                                    cssClass="col-md-2 col-form-label">Library</form:label>--%>
+                                    <%--                                        <form:checkbox path="isLibrary" data-toggle="toggle" data-on="Yes" data-off="No"--%>
+                                    <%--                                                       data-size="sm"/>--%>
+                                    <%--                                        <form:errors path="isLibrary" cssClass="text-danger"/>--%>
+                                    <%--                                    </div>--%>
 
                                     <div class="form-row form-group">
                                         <form:label path="reference"
@@ -231,6 +245,12 @@
                                             <td><strong>Library:</strong></td>
                                             <td><span
                                                     class="badge badge-warning">${submission.library ? "Yes" : "No"}</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>In-House:</strong></td>
+                                            <td><span
+                                                    class="badge badge-success">${submission.inHouse ? "Yes" : "No"}</span>
                                             </td>
                                         </tr>
                                         <c:if test="${submission.reference != null}">
