@@ -76,7 +76,7 @@ public class MspFileReaderService implements FileReaderService {
 
         for (String s : line.split(";")) {
             String[] mzIntensityPair = s.split("[ \t]+");  // Split by any combination of the blank space and tab characters
-            if (mzIntensityPair.length == 2) {
+            if (mzIntensityPair.length >= 2) {
                 try {
                     Peak peak = new Peak();
                     peak.setMz(Double.parseDouble(mzIntensityPair[0]));
