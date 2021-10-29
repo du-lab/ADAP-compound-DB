@@ -74,6 +74,7 @@ public class MspFileReaderService implements FileReaderService {
 
     private void addPeak(Spectrum spectrum, List<Peak> peaks, String line) {
 
+        line = line.replaceAll("\".+\"", "");
         for (String s : line.split(";")) {
             String[] mzIntensityPair = s.split("[ \t]+");  // Split by any combination of the blank space and tab characters
             if (mzIntensityPair.length >= 2) {
