@@ -194,9 +194,14 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
     @Override
     public void savePeaksAndPropertiesQuery(final List<Spectrum> spectrumList, final List<Long> savedSpectrumIdList) {
+
+
+
         final StringBuilder peakSql = new StringBuilder(PEAK_INSERT_SQL_STRING);
         final StringBuilder propertySql = new StringBuilder(PROPERTY_INSERT_SQL_STRING);
 
+        int peakCount = 0;
+        int propertyCount = 0;
         for (int i = 0; i < spectrumList.size(); i++) {
             final List<Peak> peaks = spectrumList.get(i).getPeaks();
             if (peaks != null) {
@@ -206,6 +211,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                     }
                     final Peak peak = peaks.get(j);
                     peakSql.append(String.format("(%f, %f, %d)", peak.getMz(), peak.getIntensity(), savedSpectrumIdList.get(i)));
+                    peakCount++;
                 }
             }
 
@@ -220,14 +226,18 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                             savedSpectrumIdList.get(i),
                             property.getName().replace("\"", "\"\""),
                             property.getValue().replace("\"", "\"\"")));
+                    propertyCount++;
                 }
             }
         }
 
+        LOGGER.info(String.format("Saving %d peaks to the database...", peakCount));
         if (!peakSql.toString().equals(PEAK_INSERT_SQL_STRING)) {
             final Query peakQuery = entityManager.createNativeQuery(peakSql.toString());
             peakQuery.executeUpdate();
         }
+
+        LOGGER.info(String.format("Saving %d spectrum properties to the database...", propertyCount));
         if (!propertySql.toString().equals(PROPERTY_INSERT_SQL_STRING)) {
             final Query propertyQuery = entityManager.createNativeQuery(propertySql.toString());
             propertyQuery.executeUpdate();
@@ -236,6 +246,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
     @Override
     public void saveSpectrumAndPeaks(final List<File> fileList, final List<Long> savedFileIdList) {
+
         final List<Spectrum> spectrumList = new ArrayList<>();
 
         StringBuilder insertSql = new StringBuilder(
@@ -245,6 +256,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                                 .map(x -> String.format("`%s`", x))
                                 .collect(Collectors.joining(", "))));
 
+        int count = 0;
         for (int i = 0; i < fileList.size(); i++) {
             final List<Spectrum> spectra = fileList.get(i).getSpectra();
             if (spectra == null) continue;
@@ -261,8 +273,13 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                         Arrays.stream(spectrumFields)
                                 .map(field -> String.format(field.format, field.function.apply(spectrum)))
                                 .collect(Collectors.joining(", "))));
+
+                count++;
             }
         }
+
+        LOGGER.info(String.format("Saving %d spectra to the database...", count));
+
         final Query insertQuery = entityManager.createNativeQuery(insertSql.toString());
         insertQuery.executeUpdate();
 
