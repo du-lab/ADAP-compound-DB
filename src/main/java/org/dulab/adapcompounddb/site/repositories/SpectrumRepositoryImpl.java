@@ -28,6 +28,9 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
     private static final Logger LOGGER = LogManager.getLogger(SpectrumRepositoryImpl.class);
 
+    private static final int MAX_PEAKS_IN_QUERY = 1000000;
+    private static final int MAX_PROPERTIES_IN_QUERY = 1000000;
+
     private static final String PEAK_INSERT_SQL_STRING = "INSERT INTO `Peak`(`Mz`, `Intensity`, `SpectrumId`) VALUES ";
     private static final String PROPERTY_INSERT_SQL_STRING = "INSERT INTO `SpectrumProperty`(`SpectrumId`, `Name`, `Value`) VALUES ";
     private static final String PEAK_VALUE_SQL_STRING = "(%f,%f,%d)";
@@ -192,55 +195,126 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         return resultList;
     }
 
+    private String[] generateQueriesToSavePeaks(List<Spectrum> spectrumList, List<Long> savedSpectrumIds) {
+
+        List<List<String>> peakTriplesList = new ArrayList<>();
+        List<String> peakTriples = new ArrayList<>();
+        int peakCount = 0;
+        for (int i = 0; i < spectrumList.size(); i++) {
+            final List<Peak> peaks = spectrumList.get(i).getPeaks();
+
+            if (peaks == null)
+                continue;
+
+            for (Peak peak : peaks) {
+                peakTriples.add(String.format("(%f, %f, %d)", peak.getMz(), peak.getIntensity(), savedSpectrumIds.get(i)));
+            }
+
+            peakCount += peaks.size();
+
+            if (peakCount > MAX_PEAKS_IN_QUERY) {
+                peakTriplesList.add(peakTriples);
+                peakTriples = new ArrayList<>();
+                peakCount = 0;
+            }
+        }
+
+        if (peakCount > 0)
+            peakTriplesList.add(peakTriples);
+
+        return peakTriplesList.stream()
+                .map(triples -> PEAK_INSERT_SQL_STRING + String.join(",", triples))
+                .toArray(String[]::new);
+    }
+
+    private String[] generateQueriesToSaveProperties(List<Spectrum> spectrumList, List<Long> savedSpectrumIds) {
+
+        List<List<String>> propertyTriplesList = new ArrayList<>();
+        List<String> propertyTriples = new ArrayList<>();
+        int propertyCount = 0;
+        for (int i = 0; i < spectrumList.size(); i++) {
+            final List<SpectrumProperty> properties = spectrumList.get(i).getProperties();
+
+            if (properties == null)
+                continue;
+
+            for (SpectrumProperty property : properties) {
+                propertyTriples.add(String.format("(%d, \"%s\", \"%s\")",
+                        savedSpectrumIds.get(i),
+                        property.getName().replace("\"", "\"\""),
+                        property.getValue().replace("\"", "\"\"")));
+            }
+
+            propertyCount += properties.size();
+
+            if (propertyCount > MAX_PROPERTIES_IN_QUERY) {
+                propertyTriplesList.add(propertyTriples);
+                propertyTriples = new ArrayList<>();
+                propertyCount = 0;
+            }
+        }
+
+        if (propertyCount > 0)
+            propertyTriplesList.add(propertyTriples);
+
+        return propertyTriplesList.stream()
+                .map(triples -> PROPERTY_INSERT_SQL_STRING + String.join(",", triples))
+                .toArray(String[]::new);
+    }
+
     @Override
     public void savePeaksAndPropertiesQuery(final List<Spectrum> spectrumList, final List<Long> savedSpectrumIdList) {
 
+//        final StringBuilder peakSql = new StringBuilder(PEAK_INSERT_SQL_STRING);
+//        final StringBuilder propertySql = new StringBuilder(PROPERTY_INSERT_SQL_STRING);
+//
+//        int peakCount = 0;
+//        int propertyCount = 0;
+//        for (int i = 0; i < spectrumList.size(); i++) {
+//            final List<Peak> peaks = spectrumList.get(i).getPeaks();
+//            if (peaks != null) {
+//                for (int j = 0; j < peaks.size(); j++) {
+//                    if (i != 0 || j != 0) {
+//                        peakSql.append(COMMA);
+//                    }
+//                    final Peak peak = peaks.get(j);
+//                    peakSql.append(String.format("(%f, %f, %d)", peak.getMz(), peak.getIntensity(), savedSpectrumIdList.get(i)));
+//                    peakCount++;
+//                }
+//            }
+//
+//            final List<SpectrumProperty> properties = spectrumList.get(i).getProperties();
+//            if (properties != null) {
+//                for (int j = 0; j < properties.size(); j++) {
+//                    if (i != 0 || j != 0) {
+//                        propertySql.append(COMMA);
+//                    }
+//                    final SpectrumProperty property = properties.get(j);
+//                    propertySql.append(String.format("(%d, \"%s\", \"%s\")",
+//                            savedSpectrumIdList.get(i),
+//                            property.getName().replace("\"", "\"\""),
+//                            property.getValue().replace("\"", "\"\"")));
+//                    propertyCount++;
+//                }
+//            }
+//        }
 
-
-        final StringBuilder peakSql = new StringBuilder(PEAK_INSERT_SQL_STRING);
-        final StringBuilder propertySql = new StringBuilder(PROPERTY_INSERT_SQL_STRING);
-
-        int peakCount = 0;
-        int propertyCount = 0;
-        for (int i = 0; i < spectrumList.size(); i++) {
-            final List<Peak> peaks = spectrumList.get(i).getPeaks();
-            if (peaks != null) {
-                for (int j = 0; j < peaks.size(); j++) {
-                    if (i != 0 || j != 0) {
-                        peakSql.append(COMMA);
-                    }
-                    final Peak peak = peaks.get(j);
-                    peakSql.append(String.format("(%f, %f, %d)", peak.getMz(), peak.getIntensity(), savedSpectrumIdList.get(i)));
-                    peakCount++;
-                }
-            }
-
-            final List<SpectrumProperty> properties = spectrumList.get(i).getProperties();
-            if (properties != null) {
-                for (int j = 0; j < properties.size(); j++) {
-                    if (i != 0 || j != 0) {
-                        propertySql.append(COMMA);
-                    }
-                    final SpectrumProperty property = properties.get(j);
-                    propertySql.append(String.format("(%d, \"%s\", \"%s\")",
-                            savedSpectrumIdList.get(i),
-                            property.getName().replace("\"", "\"\""),
-                            property.getValue().replace("\"", "\"\"")));
-                    propertyCount++;
-                }
+        String[] peakSqls = generateQueriesToSavePeaks(spectrumList, savedSpectrumIdList);
+        for (String peakSql : peakSqls) {
+            if (!peakSql.equals(PEAK_INSERT_SQL_STRING)) {
+                LOGGER.info(String.format("Saving peaks to the database (%d bytes)...", peakSql.length() * 2));
+                Query peakQuery = entityManager.createNativeQuery(peakSql);
+                peakQuery.executeUpdate();
             }
         }
 
-        LOGGER.info(String.format("Saving %d peaks to the database...", peakCount));
-        if (!peakSql.toString().equals(PEAK_INSERT_SQL_STRING)) {
-            final Query peakQuery = entityManager.createNativeQuery(peakSql.toString());
-            peakQuery.executeUpdate();
-        }
-
-        LOGGER.info(String.format("Saving %d spectrum properties to the database...", propertyCount));
-        if (!propertySql.toString().equals(PROPERTY_INSERT_SQL_STRING)) {
-            final Query propertyQuery = entityManager.createNativeQuery(propertySql.toString());
-            propertyQuery.executeUpdate();
+        String[] propertySqls = generateQueriesToSaveProperties(spectrumList, savedSpectrumIdList);
+        for (String propertySql : propertySqls) {
+            if (!propertySql.equals(PROPERTY_INSERT_SQL_STRING)) {
+                LOGGER.info(String.format("Saving spectrum properties to the database (%d bytes)...", propertySql.length() * 2));
+                Query propertyQuery = entityManager.createNativeQuery(propertySql);
+                propertyQuery.executeUpdate();
+            }
         }
     }
 
