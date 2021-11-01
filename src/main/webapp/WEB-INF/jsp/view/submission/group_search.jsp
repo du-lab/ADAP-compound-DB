@@ -101,7 +101,7 @@
     </div>
 
     <div class="row row-content">
-        <div class="col" id="queryColumn">
+        <div class="col col-compact" id="queryColumn">
             <div class="card">
                 <div class="card-header card-header-single">Query Structure</div>
                 <div class="card-body small overflow-auto" style="height: 300px">
@@ -109,15 +109,15 @@
                 </div>
             </div>
         </div>
-        <div class="col">
+        <div class="col col-compact">
             <div class="card">
                 <div class="card-header card-header-single">Query</div>
-                <div class="card-body small overflow-auto" style="height: 300px">
+                <div class="card-body card-body-compact small overflow-auto" style="height: 300px">
                     <div id="queryInfo"></div>
                 </div>
             </div>
         </div>
-        <div class="col">
+        <div class="col col-compact">
             <div class="card">
                 <div class="card-header card-header-single">Plot</div>
                 <%--                <div class="card-body small overflow-auto" style="height: 300px">--%>
@@ -125,15 +125,15 @@
                 <%--                </div>--%>
             </div>
         </div>
-        <div class="col">
+        <div class="col col-compact">
             <div class="card">
                 <div class="card-header card-header-single">Match</div>
-                <div class="card-body small overflow-auto" style="height: 300px">
+                <div class="card-body card-body-compact small overflow-auto" style="height: 300px">
                     <div id="matchInfo"></div>
                 </div>
             </div>
         </div>
-        <div class="col" id="matchColumn">
+        <div class="col col-compact" id="matchColumn">
             <div class="card">
                 <div class="card-header card-header-single">Match Structure</div>
                 <div class="card-body small overflow-auto" style="height: 300px">
