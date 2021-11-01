@@ -43,7 +43,7 @@ public class GroupSearchService {
     }
 
     @Async
-    @Transactional(propagation = Propagation.REQUIRED)
+//    @Transactional(propagation = Propagation.REQUIRED)
     public Future<Void> groupSearch(UserPrincipal userPrincipal, List<File> files, HttpSession session,
                                     Set<Long> submissionIds, String species, String source, String disease,
                                     boolean withOntologyLevels) {
@@ -69,6 +69,9 @@ public class GroupSearchService {
                 return new AsyncResult<>(null);
             }
 
+            long startTime = System.currentTimeMillis();
+
+            int spectrumCount = 0;
             int progressStep = 0;
             progress = 0F;
             int position = 0;
@@ -76,7 +79,7 @@ public class GroupSearchService {
                 File file = files.get(fileIndex);
                 List<Spectrum> spectra = file.getSpectra();
                 if (spectra == null) continue;
-                for (int spectrumIndex = 0; spectrumIndex < spectra.size(); ++spectrumIndex) {  // Spectrum querySpectrum : file.getSpectra()
+                for (int spectrumIndex = 0; spectrumIndex < spectra.size(); ++spectrumIndex, ++spectrumCount) {  // Spectrum querySpectrum : file.getSpectra()
                     Spectrum querySpectrum = spectra.get(spectrumIndex);
 
                     if (Thread.currentThread().isInterrupted()) break;
@@ -112,6 +115,13 @@ public class GroupSearchService {
                         return new AsyncResult<>(null);
                     }
                     progress = (float) ++progressStep / totalSteps;
+
+                    if (spectrumCount % 100 == 0) {
+                        long time = System.currentTimeMillis();
+                        LOGGER.info(String.format(
+                                "Searched %d spectra with the average time %.3f seconds per spectrum",
+                                spectrumCount, 1E-3 * (time - startTime) / spectrumCount));
+                    }
                 }
             }
         } catch (Throwable t) {

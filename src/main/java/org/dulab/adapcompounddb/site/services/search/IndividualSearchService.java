@@ -63,7 +63,7 @@ public class IndividualSearchService {
         return searchResults;
     }
 
-    @Transactional
+//    @Transactional
     public List<SearchResultDTO> searchWithOntologyLevels(UserPrincipal user, Spectrum spectrum,
                                                           SearchParameters parameters) {
 
