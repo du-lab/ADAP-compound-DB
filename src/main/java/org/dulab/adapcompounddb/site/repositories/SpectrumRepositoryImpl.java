@@ -265,40 +265,6 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     @Override
     public void savePeaksAndPropertiesQuery(final List<Spectrum> spectrumList, final List<Long> savedSpectrumIdList) {
 
-//        final StringBuilder peakSql = new StringBuilder(PEAK_INSERT_SQL_STRING);
-//        final StringBuilder propertySql = new StringBuilder(PROPERTY_INSERT_SQL_STRING);
-//
-//        int peakCount = 0;
-//        int propertyCount = 0;
-//        for (int i = 0; i < spectrumList.size(); i++) {
-//            final List<Peak> peaks = spectrumList.get(i).getPeaks();
-//            if (peaks != null) {
-//                for (int j = 0; j < peaks.size(); j++) {
-//                    if (i != 0 || j != 0) {
-//                        peakSql.append(COMMA);
-//                    }
-//                    final Peak peak = peaks.get(j);
-//                    peakSql.append(String.format("(%f, %f, %d)", peak.getMz(), peak.getIntensity(), savedSpectrumIdList.get(i)));
-//                    peakCount++;
-//                }
-//            }
-//
-//            final List<SpectrumProperty> properties = spectrumList.get(i).getProperties();
-//            if (properties != null) {
-//                for (int j = 0; j < properties.size(); j++) {
-//                    if (i != 0 || j != 0) {
-//                        propertySql.append(COMMA);
-//                    }
-//                    final SpectrumProperty property = properties.get(j);
-//                    propertySql.append(String.format("(%d, \"%s\", \"%s\")",
-//                            savedSpectrumIdList.get(i),
-//                            property.getName().replace("\"", "\"\""),
-//                            property.getValue().replace("\"", "\"\"")));
-//                    propertyCount++;
-//                }
-//            }
-//        }
-
         String[] peakSqls = generateQueriesToSavePeaks(spectrumList, savedSpectrumIdList);
         for (String peakSql : peakSqls) {
             if (!peakSql.equals(PEAK_INSERT_SQL_STRING)) {

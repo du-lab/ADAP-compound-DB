@@ -46,18 +46,18 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-    <!--CharsetFilter start -->
-    <filter>
-        <filter-name>CharsetFilter</filter-name>
-        <filter-class>org.dulab.adapcompounddb.site.filters.CharSetFilter</filter-class>
-        <init-param>
-            <param-name>requestEncoding</param-name>
-            <param-value>UTF-8</param-value>
-        </init-param>
-    </filter>
+<!--    &lt;!&ndash;CharsetFilter start &ndash;&gt;-->
+<!--    <filter>-->
+<!--        <filter-name>CharsetFilter</filter-name>-->
+<!--        <filter-class>org.dulab.adapcompounddb.site.filters.CharSetFilter</filter-class>-->
+<!--        <init-param>-->
+<!--            <param-name>requestEncoding</param-name>-->
+<!--            <param-value>UTF-8</param-value>-->
+<!--        </init-param>-->
+<!--    </filter>-->
 
-    <filter-mapping>
-        <filter-name>CharsetFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
+<!--    <filter-mapping>-->
+<!--        <filter-name>CharsetFilter</filter-name>-->
+<!--        <url-pattern>/*</url-pattern>-->
+<!--    </filter-mapping>-->
 </web-app>

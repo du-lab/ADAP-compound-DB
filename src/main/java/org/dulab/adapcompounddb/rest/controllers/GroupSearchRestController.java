@@ -24,9 +24,14 @@ import java.util.stream.Collectors;
 @RestController
 public class GroupSearchRestController {
 
+    public static final ObjectMapper mapper = new ObjectMapper();
     public static final List<SearchResultDTO> EMPTY_LIST = new ArrayList<>(0);
     private final SpectrumMatchService spectrumMatchService;
     private final GroupSearchService groupSearchService;
+
+    static {
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+    }
 
     @Autowired
     public GroupSearchRestController(final SpectrumMatchService spectrumMatchService, final GroupSearchService groupSearchService) {
@@ -45,11 +50,11 @@ public class GroupSearchRestController {
 
         List<SearchResultDTO> matches;
 
-        if (session.getAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME) != null) {
+        Object sessionObject = session.getAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
+        if (sessionObject != null) {
 
             @SuppressWarnings("unchecked")
-            List<SearchResultDTO> sessionMatches =
-                    (List<SearchResultDTO>) session.getAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
+            List<SearchResultDTO> sessionMatches = (List<SearchResultDTO>) sessionObject;
 
             //Avoid ConcurrentModificationException by make a copy for sorting
             matches = new ArrayList<>(sessionMatches);
@@ -58,10 +63,9 @@ public class GroupSearchRestController {
             matches = new ArrayList<>(EMPTY_LIST);
         }
         final DataTableResponse response = groupSearchSort(searchStr, start, length, column, sortDirection, matches);
-        final ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-        final String jsonString = mapper.writeValueAsString(response);
-        return jsonString;
+//        final ObjectMapper mapper = new ObjectMapper();
+//        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        return mapper.writeValueAsString(response);
     }
 
     @RequestMapping(value = "/file/group_search/progress", produces = "application/json")
