@@ -14,6 +14,90 @@ public class StatisticsUtils {
     private static Combinatorics combinatorics = new Combinatorics();
 
     /**
+     * Calculates chi-squared statistics of permutation test
+     */
+    public static double calculateChiSquaredPermutationStatistics(Collection<DbAndClusterValuePair> dbAndClusterValuePairs){
+        List<Integer> clusterList = new ArrayList<>();
+        List<Integer> dbList = new ArrayList<>();
+
+        int n = 0;
+        for (DbAndClusterValuePair dbAndClusterValuePair : dbAndClusterValuePairs) {
+            int clusterNum = dbAndClusterValuePair.getClusterValue();
+            int dbNum = dbAndClusterValuePair.getDbValue();
+
+            if(clusterNum>0){
+                for(int i=0; i<clusterNum; i++){
+                    clusterList.add(n);
+                }
+            }
+            if(dbNum>0){
+                for(int i=0; i<dbNum; i++){
+                    dbList.add(n);
+                }
+            }
+            n++;
+        }
+
+        double statObs = chi_square_test(clusterList, dbList);
+        List<Double> chiSquareStatDistr = new ArrayList<>();
+
+        int iterationNumber = 50000;
+
+        for (int i=0; i <iterationNumber; i++){
+            List[] shuffledResults = random_shuffle(clusterList, dbList);
+            List<Integer> newCluster = new ArrayList<>(shuffledResults[0]);
+            List<Integer> newDb = new ArrayList<>(shuffledResults[1]);
+            chiSquareStatDistr.add(chi_square_test(newCluster, newDb));
+        }
+
+        float pvalue = (chiSquareStatDistr.stream().filter(i -> i>=statObs).count()) / (float) iterationNumber;
+
+        return pvalue;
+    }
+
+    public static List[] random_shuffle(List<Integer> clusterList, List<Integer> dbList){
+        List<Integer> newClusterList = new ArrayList<>();
+        List<Integer> newDbList = new ArrayList<>();
+
+        List<Integer> mergedList = new ArrayList<>(clusterList);
+        mergedList.addAll(dbList);
+
+        Random rand = new Random();
+
+        for (int i=0; i<clusterList.size(); i++){
+            int newElement = mergedList.get(rand.nextInt(mergedList.size()));
+            newClusterList.add(newElement);
+            mergedList.remove(newElement);
+        }
+
+        for(int i=0; i<dbList.size();i++){
+            Integer newElement = mergedList.get(rand.nextInt(mergedList.size()));
+            newDbList.add(newElement);
+            mergedList.remove(newElement);
+        }
+        return new List[]{newClusterList, newDbList};
+    }
+
+    public static double chi_square_test(List<Integer> clusterList, List<Integer> dbList){
+        List<Integer> mergedList = new ArrayList<>(clusterList);
+        mergedList.addAll(dbList);
+
+        Set<Integer> uniqueElementList = new HashSet<>(mergedList);
+
+        double S = 0;
+        for(Integer s: uniqueElementList){
+
+            double observation = Collections.frequency(clusterList, s) + 0.5;
+            double expectation = Collections.frequency(dbList, s) + 0.5;
+
+            S = S + (Math.pow(observation-expectation, 2))/expectation;
+
+        }
+        return S;
+    }
+
+
+    /**
      * Calculates chi-squared statistics
      */
     public static double calculateChiSquaredStatistics(Collection<DbAndClusterValuePair> dbAndClusterValuePairs) {
