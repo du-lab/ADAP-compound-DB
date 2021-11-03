@@ -85,7 +85,7 @@
                 </div>
                 <div class="card-body">
                     <div id="carousel" class="carousel slide" data-ride="carousel">
-                        <div class="carousel-inner" role="listbox" style="height: 600px">
+                        <div class="carousel-inner" role="listbox" style="height: 525px">
                             <div class="carousel-item active">
                                 <h3>Explore NMDR studies</h3>
                                 <div class="media">
@@ -133,7 +133,7 @@
                             <div class="carousel-item">
                                 <h3>Search against ADAP-KDB Library</h3>
                                 <div class="media">
-                                    <img class="d-flex img-thumbnail mr-3 align-self-center"
+                                    <img class="d-flex img-thumbnail mr-3 align-self-center" width="250"
                                          src="${pageContext.request.contextPath}/resources/AdapCompoundDb/img/library_matching_300.png"
                                          alt="Library Search"/>
                                     <div class="media-body">
@@ -150,11 +150,11 @@
                                                     <li><strong>Search for similar spectra</strong> for matching against
                                                         library spectra based on the spectral similarity;
                                                     </li>
-                                                    <li><strong>Search for similar spectra (with Ontology
-                                                        Levels)</strong> for matching against library spectra based on
-                                                        the spectral similarity, neutral mass, and retention time
-                                                        (MS/MS only);
-                                                    </li>
+<%--                                                    <li><strong>Search for similar spectra (with Ontology--%>
+<%--                                                        Levels)</strong> for matching against library spectra based on--%>
+<%--                                                        the spectral similarity, neutral mass, and retention time--%>
+<%--                                                        (MS/MS only);--%>
+<%--                                                    </li>--%>
                                                     <li><strong>Search for similar studies</strong> for matching the
                                                         uploaded spectra directly against the Metabolomics Workbench
                                                         studies (Experimental).
@@ -178,11 +178,11 @@
                                        download>MSP file with LC-MS/MS spectra</a>, or
                                     <a href="${pageContext.request.contextPath}/resources/AdapCompoundDb/misc/st001314mass.csv"
                                        download>CSV file with m/z-retention time features.</a>
+                                </p>
+                                <p>
                                     Download a file, then click <strong>Upload Files</strong>, select "GC",
                                     "LC MS/MS +", or "Mass" respectively in the <strong>Chromatography type</strong>
                                     dropdown list, select the downloaded file, and click <strong>Upload</strong>.
-                                </p>
-                                <p>
                                     When uploading the sample CSV file, you need to specify where to find the neutral
                                     mass information by clicking <strong>Edit Metadata Fields</strong> on the upload
                                     page and putting "neutral_mass" for the <strong>Neutral Mass Field</strong> in
