@@ -89,7 +89,7 @@
                         <li class="nav-item"><a id="mass_spectra_link"
                                                 class="nav-link ${!view_submission ? "active" : ""}"
                                                 data-toggle="tab"
-                                                href="#mass_spectra">Mass Spectra</a>
+                                                href="#mass_spectra">Data</a>
                         </li>
                         <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#files">Files</a></li>
                     </ul>

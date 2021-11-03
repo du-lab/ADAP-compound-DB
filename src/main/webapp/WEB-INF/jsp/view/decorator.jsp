@@ -20,7 +20,7 @@
     </script>
 
 
-    <title><decorator:title default="ADAP Compound Knowledgebase"/></title>
+    <title><decorator:title default="ADAP-KDB Compound Knowledgebase"/></title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="icon" type="image/png" href="<c:url value="/resources/static/favicon-32x32.png"/>" sizes="32x32"/>
     <link rel="icon" type="image/png" href="<c:url value="/resources/static/favicon-16x16.png"/>" sizes="16x16"/>
@@ -82,7 +82,7 @@
             <div class="col-12 col-lg-8">
                 <h1 class="text-nowrap">
                     <i class="material-icons mobile" title="Menu" id="menu">view_headline</i>
-                    ADAP Spectral Knowledgebase
+                    ADAP-KDB Spectral Knowledgebase
                     <sup><small class="badge badge-pill badge-light">Beta</small></sup>
                 </h1>
             </div>

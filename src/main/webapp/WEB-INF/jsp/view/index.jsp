@@ -17,7 +17,7 @@
 
     <div class="row">
         <div class="col" style="text-align: center">
-            <h1>Welcome to ADAP Spectral Knowledgebase!</h1>
+            <h1>Welcome to ADAP-KDB Spectral Knowledgebase!</h1>
         </div>
     </div>
 
@@ -25,7 +25,7 @@
         <div class="col">
             <div class="card">
                 <div class="card-header card-header-single">
-                    ADAP Spectral Knowledgebase
+                    ADAP-KDB Spectral Knowledgebase
                 </div>
 
                 <div class="card-body">
@@ -38,26 +38,39 @@
                         </a>
                         <div class="media-body">
                             <p>
-                                The number of metabolomics studies in NIH’s Metabolomics Data Repository (NMDR)
+                                The number of metabolomics studies in public data repositories such as the
+                                <a href="https://metabolomicsworkbench.org/" target="_blank">NIH’s
+                                    Metabolomics Data Repository (a.k.a. Metabolomics Workbench)</a> and
+                                <a href="https://www.ebi.ac.uk/metabolights/" target="_blank">MetaboLights</a>
                                 acquiring untargeted data from the liquid chromatography (LC-) and gas chromatography
                                 coupled to mass spectrometry (GC-MS) analytical platforms has been steadily growing.
                                 Accompanying this growth is the enormous number of known and unknown compounds contained
                                 in that data, providing an invaluable opportunity to harness the power of big data and
-                                allow for cross-species, cross-diseases, and cross-sample source analysis. Toward this
-                                end, we have developed ADAP-KDB, a mass spectral knowledgebase that contains consensus
-                                GC-MS and LC-MS/MS spectra extracted from untargeted metabolomics data in NMDR. ADAP-KDB
-                                enables efficient sharing and aggregation of information about both known and unknown
-                                compounds across studies and laboratories and makes those compounds easily findable.
+                                allow for cross-species, cross-diseases, and cross-sample source analysis.
+                            </p>
+                            <p>
+                                Toward this end, we have developed ADAP-KDB, a mass spectral knowledgebase that contains
+                                consensus
+                                GC-MS and LC-MS/MS spectra constructed from untargeted, publicly available metabolomics
+                                data. At this point, all the consensus spectra are constructed from data in the
+                                <a href="https://metabolomicsworkbench.org/" target="_blank">Metabolomics Workbench</a>
+                                and spectra constructed similarly from other publicly available data repositories will
+                                be gradually added.
+                            </p>
+                            <p>
+                                ADAP-KDB enables efficient sharing and aggregation of information about both known and
+                                unknown compounds across studies and laboratories and makes those compounds easily
+                                findable.
                             <p/>
-
-                            <div class="border p-3">
-                                <a href="https://pubs.acs.org/doi/10.1021/acs.analchem.1c00355" target="_blank">
-                                    ADAP-KDB: A Spectral Knowledgebase for Tracking and
-                                    Prioritizing Unknown GC–MS Spectra in the NIH’s Metabolomics Data Repository</a>,
-                                Aleksandr Smirnov, Yunfei Liao, Eoin Fahy, Shankar Subramaniam, and Xiuxia Du,
-                                <em>Analytical Chemistry</em> 2021 93 (36), 12213-12220
-                            </div>
                         </div>
+                    </div>
+
+                    <div class="border p-3">
+                        <a href="https://pubs.acs.org/doi/10.1021/acs.analchem.1c00355" target="_blank">
+                            ADAP-KDB: A Spectral Knowledgebase for Tracking and Prioritizing Unknown GC–MS Spectra in
+                            the NIH’s Metabolomics Data Repository</a>,
+                        Aleksandr Smirnov, Yunfei Liao, Eoin Fahy, Shankar Subramaniam, and Xiuxia Du,
+                        <em>Analytical Chemistry</em> 2021 93 (36), 12213-12220
                     </div>
                 </div>
             </div>
@@ -72,7 +85,7 @@
                 </div>
                 <div class="card-body">
                     <div id="carousel" class="carousel slide" data-ride="carousel">
-                        <div class="carousel-inner" role="listbox" style="height: 525px">
+                        <div class="carousel-inner" role="listbox" style="height: 600px">
                             <div class="carousel-item active">
                                 <h3>Explore NMDR studies</h3>
                                 <div class="media">
@@ -157,6 +170,24 @@
                                         </ul>
                                     </div>
                                 </div>
+                                <p>
+                                    Use one of these sample files to try the library searching:
+                                    <a href="${pageContext.request.contextPath}/resources/AdapCompoundDb/misc/st001303gcms.msp"
+                                       download>MSP file with GC-MS spectra</a>,
+                                    <a href="${pageContext.request.contextPath}/resources/AdapCompoundDb/misc/st001314lcmsms.msp"
+                                       download>MSP file with LC-MS/MS spectra</a>, or
+                                    <a href="${pageContext.request.contextPath}/resources/AdapCompoundDb/misc/st001314mass.csv"
+                                       download>CSV file with m/z-retention time features.</a>
+                                    Download a file, then click <strong>Upload Files</strong>, select "GC",
+                                    "LC MS/MS +", or "Mass" respectively in the <strong>Chromatography type</strong>
+                                    dropdown list, select the downloaded file, and click <strong>Upload</strong>.
+                                </p>
+                                <p>
+                                    When uploading the sample CSV file, you need to specify where to find the neutral
+                                    mass information by clicking <strong>Edit Metadata Fields</strong> on the upload
+                                    page and putting "neutral_mass" for the <strong>Neutral Mass Field</strong> in
+                                    the <strong>CSV</strong> column.
+                                </p>
                             </div>
 
                             <div class="carousel-item">
@@ -221,14 +252,12 @@
         </div>
     </div>
 </div>
-</div>
-</div>
 
 <script src="<c:url value="/resources/npm/node_modules/jquery/dist/jquery.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/popper.js/dist/umd/popper.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/bootstrap/dist/js/bootstrap.min.js"/>"></script>
 <script>
     $(document).ready(function () {
-        $('#carousel').carousel({interval: 5000});
+        $('#carousel').carousel({interval: 4000});
     })
 </script>
