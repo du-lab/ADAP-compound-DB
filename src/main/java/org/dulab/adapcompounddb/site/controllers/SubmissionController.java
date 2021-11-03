@@ -137,9 +137,9 @@ public class SubmissionController extends BaseController {
         return "submission/view";
     }
     @RequestMapping(value = "/libraries/", method = RequestMethod.GET)
-    public String publicLibraries(final Model model, Submission submission) {
+    public String publicLibraries(final Model model) {
 
-        model.addAttribute("libraries", submissionService.findAllPublicLibraries(submission));
+        model.addAttribute("libraries", submissionService.findAllPublicLibraries());
 
         return "all_libraries";
     }

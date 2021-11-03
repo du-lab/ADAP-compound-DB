@@ -46,12 +46,13 @@ public class GroupSearchController extends BaseController {
     }
 
     @ModelAttribute
-    public void addAttributes(Model model) {
+    public void addAttributes(Model model, ChromatographyType type) {
         List<String> speciesList = submissionTagService.findDistinctTagValuesByTagKey("species (common)");
         List<String> sourceList = submissionTagService.findDistinctTagValuesByTagKey("sample source");
         List<String> diseaseList = submissionTagService.findDistinctTagValuesByTagKey("disease");
+
         SortedMap<Long, String> submissions = submissionService.findUserPrivateSubmissions(this.getCurrentUserPrincipal());
-        submissions.put(0L, "Public");
+        submissions.put(0L, "Consensus Spectra");
 
         filterOptions = new FilterOptions(speciesList, sourceList, diseaseList, submissions);
         model.addAttribute("filterOptions", filterOptions);
@@ -157,10 +158,12 @@ public class GroupSearchController extends BaseController {
         List<String> diseaseList = submissionTagService.findDistinctTagValuesByTagKey("disease");
 
         SortedMap<Long, String> submissions = new TreeMap<>();
-        for (ChromatographyType chromatographyType : chromatographyTypes)
+        for (ChromatographyType chromatographyType : chromatographyTypes) {
             submissions.putAll(
                     submissionService.findUserPrivateSubmissions(this.getCurrentUserPrincipal(), chromatographyType));
-        submissions.put(0L, "Public");
+            submissions.putAll(submissionService.findPublicSubmissions(chromatographyType));
+        }
+        submissions.put(0L, "Consensus Spectra");
 
         return new FilterOptions(speciesList, sourceList, diseaseList, submissions);
     }

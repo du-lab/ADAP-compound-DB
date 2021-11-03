@@ -82,8 +82,8 @@ public class SubmissionService {
 
         return response;
     }
-    public Iterable<Submission> findAllPublicLibraries(Submission submission){
-        return submissionRepository.findByPrivateFalseAndReferenceTrue(submission);
+    public Iterable<Submission> findAllPublicLibraries(){
+        return submissionRepository.findByPrivateFalseAndReferenceTrue();
     }
 
     @Transactional
@@ -218,6 +218,15 @@ public class SubmissionService {
     public SortedMap<Long, String> findUserPrivateSubmissions(UserPrincipal user, ChromatographyType type) {
         Iterable<Submission> submissions =
                 submissionRepository.findByPrivateTrueAndReferenceTrueAndUserAndChromatographyType(user, type);
+
+        SortedMap<Long, String> submissionIdToNameMap = new TreeMap<>();
+        submissions.forEach(s -> submissionIdToNameMap.put(s.getId(), s.getName() + " (private)"));
+        return submissionIdToNameMap;
+    }
+
+    public SortedMap<Long, String> findPublicSubmissions(ChromatographyType type) {
+        Iterable<Submission> submissions =
+                submissionRepository.findByPrivateFalseAndReferenceTrueAndChromatographyType(type);
 
         SortedMap<Long, String> submissionIdToNameMap = new TreeMap<>();
         submissions.forEach(s -> submissionIdToNameMap.put(s.getId(), s.getName()));
