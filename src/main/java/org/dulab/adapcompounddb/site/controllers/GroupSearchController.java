@@ -45,17 +45,18 @@ public class GroupSearchController extends BaseController {
         this.submissionTagService = submissionTagService;
     }
 
-    @ModelAttribute
-    public void addAttributes(Model model) {
-        List<String> speciesList = submissionTagService.findDistinctTagValuesByTagKey("species (common)");
-        List<String> sourceList = submissionTagService.findDistinctTagValuesByTagKey("sample source");
-        List<String> diseaseList = submissionTagService.findDistinctTagValuesByTagKey("disease");
-        SortedMap<Long, String> submissions = submissionService.findUserPrivateSubmissions(this.getCurrentUserPrincipal());
-        submissions.put(0L, "Public");
-
-        filterOptions = new FilterOptions(speciesList, sourceList, diseaseList, submissions);
-        model.addAttribute("filterOptions", filterOptions);
-    }
+//    @ModelAttribute
+//    public void addAttributes(Model model, ChromatographyType type) {
+//        List<String> speciesList = submissionTagService.findDistinctTagValuesByTagKey("species (common)");
+//        List<String> sourceList = submissionTagService.findDistinctTagValuesByTagKey("sample source");
+//        List<String> diseaseList = submissionTagService.findDistinctTagValuesByTagKey("disease");
+//
+//        SortedMap<Long, String> submissions = submissionService.findUserPrivateSubmissions(this.getCurrentUserPrincipal());
+//        submissions.put(0L, "Consensus Spectra");
+//
+//        filterOptions = new FilterOptions(speciesList, sourceList, diseaseList, submissions);
+//        model.addAttribute("filterOptions", filterOptions);
+//    }
 
     @RequestMapping(value = "/file/group_search/", method = RequestMethod.GET)
     public String groupSearch(@RequestParam Optional<Boolean> withOntologyLevels, HttpSession session, Model model,
@@ -157,10 +158,12 @@ public class GroupSearchController extends BaseController {
         List<String> diseaseList = submissionTagService.findDistinctTagValuesByTagKey("disease");
 
         SortedMap<Long, String> submissions = new TreeMap<>();
-        for (ChromatographyType chromatographyType : chromatographyTypes)
+        for (ChromatographyType chromatographyType : chromatographyTypes) {
             submissions.putAll(
                     submissionService.findUserPrivateSubmissions(this.getCurrentUserPrincipal(), chromatographyType));
-        submissions.put(0L, "Public");
+            submissions.putAll(submissionService.findPublicSubmissions(chromatographyType));
+        }
+        submissions.put(0L, "Consensus Spectra");
 
         return new FilterOptions(speciesList, sourceList, diseaseList, submissions);
     }

@@ -382,7 +382,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                                                boolean searchClusterable) {
 
         PreScreenQueryBuilder queryBuilder =
-                new PreScreenQueryBuilder(searchConsensus, searchReference, searchClusterable)
+                new PreScreenQueryBuilder(searchConsensus, searchReference, searchClusterable, params.getSubmissionIds())
                         .withUser(user)
                         .withChromatographyType(querySpectrum.getChromatographyType())
                         .withPrecursor(params.getPrecursorTolerance(), params.getPrecursorTolerancePPM(), querySpectrum.getPrecursor())
