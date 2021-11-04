@@ -4,14 +4,16 @@ import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 
-import java.util.Arrays;
-import java.util.Objects;
+import javax.annotation.Nullable;
+import java.math.BigInteger;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class PreScreenQueryBuilder {
 
     private final String spectrumTypeQuery;
+    private final Set<BigInteger> submissionIds;
 
     private ChromatographyType chromatographyType;
 
@@ -33,7 +35,10 @@ public class PreScreenQueryBuilder {
     private Double massTolerancePPM = null;
 
 
-    public PreScreenQueryBuilder(boolean searchConsensus, boolean searchReference, boolean searchClusterable) {
+    public PreScreenQueryBuilder(boolean searchConsensus, boolean searchReference, boolean searchClusterable,
+                                 @Nullable Set<BigInteger> submissionIds) {
+
+        this.submissionIds = submissionIds;
 
         spectrumTypeQuery = Arrays.stream(
                 new String[]{
@@ -190,13 +195,37 @@ public class PreScreenQueryBuilder {
         query += "LEFT JOIN File ON File.Id = Spectrum.FileId ";
         query += "LEFT JOIN Submission ON Submission.Id = File.SubmissionId ";
         query += "LEFT JOIN UserPrincipal ON UserPrincipal.Id = Submission.UserPrincipalId\n";
-        query += "WHERE Spectrum.FileId IS NULL OR Submission.IsPrivate IS FALSE";
-        if (user != null)
-            query += String.format(" OR UserPrincipal.Id = %d", user.getId());
+        query += String.format("WHERE (Spectrum.FileId IS NULL OR Submission.IsPrivate IS FALSE%s)",
+                user != null ? " OR UserPrincipal.Id = " + user.getId() : "");
+        if (submissionIds != null)
+            query += String.format(" AND (%s)", buildConditionStringWithSubmissionIds());
 
         query += "\nGROUP BY Id ORDER BY Common DESC";
 
         return query;
+    }
+
+    private String buildConditionStringWithSubmissionIds() {
+
+        if (submissionIds == null)
+            return null;
+
+        String ids = submissionIds.stream()
+                .filter(x -> !x.equals(BigInteger.ZERO))
+                .map(BigInteger::toString)
+                .collect(Collectors.joining(","));
+
+        String condition;
+        if (submissionIds.contains(BigInteger.ZERO) && !ids.isEmpty())
+            condition = String.format("Spectrum.Consensus IS TRUE OR Submission.Id IN (%s)", ids);
+        else if (submissionIds.contains(BigInteger.ZERO))
+            condition = "Spectrum.Consensus IS TRUE";
+        else if (!ids.isEmpty())
+            condition = String.format("Submission.Id IN (%s)", ids);
+        else
+            condition = "1 = 0";
+
+        return condition;
     }
 
     private static double getLowerLimit(double x, double ppm) {
