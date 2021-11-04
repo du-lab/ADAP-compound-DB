@@ -51,6 +51,9 @@ public class JavaSpectrumSimilarityService {
                 spectrumRepository.preScreenSpectra(querySpectrum, parameters, user, greedy,
                         searchConsensus, searchReference, searchClusterable));
 
+        if (commonToSpectrumIdsMap.isEmpty())
+            return new ArrayList<>(0);
+
         if (parameters.getSpecies() != null || parameters.getSource() != null || parameters.getDisease() != null)
             commonToSpectrumIdsMap = MappingUtils.toMapBigIntegerOfLists(
                     spectrumRepository.filterSpectra(commonToSpectrumIdsMap, parameters));
