@@ -65,15 +65,19 @@ public class GroupSearchRestController {
     }
 
     @RequestMapping(value = "/file/group_search/progress", produces = "application/json")
-    public int fileGroupSearchProgress() {
+    public int fileGroupSearchProgress(HttpSession session) {
+        float progressObject = (float) session.getAttribute(GroupSearchService.groupSearchProgress);
+
         // Return json-string containing a number between 0 and 100.
-        return Math.round(100 * groupSearchService.getProgress());
+        return Math.round(100 * progressObject);
     }
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/group_search/progress", produces = "application/json")
-    public int submissionGroupSearchProgress(@PathVariable("submissionId") final long submissionId) {
+    public int submissionGroupSearchProgress(@PathVariable("submissionId") final long submissionId, HttpSession session) {
+        float progressObject = (float) session.getAttribute(GroupSearchService.groupSearchProgress);
+
         // Return json-string containing a number between 0 and 100.
-        return Math.round(100 * groupSearchService.getProgress());
+        return Math.round(100 * progressObject);
     }
 
 
