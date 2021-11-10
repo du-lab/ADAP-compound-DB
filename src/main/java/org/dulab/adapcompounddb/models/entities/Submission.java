@@ -213,10 +213,9 @@ public class Submission implements Serializable {
         if (files != null) {
             for (File file : files) {
                 List<Spectrum> spectra = file.getSpectra();
-                for (Spectrum spectrum : spectra) {
+                Spectrum spectrum = spectra.get(0);
                     if (!spectrum.isReference())
                         return false;
-                }
             }
         }
         return true;
@@ -226,10 +225,9 @@ public class Submission implements Serializable {
         if (files != null) {
             for (File file : files) {
                 List<Spectrum> spectra = file.getSpectra();
-                for (Spectrum spectrum : spectra) {
+                Spectrum spectrum = spectra.get(0);
                     if (!spectrum.isInHouseReference())
                         return false;
-                }
             }
         }
         return true;
