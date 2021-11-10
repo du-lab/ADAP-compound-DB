@@ -28,6 +28,7 @@ public class GroupSearchService {
 
     private float progress = 0;
     private final IndividualSearchService spectrumSearchService;
+    public static final String groupSearchProgress = "group_search_progress";
 
     @Autowired
     public GroupSearchService(IndividualSearchService spectrumSearchService) {
@@ -107,14 +108,15 @@ public class GroupSearchService {
 
                     if (Thread.currentThread().isInterrupted()) break;
 
+                    progress = (float) ++progressStep / totalSteps;
                     groupSearchDTOList.addAll(individualSearchResults);
                     try {
                         session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
+                        session.setAttribute(groupSearchProgress, progress);
                     } catch (IllegalStateException e) {
                         LOGGER.warn("It looks like the session has been closed. Stopping the group search.");
                         return new AsyncResult<>(null);
                     }
-                    progress = (float) ++progressStep / totalSteps;
 
                     if (spectrumCount % 100 == 0) {
                         long time = System.currentTimeMillis();
