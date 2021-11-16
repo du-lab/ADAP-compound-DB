@@ -213,24 +213,30 @@ public class Submission implements Serializable {
         if (files != null) {
             for (File file : files) {
                 List<Spectrum> spectra = file.getSpectra();
-                Spectrum spectrum = spectra.get(0);
-                    if (!spectrum.isReference())
-                        return false;
+                if (!spectra.isEmpty()) {
+                    Spectrum spectrum = spectra.get(0);
+                    if (spectrum.isReference()) {
+                        return true;
+                    }
+                }
             }
         }
-        return true;
+        return false;
     }
 
     public boolean isInHouse() {
         if (files != null) {
             for (File file : files) {
                 List<Spectrum> spectra = file.getSpectra();
-                Spectrum spectrum = spectra.get(0);
-                    if (!spectrum.isInHouseReference())
-                        return false;
+                if (!spectra.isEmpty()) {
+                    Spectrum spectrum = spectra.get(0);
+                    if (spectrum.isInHouseReference()) {
+                        return true;
+                    }
+                }
             }
         }
-        return true;
+        return false;
     }
 
     public boolean isAuthorized(final UserPrincipal user) {
