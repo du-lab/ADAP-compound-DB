@@ -130,6 +130,13 @@
                                 <span class="align-middle">Distributions</span>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<c:url value="/downloads/"/>">
+                                <i class="material-icons align-middle">download</i>
+                                <span class="align-middle">Downloads</span>
+                            </a>
+
+                        </li>
                         <c:if test="${currentUser == null}">
                             <li class="nav-item">
                                 <a id="loginPage" class="nav-link" href="<c:url value="/login/"/>">

@@ -114,4 +114,7 @@ public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, Spec
     @Modifying
     @Query("UPDATE Spectrum s SET s.cluster = :cluster WHERE s.id IN (:ids)")
     void updateClusterForSpectra(@Param("cluster") SpectrumCluster cluster, @Param("ids") Set<Long> ids);
+
+    Iterable<Spectrum> findAllByConsensusTrueAndChromatographyTypeAndIntegerMz(
+            ChromatographyType chromatographyType, boolean integerMz);
 }
