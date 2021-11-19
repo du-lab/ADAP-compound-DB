@@ -14,6 +14,7 @@ public class ControllerUtilsTest {
     @Test
     public void peaksToJsonTest() {
 
+        //TODO Why have you commented this out?
         // Null value check
 //        assertEquals("", peaksToJson(null));
 

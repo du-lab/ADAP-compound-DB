@@ -63,6 +63,7 @@ public class AuthenticationControllerTest {
     @Test
     public void loginRedirectTest() throws Exception {
 
+        //TODO Why have you commented it out?
 //        UserPrincipal.assign(mockHttpSession, userPrincipal);
         mockMvc.perform(get("/login").session(mockHttpSession))
                 .andExpect(status().isSeeOther())  // checks the status

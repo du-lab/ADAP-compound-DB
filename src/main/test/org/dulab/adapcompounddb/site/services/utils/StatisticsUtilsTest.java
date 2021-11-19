@@ -10,6 +10,9 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
+//TODO Could you create methods `testCalculateChiSquaredPermutationStatistics1()`, `testCalculateChiSquaredPermutationStatistics2()`
+// and `testCalculateChiSquaredPermutationStatistics3()` and completely remove classes `StatisticsUtilsTest2` and `StatisticsUtilsTest3`?
+//TODO You don't need to extend TestCase. It'll work without it.
 public class StatisticsUtilsTest extends TestCase
 {
 
