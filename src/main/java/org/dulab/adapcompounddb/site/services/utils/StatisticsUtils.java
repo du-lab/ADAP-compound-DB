@@ -40,15 +40,15 @@ public class StatisticsUtils {
 
         double statObs = chi_square_test(clusterList, dbList);
 
-        //TODO If you know the list size a priory, it's better to use `new ArrayList<>(iterationNumber)` for a better performance
-        List<Double> chiSquareStatDistr = new ArrayList<>();
-
         int iterationNumber = 50000;
 
+        //TODO If you know the list size a priory, it's better to use `new ArrayList<>(iterationNumber)` for a better performance
+        List<Double> chiSquareStatDistr = new ArrayList<>(iterationNumber);
+
         for (int i = 0; i < iterationNumber; i++) {
-            List[] shuffledResults = random_shuffle(clusterList, dbList);
-            List<Integer> newCluster = new ArrayList<>(shuffledResults[0]);
-            List<Integer> newDb = new ArrayList<>(shuffledResults[1]);
+            List<Integer> shuffledResults = random_shuffle(clusterList, dbList);
+            List<Integer> newCluster = shuffledResults.subList(0, clusterList.size());
+            List<Integer> newDb = shuffledResults.subList(clusterList.size(), clusterList.size() + dbList.size());
             chiSquareStatDistr.add(chi_square_test(newCluster, newDb));
         }
 
@@ -60,41 +60,32 @@ public class StatisticsUtils {
     //TODO This function can be private
     //TODO Using List[] is a bad practise. Maybe implement a method `List<Integer> random_shuffle(List<Integer> mergedList)` that returns a shuffled merged list.
     // Or replace entire `random_shuffle` with `Collections.shuffle()`
-    public static List[] random_shuffle(List<Integer> clusterList, List<Integer> dbList) {
-        List<Integer> newClusterList = new ArrayList<>();
-        List<Integer> newDbList = new ArrayList<>();
+    private static List<Integer> random_shuffle(List<Integer> clusterList, List<Integer> dbList) {
+        List<Integer> newClusterList;
+        List<Integer> newDbList;
 
         List<Integer> mergedList = new ArrayList<>(clusterList);
         mergedList.addAll(dbList);
 
-        //TODO I would move this outside `random_shuffle` also.
-        Random rand = new Random();
+        Collections.shuffle(mergedList);
 
-        for (int i = 0; i < clusterList.size(); i++) {
-            int newElement = mergedList.get(rand.nextInt(mergedList.size()));
-            newClusterList.add(newElement);
-            //TODO `remove() is a very slow operation.` Try to use `Collections.shuffle()` instead of these for-loops
-            mergedList.remove(newElement);
-        }
+        newClusterList = mergedList.subList(0,clusterList.size());
+        newDbList = mergedList.subList(clusterList.size(), clusterList.size()+dbList.size());
 
-        for (int i = 0; i < dbList.size(); i++) {
-            Integer newElement = mergedList.get(rand.nextInt(mergedList.size()));
-            newDbList.add(newElement);
-            mergedList.remove(newElement);
-        }
-        return new List[]{newClusterList, newDbList};
+        List<Integer> newMergedList = new ArrayList<>(newClusterList);
+        newMergedList.addAll(newDbList);
+
+        return newMergedList;
     }
 
     //TODO This function can be private
-    public static double chi_square_test(List<Integer> clusterList, List<Integer> dbList) {
+    private static double chi_square_test(List<Integer> clusterList, List<Integer> dbList) {
 
         //TODO Variable `mergedList` seems unnecessary to me.
         // Instead, you can do `Set<Integer> uniqueElementList = new HashSet<>(clusterList)`
         // and `uniqueElementList.addAll(dbList)`
-        List<Integer> mergedList = new ArrayList<>(clusterList);
-        mergedList.addAll(dbList);
-
-        Set<Integer> uniqueElementList = new HashSet<>(mergedList);
+        Set<Integer> uniqueElementList = new HashSet<>(clusterList);
+        uniqueElementList.addAll(dbList);
 
         //TODO According to this code, you are not using the formula for calculating the expected values (see page 2 of the manuscript at the top-right)
         // Is this what Rasmus did in his code?
@@ -103,14 +94,13 @@ public class StatisticsUtils {
         for (Integer s : uniqueElementList) {
 
             double observation = Collections.frequency(clusterList, s) + 0.5;
-            double expectation = Collections.frequency(dbList, s) + 0.5;
+            double expectation = Collections.frequency(dbList, s) * (clusterList.size()/(float) dbList.size()) + 0.5;
 
             S = S + (Math.pow(observation - expectation, 2)) / expectation;
 
         }
         return S;
     }
-
 
     /**
      * Calculates chi-squared statistics
