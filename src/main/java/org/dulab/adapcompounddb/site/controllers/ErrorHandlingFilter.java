@@ -18,25 +18,24 @@ public class ErrorHandlingFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-        throws IOException {
+            throws IOException, ServletException {
 
         try {
             chain.doFilter(request, response);
-        }
-        catch (Exception e) {
-            if (response instanceof HttpServletResponse)
-                ((HttpServletResponse) response).sendRedirect(
-                        String.format("%s/error?errorMsg=%s",
-                                request.getServletContext().getContextPath(),
-                                URLEncoder.encode(e.getMessage(), "UTF-8")));
+        } catch (Exception e) {
+            RequestDispatcher requestDispatcher = request.getRequestDispatcher(
+                    String.format("/error?errorMsg=%s",
+                            URLEncoder.encode(e.getMessage(), "UTF-8")));
+            requestDispatcher.forward(request, response);
             LOG.error(e.getMessage(), e.getCause());
-
         }
     }
 
     @Override
-    public void init(FilterConfig config) {}
+    public void init(FilterConfig config) {
+    }
 
     @Override
-    public void destroy() {}
+    public void destroy() {
+    }
 }
