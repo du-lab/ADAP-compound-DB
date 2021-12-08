@@ -42,10 +42,7 @@ public class GroupSearchRestController {
     public String fileGroupSearchResults(
             @RequestParam("start") final Integer start,
             @RequestParam("length") final Integer length,
-            @RequestParam("column") final Integer column,
-            @RequestParam("sortDirection") final String sortDirection,
             @RequestParam("search") final String searchStr,
-            @RequestParam final Map<String, String> parameters,
             @RequestParam("columnStr") final String columnStr,
             final HttpSession session) throws JsonProcessingException {
 
@@ -63,7 +60,7 @@ public class GroupSearchRestController {
         } else {
             matches = new ArrayList<>(EMPTY_LIST);
         }
-        final DataTableResponse response = groupSearchSort(searchStr, start, length, column, sortDirection, matches, columnStr);
+        final DataTableResponse response = groupSearchSort(searchStr, start, length, matches, columnStr);
 //        final ObjectMapper mapper = new ObjectMapper();
 //        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
        return mapper.writeValueAsString(response);
@@ -83,7 +80,6 @@ public class GroupSearchRestController {
 
 
     private DataTableResponse groupSearchSort(final String searchStr, final Integer start, final Integer length,
-                                              final Integer column, final String sortDirection,
                                               List<SearchResultDTO> spectrumList, final String columnStr) {
 
         if (searchStr != null && searchStr.trim().length() > 0)
@@ -106,24 +102,28 @@ public class GroupSearchRestController {
             }
         }
 
-        Comparator<SearchResultDTO> multiColumnComparator = null;
-        for (int i = 0; i < columnNumbers.size(); i++) {
+        if (columnNumbers.size() == columnDirections.size() && !columnNumbers.isEmpty() || !columnDirections.isEmpty()) {
+            Comparator<SearchResultDTO> multiColumnComparator = null;
+            for (int i = 0; i < columnNumbers.size(); i++) {
 
-            int columnNum = Integer.parseInt(columnNumbers.get(i));
-            String columnDir = columnDirections.get(i);
+                int columnNum = Integer.parseInt(columnNumbers.get(i));
+                String columnDir = columnDirections.get(i);
 
-            String sortColumn = GroupSearchColumnInformation.getColumnNameFromPosition(columnNum);
+                String sortColumn = GroupSearchColumnInformation.getColumnNameFromPosition(columnNum);
 
-            Comparator<SearchResultDTO> comparator = comparingColumns(sortColumn, columnDir);
+                Comparator<SearchResultDTO> comparator = comparingColumns(sortColumn, columnDir);
 
-            if (multiColumnComparator == null) {
-                multiColumnComparator = comparator;
-            } else {
-                multiColumnComparator = multiColumnComparator.thenComparing(comparator);
+                if (multiColumnComparator == null) {
+                    multiColumnComparator = comparator;
+                } else {
+                    multiColumnComparator = multiColumnComparator.thenComparing(comparator);
+                }
             }
-        }
 
-        spectrumList.sort(multiColumnComparator);
+            spectrumList.sort(multiColumnComparator);
+        } else{
+            throw new IllegalStateException("Wrong sorting parameters");
+        }
 
         final List<SearchResultDTO> spectrumMatchList = new ArrayList<>();
         for (int i = 0; i < spectrumList.size(); i++) {

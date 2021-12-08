@@ -206,14 +206,10 @@
                 url: "${pageContext.request.contextPath}/file/group_search/data.json",
                 data: function (data) {
 
-                    data.simpleOrder = [];
+                    data.columnStr = [];
                     for (let i = 0; i < data.order.length; i++) {
-                        data.simpleOrder += data.order[i].column + "-" + data.order[i].dir + ",";
+                        data.columnStr += data.order[i].column + "-" + data.order[i].dir + ",";
                     }
-                    data.columnStr = data.simpleOrder;
-
-                    data.column = data.order[0].column;
-                    data.sortDirection = data.order[0].dir;
                     data.search = data.search["value"];
                 },
                 dataSrc: function (d) {
