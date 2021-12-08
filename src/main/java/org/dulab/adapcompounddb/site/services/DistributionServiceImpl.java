@@ -219,7 +219,7 @@ public class DistributionServiceImpl implements DistributionService {
             tagDistribution.setDistributionMap(clusterDistributionMap);
             tagDistribution.setLabel(key);
             tagDistribution.setPValue(
-                    StatisticsUtils.calculateChiSquaredStatistics(clusterDistributionMap.values()));
+                    StatisticsUtils.calculateChiSquaredPermutationStatistics(clusterDistributionMap.values()));
 //            tagDistribution.setPValue(
 //                    StatisticsUtils.calculateExactTestStatistics(clusterDistributionMap.values()));
             tagDistribution.setMassSpectrometryType(massSpectrometryType);

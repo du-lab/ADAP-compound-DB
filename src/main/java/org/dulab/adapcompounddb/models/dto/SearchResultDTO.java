@@ -60,6 +60,10 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
     private Double aveSignificance;
     private Double minSignificance;
     private Double maxSignificance;
+    private Double minPValue;
+    private Double diseasePValue;
+    private Double speciesPValue;
+    private Double sampleSourcePValue;
     private String ontologyLevel;
     private Integer ontologyPriority;
     private String chromatographyTypeLabel;
@@ -101,6 +105,10 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
             this.aveSignificance = view.getAverageSignificance();
             this.minSignificance = view.getMinimumSignificance();
             this.maxSignificance = view.getMaximumSignificance();
+            this.diseasePValue = view.getDiseasePValue();
+            this.speciesPValue = view.getSpeciesPValue();
+            this.sampleSourcePValue = view.getSampleSourcePValue();
+            this.minPValue = view.getMinPValue();
             this.chromatographyTypeLabel = view.getChromatographyType().getLabel();
             this.chromatographyTypePath = view.getChromatographyType().getIconPath();
         }
@@ -271,6 +279,46 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
 
     public void setMaxSignificance(final Double maxSignificance) {
         this.maxSignificance = maxSignificance;
+    }
+
+    public Double getMinPValue()
+    {
+        return minPValue;
+    }
+
+    public void setMinPValue(Double minPValue)
+    {
+        this.minPValue = minPValue;
+    }
+
+    public Double getDiseasePValue()
+    {
+        return diseasePValue;
+    }
+
+    public void setDiseasePValue(Double diseasePValue)
+    {
+        this.diseasePValue = diseasePValue;
+    }
+
+    public Double getSpeciesPValue()
+    {
+        return speciesPValue;
+    }
+
+    public void setSpeciesPValue(Double speciesPValue)
+    {
+        this.speciesPValue = speciesPValue;
+    }
+
+    public Double getSampleSourcePValue()
+    {
+        return sampleSourcePValue;
+    }
+
+    public void setSampleSourcePValue(Double sampleSourcePValue)
+    {
+        this.sampleSourcePValue = sampleSourcePValue;
     }
 
     public String getOntologyLevel() {
