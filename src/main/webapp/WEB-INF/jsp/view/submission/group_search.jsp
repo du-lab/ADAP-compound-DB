@@ -205,8 +205,11 @@
             ajax: {
                 url: "${pageContext.request.contextPath}/file/group_search/data.json",
                 data: function (data) {
-                    data.column = data.order[0].column;
-                    data.sortDirection = data.order[0].dir;
+
+                    data.columnStr = [];
+                    for (let i = 0; i < data.order.length; i++) {
+                        data.columnStr += data.order[i].column + "-" + data.order[i].dir + ",";
+                    }
                     data.search = data.search["value"];
                 },
                 dataSrc: function (d) {
