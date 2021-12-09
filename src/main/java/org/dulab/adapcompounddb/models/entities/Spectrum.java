@@ -47,6 +47,9 @@ public class Spectrum implements Serializable {
     @OneToMany(targetEntity = SpectrumProperty.class, mappedBy = "spectrum", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
     private List<SpectrumProperty> properties;
 
+    @OneToMany(targetEntity = Synonym.class, mappedBy = "spectrum", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
+    private List<Synonym> synonyms;
+
     @OneToMany(targetEntity = SpectrumMatch.class, mappedBy = "querySpectrum", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<SpectrumMatch> matches;
 
@@ -136,6 +139,20 @@ public class Spectrum implements Serializable {
 
     public void setName(final String name) {
         this.name = name;
+    }
+
+    public List<Synonym> getSynonyms() {
+        return synonyms;
+    }
+
+    public void setSynonyms(List<Synonym> synonyms) {
+        this.synonyms = synonyms;
+    }
+
+    public String getStringOfSynonyms() {
+        return synonyms.stream()
+                .map(Synonym::getName)
+                .collect(Collectors.joining(", "));
     }
 
     public File getFile() {

@@ -141,6 +141,16 @@
                                                     </div>
                                                 </div>
                                                 <div class="row form-group">
+                                                    <form:label path="mspSynonymField"
+                                                                cssClass="col-md-4 col-form-label">Synonym Field</form:label>
+                                                    <div class="col-md-4">
+                                                        <form:input path="mspSynonymField" cssClass="form-control"/>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <form:input path="csvSynonymField" cssClass="form-control"/>
+                                                    </div>
+                                                </div>
+                                                <div class="row form-group">
                                                     <form:label path="mspExternalIdField"
                                                                 cssClass="col-md-4 col-form-label">ID Field</form:label>
                                                     <div class="col-md-4">

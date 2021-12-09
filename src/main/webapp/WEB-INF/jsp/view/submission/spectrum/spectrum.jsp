@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 
 <div class="container">
@@ -55,6 +56,9 @@
                                             <c:if test="${spectrum.cluster != null}">
                                                 <a href="${pageContext.request.contextPath}/cluster/${spectrum.cluster.id}/">${spectrum.cluster}</a>
                                             </c:if>
+                                        </li>
+                                        <li class="list-group-item py-1">
+                                            <strong>Synonym:</strong>&nbsp;${spectrum.getStringOfSynonyms()}
                                         </li>
                                         <li class="list-group-item py-1">
                                             <strong>External ID:</strong>&nbsp;${spectrum.externalId}

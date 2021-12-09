@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.enums.FileType;
 import org.dulab.adapcompounddb.models.MetaDataMapping;
+import org.dulab.adapcompounddb.models.MetaDataMapping.Field;
 import org.dulab.adapcompounddb.validation.ContainsFiles;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,6 +34,7 @@ public class FileUploadForm {
     private boolean mergeFiles;
 
     private String mspNameField;
+    private String mspSynonymField;
     private String mspExternalIdField;
     private String mspPrecursorMzField;
     private String mspRetentionTimeField;
@@ -42,6 +44,7 @@ public class FileUploadForm {
     private String mspInChiField;
     private String mspInChiKeyField;
     private String csvNameField;
+    private String csvSynonymField;
     private String csvExternalIdField;
     private String csvPrecursorMzField;
     private String csvRetentionTimeField;
@@ -87,6 +90,14 @@ public class FileUploadForm {
 
     public void setMspNameField(String mspNameField) {
         this.mspNameField = mspNameField;
+    }
+
+    public String getMspSynonymField() {
+        return mspSynonymField;
+    }
+
+    public void setMspSynonymField(String mspSynonymField) {
+        this.mspSynonymField = mspSynonymField;
     }
 
     public String getMspExternalIdField() {
@@ -159,6 +170,14 @@ public class FileUploadForm {
 
     public void setCsvNameField(String csvNameField) {
         this.csvNameField = csvNameField;
+    }
+
+    public String getCsvSynonymField() {
+        return csvSynonymField;
+    }
+
+    public void setCsvSynonymField(String csvSynonymField) {
+        this.csvSynonymField = csvSynonymField;
     }
 
     public String getCsvExternalIdField() {
@@ -235,10 +254,8 @@ public class FileUploadForm {
 
     public Map<FileType, MetaDataMapping> getMetaDataMappings() {
         Map<FileType, MetaDataMapping> mappings = new HashMap<>();
-        mappings.put(FileType.MSP, new MetaDataMapping(
-                mspNameField, mspExternalIdField, mspPrecursorMzField, null, mspRetentionTimeField, mspMassField, mspFormulaField, mspCanonicalSmilesField, mspInChiKeyField, mspInChiField));
-        mappings.put(FileType.CSV, new MetaDataMapping(
-                csvNameField, csvExternalIdField, csvPrecursorMzField, null, csvRetentionTimeField, csvMassField, csvFormulaField, csvCanonicalSmilesField, csvInChiKeyField, csvInChiField));
+        mappings.put(FileType.MSP, createMspMapping());
+        mappings.put(FileType.CSV, createCsvMapping());
         return mappings;
     }
 
@@ -253,5 +270,37 @@ public class FileUploadForm {
 
     public static FileUploadForm fromJsonBytes(byte[] jsonBytes) throws IOException {
         return OBJECT_MAPPER.readValue(jsonBytes, FileUploadForm.class);
+    }
+
+    private MetaDataMapping createMspMapping() {
+        MetaDataMapping mapping = new MetaDataMapping();
+        mapping.setFieldName(Field.NAME, mspNameField);
+        mapping.setFieldName(Field.SYNONYM, mspSynonymField);
+        mapping.setFieldName(Field.EXTERNAL_ID, mspExternalIdField);
+        mapping.setFieldName(Field.PRECURSOR_MZ, mspPrecursorMzField);
+        mapping.setFieldName(Field.PRECURSOR_TYPE, null);
+        mapping.setFieldName(Field.RETENTION_TIME, mspRetentionTimeField);
+        mapping.setFieldName(Field.MASS, mspMassField);
+        mapping.setFieldName(Field.FORMULA, mspFormulaField);
+        mapping.setFieldName(Field.SMILES, mspCanonicalSmilesField);
+        mapping.setFieldName(Field.INCHI_KEY, mspInChiKeyField);
+        mapping.setFieldName(Field.INCHI, mspInChiField);
+        return mapping;
+    }
+
+    private MetaDataMapping createCsvMapping() {
+        MetaDataMapping mapping = new MetaDataMapping();
+        mapping.setFieldName(Field.NAME, csvNameField);
+        mapping.setFieldName(Field.SYNONYM, csvSynonymField);
+        mapping.setFieldName(Field.EXTERNAL_ID, csvExternalIdField);
+        mapping.setFieldName(Field.PRECURSOR_MZ, csvPrecursorMzField);
+        mapping.setFieldName(Field.PRECURSOR_TYPE, null);
+        mapping.setFieldName(Field.RETENTION_TIME, csvRetentionTimeField);
+        mapping.setFieldName(Field.MASS, csvMassField);
+        mapping.setFieldName(Field.FORMULA, csvFormulaField);
+        mapping.setFieldName(Field.SMILES, csvCanonicalSmilesField);
+        mapping.setFieldName(Field.INCHI_KEY, csvInChiKeyField);
+        mapping.setFieldName(Field.INCHI, csvInChiField);
+        return mapping;
     }
 }

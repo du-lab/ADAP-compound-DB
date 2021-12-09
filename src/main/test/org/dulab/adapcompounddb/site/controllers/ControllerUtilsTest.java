@@ -6,7 +6,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static org.dulab.adapcompounddb.site.controllers.ControllerUtils.peaksToJson;
+import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.peaksToJson;
 import static org.junit.Assert.*;
 
 public class ControllerUtilsTest {
