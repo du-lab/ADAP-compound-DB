@@ -12,8 +12,8 @@ import static org.dulab.adapcompounddb.site.services.utils.MappingUtils.parseDou
 public class MetaDataMapping {
 
     public enum Field {
-        NAME, SYNONYM, EXTERNAL_ID, PRECURSOR_MZ, PRECURSOR_TYPE, RETENTION_TIME, MASS, FORMULA, SMILES, INCHI_KEY,
-        INCHI
+        NAME, SYNONYM, EXTERNAL_ID, PRECURSOR_MZ, PRECURSOR_TYPE, RETENTION_TIME, RETENTION_INDEX, MASS, FORMULA,
+        SMILES, INCHI_KEY, INCHI
     }
 
     private static final Map<Field, BiConsumer<Spectrum, String>> fieldToFunctionMap = new HashMap<>();
@@ -32,6 +32,10 @@ public class MetaDataMapping {
         fieldToFunctionMap.put(Field.PRECURSOR_MZ, (s, v) -> s.setPrecursor(parseDouble(v)));
         fieldToFunctionMap.put(Field.PRECURSOR_TYPE, Spectrum::setPrecursorType);
         fieldToFunctionMap.put(Field.RETENTION_TIME, (s, v) -> s.setRetentionTime(parseDouble(v)));
+        fieldToFunctionMap.put(Field.RETENTION_INDEX, (spectrum, value) -> {
+            Double retentionIndex = parseDouble(value);
+            spectrum.setRetentionIndex((retentionIndex != null && retentionIndex > 0) ? retentionIndex : null);
+        });
         fieldToFunctionMap.put(Field.MASS, (s, v) -> s.setMass(parseDouble(v)));
         fieldToFunctionMap.put(Field.FORMULA, Spectrum::setFormula);
         fieldToFunctionMap.put(Field.SMILES, Spectrum::setCanonicalSmiles);

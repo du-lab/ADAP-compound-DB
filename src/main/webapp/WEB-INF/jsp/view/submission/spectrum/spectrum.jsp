@@ -73,6 +73,9 @@
                                             <strong>Retention time:</strong>&nbsp;${spectrum.retentionTime}
                                         </li>
                                         <li class="list-group-item py-1">
+                                            <strong>Retention index:</strong>&nbsp;${spectrum.retentionIndex}
+                                        </li>
+                                        <li class="list-group-item py-1">
                                             <strong>Molecular mass:</strong>&nbsp;${spectrum.mass}
                                         </li>
                                         <li class="list-group-item py-1">

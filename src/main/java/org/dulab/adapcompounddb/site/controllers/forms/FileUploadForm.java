@@ -38,6 +38,7 @@ public class FileUploadForm {
     private String mspExternalIdField;
     private String mspPrecursorMzField;
     private String mspRetentionTimeField;
+    private String mspRetentionIndexField;
     private String mspMassField;
     private String mspFormulaField;
     private String mspCanonicalSmilesField;
@@ -48,6 +49,7 @@ public class FileUploadForm {
     private String csvExternalIdField;
     private String csvPrecursorMzField;
     private String csvRetentionTimeField;
+    private String csvRetentionIndexField;
     private String csvMassField;
     private String csvFormulaField;
     private String csvCanonicalSmilesField;
@@ -122,6 +124,14 @@ public class FileUploadForm {
 
     public void setMspRetentionTimeField(String mspRetentionTimeField) {
         this.mspRetentionTimeField = mspRetentionTimeField;
+    }
+
+    public String getMspRetentionIndexField() {
+        return mspRetentionIndexField;
+    }
+
+    public void setMspRetentionIndexField(String mspRetentionIndexField) {
+        this.mspRetentionIndexField = mspRetentionIndexField;
     }
 
     public String getMspMassField() {
@@ -204,6 +214,14 @@ public class FileUploadForm {
         this.csvRetentionTimeField = csvRetentionTimeField;
     }
 
+    public String getCsvRetentionIndexField() {
+        return csvRetentionIndexField;
+    }
+
+    public void setCsvRetentionIndexField(String csvRetentionIndexField) {
+        this.csvRetentionIndexField = csvRetentionIndexField;
+    }
+
     public String getCsvMassField() {
         return csvMassField;
     }
@@ -280,6 +298,7 @@ public class FileUploadForm {
         mapping.setFieldName(Field.PRECURSOR_MZ, mspPrecursorMzField);
         mapping.setFieldName(Field.PRECURSOR_TYPE, null);
         mapping.setFieldName(Field.RETENTION_TIME, mspRetentionTimeField);
+        mapping.setFieldName(Field.RETENTION_INDEX, mspRetentionIndexField);
         mapping.setFieldName(Field.MASS, mspMassField);
         mapping.setFieldName(Field.FORMULA, mspFormulaField);
         mapping.setFieldName(Field.SMILES, mspCanonicalSmilesField);
@@ -296,6 +315,7 @@ public class FileUploadForm {
         mapping.setFieldName(Field.PRECURSOR_MZ, csvPrecursorMzField);
         mapping.setFieldName(Field.PRECURSOR_TYPE, null);
         mapping.setFieldName(Field.RETENTION_TIME, csvRetentionTimeField);
+        mapping.setFieldName(Field.RETENTION_INDEX, csvRetentionIndexField);
         mapping.setFieldName(Field.MASS, csvMassField);
         mapping.setFieldName(Field.FORMULA, csvFormulaField);
         mapping.setFieldName(Field.SMILES, csvCanonicalSmilesField);

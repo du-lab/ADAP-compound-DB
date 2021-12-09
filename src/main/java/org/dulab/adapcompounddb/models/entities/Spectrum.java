@@ -69,6 +69,7 @@ public class Spectrum implements Serializable {
     private Double precursor;
     private String precursorType;
     private Double retentionTime;
+    private Double retentionIndex;
     private Double significance;
     private Double mass;
     private String formula;
@@ -434,6 +435,14 @@ public class Spectrum implements Serializable {
 
     public void setRetentionTime(final Double retentionTime) {
         this.retentionTime = retentionTime;
+    }
+
+    public Double getRetentionIndex() {
+        return retentionIndex;
+    }
+
+    public void setRetentionIndex(Double retentionIndex) {
+        this.retentionIndex = retentionIndex;
     }
 
     public ChromatographyType getChromatographyType() {

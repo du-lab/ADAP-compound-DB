@@ -183,6 +183,16 @@
                                                     </div>
                                                 </div>
                                                 <div class="row form-group">
+                                                    <form:label path="mspRetentionIndexField"
+                                                                cssClass="col-md-4 col-form-label">Retention Index Field</form:label>
+                                                    <div class="col-md-4">
+                                                        <form:input path="mspRetentionIndexField" cssClass="form-control"/>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <form:input path="csvRetentionIndexField" cssClass="form-control"/>
+                                                    </div>
+                                                </div>
+                                                <div class="row form-group">
                                                     <form:label path="mspMassField"
                                                                 cssClass="col-md-4 col-form-label">Neutral Mass Field</form:label>
                                                     <div class="col-md-4">
