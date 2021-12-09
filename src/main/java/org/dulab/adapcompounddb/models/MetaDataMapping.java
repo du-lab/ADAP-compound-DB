@@ -1,8 +1,10 @@
 package org.dulab.adapcompounddb.models;
 
+import org.dulab.adapcompounddb.models.entities.Identifier;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumProperty;
 import org.dulab.adapcompounddb.models.entities.Synonym;
+import org.dulab.adapcompounddb.models.enums.IdentifierType;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -12,8 +14,8 @@ import static org.dulab.adapcompounddb.site.services.utils.MappingUtils.parseDou
 public class MetaDataMapping {
 
     public enum Field {
-        NAME, SYNONYM, EXTERNAL_ID, PRECURSOR_MZ, PRECURSOR_TYPE, RETENTION_TIME, RETENTION_INDEX, MASS, FORMULA,
-        SMILES, INCHI_KEY, INCHI
+        NAME, SYNONYM, EXTERNAL_ID, CAS_ID, KEGG_ID, PRECURSOR_MZ, PRECURSOR_TYPE, RETENTION_TIME, RETENTION_INDEX,
+        MASS, FORMULA, SMILES, INCHI_KEY, INCHI
     }
 
     private static final Map<Field, BiConsumer<Spectrum, String>> fieldToFunctionMap = new HashMap<>();
@@ -29,6 +31,18 @@ public class MetaDataMapping {
             spectrum.setSynonyms(synonyms);
         });
         fieldToFunctionMap.put(Field.EXTERNAL_ID, Spectrum::setExternalId);
+        fieldToFunctionMap.put(Field.CAS_ID, (spectrum, value) -> {
+            Map<IdentifierType, String> identifiers =
+                    Objects.requireNonNullElseGet(spectrum.getIdentifiers(), HashMap::new);
+            identifiers.put(IdentifierType.CAS, value);
+            spectrum.setIdentifiers(identifiers);
+        });
+        fieldToFunctionMap.put(Field.KEGG_ID, (spectrum, value) -> {
+            Map<IdentifierType, String> identifiers =
+                    Objects.requireNonNullElseGet(spectrum.getIdentifiers(), HashMap::new);
+            identifiers.put(IdentifierType.KEGG, value);
+            spectrum.setIdentifiers(identifiers);
+        });
         fieldToFunctionMap.put(Field.PRECURSOR_MZ, (s, v) -> s.setPrecursor(parseDouble(v)));
         fieldToFunctionMap.put(Field.PRECURSOR_TYPE, Spectrum::setPrecursorType);
         fieldToFunctionMap.put(Field.RETENTION_TIME, (s, v) -> s.setRetentionTime(parseDouble(v)));
@@ -45,27 +59,6 @@ public class MetaDataMapping {
 
     private final Map<Field, String> fieldToNameMap = new HashMap<>();
 
-
-//    public MetaDataMapping() {
-//        this(null, null, null, null, null,
-//                null, null, null, null, null);
-//    }
-
-//    public MetaDataMapping(String nameField, String externalIdField, String precursorMzField, String precursorTypeField,
-//                           String retTimeField, String massField, String formulaField, String canonicalSmilesField,
-//                           String inchiKeyField, String inchiField) {
-//
-//        this.setFieldName(Field.NAME, nameField);
-//        this.setFieldName(Field.EXTERNAL_ID, externalIdField);
-//        this.setFieldName(Field.PRECURSOR_MZ, precursorMzField);
-//        this.setFieldName(Field.PRECURSOR_TYPE, precursorTypeField);
-//        this.setFieldName(Field.RETENTION_TIME, retTimeField);
-//        this.setFieldName(Field.MASS, massField);
-//        this.setFieldName(Field.FORMULA, formulaField);
-//        this.setFieldName(Field.SMILES, canonicalSmilesField);
-//        this.setFieldName(Field.INCHI_KEY, inchiKeyField);
-//        this.setFieldName(Field.INCHI, inchiField);
-//    }
 
     public String getFieldName(Field field) {
         return fieldToNameMap.get(field);

@@ -36,6 +36,8 @@ public class FileUploadForm {
     private String mspNameField;
     private String mspSynonymField;
     private String mspExternalIdField;
+    private String mspCasNoField;
+    private String mspKeggField;
     private String mspPrecursorMzField;
     private String mspRetentionTimeField;
     private String mspRetentionIndexField;
@@ -47,6 +49,8 @@ public class FileUploadForm {
     private String csvNameField;
     private String csvSynonymField;
     private String csvExternalIdField;
+    private String csvCasNoField;
+    private String csvKeggField;
     private String csvPrecursorMzField;
     private String csvRetentionTimeField;
     private String csvRetentionIndexField;
@@ -108,6 +112,22 @@ public class FileUploadForm {
 
     public void setMspExternalIdField(String mspExternalIdField) {
         this.mspExternalIdField = mspExternalIdField;
+    }
+
+    public String getMspCasNoField() {
+        return mspCasNoField;
+    }
+
+    public void setMspCasNoField(String mspCasNoField) {
+        this.mspCasNoField = mspCasNoField;
+    }
+
+    public String getMspKeggField() {
+        return mspKeggField;
+    }
+
+    public void setMspKeggField(String mspKeggField) {
+        this.mspKeggField = mspKeggField;
     }
 
     public String getMspPrecursorMzField() {
@@ -196,6 +216,22 @@ public class FileUploadForm {
 
     public void setCsvExternalIdField(String csvExternalIdField) {
         this.csvExternalIdField = csvExternalIdField;
+    }
+
+    public String getCsvCasNoField() {
+        return csvCasNoField;
+    }
+
+    public void setCsvCasNoField(String csvCasNoField) {
+        this.csvCasNoField = csvCasNoField;
+    }
+
+    public String getCsvKeggField() {
+        return csvKeggField;
+    }
+
+    public void setCsvKeggField(String csvKeggField) {
+        this.csvKeggField = csvKeggField;
     }
 
     public String getCsvPrecursorMzField() {
@@ -295,6 +331,8 @@ public class FileUploadForm {
         mapping.setFieldName(Field.NAME, mspNameField);
         mapping.setFieldName(Field.SYNONYM, mspSynonymField);
         mapping.setFieldName(Field.EXTERNAL_ID, mspExternalIdField);
+        mapping.setFieldName(Field.CAS_ID, mspCasNoField);
+        mapping.setFieldName(Field.KEGG_ID, mspKeggField);
         mapping.setFieldName(Field.PRECURSOR_MZ, mspPrecursorMzField);
         mapping.setFieldName(Field.PRECURSOR_TYPE, null);
         mapping.setFieldName(Field.RETENTION_TIME, mspRetentionTimeField);
@@ -312,6 +350,8 @@ public class FileUploadForm {
         mapping.setFieldName(Field.NAME, csvNameField);
         mapping.setFieldName(Field.SYNONYM, csvSynonymField);
         mapping.setFieldName(Field.EXTERNAL_ID, csvExternalIdField);
+        mapping.setFieldName(Field.CAS_ID, csvCasNoField);
+        mapping.setFieldName(Field.KEGG_ID, csvKeggField);
         mapping.setFieldName(Field.PRECURSOR_MZ, csvPrecursorMzField);
         mapping.setFieldName(Field.PRECURSOR_TYPE, null);
         mapping.setFieldName(Field.RETENTION_TIME, csvRetentionTimeField);

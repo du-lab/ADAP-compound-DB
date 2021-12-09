@@ -161,6 +161,26 @@
                                                     </div>
                                                 </div>
                                                 <div class="row form-group">
+                                                    <form:label path="mspCasNoField"
+                                                                cssClass="col-md-4 col-form-label">CAS Field</form:label>
+                                                    <div class="col-md-4">
+                                                        <form:input path="mspCasNoField" cssClass="form-control"/>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <form:input path="csvCasNoField" cssClass="form-control"/>
+                                                    </div>
+                                                </div>
+                                                <div class="row form-group">
+                                                    <form:label path="mspKeggField"
+                                                                cssClass="col-md-4 col-form-label">KEGG Field</form:label>
+                                                    <div class="col-md-4">
+                                                        <form:input path="mspKeggField" cssClass="form-control"/>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <form:input path="csvKeggField" cssClass="form-control"/>
+                                                    </div>
+                                                </div>
+                                                <div class="row form-group">
                                                     <form:label path="mspPrecursorMzField"
                                                                 cssClass="col-md-4 col-form-label">Precursor m/z Field</form:label>
                                                     <div class="col-md-4">

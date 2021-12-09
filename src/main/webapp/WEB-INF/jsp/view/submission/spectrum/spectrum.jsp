@@ -64,6 +64,9 @@
                                             <strong>External ID:</strong>&nbsp;${spectrum.externalId}
                                         </li>
                                         <li class="list-group-item py-1">
+                                            <strong>Identifiers:</strong>&nbsp;${spectrum.getStringOfIdentifiers()}
+                                        </li>
+                                        <li class="list-group-item py-1">
                                             <strong>Formula:</strong>&nbsp;${spectrum.formula}
                                         </li>
                                         <li class="list-group-item py-1">
