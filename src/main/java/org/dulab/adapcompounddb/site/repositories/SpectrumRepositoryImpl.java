@@ -2,21 +2,15 @@ package org.dulab.adapcompounddb.site.repositories;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dulab.adapcompounddb.site.repositories.querybuilders.FilterQueryBuilder;
-import org.dulab.adapcompounddb.site.repositories.querybuilders.PreScreenQueryBuilder;
-import org.dulab.adapcompounddb.site.repositories.querybuilders.SpectrumQueryBuilder;
-import org.dulab.adapcompounddb.site.repositories.querybuilders.SpectrumQueryBuilderAlt;
+import org.dulab.adapcompounddb.site.repositories.querybuilders.*;
 import org.dulab.adapcompounddb.site.services.admin.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.entities.*;
@@ -28,54 +22,11 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
     private static final Logger LOGGER = LogManager.getLogger(SpectrumRepositoryImpl.class);
 
-    private static final int MAX_PEAKS_IN_QUERY = 1000000;
-    private static final int MAX_PROPERTIES_IN_QUERY = 1000000;
-
-    private static final String PEAK_INSERT_SQL_STRING = "INSERT INTO `Peak`(`Mz`, `Intensity`, `SpectrumId`) VALUES ";
-    private static final String PROPERTY_INSERT_SQL_STRING = "INSERT INTO `SpectrumProperty`(`SpectrumId`, `Name`, `Value`) VALUES ";
     private static final String PEAK_VALUE_SQL_STRING = "(%f,%f,%d)";
     private static final String PROPERTY_VALUE_SQL_STRING = "(%d, %s, %s)";
 
     public static final String DOUBLE_QUOTE = "\"";
     public static final String COMMA = ",";
-
-
-    private static final SqlField[] spectrumFields = new SqlField[]{
-            new SqlField("Name", "%s", s -> quote(s.getName())),
-            new SqlField("ExternalId", "%s", s -> quote(s.getExternalId())),
-            new SqlField("Precursor", "%f", Spectrum::getPrecursor),
-            new SqlField("PrecursorType", "%s", s -> quote(s.getPrecursorType())),
-            new SqlField("RetentionTime", "%f", Spectrum::getRetentionTime),
-            new SqlField("Significance", "%f", Spectrum::getSignificance),
-            new SqlField("ClusterId", "%d", s -> s.getCluster() != null ? s.getCluster().getId() : null),
-            new SqlField("Consensus", "%b", Spectrum::isConsensus),
-            new SqlField("Reference", "%b", Spectrum::isReference),
-            new SqlField("InHouseReference", "%b", Spectrum::isInHouseReference),
-            new SqlField("IntegerMz", "%b", Spectrum::isIntegerMz),
-            new SqlField("ChromatographyType", "%s", s -> quote(s.getChromatographyType().name())),
-            new SqlField("FileId", "%d", s -> s.getFile().getId()),
-            new SqlField("Mass", "%f", Spectrum::getMass),
-            new SqlField("Formula", "%s", s -> quote(s.getFormula())),
-            new SqlField("CanonicalSMILES", "%s", s -> quote(s.getCanonicalSmiles())),
-            new SqlField("InChi", "%s", s -> quote(s.getInChi())),
-            new SqlField("InChiKey", "%s", s -> quote(s.getInChiKey())),
-            new SqlField("TopMz1", "%f", Spectrum::getTopMz1),
-            new SqlField("TopMz2", "%f", Spectrum::getTopMz2),
-            new SqlField("TopMz3", "%f", Spectrum::getTopMz3),
-            new SqlField("TopMz4", "%f", Spectrum::getTopMz4),
-            new SqlField("TopMz5", "%f", Spectrum::getTopMz5),
-            new SqlField("TopMz6", "%f", Spectrum::getTopMz6),
-            new SqlField("TopMz7", "%f", Spectrum::getTopMz7),
-            new SqlField("TopMz8", "%f", Spectrum::getTopMz8),
-            new SqlField("TopMz9", "%f", Spectrum::getTopMz9),
-            new SqlField("TopMz10", "%f", Spectrum::getTopMz10),
-            new SqlField("TopMz11", "%f", Spectrum::getTopMz11),
-            new SqlField("TopMz12", "%f", Spectrum::getTopMz12),
-            new SqlField("TopMz13", "%f", Spectrum::getTopMz13),
-            new SqlField("TopMz14", "%f", Spectrum::getTopMz14),
-            new SqlField("TopMz15", "%f", Spectrum::getTopMz15),
-            new SqlField("TopMz16", "%f", Spectrum::getTopMz16)
-    };
 
 
     @PersistenceContext
@@ -195,144 +146,54 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         return resultList;
     }
 
-    private String[] generateQueriesToSavePeaks(List<Spectrum> spectrumList, List<Long> savedSpectrumIds) {
-
-        List<List<String>> peakTriplesList = new ArrayList<>();
-        List<String> peakTriples = new ArrayList<>();
-        int peakCount = 0;
-        for (int i = 0; i < spectrumList.size(); i++) {
-            final List<Peak> peaks = spectrumList.get(i).getPeaks();
-
-            if (peaks == null)
-                continue;
-
-            for (Peak peak : peaks) {
-                peakTriples.add(String.format("(%f, %f, %d)", peak.getMz(), peak.getIntensity(), savedSpectrumIds.get(i)));
-            }
-
-            peakCount += peaks.size();
-
-            if (peakCount > MAX_PEAKS_IN_QUERY) {
-                peakTriplesList.add(peakTriples);
-                peakTriples = new ArrayList<>();
-                peakCount = 0;
-            }
-        }
-
-        if (peakCount > 0)
-            peakTriplesList.add(peakTriples);
-
-        return peakTriplesList.stream()
-                .map(triples -> PEAK_INSERT_SQL_STRING + String.join(",", triples))
-                .toArray(String[]::new);
-    }
-
-    private String[] generateQueriesToSaveProperties(List<Spectrum> spectrumList, List<Long> savedSpectrumIds) {
-
-        List<List<String>> propertyTriplesList = new ArrayList<>();
-        List<String> propertyTriples = new ArrayList<>();
-        int propertyCount = 0;
-        for (int i = 0; i < spectrumList.size(); i++) {
-            final List<SpectrumProperty> properties = spectrumList.get(i).getProperties();
-
-            if (properties == null)
-                continue;
-
-            for (SpectrumProperty property : properties) {
-                propertyTriples.add(String.format("(%d, \"%s\", \"%s\")",
-                        savedSpectrumIds.get(i),
-                        property.getName().replace("\"", "\"\""),
-                        property.getValue().replace("\"", "\"\"")));
-            }
-
-            propertyCount += properties.size();
-
-            if (propertyCount > MAX_PROPERTIES_IN_QUERY) {
-                propertyTriplesList.add(propertyTriples);
-                propertyTriples = new ArrayList<>();
-                propertyCount = 0;
-            }
-        }
-
-        if (propertyCount > 0)
-            propertyTriplesList.add(propertyTriples);
-
-        return propertyTriplesList.stream()
-                .map(triples -> PROPERTY_INSERT_SQL_STRING + String.join(",", triples))
-                .toArray(String[]::new);
-    }
-
     @Override
-    public void savePeaksAndPropertiesQuery(final List<Spectrum> spectrumList, final List<Long> savedSpectrumIdList) {
+    public void saveSpectra(List<File> fileList, List<Long> savedFileIdList) {
 
-        String[] peakSqls = generateQueriesToSavePeaks(spectrumList, savedSpectrumIdList);
-        for (String peakSql : peakSqls) {
-            if (!peakSql.equals(PEAK_INSERT_SQL_STRING)) {
-                LOGGER.info(String.format("Saving peaks to the database (%d bytes)...", peakSql.length() * 2));
-                Query peakQuery = entityManager.createNativeQuery(peakSql);
-                peakQuery.executeUpdate();
-            }
-        }
+        SaveSpectraQueryBuilder queryBuilder = new SaveSpectraQueryBuilder(fileList);
+        String insertSql = queryBuilder.build();
+        List<Spectrum> spectrumList = queryBuilder.getSpectrumList();
 
-        String[] propertySqls = generateQueriesToSaveProperties(spectrumList, savedSpectrumIdList);
-        for (String propertySql : propertySqls) {
-            if (!propertySql.equals(PROPERTY_INSERT_SQL_STRING)) {
-                LOGGER.info(String.format("Saving spectrum properties to the database (%d bytes)...", propertySql.length() * 2));
-                Query propertyQuery = entityManager.createNativeQuery(propertySql);
-                propertyQuery.executeUpdate();
-            }
-        }
-    }
+        LOGGER.info(String.format("Saving %d spectra to the database...", spectrumList.size()));
 
-    @Override
-    public void saveSpectrumAndPeaks(final List<File> fileList, final List<Long> savedFileIdList) {
-
-        final List<Spectrum> spectrumList = new ArrayList<>();
-
-        StringBuilder insertSql = new StringBuilder(
-                String.format("INSERT INTO `Spectrum`(%s) VALUES ",
-                        Arrays.stream(spectrumFields)
-                                .map(SqlField::getName)
-                                .map(x -> String.format("`%s`", x))
-                                .collect(Collectors.joining(", "))));
-
-        int count = 0;
-        for (int i = 0; i < fileList.size(); i++) {
-            final List<Spectrum> spectra = fileList.get(i).getSpectra();
-            if (spectra == null) continue;
-            spectrumList.addAll(spectra);
-
-            for (int j = 0; j < spectra.size(); j++) {
-                if (i != 0 || j != 0) {
-                    insertSql.append(COMMA);
-                }
-                final Spectrum spectrum = spectra.get(j);
-                spectrum.setFile(fileList.get(i));
-
-                insertSql.append(String.format("(%s)",
-                        Arrays.stream(spectrumFields)
-                                .map(field -> String.format(field.format, field.function.apply(spectrum)))
-                                .collect(Collectors.joining(", "))));
-
-                count++;
-            }
-        }
-
-        LOGGER.info(String.format("Saving %d spectra to the database...", count));
-
-        final Query insertQuery = entityManager.createNativeQuery(insertSql.toString());
+        Query insertQuery = entityManager.createNativeQuery(insertSql);
         insertQuery.executeUpdate();
 
-        final List<Long> fileIds = new ArrayList<>(fileList.size());
+        List<Long> fileIds = new ArrayList<>(fileList.size());
         fileList.forEach(file -> fileIds.add(file.getId()));
-        final String selectSql = "select s.id from Spectrum s where s.file.id in (:fileIds)";
+        String selectSql = "select s.id from Spectrum s where s.file.id in (:fileIds)";
 
-        final TypedQuery<Long> selectQuery = entityManager.createQuery(selectSql, Long.class);
+        TypedQuery<Long> selectQuery = entityManager.createQuery(selectSql, Long.class);
         selectQuery.setParameter("fileIds", fileIds);
 
-        final List<Long> spectrumIds = selectQuery.getResultList();
+        List<Long> spectrumIds = selectQuery.getResultList();
 
-        savePeaksAndPropertiesQuery(spectrumList, spectrumIds);
+        String[] peakSqls = new SavePeaksQueryBuilder(spectrumList, spectrumIds).build();
+        for (String peakSql : peakSqls) {
+            LOGGER.info(String.format("Saving peaks to the database (%d bytes)...", peakSql.length() * 2));
+            Query peakQuery = entityManager.createNativeQuery(peakSql);
+            peakQuery.executeUpdate();
+        }
+
+        String[] propertySqls = new SavePropertiesQueryBuilder(spectrumList, spectrumIds).build();
+        for (String propertySql : propertySqls) {
+            LOGGER.info(String.format("Saving spectrum properties to the database (%d bytes)...", propertySql.length() * 2));
+            Query propertyQuery = entityManager.createNativeQuery(propertySql);
+            propertyQuery.executeUpdate();
+        }
+
+        String[] synonymSqls = new SaveSynonymsQueryBuilder(spectrumList, spectrumIds).build();
+        for (String synonymSql : synonymSqls) {
+            LOGGER.info(String.format("Saving spectrum synonyms to the database (%d bytes)...", synonymSql.length() * 2));
+            Query synonymQuery = entityManager.createNativeQuery(synonymSql);
+            synonymQuery.executeUpdate();
+        }
+
+        String[] identifierSqls = new SaveIdentifiersQueryBuilder(spectrumList, spectrumIds).build();
+        for (String identifierSql : identifierSqls) {
+            LOGGER.info(String.format("Saving spectrum identifiers to the database (%d bytes)...", identifierSql.length() * 2));
+            Query identifierQuery = entityManager.createNativeQuery(identifierSql);
+            identifierQuery.executeUpdate();
+        }
     }
 
     @Override
@@ -421,34 +282,4 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         return resultList;
     }
 
-    private static String quote(String x) {
-        if (x == null) return null;
-        return String.format("\"%s\"", x.replace("\"", "\"\""));
-    }
-
-
-    private static class SqlField {
-
-        private final String name;
-        private final String format;
-        private final Function<Spectrum, Object> function;
-
-        public SqlField(String name, String format, Function<Spectrum, Object> function) {
-            this.name = name;
-            this.format = format;
-            this.function = function;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getFormat() {
-            return format;
-        }
-
-        public Function<Spectrum, Object> getFunction() {
-            return function;
-        }
-    }
 }

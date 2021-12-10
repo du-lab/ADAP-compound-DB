@@ -45,6 +45,7 @@ public class Spectrum implements Serializable {
             joinColumns = {@JoinColumn(name = "SpectrumId", referencedColumnName = "Id")})
     @MapKeyColumn(name = "type")
     @MapKeyEnumerated(EnumType.STRING)
+    @Column(name = "value")
     private Map<IdentifierType, String> identifiers;
 
     @ManyToOne(fetch = FetchType.LAZY)

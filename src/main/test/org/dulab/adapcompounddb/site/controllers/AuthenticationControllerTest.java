@@ -63,7 +63,7 @@ public class AuthenticationControllerTest {
     @Test
     public void loginRedirectTest() throws Exception {
 
-        UserPrincipal.assign(mockHttpSession, userPrincipal);
+//        UserPrincipal.assign(mockHttpSession, userPrincipal);
         mockMvc.perform(get("/login").session(mockHttpSession))
                 .andExpect(status().isSeeOther())  // checks the status
                 .andExpect(redirectedUrl("/"));  // check the redirect url

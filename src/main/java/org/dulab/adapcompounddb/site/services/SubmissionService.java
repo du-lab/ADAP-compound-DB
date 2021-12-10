@@ -111,7 +111,7 @@ public class SubmissionService {
                 .collect(Collectors.toSet());
 //        if (fileList.get(0).getSpectra().get(0).getId() == 0) {
         if (ids.contains(0L)) {
-            spectrumRepository.saveSpectrumAndPeaks(fileList, savedFileIds);
+            spectrumRepository.saveSpectra(fileList, savedFileIds);
         }
     }
 

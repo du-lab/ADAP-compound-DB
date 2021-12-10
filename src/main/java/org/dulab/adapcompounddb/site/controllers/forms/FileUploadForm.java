@@ -306,6 +306,7 @@ public class FileUploadForm {
         this.files = files;
     }
 
+    @JsonIgnore
     public Map<FileType, MetaDataMapping> getMetaDataMappings() {
         Map<FileType, MetaDataMapping> mappings = new HashMap<>();
         mappings.put(FileType.MSP, createMspMapping());
@@ -326,6 +327,7 @@ public class FileUploadForm {
         return OBJECT_MAPPER.readValue(jsonBytes, FileUploadForm.class);
     }
 
+    @JsonIgnore
     private MetaDataMapping createMspMapping() {
         MetaDataMapping mapping = new MetaDataMapping();
         mapping.setFieldName(Field.NAME, mspNameField);
@@ -345,6 +347,7 @@ public class FileUploadForm {
         return mapping;
     }
 
+    @JsonIgnore
     private MetaDataMapping createCsvMapping() {
         MetaDataMapping mapping = new MetaDataMapping();
         mapping.setFieldName(Field.NAME, csvNameField);
