@@ -86,6 +86,10 @@ public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, Spec
     @Query("select s.file.submission.id, sum(s.reference) from Spectrum s where s.file.submission.id in :ids group by s.file.submission.id")
     Iterable<Object[]> getAllSpectrumReferenceBySubmissionIds(@Param("ids") long[] submissionIds);
 
+    @Query("select s.file.submission.id, sum(s.inHouseReference) from Spectrum s " +
+            "where s.file.submission.id in :ids group by s.file.submission.id")
+    Iterable<Object[]> getAllSpectrumInHouseReferenceBySubmissionIds(@Param("ids") long[] submissionIds);
+
     @Query("select sum(s.clusterable) from Spectrum s where s.file.submission.id = :submissionId")
     boolean getAllSpectrumClusterableBySubmissionId(@Param("submissionId") Long submissionId);
 

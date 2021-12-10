@@ -68,11 +68,14 @@ public class SubmissionService {
             long[] submissionIds = submissions.stream().mapToLong(Submission::getId).toArray();
             Map<Long, Boolean> references = MappingUtils.toMap(
                     spectrumRepository.getAllSpectrumReferenceBySubmissionIds(submissionIds));
+            Map<Long, Boolean> inHouseReferences = MappingUtils.toMap(
+                    spectrumRepository.getAllSpectrumInHouseReferenceBySubmissionIds(submissionIds));
             Map<Long, Boolean> clusterables = MappingUtils.toMap(
                     spectrumRepository.getAllSpectrumClusterableBySubmissionIds(submissionIds));
 
             submissionDTOs = submissions.stream()
-                    .map(s -> new SubmissionDTO(s, references.get(s.getId()), clusterables.get(s.getId())))
+                    .map(s -> new SubmissionDTO(s, references.get(s.getId()), inHouseReferences.get(s.getId()),
+                            clusterables.get(s.getId())))
                     .collect(Collectors.toList());
         }
 
@@ -82,13 +85,14 @@ public class SubmissionService {
 
         return response;
     }
+
     public Iterable<Submission> findAllPublicLibraries(){
         return submissionRepository.findByPrivateFalseAndReferenceTrue();
     }
 
-    @Transactional
-    public List<Submission> findSubmissionsWithTagsByUserId(final long userId) {
-        return MappingUtils.toList(submissionRepository.findByUserId(userId));
+//    @Transactional
+    public List<Submission> findSubmissionsWithTagsByUserId(long userId) {
+        return MappingUtils.toList(submissionRepository.findWithTagsByUserId(userId));
     }
 
     public List<Submission> findSubmissionsByExternalId(String externalId) {
@@ -253,4 +257,23 @@ public class SubmissionService {
                 : submissionRepository.findChromatographyTypesBySubmissionId(submissionIds));
     }
 
+    public Map<Long, Boolean> getIdToIsLibraryMap(List<Submission> submissions) {
+        long[] submissionIds = submissions.stream()
+                .mapToLong(Submission::getId)
+                .toArray();
+
+        return MappingUtils.toMap(submissionIds.length == 0
+                ? new ArrayList<>(0)
+                : spectrumRepository.getAllSpectrumReferenceBySubmissionIds(submissionIds));
+    }
+
+    public Map<Long, Boolean> getIdToIsInHouseLibraryMap(List<Submission> submissions) {
+        long[] submissionIds = submissions.stream()
+                .mapToLong(Submission::getId)
+                .toArray();
+
+        return MappingUtils.toMap(submissionIds.length == 0
+                ? new ArrayList<>(0)
+                : spectrumRepository.getAllSpectrumInHouseReferenceBySubmissionIds(submissionIds));
+    }
 }

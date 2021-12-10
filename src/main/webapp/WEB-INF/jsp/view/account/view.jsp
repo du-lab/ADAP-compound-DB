@@ -3,6 +3,8 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+
 <script src="<c:url value="/resources/AdapCompoundDb/js/tagsColor.js"/>"></script>
 <div class="container">
     <div class="row row-content">
@@ -60,7 +62,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <%--@elvariable id="submissionList" type="java.util.List<org.dulab.adapcompounddb.models.entities.Submission>"--%>
+                            <%--@elvariable id="submissionList" type="java.util.List<org.dulab.adapcompounddb.models.dto.SubmissionDTO>"--%>
                             <c:forEach items="${submissionList}" var="study" varStatus="loop">
                                 <c:if test="${!study.library}">
                                     <tr>
@@ -82,11 +84,11 @@
                                         <td>
                                                 <%--                            ${study.tagsAsString}--%>
                                             <c:forEach items="${study.tags}" var="tag" varStatus="status">
-                                                <span id="${study.id}color${status.index}">${tag.toString()}&nbsp;</span>
-                                                <script>
-                                                    var spanId = '${fn:length(study.tags)}';
-                                                    spanColor(${study.id}, spanId);
-                                                </script>
+                                                <span class="color-${status.index mod 5}">${tag}&nbsp;</span>
+<%--                                                <script>--%>
+<%--                                                    let spanId = '${fn:length(study.tags)}';--%>
+<%--                                                    spanColor(${study.id}, spanId);--%>
+<%--                                                </script>--%>
                                             </c:forEach>
 
                                         </td>
@@ -143,7 +145,7 @@
                                             <c:if test="${study.isPrivate()}">
                                                 <span class="badge badge-info">private</span>
                                             </c:if>
-                                            <c:if test="${study.isInHouse()}">
+                                            <c:if test="${study.inHouseLibrary}">
                                                 <span class="badge badge-success">in-house</span>
                                             </c:if>
                                                 <%--                        <small>${dulab:abbreviate(study.description, 80)}</small>--%>
