@@ -219,7 +219,9 @@
                     table.column(4).visible(d.data.map(row => row['size']).join(''));
                     // table.column(5).visible(d.data.map(row => row['score']).join(''));
                     // table.column(6).visible(d.data.map(row => row['massError']).join(''));
-                    // table.column(7).visible(d.data.map(row => row['retTimeError']).join(''));
+                    // table.column(7).visible(d.data.map(row => row['massErrorPPM']).join(''));
+                    // table.column(8).visible(d.data.map(row => row['retTimeError']).join(''));
+                    // table.column(9).visible(d.data.map(row => row['retIndexError']).join(''));
                     table.column(10).visible(d.data.map(row => row['aveSignificance']).join(''));
                     table.column(11).visible(d.data.map(row => row['minSignificance']).join(''));
                     table.column(12).visible(d.data.map(row => row['maxSignificance']).join(''));
@@ -234,178 +236,41 @@
                 $(row).attr('data-queryFileIndex', data.queryFileIndex);
                 $(row).attr('data-querySpectrumIndex', data.querySpectrumIndex);
             },
-            <%--columns: [--%>
-            <%--    {data: 'position'},--%>
-            <%--    {data: function (row) {--%>
-            <%--            const href = (row.querySpectrumId !== 0)--%>
-            <%--                ? `<c:url value="/spectrum/\${row.querySpectrumId}/"/>`--%>
-            <%--                : `<c:url value="/file/\${row.queryFileIndex}/\${row.querySpectrumIndex}/"/>`;--%>
-            <%--            return `<a href="\${href}">\${row.querySpectrumName}</a>`;--%>
-            <%--        }},--%>
-            <%--    {data: row => }--%>
-
-            <%--],--%>
-            "aoColumnDefs": [
+            columns: [
+                {data: 'position'},
                 {
-                    "targets": 0,
-                    "bSortable": true,
-                    "searchable": false,
-                    "bVisible": true,
-                    "render": function (data, type, row, meta) {
-                        // return meta.settings.oAjaxData.start + meta.row + 1;
-                        return row.position;
-                    }
-                },
-                {
-                    "targets": 1,
-                    "bSortable": true,
-                    "bVisible": true,
-                    "render": function (data, type, row, meta) {
+                    data: function (row) {
                         const href = (row.querySpectrumId !== 0)
-                            ? `${pageContext.request.contextPath}/spectrum/\${row.querySpectrumId}/`
-                            : `${pageContext.request.contextPath}/file/\${row.queryFileIndex}/\${row.querySpectrumIndex}/`;
+                            ? `<c:url value="/spectrum/\${row.querySpectrumId}/"/>`
+                            : `<c:url value="/file/\${row.queryFileIndex}/\${row.querySpectrumIndex}/"/>`;
                         return `<a href="\${href}">\${row.querySpectrumName}</a>`;
                     }
                 },
+                {data: row => (row.name != null) ? `<a href="<c:url value="/\${row.href}" />">\${row.name}</a>` : ''},
+                {data: row => (row.mass != null) ? row.mass.toFixed(3) : ''},
+                {data: row => (row.size != null) ? row.size : ''},
+                {data: row => (row.score != null) ? row.score.toFixed(3) * 1000 : ''},
+                {data: row => (row.massError != null) ? (1000 * row.massError).toFixed(3) : ''},
+                {data: row => (row.massErrorPPM != null) ? row.massErrorPPM.toFixed(3) : ''},
+                {data: row => (row.retTimeError != null) ? row.retTimeError.toFixed(3) : ''},
+                {data: row => (row.retIndexError != null) ? row.retIndexError.toFixed(1) : ''},
+                {data: row => (row.aveSignificance != null) ? row.aveSignificance.toFixed(3) : ''},
+                {data: row => (row.minSignificance != null) ? row.minSignificance.toFixed(3) : ''},
+                {data: row => (row.maxSignificance != null) ? row.maxSignificance.toFixed(3) : ''},
+                {data: 'ontologyLevel'},
                 {
-                    "targets": 2,
-                    "bSortable": true,
-                    "bVisible": true,
-                    "render": function (data, type, row, meta) {
-                        let content = '';
-                        if (row.name != null) {
-                            content = `<a href="${pageContext.request.contextPath}\${row.href}">\${row.name}</a>`;
-                        }
-                        return content;
-                    }
+                    data: row => (row.chromatographyTypeLabel != null)
+                        ? `<span class="badge badge-secondary">\${row.chromatographyTypeLabel}</span>` : ''
                 },
                 {
-                    "targets": 3,
-                    "bSortable": true,
-                    "bVisible": true,
-                    "render": function (data, type, row) {
-                        return (row.mass != null) ? row.mass.toFixed(3) : '';
-                    }
-                },
-                {
-                    "targets": 4,
-                    "bSortable": true,
-                    "bVisible": true,
-                    "render": function (data, type, row, meta) {
-                        return (row.size != null) ? row.size : '';
-                    }
-                },
-                {
-                    "targets": 5,
-                    "bSortable": true,
-                    "bVisible": true,
-                    "render": function (data, type, row, meta) {
-                        return (row.score != null) ? row.score.toFixed(3) * 1000 : '';
-                    }
-                },
-                {
-                    "targets": 6,
-                    "bSortable": true,
-                    "bVisible": true,
-                    "render": function (data, type, row) {
-                        return (row.massError != null) ? (1000 * row.massError).toFixed(3) : '';
-                    }
-                },
-                {
-                    "targets": 7,
-                    "bSortable": true,
-                    "bVisible": true,
-                    "render": function (data, type, row) {
-                        return (row.massErrorPPM != null) ? row.massErrorPPM.toFixed(3) : '';
-                    }
-                },
-                {
-                    "targets": 8,
-                    "bSortable": true,
-                    "bVisible": true,
-                    "render": function (data, type, row) {
-                        return (row.retTimeError != null) ? row.retTimeError.toFixed(3) : '';
-                    }
-                }, {
-                    "targets": 9,
-                    "bSortable": true,
-                    "bVisible": true,
-                    "render": function (data, type, row) {
-                        return (row.retIndexError != null) ? row.retIndexError.toFixed(1) : '';
-                    }
-                },
-                {
-                    "targets": 10,
-                    "bSortable": true,
-                    "bVisible": true,
-                    "render": function (data, type, row, meta) {
-                        if (row.aveSignificance != null) {
-                            return row.aveSignificance.toFixed(3);
-                        } else {
-                            return '';
-                        }
-                    }
-                },
-                {
-                    "targets": 11,
-                    "bSortable": true,
-                    "bVisible": true,
-                    "render": function (data, type, row, meta) {
-                        if (row.minSignificance != null) {
-                            return row.minSignificance.toFixed(3);
-                        } else {
-                            return '';
-                        }
-                    }
-                },
-                {
-                    "targets": 12,
-                    "bSortable": true,
-                    "bVisible": true,
-                    "render": function (data, type, row, meta) {
-                        if (row.maxSignificance != null) {
-                            return row.maxSignificance.toFixed(3);
-                        } else {
-                            return '';
-                        }
-                    }
-                }, {
-                    "targets": 13,
-                    "bSortable": true,
-                    "bVisible": true,
-                    "render": function (data, type, row) {
-                        return row.ontologyLevel;
-                    }
-                },
-                {
-                    "targets": 14,
-                    "bSortable": true,
-                    "bVisible": true,
-                    "render": function (data, type, row, meta) {
-                        let content = '';
-                        if (row.name != null) {
-                            content = '<img' +
-                                ' src="${pageContext.request.contextPath}/' + row.chromatographyTypePath + '"'
-                                + ' alt="' + row.chromatographyTypeLabel + '"'
-                                + ' title="' + row.chromatographyTypeLabel + '"'
-                                + ' class="icon"/>';
-                        }
-                        return content;
-                    }
-                },
-                {
-                    "targets": 15,
-                    "bSortable": false,
-                    "bVisible": true,
-                    "render": function (data, type, row, meta) {
+                    data: function (row) {
                         const href = (row.querySpectrumId !== 0)
-                            ? `${pageContext.request.contextPath}/spectrum/\${row.querySpectrumId}/search/`
-                            : `${pageContext.request.contextPath}/file/\${row.queryFileIndex}/\${row.querySpectrumIndex}/search/`;
+                            ? `<c:url value="/spectrum/\${row.querySpectrumId}/search/"/>`
+                            : `<c:url value="/file/\${row.queryFileIndex}/\${row.querySpectrumIndex}/search/"/>`;
                         return `<a href="\${href}"><i class="material-icons" title="Search spectrum">&#xE8B6;</i></a>`;
                     }
-                },
-                // {"className": "dt-center", "targets": "_all"}
-            ],
+                }
+            ]
         });
 
         table.on('select', function (e, dt, type, indexes) {

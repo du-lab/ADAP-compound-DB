@@ -137,7 +137,7 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
             this.matchType = matchSpectrum.isConsensus() ? MatchType.CLUSTER : MatchType.SPECTRUM;
             this.matchIndex = matchIndex;
             this.spectrumId = matchSpectrum.getId();
-            this.name = matchSpectrum.getName();
+            this.name = matchSpectrum.getShortName();
             this.externalId = matchSpectrum.getExternalId();
             this.size = 1;
             this.precursorType = matchSpectrum.getPrecursorType();
@@ -552,7 +552,7 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
     }
 
     public String getHRef() {
-        return String.format("/%s/%d/",
+        return String.format("%s/%d/",
                 matchType.name().toLowerCase(),
                 (matchType == MatchType.CLUSTER) ? this.getClusterId() : this.getSpectrumId());
     }

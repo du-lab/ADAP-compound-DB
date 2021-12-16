@@ -63,30 +63,31 @@ public class GroupSearchRestController {
         final DataTableResponse response = groupSearchSort(searchStr, start, length, matches, columnStr);
 //        final ObjectMapper mapper = new ObjectMapper();
 //        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-       return mapper.writeValueAsString(response);
+        return mapper.writeValueAsString(response);
     }
 
-    @RequestMapping(value = "/file/group_search/progress", produces = "application/json")
+    @RequestMapping(value = {"/file/group_search/progress", "/submission/*/group_search/progress}"},
+            produces = "application/json")
     public int fileGroupSearchProgress(HttpSession session) {
-        float progressObject = (float) session.getAttribute(GroupSearchService.groupSearchProgress);
-
-        // Return json-string containing a number between 0 and 100.
-        return Math.round(100 * progressObject);
-    }
-
-    @RequestMapping(value = "/submission/{submissionId:\\d+}/group_search/progress", produces = "application/json")
-    public int submissionGroupSearchProgress(@PathVariable("submissionId") final long submissionId, HttpSession session) {
         Object progressObject = session.getAttribute(GroupSearchService.groupSearchProgress);
-
         if (!(progressObject instanceof Float))
             return 0;
 
-        float progress = (Float) progressObject;
-
         // Return json-string containing a number between 0 and 100.
+        float progress = (Float) progressObject;
         return Math.round(100 * progress);
     }
 
+//    @RequestMapping(value = "/submission/{submissionId:\\d+}/group_search/progress", produces = "application/json")
+//    public int submissionGroupSearchProgress(@PathVariable("submissionId") final long submissionId, HttpSession session) {
+//        Object progressObject = session.getAttribute(GroupSearchService.groupSearchProgress);
+//        if (!(progressObject instanceof Float))
+//            return 0;
+//
+//        // Return json-string containing a number between 0 and 100.
+//        float progress = (Float) progressObject;
+//        return Math.round(100 * progress);
+//    }
 
     private DataTableResponse groupSearchSort(final String searchStr, final Integer start, final Integer length,
                                               List<SearchResultDTO> spectrumList, final String columnStr) {
@@ -130,7 +131,7 @@ public class GroupSearchRestController {
             }
 
             spectrumList.sort(multiColumnComparator);
-        } else{
+        } else {
             throw new IllegalStateException("Wrong sorting parameters");
         }
 
@@ -150,7 +151,7 @@ public class GroupSearchRestController {
         return response;
     }
 
-    private Comparator<SearchResultDTO> comparingColumns(String column, String sortDirection){
+    private Comparator<SearchResultDTO> comparingColumns(String column, String sortDirection) {
         Comparator<SearchResultDTO> comparator = null;
 
         if (column != null) {
