@@ -2,6 +2,7 @@ package org.dulab.adapcompounddb.site.controllers.forms;
 
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.SortedMap;
 
@@ -11,10 +12,10 @@ public class FilterOptions {
     private final List<String> speciesList;
     private final List<String> sourceList;
     private final List<String> diseaseList;
-    private final SortedMap<Long, String> submissions;
+    private final SortedMap<BigInteger, String> submissions;
 
     public FilterOptions(List<String> speciesList, List<String> sourceList, List<String> diseaseList,
-                         SortedMap<Long, String> submissions) {
+                         SortedMap<BigInteger, String> submissions) {
         this.speciesList = speciesList;
         this.sourceList = sourceList;
         this.diseaseList = diseaseList;
@@ -38,7 +39,7 @@ public class FilterOptions {
         return diseaseList;
     }
 
-    public SortedMap<Long, String> getSubmissions() {
+    public SortedMap<BigInteger, String> getSubmissions() {
         return submissions;
     }
 }

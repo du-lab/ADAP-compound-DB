@@ -29,7 +29,19 @@ public class JavaSpectrumSimilarityService {
 
     public List<SpectrumMatch> searchConsensusAndReference(
             Spectrum querySpectrum, SearchParameters parameters, UserPrincipal user) {
-        return search(querySpectrum, parameters, user, true, true, false);
+
+        Set<BigInteger> submissionIds = parameters.getSubmissionIds();
+
+        boolean searchConsensus = submissionIds == null || submissionIds.contains(BigInteger.ZERO);
+        boolean searchReference = submissionIds == null
+                || submissionIds.stream().anyMatch(id -> !Objects.equals(id, BigInteger.ZERO));
+
+        if (!searchConsensus && !searchReference) {
+            LOGGER.info("Spectrum search is attempted without any selected libraries");
+            return new ArrayList<>(0);
+        }
+
+        return search(querySpectrum, parameters, user, searchConsensus, searchReference, false);
     }
 
     public List<SpectrumMatch> searchClusterable(

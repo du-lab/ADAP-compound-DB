@@ -30,6 +30,9 @@ public class PreScreenQueryBuilder {
     private Double retTime = null;
     private Double retTimeTolerance = null;
 
+    private Double retIndex = null;
+    private Double retIndexTolerance = null;
+
     private double[] masses = null;
     private Double massTolerance = null;
     private Double massTolerancePPM = null;
@@ -63,6 +66,12 @@ public class PreScreenQueryBuilder {
     public PreScreenQueryBuilder withRetTime(Double tolerance, Double retTime) {
         this.retTime = retTime;
         this.retTimeTolerance = tolerance;
+        return this;
+    }
+
+    public PreScreenQueryBuilder withRetIndex(Double tolerance, Double retIndex) {
+        this.retIndex = retIndex;
+        this.retIndexTolerance = tolerance;
         return this;
     }
 
@@ -127,6 +136,10 @@ public class PreScreenQueryBuilder {
         if (retTime != null && retTimeTolerance != null)
             queryBlock += String.format(" AND Spectrum.RetentionTime > %f AND Spectrum.RetentionTime < %f",
                     retTime - retTimeTolerance, retTime + retTimeTolerance);
+
+        if (retIndex != null && retIndexTolerance != null)
+            queryBlock += String.format(" AND Spectrum.RetentionIndex > %f AND Spectrum.RetentionIndex < %f",
+                    retIndex - retIndexTolerance, retIndex + retIndexTolerance);
 
         if (querySpectrum != null && mzTolerance != null) {
             queryBlock += String.format(" AND (%s)", IntStream.range(1, numberOfTopMz + 1)

@@ -16,6 +16,7 @@ import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters;
+import org.dulab.adapcompounddb.site.services.search.SearchParameters.RetIndexMatchType;
 
 
 public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
@@ -248,6 +249,9 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                         .withChromatographyType(querySpectrum.getChromatographyType())
                         .withPrecursor(params.getPrecursorTolerance(), params.getPrecursorTolerancePPM(), querySpectrum.getPrecursor())
                         .withRetTime(params.getRetTimeTolerance(), querySpectrum.getRetentionTime());
+
+        if (params.getRetIndexMatchType() == RetIndexMatchType.ALWAYS_MATCH)
+            queryBuilder = queryBuilder.withRetIndex(params.getRetIndexTolerance(), querySpectrum.getRetentionIndex());
 
         queryBuilder = (querySpectrum.getMass() != null)
                 ? queryBuilder.withMass(params.getMassTolerance(), params.getMassTolerancePPM(), querySpectrum.getMass())

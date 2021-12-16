@@ -12,6 +12,7 @@ import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
 import org.dulab.adapcompounddb.site.services.search.GroupSearchService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.dulab.adapcompounddb.site.services.SubmissionTagService;
+import org.dulab.adapcompounddb.site.services.search.SearchParameters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.Future;
 
@@ -28,6 +30,8 @@ import java.util.concurrent.Future;
 public class GroupSearchController extends BaseController {
 
     private static final Logger LOGGER = LogManager.getLogger(GroupSearchController.class);
+
+    private static final String ALL = "all";
 
     private final GroupSearchService groupSearchService;
     private final SubmissionService submissionService;
@@ -91,7 +95,7 @@ public class GroupSearchController extends BaseController {
         form.setSubmissionIds(filterOptions.getSubmissions().keySet());
         form.setWithOntologyLevels(withOntologyLevels);
         model.addAttribute("filterForm", form);
-        return "submission/group_search";
+        return "submission/group_search_parameters";
     }
 
     @RequestMapping(value = "/file/group_search/", method = RequestMethod.POST)
@@ -124,12 +128,23 @@ public class GroupSearchController extends BaseController {
             asyncResult.cancel(true);
         }
 
-        String species = form.getSpecies().equalsIgnoreCase("all") ? null : form.getSpecies();
-        String source = form.getSource().equalsIgnoreCase("all") ? null : form.getSource();
-        String disease = form.getDisease().equalsIgnoreCase("all") ? null : form.getDisease();
+        String species = ALL.equalsIgnoreCase(form.getSpecies()) ? null : form.getSpecies();
+        String source = ALL.equalsIgnoreCase(form.getSource()) ? null : form.getSource();
+        String disease = ALL.equalsIgnoreCase(form.getDisease()) ? null : form.getDisease();
+
+        SearchParameters parameters = new SearchParameters();
+        parameters.setScoreThreshold(form.getScoreThreshold() / 1000.0);
+        parameters.setRetIndexTolerance((double) form.getRetentionIndexTolerance());
+        parameters.setRetIndexMatchType(form.getRetentionIndexMatch());
+        parameters.setMzTolerance(form.getMzTolerance(), form.getMzToleranceType());
+        parameters.setLimit(form.getLimit());
+        parameters.setSpecies(species);
+        parameters.setSource(source);
+        parameters.setDisease(disease);
+        parameters.setSubmissionIds(form.getSubmissionIds());
 
         asyncResult = groupSearchService.groupSearch(this.getCurrentUserPrincipal(), submission.getFiles(), session,
-                form.getSubmissionIds(), species, source, disease, form.isWithOntologyLevels());
+                parameters, form.isWithOntologyLevels());
 
         return new ModelAndView("submission/group_search");
     }
@@ -157,13 +172,13 @@ public class GroupSearchController extends BaseController {
         List<String> sourceList = submissionTagService.findDistinctTagValuesByTagKey("sample source");
         List<String> diseaseList = submissionTagService.findDistinctTagValuesByTagKey("disease");
 
-        SortedMap<Long, String> submissions = new TreeMap<>();
+        SortedMap<BigInteger, String> submissions = new TreeMap<>();
         for (ChromatographyType chromatographyType : chromatographyTypes) {
             submissions.putAll(
                     submissionService.findUserPrivateSubmissions(this.getCurrentUserPrincipal(), chromatographyType));
             submissions.putAll(submissionService.findPublicSubmissions(chromatographyType));
         }
-        submissions.put(0L, "Consensus Spectra");
+        submissions.put(BigInteger.ZERO, "Consensus Spectra");
 
         return new FilterOptions(speciesList, sourceList, diseaseList, submissions);
     }

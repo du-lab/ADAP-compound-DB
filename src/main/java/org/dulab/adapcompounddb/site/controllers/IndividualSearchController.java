@@ -208,7 +208,7 @@ public class IndividualSearchController extends BaseController {
         parameters.setSpecies(filterForm.getSpecies().equalsIgnoreCase("all") ? null : filterForm.getSpecies());
         parameters.setSource(filterForm.getSource().equalsIgnoreCase("all") ? null : filterForm.getSource());
         parameters.setDisease(filterForm.getDisease().equalsIgnoreCase("all") ? null : filterForm.getDisease());
-        parameters.setSubmissionIds(filterForm.getSubmissionIds().stream().map(BigInteger::valueOf).collect(Collectors.toSet()));
+        parameters.setSubmissionIds(filterForm.getSubmissionIds());
 
         List<SearchResultDTO> searchResults = individualSearchService.searchConsensusSpectra(
                 this.getCurrentUserPrincipal(), querySpectrum, parameters);
@@ -226,9 +226,9 @@ public class IndividualSearchController extends BaseController {
         List<String> sourceList = submissionTagService.findDistinctTagValuesByTagKey("sample source");
         List<String> diseaseList = submissionTagService.findDistinctTagValuesByTagKey("disease");
 
-        SortedMap<Long, String> submissions = submissionService.findUserPrivateSubmissions(
+        SortedMap<BigInteger, String> submissions = submissionService.findUserPrivateSubmissions(
                 this.getCurrentUserPrincipal(), chromatographyType);
-        submissions.put(0L, "Public");
+        submissions.put(BigInteger.ZERO, "Public");
 
         return new FilterOptions(speciesList, sourceList, diseaseList, submissions);
     }

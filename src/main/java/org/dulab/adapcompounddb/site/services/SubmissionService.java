@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.services;
 
+import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -219,21 +220,21 @@ public class SubmissionService {
         return tagMap;
     }
 
-    public SortedMap<Long, String> findUserPrivateSubmissions(UserPrincipal user, ChromatographyType type) {
+    public SortedMap<BigInteger, String> findUserPrivateSubmissions(UserPrincipal user, ChromatographyType type) {
         Iterable<Submission> submissions =
                 submissionRepository.findByPrivateTrueAndReferenceTrueAndUserAndChromatographyType(user, type);
 
-        SortedMap<Long, String> submissionIdToNameMap = new TreeMap<>();
-        submissions.forEach(s -> submissionIdToNameMap.put(s.getId(), s.getName() + " (private)"));
+        SortedMap<BigInteger, String> submissionIdToNameMap = new TreeMap<>();
+        submissions.forEach(s -> submissionIdToNameMap.put(BigInteger.valueOf(s.getId()), s.getName() + " (private)"));
         return submissionIdToNameMap;
     }
 
-    public SortedMap<Long, String> findPublicSubmissions(ChromatographyType type) {
+    public SortedMap<BigInteger, String> findPublicSubmissions(ChromatographyType type) {
         Iterable<Submission> submissions =
                 submissionRepository.findByPrivateFalseAndReferenceTrueAndChromatographyType(type);
 
-        SortedMap<Long, String> submissionIdToNameMap = new TreeMap<>();
-        submissions.forEach(s -> submissionIdToNameMap.put(s.getId(), s.getName()));
+        SortedMap<BigInteger, String> submissionIdToNameMap = new TreeMap<>();
+        submissions.forEach(s -> submissionIdToNameMap.put(BigInteger.valueOf(s.getId()), s.getName()));
         return submissionIdToNameMap;
     }
 
