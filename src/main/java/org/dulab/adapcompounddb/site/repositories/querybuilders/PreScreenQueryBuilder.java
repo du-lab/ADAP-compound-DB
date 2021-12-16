@@ -45,9 +45,9 @@ public class PreScreenQueryBuilder {
 
         spectrumTypeQuery = Arrays.stream(
                 new String[]{
-                        searchConsensus ? "Consensus IS TRUE" : null,
-                        searchReference ? "Reference IS TRUE" : null,
-                        searchClusterable ? "Clusterable IS TRUE" : null})
+                        searchConsensus ? "Spectrum.Consensus IS TRUE" : null,
+                        searchReference ? "Spectrum.Reference IS TRUE" : null,
+                        searchClusterable ? "Spectrum.Clusterable IS TRUE" : null})
                 .filter(Objects::nonNull).collect(Collectors.joining(" OR "));
     }
 
@@ -105,7 +105,10 @@ public class PreScreenQueryBuilder {
 
     public String buildQueryBlock(int numberOfTopMz, Double queryMz) {
 
-        String queryBlock = String.format("SELECT Id FROM Spectrum WHERE (%s)", spectrumTypeQuery);
+        String queryBlock = String.format("SELECT Spectrum.Id FROM Spectrum LEFT JOIN File ON File.Id = Spectrum.FileId " +
+                "LEFT JOIN Submission ON Submission.Id = File.SubmissionId " +
+                "LEFT JOIN UserPrincipal ON UserPrincipal.Id = Submission.UserPrincipalId\n" +
+                "WHERE (%s)", spectrumTypeQuery);
 
         if (chromatographyType != null)
             queryBlock += String.format(" AND Spectrum.ChromatographyType = '%s'", chromatographyType);
@@ -157,6 +160,11 @@ public class PreScreenQueryBuilder {
                     .collect(Collectors.joining(" OR ")));
         }
 
+        queryBlock += String.format(" AND (Spectrum.FileId IS NULL OR Submission.IsPrivate IS FALSE%s)",
+                user != null ? " OR UserPrincipal.Id = " + user.getId() : "");
+        if (submissionIds != null)
+            queryBlock += String.format(" AND (%s)", buildConditionStringWithSubmissionIds());
+
         queryBlock += "\n";
 
         return queryBlock;
@@ -203,15 +211,6 @@ public class PreScreenQueryBuilder {
             query += buildQueryBlock(0, null);
         }
         query += ") AS TempTable\n";
-
-        query += "JOIN Spectrum ON Spectrum.Id = TempTable.Id ";
-        query += "LEFT JOIN File ON File.Id = Spectrum.FileId ";
-        query += "LEFT JOIN Submission ON Submission.Id = File.SubmissionId ";
-        query += "LEFT JOIN UserPrincipal ON UserPrincipal.Id = Submission.UserPrincipalId\n";
-        query += String.format("WHERE (Spectrum.FileId IS NULL OR Submission.IsPrivate IS FALSE%s)",
-                user != null ? " OR UserPrincipal.Id = " + user.getId() : "");
-        if (submissionIds != null)
-            query += String.format(" AND (%s)", buildConditionStringWithSubmissionIds());
 
         query += "\nGROUP BY Id ORDER BY Common DESC";
 
