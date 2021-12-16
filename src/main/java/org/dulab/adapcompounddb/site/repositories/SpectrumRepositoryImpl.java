@@ -2,6 +2,7 @@ package org.dulab.adapcompounddb.site.repositories;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -250,8 +251,11 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                         .withPrecursor(params.getPrecursorTolerance(), params.getPrecursorTolerancePPM(), querySpectrum.getPrecursor())
                         .withRetTime(params.getRetTimeTolerance(), querySpectrum.getRetentionTime());
 
-        if (params.getRetIndexMatchType() == RetIndexMatchType.ALWAYS_MATCH)
+        if (params.getRetIndexMatchType() == RetIndexMatchType.ALWAYS_MATCH) {
+            if (querySpectrum.getRetentionIndex() == null)
+                return Collections.emptyList();
             queryBuilder = queryBuilder.withRetIndex(params.getRetIndexTolerance(), querySpectrum.getRetentionIndex());
+        }
 
         queryBuilder = (querySpectrum.getMass() != null)
                 ? queryBuilder.withMass(params.getMassTolerance(), params.getMassTolerancePPM(), querySpectrum.getMass())

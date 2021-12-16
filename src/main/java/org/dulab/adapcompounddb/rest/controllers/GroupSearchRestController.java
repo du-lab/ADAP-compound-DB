@@ -76,10 +76,15 @@ public class GroupSearchRestController {
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/group_search/progress", produces = "application/json")
     public int submissionGroupSearchProgress(@PathVariable("submissionId") final long submissionId, HttpSession session) {
-        float progressObject = (float) session.getAttribute(GroupSearchService.groupSearchProgress);
+        Object progressObject = session.getAttribute(GroupSearchService.groupSearchProgress);
+
+        if (!(progressObject instanceof Float))
+            return 0;
+
+        float progress = (Float) progressObject;
 
         // Return json-string containing a number between 0 and 100.
-        return Math.round(100 * progressObject);
+        return Math.round(100 * progress);
     }
 
 
@@ -177,6 +182,9 @@ public class GroupSearchRestController {
                 case "retTimeError":
                     comparator = getComparator(SearchResultDTO::getRetTimeError, sortDirection);
                     break;
+                case "retIndexError":
+                    comparator = getComparator(SearchResultDTO::getRetIndexError, sortDirection);
+                    break;
                 case "averageSignificance":
                     comparator = getComparator(SearchResultDTO::getAveSignificance, sortDirection);
                     break;
@@ -232,11 +240,12 @@ public class GroupSearchRestController {
         MASS_ERROR(6, "massError"),
         MASS_ERROR_PPM(7, "massErrorPPM"),
         RET_TIME_ERROR(8, "retTimeError"),
-        AVERAGE_SIGNIFICANCE(9, "averageSignificance"),
-        MINIMUM_SIGNIFICANCE(10, "minimumSignificance"),
-        MAXIMUM_SIGNIFICANCE(11, "maximumSignificance"),
-        ONTOLOGY_LEVEL(12, "ontologyLevel"),
-        CHROMATOGRAPHY_TYPE(13, "chromatographyType");
+        RET_INDEX_ERROR(9, "retIndexError"),
+        AVERAGE_SIGNIFICANCE(10, "averageSignificance"),
+        MINIMUM_SIGNIFICANCE(11, "minimumSignificance"),
+        MAXIMUM_SIGNIFICANCE(12, "maximumSignificance"),
+        ONTOLOGY_LEVEL(13, "ontologyLevel"),
+        CHROMATOGRAPHY_TYPE(14, "chromatographyType");
 
         private int position;
         private String sortColumnName;

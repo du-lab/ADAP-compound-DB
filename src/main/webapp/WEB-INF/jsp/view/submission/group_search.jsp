@@ -157,11 +157,12 @@
                             <th>Query</th>
                             <th title="Match spectra">Match</th>
                             <th title="Molecular weight">Molecular weight</th>
-                            <th title="Number of studies" class="Count">Studies</th>
+                            <th title="Number of studies" class="Count">Sources</th>
                             <th title="Minimum matching score between all spectra in a cluster">Score</th>
                             <th title="Difference between query and library neutral masses">Mass Error (mDa)</th>
                             <th title="Difference between query and library neutral masses">Mass Error (PPM)</th>
                             <th title="Difference between query and library retention times">Ret Time Error</th>
+                            <th title="Difference between query and library retention indices">Ret Index error</th>
                             <th title="Average P-value of ANOVA tests">Average P-value</th>
                             <th title="Minimum P-value of ANOVA tests">Minimum P-value</th>
                             <th title="Maximum P-value of ANOVA tests">Maximum P-value</th>
@@ -219,9 +220,9 @@
                     // table.column(5).visible(d.data.map(row => row['score']).join(''));
                     // table.column(6).visible(d.data.map(row => row['massError']).join(''));
                     // table.column(7).visible(d.data.map(row => row['retTimeError']).join(''));
-                    table.column(9).visible(d.data.map(row => row['aveSignificance']).join(''));
-                    table.column(10).visible(d.data.map(row => row['minSignificance']).join(''));
-                    table.column(11).visible(d.data.map(row => row['maxSignificance']).join(''));
+                    table.column(10).visible(d.data.map(row => row['aveSignificance']).join(''));
+                    table.column(11).visible(d.data.map(row => row['minSignificance']).join(''));
+                    table.column(12).visible(d.data.map(row => row['maxSignificance']).join(''));
                     return d.data;
                 }
             },
@@ -233,6 +234,17 @@
                 $(row).attr('data-queryFileIndex', data.queryFileIndex);
                 $(row).attr('data-querySpectrumIndex', data.querySpectrumIndex);
             },
+            <%--columns: [--%>
+            <%--    {data: 'position'},--%>
+            <%--    {data: function (row) {--%>
+            <%--            const href = (row.querySpectrumId !== 0)--%>
+            <%--                ? `<c:url value="/spectrum/\${row.querySpectrumId}/"/>`--%>
+            <%--                : `<c:url value="/file/\${row.queryFileIndex}/\${row.querySpectrumIndex}/"/>`;--%>
+            <%--            return `<a href="\${href}">\${row.querySpectrumName}</a>`;--%>
+            <%--        }},--%>
+            <%--    {data: row => }--%>
+
+            <%--],--%>
             "aoColumnDefs": [
                 {
                     "targets": 0,
@@ -314,9 +326,16 @@
                     "render": function (data, type, row) {
                         return (row.retTimeError != null) ? row.retTimeError.toFixed(3) : '';
                     }
+                }, {
+                    "targets": 9,
+                    "bSortable": true,
+                    "bVisible": true,
+                    "render": function (data, type, row) {
+                        return (row.retIndexError != null) ? row.retIndexError.toFixed(1) : '';
+                    }
                 },
                 {
-                    "targets": 9,
+                    "targets": 10,
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
@@ -328,7 +347,7 @@
                     }
                 },
                 {
-                    "targets": 10,
+                    "targets": 11,
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
@@ -340,7 +359,7 @@
                     }
                 },
                 {
-                    "targets": 11,
+                    "targets": 12,
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
@@ -351,7 +370,7 @@
                         }
                     }
                 }, {
-                    "targets": 12,
+                    "targets": 13,
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row) {
@@ -359,7 +378,7 @@
                     }
                 },
                 {
-                    "targets": 13,
+                    "targets": 14,
                     "bSortable": true,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
@@ -375,7 +394,7 @@
                     }
                 },
                 {
-                    "targets": 14,
+                    "targets": 15,
                     "bSortable": false,
                     "bVisible": true,
                     "render": function (data, type, row, meta) {
@@ -406,8 +425,12 @@
             $('#queryInfo').spectrumInfo(queryUrl + 'info.json');
             $('#matchInfo').spectrumInfo(matchUrl + 'info.json');
             $('#plot').spectrumPlot(position, queryUrl + 'positive/peaks.json', matchUrl + 'negative/peaks.json');
-            $('#queryStructure').spectrumStructure(queryUrl + 'structure.json', function (x) {$('#queryColumn').attr('hidden', !x);});
-            $('#matchStructure').spectrumStructure(matchUrl + 'structure.json', function (x) {$('#matchColumn').attr('hidden', !x);});
+            $('#queryStructure').spectrumStructure(queryUrl + 'structure.json', function (x) {
+                $('#queryColumn').attr('hidden', !x);
+            });
+            $('#matchStructure').spectrumStructure(matchUrl + 'structure.json', function (x) {
+                $('#matchColumn').attr('hidden', !x);
+            });
 
         });
 

@@ -41,7 +41,9 @@
                                                 cssClass="col-form-label">Retention Index Match:</form:label>
                                     <form:select path="retentionIndexMatch" cssClass="form-control">
                                         <form:option value="IGNORE_MATCH">Ignore Retention Index</form:option>
-                                        <form:option value="PENALIZE_NO_MATCH">Penalize matches without Retention Index</form:option>
+                                        <form:option value="PENALIZE_NO_MATCH_STRONG">Penalize matches without Retention Index (Strong)</form:option>
+                                        <form:option value="PENALIZE_NO_MATCH_AVERAGE">Penalize matches without Retention Index (Average)</form:option>
+                                        <form:option value="PENALIZE_NO_MATCH_WEAK">Penalize matches without Retention Index (Weak)</form:option>
                                         <form:option value="ALWAYS_MATCH">Always match Retention Index</form:option>
                                     </form:select>
                                 </div>

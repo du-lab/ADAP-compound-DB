@@ -10,7 +10,7 @@ public class FilterForm {
 
     private int scoreThreshold = 500;
     private int retentionIndexTolerance = 40;
-    private RetIndexMatchType retentionIndexMatch = RetIndexMatchType.PENALIZE_NO_MATCH;
+    private RetIndexMatchType retentionIndexMatch = RetIndexMatchType.PENALIZE_NO_MATCH_AVERAGE;
     private double mzTolerance = 0.01;
     private MzToleranceType mzToleranceType = MzToleranceType.DA;
     private int limit = 10;

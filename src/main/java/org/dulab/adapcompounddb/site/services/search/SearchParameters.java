@@ -16,7 +16,10 @@ public class SearchParameters implements Cloneable {
 
     private static final Logger LOGGER = LogManager.getLogger(SearchParameters.class);
 
-    public enum RetIndexMatchType {IGNORE_MATCH, PENALIZE_NO_MATCH, ALWAYS_MATCH}
+    public enum RetIndexMatchType {
+        IGNORE_MATCH, PENALIZE_NO_MATCH_STRONG, PENALIZE_NO_MATCH_AVERAGE,
+        PENALIZE_NO_MATCH_WEAK, ALWAYS_MATCH
+    }
 
     public enum MzToleranceType {DA, PPM}
 

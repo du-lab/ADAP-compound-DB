@@ -33,6 +33,7 @@ public class SpectrumMatch implements Serializable {
     private Double massError;
     private Double massErrorPPM;
     private Double retTimeError;
+    private Double retIndexError;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -112,6 +113,14 @@ public class SpectrumMatch implements Serializable {
 
     public void setRetTimeError(Double retTimeError) {
         this.retTimeError = retTimeError;
+    }
+
+    public Double getRetIndexError() {
+        return retIndexError;
+    }
+
+    public void setRetIndexError(Double retIndexError) {
+        this.retIndexError = retIndexError;
     }
 
     @Override

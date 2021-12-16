@@ -80,6 +80,7 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
     private Double massError;
     private Double massErrorPPM;
     private Double retTimeError;
+    private Double retIndexError;
     private boolean marked;
 
 
@@ -151,6 +152,7 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
             this.massError = spectrumMatch.getMassError();
             this.massErrorPPM = spectrumMatch.getMassErrorPPM();
             this.retTimeError = spectrumMatch.getRetTimeError();
+            this.retIndexError = spectrumMatch.getRetIndexError();
 
             SpectrumCluster cluster = matchSpectrum.getCluster();
             if (cluster != null) {
@@ -531,6 +533,14 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
 
     public void setRetTimeError(Double retTimeError) {
         this.retTimeError = retTimeError;
+    }
+
+    public Double getRetIndexError() {
+        return retIndexError;
+    }
+
+    public void setRetIndexError(Double retIndexError) {
+        this.retIndexError = retIndexError;
     }
 
     public int getPosition() {
