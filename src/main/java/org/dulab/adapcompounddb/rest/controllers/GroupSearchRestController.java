@@ -61,15 +61,12 @@ public class GroupSearchRestController {
             matches = new ArrayList<>(EMPTY_LIST);
         }
         final DataTableResponse response = groupSearchSort(searchStr, start, length, matches, columnStr);
-//        final ObjectMapper mapper = new ObjectMapper();
-//        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         return mapper.writeValueAsString(response);
     }
 
-    @RequestMapping(value = {"/file/group_search/progress", "/submission/*/group_search/progress}"},
-            produces = "application/json")
+    @RequestMapping(value = "/group_search/progress", produces = "application/json")
     public int fileGroupSearchProgress(HttpSession session) {
-        Object progressObject = session.getAttribute(GroupSearchService.groupSearchProgress);
+        Object progressObject = session.getAttribute(ControllerUtils.GROUP_SEARCH_PROGRESS_ATTRIBUTE_NAME);
         if (!(progressObject instanceof Float))
             return 0;
 
@@ -77,17 +74,6 @@ public class GroupSearchRestController {
         float progress = (Float) progressObject;
         return Math.round(100 * progress);
     }
-
-//    @RequestMapping(value = "/submission/{submissionId:\\d+}/group_search/progress", produces = "application/json")
-//    public int submissionGroupSearchProgress(@PathVariable("submissionId") final long submissionId, HttpSession session) {
-//        Object progressObject = session.getAttribute(GroupSearchService.groupSearchProgress);
-//        if (!(progressObject instanceof Float))
-//            return 0;
-//
-//        // Return json-string containing a number between 0 and 100.
-//        float progress = (Float) progressObject;
-//        return Math.round(100 * progress);
-//    }
 
     private DataTableResponse groupSearchSort(final String searchStr, final Integer start, final Integer length,
                                               List<SearchResultDTO> spectrumList, final String columnStr) {

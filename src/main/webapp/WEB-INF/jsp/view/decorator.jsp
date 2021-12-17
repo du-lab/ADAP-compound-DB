@@ -119,6 +119,14 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a id="searchPage" class="nav-link"
+                               <c:if test="${sessionScope[dulab:groupSearchResultsAttributeName()] == null}">hidden</c:if>
+                               href="<c:url value="/group_search/"/>">
+                                <i class="material-icons align-middle">search</i>
+                                <span class="align-middle">Search</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a id="libraryPage" class="nav-link" href="<c:url value="/libraries/" />">
                                 <i class="material-icons align-middle">equalizer</i>
                                 <span class="align-middle">Libraries</span>

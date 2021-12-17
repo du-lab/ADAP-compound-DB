@@ -27,6 +27,9 @@ public class ControllerUtils {
         return GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME;
     }
 
+    public static final String GROUP_SEARCH_PROGRESS_ATTRIBUTE_NAME = "group_search_progress";
+    public static String getGroupSearchProgressAttributeName() {return GROUP_SEARCH_PROGRESS_ATTRIBUTE_NAME;}
+
     public static final String INDIVIDUAL_SEARCH_RESULTS_ATTRIBUTE_NAME = "individual_search_results";
 
 

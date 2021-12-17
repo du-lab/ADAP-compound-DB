@@ -49,79 +49,42 @@ public class GroupSearchController extends BaseController {
         this.submissionTagService = submissionTagService;
     }
 
-//    @ModelAttribute
-//    public void addAttributes(Model model, ChromatographyType type) {
-//        List<String> speciesList = submissionTagService.findDistinctTagValuesByTagKey("species (common)");
-//        List<String> sourceList = submissionTagService.findDistinctTagValuesByTagKey("sample source");
-//        List<String> diseaseList = submissionTagService.findDistinctTagValuesByTagKey("disease");
-//
-//        SortedMap<Long, String> submissions = submissionService.findUserPrivateSubmissions(this.getCurrentUserPrincipal());
-//        submissions.put(0L, "Consensus Spectra");
-//
-//        filterOptions = new FilterOptions(speciesList, sourceList, diseaseList, submissions);
-//        model.addAttribute("filterOptions", filterOptions);
-//    }
+    @RequestMapping(value = "/group_search/parameters", method = RequestMethod.GET)
+    public String groupSearchParametersGet(@RequestParam Optional<Boolean> withOntologyLevels,
+                                           @RequestParam Optional<Long> submissionId,
+                                           HttpSession session, Model model, @Valid FilterForm form) {
 
-    @RequestMapping(value = "/file/group_search/", method = RequestMethod.GET)
-    public String groupSearch(@RequestParam Optional<Boolean> withOntologyLevels, HttpSession session, Model model,
-                              @Valid FilterForm form) {
+//        session.removeAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
 
-        session.removeAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
+        Submission submission = submissionId
+                .map(submissionService::findSubmission)
+                .orElseGet(() -> Submission.from(session));
 
-        final Submission submission = Submission.from(session);
-        if (submission == null) {
+        if (submission == null)
             return "redirect:/file/upload/";
-        }
-
-        return groupSearchGet(withOntologyLevels.orElse(false), submission, model, form);
-    }
-
-    @RequestMapping(value = "/submission/{submissionId:\\d+}/group_search/", method = RequestMethod.GET)
-    public String groupSearch(@PathVariable("submissionId") long submissionId,
-                              @RequestParam Optional<Boolean> withOntologyLevels, Model model, @Valid FilterForm form,
-                              HttpSession session) {
-        session.removeAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
-        groupSearchService.setProgress(0F);
-
-        Submission submission = submissionService.findSubmission(submissionId);
-        return groupSearchGet(withOntologyLevels.orElse(false), submission, model, form);
-    }
-
-    public String groupSearchGet(boolean withOntologyLevels, Submission submission, Model model, FilterForm form) {
 
         FilterOptions filterOptions = getFilterOptions(getChromatographyTypes(submission));
         model.addAttribute("filterOptions", filterOptions);
 
         form.setSubmissionIds(filterOptions.getSubmissions().keySet());
-        form.setWithOntologyLevels(withOntologyLevels);
+        form.setWithOntologyLevels(withOntologyLevels.orElse(false));
         model.addAttribute("filterForm", form);
         return "submission/group_search_parameters";
     }
 
-    @RequestMapping(value = "/file/group_search/", method = RequestMethod.POST)
-    public ModelAndView groupSearch(final HttpSession session, final Model model, @Valid final FilterForm form,
-                                    final Errors errors) {
+    @RequestMapping(value = "/group_search/parameters", method = RequestMethod.POST)
+    public String groupSearchParametersPost(@RequestParam Optional<Long> submissionId, HttpSession session, Model model,
+                                            @Valid FilterForm form, Errors errors) {
 
-        final Submission submission = Submission.from(session);
-        return groupSearchPost(session, model, form, errors, submission);
-    }
-
-    @RequestMapping(value = "/submission/{submissionId:\\d+}/group_search/", method = RequestMethod.POST)
-    public ModelAndView groupSearch(@PathVariable("submissionId") final long submissionId, final HttpSession session,
-                                    final Model model, @Valid final FilterForm form, final Errors errors) {
-
-        Submission submission = submissionService.findSubmission(submissionId);
-        return groupSearchPost(session, model, form, errors, submission);
-    }
-
-    private ModelAndView groupSearchPost(
-            HttpSession session, Model model, @Valid FilterForm form, Errors errors, Submission submission) {
+        Submission submission = submissionId
+                .map(submissionService::findSubmission)
+                .orElseGet(() -> Submission.from(session));
 
         FilterOptions filterOptions = getFilterOptions(getChromatographyTypes(submission));
         model.addAttribute("filterOptions", filterOptions);
 
         if (errors.hasErrors()) {
-            return new ModelAndView("submission/group_search");
+            return "submission/group_search_parameters";
         }
 
         if (asyncResult != null && !asyncResult.isDone()) {
@@ -146,7 +109,12 @@ public class GroupSearchController extends BaseController {
         asyncResult = groupSearchService.groupSearch(this.getCurrentUserPrincipal(), submission.getFiles(), session,
                 parameters, form.isWithOntologyLevels());
 
-        return new ModelAndView("submission/group_search");
+        return "redirect:/group_search/";
+    }
+
+    @RequestMapping(value = "/group_search/", method = RequestMethod.GET)
+    public String groupSearch() {
+        return "submission/group_search";
     }
 
     private Collection<ChromatographyType> getChromatographyTypes(Submission submission) {

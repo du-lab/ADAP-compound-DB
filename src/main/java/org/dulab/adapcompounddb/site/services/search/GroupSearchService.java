@@ -26,21 +26,11 @@ public class GroupSearchService {
 
     private static final Logger LOGGER = LogManager.getLogger(GroupSearchService.class);
 
-    private float progress = 0;
     private final IndividualSearchService spectrumSearchService;
-    public static final String groupSearchProgress = "group_search_progress";
 
     @Autowired
     public GroupSearchService(IndividualSearchService spectrumSearchService) {
         this.spectrumSearchService = spectrumSearchService;
-    }
-
-    public float getProgress() {
-        return progress;
-    }
-
-    public void setProgress(final float progress) {
-        this.progress = progress;
     }
 
     @Async
@@ -70,7 +60,7 @@ public class GroupSearchService {
 
             int spectrumCount = 0;
             int progressStep = 0;
-            progress = 0F;
+            float progress = 0F;
             int position = 0;
             for (int fileIndex = 0; fileIndex < files.size(); ++fileIndex) {
                 File file = files.get(fileIndex);
@@ -105,7 +95,7 @@ public class GroupSearchService {
                     groupSearchDTOList.addAll(individualSearchResults);
                     try {
                         session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
-                        session.setAttribute(groupSearchProgress, progress);
+                        session.setAttribute(ControllerUtils.GROUP_SEARCH_PROGRESS_ATTRIBUTE_NAME, progress);
                     } catch (IllegalStateException e) {
                         LOGGER.warn("It looks like the session has been closed. Stopping the group search.");
                         return new AsyncResult<>(null);

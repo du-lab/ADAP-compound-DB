@@ -52,12 +52,13 @@
                             Search
                         </button>
                         <div class="dropdown-menu dropdown-menu-right">
-                            <a id="searchAllSpectra" class="dropdown-item" href="<c:url value="group_search/"/>"
+                            <a id="searchAllSpectra" class="dropdown-item"
+                               href="<c:url value="/group_search/parameters"><c:if test="${submission.id != 0}"><c:param name="submissionId" value="${submission.id}"/></c:if></c:url>"
                                title="Search based on the spectral similarity">
                                 Search for similar spectra
                             </a>
                             <a class="dropdown-item <c:if test="${!dulab:checkOntologyLevels(submission)}">disabled</c:if>"
-                               href="<c:url value="group_search/"><c:param name="withOntologyLevels">true</c:param></c:url>"
+                               href="<c:url value="/group_search/parameters"><c:if test="${submission.id != 0}"><c:param name="submissionId" value="${submission.id}"/></c:if><c:param name="withOntologyLevels">true</c:param></c:url>"
                                title="Search based on the mass, retention time, and spectral similarity">
                                 Search for similar spectra (with Ontology Levels)
                             </a>
