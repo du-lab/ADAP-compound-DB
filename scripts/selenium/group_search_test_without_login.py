@@ -43,7 +43,7 @@ def group_search_test(homepage_url, msp_path):
         time.sleep(60)
 
         # check if current page is file/group_search/
-        assert (driver.current_url.__str__().startswith(urljoin(homepage_url, 'file/group_search/')))
+        assert (driver.current_url.__str__().startswith(urljoin(homepage_url, 'group_search/')))
 
         # check if the matching table contains values
         matching_table = driver.find_element_by_id('match_table')
