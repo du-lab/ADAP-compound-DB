@@ -427,7 +427,7 @@
     </dependencies>
     <build>
         <finalName>adap-compound-db</finalName>
-        <testSourceDirectory>src/main/test</testSourceDirectory>
+<!--        <testSourceDirectory>src/main/test</testSourceDirectory>-->
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
