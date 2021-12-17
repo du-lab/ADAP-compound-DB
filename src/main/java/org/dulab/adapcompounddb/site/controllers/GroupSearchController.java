@@ -96,8 +96,9 @@ public class GroupSearchController extends BaseController {
         String disease = ALL.equalsIgnoreCase(form.getDisease()) ? null : form.getDisease();
 
         SearchParameters parameters = new SearchParameters();
-        parameters.setScoreThreshold(form.getScoreThreshold() / 1000.0);
-        parameters.setRetIndexTolerance((double) form.getRetentionIndexTolerance());
+        parameters.setScoreThreshold(form.getScoreThreshold() != null ? form.getScoreThreshold() / 1000.0 : null);
+        parameters.setRetIndexTolerance(
+                form.getRetentionIndexTolerance() != null ? (double) form.getRetentionIndexTolerance() : null);
         parameters.setRetIndexMatchType(form.getRetentionIndexMatch());
         parameters.setMzTolerance(form.getMzTolerance(), form.getMzToleranceType());
         parameters.setLimit(form.getLimit());
@@ -146,7 +147,7 @@ public class GroupSearchController extends BaseController {
                     submissionService.findUserPrivateSubmissions(this.getCurrentUserPrincipal(), chromatographyType));
             submissions.putAll(submissionService.findPublicSubmissions(chromatographyType));
         }
-        submissions.put(BigInteger.ZERO, "Consensus Spectra");
+        submissions.put(BigInteger.ZERO, "ADAP-KDB Consensus Spectra");
 
         return new FilterOptions(speciesList, sourceList, diseaseList, submissions);
     }

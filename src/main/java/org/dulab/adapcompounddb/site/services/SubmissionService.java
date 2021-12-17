@@ -225,7 +225,12 @@ public class SubmissionService {
                 submissionRepository.findByPrivateTrueAndReferenceTrueAndUserAndChromatographyType(user, type);
 
         SortedMap<BigInteger, String> submissionIdToNameMap = new TreeMap<>();
-        submissions.forEach(s -> submissionIdToNameMap.put(BigInteger.valueOf(s.getId()), s.getName() + " (private)"));
+        for (Submission submission : submissions) {
+            String html = String.format("%s <span class='badge badge-info'>private</span>%s",
+                    submission.getName(),
+                    submission.isInHouse() ? " <span class='badge badge-success'>in-house</span>" : "");
+            submissionIdToNameMap.put(BigInteger.valueOf(submission.getId()), html);
+        }
         return submissionIdToNameMap;
     }
 

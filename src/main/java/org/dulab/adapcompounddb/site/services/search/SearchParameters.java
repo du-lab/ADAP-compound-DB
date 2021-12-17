@@ -231,7 +231,7 @@ public class SearchParameters implements Cloneable {
                 break;
             case LC_MSMS_POS:
             case LC_MSMS_NEG:
-                parameters.setMzTolerance(0.001);
+                parameters.setMzTolerancePPM(0.001);
                 parameters.setScoreThreshold(0.3);
                 parameters.setPrecursorTolerance(0.01);
                 break;

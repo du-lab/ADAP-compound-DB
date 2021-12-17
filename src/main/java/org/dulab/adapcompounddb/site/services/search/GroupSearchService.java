@@ -66,7 +66,7 @@ public class GroupSearchService {
                 File file = files.get(fileIndex);
                 List<Spectrum> spectra = file.getSpectra();
                 if (spectra == null) continue;
-                for (int spectrumIndex = 0; spectrumIndex < spectra.size(); ++spectrumIndex, ++spectrumCount) {  // Spectrum querySpectrum : file.getSpectra()
+                for (int spectrumIndex = 0; spectrumIndex < spectra.size(); ++spectrumIndex) {  // Spectrum querySpectrum : file.getSpectra()
                     Spectrum querySpectrum = spectra.get(spectrumIndex);
 
                     if (Thread.currentThread().isInterrupted()) break;
@@ -101,7 +101,7 @@ public class GroupSearchService {
                         return new AsyncResult<>(null);
                     }
 
-                    if (spectrumCount % 100 == 0) {
+                    if (++spectrumCount % 100 == 0) {
                         long time = System.currentTimeMillis();
                         LOGGER.info(String.format(
                                 "Searched %d spectra with the average time %.3f seconds per spectrum",

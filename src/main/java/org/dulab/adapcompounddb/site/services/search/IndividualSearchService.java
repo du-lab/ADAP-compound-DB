@@ -83,6 +83,8 @@ public class IndividualSearchService {
         modifiedParameters.setScoreThreshold(null);
         modifiedParameters.setPrecursorTolerance(null, null);
         modifiedParameters.setRetTimeTolerance(null);
+        modifiedParameters.setRetIndexTolerance(null);
+        modifiedParameters.setRetIndexMatchType(SearchParameters.RetIndexMatchType.IGNORE_MATCH);
         modifiedParameters.setMassTolerance(null, Parameters.MASS_TOLERANCE_PPM);
 
         List<Adduct> adducts = adductService.findAdductsByChromatography(spectrum.getChromatographyType());

@@ -8,12 +8,12 @@ import java.util.Set;
 
 public class FilterForm {
 
-    private int scoreThreshold = 500;
-    private int retentionIndexTolerance = 40;
-    private RetIndexMatchType retentionIndexMatch = RetIndexMatchType.PENALIZE_NO_MATCH_AVERAGE;
-    private double mzTolerance = 0.01;
+    private Integer scoreThreshold;
+    private Integer retentionIndexTolerance;
+    private RetIndexMatchType retentionIndexMatch = RetIndexMatchType.IGNORE_MATCH;
+    private Double mzTolerance;
     private MzToleranceType mzToleranceType = MzToleranceType.DA;
-    private int limit = 10;
+    private Integer limit = 10;
     private String species;
     private String source;
     private String disease;
@@ -21,19 +21,19 @@ public class FilterForm {
     private boolean withOntologyLevels;
 
 
-    public int getScoreThreshold() {
+    public Integer getScoreThreshold() {
         return scoreThreshold;
     }
 
-    public void setScoreThreshold(int scoreThreshold) {
+    public void setScoreThreshold(Integer scoreThreshold) {
         this.scoreThreshold = scoreThreshold;
     }
 
-    public int getRetentionIndexTolerance() {
+    public Integer getRetentionIndexTolerance() {
         return retentionIndexTolerance;
     }
 
-    public void setRetentionIndexTolerance(int retentionIndexTolerance) {
+    public void setRetentionIndexTolerance(Integer retentionIndexTolerance) {
         this.retentionIndexTolerance = retentionIndexTolerance;
     }
 
@@ -45,11 +45,11 @@ public class FilterForm {
         this.retentionIndexMatch = retentionIndexMatch;
     }
 
-    public double getMzTolerance() {
+    public Double getMzTolerance() {
         return mzTolerance;
     }
 
-    public void setMzTolerance(double mzTolerance) {
+    public void setMzTolerance(Double mzTolerance) {
         this.mzTolerance = mzTolerance;
     }
 
@@ -61,11 +61,11 @@ public class FilterForm {
         this.mzToleranceType = mzToleranceType;
     }
 
-    public int getLimit() {
+    public Integer getLimit() {
         return limit;
     }
 
-    public void setLimit(int limit) {
+    public void setLimit(Integer limit) {
         this.limit = limit;
     }
 

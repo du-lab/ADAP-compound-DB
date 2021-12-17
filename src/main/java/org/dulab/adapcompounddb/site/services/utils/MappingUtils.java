@@ -54,6 +54,8 @@ public class MappingUtils {
     }
 
     public static Double parseDouble(String string) {
+        if (string == null || string.isEmpty())
+            return null;
         try {
             return Double.parseDouble(string.replaceAll(",", "."));
         } catch (NullPointerException | NumberFormatException e) {

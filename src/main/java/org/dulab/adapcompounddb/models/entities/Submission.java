@@ -213,7 +213,7 @@ public class Submission implements Serializable {
         if (files != null) {
             for (File file : files) {
                 List<Spectrum> spectra = file.getSpectra();
-                if (!spectra.isEmpty()) {
+                if (spectra != null && !spectra.isEmpty()) {
                     Spectrum spectrum = spectra.get(0);
                     if (spectrum.isReference()) {
                         return true;
@@ -228,7 +228,7 @@ public class Submission implements Serializable {
         if (files != null) {
             for (File file : files) {
                 List<Spectrum> spectra = file.getSpectra();
-                if (!spectra.isEmpty()) {
+                if (spectra != null && !spectra.isEmpty()) {
                     Spectrum spectrum = spectra.get(0);
                     if (spectrum.isInHouseReference()) {
                         return true;
