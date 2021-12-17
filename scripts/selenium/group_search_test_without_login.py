@@ -33,8 +33,11 @@ def group_search_test(homepage_url, msp_path):
         search_menu.click()
         time.sleep(5)
 
-        search_all_button = driver.find_element_by_id('searchAllSpectra')
-        search_all_button.click()
+        search_parameters_button = driver.find_element_by_id('searchAllSpectra')
+        search_parameters_button.click()
+
+        search_button = driver.find_element_by_id('searchButton')
+        search_button.click()
 
         # add 60 seconds
         time.sleep(60)

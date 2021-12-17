@@ -9,7 +9,7 @@
                 <div class="form-row">
                     <div class="col">
                         <div class="btn-toolbar justify-content-end" role="toolbar">
-                            <button class="btn btn-primary" type="submit">Search</button>
+                            <button id="searchButton" class="btn btn-primary" type="submit">Search</button>
                         </div>
                     </div>
                 </div>
