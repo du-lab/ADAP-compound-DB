@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.controllers.forms;
 
+import org.dulab.adapcompounddb.site.controllers.utils.ConversionsUtils;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -10,7 +11,7 @@ public class FileUploadFormTest {
     public void toJsonBytes() {
 
         FileUploadForm fileUploadForm = new FileUploadForm();
-        byte[] data = fileUploadForm.toJsonBytes();
+        String byteString = ConversionsUtils.formToByteString(fileUploadForm);
     }
 
     @Test

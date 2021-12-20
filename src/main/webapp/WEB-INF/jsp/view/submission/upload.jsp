@@ -80,27 +80,42 @@
                                                              cssClass="text-danger form-control-sm"/>
                                             </div>
                                         </div>
+
                                         <div class="row form-group">
                                             <div class="col-md-4">
-                                                <form:label path="mergeFiles"
-                                                            cssClass="col-form-label">Merge Files</form:label>
-                                            </div>
-                                            <div class="col-md-8">
-                                                <form:checkbox path="mergeFiles" data-toggle="toggle" data-on="Yes"
-                                                               data-off="No"
-                                                               data-size="sm"/>
-                                                <form:errors path="mergeFiles" cssClass="text-danger form-control-sm"/>
-                                            </div>
-                                        </div>
-                                        <div class="row form-group">
-                                            <div class="col-md-4">
-                                                <form:label path="files" cssClass="col-form-label">File (max 256MB)</form:label>&nbsp;
+                                                <form:label path="files"
+                                                            cssClass="col-form-label">Files (max 256MB)</form:label>&nbsp;
                                             </div>
                                             <div class="col-md-8">
                                                 <input type="file" name="files" accept=".msp,.csv,.cdf,.mzml,.mzxml"
                                                        class="form-control-file"
                                                        multiple/>
                                                 <form:errors path="files" cssClass="text-danger form-control-sm"/>
+                                            </div>
+                                        </div>
+
+                                        <div class="row form-group">
+                                            <div class="col-md-8 offset-md-4">
+                                                <div class="custom-control custom-switch">
+                                                    <input type="checkbox" class="custom-control-input"
+                                                           name="mergeFiles" id="mergeFiles"
+                                                           <c:if test="${fileUploadForm.mergeFiles}">checked</c:if>/>
+                                                    <label class="custom-control-label" for="mergeFiles">Merge
+                                                        Files</label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row form-group">
+                                            <div class="col-md-8 offset-md-4">
+                                                <div class="custom-control custom-switch">
+                                                    <input type="checkbox" class="custom-control-input"
+                                                           name="roundMzValues" id="roundMzValues"
+                                                           <c:if test="${fileUploadForm.roundMzValues}">checked</c:if>/>
+                                                    <label class="custom-control-label" for="roundMzValues">
+                                                        Round m/z values in Spectra
+                                                    </label>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -206,10 +221,12 @@
                                                     <form:label path="mspRetentionIndexField"
                                                                 cssClass="col-md-4 col-form-label">Retention Index Field</form:label>
                                                     <div class="col-md-4">
-                                                        <form:input path="mspRetentionIndexField" cssClass="form-control"/>
+                                                        <form:input path="mspRetentionIndexField"
+                                                                    cssClass="form-control"/>
                                                     </div>
                                                     <div class="col-md-4">
-                                                        <form:input path="csvRetentionIndexField" cssClass="form-control"/>
+                                                        <form:input path="csvRetentionIndexField"
+                                                                    cssClass="form-control"/>
                                                     </div>
                                                 </div>
                                                 <div class="row form-group">
@@ -288,7 +305,7 @@
 <script src="<c:url value="/resources/npm/node_modules/jquery/dist/jquery.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/popper.js/dist/umd/popper.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/bootstrap/dist/js/bootstrap.min.js"/>"></script>
-<script src="<c:url value="/resources/npm/node_modules/bootstrap4-toggle/js/bootstrap4-toggle.min.js"/>"></script>
+<%--<script src="<c:url value="/resources/npm/node_modules/bootstrap4-toggle/js/bootstrap4-toggle.min.js"/>"></script>--%>
 <script>
     $('#fileUploadForm').submit(function () {
         $('#progressModal').modal('show');

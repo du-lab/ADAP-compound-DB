@@ -21,7 +21,6 @@ import java.util.Map;
 public class FileUploadForm {
 
     private static final Logger LOGGER = LogManager.getLogger(FileUploadForm.class);
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
 
     @JsonIgnore
@@ -32,6 +31,7 @@ public class FileUploadForm {
 //    private FileType fileType;
 
     private boolean mergeFiles;
+    private boolean roundMzValues;
 
     private String mspNameField;
     private String mspSynonymField;
@@ -88,6 +88,14 @@ public class FileUploadForm {
 
     public void setMergeFiles(boolean mergeFiles) {
         this.mergeFiles = mergeFiles;
+    }
+
+    public boolean isRoundMzValues() {
+        return roundMzValues;
+    }
+
+    public void setRoundMzValues(boolean roundMzValues) {
+        this.roundMzValues = roundMzValues;
     }
 
     public String getMspNameField() {
@@ -314,18 +322,18 @@ public class FileUploadForm {
         return mappings;
     }
 
-    public byte[] toJsonBytes() {
-        try {
-            return OBJECT_MAPPER.writeValueAsBytes(this);
-        } catch (JsonProcessingException e) {
-            LOGGER.warn("Cannot convert FileUploadForm to Json: " + e.getMessage(), e);
-            return new byte[0];
-        }
-    }
+//    public byte[] toJsonBytes() {
+//        try {
+//            return OBJECT_MAPPER.writeValueAsBytes(this);
+//        } catch (JsonProcessingException e) {
+//            LOGGER.warn("Cannot convert FileUploadForm to Json: " + e.getMessage(), e);
+//            return new byte[0];
+//        }
+//    }
 
-    public static FileUploadForm fromJsonBytes(byte[] jsonBytes) throws IOException {
-        return OBJECT_MAPPER.readValue(jsonBytes, FileUploadForm.class);
-    }
+//    public static FileUploadForm fromJsonBytes(byte[] jsonBytes) throws IOException {
+//        return OBJECT_MAPPER.readValue(jsonBytes, FileUploadForm.class);
+//    }
 
     @JsonIgnore
     private MetaDataMapping createMspMapping() {

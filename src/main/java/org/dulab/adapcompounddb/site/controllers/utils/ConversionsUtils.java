@@ -1,5 +1,7 @@
 package org.dulab.adapcompounddb.site.controllers.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -11,7 +13,9 @@ import javax.annotation.Nullable;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -82,5 +86,36 @@ public class ConversionsUtils {
             LOGGER.warn("Error while plotting a structure for SMILES", e);
         }
         return null;
+    }
+
+    public static <T> T byteStringToForm(String jsonString, Class<T> formClass) {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try {
+            byte[] jsonBytes = Base64.getDecoder().decode(jsonString);
+            return objectMapper.readValue(jsonBytes, formClass);
+        } catch (IOException e) {
+            try {
+                return formClass.getConstructor().newInstance();
+            } catch (NoSuchMethodException | InstantiationException | IllegalAccessException
+                    | InvocationTargetException ex) {
+                throw new IllegalStateException("Cannot initialize a form: " + ex.getMessage(), ex);
+            }
+        }
+    }
+
+    public static <T> String formToByteString(T form) {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        byte[] jsonBytes;
+        try {
+            jsonBytes = objectMapper.writeValueAsBytes(form);
+            return Base64.getEncoder().encodeToString(jsonBytes);
+        } catch (JsonProcessingException e) {
+            LOGGER.warn("Cannot convert Form to Json: " + e.getMessage(), e);
+            return "";
+        }
     }
 }

@@ -46,7 +46,7 @@ public class MultipartFileUtils {
     public static void readMultipartFile(Submission submission, List<MultipartFile> multipartFiles,
                                          @Nullable ChromatographyType chromatographyType,
                                          @Nullable Map<FileType, MetaDataMapping> metaDataMappings,
-                                         boolean mergeFiles) {
+                                         boolean mergeFiles, boolean roundMzInSpectra) {
 
 //        final FileReaderService service = fileReaderServiceMap.get(fileType);
 //        if (service == null)
@@ -71,6 +71,10 @@ public class MultipartFileUtils {
             if (fileReader == null)
                 throw new IllegalStateException(
                         "Cannot find an implementation of FileReaderService for a file of type " + fileType);
+
+            if (fileReader instanceof MspFileReaderService) {
+                ((MspFileReaderService) fileReader).setRoundMzValues(roundMzInSpectra);
+            }
 
             File file = new File();
             file.setName(filename);

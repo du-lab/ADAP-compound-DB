@@ -23,14 +23,17 @@ import java.util.stream.Collectors;
 public class ControllerUtils {
 
     public static final String GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME = "group_search_results";
+
     public static String groupSearchResultsAttributeName() {
         return GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME;
     }
 
     public static final String GROUP_SEARCH_PROGRESS_ATTRIBUTE_NAME = "group_search_progress";
-    public static String getGroupSearchProgressAttributeName() {return GROUP_SEARCH_PROGRESS_ATTRIBUTE_NAME;}
 
     public static final String INDIVIDUAL_SEARCH_RESULTS_ATTRIBUTE_NAME = "individual_search_results";
+
+    public static final String META_FIELDS_COOKIE_NAME = "metaFields";
+    public static final String SEARCH_PARAMETERS_COOKIE_NAME = "search_parameters_form";
 
 
     @Autowired
@@ -119,11 +122,11 @@ public class ControllerUtils {
                     .orElse(0.0);
 
             peaks.forEach(p -> jsonArrayBuilder.add(
-                            Json.createObjectBuilder()
-                                    .add("mz", p.getMz())
-                                    .add("intensity", 100 * p.getIntensity() / maxIntensity)
-                                    .build()
-                    ));
+                    Json.createObjectBuilder()
+                            .add("mz", p.getMz())
+                            .add("intensity", 100 * p.getIntensity() / maxIntensity)
+                            .build()
+            ));
         }
 
         jsonObjectBuilder.add("peaks", jsonArrayBuilder.build());
@@ -407,6 +410,7 @@ public class ControllerUtils {
 
     /**
      * Returns true if ontology levels can be assigned to the spectra in the given submission
+     *
      * @param submission instance of Submission
      * @return true if ontology levels can be assigned to the spectra in the given submission
      */

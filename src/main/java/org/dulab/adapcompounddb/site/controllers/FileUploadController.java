@@ -6,6 +6,7 @@ import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.enums.FileType;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.site.controllers.forms.FileUploadForm;
+import org.dulab.adapcompounddb.site.controllers.utils.ConversionsUtils;
 import org.dulab.adapcompounddb.site.controllers.utils.MultipartFileUtils;
 import org.dulab.adapcompounddb.site.services.io.FileReaderService;
 import org.dulab.adapcompounddb.site.services.io.MspFileReaderService;
@@ -25,15 +26,14 @@ import javax.validation.Valid;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.META_FIELDS_COOKIE_NAME;
+
 @Controller
 public class FileUploadController {
-
-    private static final String META_FIELDS_COOKIE_NAME = "metaFields";
 
     private static final Logger LOG = LogManager.getLogger(FileUploadController.class);
 
@@ -102,13 +102,7 @@ public class FileUploadController {
             return "redirect:/file/";
         }
 
-        FileUploadForm form;
-        try {
-            byte[] jsonBytes = Base64.getDecoder().decode(metaFieldsInJson);
-            form = FileUploadForm.fromJsonBytes(jsonBytes);
-        } catch (IOException e) {
-            form = new FileUploadForm();
-        }
+        FileUploadForm form = ConversionsUtils.byteStringToForm(metaFieldsInJson, FileUploadForm.class);
 
         model.addAttribute("fileUploadForm", form);
         return "submission/upload";
@@ -129,7 +123,7 @@ public class FileUploadController {
         Submission submission = new Submission();
 //        try {
         MultipartFileUtils.readMultipartFile(submission, form.getFiles(), form.getChromatographyType(),
-                form.getMetaDataMappings(), form.isMergeFiles());
+                form.getMetaDataMappings(), form.isMergeFiles(), form.isRoundMzValues());
 //        } catch (IllegalStateException e) {
 //            LOG.warn(e.getMessage(), e);
 //            model.addAttribute("message", e.getMessage());
@@ -138,8 +132,8 @@ public class FileUploadController {
 
         Submission.assign(session, submission);
 
-        byte[] jsonBytes = form.toJsonBytes();
-        Cookie metaFieldsCookie = new Cookie(META_FIELDS_COOKIE_NAME, Base64.getEncoder().encodeToString(jsonBytes));
+        String byteString = ConversionsUtils.formToByteString(form);
+        Cookie metaFieldsCookie = new Cookie(META_FIELDS_COOKIE_NAME, byteString);
         response.addCookie(metaFieldsCookie);
 
         return "redirect:/file/";

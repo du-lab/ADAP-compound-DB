@@ -25,6 +25,8 @@ public class MspFileReaderService implements FileReaderService {
     private static final Logger LOG = LogManager.getLogger(MspFileReaderService.class);
     private static final Pattern PEAK_PATTERN = Pattern.compile("([0-9]+[:\\s][0-9]+[;\\s]?)+");
 
+    private boolean roundMzValues = false;
+
     @Override
     public List<Spectrum> read(InputStream inputStream, @Nullable MetaDataMapping mapping, String filename,
                                ChromatographyType chromatographyType)
@@ -81,6 +83,14 @@ public class MspFileReaderService implements FileReaderService {
         return spectra;
     }
 
+    public boolean isRoundMzValues() {
+        return roundMzValues;
+    }
+
+    public void setRoundMzValues(boolean roundMzValues) {
+        this.roundMzValues = roundMzValues;
+    }
+
     private void addPeak(Spectrum spectrum, List<Peak> peaks, String line) {
 
         line = line.replaceAll("\".+\"", "");
@@ -88,7 +98,10 @@ public class MspFileReaderService implements FileReaderService {
         for (int i = 0; i < pairs.length; i += 2) {
             try {
                 Peak peak = new Peak();
-                peak.setMz(Double.parseDouble(pairs[i]));
+                double mz = Double.parseDouble(pairs[i]);
+                if (roundMzValues)
+                    mz = Math.round(mz);
+                peak.setMz(mz);
                 peak.setIntensity(Double.parseDouble(pairs[i + 1]));
                 peak.setSpectrum(spectrum);
                 peaks.add(peak);

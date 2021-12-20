@@ -76,7 +76,8 @@ public class FileUploadRestController {
             Map<FileType, MetaDataMapping> metaDataMappingMap = new HashMap<>();
             metaDataMappingMap.put(FileType.MSP, metaDataMapping);
 
-            MultipartFileUtils.readMultipartFile(submission, files, chromatographyType, metaDataMappingMap, false);
+            MultipartFileUtils.readMultipartFile(submission, files, chromatographyType, metaDataMappingMap,
+                    false, false);
 
             submissionService.saveSubmission(submission);
 

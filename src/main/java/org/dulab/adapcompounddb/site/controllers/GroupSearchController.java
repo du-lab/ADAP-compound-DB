@@ -9,6 +9,7 @@ import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterForm;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterOptions;
 import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
+import org.dulab.adapcompounddb.site.controllers.utils.ConversionsUtils;
 import org.dulab.adapcompounddb.site.services.search.GroupSearchService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.dulab.adapcompounddb.site.services.SubmissionTagService;
@@ -20,11 +21,16 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.Future;
+
+import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.META_FIELDS_COOKIE_NAME;
+import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.SEARCH_PARAMETERS_COOKIE_NAME;
 
 @Controller
 public class GroupSearchController extends BaseController {
@@ -52,7 +58,10 @@ public class GroupSearchController extends BaseController {
     @RequestMapping(value = "/group_search/parameters", method = RequestMethod.GET)
     public String groupSearchParametersGet(@RequestParam Optional<Boolean> withOntologyLevels,
                                            @RequestParam Optional<Long> submissionId,
-                                           HttpSession session, Model model, @Valid FilterForm form) {
+                                           HttpSession session, Model model,
+                                           @CookieValue(
+                                                   value = SEARCH_PARAMETERS_COOKIE_NAME,
+                                                   defaultValue = "") String searchParametersCookie) {
 
 //        session.removeAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
 
@@ -66,7 +75,9 @@ public class GroupSearchController extends BaseController {
         FilterOptions filterOptions = getFilterOptions(getChromatographyTypes(submission));
         model.addAttribute("filterOptions", filterOptions);
 
-        form.setSubmissionIds(filterOptions.getSubmissions().keySet());
+        FilterForm form = ConversionsUtils.byteStringToForm(searchParametersCookie, FilterForm.class);
+        if (form.getSubmissionIds() == null || form.getSubmissionIds().isEmpty())
+            form.setSubmissionIds(filterOptions.getSubmissions().keySet());
         form.setWithOntologyLevels(withOntologyLevels.orElse(false));
         model.addAttribute("filterForm", form);
         return "submission/group_search_parameters";
@@ -74,7 +85,7 @@ public class GroupSearchController extends BaseController {
 
     @RequestMapping(value = "/group_search/parameters", method = RequestMethod.POST)
     public String groupSearchParametersPost(@RequestParam Optional<Long> submissionId, HttpSession session, Model model,
-                                            @Valid FilterForm form, Errors errors) {
+                                            HttpServletResponse response, @Valid FilterForm form, Errors errors) {
 
         Submission submission = submissionId
                 .map(submissionService::findSubmission)
@@ -109,6 +120,10 @@ public class GroupSearchController extends BaseController {
 
         asyncResult = groupSearchService.groupSearch(this.getCurrentUserPrincipal(), submission.getFiles(), session,
                 parameters, form.isWithOntologyLevels());
+
+        String byteString = ConversionsUtils.formToByteString(form);
+        Cookie metaFieldsCookie = new Cookie(SEARCH_PARAMETERS_COOKIE_NAME, byteString);
+        response.addCookie(metaFieldsCookie);
 
         return "redirect:/group_search/";
     }
