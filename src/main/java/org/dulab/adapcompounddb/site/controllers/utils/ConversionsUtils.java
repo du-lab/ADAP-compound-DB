@@ -49,41 +49,42 @@ public class ConversionsUtils {
         return String.format("%.3f", x);
     }
 
-    public static String smilesToImage(@Nullable String smiles) {
+    public static String toImage(@Nullable String smiles, @Nullable String inchi) {
 
-        if (smiles == null || smiles.isEmpty())
+        String parameters;
+        if (smiles != null && !smiles.isEmpty())
+            parameters = "--smiles " + smiles;
+        else if (inchi != null && !inchi.isEmpty())
+            parameters = "--inchi " + inchi;
+        else
             return null;
 
         try {
             // using the Runtime exec method:
-            String command = String.format("python3 generate_image_for_smiles.py %s", smiles);
-
+            String command = String.format("python3 generate_image_for_smiles.py %s", parameters);
             Process process = Runtime.getRuntime().exec(command);
 
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
             BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
 
             StringBuilder output = new StringBuilder();
-
-            String image;
             String read;
             while ((read = stdInput.readLine()) != null) {
                 output.append(read);
             }
-            image = output.toString();
 
+            String image = output.toString();
             if (!image.isEmpty())
                 return image;
 
             // read any errors from the attempted command
-            String s = null;
-            while ((s = stdError.readLine()) != null) {
-                LOGGER.warn(s);
-                LOGGER.warn("Working directory: " + System.getProperty("user.dir"));
+            String error;
+            while ((error = stdError.readLine()) != null) {
+                LOGGER.warn(error);
             }
 
         } catch (IOException e) {
-            LOGGER.warn("Error while plotting a structure for SMILES", e);
+            LOGGER.warn("Error while plotting a structure", e);
         }
         return null;
     }

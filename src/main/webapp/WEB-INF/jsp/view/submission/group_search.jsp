@@ -38,8 +38,8 @@
         <div class="col col-compact" id="queryColumn">
             <div class="card">
                 <div class="card-header card-header-single">Query Structure</div>
-                <div class="card-body small overflow-auto" style="height: 300px">
-                    <div id="queryStructure"></div>
+                <div class="overflow-auto" style="height: 300px">
+                    <div id="queryStructure" class="d-flex justify-content-center h-100"></div>
                 </div>
             </div>
         </div>
@@ -70,8 +70,8 @@
         <div class="col col-compact" id="matchColumn">
             <div class="card">
                 <div class="card-header card-header-single">Match Structure</div>
-                <div class="card-body small overflow-auto" style="height: 300px">
-                    <div id="matchStructure"></div>
+                <div class="overflow-auto" style="height: 300px">
+                    <div id="matchStructure" class="d-flex justify-content-center h-100"></div>
                 </div>
             </div>
         </div>
@@ -121,7 +121,7 @@
 <script src="<c:url value="/resources/DataTables/Select-1.3.1/js/dataTables.select.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/d3/d3.min.js"/>"></script>
 <script src="<c:url value="/resources/SpeckTackle/st.js"/>"></script>
-<script src="<c:url value="/resources/AdapCompoundDb/js/spectrumInfo.js"/>"></script>
+<%--<script src="<c:url value="/resources/AdapCompoundDb/js/spectrumInfo.js"/>"></script>--%>
 <script src="<c:url value="/resources/AdapCompoundDb/js/spectrumPlot.js"/>"></script>
 <script src="<c:url value="/resources/AdapCompoundDb/js/spectrumStructure.js"/>"></script>
 <script>
@@ -221,8 +221,18 @@
             let queryUrl = `${pageContext.request.contextPath}\${queryHRef}search/`;
             let matchUrl = `${pageContext.request.contextPath}/spectrum/\${matchId}/search/`;
 
-            $('#queryInfo').spectrumInfo(queryUrl + 'info.json');
-            $('#matchInfo').spectrumInfo(matchUrl + 'info.json');
+            $.ajax({
+                url: `${pageContext.request.contextPath}/ajax/spectrum/info?spectrumId=\${queryId}&fileIndex=\${queryFileIndex}&spectrumIndex=\${querySpectrumIndex}`,
+                success: d => $('#queryInfo').html(d)
+            })
+
+            $.ajax({
+                url: `${pageContext.request.contextPath}/ajax/spectrum/info?spectrumId=\${matchId}`,
+                success: d => $('#matchInfo').html(d)
+            })
+
+            // $('#queryInfo').spectrumInfo(queryUrl + 'info.json');
+            // $('#matchInfo').spectrumInfo(matchUrl + 'info.json');
             $('#plot').spectrumPlot(position, queryUrl + 'positive/peaks.json', matchUrl + 'negative/peaks.json');
             $('#queryStructure').spectrumStructure(queryUrl + 'structure.json', function (x) {
                 $('#queryColumn').attr('hidden', !x);
@@ -249,7 +259,7 @@
                 }
             });
         }, 1000);
-<%--        <c:if test="${pageContext.request.method == 'GET'}">$('#filterForm').submit();--%>
-<%--        </c:if>--%>
+        <%--        <c:if test="${pageContext.request.method == 'GET'}">$('#filterForm').submit();--%>
+        <%--        </c:if>--%>
     });
 </script>
