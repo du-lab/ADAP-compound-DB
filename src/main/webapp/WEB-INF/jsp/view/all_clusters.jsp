@@ -284,7 +284,7 @@
         });
 
         // let filterForm = $('#filterForm');
-        // filterForm.appendTo('#filter');
+        // filterForm.appendTo('#filter');m
 
         // $('#species, #source, #disease').change(function () {
         //     dataTable.ajax.reload(null, false);

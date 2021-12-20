@@ -27,8 +27,11 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
         COLUMN_TO_FIELD_MAP.put(4, SearchResultDTO::getScore);
         COLUMN_TO_FIELD_MAP.put(5, SearchResultDTO::getAveSignificance);
         COLUMN_TO_FIELD_MAP.put(6, SearchResultDTO::getMinSignificance);
-        COLUMN_TO_FIELD_MAP.put(7, SearchResultDTO::getMaxSignificance);
-        COLUMN_TO_FIELD_MAP.put(8, SearchResultDTO::getChromatographyTypeLabel);
+        COLUMN_TO_FIELD_MAP.put(7, SearchResultDTO::getSpeciesPValue);
+        COLUMN_TO_FIELD_MAP.put(8, SearchResultDTO::getSampleSourcePValue);
+        COLUMN_TO_FIELD_MAP.put(9, SearchResultDTO::getDiseasePValue);
+        COLUMN_TO_FIELD_MAP.put(10, SearchResultDTO::getMinPValue);
+        COLUMN_TO_FIELD_MAP.put(11, SearchResultDTO::getChromatographyTypeLabel);
     }
 
     // *************************
@@ -165,6 +168,10 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
                 this.aveSignificance = cluster.getAveSignificance();
                 this.minSignificance = cluster.getMinSignificance();
                 this.maxSignificance = cluster.getMaxSignificance();
+                this.speciesPValue = cluster.getSpeciesPValue();
+                this.sampleSourcePValue = cluster.getSampleSourcePValue();
+                this.diseasePValue = cluster.getDiseasePValue();
+                this.minPValue = cluster.getMinPValue();
             }
 
             File file = matchSpectrum.getFile();

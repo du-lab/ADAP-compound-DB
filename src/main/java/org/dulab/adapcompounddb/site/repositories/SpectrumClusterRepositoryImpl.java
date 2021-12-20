@@ -79,6 +79,8 @@ public class SpectrumClusterRepositoryImpl implements SpectrumClusterRepositoryC
                 "count(distinct File.SubmissionId) as Size, SpectrumCluster.Diameter as Score, NULL AS MassError, NULL AS MassErrorPPM, NULL AS RetTimeError, " +
                 "avg(Spectrum.Significance) as AverageSignificance, " +
                 "min(Spectrum.Significance) as MinimumSignificance, max(Spectrum.Significance) as MaximumSignificance, " +
+                "SpectrumCluster.DiseasePValue as DiseasePValue, SpectrumCluster.MinPValue as minPValue, SpectrumCluster.SpeciesPValue as speciesPValue, " +
+                "SpectrumCluster.SampleSourcePValue as sampleSourcePValue, " +
                 "SpectrumCluster.ChromatographyType from SpectrumCluster " +
                 "join Spectrum on SpectrumCluster.Id=Spectrum.ClusterId " +
                 "join Spectrum as ConsensusSpectrum on SpectrumCluster.ConsensusSpectrumId=ConsensusSpectrum.Id " +
