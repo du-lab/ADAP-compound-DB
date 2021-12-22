@@ -76,6 +76,7 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
     private Double retTime;
     private String formula;
     private String submissionName;
+    private Boolean inHouse;
     private Long submissionId;
 
     // Other
@@ -86,6 +87,7 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
     private Double massError;
     private Double massErrorPPM;
     private Double retTimeError;
+    private Double retIndexError;
     private boolean marked;
 
 
@@ -146,13 +148,14 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
             this.matchType = matchSpectrum.isConsensus() ? MatchType.CLUSTER : MatchType.SPECTRUM;
             this.matchIndex = matchIndex;
             this.spectrumId = matchSpectrum.getId();
-            this.name = matchSpectrum.getName();
+            this.name = matchSpectrum.getShortName();
             this.externalId = matchSpectrum.getExternalId();
             this.size = 1;
             this.precursorType = matchSpectrum.getPrecursorType();
             this.mass = matchSpectrum.getMass();
             this.retTime = matchSpectrum.getRetentionTime();
             this.formula = matchSpectrum.getFormula();
+            this.inHouse = matchSpectrum.isInHouseReference();
 
             this.score = spectrumMatch.getScore();
             this.precursorError = spectrumMatch.getPrecursorError();
@@ -160,6 +163,7 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
             this.massError = spectrumMatch.getMassError();
             this.massErrorPPM = spectrumMatch.getMassErrorPPM();
             this.retTimeError = spectrumMatch.getRetTimeError();
+            this.retIndexError = spectrumMatch.getRetIndexError();
 
             SpectrumCluster cluster = matchSpectrum.getCluster();
             if (cluster != null) {
@@ -378,6 +382,14 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
         this.submissionId = submissionId;
     }
 
+    public Boolean getInHouse() {
+        return inHouse;
+    }
+
+    public void setInHouse(Boolean inHouse) {
+        this.inHouse = inHouse;
+    }
+
     public String getQuerySpectrumName() {
         return querySpectrumName;
     }
@@ -578,6 +590,14 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
         this.retTimeError = retTimeError;
     }
 
+    public Double getRetIndexError() {
+        return retIndexError;
+    }
+
+    public void setRetIndexError(Double retIndexError) {
+        this.retIndexError = retIndexError;
+    }
+
     public int getPosition() {
         return position;
     }
@@ -587,7 +607,7 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
     }
 
     public String getHRef() {
-        return String.format("/%s/%d/",
+        return String.format("%s/%d/",
                 matchType.name().toLowerCase(),
                 (matchType == MatchType.CLUSTER) ? this.getClusterId() : this.getSpectrumId());
     }

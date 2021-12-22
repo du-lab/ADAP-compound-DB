@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 
 <div class="container">
@@ -57,7 +58,13 @@
                                             </c:if>
                                         </li>
                                         <li class="list-group-item py-1">
+                                            <strong>Synonym:</strong>&nbsp;${spectrum.getStringOfSynonyms()}
+                                        </li>
+                                        <li class="list-group-item py-1">
                                             <strong>External ID:</strong>&nbsp;${spectrum.externalId}
+                                        </li>
+                                        <li class="list-group-item py-1">
+                                            <strong>Identifiers:</strong>&nbsp;${spectrum.getStringOfIdentifiers()}
                                         </li>
                                         <li class="list-group-item py-1">
                                             <strong>Formula:</strong>&nbsp;${spectrum.formula}
@@ -67,6 +74,9 @@
                                         </li>
                                         <li class="list-group-item py-1">
                                             <strong>Retention time:</strong>&nbsp;${spectrum.retentionTime}
+                                        </li>
+                                        <li class="list-group-item py-1">
+                                            <strong>Retention index:</strong>&nbsp;${spectrum.retentionIndex}
                                         </li>
                                         <li class="list-group-item py-1">
                                             <strong>Molecular mass:</strong>&nbsp;${spectrum.mass}
@@ -84,8 +94,12 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                    <h4>Molecular Structure</h4>
-                                    <div style = "text-align:center";>${dulab:smilesToImage(spectrum.canonicalSmiles)}</div>
+                                    <c:set var="image" scope="session"
+                                           value="${dulab:toImage(spectrum.canonicalSmiles, spectrum.inChi)}"/>
+                                    <c:if test="${image != null}">
+                                        <h4>Molecular Structure</h4>
+                                        <div style="text-align:center" ;>${image}</div>
+                                    </c:if>
                                     <h4>Other Properties</h4>
                                     <ul class="list-group list-group-flush">
                                         <c:forEach items="${spectrum.properties}" var="property">
@@ -254,6 +268,7 @@
         });
 
         SpectrumPlot('plot', ${dulab:spectrumToJson(spectrum)});
+
     })
 
     // Adjust column widths when a table becomes visible

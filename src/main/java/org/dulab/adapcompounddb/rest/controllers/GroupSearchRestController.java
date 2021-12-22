@@ -9,24 +9,28 @@ import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
 import org.dulab.adapcompounddb.site.services.search.GroupSearchService;
 import org.dulab.adapcompounddb.site.services.search.SpectrumMatchService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RestController
 public class GroupSearchRestController {
 
+    public static final ObjectMapper mapper = new ObjectMapper();
     public static final List<SearchResultDTO> EMPTY_LIST = new ArrayList<>(0);
     private final SpectrumMatchService spectrumMatchService;
     private final GroupSearchService groupSearchService;
+
+    static {
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+    }
 
     @Autowired
     public GroupSearchRestController(final SpectrumMatchService spectrumMatchService, final GroupSearchService groupSearchService) {
@@ -38,18 +42,17 @@ public class GroupSearchRestController {
     public String fileGroupSearchResults(
             @RequestParam("start") final Integer start,
             @RequestParam("length") final Integer length,
-            @RequestParam("column") final Integer column,
-            @RequestParam("sortDirection") final String sortDirection,
             @RequestParam("search") final String searchStr,
+            @RequestParam("columnStr") final String columnStr,
             final HttpSession session) throws JsonProcessingException {
 
         List<SearchResultDTO> matches;
 
-        if (session.getAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME) != null) {
+        Object sessionObject = session.getAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
+        if (sessionObject != null) {
 
             @SuppressWarnings("unchecked")
-            List<SearchResultDTO> sessionMatches =
-                    (List<SearchResultDTO>) session.getAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
+            List<SearchResultDTO> sessionMatches = (List<SearchResultDTO>) sessionObject;
 
             //Avoid ConcurrentModificationException by make a copy for sorting
             matches = new ArrayList<>(sessionMatches);
@@ -57,29 +60,23 @@ public class GroupSearchRestController {
         } else {
             matches = new ArrayList<>(EMPTY_LIST);
         }
-        final DataTableResponse response = groupSearchSort(searchStr, start, length, column, sortDirection, matches);
-        final ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-        final String jsonString = mapper.writeValueAsString(response);
-        return jsonString;
+        final DataTableResponse response = groupSearchSort(searchStr, start, length, matches, columnStr);
+        return mapper.writeValueAsString(response);
     }
 
-    @RequestMapping(value = "/file/group_search/progress", produces = "application/json")
-    public int fileGroupSearchProgress() {
+    @RequestMapping(value = "/group_search/progress", produces = "application/json")
+    public int fileGroupSearchProgress(HttpSession session) {
+        Object progressObject = session.getAttribute(ControllerUtils.GROUP_SEARCH_PROGRESS_ATTRIBUTE_NAME);
+        if (!(progressObject instanceof Float))
+            return 0;
+
         // Return json-string containing a number between 0 and 100.
-        return Math.round(100 * groupSearchService.getProgress());
+        float progress = (Float) progressObject;
+        return Math.round(100 * progress);
     }
-
-    @RequestMapping(value = "/submission/{submissionId:\\d+}/group_search/progress", produces = "application/json")
-    public int submissionGroupSearchProgress(@PathVariable("submissionId") final long submissionId) {
-        // Return json-string containing a number between 0 and 100.
-        return Math.round(100 * groupSearchService.getProgress());
-    }
-
 
     private DataTableResponse groupSearchSort(final String searchStr, final Integer start, final Integer length,
-                                              final Integer column, final String sortDirection,
-                                              List<SearchResultDTO> spectrumList) {
+                                              List<SearchResultDTO> spectrumList, final String columnStr) {
 
         if (searchStr != null && searchStr.trim().length() > 0)
             spectrumList = spectrumList.stream()
@@ -87,54 +84,41 @@ public class GroupSearchRestController {
                             || (s.getName() != null && s.getName().contains(searchStr)))
                     .collect(Collectors.toList());
 
-        String sortColumn = GroupSearchColumnInformation.getColumnNameFromPosition(column);
+        String[] columns = columnStr.split("[-,]");
+        List<String> columnNumbersAndDirections = Arrays.asList(columns);
 
-        // sorting each column
-        if (sortColumn != null) {
-            switch (sortColumn) {
-                case "id":
-                    spectrumList.sort(getComparator(SearchResultDTO::getPosition, sortDirection));
-                    break;
-                case "querySpectrumName":
-                    spectrumList.sort(getComparator(SearchResultDTO::getQuerySpectrumName, sortDirection));
-                    break;
-                case "consensusSpectrumName":
-                    spectrumList.sort(getComparator(SearchResultDTO::getName, sortDirection));
-                    break;
-                case "mass":
-                    spectrumList.sort(getComparator(SearchResultDTO::getMass, sortDirection));
-                    break;
-                case "size":
-                    spectrumList.sort(getComparator(SearchResultDTO::getSize, sortDirection));
-                    break;
-                case "diameter":
-                    spectrumList.sort(getComparator(SearchResultDTO::getScore, sortDirection));
-                    break;
-                case "massError":
-                    spectrumList.sort(getComparator(SearchResultDTO::getMassError, sortDirection));
-                    break;
-                case "massErrorPPM":
-                    spectrumList.sort(getComparator(SearchResultDTO::getMassErrorPPM, sortDirection));
-                    break;
-                case "retTimeError":
-                    spectrumList.sort(getComparator(SearchResultDTO::getRetTimeError, sortDirection));
-                    break;
-                case "averageSignificance":
-                    spectrumList.sort(getComparator(SearchResultDTO::getAveSignificance, sortDirection));
-                    break;
-                case "minimumSignificance":
-                    spectrumList.sort(getComparator(SearchResultDTO::getMinSignificance, sortDirection));
-                    break;
-                case "maximumSignificance":
-                    spectrumList.sort(getComparator(SearchResultDTO::getMaxSignificance, sortDirection));
-                    break;
-                case "ontologyLevel":
-                    spectrumList.sort(getComparator(SearchResultDTO::getOntologyLevel, sortDirection));
-                    break;
-                case "chromatographyType":
-                    spectrumList.sort(getComparator(SearchResultDTO::getChromatographyTypeLabel, sortDirection));
-                    break;
+        List<String> columnNumbers = new ArrayList<>();
+        List<String> columnDirections = new ArrayList<>();
+
+        for (int i = 0; i < columnNumbersAndDirections.size(); i++) {
+            if (i % 2 == 0) {
+                columnNumbers.add(columnNumbersAndDirections.get(i));
+            } else {
+                columnDirections.add(columnNumbersAndDirections.get(i));
             }
+        }
+
+        if (columnNumbers.size() == columnDirections.size() && !columnNumbers.isEmpty() || !columnDirections.isEmpty()) {
+            Comparator<SearchResultDTO> multiColumnComparator = null;
+            for (int i = 0; i < columnNumbers.size(); i++) {
+
+                int columnNum = Integer.parseInt(columnNumbers.get(i));
+                String columnDir = columnDirections.get(i);
+
+                String sortColumn = GroupSearchColumnInformation.getColumnNameFromPosition(columnNum);
+
+                Comparator<SearchResultDTO> comparator = comparingColumns(sortColumn, columnDir);
+
+                if (multiColumnComparator == null) {
+                    multiColumnComparator = comparator;
+                } else {
+                    multiColumnComparator = multiColumnComparator.thenComparing(comparator);
+                }
+            }
+
+            spectrumList.sort(multiColumnComparator);
+        } else {
+            throw new IllegalStateException("Wrong sorting parameters");
         }
 
         final List<SearchResultDTO> spectrumMatchList = new ArrayList<>();
@@ -151,6 +135,61 @@ public class GroupSearchRestController {
         response.setRecordsFiltered((long) spectrumList.size());
 
         return response;
+    }
+
+    private Comparator<SearchResultDTO> comparingColumns(String column, String sortDirection) {
+        Comparator<SearchResultDTO> comparator = null;
+
+        if (column != null) {
+            switch (column) {
+                case "id":
+                    comparator = getComparator(SearchResultDTO::getPosition, sortDirection);
+                    break;
+                case "querySpectrumName":
+                    comparator = getComparator(SearchResultDTO::getQuerySpectrumName, sortDirection);
+                    break;
+                case "consensusSpectrumName":
+                    comparator = getComparator(SearchResultDTO::getName, sortDirection);
+                    break;
+                case "mass":
+                    comparator = getComparator(SearchResultDTO::getMass, sortDirection);
+                    break;
+                case "size":
+                    comparator = getComparator(SearchResultDTO::getSize, sortDirection);
+                    break;
+                case "diameter":
+                    comparator = getComparator(SearchResultDTO::getScore, sortDirection);
+                    break;
+                case "massError":
+                    comparator = getComparator(SearchResultDTO::getMassError, sortDirection);
+                    break;
+                case "massErrorPPM":
+                    comparator = getComparator(SearchResultDTO::getMassErrorPPM, sortDirection);
+                    break;
+                case "retTimeError":
+                    comparator = getComparator(SearchResultDTO::getRetTimeError, sortDirection);
+                    break;
+                case "retIndexError":
+                    comparator = getComparator(SearchResultDTO::getRetIndexError, sortDirection);
+                    break;
+                case "averageSignificance":
+                    comparator = getComparator(SearchResultDTO::getAveSignificance, sortDirection);
+                    break;
+                case "minimumSignificance":
+                    comparator = getComparator(SearchResultDTO::getMinSignificance, sortDirection);
+                    break;
+                case "maximumSignificance":
+                    comparator = getComparator(SearchResultDTO::getMaxSignificance, sortDirection);
+                    break;
+                case "ontologyLevel":
+                    comparator = getComparator(SearchResultDTO::getOntologyLevel, sortDirection);
+                    break;
+                case "chromatographyType":
+                    comparator = getComparator(SearchResultDTO::getChromatographyTypeLabel, sortDirection);
+                    break;
+            }
+        }
+        return comparator;
     }
 
     // function for sorting the column
@@ -188,11 +227,12 @@ public class GroupSearchRestController {
         MASS_ERROR(6, "massError"),
         MASS_ERROR_PPM(7, "massErrorPPM"),
         RET_TIME_ERROR(8, "retTimeError"),
-        AVERAGE_SIGNIFICANCE(9, "averageSignificance"),
-        MINIMUM_SIGNIFICANCE(10, "minimumSignificance"),
-        MAXIMUM_SIGNIFICANCE(11, "maximumSignificance"),
-        ONTOLOGY_LEVEL(12, "ontologyLevel"),
-        CHROMATOGRAPHY_TYPE(13, "chromatographyType");
+        RET_INDEX_ERROR(9, "retIndexError"),
+        AVERAGE_SIGNIFICANCE(10, "averageSignificance"),
+        MINIMUM_SIGNIFICANCE(11, "minimumSignificance"),
+        MAXIMUM_SIGNIFICANCE(12, "maximumSignificance"),
+        ONTOLOGY_LEVEL(13, "ontologyLevel"),
+        CHROMATOGRAPHY_TYPE(14, "chromatographyType");
 
         private int position;
         private String sortColumnName;

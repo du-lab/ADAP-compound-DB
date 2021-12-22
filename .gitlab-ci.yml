@@ -14,7 +14,7 @@ build:
   only:
     - master
   script:
-    - mvn clean tomcat7:redeploy -Denvironment=test
+    - mvn clean install tomcat7:redeploy -Denvironment=test
 
 test:
   stage: test

@@ -3,6 +3,8 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+
 <script src="<c:url value="/resources/AdapCompoundDb/js/tagsColor.js"/>"></script>
 <div class="container">
     <div class="row row-content">
@@ -14,7 +16,8 @@
                 <div class="card-body">
                     <div align="center">
                         <div style="display: inline-block">
-                            <i class="material-icons color-primary-light" style="font-size:4.5em; margin: 20px;">person</i>
+                            <i class="material-icons color-primary-light"
+                               style="font-size:4.5em; margin: 20px;">person</i>
                         </div>
                         <div align="left" style="display: inline-block;">
                             <p><strong>Username:&nbsp;</strong>${user.username}</p>
@@ -37,7 +40,8 @@
             <div class="card">
                 <div class="card-header card-header-tabs">
                     <ul class="nav nav-tabs nav-fill nav-justified" role="tablist">
-                        <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#studies">Studies</a></li>
+                        <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#studies">Studies</a>
+                        </li>
                         <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#libraries">Libraries</a></li>
                     </ul>
                 </div>
@@ -58,56 +62,56 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <%--@elvariable id="submissionList" type="java.util.List<org.dulab.adapcompounddb.models.entities.Submission>"--%>
+                            <%--@elvariable id="submissionList" type="java.util.List<org.dulab.adapcompounddb.models.dto.SubmissionDTO>"--%>
                             <c:forEach items="${submissionList}" var="study" varStatus="loop">
                                 <c:if test="${!study.library}">
-                                <tr>
-                                    <td></td>
-                                    <td><fmt:formatDate value="${study.dateTime}" type="DATE" pattern="yyyy-MM-dd"/><br/>
-                                            <%--                            <small><fmt:formatDate value="${study.dateTime}" type="TIME"/></small>--%>
-                                    </td>
-                                    <td>
-                                        <a href="${pageContext.request.contextPath}/submission/${study.id}/">${study.name}&nbsp;
-                                            <c:if test="${study.isPrivate()}">
-                                                <span class="badge badge-info">private</span>
-                                            </c:if>
-                                        </a><br/>
-                                            <%--                        <small>${dulab:abbreviate(study.description, 80)}</small>--%>
-                                    </td>
-                                    <td>
-                                        <a href="${pageContext.request.contextPath}/submission/${study.id}/">${study.externalId}</a><br/>
-                                    </td>
-                                    <td>
-                                            <%--                            ${study.tagsAsString}--%>
-                                        <c:forEach items="${study.tags}" var="tag" varStatus="status">
-                                            <span id="${study.id}color${status.index}">${tag.toString()}&nbsp;</span>
-                                            <script>
-                                                var spanId = '${fn:length(study.tags)}';
-                                                spanColor(${study.id}, spanId);
-                                            </script>
-                                        </c:forEach>
+                                    <tr>
+                                        <td></td>
+                                        <td><fmt:formatDate value="${study.dateTime}" type="DATE" pattern="yyyy-MM-dd"/><br/>
+                                                <%--                            <small><fmt:formatDate value="${study.dateTime}" type="TIME"/></small>--%>
+                                        </td>
+                                        <td>
+                                            <a href="${pageContext.request.contextPath}/submission/${study.id}/">${study.name}&nbsp;
+                                                <c:if test="${study.isPrivate()}">
+                                                    <span class="badge badge-info">private</span>
+                                                </c:if>
+                                            </a><br/>
+                                                <%--                        <small>${dulab:abbreviate(study.description, 80)}</small>--%>
+                                        </td>
+                                        <td>
+                                            <a href="${pageContext.request.contextPath}/submission/${study.id}/">${study.externalId}</a><br/>
+                                        </td>
+                                        <td>
+                                                <%--                            ${study.tagsAsString}--%>
+                                            <c:forEach items="${study.tags}" var="tag" varStatus="status">
+                                                <span class="color-${status.index mod 5}">${tag}&nbsp;</span>
+<%--                                                <script>--%>
+<%--                                                    let spanId = '${fn:length(study.tags)}';--%>
+<%--                                                    spanColor(${study.id}, spanId);--%>
+<%--                                                </script>--%>
+                                            </c:forEach>
 
-                                    </td>
-                                    <td>
-                                            <%--@elvariable id="submissionIdToChromatographyListMap" type="java.util.Map<java.lang.Long, java.util.List<org.dulab.adapcompounddb.models.enums.ChromatographyType>>"--%>
-                                        <c:forEach items="${submissionIdToChromatographyListMap.get(study.id)}"
-                                                   var="chromatographyType">
-                                            <span class="badge badge-info">${chromatographyType.label}</span>
-                                        </c:forEach>
-                                    </td>
-                                    <td>
-                                        <!-- more horiz -->
-                                        <a href="${pageContext.request.contextPath}/submission/${study.id}/"><i
-                                                class="material-icons" title="View">&#xE5D3;</i></a>
+                                        </td>
+                                        <td>
+                                                <%--@elvariable id="submissionIdToChromatographyListMap" type="java.util.Map<java.lang.Long, java.util.List<org.dulab.adapcompounddb.models.enums.ChromatographyType>>"--%>
+                                            <c:forEach items="${submissionIdToChromatographyListMap.get(study.id)}"
+                                                       var="chromatographyType">
+                                                <span class="badge badge-info">${chromatographyType.label}</span>
+                                            </c:forEach>
+                                        </td>
+                                        <td>
+                                            <!-- more horiz -->
+                                            <a href="${pageContext.request.contextPath}/submission/${study.id}/"><i
+                                                    class="material-icons" title="View">&#xE5D3;</i></a>
 
-                                        <!-- delete -->
-                                        <a onclick="confirmDeleteDialog.show(
-                                                'Submission &quot;${study.name}&quot; and all its spectra will be deleted. Are you sure?',
-                                                '${pageContext.request.contextPath}/submission/${study.id}/delete/');">
-                                            <i class="material-icons" title="Delete">&#xE872;</i>
-                                        </a>
-                                    </td>
-                                </tr>
+                                            <!-- delete -->
+                                            <a onclick="confirmDeleteDialog.show(
+                                                    'Submission &quot;${study.name}&quot; and all its spectra will be deleted. Are you sure?',
+                                                    '${pageContext.request.contextPath}/submission/${study.id}/delete/');">
+                                                <i class="material-icons" title="Delete">&#xE872;</i>
+                                            </a>
+                                        </td>
+                                    </tr>
                                 </c:if>
                             </c:forEach>
                             </tbody>
@@ -131,53 +135,55 @@
 
                             <c:forEach items="${submissionList}" var="study" varStatus="loop">
                                 <c:if test="${study.library}">
-                                <tr>
-                                    <td></td>
-                                    <td><fmt:formatDate value="${study.dateTime}" type="DATE" pattern="yyyy-MM-dd"/><br/>
-                                            <%--                            <small><fmt:formatDate value="${study.dateTime}" type="TIME"/></small>--%>
-                                    </td>
-                                    <td>
-                                        <a href="${pageContext.request.contextPath}/submission/${study.id}/">${study.name}&nbsp;
+                                    <tr>
+                                        <td></td>
+                                        <td><fmt:formatDate value="${study.dateTime}" type="DATE" pattern="yyyy-MM-dd"/><br/>
+                                                <%--                            <small><fmt:formatDate value="${study.dateTime}" type="TIME"/></small>--%>
+                                        </td>
+                                        <td>
+                                            <a href="${pageContext.request.contextPath}/submission/${study.id}/">${study.name}&nbsp</a>
                                             <c:if test="${study.isPrivate()}">
                                                 <span class="badge badge-info">private</span>
                                             </c:if>
-                                        </a><br/>
-                                            <%--                        <small>${dulab:abbreviate(study.description, 80)}</small>--%>
-                                    </td>
-                                    <td>
-                                        <a href="${pageContext.request.contextPath}/submission/${study.id}/">${study.externalId}</a><br/>
-                                    </td>
-                                    <td>
-                                            <%--                            ${study.tagsAsString}--%>
-                                        <c:forEach items="${study.tags}" var="tag" varStatus="status">
-                                            <span id="${study.id}color${status.index}">${tag.toString()}&nbsp;</span>
-                                            <script>
-                                                var spanId = '${fn:length(study.tags)}';
-                                                spanColor(${study.id}, spanId);
-                                            </script>
-                                        </c:forEach>
+                                            <c:if test="${study.inHouseLibrary}">
+                                                <span class="badge badge-success">in-house</span>
+                                            </c:if>
+                                                <%--                        <small>${dulab:abbreviate(study.description, 80)}</small>--%>
+                                        </td>
+                                        <td>
+                                            <a href="${pageContext.request.contextPath}/submission/${study.id}/">${study.externalId}</a><br/>
+                                        </td>
+                                        <td>
+                                                <%--                            ${study.tagsAsString}--%>
+                                            <c:forEach items="${study.tags}" var="tag" varStatus="status">
+                                                <span id="${study.id}color${status.index}">${tag.toString()}&nbsp;</span>
+                                                <script>
+                                                    var spanId = '${fn:length(study.tags)}';
+                                                    spanColor(${study.id}, spanId);
+                                                </script>
+                                            </c:forEach>
 
-                                    </td>
-                                    <td>
-                                            <%--@elvariable id="submissionIdToChromatographyListMap" type="java.util.Map<java.lang.Long, java.util.List<org.dulab.adapcompounddb.models.enums.ChromatographyType>>"--%>
-                                        <c:forEach items="${submissionIdToChromatographyListMap.get(study.id)}"
-                                                   var="chromatographyType">
-                                            <span class="badge badge-info">${chromatographyType.label}</span>
-                                        </c:forEach>
-                                    </td>
-                                    <td>
-                                        <!-- more horiz -->
-                                        <a href="${pageContext.request.contextPath}/submission/${study.id}/"><i
-                                                class="material-icons" title="View">&#xE5D3;</i></a>
+                                        </td>
+                                        <td>
+                                                <%--@elvariable id="submissionIdToChromatographyListMap" type="java.util.Map<java.lang.Long, java.util.List<org.dulab.adapcompounddb.models.enums.ChromatographyType>>"--%>
+                                            <c:forEach items="${submissionIdToChromatographyListMap.get(study.id)}"
+                                                       var="chromatographyType">
+                                                <span class="badge badge-info">${chromatographyType.label}</span>
+                                            </c:forEach>
+                                        </td>
+                                        <td>
+                                            <!-- more horiz -->
+                                            <a href="${pageContext.request.contextPath}/submission/${study.id}/"><i
+                                                    class="material-icons" title="View">&#xE5D3;</i></a>
 
-                                        <!-- delete -->
-                                        <a onclick="confirmDeleteDialog.show(
-                                                'Submission &quot;${study.name}&quot; and all its spectra will be deleted. Are you sure?',
-                                                '${pageContext.request.contextPath}/submission/${study.id}/delete/');">
-                                            <i class="material-icons" title="Delete">&#xE872;</i>
-                                        </a>
-                                    </td>
-                                </tr>
+                                            <!-- delete -->
+                                            <a onclick="confirmDeleteDialog.show(
+                                                    'Submission &quot;${study.name}&quot; and all its spectra will be deleted. Are you sure?',
+                                                    '${pageContext.request.contextPath}/submission/${study.id}/delete/');">
+                                                <i class="material-icons" title="Delete">&#xE872;</i>
+                                            </a>
+                                        </td>
+                                    </tr>
                                 </c:if>
                             </c:forEach>
                             </tbody>

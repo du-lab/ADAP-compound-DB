@@ -23,9 +23,7 @@ public interface SpectrumRepositoryCustom {
             List<BigInteger> preScreenedSpectrumIds, Iterable<BigInteger> submissionIds, Spectrum querySpectrum,
             SearchParameters parameters);
 
-    void savePeaksAndPropertiesQuery(List<Spectrum> spectrumList, List<Long> savedSpectrumIdList);
-
-    void saveSpectrumAndPeaks(final List<File> fileList, final List<Long> savedFileIdList);
+    void saveSpectra(final List<File> fileList, final List<Long> savedFileIdList);
 
     void savePeaksAndProperties(Long spectrumId, List<Peak> peaks, List<SpectrumProperty> properties);
 

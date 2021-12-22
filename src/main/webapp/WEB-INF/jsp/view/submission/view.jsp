@@ -52,12 +52,13 @@
                             Search
                         </button>
                         <div class="dropdown-menu dropdown-menu-right">
-                            <a id="searchAllSpectra" class="dropdown-item" href="<c:url value="group_search/"/>"
+                            <a id="searchAllSpectra" class="dropdown-item"
+                               href="<c:url value="/group_search/parameters"><c:if test="${submission.id != 0}"><c:param name="submissionId" value="${submission.id}"/></c:if></c:url>"
                                title="Search based on the spectral similarity">
                                 Search for similar spectra
                             </a>
                             <a class="dropdown-item <c:if test="${!dulab:checkOntologyLevels(submission)}">disabled</c:if>"
-                               href="<c:url value="group_search/"><c:param name="withOntologyLevels">true</c:param></c:url>"
+                               href="<c:url value="/group_search/parameters"><c:if test="${submission.id != 0}"><c:param name="submissionId" value="${submission.id}"/></c:if><c:param name="withOntologyLevels">true</c:param></c:url>"
                                title="Search based on the mass, retention time, and spectral similarity">
                                 Search for similar spectra (with Ontology Levels)
                             </a>
@@ -80,16 +81,16 @@
                     <ul class="nav nav-tabs nav-fill nav-justified" role="tablist">
                         <c:if test="${view_submission && edit_submission}">
                             <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#submission_edit">
-                                Study Properties</a></li>
+                                Properties</a></li>
                         </c:if>
                         <c:if test="${view_submission && !edit_submission}">
                             <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#submission_view">
-                                Study Properties</a></li>
+                                Properties</a></li>
                         </c:if>
                         <li class="nav-item"><a id="mass_spectra_link"
                                                 class="nav-link ${!view_submission ? "active" : ""}"
                                                 data-toggle="tab"
-                                                href="#mass_spectra">Mass Spectra</a>
+                                                href="#mass_spectra">Data</a>
                         </li>
                         <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#files">Files</a></li>
                     </ul>
@@ -150,20 +151,34 @@
                                     </div>
 
                                     <div class="form-row form-group">
-                                        <form:label path="isPrivate"
-                                                    cssClass="col-md-2 col-form-label">Private</form:label>
-                                        <form:checkbox path="isPrivate" data-toggle="toggle" data-on="Yes" data-off="No"
-                                                       data-size="sm"/>
-                                        <form:errors path="isPrivate" cssClass="text-danger"/>
+                                        <div class="col-md-3 offset-md-2">
+                                                <%--                                            <form:label path="isPrivate"--%>
+                                                <%--                                                        cssClass="col-md-6 col-form-label">Private</form:label>--%>
+                                            <form:checkbox path="isPrivate" data-toggle="toggle" data-on="Private"
+                                                           data-off="Public" data-size="sm"/>
+                                            <form:errors path="isPrivate" cssClass="text-danger"/>
+                                        </div>
+                                        <div class="col-md-3">
+                                                <%--                                            <form:label path="isLibrary"--%>
+                                                <%--                                                        cssClass="col-md-6 col-form-label">Library</form:label>--%>
+                                            <form:checkbox path="isLibrary" data-toggle="toggle" data-on="Library"
+                                                           data-off="Study" data-size="sm"/>
+                                            <form:errors path="isLibrary" cssClass="text-danger"/>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <form:checkbox path="isInHouseLibrary" data-toggle="toggle"
+                                                           data-on="In-House" data-off="External" data-size="sm"/>
+                                            <form:errors path="isInHouseLibrary" cssClass="text-danger"/>
+                                        </div>
                                     </div>
 
-                                    <div class="form-row form-group">
-                                        <form:label path="isLibrary"
-                                                    cssClass="col-md-2 col-form-label">Library</form:label>
-                                        <form:checkbox path="isLibrary" data-toggle="toggle" data-on="Yes" data-off="No"
-                                                       data-size="sm"/>
-                                        <form:errors path="isLibrary" cssClass="text-danger"/>
-                                    </div>
+                                    <%--                                    <div class="form-row form-group">--%>
+                                    <%--                                        <form:label path="isLibrary"--%>
+                                    <%--                                                    cssClass="col-md-2 col-form-label">Library</form:label>--%>
+                                    <%--                                        <form:checkbox path="isLibrary" data-toggle="toggle" data-on="Yes" data-off="No"--%>
+                                    <%--                                                       data-size="sm"/>--%>
+                                    <%--                                        <form:errors path="isLibrary" cssClass="text-danger"/>--%>
+                                    <%--                                    </div>--%>
 
                                     <div class="form-row form-group">
                                         <form:label path="reference"
@@ -231,6 +246,12 @@
                                             <td><strong>Library:</strong></td>
                                             <td><span
                                                     class="badge badge-warning">${submission.library ? "Yes" : "No"}</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>In-House:</strong></td>
+                                            <td><span
+                                                    class="badge badge-success">${submission.inHouse ? "Yes" : "No"}</span>
                                             </td>
                                         </tr>
                                         <c:if test="${submission.reference != null}">

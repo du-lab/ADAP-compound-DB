@@ -1,5 +1,7 @@
 package org.dulab.adapcompounddb.site.controllers.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -11,7 +13,9 @@ import javax.annotation.Nullable;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,42 +49,74 @@ public class ConversionsUtils {
         return String.format("%.3f", x);
     }
 
-    public static String smilesToImage(@Nullable String smiles) {
+    public static String toImage(@Nullable String smiles, @Nullable String inchi) {
 
-        if (smiles == null || smiles.isEmpty())
+        String parameters;
+        if (smiles != null && !smiles.isEmpty())
+            parameters = "--smiles " + smiles;
+        else if (inchi != null && !inchi.isEmpty())
+            parameters = "--inchi " + inchi;
+        else
             return null;
 
         try {
             // using the Runtime exec method:
-            String command = String.format("python3 generate_image_for_smiles.py %s", smiles);
-
+            String command = String.format("python3 generate_image_for_smiles.py %s", parameters);
             Process process = Runtime.getRuntime().exec(command);
 
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
             BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
 
             StringBuilder output = new StringBuilder();
-
-            String image;
             String read;
             while ((read = stdInput.readLine()) != null) {
                 output.append(read);
             }
-            image = output.toString();
 
+            String image = output.toString();
             if (!image.isEmpty())
                 return image;
 
             // read any errors from the attempted command
-            String s = null;
-            while ((s = stdError.readLine()) != null) {
-                LOGGER.warn(s);
-                LOGGER.warn("Working directory: " + System.getProperty("user.dir"));
+            String error;
+            while ((error = stdError.readLine()) != null) {
+                LOGGER.warn(error);
             }
 
         } catch (IOException e) {
-            LOGGER.warn("Error while plotting a structure for SMILES", e);
+            LOGGER.warn("Error while plotting a structure", e);
         }
         return null;
+    }
+
+    public static <T> T byteStringToForm(String jsonString, Class<T> formClass) {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try {
+            byte[] jsonBytes = Base64.getDecoder().decode(jsonString);
+            return objectMapper.readValue(jsonBytes, formClass);
+        } catch (IOException e) {
+            try {
+                return formClass.getConstructor().newInstance();
+            } catch (NoSuchMethodException | InstantiationException | IllegalAccessException
+                    | InvocationTargetException ex) {
+                throw new IllegalStateException("Cannot initialize a form: " + ex.getMessage(), ex);
+            }
+        }
+    }
+
+    public static <T> String formToByteString(T form) {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        byte[] jsonBytes;
+        try {
+            jsonBytes = objectMapper.writeValueAsBytes(form);
+            return Base64.getEncoder().encodeToString(jsonBytes);
+        } catch (JsonProcessingException e) {
+            LOGGER.warn("Cannot convert Form to Json: " + e.getMessage(), e);
+            return "";
+        }
     }
 }

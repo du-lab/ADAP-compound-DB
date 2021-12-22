@@ -113,7 +113,7 @@ public class SpectrumRestController1 {
             spectrum = spectrumService.find(spectrumId);
 
             JSONObject smilesImage = new JSONObject();
-            smilesImage.put("image", ConversionsUtils.smilesToImage(spectrum.getCanonicalSmiles()));
+            smilesImage.put("image", ConversionsUtils.toImage(spectrum.getCanonicalSmiles(), spectrum.getInChi()));
 
             return smilesImage.toString();
         } catch (EmptySearchResultException e) {
@@ -148,7 +148,7 @@ public class SpectrumRestController1 {
             spectrum = submission.getFiles().get(fileIndex).getSpectra().get(spectrumIndex);
 
             JSONObject smilesImage = new JSONObject();
-            smilesImage.put("image", ConversionsUtils.smilesToImage(spectrum.getCanonicalSmiles()));
+            smilesImage.put("image", ConversionsUtils.toImage(spectrum.getCanonicalSmiles(), spectrum.getInChi()));
 
             return smilesImage.toString();
 

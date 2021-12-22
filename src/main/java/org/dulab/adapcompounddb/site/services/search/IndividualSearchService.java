@@ -63,7 +63,7 @@ public class IndividualSearchService {
         return searchResults;
     }
 
-    @Transactional
+//    @Transactional
     public List<SearchResultDTO> searchWithOntologyLevels(UserPrincipal user, Spectrum spectrum,
                                                           SearchParameters parameters) {
 
@@ -83,6 +83,8 @@ public class IndividualSearchService {
         modifiedParameters.setScoreThreshold(null);
         modifiedParameters.setPrecursorTolerance(null, null);
         modifiedParameters.setRetTimeTolerance(null);
+        modifiedParameters.setRetIndexTolerance(null);
+        modifiedParameters.setRetIndexMatchType(SearchParameters.RetIndexMatchType.IGNORE_MATCH);
         modifiedParameters.setMassTolerance(null, Parameters.MASS_TOLERANCE_PPM);
 
         List<Adduct> adducts = adductService.findAdductsByChromatography(spectrum.getChromatographyType());
@@ -91,9 +93,9 @@ public class IndividualSearchService {
                     .mapToDouble(adduct -> adduct.calculateNeutralMass(spectrum.getPrecursor()))
                     .toArray());
 
-        Map<Long, String> privateSubmissionIdMap =
-                submissionService.findUserPrivateSubmissions(user, spectrum.getChromatographyType());
-        Set<Long> privateSubmissionIds = privateSubmissionIdMap.keySet();
+//        Map<Long, String> privateSubmissionIdMap =
+//                submissionService.findUserPrivateSubmissions(user, spectrum.getChromatographyType());
+//        Set<Long> privateSubmissionIds = privateSubmissionIdMap.keySet();
 
         List<SpectrumMatch> matches =
                 javaSpectrumSimilarityService.searchConsensusAndReference(spectrum, modifiedParameters, user);
@@ -109,8 +111,8 @@ public class IndividualSearchService {
         for (SearchResultDTO result : results) {
 
             OntologyLevel ontologyLevel = OntologySupplier.select(spectrum.getChromatographyType(),
-                    privateSubmissionIds.contains(result.getSubmissionId()), result.getScore(),
-                    result.getPrecursorErrorPPM(), result.getMassErrorPPM(), result.getRetTimeError());
+                    result.getInHouse(), result.getScore(), result.getPrecursorErrorPPM(), result.getMassErrorPPM(),
+                    result.getRetTimeError());
             if (ontologyLevel == null)
                 continue;
 

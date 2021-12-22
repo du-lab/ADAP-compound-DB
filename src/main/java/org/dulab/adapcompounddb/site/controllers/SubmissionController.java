@@ -3,6 +3,7 @@ package org.dulab.adapcompounddb.site.controllers;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.entities.*;
+import org.dulab.adapcompounddb.site.controllers.forms.FilterOptions;
 import org.dulab.adapcompounddb.site.controllers.forms.SubmissionForm;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
@@ -134,6 +135,13 @@ public class SubmissionController extends BaseController {
         model.addAttribute("availableTags", submissionService.findUniqueTagStrings());
 
         return "submission/view";
+    }
+    @RequestMapping(value = "/libraries/", method = RequestMethod.GET)
+    public String publicLibraries(final Model model) {
+
+        model.addAttribute("libraries", submissionService.findAllPublicLibraries());
+
+        return "all_libraries";
     }
 
 //    private SubmissionForm createSubmissionForm(final Submission submission) {
@@ -298,6 +306,9 @@ public class SubmissionController extends BaseController {
         if (!submissionForm.getIsPrivate() && submissionForm.getIsLibrary())
             throw new IllegalStateException("Creating a library is allowed only for private submissions");
 
+        if (!submissionForm.getIsLibrary() && submissionForm.getIsInHouseLibrary())
+            throw new IllegalStateException("Invalid values of the Library and In-House fields");
+
         submission.setName(submissionForm.getName());
         submission.setExternalId(submissionForm.getExternalId());
         submission.setDescription(submissionForm.getDescription());
@@ -313,6 +324,7 @@ public class SubmissionController extends BaseController {
                 if (spectra == null) continue;
                 for (Spectrum spectrum : spectra) {
                     spectrum.setReference(submissionForm.getIsLibrary());
+                    spectrum.setInHouseReference(submissionForm.getIsInHouseLibrary());
                 }
             }
         }

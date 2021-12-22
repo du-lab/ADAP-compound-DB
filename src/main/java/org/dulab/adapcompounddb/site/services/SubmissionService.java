@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.services;
 
+import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -68,11 +69,14 @@ public class SubmissionService {
             long[] submissionIds = submissions.stream().mapToLong(Submission::getId).toArray();
             Map<Long, Boolean> references = MappingUtils.toMap(
                     spectrumRepository.getAllSpectrumReferenceBySubmissionIds(submissionIds));
+            Map<Long, Boolean> inHouseReferences = MappingUtils.toMap(
+                    spectrumRepository.getAllSpectrumInHouseReferenceBySubmissionIds(submissionIds));
             Map<Long, Boolean> clusterables = MappingUtils.toMap(
                     spectrumRepository.getAllSpectrumClusterableBySubmissionIds(submissionIds));
 
             submissionDTOs = submissions.stream()
-                    .map(s -> new SubmissionDTO(s, references.get(s.getId()), clusterables.get(s.getId())))
+                    .map(s -> new SubmissionDTO(s, references.get(s.getId()), inHouseReferences.get(s.getId()),
+                            clusterables.get(s.getId())))
                     .collect(Collectors.toList());
         }
 
@@ -83,9 +87,13 @@ public class SubmissionService {
         return response;
     }
 
-    @Transactional
-    public List<Submission> findSubmissionsWithTagsByUserId(final long userId) {
-        return MappingUtils.toList(submissionRepository.findByUserId(userId));
+    public Iterable<Submission> findAllPublicLibraries(){
+        return submissionRepository.findByPrivateFalseAndReferenceTrue();
+    }
+
+//    @Transactional
+    public List<Submission> findSubmissionsWithTagsByUserId(long userId) {
+        return MappingUtils.toList(submissionRepository.findWithTagsByUserId(userId));
     }
 
     public List<Submission> findSubmissionsByExternalId(String externalId) {
@@ -108,7 +116,7 @@ public class SubmissionService {
                 .collect(Collectors.toSet());
 //        if (fileList.get(0).getSpectra().get(0).getId() == 0) {
         if (ids.contains(0L)) {
-            spectrumRepository.saveSpectrumAndPeaks(fileList, savedFileIds);
+            spectrumRepository.saveSpectra(fileList, savedFileIds);
         }
     }
 
@@ -212,12 +220,26 @@ public class SubmissionService {
         return tagMap;
     }
 
-    public SortedMap<Long, String> findUserPrivateSubmissions(UserPrincipal user, ChromatographyType type) {
+    public SortedMap<BigInteger, String> findUserPrivateSubmissions(UserPrincipal user, ChromatographyType type) {
         Iterable<Submission> submissions =
                 submissionRepository.findByPrivateTrueAndReferenceTrueAndUserAndChromatographyType(user, type);
 
-        SortedMap<Long, String> submissionIdToNameMap = new TreeMap<>();
-        submissions.forEach(s -> submissionIdToNameMap.put(s.getId(), s.getName()));
+        SortedMap<BigInteger, String> submissionIdToNameMap = new TreeMap<>();
+        for (Submission submission : submissions) {
+            String html = String.format("%s <span class='badge badge-info'>private</span>%s",
+                    submission.getName(),
+                    submission.isInHouse() ? " <span class='badge badge-success'>in-house</span>" : "");
+            submissionIdToNameMap.put(BigInteger.valueOf(submission.getId()), html);
+        }
+        return submissionIdToNameMap;
+    }
+
+    public SortedMap<BigInteger, String> findPublicSubmissions(ChromatographyType type) {
+        Iterable<Submission> submissions =
+                submissionRepository.findByPrivateFalseAndReferenceTrueAndChromatographyType(type);
+
+        SortedMap<BigInteger, String> submissionIdToNameMap = new TreeMap<>();
+        submissions.forEach(s -> submissionIdToNameMap.put(BigInteger.valueOf(s.getId()), s.getName()));
         return submissionIdToNameMap;
     }
 
@@ -239,5 +261,25 @@ public class SubmissionService {
         return MappingUtils.toMapOfLists(submissionIds.isEmpty()
                 ? new ArrayList<>(0)
                 : submissionRepository.findChromatographyTypesBySubmissionId(submissionIds));
+    }
+
+    public Map<Long, Boolean> getIdToIsLibraryMap(List<Submission> submissions) {
+        long[] submissionIds = submissions.stream()
+                .mapToLong(Submission::getId)
+                .toArray();
+
+        return MappingUtils.toMap(submissionIds.length == 0
+                ? new ArrayList<>(0)
+                : spectrumRepository.getAllSpectrumReferenceBySubmissionIds(submissionIds));
+    }
+
+    public Map<Long, Boolean> getIdToIsInHouseLibraryMap(List<Submission> submissions) {
+        long[] submissionIds = submissions.stream()
+                .mapToLong(Submission::getId)
+                .toArray();
+
+        return MappingUtils.toMap(submissionIds.length == 0
+                ? new ArrayList<>(0)
+                : spectrumRepository.getAllSpectrumInHouseReferenceBySubmissionIds(submissionIds));
     }
 }

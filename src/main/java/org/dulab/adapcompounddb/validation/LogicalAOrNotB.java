@@ -7,24 +7,24 @@ import java.lang.annotation.*;
 
 @Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = PrivateLibraryValidator.class)
+@Constraint(validatedBy = LogicalAOrNotBValidator.class)
 @Documented
-public @interface PrivateLibrary {
+public @interface LogicalAOrNotB {
 
-    String message() default "Creating a library is allowed only for private submissions";
+    String message() default "Invalid field values";
 
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
 
-    String privateField();
+    String fieldA();
 
-    String libraryField();
+    String fieldB();
 
     @Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
     @interface List {
-        PrivateLibrary[] value();
+        LogicalAOrNotB[] value();
     }
 }

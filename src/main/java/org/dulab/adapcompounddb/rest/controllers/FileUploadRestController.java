@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.MetaDataMapping;
+import org.dulab.adapcompounddb.models.MetaDataMapping.Field;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.enums.FileType;
 import org.dulab.adapcompounddb.models.enums.UserRole;
@@ -63,19 +64,20 @@ public class FileUploadRestController {
             submission.getTags().forEach(tag -> tag.setSubmission(submission));
 
             MetaDataMapping metaDataMapping = new MetaDataMapping();
-            metaDataMapping.setNameField("Name");
-            metaDataMapping.setMassField("Mass");
-            metaDataMapping.setFormulaField("Formula");
-            metaDataMapping.setExternalIdField("CASNO");
-            metaDataMapping.setInchiKeyField("INCHI_KEY");
-            metaDataMapping.setRetTimeField("RT");
-            metaDataMapping.setPrecursorMzField("PrecursorMz");
-            metaDataMapping.setPrecursorTypeField("Precursor_type");
+            metaDataMapping.setFieldName(Field.NAME, "Name");
+            metaDataMapping.setFieldName(Field.MASS, "Mass");
+            metaDataMapping.setFieldName(Field.FORMULA, "Formula");
+            metaDataMapping.setFieldName(Field.EXTERNAL_ID, "CASNO");
+            metaDataMapping.setFieldName(Field.INCHI_KEY, "INCHI_KEY");
+            metaDataMapping.setFieldName(Field.RETENTION_TIME, "RT");
+            metaDataMapping.setFieldName(Field.PRECURSOR_MZ, "PrecursorMz");
+            metaDataMapping.setFieldName(Field.PRECURSOR_TYPE, "Precursor_type");
 
             Map<FileType, MetaDataMapping> metaDataMappingMap = new HashMap<>();
             metaDataMappingMap.put(FileType.MSP, metaDataMapping);
 
-            MultipartFileUtils.readMultipartFile(submission, files, chromatographyType, metaDataMappingMap, false);
+            MultipartFileUtils.readMultipartFile(submission, files, chromatographyType, metaDataMappingMap,
+                    false, false);
 
             submissionService.saveSubmission(submission);
 

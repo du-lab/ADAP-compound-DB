@@ -8,6 +8,7 @@ import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
+import org.dulab.adapcompounddb.site.services.search.SearchParameters.RetIndexMatchType;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,10 @@ public class JavaSpectrumSimilarityService {
 
     private static final Logger LOGGER = LogManager.getLogger(JavaSpectrumSimilarityService.class);
 
+    private static final double RET_INDEX_STRONG_PENALTY = 0.5;
+    private static final double RET_INDEX_AVERAGE_PENALTY = 0.7;
+    private static final double RET_INDEX_WEAK_PENALTY = 0.9;
+
     private final SpectrumRepository spectrumRepository;
 
 
@@ -29,7 +34,19 @@ public class JavaSpectrumSimilarityService {
 
     public List<SpectrumMatch> searchConsensusAndReference(
             Spectrum querySpectrum, SearchParameters parameters, UserPrincipal user) {
-        return search(querySpectrum, parameters, user, true, true, false);
+
+        Set<BigInteger> submissionIds = parameters.getSubmissionIds();
+
+        boolean searchConsensus = submissionIds == null || submissionIds.contains(BigInteger.ZERO);
+        boolean searchReference = submissionIds == null
+                || submissionIds.stream().anyMatch(id -> !Objects.equals(id, BigInteger.ZERO));
+
+        if (!searchConsensus && !searchReference) {
+            LOGGER.info("Spectrum search is attempted without any selected libraries");
+            return new ArrayList<>(0);
+        }
+
+        return search(querySpectrum, parameters, user, searchConsensus, searchReference, false);
     }
 
     public List<SpectrumMatch> searchClusterable(
@@ -50,6 +67,9 @@ public class JavaSpectrumSimilarityService {
         Map<BigInteger, List<BigInteger>> commonToSpectrumIdsMap = MappingUtils.toMapBigIntegerOfLists(
                 spectrumRepository.preScreenSpectra(querySpectrum, parameters, user, greedy,
                         searchConsensus, searchReference, searchClusterable));
+
+        if (commonToSpectrumIdsMap.isEmpty())
+            return new ArrayList<>(0);
 
         if (parameters.getSpecies() != null || parameters.getSource() != null || parameters.getDisease() != null)
             commonToSpectrumIdsMap = MappingUtils.toMapBigIntegerOfLists(
@@ -123,6 +143,10 @@ public class JavaSpectrumSimilarityService {
             if (querySpectrum.getRetentionTime() != null && librarySpectrum.getRetentionTime() != null)
                 retTimeError = Math.abs(querySpectrum.getRetentionTime() - librarySpectrum.getRetentionTime());
 
+            double retIndexError = Double.MAX_VALUE;
+            if (querySpectrum.getRetentionIndex() != null && librarySpectrum.getRetentionIndex() != null)
+                retIndexError = Math.abs(querySpectrum.getRetentionIndex() - librarySpectrum.getRetentionIndex());
+
             // if the similarity score > ScoreThreshold, then return the MatchSpectrum
             if ((params.getPrecursorTolerance() == null || precursorError < params.getPrecursorTolerance())
                     && (params.getPrecursorTolerancePPM() == null || precursorErrorPPM < params.getPrecursorTolerancePPM())
@@ -140,13 +164,35 @@ public class JavaSpectrumSimilarityService {
                 match.setMassError(massError < Double.MAX_VALUE ? massError : null);
                 match.setMassErrorPPM(massErrorPPM < Double.MAX_VALUE ? massErrorPPM : null);
                 match.setRetTimeError(retTimeError < Double.MAX_VALUE ? retTimeError : null);
+                match.setRetIndexError(retIndexError < Double.MAX_VALUE ? retIndexError : null);
+
+                if (params.getRetIndexTolerance() != null && retIndexError >= params.getRetIndexTolerance()) {
+
+                    if (params.getRetIndexMatchType() == RetIndexMatchType.ALWAYS_MATCH)
+                        continue;
+
+                    Double score = match.getScore();
+                    if (score != null) {
+                        if (params.getRetIndexMatchType() == RetIndexMatchType.PENALIZE_NO_MATCH_STRONG)
+                            match.setScore(RET_INDEX_STRONG_PENALTY * score);
+                        else if (params.getRetIndexMatchType() == RetIndexMatchType.PENALIZE_NO_MATCH_AVERAGE)
+                            match.setScore(RET_INDEX_AVERAGE_PENALTY * score);
+                        else if (params.getRetIndexMatchType() == RetIndexMatchType.PENALIZE_NO_MATCH_WEAK)
+                            match.setScore(RET_INDEX_WEAK_PENALTY * score);
+
+                        if (params.getScoreThreshold() != null && match.getScore() <= params.getScoreThreshold())
+                            continue;
+                    }
+                }
+
                 matches.add(match);
             }
         }
 
         matches.sort(Comparator.comparing(SpectrumMatch::getScore, Comparator.nullsLast(Comparator.reverseOrder()))
                 .thenComparing(SpectrumMatch::getMassError, Comparator.nullsLast(Comparator.naturalOrder()))
-                .thenComparing(SpectrumMatch::getRetTimeError, Comparator.nullsLast(Comparator.naturalOrder())));
+                .thenComparing(SpectrumMatch::getRetTimeError, Comparator.nullsLast(Comparator.naturalOrder()))
+                .thenComparing(SpectrumMatch::getRetIndexError, Comparator.nullsLast(Comparator.naturalOrder())));
 
         return matches;
     }

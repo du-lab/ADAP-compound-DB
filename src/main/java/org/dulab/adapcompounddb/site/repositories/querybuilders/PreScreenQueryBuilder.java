@@ -4,14 +4,16 @@ import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 
-import java.util.Arrays;
-import java.util.Objects;
+import javax.annotation.Nullable;
+import java.math.BigInteger;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class PreScreenQueryBuilder {
 
     private final String spectrumTypeQuery;
+    private final Set<BigInteger> submissionIds;
 
     private ChromatographyType chromatographyType;
 
@@ -28,18 +30,24 @@ public class PreScreenQueryBuilder {
     private Double retTime = null;
     private Double retTimeTolerance = null;
 
+    private Double retIndex = null;
+    private Double retIndexTolerance = null;
+
     private double[] masses = null;
     private Double massTolerance = null;
     private Double massTolerancePPM = null;
 
 
-    public PreScreenQueryBuilder(boolean searchConsensus, boolean searchReference, boolean searchClusterable) {
+    public PreScreenQueryBuilder(boolean searchConsensus, boolean searchReference, boolean searchClusterable,
+                                 @Nullable Set<BigInteger> submissionIds) {
+
+        this.submissionIds = submissionIds;
 
         spectrumTypeQuery = Arrays.stream(
                 new String[]{
-                        searchConsensus ? "Consensus IS TRUE" : null,
-                        searchReference ? "Reference IS TRUE" : null,
-                        searchClusterable ? "Clusterable IS TRUE" : null})
+                        searchConsensus ? "Spectrum.Consensus IS TRUE" : null,
+                        searchReference ? "Spectrum.Reference IS TRUE" : null,
+                        searchClusterable ? "Spectrum.Clusterable IS TRUE" : null})
                 .filter(Objects::nonNull).collect(Collectors.joining(" OR "));
     }
 
@@ -58,6 +66,12 @@ public class PreScreenQueryBuilder {
     public PreScreenQueryBuilder withRetTime(Double tolerance, Double retTime) {
         this.retTime = retTime;
         this.retTimeTolerance = tolerance;
+        return this;
+    }
+
+    public PreScreenQueryBuilder withRetIndex(Double tolerance, Double retIndex) {
+        this.retIndex = retIndex;
+        this.retIndexTolerance = tolerance;
         return this;
     }
 
@@ -91,7 +105,10 @@ public class PreScreenQueryBuilder {
 
     public String buildQueryBlock(int numberOfTopMz, Double queryMz) {
 
-        String queryBlock = String.format("SELECT Id FROM Spectrum WHERE (%s)", spectrumTypeQuery);
+        String queryBlock = String.format("SELECT Spectrum.Id FROM Spectrum LEFT JOIN File ON File.Id = Spectrum.FileId " +
+                "LEFT JOIN Submission ON Submission.Id = File.SubmissionId " +
+                "LEFT JOIN UserPrincipal ON UserPrincipal.Id = Submission.UserPrincipalId\n" +
+                "WHERE (%s)", spectrumTypeQuery);
 
         if (chromatographyType != null)
             queryBlock += String.format(" AND Spectrum.ChromatographyType = '%s'", chromatographyType);
@@ -123,6 +140,10 @@ public class PreScreenQueryBuilder {
             queryBlock += String.format(" AND Spectrum.RetentionTime > %f AND Spectrum.RetentionTime < %f",
                     retTime - retTimeTolerance, retTime + retTimeTolerance);
 
+        if (retIndex != null && retIndexTolerance != null)
+            queryBlock += String.format(" AND Spectrum.RetentionIndex > %f AND Spectrum.RetentionIndex < %f",
+                    retIndex - retIndexTolerance, retIndex + retIndexTolerance);
+
         if (querySpectrum != null && mzTolerance != null) {
             queryBlock += String.format(" AND (%s)", IntStream.range(1, numberOfTopMz + 1)
                     .mapToObj(i -> String.format("(TopMz%d > %f AND TopMz%d < %f)",
@@ -138,6 +159,11 @@ public class PreScreenQueryBuilder {
                             i, getUpperLimit(queryMz, mzTolerancePPM)))
                     .collect(Collectors.joining(" OR ")));
         }
+
+        queryBlock += String.format(" AND (Spectrum.FileId IS NULL OR Submission.IsPrivate IS FALSE%s)",
+                user != null ? " OR UserPrincipal.Id = " + user.getId() : "");
+        if (submissionIds != null)
+            queryBlock += String.format(" AND (%s)", buildConditionStringWithSubmissionIds());
 
         queryBlock += "\n";
 
@@ -186,17 +212,32 @@ public class PreScreenQueryBuilder {
         }
         query += ") AS TempTable\n";
 
-        query += "JOIN Spectrum ON Spectrum.Id = TempTable.Id ";
-        query += "LEFT JOIN File ON File.Id = Spectrum.FileId ";
-        query += "LEFT JOIN Submission ON Submission.Id = File.SubmissionId ";
-        query += "LEFT JOIN UserPrincipal ON UserPrincipal.Id = Submission.UserPrincipalId\n";
-        query += "WHERE Spectrum.FileId IS NULL OR Submission.IsPrivate IS FALSE";
-        if (user != null)
-            query += String.format(" OR UserPrincipal.Id = %d", user.getId());
-
         query += "\nGROUP BY Id ORDER BY Common DESC";
 
         return query;
+    }
+
+    private String buildConditionStringWithSubmissionIds() {
+
+        if (submissionIds == null)
+            return null;
+
+        String ids = submissionIds.stream()
+                .filter(x -> !x.equals(BigInteger.ZERO))
+                .map(BigInteger::toString)
+                .collect(Collectors.joining(","));
+
+        String condition;
+        if (submissionIds.contains(BigInteger.ZERO) && !ids.isEmpty())
+            condition = String.format("Spectrum.Consensus IS TRUE OR Submission.Id IN (%s)", ids);
+        else if (submissionIds.contains(BigInteger.ZERO))
+            condition = "Spectrum.Consensus IS TRUE";
+        else if (!ids.isEmpty())
+            condition = String.format("Submission.Id IN (%s)", ids);
+        else
+            condition = "1 = 0";
+
+        return condition;
     }
 
     private static double getLowerLimit(double x, double ppm) {

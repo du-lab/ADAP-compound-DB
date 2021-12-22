@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
+import java.math.BigInteger;
 import java.util.Set;
 
 public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, SpectrumRepositoryCustom {
@@ -81,13 +81,17 @@ public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, Spec
 //    Integer getSpectrumReferenceOfSubmissionIfSame(@Param("submissionId") Long submissionId);
 
     @Query("select sum(s.reference) from Spectrum s where s.file.submission.id = :submissionId")
-    boolean getAllSpectrumReferenceBySubmissionId(@Param("submissionId") Long submissionId);
+    boolean containsReferenceSpectra(@Param("submissionId") Long submissionId);
 
     @Query("select s.file.submission.id, sum(s.reference) from Spectrum s where s.file.submission.id in :ids group by s.file.submission.id")
     Iterable<Object[]> getAllSpectrumReferenceBySubmissionIds(@Param("ids") long[] submissionIds);
 
+    @Query("select s.file.submission.id, sum(s.inHouseReference) from Spectrum s " +
+            "where s.file.submission.id in :ids group by s.file.submission.id")
+    Iterable<Object[]> getAllSpectrumInHouseReferenceBySubmissionIds(@Param("ids") long[] submissionIds);
+
     @Query("select sum(s.clusterable) from Spectrum s where s.file.submission.id = :submissionId")
-    boolean getAllSpectrumClusterableBySubmissionId(@Param("submissionId") Long submissionId);
+    boolean containsClusterableSpectra(@Param("submissionId") Long submissionId);
 
     @Query("select s.file.submission.id, sum(s.clusterable) from Spectrum s " +
             "where s.file.submission.id in :ids group by s.file.submission.id")
@@ -114,4 +118,7 @@ public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, Spec
     @Modifying
     @Query("UPDATE Spectrum s SET s.cluster = :cluster WHERE s.id IN (:ids)")
     void updateClusterForSpectra(@Param("cluster") SpectrumCluster cluster, @Param("ids") Set<Long> ids);
+
+    Iterable<Spectrum> findAllByConsensusTrueAndChromatographyTypeAndIntegerMz(
+            ChromatographyType chromatographyType, boolean integerMz);
 }

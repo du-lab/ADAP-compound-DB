@@ -1,7 +1,11 @@
 package org.dulab.adapcompounddb.site.services.search;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -9,6 +13,15 @@ import java.util.List;
 import java.util.Set;
 
 public class SearchParameters implements Cloneable {
+
+    private static final Logger LOGGER = LogManager.getLogger(SearchParameters.class);
+
+    public enum RetIndexMatchType {
+        IGNORE_MATCH, PENALIZE_NO_MATCH_STRONG, PENALIZE_NO_MATCH_AVERAGE,
+        PENALIZE_NO_MATCH_WEAK, ALWAYS_MATCH
+    }
+
+    public enum MzToleranceType {DA, PPM}
 
     private Boolean greedy;
     private Double scoreThreshold;
@@ -19,6 +32,8 @@ public class SearchParameters implements Cloneable {
     private Double massTolerance;
     private Double massTolerancePPM;
     private Double retTimeTolerance;
+    private Double retIndexTolerance;
+    private RetIndexMatchType retIndexMatchType;
     private String species;
     private String source;
     private String disease;
@@ -56,6 +71,18 @@ public class SearchParameters implements Cloneable {
     public SearchParameters setMzTolerance(Double mzTolerance, Double mzTolerancePPM) {
         this.mzTolerance = mzTolerance;
         this.mzTolerancePPM = mzTolerancePPM;
+        return this;
+    }
+
+    public SearchParameters setMzTolerance(Double mzTolerance, MzToleranceType mzToleranceType) {
+        switch (mzToleranceType) {
+            case PPM:
+                setMzTolerancePPM(mzTolerance);
+                break;
+            case DA:
+                setMzTolerance(mzTolerance);
+                break;
+        }
         return this;
     }
 
@@ -133,6 +160,22 @@ public class SearchParameters implements Cloneable {
         return this;
     }
 
+    public Double getRetIndexTolerance() {
+        return retIndexTolerance;
+    }
+
+    public void setRetIndexTolerance(Double retIndexTolerance) {
+        this.retIndexTolerance = retIndexTolerance;
+    }
+
+    public RetIndexMatchType getRetIndexMatchType() {
+        return retIndexMatchType;
+    }
+
+    public void setRetIndexMatchType(RetIndexMatchType retIndexMatchType) {
+        this.retIndexMatchType = retIndexMatchType;
+    }
+
     public String getSpecies() {
         return species;
     }
@@ -188,7 +231,7 @@ public class SearchParameters implements Cloneable {
                 break;
             case LC_MSMS_POS:
             case LC_MSMS_NEG:
-                parameters.setMzTolerance(0.001);
+                parameters.setMzTolerancePPM(0.001);
                 parameters.setScoreThreshold(0.3);
                 parameters.setPrecursorTolerance(0.01);
                 break;
@@ -205,6 +248,28 @@ public class SearchParameters implements Cloneable {
 
     public void setLimit(int limit) {
         this.limit = limit;
+    }
+
+    /**
+     * Sets variables of the current instance to the non-null values of 'other' instance
+     *
+     * @param other instance of `SearchParameters`
+     * @return updated current instance
+     */
+    public SearchParameters merge(SearchParameters other) {
+        if (other == null) return this;
+        for (Field field : other.getClass().getDeclaredFields()) {
+            if (Modifier.isStatic(field.getModifiers())) continue;
+            try {
+                Object value = field.get(other);
+                if (value != null) {
+                    this.getClass().getDeclaredField(field.getName()).set(this, value);
+                }
+            } catch (IllegalAccessException | NoSuchFieldException e) {
+                LOGGER.warn("Error when merging two search parameters: " + e.getMessage(), e);
+            }
+        }
+        return this;
     }
 
     @Override

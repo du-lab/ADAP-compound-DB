@@ -3,4 +3,8 @@
 	<decorator name="default" page="/WEB-INF/jsp/view/decorator.jsp">
         <pattern>/*</pattern>
     </decorator>
+
+    <excludes>
+        <pattern>/ajax/*</pattern>
+    </excludes>
 </decorators>

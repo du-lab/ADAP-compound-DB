@@ -2,150 +2,87 @@ package org.dulab.adapcompounddb.models;
 
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumProperty;
+import org.dulab.adapcompounddb.models.entities.Synonym;
+import org.dulab.adapcompounddb.models.enums.IdentifierType;
+
+import java.util.*;
+import java.util.function.BiConsumer;
 
 import static org.dulab.adapcompounddb.site.services.utils.MappingUtils.parseDouble;
 
 public class MetaDataMapping {
-    private String nameField;
-    private String externalIdField;
-    private String precursorMzField;
-    private String precursorTypeField;
-    private String retTimeField;
-    private String massField;
-    private String formulaField;
-    private String canonicalSmilesField;
-    private String inchiKeyField;
-    private String inchiField;
 
-
-    public MetaDataMapping() {
-        this(null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null);
+    public enum Field {
+        NAME, SYNONYM, EXTERNAL_ID, CAS_ID, KEGG_ID, PRECURSOR_MZ, PRECURSOR_TYPE, RETENTION_TIME, RETENTION_INDEX,
+        MASS, FORMULA, SMILES, INCHI_KEY, INCHI
     }
 
-    public MetaDataMapping(String nameField, String externalIdField, String precursorMzField, String precursorTypeField,
-                           String retTimeField, String massField, String formulaField, String canonicalSmilesField, String inchiKeyField, String inchiField) {
-        this.nameField = nameField;
-        this.externalIdField = externalIdField;
-        this.precursorMzField = precursorMzField;
-        this.retTimeField = retTimeField;
-        this.massField = massField;
-        this.formulaField = formulaField;
-        this.canonicalSmilesField = canonicalSmilesField;
-        this.inchiKeyField = inchiKeyField;
-        this.inchiField = inchiField;
+    private static final Map<Field, BiConsumer<Spectrum, String>> fieldToFunctionMap = new HashMap<>();
+
+    static {
+        fieldToFunctionMap.put(Field.NAME, Spectrum::setName);
+        fieldToFunctionMap.put(Field.SYNONYM, (spectrum, value) -> {
+            List<Synonym> synonyms = Objects.requireNonNullElseGet(spectrum.getSynonyms(), ArrayList::new);
+            Synonym synonym = new Synonym();
+            synonym.setName(value);
+            synonym.setSpectrum(spectrum);
+            synonyms.add(synonym);
+            spectrum.setSynonyms(synonyms);
+        });
+        fieldToFunctionMap.put(Field.EXTERNAL_ID, Spectrum::setExternalId);
+        fieldToFunctionMap.put(Field.CAS_ID, (spectrum, value) -> {
+            Map<IdentifierType, String> identifiers =
+                    Objects.requireNonNullElseGet(spectrum.getIdentifiers(), HashMap::new);
+            identifiers.put(IdentifierType.CAS, value);
+            spectrum.setIdentifiers(identifiers);
+        });
+        fieldToFunctionMap.put(Field.KEGG_ID, (spectrum, value) -> {
+            Map<IdentifierType, String> identifiers =
+                    Objects.requireNonNullElseGet(spectrum.getIdentifiers(), HashMap::new);
+            identifiers.put(IdentifierType.KEGG, value);
+            spectrum.setIdentifiers(identifiers);
+        });
+        fieldToFunctionMap.put(Field.PRECURSOR_MZ, (s, v) -> s.setPrecursor(parseDouble(v)));
+        fieldToFunctionMap.put(Field.PRECURSOR_TYPE, Spectrum::setPrecursorType);
+        fieldToFunctionMap.put(Field.RETENTION_TIME, (s, v) -> s.setRetentionTime(parseDouble(v)));
+        fieldToFunctionMap.put(Field.RETENTION_INDEX, (spectrum, value) -> {
+            Double retentionIndex = parseDouble(value);
+            spectrum.setRetentionIndex((retentionIndex != null && retentionIndex > 0) ? retentionIndex : null);
+        });
+        fieldToFunctionMap.put(Field.MASS, (s, v) -> s.setMass(parseDouble(v)));
+        fieldToFunctionMap.put(Field.FORMULA, Spectrum::setFormula);
+        fieldToFunctionMap.put(Field.SMILES, Spectrum::setCanonicalSmiles);
+        fieldToFunctionMap.put(Field.INCHI_KEY, Spectrum::setInChiKey);
+        fieldToFunctionMap.put(Field.INCHI, Spectrum::setInChi);
     }
 
-    public String getNameField() {
-        return nameField;
+    private final Map<Field, String> fieldToNameMap = new HashMap<>();
+
+
+    public String getFieldName(Field field) {
+        return fieldToNameMap.get(field);
     }
 
-    public String getExternalIdField() {
-        return externalIdField;
+    public void setFieldName(Field field, String fieldName) {
+        fieldToNameMap.put(field, (fieldName != null) ? fieldName.trim().toLowerCase() : null);
     }
 
-    public String getPrecursorMzField() {
-        return precursorMzField;
-    }
-
-    public String getPrecursorTypeField() {
-        return precursorTypeField;
-    }
-
-    public String getRetTimeField() {
-        return retTimeField;
-    }
-
-    public String getMassField() {
-        return massField;
-    }
-
-    public String getFormulaField() {
-        return formulaField;
-    }
-
-    public String getCanonicalSmilesField() {
-        return canonicalSmilesField;
-    }
-
-    public String getInchiKeyField() {
-        return inchiKeyField;
-    }
-
-    public String getInchiField() {
-        return inchiField;
-    }
-
-    public void setNameField(String nameField) {
-        this.nameField = nameField;
-    }
-
-    public void setExternalIdField(String externalIdField) {
-        this.externalIdField = externalIdField;
-    }
-
-    public void setPrecursorMzField(String precursorMzField) {
-        this.precursorMzField = precursorMzField;
-    }
-
-    public void setPrecursorTypeField(String precursorTypeField) {
-        this.precursorTypeField = precursorTypeField;
-    }
-
-    public void setRetTimeField(String retTimeField) {
-        this.retTimeField = retTimeField;
-    }
-
-    public void setMassField(String massField) {
-        this.massField = massField;
-    }
-
-    public void setFormulaField(String formulaField) {
-        this.formulaField = formulaField;
-    }
-
-    public void setCanonicalSmilesField(String canonicalSmilesField) {
-        this.canonicalSmilesField = canonicalSmilesField;
-    }
-
-    public void setInchiKeyField(String inchiKeyField) {
-        this.inchiKeyField = inchiKeyField;
-    }
-
-    public void setInchiField(String inchiField) {
-        this.inchiField = inchiField;
-    }
 
     public void map(SpectrumProperty property, Spectrum spectrum) {
-        String propertyName = property.getName();
+        String propertyName = property.getName().trim().toLowerCase();
         String propertyValue = property.getValue();
-        if (propertyName.equalsIgnoreCase(this.getNameField()))
-            spectrum.setName(propertyValue);
-        else if (propertyName.equalsIgnoreCase(this.getExternalIdField()))
-            spectrum.setExternalId(propertyValue);
-        else if (propertyName.equalsIgnoreCase(this.getPrecursorMzField()))
-            spectrum.setPrecursor(parseDouble(propertyValue));
-        else if (propertyName.equalsIgnoreCase(this.getPrecursorTypeField()))
-            spectrum.setPrecursorType(propertyValue);
-        else if (propertyName.equalsIgnoreCase(this.getRetTimeField()))
-            spectrum.setRetentionTime(parseDouble(propertyValue));
-        else if (propertyName.equalsIgnoreCase(this.getMassField()))
-            spectrum.setMass(parseDouble(propertyValue));
-        else if (propertyName.equalsIgnoreCase(this.getFormulaField()))
-            spectrum.setFormula(propertyValue);
-        else if (propertyName.equalsIgnoreCase(this.getCanonicalSmilesField()))
-            spectrum.setCanonicalSmiles(propertyValue);
-        else if (propertyName.equalsIgnoreCase(this.getInchiKeyField()))
-            spectrum.setInChiKey(propertyValue);
-        else if (propertyName.equalsIgnoreCase(this.getInchiField()))
-            spectrum.setInChi(propertyValue);
+
+        for (Field field : Field.values()) {
+            if (propertyName.equals(fieldToNameMap.get(field)))
+                fieldToFunctionMap.get(field).accept(spectrum, propertyValue);
+        }
+    }
+
+    public boolean check(String fieldName) {
+        fieldName = fieldName.trim().toLowerCase();
+        for (Field field : Field.values())
+            if (fieldName.equals(fieldToNameMap.get(field)))
+                return true;
+        return false;
     }
 }

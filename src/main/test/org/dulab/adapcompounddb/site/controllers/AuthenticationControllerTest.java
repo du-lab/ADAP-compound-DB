@@ -13,16 +13,13 @@ package org.dulab.adapcompounddb.site.controllers;
 //import org.springframework.mock.web.MockHttpSession;
 //import org.springframework.test.web.servlet.MockMvc;
 //import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-//import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 //
 //import static org.junit.Assert.*;
 //import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 //import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
+//
 //@RunWith(MockitoJUnitRunner.class)
 public class AuthenticationControllerTest {
-
-    //TODO This unit tests don't work anymore. Try to make them work.
 
 //    private MockMvc mockMvc;
 //    private MockHttpSession mockHttpSession;
@@ -39,7 +36,7 @@ public class AuthenticationControllerTest {
 //    @Mock
 //    private UserPrincipal userPrincipal;
 //
-//    @Before
+////    @Before
 //    public void setUp() {
 //
 //        mockMvc = MockMvcBuilders
@@ -53,7 +50,7 @@ public class AuthenticationControllerTest {
 //        mockHttpSession = new MockHttpSession();
 //    }
 //
-//    @Test
+////    @Test
 //    public void loginGetTest() throws Exception {
 //
 //        mockMvc.perform(get("/login"))
@@ -62,10 +59,9 @@ public class AuthenticationControllerTest {
 //                .andExpect(forwardedUrl("/WEB-INF/jsp/view/login.jsp"));  // checks the view filename
 //    }
 //
-//    @Test
+////    @Test
 //    public void loginRedirectTest() throws Exception {
 //
-//        //TODO Why have you commented it out?
 ////        UserPrincipal.assign(mockHttpSession, userPrincipal);
 //        mockMvc.perform(get("/login").session(mockHttpSession))
 //                .andExpect(status().isSeeOther())  // checks the status

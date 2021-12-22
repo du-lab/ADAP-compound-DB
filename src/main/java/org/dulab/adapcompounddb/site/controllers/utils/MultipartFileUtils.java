@@ -46,7 +46,7 @@ public class MultipartFileUtils {
     public static void readMultipartFile(Submission submission, List<MultipartFile> multipartFiles,
                                          @Nullable ChromatographyType chromatographyType,
                                          @Nullable Map<FileType, MetaDataMapping> metaDataMappings,
-                                         boolean mergeFiles) {
+                                         boolean mergeFiles, boolean roundMzInSpectra) {
 
 //        final FileReaderService service = fileReaderServiceMap.get(fileType);
 //        if (service == null)
@@ -71,6 +71,10 @@ public class MultipartFileUtils {
             if (fileReader == null)
                 throw new IllegalStateException(
                         "Cannot find an implementation of FileReaderService for a file of type " + fileType);
+
+            if (fileReader instanceof MspFileReaderService) {
+                ((MspFileReaderService) fileReader).setRoundMzValues(roundMzInSpectra);
+            }
 
             File file = new File();
             file.setName(filename);
@@ -158,13 +162,17 @@ public class MultipartFileUtils {
         File mergedFile = files.get(0);
         List<Spectrum> mergedSpectra = mergedFile.getSpectra();
         if (!checkNames(mergedSpectra))
-            throw new IllegalStateException("No ID found for the spectra in file " + mergedFile.getName());
+            throw new IllegalStateException(String.format(
+                    "No Name found for the spectra in file %s. Please check whether the Name Field is correct.",
+                    mergedFile.getName()));
 
         for (int i = 1; i < files.size(); ++i) {
             File file = files.get(i);
             List<Spectrum> spectra = file.getSpectra();
             if (!checkNames(spectra))
-                throw new IllegalStateException("No ID found for the spectra in file " + mergedFile.getName());
+                throw new IllegalStateException(String.format(
+                        "No Name found for the spectra in file %s. Please check whether the Name Field is correct.",
+                        mergedFile.getName()));
 
             mergedSpectra = mergeSpectra(mergedSpectra, spectra);
             file.setSpectra(null);

@@ -717,3 +717,12 @@ progress:after {
 /*    border-radius: 2px;*/
 /*    cursor: pointer;*/
 /*}*/
+
+.col-compact {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.card-body-compact {
+    padding: 0.5em;
+}

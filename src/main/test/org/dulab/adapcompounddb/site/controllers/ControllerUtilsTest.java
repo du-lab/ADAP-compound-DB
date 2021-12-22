@@ -6,7 +6,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-//import static org.dulab.adapcompounddb.site.controllers.ControllerUtils.peaksToJson;
+import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.peaksToJson;
 import static org.junit.Assert.*;
 
 public class ControllerUtilsTest {
@@ -14,12 +14,11 @@ public class ControllerUtilsTest {
     @Test
     public void peaksToJsonTest() {
 
-        //TODO Why have you commented this out?
         // Null value check
-//        assertEquals("", peaksToJson(null));
+        assertEquals("[]", peaksToJson(null).toString());
 
         // Empty list check
-//        assertEquals("", peaksToJson(new ArrayList<>(0)));
+        assertEquals("[]", peaksToJson(new ArrayList<>(0)).toString());
 
         // List of two peaks
         Peak peak1 = new Peak();
@@ -30,7 +29,7 @@ public class ControllerUtilsTest {
         peak2.setMz(41.0);
         peak2.setIntensity(10.0);
 
-//        assertEquals("[[40.0,100.0],[41.0,10.0]]", peaksToJson(Arrays.asList(peak1, peak2)));
+        assertEquals("[[40.0,100.0],[41.0,10.0]]", peaksToJson(Arrays.asList(peak1, peak2)).toString());
 
     }
 }

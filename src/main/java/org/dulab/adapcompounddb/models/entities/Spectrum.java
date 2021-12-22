@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.regex.Pattern;
 
@@ -13,6 +14,7 @@ import javax.validation.constraints.NotNull;
 
 import org.dulab.adapcompounddb.models.MetaDataMapping;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
+import org.dulab.adapcompounddb.models.enums.IdentifierType;
 
 @Entity
 @SqlResultSetMapping(name = "SpectrumScoreMapping", columns = {@ColumnResult(name = "SpectrumId", type = Long.class),
@@ -35,6 +37,17 @@ public class Spectrum implements Serializable {
 
     private String externalId;
 
+//    @OneToMany(targetEntity = Identifier.class, mappedBy = "spectrum", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
+//    private List<Identifier> identifiers;
+
+    @ElementCollection
+    @CollectionTable(name = "Identifier",
+            joinColumns = {@JoinColumn(name = "SpectrumId", referencedColumnName = "Id")})
+    @MapKeyColumn(name = "type")
+    @MapKeyEnumerated(EnumType.STRING)
+    @Column(name = "value")
+    private Map<IdentifierType, String> identifiers;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "FileId", referencedColumnName = "Id")
     private File file;
@@ -47,6 +60,9 @@ public class Spectrum implements Serializable {
     @OneToMany(targetEntity = SpectrumProperty.class, mappedBy = "spectrum", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
     private List<SpectrumProperty> properties;
 
+    @OneToMany(targetEntity = Synonym.class, mappedBy = "spectrum", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
+    private List<Synonym> synonyms;
+
     @OneToMany(targetEntity = SpectrumMatch.class, mappedBy = "querySpectrum", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<SpectrumMatch> matches;
 
@@ -58,61 +74,38 @@ public class Spectrum implements Serializable {
     private SpectrumCluster cluster;
 
     private boolean consensus;
-
     private boolean reference;
-
+    private boolean inHouseReference;
     private boolean clusterable;
-
     private boolean integerMz;
 
     private Double precursor;
-
     private String precursorType;
-
     private Double retentionTime;
-
+    private Double retentionIndex;
     private Double significance;
-
     private Double mass;
-
     private String formula;
 
     private Double topMz1;
-
     private Double topMz2;
-
     private Double topMz3;
-
     private Double topMz4;
-
     private Double topMz5;
-
     private Double topMz6;
-
     private Double topMz7;
-
     private Double topMz8;
-
     private Double topMz9;
-
     private Double topMz10;
-
     private Double topMz11;
-
     private Double topMz12;
-
     private Double topMz13;
-
     private Double topMz14;
-
     private Double topMz15;
-
     private Double topMz16;
 
     private String canonicalSmiles; //CC Edits
-
     private String inChi; //CC Edits
-
     private String inChiKey; //CC Edits
 
 
@@ -130,6 +123,22 @@ public class Spectrum implements Serializable {
 
     public void setId(final long id) {
         this.id = id;
+    }
+
+    public Map<IdentifierType, String> getIdentifiers() {
+        return identifiers;
+    }
+
+    public void setIdentifiers(Map<IdentifierType, String> identifiers) {
+        this.identifiers = identifiers;
+    }
+
+    public String getStringOfIdentifiers() {
+        if (identifiers == null)
+            return null;
+        return identifiers.entrySet().stream()
+                .map(e -> String.format("%s (%s)", e.getValue(), e.getKey()))
+                .collect(Collectors.joining(", "));
     }
 
     public String getExternalId() {
@@ -160,6 +169,21 @@ public class Spectrum implements Serializable {
 
     public void setName(final String name) {
         this.name = name;
+    }
+
+    public List<Synonym> getSynonyms() {
+        return synonyms;
+    }
+
+    public void setSynonyms(List<Synonym> synonyms) {
+        this.synonyms = synonyms;
+    }
+
+    public String getStringOfSynonyms() {
+        if (synonyms == null) return null;
+        return synonyms.stream()
+                .map(Synonym::getName)
+                .collect(Collectors.joining(", "));
     }
 
     public File getFile() {
@@ -210,11 +234,12 @@ public class Spectrum implements Serializable {
         setPeaks(peaks, false);
     }
 
-    /** Setter method for the field `peaks`. If `normalize` is true, this method also
+    /**
+     * Setter method for the field `peaks`. If `normalize` is true, this method also
      * - normalized peaks' intensities so that their sum is equal to one,
      * - sets attribute `integerMz` to true if all peaks' m/z values are integer
      *
-     * @param peaks list of peaks
+     * @param peaks     list of peaks
      * @param normalize determined whether the normalization is performed
      */
     public void setPeaks(final List<Peak> peaks, final boolean normalize) {
@@ -227,52 +252,52 @@ public class Spectrum implements Serializable {
                     .sorted(Comparator.comparingDouble(Peak::getIntensity).reversed())
                     .collect(Collectors.toList());
             // assign m/z values of the top 16 highest peaks
-            if (peakList.size() >= 1){
+            if (peakList.size() >= 1) {
                 this.setTopMz1(peakList.get(0).getMz());
             }
-            if (peakList.size() >= 2){
+            if (peakList.size() >= 2) {
                 this.setTopMz2(peakList.get(1).getMz());
             }
-            if (peakList.size() >= 3){
+            if (peakList.size() >= 3) {
                 this.setTopMz3(peakList.get(2).getMz());
             }
-            if (peakList.size() >= 4){
+            if (peakList.size() >= 4) {
                 this.setTopMz4(peakList.get(3).getMz());
             }
-            if (peakList.size() >= 5){
+            if (peakList.size() >= 5) {
                 this.setTopMz5(peakList.get(4).getMz());
             }
-            if (peakList.size() >= 6){
+            if (peakList.size() >= 6) {
                 this.setTopMz6(peakList.get(5).getMz());
             }
-            if (peakList.size() >= 7){
+            if (peakList.size() >= 7) {
                 this.setTopMz7(peakList.get(6).getMz());
             }
-            if (peakList.size() >= 8){
+            if (peakList.size() >= 8) {
                 this.setTopMz8(peakList.get(7).getMz());
             }
-            if (peakList.size() >= 9){
+            if (peakList.size() >= 9) {
                 this.setTopMz9(peakList.get(8).getMz());
             }
-            if (peakList.size() >= 10){
+            if (peakList.size() >= 10) {
                 this.setTopMz10(peakList.get(9).getMz());
             }
-            if (peakList.size() >= 11){
+            if (peakList.size() >= 11) {
                 this.setTopMz11(peakList.get(10).getMz());
             }
-            if (peakList.size() >= 12){
+            if (peakList.size() >= 12) {
                 this.setTopMz12(peakList.get(11).getMz());
             }
-            if (peakList.size() >= 13){
+            if (peakList.size() >= 13) {
                 this.setTopMz13(peakList.get(12).getMz());
             }
-            if (peakList.size() >= 14){
+            if (peakList.size() >= 14) {
                 this.setTopMz14(peakList.get(13).getMz());
             }
-            if (peakList.size() >= 15){
+            if (peakList.size() >= 15) {
                 this.setTopMz15(peakList.get(14).getMz());
             }
-            if (peakList.size() >= 16){
+            if (peakList.size() >= 16) {
                 this.setTopMz16(peakList.get(15).getMz());
             }
 
@@ -303,7 +328,7 @@ public class Spectrum implements Serializable {
      * fields like `name`, `precursorMz`, `retentionTime`, etc.
      *
      * @param properties list of properties
-     * @param mapping instance of {@link MetaDataMapping} that contains the property names containing meta information
+     * @param mapping    instance of {@link MetaDataMapping} that contains the property names containing meta information
      */
     public void setProperties(List<SpectrumProperty> properties, MetaDataMapping mapping) {
         this.properties = properties;
@@ -395,6 +420,14 @@ public class Spectrum implements Serializable {
         this.reference = reference;
     }
 
+    public boolean isInHouseReference() {
+        return inHouseReference;
+    }
+
+    public void setInHouseReference(boolean inHouseReference) {
+        this.inHouseReference = inHouseReference;
+    }
+
     public boolean isClusterable() {
         return clusterable;
     }
@@ -433,6 +466,14 @@ public class Spectrum implements Serializable {
 
     public void setRetentionTime(final Double retentionTime) {
         this.retentionTime = retentionTime;
+    }
+
+    public Double getRetentionIndex() {
+        return retentionIndex;
+    }
+
+    public void setRetentionIndex(Double retentionIndex) {
+        this.retentionIndex = retentionIndex;
     }
 
     public ChromatographyType getChromatographyType() {

@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.models.dto;
 
 import org.dulab.adapcompounddb.models.entities.Submission;
+import org.dulab.adapcompounddb.models.entities.SubmissionTag;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -17,47 +18,44 @@ public class SubmissionDTO implements Serializable {
     // *************************
 
     private long id;
-
     private String name;
-
     private String description;
-
-    private Date dateTime;
-
-    private String tagsAsString;
-
-    private String userName;
-
-    private String userEMail;
-
-    private String url;
-
-    private boolean isPrivate;
-
-    private boolean reference;
-
-    private boolean clusterable;
-
     private String externalId;
+    private Date dateTime;
+    private String tagsAsString;
+    private String userName;
+    private String userEMail;
+    private String url;
+    private boolean isPrivate;
+    private boolean reference;
+    private boolean clusterable;
+    private boolean isLibrary;
+    private boolean isInHouseLibrary;
+    private String[] tags;
 
-    public SubmissionDTO(Submission submission, boolean reference, boolean clusterable) {
+    public SubmissionDTO(Submission submission, boolean isLibrary, boolean isInHouseLibrary, boolean clusterable) {
         this.id = submission.getId();
         this.name = submission.getName();
         this.description = submission.getDescription();
         this.dateTime = submission.getDateTime();
         this.tagsAsString = submission.getTagsAsString();
+        this.tags = submission.getTags().stream()
+                .map(SubmissionTag::toString)
+                .toArray(String[]::new);
         this.userName = submission.getUser().getUsername();
         this.userEMail = submission.getUser().getEmail();
         this.url = submission.getReference();
         this.isPrivate = submission.isPrivate();
-        this.reference = reference;
+        this.reference = isLibrary;
         this.clusterable = clusterable;
+        this.isLibrary = isLibrary;
+        this.isInHouseLibrary = isInHouseLibrary;
         this.externalId = submission.getExternalId();
     }
 
-    public SubmissionDTO(Submission submission) {
-        this(submission, false, false);
-    }
+//    public SubmissionDTO(Submission submission) {
+//        this(submission, false, false, false);
+//    }
 
     // *******************************
     // ***** Getters and Setters *****
@@ -131,8 +129,8 @@ public class SubmissionDTO implements Serializable {
         return isPrivate;
     }
 
-    public void setPrivate(boolean aPrivate) {
-        isPrivate = aPrivate;
+    public void setPrivate(boolean isPrivate) {
+        this.isPrivate = isPrivate;
     }
 
     public boolean isReference() {
@@ -151,12 +149,36 @@ public class SubmissionDTO implements Serializable {
         this.clusterable = clusterable;
     }
 
+    public boolean isLibrary() {
+        return isLibrary;
+    }
+
+    public void setLibrary(boolean library) {
+        isLibrary = library;
+    }
+
+    public boolean isInHouseLibrary() {
+        return isInHouseLibrary;
+    }
+
+    public void setInHouseLibrary(boolean inHouseLibrary) {
+        isInHouseLibrary = inHouseLibrary;
+    }
+
     public String getExternalId() {
         return externalId;
     }
 
     public void setExternalId(String externalId) {
         this.externalId = externalId;
+    }
+
+    public String[] getTags() {
+        return tags;
+    }
+
+    public void setTags(String[] tags) {
+        this.tags = tags;
     }
 
     // *************************

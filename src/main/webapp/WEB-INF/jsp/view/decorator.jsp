@@ -20,7 +20,7 @@
     </script>
 
 
-    <title><decorator:title default="ADAP Compound Knowledgebase"/></title>
+    <title><decorator:title default="ADAP-KDB Compound Knowledgebase"/></title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="icon" type="image/png" href="<c:url value="/resources/static/favicon-32x32.png"/>" sizes="32x32"/>
     <link rel="icon" type="image/png" href="<c:url value="/resources/static/favicon-16x16.png"/>" sizes="16x16"/>
@@ -82,7 +82,7 @@
             <div class="col-12 col-lg-8">
                 <h1 class="text-nowrap">
                     <i class="material-icons mobile" title="Menu" id="menu">view_headline</i>
-                    ADAP Spectral Knowledgebase
+                    ADAP-KDB Spectral Knowledgebase
                     <sup><small class="badge badge-pill badge-light">Beta</small></sup>
                 </h1>
             </div>
@@ -119,9 +119,17 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a id="spectraPage" class="nav-link" href="<c:url value="/allClusters/" />">
+                            <a id="searchPage" class="nav-link"
+                               <c:if test="${sessionScope[dulab:groupSearchResultsAttributeName()] == null}">hidden</c:if>
+                               href="<c:url value="/group_search/"/>">
+                                <i class="material-icons align-middle">search</i>
+                                <span class="align-middle">Search</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a id="libraryPage" class="nav-link" href="<c:url value="/libraries/" />">
                                 <i class="material-icons align-middle">equalizer</i>
-                                <span class="align-middle">Spectra</span>
+                                <span class="align-middle">Libraries</span>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -129,6 +137,13 @@
                                 <i class="material-icons align-middle">book</i>
                                 <span class="align-middle">Distributions</span>
                             </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<c:url value="/downloads/"/>">
+                                <i class="material-icons align-middle">download</i>
+                                <span class="align-middle">Downloads</span>
+                            </a>
+
                         </li>
                         <c:if test="${currentUser == null}">
                             <li class="nav-item">

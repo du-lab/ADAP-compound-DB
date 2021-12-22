@@ -26,7 +26,6 @@ public class GroupSearchService {
 
     private static final Logger LOGGER = LogManager.getLogger(GroupSearchService.class);
 
-    private float progress = 0;
     private final IndividualSearchService spectrumSearchService;
 
     @Autowired
@@ -34,24 +33,12 @@ public class GroupSearchService {
         this.spectrumSearchService = spectrumSearchService;
     }
 
-    public float getProgress() {
-        return progress;
-    }
-
-    public void setProgress(final float progress) {
-        this.progress = progress;
-    }
-
     @Async
-    @Transactional(propagation = Propagation.REQUIRED)
+//    @Transactional(propagation = Propagation.REQUIRED)
     public Future<Void> groupSearch(UserPrincipal userPrincipal, List<File> files, HttpSession session,
-                                    Set<Long> submissionIds, String species, String source, String disease,
-                                    boolean withOntologyLevels) {
+                                    SearchParameters userParameters, boolean withOntologyLevels) {
 
-        LOGGER.info(String.format("Group search has started (species: %s, source: %s, disease: %s)",
-                species != null ? species : "all",
-                source != null ? source : "all",
-                disease != null ? disease : "all"));
+        LOGGER.info("Group search has started");
 
         try {
             final List<SearchResultDTO> groupSearchDTOList = new ArrayList<>();
@@ -69,8 +56,11 @@ public class GroupSearchService {
                 return new AsyncResult<>(null);
             }
 
+            long startTime = System.currentTimeMillis();
+
+            int spectrumCount = 0;
             int progressStep = 0;
-            progress = 0F;
+            float progress = 0F;
             int position = 0;
             for (int fileIndex = 0; fileIndex < files.size(); ++fileIndex) {
                 File file = files.get(fileIndex);
@@ -83,11 +73,8 @@ public class GroupSearchService {
 
                     SearchParameters parameters =
                             SearchParameters.getDefaultParameters(querySpectrum.getChromatographyType());
-                    parameters.setSpecies(species);
-                    parameters.setSource(source);
-                    parameters.setDisease(disease);
-                    parameters.setSubmissionIds(submissionIds.stream().map(BigInteger::valueOf).collect(Collectors.toSet()));
-                    parameters.setLimit(10);
+                    parameters.merge(userParameters);
+//                    parameters.setLimit(10);
 
                     List<SearchResultDTO> individualSearchResults = (withOntologyLevels)
                             ? spectrumSearchService.searchWithOntologyLevels(userPrincipal, querySpectrum, parameters)
@@ -104,30 +91,31 @@ public class GroupSearchService {
 
                     if (Thread.currentThread().isInterrupted()) break;
 
+                    progress = (float) ++progressStep / totalSteps;
                     groupSearchDTOList.addAll(individualSearchResults);
                     try {
                         session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
+                        session.setAttribute(ControllerUtils.GROUP_SEARCH_PROGRESS_ATTRIBUTE_NAME, progress);
                     } catch (IllegalStateException e) {
                         LOGGER.warn("It looks like the session has been closed. Stopping the group search.");
                         return new AsyncResult<>(null);
                     }
-                    progress = (float) ++progressStep / totalSteps;
+
+                    if (++spectrumCount % 100 == 0) {
+                        long time = System.currentTimeMillis();
+                        LOGGER.info(String.format(
+                                "Searched %d spectra with the average time %.3f seconds per spectrum",
+                                spectrumCount, 1E-3 * (time - startTime) / spectrumCount));
+                    }
                 }
             }
         } catch (Throwable t) {
-            LOGGER.error(String.format("Error during the group search (species: %s, source: %s, disease: %s): %s",
-                    species != null ? species : "all",
-                    source != null ? source : "all",
-                    disease != null ? disease : "all",
-                    t.getMessage()), t);
+            LOGGER.error(String.format("Error during the group search: %s", t.getMessage()), t);
             throw t;
         }
 
         if (Thread.currentThread().isInterrupted())
-            LOGGER.info(String.format("Group search is cancelled (species: %s, source: %s, disease: %s)",
-                    species != null ? species : "all",
-                    source != null ? source : "all",
-                    disease != null ? disease : "all"));
+            LOGGER.info("Group search is cancelled");
 
         return new AsyncResult<>(null);
     }
