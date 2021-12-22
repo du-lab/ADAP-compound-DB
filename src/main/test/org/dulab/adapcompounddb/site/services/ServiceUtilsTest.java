@@ -15,15 +15,15 @@ public class ServiceUtilsTest {
 
     private static final double EPS = 1e-5;
 
-//    @Test
-//    public void calculateChiSquaredStatisticsEmpty() {
-//
-//        List<DbAndClusterValuePair> emptyList = new ArrayList<>(0);
-//
-//        double pValue = StatisticsUtils.calculateChiSquaredStatistics(emptyList);
-//
-//        assertEquals(1.0, pValue, EPS);
-//    }
+    @Test
+    public void calculateChiSquaredStatisticsEmpty() {
+
+        List<DbAndClusterValuePair> emptyList = new ArrayList<>(0);
+
+        double pValue = StatisticsUtils.calculateChiSquaredStatistics(emptyList);
+
+        assertEquals(1.0, pValue, EPS);
+    }
 
     @Test
     public void calculateChiSquaredStatisticsSingleton() {

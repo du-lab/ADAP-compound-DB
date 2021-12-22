@@ -42,7 +42,6 @@ public class StatisticsUtils {
 
         int iterationNumber = 50000;
 
-        //TODO If you know the list size a priory, it's better to use `new ArrayList<>(iterationNumber)` for a better performance
         List<Double> chiSquareStatDistr = new ArrayList<>(iterationNumber);
 
         for (int i = 0; i < iterationNumber; i++) {
@@ -57,9 +56,6 @@ public class StatisticsUtils {
         return pvalue;
     }
 
-    //TODO This function can be private
-    //TODO Using List[] is a bad practise. Maybe implement a method `List<Integer> random_shuffle(List<Integer> mergedList)` that returns a shuffled merged list.
-    // Or replace entire `random_shuffle` with `Collections.shuffle()`
     private static List<Integer> random_shuffle(List<Integer> clusterList, List<Integer> dbList) {
         List<Integer> newClusterList;
         List<Integer> newDbList;
@@ -78,17 +74,10 @@ public class StatisticsUtils {
         return newMergedList;
     }
 
-    //TODO This function can be private
     private static double chi_square_test(List<Integer> clusterList, List<Integer> dbList) {
 
-        //TODO Variable `mergedList` seems unnecessary to me.
-        // Instead, you can do `Set<Integer> uniqueElementList = new HashSet<>(clusterList)`
-        // and `uniqueElementList.addAll(dbList)`
         Set<Integer> uniqueElementList = new HashSet<>(clusterList);
         uniqueElementList.addAll(dbList);
-
-        //TODO According to this code, you are not using the formula for calculating the expected values (see page 2 of the manuscript at the top-right)
-        // Is this what Rasmus did in his code?
 
         double S = 0;
         for (Integer s : uniqueElementList) {
@@ -108,7 +97,7 @@ public class StatisticsUtils {
     public static double calculateChiSquaredStatistics(Collection<DbAndClusterValuePair> dbAndClusterValuePairs) {
 
         int freedomDegrees = dbAndClusterValuePairs.size() - 1;
-        if (freedomDegrees == 0)
+        if (freedomDegrees <= 0)
             return 1.0;
 
         int allDbSum = 0;
