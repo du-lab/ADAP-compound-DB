@@ -289,6 +289,16 @@
                                                                     cssClass="form-control"/>
                                                     </div>
                                                 </div>
+                                                <div class="row form-group">
+                                                    <form:label path="mspIsotopeField"
+                                                                cssClass="col-md-4 col-form-label">Isotopic Distribution Field</form:label>
+                                                    <div class="col-md-4">
+                                                        <form:input path="mspIsotopeField" cssClass="form-control"/>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <form:input path="csvIsotopeField" cssClass="form-control"/>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

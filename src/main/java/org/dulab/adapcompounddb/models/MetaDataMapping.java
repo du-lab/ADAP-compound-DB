@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.models;
 
+import org.dulab.adapcompounddb.models.entities.Isotope;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumProperty;
 import org.dulab.adapcompounddb.models.entities.Synonym;
@@ -7,6 +8,8 @@ import org.dulab.adapcompounddb.models.enums.IdentifierType;
 
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.dulab.adapcompounddb.site.services.utils.MappingUtils.parseDouble;
 
@@ -14,7 +17,7 @@ public class MetaDataMapping {
 
     public enum Field {
         NAME, SYNONYM, EXTERNAL_ID, CAS_ID, KEGG_ID, PRECURSOR_MZ, PRECURSOR_TYPE, RETENTION_TIME, RETENTION_INDEX,
-        MASS, FORMULA, SMILES, INCHI_KEY, INCHI
+        MASS, FORMULA, SMILES, INCHI_KEY, INCHI, ISOTOPIC_DISTRIBUTION
     }
 
     private static final Map<Field, BiConsumer<Spectrum, String>> fieldToFunctionMap = new HashMap<>();
@@ -54,6 +57,10 @@ public class MetaDataMapping {
         fieldToFunctionMap.put(Field.SMILES, Spectrum::setCanonicalSmiles);
         fieldToFunctionMap.put(Field.INCHI_KEY, Spectrum::setInChiKey);
         fieldToFunctionMap.put(Field.INCHI, Spectrum::setInChi);
+        fieldToFunctionMap.put(Field.ISOTOPIC_DISTRIBUTION, (spectrum, value) ->
+                spectrum.setIsotopes(Arrays.stream(value.split("-"))
+                        .mapToDouble(Double::parseDouble)
+                        .toArray()));
     }
 
     private final Map<Field, String> fieldToNameMap = new HashMap<>();

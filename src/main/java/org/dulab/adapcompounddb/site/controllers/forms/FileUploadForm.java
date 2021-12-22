@@ -46,6 +46,8 @@ public class FileUploadForm {
     private String mspCanonicalSmilesField;
     private String mspInChiField;
     private String mspInChiKeyField;
+    private String mspIsotopeField;
+
     private String csvNameField;
     private String csvSynonymField;
     private String csvExternalIdField;
@@ -59,6 +61,7 @@ public class FileUploadForm {
     private String csvCanonicalSmilesField;
     private String csvInChiField;
     private String csvInChiKeyField;
+    private String csvIsotopeField;
 
     @JsonIgnore
     @ContainsFiles
@@ -202,6 +205,14 @@ public class FileUploadForm {
         this.mspInChiKeyField = mspInChiKeyField;
     }
 
+    public String getMspIsotopeField() {
+        return mspIsotopeField;
+    }
+
+    public void setMspIsotopeField(String mspIsotopeField) {
+        this.mspIsotopeField = mspIsotopeField;
+    }
+
     public String getCsvNameField() {
         return csvNameField;
     }
@@ -306,6 +317,14 @@ public class FileUploadForm {
         this.csvInChiKeyField = csvInChiKeyField;
     }
 
+    public String getCsvIsotopeField() {
+        return csvIsotopeField;
+    }
+
+    public void setCsvIsotopeField(String csvIsotopeField) {
+        this.csvIsotopeField = csvIsotopeField;
+    }
+
     public List<MultipartFile> getFiles() {
         return files;
     }
@@ -352,6 +371,7 @@ public class FileUploadForm {
         mapping.setFieldName(Field.SMILES, mspCanonicalSmilesField);
         mapping.setFieldName(Field.INCHI_KEY, mspInChiKeyField);
         mapping.setFieldName(Field.INCHI, mspInChiField);
+        mapping.setFieldName(Field.ISOTOPIC_DISTRIBUTION, mspIsotopeField);
         return mapping;
     }
 
@@ -372,6 +392,7 @@ public class FileUploadForm {
         mapping.setFieldName(Field.SMILES, csvCanonicalSmilesField);
         mapping.setFieldName(Field.INCHI_KEY, csvInChiKeyField);
         mapping.setFieldName(Field.INCHI, csvInChiField);
+        mapping.setFieldName(Field.ISOTOPIC_DISTRIBUTION, csvIsotopeField);
         return mapping;
     }
 }

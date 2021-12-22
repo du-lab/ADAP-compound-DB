@@ -57,6 +57,9 @@ public class Spectrum implements Serializable {
     @OneToMany(targetEntity = Peak.class, mappedBy = "spectrum", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
     private List<Peak> peaks;
 
+    @OneToMany(targetEntity = Isotope.class, mappedBy = "spectrum", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
+    private List<Isotope> isotopes;
+
     @OneToMany(targetEntity = SpectrumProperty.class, mappedBy = "spectrum", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
     private List<SpectrumProperty> properties;
 
@@ -314,6 +317,27 @@ public class Spectrum implements Serializable {
         }
     }
 
+    public List<Isotope> getIsotopes() {
+        return isotopes;
+    }
+
+    public void setIsotopes(List<Isotope> isotopes) {
+        this.isotopes = isotopes;
+    }
+
+    public void setIsotopes(double[] intensities) {
+        if (intensities == null) return;
+
+        List<Isotope> isotopes = new ArrayList<>(intensities.length);
+        for (int i = 0; i < intensities.length; ++i) {
+            Isotope isotope = new Isotope();
+            isotope.setIndex(i);
+            isotope.setIntensity(intensities[i]);
+            isotope.setSpectrum(this);
+            isotopes.add(isotope);
+        }
+        setIsotopes(isotopes);
+    }
 
     public List<SpectrumProperty> getProperties() {
         return properties;
@@ -701,9 +725,11 @@ public class Spectrum implements Serializable {
         mergedSpectrum.setPrecursor(mergeDoublesAsAverage(s1.precursor, s2.precursor, 0.01));
         mergedSpectrum.setPrecursorType(s1.precursorType != null ? s1.precursorType : s2.precursorType);
         mergedSpectrum.setRetentionTime(mergeDoublesAsAverage(s1.retentionTime, s2.retentionTime, 0.1));
+        mergedSpectrum.setRetentionIndex(mergeDoublesAsAverage(s1.retentionIndex, s2.retentionIndex, 20.0));
         mergedSpectrum.setSignificance(mergeDoublesAsMaximum(s1.significance, s2.significance, 0.1));
         mergedSpectrum.setMass(mergeDoublesAsAverage(s1.mass, s2.mass, 0.01));
         mergedSpectrum.setPeaks(mergeLists(s1.peaks, s2.peaks), true);
+        mergedSpectrum.setIsotopes(mergeLists(s1.isotopes, s2.isotopes));
         mergedSpectrum.setProperties(mergeLists(s1.properties, s2.properties));
 
         return mergedSpectrum;
