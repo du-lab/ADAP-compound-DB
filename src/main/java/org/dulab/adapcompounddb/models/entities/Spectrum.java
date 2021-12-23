@@ -15,6 +15,7 @@ import javax.validation.constraints.NotNull;
 import org.dulab.adapcompounddb.models.MetaDataMapping;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.enums.IdentifierType;
+import org.dulab.adapcompounddb.site.services.utils.IsotopicDistributionUtils;
 
 @Entity
 @SqlResultSetMapping(name = "SpectrumScoreMapping", columns = {@ColumnResult(name = "SpectrumId", type = Long.class),
@@ -337,6 +338,19 @@ public class Spectrum implements Serializable {
             isotopes.add(isotope);
         }
         setIsotopes(isotopes);
+    }
+
+    public double[] getIsotopesAsArray() {
+        if (isotopes != null && !isotopes.isEmpty()) {
+            return isotopes.stream()
+                    .sorted(Comparator.comparingInt(Isotope::getIndex))
+                    .mapToDouble(Isotope::getIntensity)
+                    .toArray();
+        }
+        if (formula != null && !formula.isEmpty()) {
+            return IsotopicDistributionUtils.calculateDistributionAsArray(formula);
+        }
+        return null;
     }
 
     public List<SpectrumProperty> getProperties() {

@@ -14,6 +14,7 @@ public class IsotopicDistributionUtils {
 
     public static final Map<String, SortedMap<Double, Double>> ISOTOPE_TABLE = new HashMap<>();
 
+    //TODO Add "P"
     static {
 //        ISOTOPE_TABLE.put("H", new TreeMap<>(Map.of(1.0078246, 99.9855, 2.0078246, 0.0145)));
 ////        ISOTOPE_TABLE.put("C", new TreeMap<>(Map.of(12.0, 98.94, 13.0, 1.06)));
@@ -39,6 +40,7 @@ public class IsotopicDistributionUtils {
         ISOTOPE_TABLE.put("Cl", new TreeMap<>(Map.of(35.0, 75.8, 36.0, ZERO, 37.0, 24.2)));
         ISOTOPE_TABLE.put("Br", new TreeMap<>(Map.of(79.0, 50.65, 80.0, ZERO,81.0, 49.35)));
         ISOTOPE_TABLE.put("Si", new TreeMap<>(Map.of(28.0, 92.2545, 29.0, 4.672,30.0, 3.0735)));
+        ISOTOPE_TABLE.put("P", new TreeMap<>(Map.of(31.0, 100.0)));
     }
 
     /**

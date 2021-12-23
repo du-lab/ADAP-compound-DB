@@ -34,6 +34,7 @@ public class SearchParameters implements Cloneable {
     private Double retTimeTolerance;
     private Double retIndexTolerance;
     private RetIndexMatchType retIndexMatchType;
+    private Double isotopicSimilarityThreshold;
     private String species;
     private String source;
     private String disease;
@@ -174,6 +175,14 @@ public class SearchParameters implements Cloneable {
 
     public void setRetIndexMatchType(RetIndexMatchType retIndexMatchType) {
         this.retIndexMatchType = retIndexMatchType;
+    }
+
+    public Double getIsotopicSimilarityThreshold() {
+        return isotopicSimilarityThreshold;
+    }
+
+    public void setIsotopicSimilarityThreshold(Double isotopicSimilarityThreshold) {
+        this.isotopicSimilarityThreshold = isotopicSimilarityThreshold;
     }
 
     public String getSpecies() {

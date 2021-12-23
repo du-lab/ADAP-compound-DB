@@ -119,6 +119,9 @@ public class JavaSpectrumSimilarityService {
                 similarityScore = calculateCosineSimilarity(
                         querySpectrum.getPeaks(), librarySpectrum.getPeaks(), mzTolerance, ppm);
 
+            double isotopicSimilarity = calculateCosineSimilarity(
+                    querySpectrum.getIsotopesAsArray(), librarySpectrum.getIsotopesAsArray());
+
             double massError = Double.MAX_VALUE;
             double massErrorPPM = Double.MAX_VALUE;
             if ((params.getMasses() != null || querySpectrum.getMass() != null)
@@ -153,7 +156,8 @@ public class JavaSpectrumSimilarityService {
                     && (params.getScoreThreshold() == null || similarityScore > params.getScoreThreshold())
                     && (params.getMassTolerance() == null || massError < params.getMassTolerance())
                     && (params.getMassTolerancePPM() == null || massErrorPPM < params.getMassTolerancePPM())
-                    && (params.getRetTimeTolerance() == null || retTimeError < params.getRetTimeTolerance())) {
+                    && (params.getRetTimeTolerance() == null || retTimeError < params.getRetTimeTolerance())
+                    && (params.getIsotopicSimilarityThreshold() == null || isotopicSimilarity > params.getIsotopicSimilarityThreshold())) {
 
                 SpectrumMatch match = new SpectrumMatch();
                 match.setQuerySpectrum(querySpectrum);
@@ -274,6 +278,31 @@ public class JavaSpectrumSimilarityService {
         }
 
         return dotProduct * dotProduct / (queryNorm2 * libraryNorm2);
+    }
+
+    private double calculateCosineSimilarity(double[] values1, double[] values2) {
+        if (values1 == null || values2 == null) return 0.0;
+
+        int length = Math.max(values1.length, values2.length);
+        if (length == 0) return 0.0;
+
+        double dotProduct = 0.0;
+        double normSquare1 = 0.0;
+        double normSquare2 = 0.0;
+
+        for (int i = 0; i < length; ++i) {
+            if (i < values1.length && i < values2.length) {
+                dotProduct += values1[i] * values2[i];
+                normSquare1 += values1[i] * values1[i];
+                normSquare2 += values2[i] * values2[i];
+            } else if (i < values1.length) {
+                normSquare1 += values1[i] * values1[i];
+            } else if (i < values2.length) {
+                normSquare2 += values2[i] * values2[i];
+            }
+        }
+
+        return dotProduct / Math.sqrt(normSquare1 * normSquare2);
     }
 
     private double scale(Peak peak) {
