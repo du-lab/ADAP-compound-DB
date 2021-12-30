@@ -111,7 +111,8 @@ public class OntologySupplier {
     @Nullable
     public static OntologyLevel select(ChromatographyType chromatographyType, boolean inHouseLibrary,
                                        @Nullable Double score, @Nullable Double precursorErrorPPM,
-                                       @Nullable Double massErrorPPM, @Nullable Double retTimeError) {
+                                       @Nullable Double massErrorPPM, @Nullable Double retTimeError,
+                                       @Nullable Double isotopicSimilarity) {
 
         int[] priorities = findPrioritiesByChromatographyType(chromatographyType);
         if (priorities == null)
@@ -129,11 +130,13 @@ public class OntologySupplier {
                 if (level.getPrecursorTolerancePPM() != null && precursorErrorPPM == null) continue;
                 if (level.getMassTolerancePPM() != null && massErrorPPM == null) continue;
                 if (level.getRetTimeTolerance() != null && retTimeError == null) continue;
+                if (level.getIsotopicSimilarityThreshold() != null && isotopicSimilarity == null) continue;
 
                 if ((level.getScoreThreshold() == null || score > level.getScoreThreshold())
                         && (level.getPrecursorTolerancePPM() == null || precursorErrorPPM < level.getPrecursorTolerancePPM())
                         && (level.getMassTolerancePPM() == null || massErrorPPM < level.getMassTolerancePPM())
-                        && (level.getRetTimeTolerance() == null || retTimeError < level.getRetTimeTolerance())) {
+                        && (level.getRetTimeTolerance() == null || retTimeError < level.getRetTimeTolerance())
+                        && (level.getIsotopicSimilarityThreshold() == null || isotopicSimilarity > level.getIsotopicSimilarityThreshold())) {
                     return level;
                 }
             }

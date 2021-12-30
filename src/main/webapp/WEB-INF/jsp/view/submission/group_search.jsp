@@ -97,6 +97,7 @@
                             <th title="Difference between query and library neutral masses">Mass Error (PPM)</th>
                             <th title="Difference between query and library retention times">Ret Time Error</th>
                             <th title="Difference between query and library retention indices">Ret Index error</th>
+                            <th title="Isotopic similarity">Iso Similarity</th>
                             <th title="Average P-value of ANOVA tests">Average P-value</th>
                             <th title="Minimum P-value of ANOVA tests">Minimum P-value</th>
                             <th title="Maximum P-value of ANOVA tests">Maximum P-value</th>
@@ -156,9 +157,9 @@
                     // table.column(7).visible(d.data.map(row => row['massErrorPPM']).join(''));
                     // table.column(8).visible(d.data.map(row => row['retTimeError']).join(''));
                     // table.column(9).visible(d.data.map(row => row['retIndexError']).join(''));
-                    table.column(10).visible(d.data.map(row => row['aveSignificance']).join(''));
-                    table.column(11).visible(d.data.map(row => row['minSignificance']).join(''));
-                    table.column(12).visible(d.data.map(row => row['maxSignificance']).join(''));
+                    table.column(11).visible(d.data.map(row => row['aveSignificance']).join(''));
+                    table.column(12).visible(d.data.map(row => row['minSignificance']).join(''));
+                    table.column(13).visible(d.data.map(row => row['maxSignificance']).join(''));
                     return d.data;
                 }
             },
@@ -188,6 +189,7 @@
                 {data: row => (row.massErrorPPM != null) ? row.massErrorPPM.toFixed(3) : ''},
                 {data: row => (row.retTimeError != null) ? row.retTimeError.toFixed(3) : ''},
                 {data: row => (row.retIndexError != null) ? row.retIndexError.toFixed(1) : ''},
+                {data: row => (row.isotopicSimilarity != null) ? row.isotopicSimilarity.toFixed(3) * 1000 : ''},
                 {data: row => (row.aveSignificance != null) ? row.aveSignificance.toFixed(3) : ''},
                 {data: row => (row.minSignificance != null) ? row.minSignificance.toFixed(3) : ''},
                 {data: row => (row.maxSignificance != null) ? row.maxSignificance.toFixed(3) : ''},

@@ -163,6 +163,7 @@ public class JavaSpectrumSimilarityService {
                 match.setQuerySpectrum(querySpectrum);
                 match.setMatchSpectrum(librarySpectrum);
                 match.setScore(similarityScore > 0 ? similarityScore : null);
+                match.setIsotopicSimilarity(isotopicSimilarity > 0 ? isotopicSimilarity : null);
                 match.setPrecursorError(precursorError < Double.MAX_VALUE ? precursorError : null);
                 match.setPrecursorErrorPPM(precursorErrorPPM < Double.MAX_VALUE ? precursorErrorPPM : null);
                 match.setMassError(massError < Double.MAX_VALUE ? massError : null);

@@ -90,6 +90,9 @@
                                         <li class="list-group-item py-1">
                                             <strong>InChiKey:</strong>&nbsp;${spectrum.inChiKey}
                                         </li>
+                                        <li class="list-group-item py-1">
+                                            <strong>Isotopic Distribution:</strong>&nbsp;${spectrum.getIsotopesAsString()}
+                                        </li>
                                     </ul>
                                 </div>
 

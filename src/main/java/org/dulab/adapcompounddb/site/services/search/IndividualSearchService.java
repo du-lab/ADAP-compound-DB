@@ -112,7 +112,7 @@ public class IndividualSearchService {
 
             OntologyLevel ontologyLevel = OntologySupplier.select(spectrum.getChromatographyType(),
                     result.getInHouse(), result.getScore(), result.getPrecursorErrorPPM(), result.getMassErrorPPM(),
-                    result.getRetTimeError());
+                    result.getRetTimeError(), result.getIsotopicSimilarity());
             if (ontologyLevel == null)
                 continue;
 

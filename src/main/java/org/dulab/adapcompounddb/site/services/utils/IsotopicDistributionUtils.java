@@ -1,15 +1,18 @@
 package org.dulab.adapcompounddb.site.services.utils;
 
+import com.sun.xml.fastinfoset.algorithm.DoubleEncodingAlgorithm;
 import org.apache.commons.math3.special.Gamma;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class IsotopicDistributionUtils {
 
     private static final Logger LOGGER = LogManager.getLogger(IsotopicDistributionUtils.class);
 
+    private static final double MIN_INTENSITY = 0.01;
     private static final double ZERO = 1e-300;
 
     public static final Map<String, SortedMap<Double, Double>> ISOTOPE_TABLE = new HashMap<>();
@@ -41,6 +44,8 @@ public class IsotopicDistributionUtils {
         ISOTOPE_TABLE.put("Br", new TreeMap<>(Map.of(79.0, 50.65, 80.0, ZERO,81.0, 49.35)));
         ISOTOPE_TABLE.put("Si", new TreeMap<>(Map.of(28.0, 92.2545, 29.0, 4.672,30.0, 3.0735)));
         ISOTOPE_TABLE.put("P", new TreeMap<>(Map.of(31.0, 100.0)));
+        ISOTOPE_TABLE.put("F", new TreeMap<>(Map.of(19.0, 100.0)));
+        ISOTOPE_TABLE.put("I", new TreeMap<>(Map.of(127.0, 100.0)));
     }
 
     /**
@@ -152,7 +157,7 @@ public class IsotopicDistributionUtils {
             distribution = calculateDistributionOfTwoAtoms(
                     distribution, calculateDistributionOfAtoms(atomDistribution, entry.getValue()));
         }
-        return distribution;
+        return trim(distribution);
     }
 
     public static double[] calculateDistributionAsArray(String formula) {
@@ -193,5 +198,13 @@ public class IsotopicDistributionUtils {
                 .mapToDouble(Double::doubleValue)
                 .max()
                 .ifPresent(max -> distribution.replaceAll((key, value) -> value * 100 / max));
+    }
+
+    private static SortedMap<Double, Double> trim(SortedMap<Double, Double> distribution) {
+        SortedMap<Double, Double> trimmedDistribution = new TreeMap<>();
+        for (Map.Entry<Double, Double> entry : distribution.entrySet())
+            if (entry.getValue() >= MIN_INTENSITY)
+                trimmedDistribution.put(entry.getKey(), entry.getValue());
+        return trimmedDistribution;
     }
 }

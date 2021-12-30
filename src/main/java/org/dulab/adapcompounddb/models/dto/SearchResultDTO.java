@@ -75,6 +75,7 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
     // Other
     private int position;
     private Double score;
+    private Double isotopicSimilarity;
     private Double precursorError;
     private Double precursorErrorPPM;
     private Double massError;
@@ -147,6 +148,7 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
             this.inHouse = matchSpectrum.isInHouseReference();
 
             this.score = spectrumMatch.getScore();
+            this.isotopicSimilarity = spectrumMatch.getIsotopicSimilarity();
             this.precursorError = spectrumMatch.getPrecursorError();
             this.precursorErrorPPM = spectrumMatch.getPrecursorErrorPPM();
             this.massError = spectrumMatch.getMassError();
@@ -251,6 +253,14 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
 
     public void setScore(final Double score) {
         this.score = score;
+    }
+
+    public Double getIsotopicSimilarity() {
+        return isotopicSimilarity;
+    }
+
+    public void setIsotopicSimilarity(Double isotopicSimilarity) {
+        this.isotopicSimilarity = isotopicSimilarity;
     }
 
     public Double getAveSignificance() {

@@ -1,10 +1,7 @@
 package org.dulab.adapcompounddb.models.entities;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.regex.Pattern;
 
@@ -351,6 +348,13 @@ public class Spectrum implements Serializable {
             return IsotopicDistributionUtils.calculateDistributionAsArray(formula);
         }
         return null;
+    }
+
+    public String getIsotopesAsString() {
+        double[] isotopes = getIsotopesAsArray();
+        return isotopes != null ? Arrays.stream(isotopes)
+                .mapToObj(x -> String.format("%.2f", x))
+                .collect(Collectors.joining(" - ")) : null;
     }
 
     public List<SpectrumProperty> getProperties() {
