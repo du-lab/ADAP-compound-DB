@@ -16,8 +16,8 @@ import static org.dulab.adapcompounddb.site.services.utils.MappingUtils.parseDou
 public class MetaDataMapping {
 
     public enum Field {
-        NAME, SYNONYM, EXTERNAL_ID, CAS_ID, KEGG_ID, PRECURSOR_MZ, PRECURSOR_TYPE, RETENTION_TIME, RETENTION_INDEX,
-        MASS, FORMULA, SMILES, INCHI_KEY, INCHI, ISOTOPIC_DISTRIBUTION
+        NAME, SYNONYM, EXTERNAL_ID, CAS_ID, HMDB_ID, KEGG_ID, PUBCHEM_ID, PRECURSOR_MZ, PRECURSOR_TYPE, RETENTION_TIME,
+        RETENTION_INDEX, MASS, FORMULA, SMILES, INCHI_KEY, INCHI, ISOTOPIC_DISTRIBUTION
     }
 
     private static final Map<Field, BiConsumer<Spectrum, String>> fieldToFunctionMap = new HashMap<>();
@@ -33,18 +33,10 @@ public class MetaDataMapping {
             spectrum.setSynonyms(synonyms);
         });
         fieldToFunctionMap.put(Field.EXTERNAL_ID, Spectrum::setExternalId);
-        fieldToFunctionMap.put(Field.CAS_ID, (spectrum, value) -> {
-            Map<IdentifierType, String> identifiers =
-                    Objects.requireNonNullElseGet(spectrum.getIdentifiers(), HashMap::new);
-            identifiers.put(IdentifierType.CAS, value);
-            spectrum.setIdentifiers(identifiers);
-        });
-        fieldToFunctionMap.put(Field.KEGG_ID, (spectrum, value) -> {
-            Map<IdentifierType, String> identifiers =
-                    Objects.requireNonNullElseGet(spectrum.getIdentifiers(), HashMap::new);
-            identifiers.put(IdentifierType.KEGG, value);
-            spectrum.setIdentifiers(identifiers);
-        });
+        fieldToFunctionMap.put(Field.CAS_ID, (s, v) -> s.addIdentifier(IdentifierType.CAS, v));
+        fieldToFunctionMap.put(Field.HMDB_ID, (s, v) -> s.addIdentifier(IdentifierType.HMDB, v));
+        fieldToFunctionMap.put(Field.KEGG_ID, (s, v) -> s.addIdentifier(IdentifierType.KEGG, v));
+        fieldToFunctionMap.put(Field.PUBCHEM_ID, (s, v) -> s.addIdentifier(IdentifierType.PUBCHEM, v));
         fieldToFunctionMap.put(Field.PRECURSOR_MZ, (s, v) -> s.setPrecursor(parseDouble(v)));
         fieldToFunctionMap.put(Field.PRECURSOR_TYPE, Spectrum::setPrecursorType);
         fieldToFunctionMap.put(Field.RETENTION_TIME, (s, v) -> s.setRetentionTime(parseDouble(v)));
@@ -71,7 +63,7 @@ public class MetaDataMapping {
     }
 
     public void setFieldName(Field field, String fieldName) {
-        fieldToNameMap.put(field, (fieldName != null) ? fieldName.trim().toLowerCase() : null);
+        fieldToNameMap.put(field, (fieldName != null && !fieldName.isEmpty()) ? fieldName.trim().toLowerCase() : null);
     }
 
 

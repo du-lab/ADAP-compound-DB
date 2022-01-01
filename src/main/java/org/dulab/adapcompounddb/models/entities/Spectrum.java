@@ -142,6 +142,12 @@ public class Spectrum implements Serializable {
                 .collect(Collectors.joining(", "));
     }
 
+    public void addIdentifier(IdentifierType identifierType, String value) {
+        if (identifiers == null)
+            identifiers = new HashMap<>();
+        identifiers.put(identifierType, value);
+    }
+
     public String getExternalId() {
         return externalId;
     }
