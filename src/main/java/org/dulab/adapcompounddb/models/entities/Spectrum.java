@@ -143,6 +143,7 @@ public class Spectrum implements Serializable {
     }
 
     public void addIdentifier(IdentifierType identifierType, String value) {
+        if (value == null || value.trim().isEmpty()) return;
         if (identifiers == null)
             identifiers = new HashMap<>();
         identifiers.put(identifierType, value);
