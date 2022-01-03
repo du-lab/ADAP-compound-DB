@@ -86,27 +86,7 @@ public interface ExportSearchResultsService {
                     SearchResultDTO::getMatchIndex, Comparator.nullsLast(Comparator.naturalOrder())));
 
             allTopResults.addAll(topResults);
-
-//            selectedSearchResults.sort(Comparator
-//                    .comparing(SearchResultDTO::getOntologyPriority, Comparator.nullsLast(Comparator.naturalOrder()))
-//                    .thenComparing(SearchResultDTO::getScore, Comparator.nullsLast(Comparator.reverseOrder()))
-//                    .thenComparing(SearchResultDTO::getMassErrorPPM, Comparator.nullsLast(Comparator.naturalOrder()))
-//                    .thenComparing(SearchResultDTO::getMassError, Comparator.nullsLast(Comparator.naturalOrder()))
-//                    .thenComparing(SearchResultDTO::getRetTimeError, Comparator.nullsLast(Comparator.naturalOrder())));
-//
-//            SearchResultDTO topResult = selectedSearchResults.get(0).clone();
-//            topResult.setQueryPrecursorMzs(selectedSearchResults.stream()
-//                    .map(SearchResultDTO::getQueryPrecursorMz).filter(Objects::nonNull)
-//                    .distinct().mapToDouble(Double::doubleValue).toArray());
-//            topResult.setQueryPrecursorTypes(selectedSearchResults.stream()
-//                    .map(SearchResultDTO::getQueryPrecursorType).filter(Objects::nonNull)
-//                    .distinct().toArray(String[]::new));
-//
-//            topResults.add(topResult);
         }
-
-//        IntStream.range(0, topResults.size())
-//                .forEach(i -> topResults.get(i).setPosition(i));
 
         return allTopResults;
     }
@@ -162,8 +142,10 @@ public interface ExportSearchResultsService {
         RET_TIME_ERROR("Retention Time Error (min)", ExportCategory.DIFFERENCE, r -> formatDouble(r.getRetTimeError(), 3)),
         MASS_ERROR_PPM("Precursor Mass Error (ppm)", ExportCategory.DIFFERENCE, r -> formatDouble(r.getMassErrorPPM(), 4)),
         PRECURSOR_TYPE("Matching Adduct", ExportCategory.DIFFERENCE, SearchResultDTO::getPrecursorType),
-        ISOTOPIC_SIMILARITY("Isotopic Similarity", ExportCategory.DIFFERENCE, r -> null),
-        SCORE("Fragmentation Score by matching with Experimental spectra", ExportCategory.DIFFERENCE, r -> r.getScore() != null ? Double.toString(r.getNISTScore()) : null),
+        ISOTOPIC_SIMILARITY("Isotopic Similarity", ExportCategory.DIFFERENCE,
+                r -> r.getIsotopicSimilarity() != null ? String.format("%.0f", 1000 * r.getIsotopicSimilarity()) : null),
+        SCORE("Fragmentation Score by matching with Experimental spectra", ExportCategory.DIFFERENCE,
+                r -> r.getScore() != null ? Long.toString(r.getNISTScore()) : null),
         THEORETICAL_SCORE("Fragmentation Score by matching with theoretical spectra", ExportCategory.DIFFERENCE, r -> null),
         //        MASS_ERROR("Mass Error (Da)", r -> r.getMassError() != null ? Double.toString(r.getMassError()) : null),
         ONTOLOGY_LEVEL("Ontology Level", ExportCategory.DIFFERENCE, SearchResultDTO::getOntologyLevel),
