@@ -41,14 +41,16 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     private final SubmissionRepository submissionRepository;
 
     private enum ColumnInformation {
-        ID(0, "id"), Cluster_ID(1, "id"),
+        ID(0, "id"),
+        Cluster_ID(1, "id"),
         NAME(2, "name"),
-        COUNT(3, "size"), SCORE(4, "score"),
+        COUNT(3, "size"),
+        SCORE(4, "score"),
         AVERAGE_SIGNIFICANCE(5, "averageSignificance"),
         MINIMUM_SIGNIFICANCE(6, "minimumSignificance"),
-        SPECIES_PVALUE(7,"speciesPValue"),
-        SAMPLE_SOURCE_PVALUE(8, "sampleSourcePValue"),
-        DISEASE_PVALUE(9,"diseasePValue"),
+        SPECIES_PVALUE(7,"diseasePValue"),
+        SAMPLE_SOURCE_PVALUE(8, "speciesPValue"),
+        DISEASE_PVALUE(9,"sampleSourcePValue"),
         MINIMUM_PVALUE(10, "minPValue"),
         CHROMATOGRAPHYTYPE(11, "chromatographyType");
 

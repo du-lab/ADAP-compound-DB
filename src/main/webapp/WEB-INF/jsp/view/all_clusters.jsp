@@ -98,11 +98,10 @@
                             <th title="Minimum matching score between all spectra in a cluster">Score</th>
                             <th title="P-value of the In-study ANOVA test">ANOVA P-value (average)</th>
                             <th title="Gini-Simpson Index">ANOVA P-value (minimum)</th>
+                            <th title="P-value of the Goodness-of-Fit test for the distribution of disease">GOF P-value (disease)</th>
                             <th title="P-value of the Goodness-of-Fit test for the distribution of species">GOF P-value (species)</th>
                             <th title="P-value of the Goodness-of-Fit test for the distribution of sample source">GOF P-value (sample source)</th>
-                            <th title="P-value of the Goodness-of-Fit test for the distribution of disease">GOF P-value (disease)</th>
-<%--                             Todo: adding title information --%>
-                            <th title="">GOF P-value (minimum)</th>
+                            <th title="The Minimum P-value of the Goodness-of-Fit test">GOF P-value (minimum)</th>
                             <th title="Chromatography type">Type</th>
                             <th></th>
                         </tr>
