@@ -72,6 +72,7 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
     private String casId;
     private String hmdbId;
     private String pubChemId;
+    private String inChIKey;
     private String submissionName;
     private Boolean inHouse;
     private Long submissionId;
@@ -150,6 +151,7 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
             this.retTime = matchSpectrum.getRetentionTime();
             this.formula = matchSpectrum.getFormula();
             this.inHouse = matchSpectrum.isInHouseReference();
+            this.inChIKey = matchSpectrum.getInChiKey();
 
             Map<IdentifierType, String> identifiers = matchSpectrum.getIdentifiers();
             if (identifiers != null) {
@@ -354,6 +356,14 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
 
     public void setPubChemId(String pubChemId) {
         this.pubChemId = pubChemId;
+    }
+
+    public String getInChIKey() {
+        return inChIKey;
+    }
+
+    public void setInChIKey(String inChIKey) {
+        this.inChIKey = inChIKey;
     }
 
     public String getSubmissionName() {

@@ -158,6 +158,7 @@ public interface ExportSearchResultsService {
         CAS_ID("CASNO", ExportCategory.MATCHED, SearchResultDTO::getCasId),
         HMDB_ID("HMDB ID", ExportCategory.MATCHED, SearchResultDTO::getHmdbId),
         PUBCHEM_ID("PubChem ID", ExportCategory.MATCHED, SearchResultDTO::getPubChemId),
+        INCHI_KEY("InChI Key", ExportCategory.MATCHED, SearchResultDTO::getInChIKey),
         SUBMISSION_NAME("Library Category", ExportCategory.MATCHED, SearchResultDTO::getSubmissionName),
         NOTES("NOTES", ExportCategory.MISC, r -> null);
 
