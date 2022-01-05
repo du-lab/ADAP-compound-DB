@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.util.*;
+import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -197,7 +198,8 @@ public class JavaSpectrumSimilarityService {
         matches.sort(Comparator.comparing(SpectrumMatch::getScore, Comparator.nullsLast(Comparator.reverseOrder()))
                 .thenComparing(SpectrumMatch::getMassError, Comparator.nullsLast(Comparator.naturalOrder()))
                 .thenComparing(SpectrumMatch::getRetTimeError, Comparator.nullsLast(Comparator.naturalOrder()))
-                .thenComparing(SpectrumMatch::getRetIndexError, Comparator.nullsLast(Comparator.naturalOrder())));
+                .thenComparing(SpectrumMatch::getRetIndexError, Comparator.nullsLast(Comparator.naturalOrder()))
+                .thenComparing(SpectrumMatch::getIsotopicSimilarity, Comparator.nullsLast(Comparator.reverseOrder())));
 
         return matches;
     }

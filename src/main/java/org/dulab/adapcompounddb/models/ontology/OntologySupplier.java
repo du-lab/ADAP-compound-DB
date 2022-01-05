@@ -27,7 +27,7 @@ public class OntologySupplier {
         chromatographyTypeToOntologyLevelsMap.get(ChromatographyType.LC_MSMS_NEG).add(ol1);
 
         OntologyLevel ol2a = new OntologyLevel("OL_2a", 2, true, null,
-                null, null,MASS_TOLERANCE_PPM, RET_TIME_TOLERANCE,
+                null, null, MASS_TOLERANCE_PPM, RET_TIME_TOLERANCE,
                 null);
         chromatographyTypeToOntologyLevelsMap.get(ChromatographyType.LC_MSMS_POS).add(ol2a);
         chromatographyTypeToOntologyLevelsMap.get(ChromatographyType.LC_MSMS_NEG).add(ol2a);

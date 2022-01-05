@@ -5,6 +5,7 @@ import org.dulab.adapcompounddb.models.MatchType;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.entities.views.MassSearchResult;
 import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
+import org.dulab.adapcompounddb.models.enums.IdentifierType;
 import org.dulab.adapcompounddb.models.ontology.OntologyLevel;
 import org.springframework.lang.Nullable;
 
@@ -68,6 +69,9 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
     private Double mass;
     private Double retTime;
     private String formula;
+    private String casId;
+    private String hmdbId;
+    private String pubChemId;
     private String submissionName;
     private Boolean inHouse;
     private Long submissionId;
@@ -146,6 +150,13 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
             this.retTime = matchSpectrum.getRetentionTime();
             this.formula = matchSpectrum.getFormula();
             this.inHouse = matchSpectrum.isInHouseReference();
+
+            Map<IdentifierType, String> identifiers = matchSpectrum.getIdentifiers();
+            if (identifiers != null) {
+                this.casId = identifiers.get(IdentifierType.CAS);
+                this.hmdbId = identifiers.get(IdentifierType.HMDB);
+                this.pubChemId = identifiers.get(IdentifierType.PUBCHEM);
+            }
 
             this.score = spectrumMatch.getScore();
             this.isotopicSimilarity = spectrumMatch.getIsotopicSimilarity();
@@ -319,6 +330,30 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
 
     public void setFormula(String formula) {
         this.formula = formula;
+    }
+
+    public String getCasId() {
+        return casId;
+    }
+
+    public void setCasId(String casId) {
+        this.casId = casId;
+    }
+
+    public String getHmdbId() {
+        return hmdbId;
+    }
+
+    public void setHmdbId(String hmdbId) {
+        this.hmdbId = hmdbId;
+    }
+
+    public String getPubChemId() {
+        return pubChemId;
+    }
+
+    public void setPubChemId(String pubChemId) {
+        this.pubChemId = pubChemId;
     }
 
     public String getSubmissionName() {
