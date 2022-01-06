@@ -1,5 +1,7 @@
 package org.dulab.adapcompounddb.site.services.io;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 
@@ -13,6 +15,8 @@ import static org.dulab.adapcompounddb.site.services.io.ExportUtils.*;
 
 public interface ExportSearchResultsService {
 
+    Logger LOGGER = LogManager.getLogger(ExportSearchResultsService.class);
+
 
     void exportAll(OutputStream outputStream, List<SearchResultDTO> searchResults) throws IOException;
 
@@ -22,6 +26,8 @@ public interface ExportSearchResultsService {
     }
 
     static List<SearchResultDTO> selectTopResults(List<SearchResultDTO> searchResults) {
+
+        LOGGER.info("Selecting top results...");
 
         Object[] queryIds = searchResults.stream()
                 .map(r -> getId(r.getQueryExternalId(), r.getQuerySpectrumName(), r.getSpectrumId(), r.getQueryFileIndex(), r.getQuerySpectrumIndex()))
@@ -87,6 +93,8 @@ public interface ExportSearchResultsService {
 
             allTopResults.addAll(topResults);
         }
+
+        LOGGER.info("Completed selecting top results.");
 
         return allTopResults;
     }
