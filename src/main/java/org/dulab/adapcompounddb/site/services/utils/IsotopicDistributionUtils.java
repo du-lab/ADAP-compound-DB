@@ -45,10 +45,16 @@ public class IsotopicDistributionUtils {
                 43.0, 0.1444,44.0, 2.1516, 45.0, ZERO, 46.0, 0.0041, 47.0, ZERO,
                 48.0, 0.196)));
         ISOTOPE_TABLE.put("Cl", new TreeMap<>(Map.of(35.0, 75.8, 36.0, ZERO, 37.0, 24.2)));
+        ISOTOPE_TABLE.put("Cr", new TreeMap<>(Map.of(50.0, 5.1916, 51.0, ZERO, 52.0, 100.0,
+                53.0, 11.3379, 54.0, 2.8166)));
         ISOTOPE_TABLE.put("Cu", new TreeMap<>(Map.of(63.0, 100.0, 64.0, ZERO, 65.0, 44.5713)));
+        ISOTOPE_TABLE.put("D", new TreeMap<>(Map.of(2.0, 100.0)));
         ISOTOPE_TABLE.put("F", new TreeMap<>(Map.of(19.0, 100.0)));
         ISOTOPE_TABLE.put("Fe", new TreeMap<>(Map.of(54.0, 6.3236, 55.0, ZERO, 56.0, 100.0,
                 57.0, 2.3986, 58.0, 0.3053)));
+        ISOTOPE_TABLE.put("Gd", new TreeMap<>(Map.of(152.0, 0.8052, 153.0, ZERO, 154.0, 8.7762,
+                155.0, 59.5813,156.0, 82.4074, 157.0, 63.0032, 158.0, 100.0,
+                159.0, ZERO, 160.0, 88.0032)));
         ISOTOPE_TABLE.put("H", new TreeMap<>(Map.of(1.0, 99.9855, 2.0, 0.0145)));
         ISOTOPE_TABLE.put("Hg", new TreeMap<>(Map.of(196.0, 0.5059, 197.0, ZERO, 198.0, 34.0641,
                 199.0, 57.3356, 200.0, 77.9089, 201.0, 44.5194, 202.0, 100.0,
@@ -59,6 +65,8 @@ public class IsotopicDistributionUtils {
         ISOTOPE_TABLE.put("Mn", new TreeMap<>(Map.of(55.0, 100.0)));
         ISOTOPE_TABLE.put("N", new TreeMap<>(Map.of(14.0, 99.6205, 15.0, 0.3795)));
         ISOTOPE_TABLE.put("Na", new TreeMap<>(Map.of(23.0, 100.0)));
+        ISOTOPE_TABLE.put("Ni", new TreeMap<>(Map.of(58.0, 100.0, 59.0, ZERO, 60.0, 38.2306,
+                61.0, 1.6552, 62.0, 5.2585, 63.0, ZERO, 64.0, 1.3329)));
         ISOTOPE_TABLE.put("O", new TreeMap<>(Map.of(16.0, 99.757, 17.0, 0.03835,18.0, 0.2045)));
         ISOTOPE_TABLE.put("P", new TreeMap<>(Map.of(31.0, 100.0)));
         ISOTOPE_TABLE.put("Pb", new TreeMap<>(Map.of(204.0, 2.6718, 205.0, ZERO, 206.0, 45.9924,
