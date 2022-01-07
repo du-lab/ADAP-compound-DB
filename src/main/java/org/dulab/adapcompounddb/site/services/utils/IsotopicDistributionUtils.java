@@ -38,6 +38,9 @@ public class IsotopicDistributionUtils {
         ISOTOPE_TABLE.put("As", new TreeMap<>(Map.of(75.0, 100.0)));
         ISOTOPE_TABLE.put("Au", new TreeMap<>(Map.of(197.0, 100.0)));
         ISOTOPE_TABLE.put("B", new TreeMap<>(Map.of(10.0, 24.6883, 11.0, 100.0)));
+        ISOTOPE_TABLE.put("Ba", new TreeMap<>(Map.of(130.0, 0.1534, 131.0, ZERO, 132.0, 0.1395,
+                133.0, ZERO, 134.0, 3.3752, 135.0, 9.1911, 136.0, 10.9484,
+                137.0, 15.6625,138.0, 100.0)));
         ISOTOPE_TABLE.put("Bi", new TreeMap<>(Map.of(209.0, 100.0)));
         ISOTOPE_TABLE.put("Br", new TreeMap<>(Map.of(79.0, 50.65, 80.0, ZERO,81.0, 49.35)));
         ISOTOPE_TABLE.put("C", new TreeMap<>(Map.of(12.0, 100.0, 13.0, 1.0816)));
@@ -49,9 +52,13 @@ public class IsotopicDistributionUtils {
                 53.0, 11.3379, 54.0, 2.8166)));
         ISOTOPE_TABLE.put("Cu", new TreeMap<>(Map.of(63.0, 100.0, 64.0, ZERO, 65.0, 44.5713)));
         ISOTOPE_TABLE.put("D", new TreeMap<>(Map.of(2.0, 100.0)));
+        ISOTOPE_TABLE.put("Er", new TreeMap<>(Map.of(162.0, 0.4167, 163.0, ZERO, 164.0, 4.7917,
+                165.0, ZERO, 166.0, 100.0, 167.0, 68.3036, 168.0, 79.7619, 169.0, ZERO,
+                170.0, 44.3452)));
         ISOTOPE_TABLE.put("F", new TreeMap<>(Map.of(19.0, 100.0)));
         ISOTOPE_TABLE.put("Fe", new TreeMap<>(Map.of(54.0, 6.3236, 55.0, ZERO, 56.0, 100.0,
                 57.0, 2.3986, 58.0, 0.3053)));
+        ISOTOPE_TABLE.put("Ga", new TreeMap<>(Map.of(69.0, 100.0, 70.0, ZERO, 71.0, 66.3894)));
         ISOTOPE_TABLE.put("Gd", new TreeMap<>(Map.of(152.0, 0.8052, 153.0, ZERO, 154.0, 8.7762,
                 155.0, 59.5813,156.0, 82.4074, 157.0, 63.0032, 158.0, 100.0,
                 159.0, ZERO, 160.0, 88.0032)));
@@ -61,6 +68,7 @@ public class IsotopicDistributionUtils {
                 203.0, ZERO, 204.0, 22.9342)));
         ISOTOPE_TABLE.put("I", new TreeMap<>(Map.of(127.0, 100.0)));
         ISOTOPE_TABLE.put("K", new TreeMap<>(Map.of(39.0, 100.0, 40.0, 0.0129, 41.0, 7.221)));
+        ISOTOPE_TABLE.put("Lu", new TreeMap<>(Map.of(175.0, 100.0,176.0, 2.6694)));
         ISOTOPE_TABLE.put("Mg", new TreeMap<>(Map.of(24.0, 100.0, 25.0, 12.6743, 26.0, 14.0684)));
         ISOTOPE_TABLE.put("Mn", new TreeMap<>(Map.of(55.0, 100.0)));
         ISOTOPE_TABLE.put("N", new TreeMap<>(Map.of(14.0, 99.6205, 15.0, 0.3795)));
@@ -68,12 +76,16 @@ public class IsotopicDistributionUtils {
         ISOTOPE_TABLE.put("Ni", new TreeMap<>(Map.of(58.0, 100.0, 59.0, ZERO, 60.0, 38.2306,
                 61.0, 1.6552, 62.0, 5.2585, 63.0, ZERO, 64.0, 1.3329)));
         ISOTOPE_TABLE.put("O", new TreeMap<>(Map.of(16.0, 99.757, 17.0, 0.03835,18.0, 0.2045)));
+        ISOTOPE_TABLE.put("Os", new TreeMap<>(Map.of(184.0, 0.0488, 185.0, ZERO, 186.0, 3.8537,
+                187.0, 3.9024, 188.0, 32.439, 189.0, 39.2683, 190.0, 64.3902,
+                191.0, ZERO, 192.0, 100.0)));
         ISOTOPE_TABLE.put("P", new TreeMap<>(Map.of(31.0, 100.0)));
         ISOTOPE_TABLE.put("Pb", new TreeMap<>(Map.of(204.0, 2.6718, 205.0, ZERO, 206.0, 45.9924,
                 207.0, 42.1756, 208.0, 100.0)));
         ISOTOPE_TABLE.put("Pt", new TreeMap<>(Map.of(190.0, 0.0296, 191.0, ZERO, 192.0, 2.3373,
                 193.0, ZERO, 194.0, 97.3373, 195.0, 100.0, 196.0, 74.8521, 197.0, ZERO,
                 198.0, 21.3018)));
+        ISOTOPE_TABLE.put("Re", new TreeMap<>(Map.of(185.0, 59.7444, 186.0, ZERO, 187.0, 100.0)));
         ISOTOPE_TABLE.put("S", new TreeMap<>(Map.of(32.0, 94.85, 33.0, 0.763,
                 34.0, 4.365, 35.0, ZERO, 36.0, 0.0158)));
         ISOTOPE_TABLE.put("Sb", new TreeMap<>(Map.of(121.0, 100.0, 122.0, ZERO, 123.0, 74.5201)));
@@ -87,7 +99,12 @@ public class IsotopicDistributionUtils {
         ISOTOPE_TABLE.put("Th", new TreeMap<>(Map.of(232.0, 100.0)));
         ISOTOPE_TABLE.put("Ti", new TreeMap<>(Map.of(46.0, 10.8401, 47.0, 9.8916, 48.0, 100.0,
                 49.0, 7.4526, 50.0, 7.3171)));
+        ISOTOPE_TABLE.put("Tl", new TreeMap<>(Map.of(203.0, 41.8842, 204.0, ZERO, 205.0, 100.0)));
         ISOTOPE_TABLE.put("V", new TreeMap<>(Map.of(50.0, 0.2506, 51.0, 100.0)));
+        ISOTOPE_TABLE.put("W", new TreeMap<>(Map.of(180.0, 0.4239, 181.0, ZERO, 182.0, 85.7515,
+                183.0, 46.6254, 184.0, 100.0, 185.0, ZERO, 186.0, 76.9482)));
+        ISOTOPE_TABLE.put("Zn", new TreeMap<>(Map.of(64.0, 100.0, 65.0, ZERO, 66.0, 57.4074,
+                67.0, 8.4362, 68.0, 38.6831, 69.0, ZERO,70.0, 1.2346)));
     }
 
     /**
