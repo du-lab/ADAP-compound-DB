@@ -113,17 +113,18 @@ public class IndividualSearchService {
             OntologyLevel ontologyLevel = OntologySupplier.select(spectrum.getChromatographyType(),
                     result.getInHouse(), result.getScore(), result.getPrecursorErrorPPM(), result.getMassErrorPPM(),
                     result.getRetTimeError(), result.getIsotopicSimilarity());
-            if (ontologyLevel == null)
-                continue;
 
-            if (ontologyLevel.getScoreThreshold() == null)
-                result.setScore(null);
-            if (ontologyLevel.getRetTimeTolerance() == null)
-                result.setRetTimeError(null);
-            if (ontologyLevel.getMassTolerancePPM() == null)
-                result.setMassErrorPPM(null);
+            if (ontologyLevel != null) {
+                if (ontologyLevel.getScoreThreshold() == null)
+                    result.setScore(null);
+                if (ontologyLevel.getRetTimeTolerance() == null)
+                    result.setRetTimeError(null);
+                if (ontologyLevel.getMassTolerancePPM() == null)
+                    result.setMassErrorPPM(null);
 
-            result.setOntologyLevel(ontologyLevel);
+                result.setOntologyLevel(ontologyLevel);
+            }
+
             resultsWithOntology.add(result);
         }
 
