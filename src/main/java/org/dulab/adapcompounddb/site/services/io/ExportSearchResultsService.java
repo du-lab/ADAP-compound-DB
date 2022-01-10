@@ -130,10 +130,10 @@ public interface ExportSearchResultsService {
         Map<Object, List<SearchResultDTO>> matchIdToSearchResultsMap = new HashMap<>();
         for (SearchResultDTO searchResult : selectedSearchResults) {
             Object matchSpectrumId = getId(searchResult.getExternalId(), searchResult.getName(), searchResult.getSpectrumId(), null, null);
-            if (matchSpectrumId == null) {
-                topResults.add(searchResult);
-                continue;
-            }
+//            if (matchSpectrumId == null) {
+//                topResults.add(searchResult);
+//                continue;
+//            }
 
             matchIdToSearchResultsMap.computeIfAbsent(matchSpectrumId, k -> new ArrayList<>())
                     .add(searchResult);
