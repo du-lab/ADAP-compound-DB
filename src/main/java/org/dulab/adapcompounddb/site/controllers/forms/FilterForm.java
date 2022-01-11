@@ -19,6 +19,7 @@ public class FilterForm {
     private String disease;
     private Set<BigInteger> submissionIds;
     private boolean withOntologyLevels;
+    private boolean sendResultsToEmail;
 
 
     public Integer getScoreThreshold() {
@@ -107,5 +108,13 @@ public class FilterForm {
 
     public void setWithOntologyLevels(boolean withOntologyLevels) {
         this.withOntologyLevels = withOntologyLevels;
+    }
+
+    public boolean isSendResultsToEmail() {
+        return sendResultsToEmail;
+    }
+
+    public void setSendResultsToEmail(boolean sendResultsToEmail) {
+        this.sendResultsToEmail = sendResultsToEmail;
     }
 }

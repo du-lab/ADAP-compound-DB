@@ -172,6 +172,8 @@ public class Spectrum implements Serializable {
     }
 
     public String getShortName() {
+        if (name != null && name.startsWith("[Ref Spec] "))
+            return name.substring(11);
         return name;
     }
 
