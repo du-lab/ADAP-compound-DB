@@ -63,7 +63,7 @@ public class IndividualSearchService {
         return searchResults;
     }
 
-//    @Transactional
+    //    @Transactional
     public List<SearchResultDTO> searchWithOntologyLevels(UserPrincipal user, Spectrum spectrum,
                                                           SearchParameters parameters) {
 
@@ -89,9 +89,11 @@ public class IndividualSearchService {
 
         List<Adduct> adducts = adductService.findAdductsByChromatography(spectrum.getChromatographyType());
         if (spectrum.getMass() == null && adducts != null && spectrum.getPrecursor() != null)
-            modifiedParameters.setMasses(adducts.stream()
-                    .mapToDouble(adduct -> adduct.calculateNeutralMass(spectrum.getPrecursor()))
-                    .toArray());
+            modifiedParameters.setAdducts(adducts);
+//                    adducts.stream()
+//                    .collect(Collectors.toMap(a -> a.calculateNeutralMass(spectrum.getPrecursor()), Adduct::getName));
+//                    .mapToDouble(adduct -> adduct.calculateNeutralMass(spectrum.getPrecursor()))
+//                    .toArray());
 
 //        Map<Long, String> privateSubmissionIdMap =
 //                submissionService.findUserPrivateSubmissions(user, spectrum.getChromatographyType());

@@ -2,10 +2,7 @@ package org.dulab.adapcompounddb.site.services.search;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dulab.adapcompounddb.models.entities.Peak;
-import org.dulab.adapcompounddb.models.entities.Spectrum;
-import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
-import org.dulab.adapcompounddb.models.entities.UserPrincipal;
+import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters.RetIndexMatchType;
@@ -125,21 +122,39 @@ public class JavaSpectrumSimilarityService {
 
             double massError = Double.MAX_VALUE;
             double massErrorPPM = Double.MAX_VALUE;
-            if ((params.getMasses() != null || querySpectrum.getMass() != null)
+            String precursorType = null;
+            if ((params.getAdducts() != null || querySpectrum.getMass() != null)
                     && librarySpectrum.getMass() != null) {
 
                 if (querySpectrum.getMass() != null) {
                     massError = Math.abs(querySpectrum.getMass() - librarySpectrum.getMass());
                     massErrorPPM = 1E6 * massError / librarySpectrum.getMass();
+                    precursorType = querySpectrum.getPrecursorType();
                 } else {
-                    massError = Arrays.stream(params.getMasses())
-                            .map(mass -> Math.abs(mass - librarySpectrum.getMass()))
-                            .min()
-                            .orElse(Double.MAX_VALUE);
-                    massErrorPPM = Arrays.stream(params.getMasses())
-                            .map(mass -> 1E6 * Math.abs(mass - librarySpectrum.getMass()) / librarySpectrum.getMass())
-                            .min()
-                            .orElse(Double.MAX_VALUE);
+                    for (Adduct adduct : params.getAdducts()) {
+                        double massDifference = Math.abs(
+                                adduct.calculateNeutralMass(querySpectrum.getPrecursor()) - librarySpectrum.getMass());
+                        if (massDifference < massError) {
+                            massError = massDifference;
+                            precursorType = adduct.getName();
+                        }
+
+                        double ppmDifference = 1E6 * massDifference / librarySpectrum.getMass();
+                        if (ppmDifference < massErrorPPM) {
+                            massErrorPPM = ppmDifference;
+                            precursorType = adduct.getName();
+                        }
+                    }
+//                    params.getAdducts().stream()
+//                            .collect(Collectors.)
+//                    massError = Arrays.stream(params.getMasses())
+//                            .map(mass -> Math.abs(mass - librarySpectrum.getMass()))
+//                            .min()
+//                            .orElse(Double.MAX_VALUE);
+//                    massErrorPPM = Arrays.stream(params.getMasses())
+//                            .map(mass -> 1E6 * Math.abs(mass - librarySpectrum.getMass()) / librarySpectrum.getMass())
+//                            .min()
+//                            .orElse(Double.MAX_VALUE);
                 }
             }
 
@@ -167,6 +182,7 @@ public class JavaSpectrumSimilarityService {
                 match.setIsotopicSimilarity(isotopicSimilarity > 0 ? isotopicSimilarity : null);
                 match.setPrecursorError(precursorError < Double.MAX_VALUE ? precursorError : null);
                 match.setPrecursorErrorPPM(precursorErrorPPM < Double.MAX_VALUE ? precursorErrorPPM : null);
+                match.setPrecursorType(precursorType);
                 match.setMassError(massError < Double.MAX_VALUE ? massError : null);
                 match.setMassErrorPPM(massErrorPPM < Double.MAX_VALUE ? massErrorPPM : null);
                 match.setRetTimeError(retTimeError < Double.MAX_VALUE ? retTimeError : null);

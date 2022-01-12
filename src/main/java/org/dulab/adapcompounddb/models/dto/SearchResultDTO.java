@@ -146,7 +146,6 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
             this.name = matchSpectrum.getShortName();
             this.externalId = matchSpectrum.getExternalId();
             this.size = 1;
-            this.precursorType = matchSpectrum.getPrecursorType();
             this.mass = matchSpectrum.getMass();
             this.retTime = matchSpectrum.getRetentionTime();
             this.formula = matchSpectrum.getFormula();
@@ -164,6 +163,7 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
             this.isotopicSimilarity = spectrumMatch.getIsotopicSimilarity();
             this.precursorError = spectrumMatch.getPrecursorError();
             this.precursorErrorPPM = spectrumMatch.getPrecursorErrorPPM();
+            this.precursorType = spectrumMatch.getPrecursorType();
             this.massError = spectrumMatch.getMassError();
             this.massErrorPPM = spectrumMatch.getMassErrorPPM();
             this.retTimeError = spectrumMatch.getRetTimeError();

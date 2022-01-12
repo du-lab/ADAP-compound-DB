@@ -30,6 +30,7 @@ public class SpectrumMatch implements Serializable {
     private Double isotopicSimilarity;
     private Double precursorError;
     private Double precursorErrorPPM;
+    private String precursorType;
     private Double massError;
     private Double massErrorPPM;
     private Double retTimeError;
@@ -97,6 +98,14 @@ public class SpectrumMatch implements Serializable {
 
     public void setPrecursorErrorPPM(Double precursorErrorPPM) {
         this.precursorErrorPPM = precursorErrorPPM;
+    }
+
+    public String getPrecursorType() {
+        return precursorType;
+    }
+
+    public void setPrecursorType(String precursorType) {
+        this.precursorType = precursorType;
     }
 
     public Double getMassError() {
