@@ -161,6 +161,10 @@ public interface ExportSearchResultsService {
                     .map(SearchResultDTO::getQueryPrecursorType).filter(Objects::nonNull)
                     .distinct().toArray(String[]::new));
 
+            topResult.setPrecursorType(identicalSearchResults.stream()
+                    .map(SearchResultDTO::getPrecursorType).filter(Objects::nonNull)
+                    .distinct().collect(Collectors.joining(", ")));
+
             topResult.setMarked(identicalSearchResults.stream()
                     .map(SearchResultDTO::isMarked)
                     .reduce(false, (previous, marked) -> previous || marked));
