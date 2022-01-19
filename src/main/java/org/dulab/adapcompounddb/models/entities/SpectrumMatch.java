@@ -13,7 +13,6 @@ import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.springframework.transaction.annotation.Transactional;
 
 @Entity
 public class SpectrumMatch implements Serializable {
@@ -28,8 +27,10 @@ public class SpectrumMatch implements Serializable {
     private Spectrum matchSpectrum;
 
     private Double score;
+    private Double isotopicSimilarity;
     private Double precursorError;
     private Double precursorErrorPPM;
+    private String precursorType;
     private Double massError;
     private Double massErrorPPM;
     private Double retTimeError;
@@ -75,6 +76,14 @@ public class SpectrumMatch implements Serializable {
         this.score = score;
     }
 
+    public Double getIsotopicSimilarity() {
+        return isotopicSimilarity;
+    }
+
+    public void setIsotopicSimilarity(Double isotopicSimilarityScore) {
+        this.isotopicSimilarity = isotopicSimilarityScore;
+    }
+
     public Double getPrecursorError() {
         return precursorError;
     }
@@ -89,6 +98,14 @@ public class SpectrumMatch implements Serializable {
 
     public void setPrecursorErrorPPM(Double precursorErrorPPM) {
         this.precursorErrorPPM = precursorErrorPPM;
+    }
+
+    public String getPrecursorType() {
+        return precursorType;
+    }
+
+    public void setPrecursorType(String precursorType) {
+        this.precursorType = precursorType;
     }
 
     public Double getMassError() {

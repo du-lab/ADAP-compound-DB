@@ -119,7 +119,7 @@ public class GroupSearchController extends BaseController {
         parameters.setSubmissionIds(form.getSubmissionIds());
 
         asyncResult = groupSearchService.groupSearch(this.getCurrentUserPrincipal(), submission.getFiles(), session,
-                parameters, form.isWithOntologyLevels());
+                parameters, form.isWithOntologyLevels(), form.isSendResultsToEmail());
 
         String byteString = ConversionsUtils.formToByteString(form);
         Cookie metaFieldsCookie = new Cookie(SEARCH_PARAMETERS_COOKIE_NAME, byteString);

@@ -5,6 +5,7 @@ import org.dulab.adapcompounddb.models.MatchType;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.entities.views.MassSearchResult;
 import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
+import org.dulab.adapcompounddb.models.enums.IdentifierType;
 import org.dulab.adapcompounddb.models.ontology.OntologyLevel;
 import org.springframework.lang.Nullable;
 
@@ -75,6 +76,10 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
     private Double mass;
     private Double retTime;
     private String formula;
+    private String casId;
+    private String hmdbId;
+    private String pubChemId;
+    private String inChIKey;
     private String submissionName;
     private Boolean inHouse;
     private Long submissionId;
@@ -82,6 +87,7 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
     // Other
     private int position;
     private Double score;
+    private Double isotopicSimilarity;
     private Double precursorError;
     private Double precursorErrorPPM;
     private Double massError;
@@ -151,15 +157,24 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
             this.name = matchSpectrum.getShortName();
             this.externalId = matchSpectrum.getExternalId();
             this.size = 1;
-            this.precursorType = matchSpectrum.getPrecursorType();
             this.mass = matchSpectrum.getMass();
             this.retTime = matchSpectrum.getRetentionTime();
             this.formula = matchSpectrum.getFormula();
             this.inHouse = matchSpectrum.isInHouseReference();
+            this.inChIKey = matchSpectrum.getInChiKey();
+
+            Map<IdentifierType, String> identifiers = matchSpectrum.getIdentifiers();
+            if (identifiers != null) {
+                this.casId = identifiers.get(IdentifierType.CAS);
+                this.hmdbId = identifiers.get(IdentifierType.HMDB);
+                this.pubChemId = identifiers.get(IdentifierType.PUBCHEM);
+            }
 
             this.score = spectrumMatch.getScore();
+            this.isotopicSimilarity = spectrumMatch.getIsotopicSimilarity();
             this.precursorError = spectrumMatch.getPrecursorError();
             this.precursorErrorPPM = spectrumMatch.getPrecursorErrorPPM();
+            this.precursorType = spectrumMatch.getPrecursorType();
             this.massError = spectrumMatch.getMassError();
             this.massErrorPPM = spectrumMatch.getMassErrorPPM();
             this.retTimeError = spectrumMatch.getRetTimeError();
@@ -268,6 +283,14 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
         this.score = score;
     }
 
+    public Double getIsotopicSimilarity() {
+        return isotopicSimilarity;
+    }
+
+    public void setIsotopicSimilarity(Double isotopicSimilarity) {
+        this.isotopicSimilarity = isotopicSimilarity;
+    }
+
     public Double getAveSignificance() {
         return aveSignificance;
     }
@@ -364,6 +387,38 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
 
     public void setFormula(String formula) {
         this.formula = formula;
+    }
+
+    public String getCasId() {
+        return casId;
+    }
+
+    public void setCasId(String casId) {
+        this.casId = casId;
+    }
+
+    public String getHmdbId() {
+        return hmdbId;
+    }
+
+    public void setHmdbId(String hmdbId) {
+        this.hmdbId = hmdbId;
+    }
+
+    public String getPubChemId() {
+        return pubChemId;
+    }
+
+    public void setPubChemId(String pubChemId) {
+        this.pubChemId = pubChemId;
+    }
+
+    public String getInChIKey() {
+        return inChIKey;
+    }
+
+    public void setInChIKey(String inChIKey) {
+        this.inChIKey = inChIKey;
     }
 
     public String getSubmissionName() {

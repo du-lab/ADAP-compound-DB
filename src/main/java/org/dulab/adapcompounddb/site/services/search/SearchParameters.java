@@ -2,15 +2,13 @@ package org.dulab.adapcompounddb.site.services.search;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dulab.adapcompounddb.models.entities.Adduct;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class SearchParameters implements Cloneable {
 
@@ -34,12 +32,15 @@ public class SearchParameters implements Cloneable {
     private Double retTimeTolerance;
     private Double retIndexTolerance;
     private RetIndexMatchType retIndexMatchType;
+    private Double isotopicSimilarityThreshold;
     private String species;
     private String source;
     private String disease;
     private Set<BigInteger> submissionIds;
     private Iterable<BigInteger> spectrumIds;
-    private double[] masses;
+//    private double[] masses;
+//    private SortedMap<Double, String> massToAdductMap;
+    private List<Adduct> adducts;
     private int limit = 100;
 
     public Boolean getGreedy() {
@@ -142,12 +143,32 @@ public class SearchParameters implements Cloneable {
         return this;
     }
 
-    public double[] getMasses() {
-        return masses;
+//    public double[] getMasses() {
+//        return masses;
+//    }
+//
+//    public SearchParameters setMasses(double[] masses) {
+//        this.masses = masses;
+//        return this;
+//    }
+
+
+//    public Map<Double, String> getMassToAdductMap() {
+//        return massToAdductMap;
+//    }
+//
+//    public SearchParameters setMassToAdductMap(Map<Double, String> massToAdductMap) {
+//        this.massToAdductMap = massToAdductMap;
+//        return this;
+//    }
+
+
+    public List<Adduct> getAdducts() {
+        return adducts;
     }
 
-    public SearchParameters setMasses(double[] masses) {
-        this.masses = masses;
+    public SearchParameters setAdducts(List<Adduct> adducts) {
+        this.adducts = adducts;
         return this;
     }
 
@@ -174,6 +195,14 @@ public class SearchParameters implements Cloneable {
 
     public void setRetIndexMatchType(RetIndexMatchType retIndexMatchType) {
         this.retIndexMatchType = retIndexMatchType;
+    }
+
+    public Double getIsotopicSimilarityThreshold() {
+        return isotopicSimilarityThreshold;
+    }
+
+    public void setIsotopicSimilarityThreshold(Double isotopicSimilarityThreshold) {
+        this.isotopicSimilarityThreshold = isotopicSimilarityThreshold;
     }
 
     public String getSpecies() {
@@ -276,7 +305,7 @@ public class SearchParameters implements Cloneable {
     public SearchParameters clone() throws CloneNotSupportedException {
         SearchParameters parameters = (SearchParameters) super.clone();
         parameters.setSubmissionIds(new HashSet<>(this.getSubmissionIds()));
-        parameters.setMasses(this.getMasses() != null ? this.getMasses().clone() : null);
+        parameters.setAdducts(this.getAdducts() != null ? new ArrayList<>(this.getAdducts()) : null);
         if (this.getSpectrumIds() != null) {
             List<BigInteger> spectrumIds = new ArrayList<>();
             this.getSpectrumIds().forEach(spectrumIds::add);

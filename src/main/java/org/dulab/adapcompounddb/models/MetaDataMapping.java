@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.models;
 
+import org.dulab.adapcompounddb.models.entities.Isotope;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumProperty;
 import org.dulab.adapcompounddb.models.entities.Synonym;
@@ -7,14 +8,16 @@ import org.dulab.adapcompounddb.models.enums.IdentifierType;
 
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.dulab.adapcompounddb.site.services.utils.MappingUtils.parseDouble;
 
 public class MetaDataMapping {
 
     public enum Field {
-        NAME, SYNONYM, EXTERNAL_ID, CAS_ID, KEGG_ID, PRECURSOR_MZ, PRECURSOR_TYPE, RETENTION_TIME, RETENTION_INDEX,
-        MASS, FORMULA, SMILES, INCHI_KEY, INCHI
+        NAME, SYNONYM, EXTERNAL_ID, CAS_ID, HMDB_ID, KEGG_ID, PUBCHEM_ID, PRECURSOR_MZ, PRECURSOR_TYPE, RETENTION_TIME,
+        RETENTION_INDEX, MASS, FORMULA, SMILES, INCHI_KEY, INCHI, ISOTOPIC_DISTRIBUTION
     }
 
     private static final Map<Field, BiConsumer<Spectrum, String>> fieldToFunctionMap = new HashMap<>();
@@ -30,18 +33,10 @@ public class MetaDataMapping {
             spectrum.setSynonyms(synonyms);
         });
         fieldToFunctionMap.put(Field.EXTERNAL_ID, Spectrum::setExternalId);
-        fieldToFunctionMap.put(Field.CAS_ID, (spectrum, value) -> {
-            Map<IdentifierType, String> identifiers =
-                    Objects.requireNonNullElseGet(spectrum.getIdentifiers(), HashMap::new);
-            identifiers.put(IdentifierType.CAS, value);
-            spectrum.setIdentifiers(identifiers);
-        });
-        fieldToFunctionMap.put(Field.KEGG_ID, (spectrum, value) -> {
-            Map<IdentifierType, String> identifiers =
-                    Objects.requireNonNullElseGet(spectrum.getIdentifiers(), HashMap::new);
-            identifiers.put(IdentifierType.KEGG, value);
-            spectrum.setIdentifiers(identifiers);
-        });
+        fieldToFunctionMap.put(Field.CAS_ID, (s, v) -> s.addIdentifier(IdentifierType.CAS, v));
+        fieldToFunctionMap.put(Field.HMDB_ID, (s, v) -> s.addIdentifier(IdentifierType.HMDB, v));
+        fieldToFunctionMap.put(Field.KEGG_ID, (s, v) -> s.addIdentifier(IdentifierType.KEGG, v));
+        fieldToFunctionMap.put(Field.PUBCHEM_ID, (s, v) -> s.addIdentifier(IdentifierType.PUBCHEM, v));
         fieldToFunctionMap.put(Field.PRECURSOR_MZ, (s, v) -> s.setPrecursor(parseDouble(v)));
         fieldToFunctionMap.put(Field.PRECURSOR_TYPE, Spectrum::setPrecursorType);
         fieldToFunctionMap.put(Field.RETENTION_TIME, (s, v) -> s.setRetentionTime(parseDouble(v)));
@@ -54,6 +49,10 @@ public class MetaDataMapping {
         fieldToFunctionMap.put(Field.SMILES, Spectrum::setCanonicalSmiles);
         fieldToFunctionMap.put(Field.INCHI_KEY, Spectrum::setInChiKey);
         fieldToFunctionMap.put(Field.INCHI, Spectrum::setInChi);
+        fieldToFunctionMap.put(Field.ISOTOPIC_DISTRIBUTION, (spectrum, value) ->
+                spectrum.setIsotopes(Arrays.stream(value.split("-"))
+                        .mapToDouble(Double::parseDouble)
+                        .toArray()));
     }
 
     private final Map<Field, String> fieldToNameMap = new HashMap<>();
@@ -64,7 +63,7 @@ public class MetaDataMapping {
     }
 
     public void setFieldName(Field field, String fieldName) {
-        fieldToNameMap.put(field, (fieldName != null) ? fieldName.trim().toLowerCase() : null);
+        fieldToNameMap.put(field, (fieldName != null && !fieldName.isEmpty()) ? fieldName.trim().toLowerCase() : null);
     }
 
 

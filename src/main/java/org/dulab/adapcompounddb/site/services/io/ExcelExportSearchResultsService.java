@@ -1,5 +1,7 @@
 package org.dulab.adapcompounddb.site.services.io;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -17,9 +19,13 @@ import static org.dulab.adapcompounddb.site.services.io.ExportUtils.isInteger;
 @Service
 public class ExcelExportSearchResultsService implements ExportSearchResultsService {
 
+    private static final Logger LOGGER = LogManager.getLogger(ExcelExportSearchResultsService.class);
+
 
     @Override
     public void exportAll(OutputStream outputStream, List<SearchResultDTO> searchResults) throws IOException {
+
+        LOGGER.info("Exporting search results to Excel...");
 
         InputStream templateStream = this.getClass().getResourceAsStream("export_template.xlsx");
 
@@ -37,6 +43,8 @@ public class ExcelExportSearchResultsService implements ExportSearchResultsServi
         }
 
         workbook.write(outputStream);
+
+        LOGGER.info("Completed exporting search results to Excel");
     }
 
     private int createHeader(int rowCount, Sheet sheet, ExcelCellStyleSupplier styleSupplier) {

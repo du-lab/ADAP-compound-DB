@@ -120,9 +120,10 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
             if (querySpectrum.getMass() != null) {
                 builder = builder.withMass(querySpectrum.getMass(), parameters.getMassTolerance())
                         .withMassPPM(querySpectrum.getMass(), parameters.getMassTolerancePPM());
-            } else {
-                builder = builder.withMasses(parameters.getMasses(), parameters.getMassTolerance())
-                        .withMassesPPM(parameters.getMasses(), parameters.getMassTolerancePPM());
+            } else if (parameters.getAdducts() != null) {
+                double[] masses = calculateMasses(parameters.getAdducts(), querySpectrum.getPrecursor());
+                builder = builder.withMasses(masses, parameters.getMassTolerance())
+                        .withMassesPPM(masses, parameters.getMassTolerancePPM());
             }
         }
 
@@ -259,7 +260,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
         queryBuilder = (querySpectrum.getMass() != null)
                 ? queryBuilder.withMass(params.getMassTolerance(), params.getMassTolerancePPM(), querySpectrum.getMass())
-                : queryBuilder.withMass(params.getMassTolerance(), params.getMassTolerancePPM(), params.getMasses());
+                : queryBuilder.withMass(params.getMassTolerance(), params.getMassTolerancePPM(), calculateMasses(params.getAdducts(), querySpectrum.getPrecursor()));
 
         if (!greedy)
             queryBuilder = queryBuilder.withQuerySpectrum(params.getMzTolerance(), params.getMzTolerancePPM(), querySpectrum);
@@ -271,6 +272,15 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                 .getResultList();
 
         return resultList;
+    }
+
+    private double[] calculateMasses(List<Adduct> adducts, Double precursor) {
+        if (adducts == null || precursor == null)
+            return null;
+
+        return adducts.stream()
+                .mapToDouble(a -> a.calculateNeutralMass(precursor))
+                .toArray();
     }
 
     @Override

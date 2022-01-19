@@ -63,7 +63,7 @@ public class IndividualSearchService {
         return searchResults;
     }
 
-//    @Transactional
+    //    @Transactional
     public List<SearchResultDTO> searchWithOntologyLevels(UserPrincipal user, Spectrum spectrum,
                                                           SearchParameters parameters) {
 
@@ -89,9 +89,11 @@ public class IndividualSearchService {
 
         List<Adduct> adducts = adductService.findAdductsByChromatography(spectrum.getChromatographyType());
         if (spectrum.getMass() == null && adducts != null && spectrum.getPrecursor() != null)
-            modifiedParameters.setMasses(adducts.stream()
-                    .mapToDouble(adduct -> adduct.calculateNeutralMass(spectrum.getPrecursor()))
-                    .toArray());
+            modifiedParameters.setAdducts(adducts);
+//                    adducts.stream()
+//                    .collect(Collectors.toMap(a -> a.calculateNeutralMass(spectrum.getPrecursor()), Adduct::getName));
+//                    .mapToDouble(adduct -> adduct.calculateNeutralMass(spectrum.getPrecursor()))
+//                    .toArray());
 
 //        Map<Long, String> privateSubmissionIdMap =
 //                submissionService.findUserPrivateSubmissions(user, spectrum.getChromatographyType());
@@ -112,18 +114,19 @@ public class IndividualSearchService {
 
             OntologyLevel ontologyLevel = OntologySupplier.select(spectrum.getChromatographyType(),
                     result.getInHouse(), result.getScore(), result.getPrecursorErrorPPM(), result.getMassErrorPPM(),
-                    result.getRetTimeError());
-            if (ontologyLevel == null)
-                continue;
+                    result.getRetTimeError(), result.getIsotopicSimilarity());
 
-            if (ontologyLevel.getScoreThreshold() == null)
-                result.setScore(null);
-            if (ontologyLevel.getRetTimeTolerance() == null)
-                result.setRetTimeError(null);
-            if (ontologyLevel.getMassTolerancePPM() == null)
-                result.setMassErrorPPM(null);
+            if (ontologyLevel != null) {
+                if (ontologyLevel.getScoreThreshold() == null)
+                    result.setScore(null);
+                if (ontologyLevel.getRetTimeTolerance() == null)
+                    result.setRetTimeError(null);
+                if (ontologyLevel.getMassTolerancePPM() == null)
+                    result.setMassErrorPPM(null);
 
-            result.setOntologyLevel(ontologyLevel);
+                result.setOntologyLevel(ontologyLevel);
+            }
+
             resultsWithOntology.add(result);
         }
 

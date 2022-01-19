@@ -172,6 +172,9 @@ public class GroupSearchRestController {
                 case "retIndexError":
                     comparator = getComparator(SearchResultDTO::getRetIndexError, sortDirection);
                     break;
+                case "isotopicSimilarity":
+                    comparator = getComparator(SearchResultDTO::getIsotopicSimilarity, sortDirection);
+                    break;
                 case "averageSignificance":
                     comparator = getComparator(SearchResultDTO::getAveSignificance, sortDirection);
                     break;
@@ -228,11 +231,12 @@ public class GroupSearchRestController {
         MASS_ERROR_PPM(7, "massErrorPPM"),
         RET_TIME_ERROR(8, "retTimeError"),
         RET_INDEX_ERROR(9, "retIndexError"),
-        AVERAGE_SIGNIFICANCE(10, "averageSignificance"),
-        MINIMUM_SIGNIFICANCE(11, "minimumSignificance"),
-        MAXIMUM_SIGNIFICANCE(12, "maximumSignificance"),
-        ONTOLOGY_LEVEL(13, "ontologyLevel"),
-        CHROMATOGRAPHY_TYPE(14, "chromatographyType");
+        ISOTOPIC_SIMILARITY(10, "isotopicSimilarity"),
+        AVERAGE_SIGNIFICANCE(11, "averageSignificance"),
+        MINIMUM_SIGNIFICANCE(12, "minimumSignificance"),
+        MAXIMUM_SIGNIFICANCE(13, "maximumSignificance"),
+        ONTOLOGY_LEVEL(14, "ontologyLevel"),
+        CHROMATOGRAPHY_TYPE(15, "chromatographyType");
 
         private int position;
         private String sortColumnName;

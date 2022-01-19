@@ -2,10 +2,7 @@ package org.dulab.adapcompounddb.site.services.search;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dulab.adapcompounddb.models.entities.Peak;
-import org.dulab.adapcompounddb.models.entities.Spectrum;
-import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
-import org.dulab.adapcompounddb.models.entities.UserPrincipal;
+import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters.RetIndexMatchType;
@@ -14,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.util.*;
+import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -119,23 +117,44 @@ public class JavaSpectrumSimilarityService {
                 similarityScore = calculateCosineSimilarity(
                         querySpectrum.getPeaks(), librarySpectrum.getPeaks(), mzTolerance, ppm);
 
+            double isotopicSimilarity = calculateCosineSimilarity(
+                    querySpectrum.getIsotopesAsArray(), librarySpectrum.getIsotopesAsArray());
+
             double massError = Double.MAX_VALUE;
             double massErrorPPM = Double.MAX_VALUE;
-            if ((params.getMasses() != null || querySpectrum.getMass() != null)
+            String precursorType = null;
+            if ((params.getAdducts() != null || querySpectrum.getMass() != null)
                     && librarySpectrum.getMass() != null) {
 
                 if (querySpectrum.getMass() != null) {
                     massError = Math.abs(querySpectrum.getMass() - librarySpectrum.getMass());
                     massErrorPPM = 1E6 * massError / librarySpectrum.getMass();
+                    precursorType = querySpectrum.getPrecursorType();
                 } else {
-                    massError = Arrays.stream(params.getMasses())
-                            .map(mass -> Math.abs(mass - librarySpectrum.getMass()))
-                            .min()
-                            .orElse(Double.MAX_VALUE);
-                    massErrorPPM = Arrays.stream(params.getMasses())
-                            .map(mass -> 1E6 * Math.abs(mass - librarySpectrum.getMass()) / librarySpectrum.getMass())
-                            .min()
-                            .orElse(Double.MAX_VALUE);
+                    for (Adduct adduct : params.getAdducts()) {
+                        double massDifference = Math.abs(
+                                adduct.calculateNeutralMass(querySpectrum.getPrecursor()) - librarySpectrum.getMass());
+                        if (massDifference < massError) {
+                            massError = massDifference;
+                            precursorType = adduct.getName();
+                        }
+
+                        double ppmDifference = 1E6 * massDifference / librarySpectrum.getMass();
+                        if (ppmDifference < massErrorPPM) {
+                            massErrorPPM = ppmDifference;
+                            precursorType = adduct.getName();
+                        }
+                    }
+//                    params.getAdducts().stream()
+//                            .collect(Collectors.)
+//                    massError = Arrays.stream(params.getMasses())
+//                            .map(mass -> Math.abs(mass - librarySpectrum.getMass()))
+//                            .min()
+//                            .orElse(Double.MAX_VALUE);
+//                    massErrorPPM = Arrays.stream(params.getMasses())
+//                            .map(mass -> 1E6 * Math.abs(mass - librarySpectrum.getMass()) / librarySpectrum.getMass())
+//                            .min()
+//                            .orElse(Double.MAX_VALUE);
                 }
             }
 
@@ -153,14 +172,17 @@ public class JavaSpectrumSimilarityService {
                     && (params.getScoreThreshold() == null || similarityScore > params.getScoreThreshold())
                     && (params.getMassTolerance() == null || massError < params.getMassTolerance())
                     && (params.getMassTolerancePPM() == null || massErrorPPM < params.getMassTolerancePPM())
-                    && (params.getRetTimeTolerance() == null || retTimeError < params.getRetTimeTolerance())) {
+                    && (params.getRetTimeTolerance() == null || retTimeError < params.getRetTimeTolerance())
+                    && (params.getIsotopicSimilarityThreshold() == null || isotopicSimilarity > params.getIsotopicSimilarityThreshold())) {
 
                 SpectrumMatch match = new SpectrumMatch();
                 match.setQuerySpectrum(querySpectrum);
                 match.setMatchSpectrum(librarySpectrum);
                 match.setScore(similarityScore > 0 ? similarityScore : null);
+                match.setIsotopicSimilarity(isotopicSimilarity > 0 ? isotopicSimilarity : null);
                 match.setPrecursorError(precursorError < Double.MAX_VALUE ? precursorError : null);
                 match.setPrecursorErrorPPM(precursorErrorPPM < Double.MAX_VALUE ? precursorErrorPPM : null);
+                match.setPrecursorType(precursorType);
                 match.setMassError(massError < Double.MAX_VALUE ? massError : null);
                 match.setMassErrorPPM(massErrorPPM < Double.MAX_VALUE ? massErrorPPM : null);
                 match.setRetTimeError(retTimeError < Double.MAX_VALUE ? retTimeError : null);
@@ -192,7 +214,8 @@ public class JavaSpectrumSimilarityService {
         matches.sort(Comparator.comparing(SpectrumMatch::getScore, Comparator.nullsLast(Comparator.reverseOrder()))
                 .thenComparing(SpectrumMatch::getMassError, Comparator.nullsLast(Comparator.naturalOrder()))
                 .thenComparing(SpectrumMatch::getRetTimeError, Comparator.nullsLast(Comparator.naturalOrder()))
-                .thenComparing(SpectrumMatch::getRetIndexError, Comparator.nullsLast(Comparator.naturalOrder())));
+                .thenComparing(SpectrumMatch::getRetIndexError, Comparator.nullsLast(Comparator.naturalOrder()))
+                .thenComparing(SpectrumMatch::getIsotopicSimilarity, Comparator.nullsLast(Comparator.reverseOrder())));
 
         return matches;
     }
@@ -274,6 +297,31 @@ public class JavaSpectrumSimilarityService {
         }
 
         return dotProduct * dotProduct / (queryNorm2 * libraryNorm2);
+    }
+
+    private double calculateCosineSimilarity(double[] values1, double[] values2) {
+        if (values1 == null || values2 == null) return 0.0;
+
+        int length = Math.max(values1.length, values2.length);
+        if (length == 0) return 0.0;
+
+        double dotProduct = 0.0;
+        double normSquare1 = 0.0;
+        double normSquare2 = 0.0;
+
+        for (int i = 0; i < length; ++i) {
+            if (i < values1.length && i < values2.length) {
+                dotProduct += values1[i] * values2[i];
+                normSquare1 += values1[i] * values1[i];
+                normSquare2 += values2[i] * values2[i];
+            } else if (i < values1.length) {
+                normSquare1 += values1[i] * values1[i];
+            } else if (i < values2.length) {
+                normSquare2 += values2[i] * values2[i];
+            }
+        }
+
+        return dotProduct / Math.sqrt(normSquare1 * normSquare2);
     }
 
     private double scale(Peak peak) {

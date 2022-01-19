@@ -30,6 +30,9 @@
                             <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#parameters">
                                 Parameters
                             </a></li>
+                            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#email">
+                                Email
+                            </a></li>
                         </ul>
                     </div>
 
@@ -150,6 +153,18 @@
                                             cssClass="col-md-4 col-form-label">Matches per Spectrum</form:label>
                                 <div class="col-md-8">
                                     <form:input path="limit" type="number" cssClass="form-control"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="email" class="tab-pane fade" role="tabpanel">
+                            <div class="form-group row">
+                                <div class="col">
+                                    <div class="form-check">
+                                        <form:checkbox path="sendResultsToEmail"
+                                                       label="Send matching results to Email (in development)"
+                                                       cssClass="form-check-input"/>
+                                    </div>
                                 </div>
                             </div>
                         </div>

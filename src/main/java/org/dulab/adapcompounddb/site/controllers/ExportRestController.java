@@ -82,17 +82,17 @@ public class ExportRestController {
             return;
         }
 
-        List<SearchResultDTO> searchResults = ((List<?>) attribute).stream()
-                .filter(object -> object instanceof SearchResultDTO)
-                .map(object -> (SearchResultDTO) object)
-                .collect(Collectors.toList());
-
         try {
+            List<SearchResultDTO> searchResults = ((List<?>) attribute).stream()
+                    .filter(object -> object instanceof SearchResultDTO)
+                    .map(object -> (SearchResultDTO) object)
+                    .collect(Collectors.toList());
+
             if (advanced)
                 exportSearchResultsService.exportAll(response.getOutputStream(), searchResults);
             else
                 exportSearchResultsService.export(response.getOutputStream(), searchResults);
-        } catch (IOException e) {
+        } catch (IOException | ConcurrentModificationException e) {
             LOGGER.warn("Error when writing to a file: " + e.getMessage(), e);
         }
     }

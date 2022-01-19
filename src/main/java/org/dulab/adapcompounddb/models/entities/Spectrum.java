@@ -1,10 +1,7 @@
 package org.dulab.adapcompounddb.models.entities;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.regex.Pattern;
 
@@ -15,6 +12,7 @@ import javax.validation.constraints.NotNull;
 import org.dulab.adapcompounddb.models.MetaDataMapping;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.enums.IdentifierType;
+import org.dulab.adapcompounddb.site.services.utils.IsotopicDistributionUtils;
 
 @Entity
 @SqlResultSetMapping(name = "SpectrumScoreMapping", columns = {@ColumnResult(name = "SpectrumId", type = Long.class),
@@ -56,6 +54,9 @@ public class Spectrum implements Serializable {
     @Valid
     @OneToMany(targetEntity = Peak.class, mappedBy = "spectrum", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
     private List<Peak> peaks;
+
+    @OneToMany(targetEntity = Isotope.class, mappedBy = "spectrum", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
+    private List<Isotope> isotopes;
 
     @OneToMany(targetEntity = SpectrumProperty.class, mappedBy = "spectrum", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
     private List<SpectrumProperty> properties;
@@ -141,6 +142,13 @@ public class Spectrum implements Serializable {
                 .collect(Collectors.joining(", "));
     }
 
+    public void addIdentifier(IdentifierType identifierType, String value) {
+        if (value == null || value.trim().isEmpty()) return;
+        if (identifiers == null)
+            identifiers = new HashMap<>();
+        identifiers.put(identifierType, value);
+    }
+
     public String getExternalId() {
         return externalId;
     }
@@ -164,6 +172,8 @@ public class Spectrum implements Serializable {
     }
 
     public String getShortName() {
+        if (name != null && name.startsWith("[Ref Spec] "))
+            return name.substring(11);
         return name;
     }
 
@@ -314,6 +324,47 @@ public class Spectrum implements Serializable {
         }
     }
 
+    public List<Isotope> getIsotopes() {
+        return isotopes;
+    }
+
+    public void setIsotopes(List<Isotope> isotopes) {
+        this.isotopes = isotopes;
+    }
+
+    public void setIsotopes(double[] intensities) {
+        if (intensities == null) return;
+
+        List<Isotope> isotopes = new ArrayList<>(intensities.length);
+        for (int i = 0; i < intensities.length; ++i) {
+            Isotope isotope = new Isotope();
+            isotope.setIndex(i);
+            isotope.setIntensity(intensities[i]);
+            isotope.setSpectrum(this);
+            isotopes.add(isotope);
+        }
+        setIsotopes(isotopes);
+    }
+
+    public double[] getIsotopesAsArray() {
+        if (isotopes != null && !isotopes.isEmpty()) {
+            return isotopes.stream()
+                    .sorted(Comparator.comparingInt(Isotope::getIndex))
+                    .mapToDouble(Isotope::getIntensity)
+                    .toArray();
+        }
+        if (formula != null && !formula.isEmpty()) {
+            return IsotopicDistributionUtils.calculateDistributionAsArray(formula);
+        }
+        return null;
+    }
+
+    public String getIsotopesAsString() {
+        double[] isotopes = getIsotopesAsArray();
+        return isotopes != null ? Arrays.stream(isotopes)
+                .mapToObj(x -> String.format("%.2f", x))
+                .collect(Collectors.joining(" - ")) : null;
+    }
 
     public List<SpectrumProperty> getProperties() {
         return properties;
@@ -701,9 +752,11 @@ public class Spectrum implements Serializable {
         mergedSpectrum.setPrecursor(mergeDoublesAsAverage(s1.precursor, s2.precursor, 0.01));
         mergedSpectrum.setPrecursorType(s1.precursorType != null ? s1.precursorType : s2.precursorType);
         mergedSpectrum.setRetentionTime(mergeDoublesAsAverage(s1.retentionTime, s2.retentionTime, 0.1));
+        mergedSpectrum.setRetentionIndex(mergeDoublesAsAverage(s1.retentionIndex, s2.retentionIndex, 20.0));
         mergedSpectrum.setSignificance(mergeDoublesAsMaximum(s1.significance, s2.significance, 0.1));
         mergedSpectrum.setMass(mergeDoublesAsAverage(s1.mass, s2.mass, 0.01));
         mergedSpectrum.setPeaks(mergeLists(s1.peaks, s2.peaks), true);
+        mergedSpectrum.setIsotopes(mergeLists(s1.isotopes, s2.isotopes));
         mergedSpectrum.setProperties(mergeLists(s1.properties, s2.properties));
 
         return mergedSpectrum;
