@@ -28,8 +28,11 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
         COLUMN_TO_FIELD_MAP.put(4, SearchResultDTO::getScore);
         COLUMN_TO_FIELD_MAP.put(5, SearchResultDTO::getAveSignificance);
         COLUMN_TO_FIELD_MAP.put(6, SearchResultDTO::getMinSignificance);
-        COLUMN_TO_FIELD_MAP.put(7, SearchResultDTO::getMaxSignificance);
-        COLUMN_TO_FIELD_MAP.put(8, SearchResultDTO::getChromatographyTypeLabel);
+        COLUMN_TO_FIELD_MAP.put(7, SearchResultDTO::getSpeciesPValue);
+        COLUMN_TO_FIELD_MAP.put(8, SearchResultDTO::getSampleSourcePValue);
+        COLUMN_TO_FIELD_MAP.put(9, SearchResultDTO::getDiseasePValue);
+        COLUMN_TO_FIELD_MAP.put(10, SearchResultDTO::getMinPValue);
+        COLUMN_TO_FIELD_MAP.put(11, SearchResultDTO::getChromatographyTypeLabel);
     }
 
     // *************************
@@ -61,6 +64,10 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
     private Double aveSignificance;
     private Double minSignificance;
     private Double maxSignificance;
+    private Double minPValue;
+    private Double diseasePValue;
+    private Double speciesPValue;
+    private Double sampleSourcePValue;
     private String ontologyLevel;
     private Integer ontologyPriority;
     private String chromatographyTypeLabel;
@@ -109,6 +116,10 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
             this.aveSignificance = view.getAverageSignificance();
             this.minSignificance = view.getMinimumSignificance();
             this.maxSignificance = view.getMaximumSignificance();
+            this.diseasePValue = view.getDiseasePValue();
+            this.speciesPValue = view.getSpeciesPValue();
+            this.sampleSourcePValue = view.getSampleSourcePValue();
+            this.minPValue = view.getMinPValue();
             this.chromatographyTypeLabel = view.getChromatographyType().getLabel();
             this.chromatographyTypePath = view.getChromatographyType().getIconPath();
         }
@@ -176,6 +187,10 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
                 this.aveSignificance = cluster.getAveSignificance();
                 this.minSignificance = cluster.getMinSignificance();
                 this.maxSignificance = cluster.getMaxSignificance();
+                this.speciesPValue = cluster.getSpeciesPValue();
+                this.sampleSourcePValue = cluster.getSampleSourcePValue();
+                this.diseasePValue = cluster.getDiseasePValue();
+                this.minPValue = cluster.getMinPValue();
             }
 
             File file = matchSpectrum.getFile();
@@ -298,6 +313,46 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
 
     public void setMaxSignificance(final Double maxSignificance) {
         this.maxSignificance = maxSignificance;
+    }
+
+    public Double getMinPValue()
+    {
+        return minPValue;
+    }
+
+    public void setMinPValue(Double minPValue)
+    {
+        this.minPValue = minPValue;
+    }
+
+    public Double getDiseasePValue()
+    {
+        return diseasePValue;
+    }
+
+    public void setDiseasePValue(Double diseasePValue)
+    {
+        this.diseasePValue = diseasePValue;
+    }
+
+    public Double getSpeciesPValue()
+    {
+        return speciesPValue;
+    }
+
+    public void setSpeciesPValue(Double speciesPValue)
+    {
+        this.speciesPValue = speciesPValue;
+    }
+
+    public Double getSampleSourcePValue()
+    {
+        return sampleSourcePValue;
+    }
+
+    public void setSampleSourcePValue(Double sampleSourcePValue)
+    {
+        this.sampleSourcePValue = sampleSourcePValue;
     }
 
     public String getOntologyLevel() {

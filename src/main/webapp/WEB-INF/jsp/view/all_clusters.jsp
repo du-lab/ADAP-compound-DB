@@ -96,9 +96,12 @@
                             <th title="Consensus spectrum">Spectrum</th>
                             <th title="Number of studies">Studies</th>
                             <th title="Minimum matching score between all spectra in a cluster">Score</th>
-                            <th title="P-value of the In-study ANOVA test">Average P-value</th>
-                            <th title="Gini-Simpson Index">Minimum P-value</th>
-                            <th title="P-value of the Cross-study Goodness-of-fit test">Maximum P-value</th>
+                            <th title="P-value of the In-study ANOVA test">ANOVA P-value (average)</th>
+                            <th title="Gini-Simpson Index">ANOVA P-value (minimum)</th>
+                            <th title="P-value of the Goodness-of-Fit test for the distribution of disease">GOF P-value (disease)</th>
+                            <th title="P-value of the Goodness-of-Fit test for the distribution of species">GOF P-value (species)</th>
+                            <th title="P-value of the Goodness-of-Fit test for the distribution of sample source">GOF P-value (sample source)</th>
+                            <th title="The Minimum P-value of the Goodness-of-Fit test">GOF P-value (minimum)</th>
                             <th title="Chromatography type">Type</th>
                             <th></th>
                         </tr>
@@ -229,11 +232,29 @@
                 {
                     "targets": 7,
                     "render": function (data, type, row, meta) {
-                        return (row.maxSignificance != null) ? row.maxSignificance.toFixed(3) : '';
+                        return (row.diseasePValue != null) ? row.diseasePValue.toFixed(3) : '';
                     }
                 },
                 {
                     "targets": 8,
+                    "render": function (data, type, row, meta) {
+                        return (row.speciesPValue != null) ? row.speciesPValue.toFixed(3) : '';
+                    }
+                },
+                {
+                    "targets": 9,
+                    "render": function (data, type, row, meta) {
+                        return (row.sampleSourcePValue != null) ? row.sampleSourcePValue.toFixed(3) : '';
+                    }
+                },
+                {
+                    "targets": 10,
+                    "render": function (data, type, row, meta) {
+                        return (row.minPValue != null) ? row.minPValue.toFixed(3) : '';
+                    }
+                },
+                {
+                    "targets": 11,
                     "render": function (data, type, row, meta) {
                         var content = '<img' +
                             ' src="${pageContext.request.contextPath}/' + row.chromatographyTypePath + '"'
@@ -245,7 +266,7 @@
                     }
                 },
                 {
-                    "targets": 9,
+                    "targets": 12,
                     "bSortable": false,
                     "render": function (data, type, row, meta) {
                         if (row.matchType === 'CLUSTER')
@@ -262,7 +283,7 @@
         });
 
         // let filterForm = $('#filterForm');
-        // filterForm.appendTo('#filter');
+        // filterForm.appendTo('#filter');m
 
         // $('#species, #source, #disease').change(function () {
         //     dataTable.ajax.reload(null, false);
