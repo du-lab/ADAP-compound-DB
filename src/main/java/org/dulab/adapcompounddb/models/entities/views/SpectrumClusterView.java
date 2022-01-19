@@ -21,6 +21,10 @@ public class SpectrumClusterView {
     private Double averageSignificance;
     private Double minimumSignificance;
     private Double maximumSignificance;
+    private Double minPValue;
+    private Double diseasePValue;
+    private Double SpeciesPValue;
+    private Double SampleSourcePValue;
     private ChromatographyType chromatographyType;
 
 
@@ -119,6 +123,46 @@ public class SpectrumClusterView {
 
     public void setMaximumSignificance(Double maximumSignificance) {
         this.maximumSignificance = maximumSignificance;
+    }
+
+    public Double getMinPValue()
+    {
+        return minPValue;
+    }
+
+    public void setMinPValue(Double minPValue)
+    {
+        this.minPValue = minPValue;
+    }
+
+    public Double getDiseasePValue()
+    {
+        return diseasePValue;
+    }
+
+    public void setDiseasePValue(Double diseasePValue)
+    {
+        this.diseasePValue = diseasePValue;
+    }
+
+    public Double getSpeciesPValue()
+    {
+        return SpeciesPValue;
+    }
+
+    public void setSpeciesPValue(Double speciesPValue)
+    {
+        SpeciesPValue = speciesPValue;
+    }
+
+    public Double getSampleSourcePValue()
+    {
+        return SampleSourcePValue;
+    }
+
+    public void setSampleSourcePValue(Double sampleSourcePValue)
+    {
+        SampleSourcePValue = sampleSourcePValue;
     }
 
     @Enumerated(EnumType.STRING)
