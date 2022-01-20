@@ -74,7 +74,8 @@ public class SpectrumService {
 
     @Transactional
     public Spectrum find(final long id) throws EmptySearchResultException {
-        return spectrumRepository.findById(id).orElseThrow(EmptySearchResultException::new);
+        return spectrumRepository.findById(id)
+                .orElseThrow(() -> new EmptySearchResultException((id)));
     }
 
     @Transactional

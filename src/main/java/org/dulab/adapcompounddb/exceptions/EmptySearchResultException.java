@@ -9,7 +9,7 @@ public class EmptySearchResultException extends RuntimeException {
     }
 
     public EmptySearchResultException(long id) {
-        super("Could not find entry wirth ID = " + id);
+        super("Could not find entry with ID = " + id);
     }
 
     public EmptySearchResultException(String message) {
