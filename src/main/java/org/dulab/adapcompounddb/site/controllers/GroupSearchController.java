@@ -43,7 +43,7 @@ public class GroupSearchController extends BaseController {
     private final SubmissionService submissionService;
     private final SubmissionTagService submissionTagService;
     private FilterOptions filterOptions;
-    private Future<Void> asyncResult;
+//    private Future<Void> asyncResult;
 
     @Autowired
     public GroupSearchController(GroupSearchService groupSearchService,
@@ -98,9 +98,9 @@ public class GroupSearchController extends BaseController {
             return "submission/group_search_parameters";
         }
 
-        if (asyncResult != null && !asyncResult.isDone()) {
-            asyncResult.cancel(true);
-        }
+//        if (asyncResult != null && !asyncResult.isDone()) {
+//            asyncResult.cancel(true);
+//        }
 
         String species = ALL.equalsIgnoreCase(form.getSpecies()) ? null : form.getSpecies();
         String source = ALL.equalsIgnoreCase(form.getSource()) ? null : form.getSource();
@@ -118,7 +118,8 @@ public class GroupSearchController extends BaseController {
         parameters.setDisease(disease);
         parameters.setSubmissionIds(form.getSubmissionIds());
 
-        asyncResult = groupSearchService.groupSearch(this.getCurrentUserPrincipal(), submission.getFiles(), session,
+//        asyncResult =
+        groupSearchService.groupSearch(this.getCurrentUserPrincipal(), submission.getFiles(), session,
                 parameters, form.isWithOntologyLevels(), form.isSendResultsToEmail());
 
         String byteString = ConversionsUtils.formToByteString(form);

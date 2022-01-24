@@ -130,7 +130,7 @@ public class ApplicationContextConfiguration {
     @Bean
     public Executor threadPoolTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(1);  // Set the number of threads to 1 because EntityManager throws errors when run in parallel threads
+        executor.setCorePoolSize(4);  // Set the number of threads to 1 because EntityManager throws errors when run in parallel threads
         return executor;
     }
 }
