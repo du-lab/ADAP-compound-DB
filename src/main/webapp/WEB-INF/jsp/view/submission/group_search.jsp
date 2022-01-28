@@ -122,6 +122,7 @@
 <script src="<c:url value="/resources/DataTables/Select-1.3.1/js/dataTables.select.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/d3/d3.min.js"/>"></script>
 <script src="<c:url value="/resources/SpeckTackle/st.js"/>"></script>
+<script src="<c:url value="/resources/AdapCompoundDb/js/jdev.js"/>"></script>
 <%--<script src="<c:url value="/resources/AdapCompoundDb/js/spectrumInfo.js"/>"></script>--%>
 <script src="<c:url value="/resources/AdapCompoundDb/js/spectrumPlot.js"/>"></script>
 <script src="<c:url value="/resources/AdapCompoundDb/js/spectrumStructure.js"/>"></script>
@@ -161,6 +162,9 @@
                     table.column(12).visible(d.data.map(row => row['minSignificance']).join(''));
                     table.column(13).visible(d.data.map(row => row['maxSignificance']).join(''));
                     return d.data;
+                },
+                error: function (xhr, error, code) {
+                    logging.logToServer('<c:url value="/js-log"/>', `\${xhr.status} - \${error} - \${code}`);
                 }
             },
             fnCreatedRow: function (row, data, dataIndex) {
