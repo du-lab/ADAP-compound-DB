@@ -33,13 +33,20 @@ public class IndexController extends BaseController {
         return "index";
     }
 
+    @RequestMapping(value = "/about/", method = RequestMethod.GET)
+    public String about() {
+        return "about";
+    }
+
     @RequestMapping(value = "/feedback", method = RequestMethod.GET)
+    @Deprecated
     public String feedback(final Model model) {
         model.addAttribute("feedbackForm", new FeedbackDTO());
         return "feedback";
     }
 
     @RequestMapping(value = "/feedback", method = RequestMethod.POST)
+    @Deprecated
     public ModelAndView feedback(final Model model, @Valid final FeedbackDTO form, final Errors errors) {
         if(errors.hasErrors()) {
             model.addAttribute("feedbackForm", form);

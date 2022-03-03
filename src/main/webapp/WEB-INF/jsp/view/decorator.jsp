@@ -143,8 +143,14 @@
                                 <i class="material-icons align-middle">download</i>
                                 <span class="align-middle">Downloads</span>
                             </a>
-
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<c:url value="/about/"/>">
+                                <i class="material-icons align-middle">help</i>
+                                <span class="align-middle">Documentation</span>
+                            </a>
+                        </li>
+
                         <c:if test="${currentUser == null}">
                             <li class="nav-item">
                                 <a id="loginPage" class="nav-link" href="<c:url value="/login/"/>">
