@@ -22,7 +22,7 @@ def cluster_page_test(homepage_url):
 
         consensus_page_button = driver.find_element_by_id('consensusPage')
         consensus_page_button.click()
-        time.sleep(5)
+        time.sleep(10)
 
         # choose the first spectrum and go to the spectrum page
         cluster_table = driver.find_element_by_id("cluster_table")
