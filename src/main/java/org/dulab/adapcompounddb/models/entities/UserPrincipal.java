@@ -152,7 +152,7 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
 //        return session == null ? null : (UserPrincipal) session.getAttribute(SESSION_ATTRIBUTE_KEY);
 //    }
 //
-//    public static void assign(HttpSession session, UserPrincipal principal) {
-//        session.setAttribute(SESSION_ATTRIBUTE_KEY, principal);
-//    }
+    public static void assign(HttpSession session, UserPrincipal principal) {
+        session.setAttribute(SESSION_ATTRIBUTE_KEY, principal);
+    }
 }

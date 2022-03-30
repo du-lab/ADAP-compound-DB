@@ -10,6 +10,8 @@ import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,6 +33,7 @@ public class StudySearchServiceImpl implements StudySearchService {
         List<SpectrumMatch> spectrumMatches = new ArrayList<>();
 
         int querySubmissionSpectraCount = 0;
+        Map<String, Integer> countMatch = new HashMap<>();
         for (File file : submission.getFiles()) {
             List<Spectrum> spectra = file.getSpectra();
             if (spectra == null) continue;
@@ -43,8 +46,31 @@ public class StudySearchServiceImpl implements StudySearchService {
                 List<SpectrumMatch> matches =
                         javaSpectrumSimilarityService.searchClusterable(spectrum, searchParameters, user);
 
+                countMatch.put(spectrum.getName().replace(',',' '), matches.size());
+
                 spectrumMatches.addAll(matches);
                 querySubmissionSpectraCount++;
+            }
+            try{
+                FileWriter writer = new FileWriter("/Users/ericliao/Desktop/manuscript_revise/matchCount.csv");
+                writer.append("Query Spectrum ID");
+                writer.append(",");
+                writer.append("Counts");
+                writer.append("\n");
+
+                for (Map.Entry<String, Integer> set :
+                        countMatch.entrySet()) {
+                    writer.append(String.valueOf(set.getKey()));
+                    writer.append(",");
+                    writer.append(String.valueOf(set.getValue()));
+                    writer.append("\n");
+                }
+
+
+                writer.flush();
+                writer.close();
+            } catch(IOException e){
+                e.printStackTrace();
             }
         }
 
