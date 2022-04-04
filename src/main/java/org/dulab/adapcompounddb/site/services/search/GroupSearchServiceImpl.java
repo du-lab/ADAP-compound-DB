@@ -121,7 +121,7 @@ public class GroupSearchServiceImpl implements GroupSearchService {
             }
             try {
                 FileWriter writer =
-                        new FileWriter("/Users/ericliao/Desktop/compare_similarity_score_between_original_and_new/new study/prescreen_threshold_50_query_8_to_library_15_matches.csv");
+                        new FileWriter("/Users/ericliao/Desktop/manuscript_revise/Low_Intensity/prescreen_threshold_50_query_8_to_library_15_matches_low.csv");
                 writer.append("Query Spectrum ID");
                 writer.append(",");
                 writer.append("Match Spectrum ID");

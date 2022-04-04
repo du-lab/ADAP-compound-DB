@@ -51,27 +51,27 @@ public class StudySearchServiceImpl implements StudySearchService {
                 spectrumMatches.addAll(matches);
                 querySubmissionSpectraCount++;
             }
-            try{
-                FileWriter writer = new FileWriter("/Users/ericliao/Desktop/manuscript_revise/matchCount.csv");
-                writer.append("Query Spectrum ID");
-                writer.append(",");
-                writer.append("Counts");
-                writer.append("\n");
-
-                for (Map.Entry<String, Integer> set :
-                        countMatch.entrySet()) {
-                    writer.append(String.valueOf(set.getKey()));
-                    writer.append(",");
-                    writer.append(String.valueOf(set.getValue()));
-                    writer.append("\n");
-                }
-
-
-                writer.flush();
-                writer.close();
-            } catch(IOException e){
-                e.printStackTrace();
-            }
+//            try{
+//                FileWriter writer = new FileWriter("/Users/ericliao/Desktop/manuscript_revise/matchCount.csv");
+//                writer.append("Query Spectrum ID");
+//                writer.append(",");
+//                writer.append("Counts");
+//                writer.append("\n");
+//
+//                for (Map.Entry<String, Integer> set :
+//                        countMatch.entrySet()) {
+//                    writer.append(String.valueOf(set.getKey()));
+//                    writer.append(",");
+//                    writer.append(String.valueOf(set.getValue()));
+//                    writer.append("\n");
+//                }
+//
+//
+//                writer.flush();
+//                writer.close();
+//            } catch(IOException e){
+//                e.printStackTrace();
+//            }
         }
 
         Set<Submission> matchSubmissions = new HashSet<>();
