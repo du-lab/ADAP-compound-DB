@@ -57,7 +57,7 @@ public class JavaSpectrumSimilarityService {
                     spectrumRepository.filterSpectra(commonToSpectrumIdsMap, parameters));
 
         List<BigInteger> preScreenedSpectrumIds =
-                getSpectrumIdsWithCommonPeaksAboveThreshold(commonToSpectrumIdsMap, greedy ? Integer.MAX_VALUE : 500);
+                getSpectrumIdsWithCommonPeaksAboveThreshold(commonToSpectrumIdsMap, greedy ? Integer.MAX_VALUE : 50);
         Set<Long> preScreenedSpectrumIdsSet = preScreenedSpectrumIds.stream()
                 .mapToLong(BigInteger::longValue)
                 .boxed()
@@ -69,15 +69,15 @@ public class JavaSpectrumSimilarityService {
         long timeCost = time2 - time1;
         try {
 
-            File myFile = new File("/Users/ericliao/Desktop/compare_similarity_score_between_original_and_new/new study/new_modified/threshold_500_8_15_time_cost.csv");
+            File myFile = new File("/Users/ericliao/Desktop/compare_similarity_score_between_original_and_new/new study/threshold_50_8_15_time_cost.csv");
             if (myFile.createNewFile()){
                 System.out.println("create time cost file");
-                FileWriter writer = new FileWriter("/Users/ericliao/Desktop/compare_similarity_score_between_original_and_new/new study/new_modified/threshold_500_8_15_time_cost.csv");
+                FileWriter writer = new FileWriter("/Users/ericliao/Desktop/compare_similarity_score_between_original_and_new/new study/threshold_50_8_15_time_cost.csv");
                 writer.append("time");
                 writer.append("\n");
                 writer.close();
             } else {
-                FileWriter writer = new FileWriter("/Users/ericliao/Desktop/compare_similarity_score_between_original_and_new/new study/new_modified/threshold_500_8_15_time_cost.csv",true);
+                FileWriter writer = new FileWriter("/Users/ericliao/Desktop/compare_similarity_score_between_original_and_new/new study/threshold_50_8_15_time_cost.csv",true);
                 writer.append(",");
                 writer.append(Long.toString(timeCost));
                 writer.append("\n");
@@ -189,6 +189,10 @@ public class JavaSpectrumSimilarityService {
 
     private double calculateCosineSimilarity(List<Peak> queryPeaks, List<Peak> libraryPeaks,
                                              double tolerance, boolean ppm) {
+
+        queryPeaks.sort(Comparator.comparingDouble(Peak::getMz));
+        libraryPeaks.sort(Comparator.comparingDouble(Peak::getMz));
+
         double lowerFactor = 1.0 - 1E-6 * tolerance;
         double upperFactor = 1.0 + 1E-6 * tolerance;
         double dotProduct = 0.0;
