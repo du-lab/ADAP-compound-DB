@@ -109,6 +109,10 @@ public class Spectrum implements Serializable {
 
     private Double topMz16;
 
+    private Double OmegaFactor;
+
+    private Double TotalIntensity;
+
     @NotNull(message = "Spectrum: the field Chromatography Type is required.")
     @Enumerated(EnumType.STRING)
     private ChromatographyType chromatographyType;
@@ -245,13 +249,14 @@ public class Spectrum implements Serializable {
                 this.setTopMz16(peakList.get(15).getMz());
             }
 
-            final double totalIntensity = peaks.stream()
+            final double maxIntensity = peaks.stream()
                     .mapToDouble(Peak::getIntensity)
-                    .sum();
+                    .max()
+                    .orElse(0.0);
 
             integerMz = true;
             for (final Peak peak : peaks) {
-                peak.setIntensity(peak.getIntensity() / totalIntensity);
+                peak.setIntensity(peak.getIntensity() / maxIntensity);
                 if (peak.getMz() % 1 != 0)
                     integerMz = false;
             }
@@ -554,6 +559,22 @@ public class Spectrum implements Serializable {
 
     public void setTopMz16(Double topMz16) {
         this.topMz16 = topMz16;
+    }
+
+    public Double getOmegaFactor() {
+        return OmegaFactor;
+    }
+
+    public void setOmegaFactor(Double omegaFactor) {
+        OmegaFactor = omegaFactor;
+    }
+
+    public Double getTotalIntensity() {
+        return TotalIntensity;
+    }
+
+    public void setTotalIntensity(Double totalIntensity) {
+        TotalIntensity = totalIntensity;
     }
 
     // ****************************
