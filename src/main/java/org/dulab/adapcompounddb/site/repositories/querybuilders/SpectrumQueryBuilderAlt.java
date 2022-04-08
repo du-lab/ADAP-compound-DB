@@ -48,7 +48,7 @@ public class SpectrumQueryBuilderAlt {
     private Double mass = null;
     private double[] masses = null;
     private Double massTolerance = null;
-    private Double massTolerancePPM = null;
+    private Integer massTolerancePPM = null;
     private List<Peak> peaks = null;
     private Double mzTolerance = null;
     private Double scoreThreshold = null;
@@ -89,7 +89,7 @@ public class SpectrumQueryBuilderAlt {
         return this;
     }
 
-    public SpectrumQueryBuilderAlt withMassPPM(Double mass, Double ppm) {
+    public SpectrumQueryBuilderAlt withMassPPM(Double mass, Integer ppm) {
         this.mass = mass;
         this.massTolerancePPM = ppm;
         return this;
@@ -101,7 +101,7 @@ public class SpectrumQueryBuilderAlt {
         return this;
     }
 
-    public SpectrumQueryBuilderAlt withMassesPPM(double[] masses, Double ppm) {
+    public SpectrumQueryBuilderAlt withMassesPPM(double[] masses, Integer ppm) {
         this.masses = masses;
         this.massTolerancePPM = ppm;
         return this;

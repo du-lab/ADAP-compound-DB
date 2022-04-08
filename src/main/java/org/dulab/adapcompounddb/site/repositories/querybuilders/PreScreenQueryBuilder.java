@@ -21,11 +21,11 @@ public class PreScreenQueryBuilder {
 
     private Spectrum querySpectrum = null;
     private Double mzTolerance = null;
-    private Double mzTolerancePPM = null;
+    private Integer mzTolerancePPM = null;
 
     private Double precursorMz = null;
     private Double precursorTolerance = null;
-    private Double precursorTolerancePPM = null;
+    private Integer precursorTolerancePPM = null;
 
     private Double retTime = null;
     private Double retTimeTolerance = null;
@@ -35,7 +35,7 @@ public class PreScreenQueryBuilder {
 
     private double[] masses = null;
     private Double massTolerance = null;
-    private Double massTolerancePPM = null;
+    private Integer massTolerancePPM = null;
 
 
     public PreScreenQueryBuilder(boolean searchConsensus, boolean searchReference, boolean searchClusterable,
@@ -56,7 +56,7 @@ public class PreScreenQueryBuilder {
         return this;
     }
 
-    public PreScreenQueryBuilder withPrecursor(Double tolerance, Double ppm, Double mz) {
+    public PreScreenQueryBuilder withPrecursor(Double tolerance, Integer ppm, Double mz) {
         this.precursorMz = mz;
         this.precursorTolerance = tolerance;
         this.precursorTolerancePPM = ppm;
@@ -75,14 +75,14 @@ public class PreScreenQueryBuilder {
         return this;
     }
 
-    public PreScreenQueryBuilder withMass(Double tolerance, Double ppm, double... masses) {
+    public PreScreenQueryBuilder withMass(Double tolerance, Integer ppm, double... masses) {
         this.masses = masses;
         this.massTolerance = tolerance;
         this.massTolerancePPM = ppm;
         return this;
     }
 
-    public PreScreenQueryBuilder withQuerySpectrum(Double mzTolerance, Double ppm, Spectrum querySpectrum) {
+    public PreScreenQueryBuilder withQuerySpectrum(Double mzTolerance, Integer ppm, Spectrum querySpectrum) {
         this.querySpectrum = querySpectrum;
         this.mzTolerance = mzTolerance;
         this.mzTolerancePPM = ppm;

@@ -81,6 +81,7 @@ public class IndividualSearchService {
         }
 
         modifiedParameters.setScoreThreshold(null);
+        modifiedParameters.setMzTolerance(null, (Integer) null);
         modifiedParameters.setPrecursorTolerance(null, null);
         modifiedParameters.setRetTimeTolerance(null);
         modifiedParameters.setRetIndexTolerance(null);

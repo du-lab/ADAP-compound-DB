@@ -95,7 +95,7 @@ public class JavaSpectrumSimilarityService {
         Double mzTolerance;
         boolean ppm;
         if (params.getMzTolerancePPM() != null) {
-            mzTolerance = params.getMzTolerancePPM();
+            mzTolerance = params.getMzTolerancePPM().doubleValue();
             ppm = true;
         } else {
             mzTolerance = params.getMzTolerance();

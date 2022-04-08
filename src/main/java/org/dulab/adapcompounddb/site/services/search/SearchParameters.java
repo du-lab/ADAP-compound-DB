@@ -24,11 +24,11 @@ public class SearchParameters implements Cloneable {
     private Boolean greedy;
     private Double scoreThreshold;
     private Double mzTolerance;
-    private Double mzTolerancePPM;
+    private Integer mzTolerancePPM;
     private Double precursorTolerance;
-    private Double precursorTolerancePPM;
+    private Integer precursorTolerancePPM;
     private Double massTolerance;
-    private Double massTolerancePPM;
+    private Integer massTolerancePPM;
     private Double retTimeTolerance;
     private Double retIndexTolerance;
     private RetIndexMatchType retIndexMatchType;
@@ -69,7 +69,7 @@ public class SearchParameters implements Cloneable {
         return this;
     }
 
-    public SearchParameters setMzTolerance(Double mzTolerance, Double mzTolerancePPM) {
+    public SearchParameters setMzTolerance(Double mzTolerance, Integer mzTolerancePPM) {
         this.mzTolerance = mzTolerance;
         this.mzTolerancePPM = mzTolerancePPM;
         return this;
@@ -78,7 +78,7 @@ public class SearchParameters implements Cloneable {
     public SearchParameters setMzTolerance(Double mzTolerance, MzToleranceType mzToleranceType) {
         switch (mzToleranceType) {
             case PPM:
-                setMzTolerancePPM(mzTolerance);
+                setMzTolerancePPM(mzTolerance != null ? mzTolerance.intValue() : null);
                 break;
             case DA:
                 setMzTolerance(mzTolerance);
@@ -87,11 +87,11 @@ public class SearchParameters implements Cloneable {
         return this;
     }
 
-    public Double getMzTolerancePPM() {
+    public Integer getMzTolerancePPM() {
         return mzTolerancePPM;
     }
 
-    public void setMzTolerancePPM(Double mzTolerancePPM) {
+    public void setMzTolerancePPM(Integer mzTolerancePPM) {
         this.mzTolerancePPM = mzTolerancePPM;
     }
 
@@ -104,17 +104,17 @@ public class SearchParameters implements Cloneable {
         return this;
     }
 
-    public SearchParameters setPrecursorTolerance(Double tolerance, Double ppm) {
+    public SearchParameters setPrecursorTolerance(Double tolerance, Integer ppm) {
         this.precursorTolerance = tolerance;
         this.precursorTolerancePPM = ppm;
         return this;
     }
 
-    public Double getPrecursorTolerancePPM() {
+    public Integer getPrecursorTolerancePPM() {
         return precursorTolerancePPM;
     }
 
-    public SearchParameters setPrecursorTolerancePPM(Double precursorTolerancePPM) {
+    public SearchParameters setPrecursorTolerancePPM(Integer precursorTolerancePPM) {
         this.precursorTolerancePPM = precursorTolerancePPM;
         return this;
     }
@@ -128,17 +128,17 @@ public class SearchParameters implements Cloneable {
         return this;
     }
 
-    public SearchParameters setMassTolerance(Double tolerance, Double ppm) {
+    public SearchParameters setMassTolerance(Double tolerance, Integer ppm) {
         this.massTolerance = tolerance;
         this.massTolerancePPM = ppm;
         return this;
     }
 
-    public Double getMassTolerancePPM() {
+    public Integer getMassTolerancePPM() {
         return massTolerancePPM;
     }
 
-    public SearchParameters setMassTolerancePPM(Double massTolerancePPM) {
+    public SearchParameters setMassTolerancePPM(Integer massTolerancePPM) {
         this.massTolerancePPM = massTolerancePPM;
         return this;
     }
@@ -260,7 +260,7 @@ public class SearchParameters implements Cloneable {
                 break;
             case LC_MSMS_POS:
             case LC_MSMS_NEG:
-                parameters.setMzTolerancePPM(0.001);
+                parameters.setMzTolerance(0.01);
                 parameters.setScoreThreshold(0.3);
                 parameters.setPrecursorTolerance(0.01);
                 break;
