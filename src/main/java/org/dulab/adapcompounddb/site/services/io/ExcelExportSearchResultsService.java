@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,8 @@ public class ExcelExportSearchResultsService implements ExportSearchResultsServi
 
         InputStream templateStream = this.getClass().getResourceAsStream("export_template.xlsx");
 
-        Workbook workbook = new XSSFWorkbook(Objects.requireNonNull(templateStream));
+        XSSFWorkbook templateWorkbook = new XSSFWorkbook(Objects.requireNonNull(templateStream));
+        Workbook workbook = new SXSSFWorkbook(templateWorkbook, 1000);
 
         ExcelCellStyleSupplier styleSupplier = new ExcelCellStyleSupplier(workbook);
 
