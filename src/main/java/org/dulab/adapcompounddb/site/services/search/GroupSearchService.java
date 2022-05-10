@@ -139,6 +139,14 @@ public class GroupSearchService {
                 } catch (IOException e) {
                     LOGGER.warn(String.format("Error when writing to file '%s': %s", filePath, e.getMessage()), e);
                 }
+
+                filePath = Paths.get(userHome, String.format("advanced_output_%s.xlsx", date)).toString();
+                LOGGER.info(String.format("Writing to file '%s'", filePath));
+                try (FileOutputStream fileOutputStream = new FileOutputStream(filePath)) {
+                    exportSearchResultsService.exportAll(fileOutputStream, groupSearchDTOList);
+                } catch (IOException e) {
+                    LOGGER.warn(String.format("Error when writing to file '%s': %s", filePath, e.getMessage()), e);
+                }
             }
 
         } catch (Throwable t) {
