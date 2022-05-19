@@ -43,6 +43,7 @@ public class SearchParameters implements Cloneable {
     private List<Adduct> adducts;
     private int limit = 100;
     private boolean penalizeQueryImpurities = true;
+    private boolean penalizeDominantPeak = true;
 
     public Boolean getGreedy() {
         return greedy;
@@ -286,6 +287,14 @@ public class SearchParameters implements Cloneable {
 
     public void setPenalizeQueryImpurities(boolean penalizeQueryImpurities) {
         this.penalizeQueryImpurities = penalizeQueryImpurities;
+    }
+
+    public boolean isPenalizeDominantPeak() {
+        return penalizeDominantPeak;
+    }
+
+    public void setPenalizeDominantPeak(boolean penalizeDominantPeak) {
+        this.penalizeDominantPeak = penalizeDominantPeak;
     }
 
     /**

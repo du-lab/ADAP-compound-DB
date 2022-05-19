@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.util.*;
-import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -114,8 +113,8 @@ public class JavaSpectrumSimilarityService {
 
             double similarityScore = 0.0;
             if (mzTolerance != null && querySpectrum.getPeaks() != null && librarySpectrum.getPeaks() != null)
-                similarityScore = calculateCosineSimilarity(querySpectrum.getPeaks(), librarySpectrum.getPeaks(),
-                        mzTolerance, ppm, params.isPenalizeQueryImpurities());
+                similarityScore = calculateCosineSimilarity(querySpectrum, librarySpectrum,
+                        mzTolerance, ppm, params.isPenalizeQueryImpurities(), params.isPenalizeDominantPeak());
 
             double isotopicSimilarity = calculateCosineSimilarity(
                     querySpectrum.getIsotopesAsArray(), librarySpectrum.getIsotopesAsArray());
@@ -224,7 +223,7 @@ public class JavaSpectrumSimilarityService {
             Map<BigInteger, List<BigInteger>> commonToSpectrumIdsMap, long threshold) {
 
         List<BigInteger> spectraList = new ArrayList<>();
-        for (BigInteger i = BigInteger.valueOf(8); i.compareTo(BigInteger.ZERO) > 0; i = i.subtract(BigInteger.ONE)) {
+        for (BigInteger i = BigInteger.valueOf(16); i.compareTo(BigInteger.ZERO) > 0; i = i.subtract(BigInteger.ONE)) {
             List<BigInteger> spectra = commonToSpectrumIdsMap.get(i);
             if (spectra != null) {
                 spectraList.addAll(commonToSpectrumIdsMap.get(i));
@@ -236,8 +235,15 @@ public class JavaSpectrumSimilarityService {
         return spectraList;
     }
 
-    private double calculateCosineSimilarity(List<Peak> queryPeaks, List<Peak> libraryPeaks,
-                                             double tolerance, boolean ppm, boolean penalizeQueryImpurities) {
+    private double calculateCosineSimilarity(Spectrum querySpectrum, Spectrum librarySpectrum,
+                                             double tolerance, boolean ppm,
+                                             boolean penalizeQueryImpurities, boolean penalizeDominantPeak) {
+
+        List<Peak> queryPeaks = querySpectrum.getPeaks();
+        List<Peak> libraryPeaks = librarySpectrum.getPeaks();
+
+        double queryOmegaFactor = penalizeDominantPeak ? querySpectrum.getOmegaFactor() : 0.0;
+        double libraryOmegaFactor = penalizeDominantPeak ? librarySpectrum.getOmegaFactor() : 0.0;
 
         queryPeaks.sort(Comparator.comparingDouble(Peak::getMz));
         libraryPeaks.sort(Comparator.comparingDouble(Peak::getMz));
@@ -254,7 +260,7 @@ public class JavaSpectrumSimilarityService {
         while (queryIndex < queryPeaks.size() || libraryIndex < libraryPeaks.size()) {
 
             if (queryIndex >= queryPeaks.size()) {
-                double y = scale(libraryPeaks.get(libraryIndex));
+                double y = scale(libraryPeaks.get(libraryIndex), libraryOmegaFactor);
                 libraryNorm2 += y * y;
                 libraryIndex++;
                 continue;
@@ -262,7 +268,7 @@ public class JavaSpectrumSimilarityService {
 
             if (libraryIndex >= libraryPeaks.size()) {
                 if (penalizeQueryImpurities) {
-                    double x = scale(queryPeaks.get(queryIndex));
+                    double x = scale(queryPeaks.get(queryIndex), queryOmegaFactor);
                     queryNorm2 += x * x;
                 }
                 queryIndex++;
@@ -280,19 +286,19 @@ public class JavaSpectrumSimilarityService {
 
             if (queryMzLessThanLibraryMz) {
                 if (penalizeQueryImpurities) {
-                    double x = scale(queryPeak);
+                    double x = scale(queryPeak, queryOmegaFactor);
                     queryNorm2 += x * x;
                 }
                 queryIndex++;
 
             } else if (queryMzGreaterThanLibraryMz) {
-                double y = scale(libraryPeak);
+                double y = scale(libraryPeak, libraryOmegaFactor);
                 libraryNorm2 += y * y;
                 libraryIndex++;
 
             } else {  // queryMz and libraryMz are withing the tolerance
-                double x = scale(queryPeak);
-                double y = scale(libraryPeak);
+                double x = scale(queryPeak, queryOmegaFactor);
+                double y = scale(libraryPeak, libraryOmegaFactor);
                 dotProduct += x * y;
                 queryNorm2 += x * x;
                 libraryNorm2 += y * y;
@@ -329,7 +335,7 @@ public class JavaSpectrumSimilarityService {
         return dotProduct / Math.sqrt(normSquare1 * normSquare2);
     }
 
-    private double scale(Peak peak) {
-        return Math.pow(peak.getIntensity(), 0.5) * Math.pow(peak.getMz(), 0.5);
+    private double scale(Peak peak, double omegaFactor) {
+        return Math.pow(peak.getIntensity() * peak.getMz() / (1.0 + omegaFactor * peak.getIntensity()), 0.5);
     }
 }

@@ -109,6 +109,7 @@ public class Spectrum implements Serializable {
     private String inChi; //CC Edits
     private String inChiKey; //CC Edits
 
+    private double omegaFactor;
 
     @NotNull(message = "Spectrum: the field Chromatography Type is required.")
     @Enumerated(EnumType.STRING)
@@ -311,16 +312,21 @@ public class Spectrum implements Serializable {
                 this.setTopMz16(peakList.get(15).getMz());
             }
 
-            final double totalIntensity = peaks.stream()
+            final double maxIntensity = peaks.stream()
                     .mapToDouble(Peak::getIntensity)
-                    .sum();
+                    .max().orElseThrow(() -> new IllegalStateException("Cannot find the maximum intensity"));
 
             integerMz = true;
             for (final Peak peak : peaks) {
-                peak.setIntensity(peak.getIntensity() / totalIntensity);
+                peak.setIntensity(peak.getIntensity() / maxIntensity);
                 if (peak.getMz() % 1 != 0)
                     integerMz = false;
             }
+
+            double totalIntensity = peaks.stream()
+                    .mapToDouble(Peak::getIntensity)
+                    .sum();
+            omegaFactor = 1 / (totalIntensity - 0.5);
         }
     }
 
@@ -679,30 +685,13 @@ public class Spectrum implements Serializable {
         this.topMz16 = topMz16;
     }
 
-    /*public String getCanonicalSmiles() {
-        return canonicalSmiles;
-    } //CC Edits
+    public double getOmegaFactor() {
+        return omegaFactor;
+    }
 
-    public void setCanonicalSmiles(String canonicalSmiles) {
-        this.canonicalSmiles = canonicalSmiles;
-    } //CC Edits
-
-    public String getInChi() {
-        return inChi;
-    } //CC Edits
-
-    public void setInChi(String inChi) {
-        this.inChi = inChi;
-    } //CC Edits
-
-    public String getInChiKey() {
-        return inChiKey;
-    } //CC Edits
-
-    public void setInChiKey(String inChiKey) {
-        this.inChiKey = inChiKey;
-    } //CC Edits*/
-
+    public void setOmegaFactor(double omegaFactor) {
+        this.omegaFactor = omegaFactor;
+    }
 
     // ****************************
     // ***** Standard methods *****

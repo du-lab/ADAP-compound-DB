@@ -250,17 +250,21 @@ public class SpectrumQueryBuilderAlt {
 
         String scoreTable = "";
         if (peaks != null && mzTolerance != null && scoreThreshold != null) {
-            scoreTable += "SELECT SpectrumId, POWER(SUM(Product), 2) AS Score, ";
+            double omega = 1.0 / (peaks.stream().mapToDouble(Peak::getIntensity).sum() - 0.5);
+            double totalIntensity = peaks.stream()
+                    .mapToDouble(p -> scale(p, omega))
+                    .sum();
+            scoreTable += String.format("SELECT SpectrumId, POWER(SUM(Product), 2) / (MAX(TotalIntensity) * %f) AS Score, ", totalIntensity);
             scoreTable += String.format("MAX(%s) AS MassError, ", getMassError());
             scoreTable += String.format("MAX(%s) AS MassErrorPPM, ", getMassErrorPPM());
             scoreTable += String.format("MAX(ABS(RetentionTime - %f)) AS RetTimeError FROM (\n", retTime);
             String finalSpectrumSelector = spectrumSelector;
             scoreTable += peaks.stream()
                     .map(p -> String.format(
-                            "\tSELECT SpectrumId, SQRT(Intensity * %f) AS Product, Mass, RetentionTime " +
+                            "\tSELECT SpectrumId, TotalIntensity, SQRT(Intensity * Mz / (1 + OmegaFactor * Intensity) * %f) AS Product, MolecularWeight, RetentionTime " +
                                     "FROM Spectrum INNER JOIN Peak ON Peak.SpectrumId = Spectrum.Id " +
                                     "WHERE %s AND Mz > %f AND Mz < %f\n",
-                            p.getIntensity(),
+                            scale(p, omega),
                             finalSpectrumSelector, p.getMz() - mzTolerance, p.getMz() + mzTolerance))
                     .collect(Collectors.joining("\tUNION ALL\n"));
             scoreTable += ") AS SearchTable ";
@@ -297,4 +301,9 @@ public class SpectrumQueryBuilderAlt {
         }
         return "NULL";
     }
+
+    private double scale(Peak peak, double omega) {
+        return peak.getIntensity() * peak.getMz() / (1.0 + omega * peak.getIntensity());
+    }
+
 }

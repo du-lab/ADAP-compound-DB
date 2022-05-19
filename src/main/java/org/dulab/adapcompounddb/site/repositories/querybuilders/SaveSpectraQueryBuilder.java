@@ -33,6 +33,7 @@ public class SaveSpectraQueryBuilder {
             new SqlField("CanonicalSMILES", "%s", s -> quote(s.getCanonicalSmiles())),
             new SqlField("InChi", "%s", s -> quote(s.getInChi())),
             new SqlField("InChiKey", "%s", s -> quote(s.getInChiKey())),
+            new SqlField("OmegaFactor", "%f", Spectrum::getOmegaFactor),
             new SqlField("TopMz1", "%f", Spectrum::getTopMz1),
             new SqlField("TopMz2", "%f", Spectrum::getTopMz2),
             new SqlField("TopMz3", "%f", Spectrum::getTopMz3),
