@@ -87,6 +87,7 @@ public class IndividualSearchService {
         modifiedParameters.setRetIndexTolerance(null);
         modifiedParameters.setRetIndexMatchType(SearchParameters.RetIndexMatchType.IGNORE_MATCH);
         modifiedParameters.setMassTolerance(null, Parameters.MASS_TOLERANCE_PPM);
+        modifiedParameters.setPenalizeQueryImpurities(false);
 
         List<Adduct> adducts = adductService.findAdductsByChromatography(spectrum.getChromatographyType());
         if (spectrum.getMass() == null && adducts != null && spectrum.getPrecursor() != null)

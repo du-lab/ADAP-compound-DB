@@ -42,6 +42,7 @@ public class SearchParameters implements Cloneable {
 //    private SortedMap<Double, String> massToAdductMap;
     private List<Adduct> adducts;
     private int limit = 100;
+    private boolean penalizeQueryImpurities = true;
 
     public Boolean getGreedy() {
         return greedy;
@@ -277,6 +278,14 @@ public class SearchParameters implements Cloneable {
 
     public void setLimit(int limit) {
         this.limit = limit;
+    }
+
+    public boolean isPenalizeQueryImpurities() {
+        return penalizeQueryImpurities;
+    }
+
+    public void setPenalizeQueryImpurities(boolean penalizeQueryImpurities) {
+        this.penalizeQueryImpurities = penalizeQueryImpurities;
     }
 
     /**

@@ -114,8 +114,8 @@ public class JavaSpectrumSimilarityService {
 
             double similarityScore = 0.0;
             if (mzTolerance != null && querySpectrum.getPeaks() != null && librarySpectrum.getPeaks() != null)
-                similarityScore = calculateCosineSimilarity(
-                        querySpectrum.getPeaks(), librarySpectrum.getPeaks(), mzTolerance, ppm);
+                similarityScore = calculateCosineSimilarity(querySpectrum.getPeaks(), librarySpectrum.getPeaks(),
+                        mzTolerance, ppm, params.isPenalizeQueryImpurities());
 
             double isotopicSimilarity = calculateCosineSimilarity(
                     querySpectrum.getIsotopesAsArray(), librarySpectrum.getIsotopesAsArray());
@@ -237,7 +237,7 @@ public class JavaSpectrumSimilarityService {
     }
 
     private double calculateCosineSimilarity(List<Peak> queryPeaks, List<Peak> libraryPeaks,
-                                             double tolerance, boolean ppm) {
+                                             double tolerance, boolean ppm, boolean penalizeQueryImpurities) {
 
         queryPeaks.sort(Comparator.comparingDouble(Peak::getMz));
         libraryPeaks.sort(Comparator.comparingDouble(Peak::getMz));
@@ -261,8 +261,10 @@ public class JavaSpectrumSimilarityService {
             }
 
             if (libraryIndex >= libraryPeaks.size()) {
-                double x = scale(queryPeaks.get(queryIndex));
-                queryNorm2 += x * x;
+                if (penalizeQueryImpurities) {
+                    double x = scale(queryPeaks.get(queryIndex));
+                    queryNorm2 += x * x;
+                }
                 queryIndex++;
                 continue;
             }
@@ -272,12 +274,15 @@ public class JavaSpectrumSimilarityService {
 
             double queryMz = queryPeak.getMz();
             double libraryMz = libraryPeak.getMz();
+
             boolean queryMzLessThanLibraryMz = ppm ? queryMz < libraryMz * lowerFactor : queryMz < libraryMz - tolerance;
             boolean queryMzGreaterThanLibraryMz = ppm ? libraryMz * upperFactor < queryMz : queryMz > libraryMz + tolerance;
 
             if (queryMzLessThanLibraryMz) {
-                double x = scale(queryPeak);
-                queryNorm2 += x * x;
+                if (penalizeQueryImpurities) {
+                    double x = scale(queryPeak);
+                    queryNorm2 += x * x;
+                }
                 queryIndex++;
 
             } else if (queryMzGreaterThanLibraryMz) {
@@ -325,6 +330,6 @@ public class JavaSpectrumSimilarityService {
     }
 
     private double scale(Peak peak) {
-        return Math.pow(peak.getIntensity(), 0.4) * Math.pow(peak.getMz(), 0.25);
+        return Math.pow(peak.getIntensity(), 0.5) * Math.pow(peak.getMz(), 0.5);
     }
 }
