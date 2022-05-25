@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.enums.MassSpectrometryType;
+import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
 import org.hibernate.validator.constraints.URL;
 
 @Entity
@@ -210,32 +211,33 @@ public class Submission implements Serializable {
     // *************************
 
     public boolean isLibrary() {
-        if (files != null) {
-            for (File file : files) {
-                List<Spectrum> spectra = file.getSpectra();
-                if (spectra != null && !spectra.isEmpty()) {
-                    Spectrum spectrum = spectra.get(0);
-                    if (spectrum.isReference()) {
-                        return true;
-                    }
-                }
-            }
-        }
+//        if (files != null) {
+//            for (File file : files) {
+//                List<Spectrum> spectra = file.getSpectra();
+//                if (spectra != null && !spectra.isEmpty()) {
+//                    Spectrum spectrum = spectra.get(0);
+//                    if (spectrum.isReference()) {
+//                        return true;
+//                    }
+//                }
+//            }
+//        }
+//        return false;
         return false;
     }
 
     public boolean isInHouse() {
-        if (files != null) {
-            for (File file : files) {
-                List<Spectrum> spectra = file.getSpectra();
-                if (spectra != null && !spectra.isEmpty()) {
-                    Spectrum spectrum = spectra.get(0);
-                    if (spectrum.isInHouseReference()) {
-                        return true;
-                    }
-                }
-            }
-        }
+//        if (files != null) {
+//            for (File file : files) {
+//                List<Spectrum> spectra = file.getSpectra();
+//                if (spectra != null && !spectra.isEmpty()) {
+//                    Spectrum spectrum = spectra.get(0);
+//                    if (spectrum.isInHouseReference()) {
+//                        return true;
+//                    }
+//                }
+//            }
+//        }
         return false;
     }
 

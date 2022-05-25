@@ -68,7 +68,7 @@ public class SubmissionController extends BaseController {
 
         final SubmissionForm submissionForm = new SubmissionForm(submission);
         submissionForm.setAuthorized(authenticated);
-        submissionForm.setIsLibrary(submission.isLibrary());
+        submissionForm.setIsLibrary(submissionService.getIfIsLibrary(submission));
         model.addAttribute("submission", submission);
         model.addAttribute("submissionForm", submissionForm);
         model.addAttribute("view_submission", authenticated); // User is logged in
@@ -126,7 +126,8 @@ public class SubmissionController extends BaseController {
         }
         final SubmissionForm submissionForm = new SubmissionForm(submission);
         submissionForm.setAuthorized(authorized);
-        submissionForm.setIsLibrary(submission.isLibrary());
+        submissionForm.setIsLibrary(submissionService.getIfIsLibrary(submission));
+        submissionForm.setIsInHouseLibrary(submissionService.getIfInHouseReference(submission.getId()));
 
         model.addAttribute("submission", submission);
         model.addAttribute("submissionForm", submissionForm);

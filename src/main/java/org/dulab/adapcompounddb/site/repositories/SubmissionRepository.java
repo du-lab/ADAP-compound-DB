@@ -9,9 +9,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import javax.persistence.NamedQuery;
 import java.math.BigInteger;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 public interface SubmissionRepository extends CrudRepository<Submission, Long> {
@@ -80,4 +80,17 @@ public interface SubmissionRepository extends CrudRepository<Submission, Long> {
 
     @Query("select s.id, min(sp.reference) = 1 from Spectrum sp join sp.file.submission s where s.id in :ids group by s.id")
     Iterable<Object[]> findAnySpectrumReferenceBySubmissionIds(@Param("ids") List<Long> submissionIds);
+
+    @Query(value = "select count(s.id) from Submission s join s.files f join f.spectra spectrum where spectrum.inHouseReference = true and s.id = :id", nativeQuery = false)
+    Long getIfInHouseReference(@Param("id") Long id);
+
+    @Query(value = "select count(s.id) from Submission s join s.files f join f.spectra spectrum where spectrum.reference = true and s.id = :id", nativeQuery = false)
+    Long getIsLibrary(@Param("id") Long id);
+
+    @Query(value = "select count(s.id) from Submission s join s.files f join f.spectra spectrum where " +
+            "spectrum.chromatographyType in (org.dulab.adapcompounddb.models.enums.ChromatographyType.LC_MSMS_POS, " +
+            "org.dulab.adapcompounddb.models.enums.ChromatographyType.LC_MSMS_NEG) and s.id = :id")
+    Long getIsSearchable(@Param("id") Long id);
+
+
 }
