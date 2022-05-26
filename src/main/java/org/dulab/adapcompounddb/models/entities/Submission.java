@@ -88,6 +88,12 @@ public class Submission implements Serializable {
 
     private boolean raw;
 
+    @Transient
+    private boolean isInHouse;
+
+    @Transient
+    private boolean isLibrary;
+
     // *******************************
     // ***** Getters and Setters *****
     // *******************************
@@ -206,6 +212,22 @@ public class Submission implements Serializable {
         this.raw = raw;
     }
 
+    public boolean getIsInHouse(){
+        return isInHouse;
+    }
+
+    public void setInHouse(boolean inHouse) {
+        this.isInHouse = inHouse;
+    }
+
+    public boolean getIsLibrary(){
+        return isLibrary;
+    }
+
+    public void setIsLibrary(boolean isLibrary) {
+        this.isLibrary = isLibrary;
+    }
+
     // *************************
     // ***** Other methods *****
     // *************************
@@ -223,7 +245,7 @@ public class Submission implements Serializable {
 //            }
 //        }
 //        return false;
-        return false;
+        return isLibrary;
     }
 
     public boolean isInHouse() {
@@ -238,7 +260,7 @@ public class Submission implements Serializable {
 //                }
 //            }
 //        }
-        return false;
+        return isInHouse;
     }
 
     public boolean isAuthorized(final UserPrincipal user) {

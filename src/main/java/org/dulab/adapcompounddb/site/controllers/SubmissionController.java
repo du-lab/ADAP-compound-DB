@@ -127,7 +127,7 @@ public class SubmissionController extends BaseController {
         final SubmissionForm submissionForm = new SubmissionForm(submission);
         submissionForm.setAuthorized(authorized);
         submissionForm.setIsLibrary(submissionService.getIfIsLibrary(submission));
-        submissionForm.setIsInHouseLibrary(submissionService.getIfInHouseReference(submission.getId()));
+        submissionForm.setIsInHouseLibrary(submissionService.getIfInHouseReference(submission));
 
         model.addAttribute("submission", submission);
         model.addAttribute("submissionForm", submissionForm);
