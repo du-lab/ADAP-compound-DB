@@ -16,7 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.enums.MassSpectrometryType;
-import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
 import org.hibernate.validator.constraints.URL;
 
 @Entity
@@ -93,6 +92,11 @@ public class Submission implements Serializable {
 
     @Transient
     private boolean isLibrary;
+
+
+
+    @Transient
+    private boolean isSearchable;
 
     // *******************************
     // ***** Getters and Setters *****
@@ -304,19 +308,23 @@ public class Submission implements Serializable {
     public boolean isSearchable() {
         if (!isRaw()) return true;
 
-        Set<ChromatographyType> chromatographyTypes = files.stream()
-                .flatMap(f -> f.getSpectra().stream())
-                .map(Spectrum::getChromatographyType)
-                .collect(Collectors.toSet());
-
-        if (chromatographyTypes.size() != 1)
-            return false;
-
-        ChromatographyType chromatographyType = chromatographyTypes.iterator().next();
-        return chromatographyType == ChromatographyType.LC_MSMS_POS
-                || chromatographyType == ChromatographyType.LC_MSMS_NEG;
+//        Set<ChromatographyType> chromatographyTypes = files.stream()
+//                .flatMap(f -> f.getSpectra().stream())
+//                .map(Spectrum::getChromatographyType)
+//                .collect(Collectors.toSet());
+//
+//        if (chromatographyTypes.size() != 1)
+//            return false;
+//
+//        ChromatographyType chromatographyType = chromatographyTypes.iterator().next();
+//        return chromatographyType == ChromatographyType.LC_MSMS_POS
+//                || chromatographyType == ChromatographyType.LC_MSMS_NEG;
+        return isSearchable;
     }
 
+    public void setSearchable(boolean searchable) {
+        isSearchable = searchable;
+    }
     @Override
     public boolean equals(final Object other) {
         if (this == other) {

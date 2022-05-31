@@ -128,7 +128,7 @@ public class SubmissionController extends BaseController {
         submissionForm.setAuthorized(authorized);
         submissionForm.setIsLibrary(submissionService.getIfIsLibrary(submission));
         submissionForm.setIsInHouseLibrary(submissionService.getIfInHouseReference(submission));
-
+        submission.setSearchable(submissionService.getIfIsSearchable(submission));
         model.addAttribute("submission", submission);
         model.addAttribute("submissionForm", submissionForm);
         model.addAttribute("view_submission", true);

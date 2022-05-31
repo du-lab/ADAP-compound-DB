@@ -284,12 +284,17 @@ public class SubmissionService {
     }
 
     public boolean getIfInHouseReference(Submission s) {
-        s.setInHouse(submissionRepository.getIfInHouseReference(s.getId()) > 0);
+        s.setInHouse(submissionRepository.getIsInHouseReference(s.getId()));
         return s.getIsInHouse();
     }
 
     public boolean getIfIsLibrary(Submission s) {
-        s.setIsLibrary(submissionRepository.getIsLibrary(s.getId()) > 0);
+        s.setIsLibrary(submissionRepository.getIsLibrary(s.getId()));
         return s.isLibrary();
+    }
+
+    public boolean getIfIsSearchable(Submission s){
+        s.setSearchable(submissionRepository.getIsSearchable(s.getId()));
+        return s.isSearchable();
     }
 }
