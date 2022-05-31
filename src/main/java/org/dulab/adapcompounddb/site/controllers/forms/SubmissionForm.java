@@ -42,7 +42,7 @@ public class SubmissionForm {
         setName(submission.getName());
         setDescription(submission.getDescription());
         setIsPrivate(submission.isPrivate());
-        setIsInHouseLibrary(submission.isInHouse());
+        //setIsInHouseLibrary(submission.isInHouse());
         setReference(submission.getReference());
 
         if (submission.getTags() != null) {

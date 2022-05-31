@@ -87,6 +87,17 @@ public class Submission implements Serializable {
 
     private boolean raw;
 
+    @Transient
+    private boolean isInHouse;
+
+    @Transient
+    private boolean isLibrary;
+
+
+
+    @Transient
+    private boolean isSearchable;
+
     // *******************************
     // ***** Getters and Setters *****
     // *******************************
@@ -205,38 +216,55 @@ public class Submission implements Serializable {
         this.raw = raw;
     }
 
+    public boolean getIsInHouse(){
+        return isInHouse;
+    }
+
+    public void setInHouse(boolean inHouse) {
+        this.isInHouse = inHouse;
+    }
+
+    public boolean getIsLibrary(){
+        return isLibrary;
+    }
+
+    public void setIsLibrary(boolean isLibrary) {
+        this.isLibrary = isLibrary;
+    }
+
     // *************************
     // ***** Other methods *****
     // *************************
 
     public boolean isLibrary() {
-        if (files != null) {
-            for (File file : files) {
-                List<Spectrum> spectra = file.getSpectra();
-                if (spectra != null && !spectra.isEmpty()) {
-                    Spectrum spectrum = spectra.get(0);
-                    if (spectrum.isReference()) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+//        if (files != null) {
+//            for (File file : files) {
+//                List<Spectrum> spectra = file.getSpectra();
+//                if (spectra != null && !spectra.isEmpty()) {
+//                    Spectrum spectrum = spectra.get(0);
+//                    if (spectrum.isReference()) {
+//                        return true;
+//                    }
+//                }
+//            }
+//        }
+//        return false;
+        return isLibrary;
     }
 
     public boolean isInHouse() {
-        if (files != null) {
-            for (File file : files) {
-                List<Spectrum> spectra = file.getSpectra();
-                if (spectra != null && !spectra.isEmpty()) {
-                    Spectrum spectrum = spectra.get(0);
-                    if (spectrum.isInHouseReference()) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+//        if (files != null) {
+//            for (File file : files) {
+//                List<Spectrum> spectra = file.getSpectra();
+//                if (spectra != null && !spectra.isEmpty()) {
+//                    Spectrum spectrum = spectra.get(0);
+//                    if (spectrum.isInHouseReference()) {
+//                        return true;
+//                    }
+//                }
+//            }
+//        }
+        return isInHouse;
     }
 
     public boolean isAuthorized(final UserPrincipal user) {
@@ -280,19 +308,23 @@ public class Submission implements Serializable {
     public boolean isSearchable() {
         if (!isRaw()) return true;
 
-        Set<ChromatographyType> chromatographyTypes = files.stream()
-                .flatMap(f -> f.getSpectra().stream())
-                .map(Spectrum::getChromatographyType)
-                .collect(Collectors.toSet());
-
-        if (chromatographyTypes.size() != 1)
-            return false;
-
-        ChromatographyType chromatographyType = chromatographyTypes.iterator().next();
-        return chromatographyType == ChromatographyType.LC_MSMS_POS
-                || chromatographyType == ChromatographyType.LC_MSMS_NEG;
+//        Set<ChromatographyType> chromatographyTypes = files.stream()
+//                .flatMap(f -> f.getSpectra().stream())
+//                .map(Spectrum::getChromatographyType)
+//                .collect(Collectors.toSet());
+//
+//        if (chromatographyTypes.size() != 1)
+//            return false;
+//
+//        ChromatographyType chromatographyType = chromatographyTypes.iterator().next();
+//        return chromatographyType == ChromatographyType.LC_MSMS_POS
+//                || chromatographyType == ChromatographyType.LC_MSMS_NEG;
+        return isSearchable;
     }
 
+    public void setSearchable(boolean searchable) {
+        isSearchable = searchable;
+    }
     @Override
     public boolean equals(final Object other) {
         if (this == other) {

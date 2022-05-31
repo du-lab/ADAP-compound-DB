@@ -282,4 +282,19 @@ public class SubmissionService {
                 ? new ArrayList<>(0)
                 : spectrumRepository.getAllSpectrumInHouseReferenceBySubmissionIds(submissionIds));
     }
+
+    public boolean isInHouseReference(Submission s) {
+        s.setInHouse(submissionRepository.getIsInHouseReference(s.getId()));
+        return s.getIsInHouse();
+    }
+
+    public boolean isLibrary(Submission s) {
+        s.setIsLibrary(submissionRepository.getIsLibrary(s.getId()));
+        return s.isLibrary();
+    }
+
+    public boolean isSearchable(Submission s){
+        s.setSearchable(submissionRepository.getIsSearchable(s.getId()));
+        return s.isSearchable();
+    }
 }
