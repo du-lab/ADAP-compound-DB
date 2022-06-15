@@ -52,12 +52,11 @@ def individual_search_test(homepage_url, msp_path):
 
         # check if the matching table contains values
         matching_table = driver.find_element_by_id('table')
-        # print(matching_table)
         data_list = matching_table.find_elements_by_css_selector('table>tbody>tr')
         assert data_list
 
     except Exception as e:
-        # driver.quit()
+        driver.quit()
         raise e
 
 
