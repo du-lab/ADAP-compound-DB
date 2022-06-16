@@ -12,6 +12,17 @@ import time
 
 import argparse
 
+def read_file_table(cur, db):
+	print('Reading File.csv')
+	csv_data = csv.reader(open('./dumpfiles/File.csv'))
+
+	csv.field_size_limit(sys.maxsize)
+	next(csv_data)
+
+	print('Writing File.csv')
+	for row in csv_data:
+		cur.execute('INSERT INTO `File` (`Id`, `Name`, `FileType`, `Content`, `SubmissionId`) VALUES(%s, %s, %s, _binary %s, %s)', row)
+		db.commit()
 
 def create_schema(location):
 	fd = open(location, 'r')
@@ -55,6 +66,7 @@ def import_csv(username, password, host, database, store_location, schema_locati
 	db.commit()
 	cur.execute('SET GLOBAL local_infile=1;')
 	db.commit()
+	cur.execute(f"use {database};")
 
 	sqlCommands = create_schema(schema_location)
 
@@ -76,21 +88,15 @@ def import_csv(username, password, host, database, store_location, schema_locati
 
 		df = pd.read_csv(mypath + f + '.csv',sep=',',  na_values = '0', low_memory = False)
 		
-		
-		df.to_sql(name = f, con=engine,index=False,if_exists='replace', chunksize = 1000000 , method='multi') #try changing chunksize to see change in performance
+		try:
+			df.to_sql(name = f, con=engine,index=False,if_exists='replace', chunksize = 1000000 , method='multi') #try changing chunksize to see change in performance
+		except:
+			print('Could not write ', f)
 		print('Read finish time: %s' % (time.time() - read_start_time))
-			
+		
+	read_file_table(cur,db)	
 
-	print('Reading File.csv')
-	csv_data = csv.reader(open('./dumpfiles/File.csv'))
-
-	csv.field_size_limit(sys.maxsize)
-	next(csv_data)
-
-	print('Writing File.csv')
-	for row in csv_data:
-		cur.execute('INSERT INTO `File` (`Id`, `Name`, `FileType`, `Content`, `SubmissionId`) VALUES(%s, %s, %s, _binary %s, %s)', row)
-		db.commit()
+	
 
 
 	cur.execute("SET GLOBAL FOREIGN_KEY_CHECKS = 1;")
