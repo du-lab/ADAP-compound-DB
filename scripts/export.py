@@ -20,8 +20,8 @@ def export(user, password, host, database, folder):
 	if not os.path.isdir(mypath):
 		os.makedirs(mypath)
 
-
-	os.system(f'mysqldump -h {host} -u {user} -p{password} --no-data {database} > {os.path.join(folder,'schema_main.sql')}')
+	path = os.path.join(folder,'schema_main.sql')
+	os.system(f'mysqldump -h {host} -u {user} -p{password} --no-data {database} > {path}')
 	db = pymysql.connect(**db_opts)
 
 
