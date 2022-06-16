@@ -21,7 +21,7 @@ def export(user, password, host, database, folder):
 		os.makedirs(mypath)
 
 
-	os.system(f'mysqldump -h {host} -u {user} -p{password} --no-data {database} > schema_main.sql')
+	os.system(f'mysqldump -h {host} -u {user} -p{password} --no-data {database} > {os.path.join(folder,'schema_main.sql')}')
 	db = pymysql.connect(**db_opts)
 
 
@@ -37,7 +37,7 @@ def export(user, password, host, database, folder):
 		rows = cur.fetchall()
 
 		column_names = [i[0] for i in cur.description]
-		fp = open(mypath+ '/' + table_name+'.csv', 'w')
+		fp = open(os.path.join(mypath,table_name+'.csv'), 'w')
 		myFile = csv.writer(fp)
 		myFile.writerow(column_names)
 		myFile.writerows(rows)

@@ -7,14 +7,14 @@ from sqlalchemy import create_engine, types
 from sqlalchemy_utils import database_exists, create_database
 from os import listdir
 from os.path import isfile, join
-
+import os
 import time
 
 import argparse
 
-def read_file_table(cur, db):
+def read_file_table(cur, db, location):
 	print('Reading File.csv')
-	csv_data = csv.reader(open('./dumpfiles/File.csv'))
+	csv_data = csv.reader(open(f'./{location}/File.csv'))
 
 	csv.field_size_limit(sys.maxsize)
 	next(csv_data)
@@ -33,12 +33,12 @@ def create_schema(location):
 	return sqlCommands
 
 
-def import_csv(username, password, host, database, store_location, schema_location):
+def import_csv(username, password, host, database, store_location, schema_name):
 	mypath = store_location
 
 	start_time = time.time()
-	onlyfiles = [f.split('.')[0] for f in listdir(mypath) if isfile(join(mypath, f))]
-	onlyfiles.pop(1)
+	onlyfiles = [f.split('.')[0] for f in listdir(mypath) if isfile(join(mypath, f)) and f.split('.')[1] == 'csv']
+	
 
 	url = f'mysql://{username}:{password}@{host}/{database}'
 
@@ -67,7 +67,7 @@ def import_csv(username, password, host, database, store_location, schema_locati
 	cur.execute('SET GLOBAL local_infile=1;')
 	db.commit()
 	cur.execute(f"use {database};")
-
+	schema_location = join(mypath, schema_name)
 	sqlCommands = create_schema(schema_location)
 
 	for command in sqlCommands :
@@ -86,7 +86,7 @@ def import_csv(username, password, host, database, store_location, schema_locati
 		
 		read_start_time = time.time()
 
-		df = pd.read_csv(mypath + f + '.csv',sep=',',  na_values = '0', low_memory = False)
+		df = pd.read_csv(os.path.join(mypath, f'{f}.csv'),sep=',',  na_values = '0', low_memory = False)
 		
 		try:
 			df.to_sql(name = f, con=engine,index=False,if_exists='replace', chunksize = 1000000 , method='multi') #try changing chunksize to see change in performance
@@ -105,11 +105,11 @@ def import_csv(username, password, host, database, store_location, schema_locati
 
 if __name__ == '__main__' :
 	parser = argparse.ArgumentParser()
-	parser.add_argument('--save', help='Save location')
-	parser.add_argument('--user', help='Username')
-	parser.add_argument('--password', help='Password')
-	parser.add_argument('--host', help='Host')
-	parser.add_argument('--db', help='Database')
-	parser.add_argument('--schema', help='Schema location')
+	parser.add_argument('--save', help='Save location', required = True)
+	parser.add_argument('--user', help='Username' ,required = True)
+	parser.add_argument('--password', help='Password' ,required = True)
+	parser.add_argument('--host', help='Host', required = True)
+	parser.add_argument('--db', help='Database', required = True)
+	parser.add_argument('--schema', help='Create table script file name', required = True)
 	args = parser.parse_args()
 	import_csv(args.user, args.password, args.host, args.db, args.save, args.schema)
