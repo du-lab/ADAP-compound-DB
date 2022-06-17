@@ -14,7 +14,7 @@ import argparse
 
 def read_file_table(cur, db, location):
 	print('Reading File.csv')
-	csv_data = csv.reader(open(f'./{location}/File.csv'))
+	csv_data = csv.reader(open(f'{location}/File.csv'))
 
 	csv.field_size_limit(sys.maxsize)
 	next(csv_data)
@@ -94,7 +94,7 @@ def import_csv(username, password, host, database, store_location, schema_name):
 			print('Could not write ', f)
 		print('Read finish time: %s' % (time.time() - read_start_time))
 		
-	read_file_table(cur,db)	
+	read_file_table(cur,db,store_location)	
 
 	
 
