@@ -22,7 +22,7 @@ def export(user, password, host, database, folder):
 
 	path = os.path.join(folder,'schema_main.sql')
 	os.system(f'mysqldump -h {host} -u {user} -p{password} --no-data {database} > {path}')
-	db = pymysql.connect(**db_opts, charset='utf8', use_unicode=True)
+	db = pymysql.connect(**db_opts)
 
 
 
@@ -35,14 +35,13 @@ def export(user, password, host, database, folder):
 		print("Writing " + table_name)
 		cur.execute(sql)
 		rows = cur.fetchall()
-		if(table_name == 'UserPrincipal'):
-			print(rows)
-			column_names = [i[0] for i in cur.description]
-			fp = open(os.path.join(mypath,table_name+'.csv'), 'w', encoding = 'utf-8')
-			myFile = csv.writer(fp)
-			myFile.writerow(column_names)
-			myFile.writerows(rows)
-			fp.close()
+
+		column_names = [i[0] for i in cur.description]
+		fp = open(os.path.join(mypath,table_name+'.csv'), 'w')
+		myFile = csv.writer(fp)
+		myFile.writerow(column_names)
+		myFile.writerows(rows)
+		fp.close()
 
 if __name__ == '__main__' :
 	parser = argparse.ArgumentParser()
