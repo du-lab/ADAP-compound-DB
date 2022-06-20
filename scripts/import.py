@@ -1,15 +1,15 @@
 import pymysql
+import MySQLdb
 import sys
 import csv
 import pandas as pd
-
 from sqlalchemy import create_engine, types
 from sqlalchemy_utils import database_exists, create_database
 from os import listdir
 from os.path import isfile, join
 import os
 import time
-
+import traceback
 import argparse
 
 def read_file_table(cur, db, location):
@@ -90,11 +90,14 @@ def import_csv(username, password, host, database, store_location, schema_name):
 		
 		try:
 			df.to_sql(name = f, con=engine,index=False,if_exists='replace', chunksize = 1000000 , method='multi') #try changing chunksize to see change in performance
-		except:
+		except Exception as e:
+
 			print('Could not write ', f)
+			print(str(e))
+			traceback.print_exc()
 		print('Read finish time: %s' % (time.time() - read_start_time))
 		
-	read_file_table(cur,db,store_location)	
+	#read_file_table(cur,db,store_location)	
 
 	
 
