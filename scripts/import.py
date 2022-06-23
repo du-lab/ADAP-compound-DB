@@ -45,7 +45,7 @@ def import_csv(username, password, host, database, store_location, schema_name):
 	if not database_exists(url):
 		create_database(url)
 
-	engine = create_engine(url, echo = False) # enter your password and database names here
+	engine = create_engine(url) # enter your password and database names here
 
 
 	db_opts = {
@@ -74,8 +74,9 @@ def import_csv(username, password, host, database, store_location, schema_name):
 		try:
 			cur.execute(command)
 			db.commit()
-		except:
-			print('Command skipped: ', command)
+		except Exception as e:
+			print('Command skipped: ', e, file=sys.stderr)
+			exit()
 
 	for f in onlyfiles:
 
@@ -87,14 +88,15 @@ def import_csv(username, password, host, database, store_location, schema_name):
 		read_start_time = time.time()
 
 		df = pd.read_csv(os.path.join(mypath, f'{f}.csv'),sep=',', low_memory = False)
-		
+
 		try:
 			df.to_sql(name = f, con=engine,index=False,if_exists='append', chunksize = 1000000 , method='multi') #try changing chunksize to see change in performance
 		except Exception as e:
 
-			print('Could not write ', f)
+			print('Could not write ', f, file=sys.stderr)
 			print(str(e))
-			traceback.print_exc()
+# 			traceback.print_exc()
+			exit()
 		print('Read finish time: %s' % (time.time() - read_start_time))
 		
 	#read_file_table(cur,db,store_location)	
