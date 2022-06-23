@@ -5,6 +5,8 @@ import csv
 import os
 
 import argparse
+import pandas.io.sql as psql
+import pandas as pd
 
 def export(user, password, host, database, folder):
 
@@ -27,21 +29,40 @@ def export(user, password, host, database, folder):
 
 
 	cur = db.cursor()
-	cur.execute("USE adapcompounddb")
+	cur.execute(f"USE {database}")
 	cur.execute("SHOW TABLES")
 	tables = cur.fetchall()
 	for(table_name, ) in tables:
-		sql = 'Select * from adapcompounddb.{};'.format(table_name)
+		sql = f'Select * from {database}.{table_name};'
 		print("Writing " + table_name)
+		
 		cur.execute(sql)
 		rows = cur.fetchall()
-
+		
+		decoded_rows = []
 		column_names = [i[0] for i in cur.description]
 		fp = open(os.path.join(mypath,table_name+'.csv'), 'w')
 		myFile = csv.writer(fp)
+		for row in rows:
+			tmp = []
+			for cell in row:
+				try:
+					tmp.append(cell.decode('utf-8'))
+					
+				except:
+					tmp.append(cell)
+					
+			decoded_rows.append(tuple(tmp))	
+	
+	
 		myFile.writerow(column_names)
-		myFile.writerows(rows)
+	
+	
+		myFile.writerows(decoded_rows)
+
+	
 		fp.close()
+			
 
 if __name__ == '__main__' :
 	parser = argparse.ArgumentParser()
