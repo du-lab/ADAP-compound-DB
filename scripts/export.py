@@ -7,6 +7,8 @@ import os
 import argparse
 import pandas.io.sql as psql
 import pandas as pd
+from sqlalchemy import create_engine
+import numpy as np
 
 def export(user, password, host, database, folder):
 
@@ -25,7 +27,8 @@ def export(user, password, host, database, folder):
 	path = os.path.join(folder,'schema_main.sql')
 	os.system(f'mysqldump -h {host} -u {user} -p{password} --no-data {database} > {path}')
 	db = pymysql.connect(**db_opts)
-
+	url = f'mysql://{user}:{password}@{host}/{database}'
+	cnx = create_engine(url).connect()
 
 
 	cur = db.cursor()
@@ -33,38 +36,17 @@ def export(user, password, host, database, folder):
 	cur.execute("SHOW TABLES")
 	tables = cur.fetchall()
 	for(table_name, ) in tables:
-		sql = f'Select * from {database}.{table_name};'
+		#sql = f'Select * from {database}.{table_name};'
 		print("Writing " + table_name)
 		
-		cur.execute(sql)
-		rows = cur.fetchall()
-		
-		decoded_rows = []
-		column_names = [i[0] for i in cur.description]
-		fp = open(os.path.join(mypath,table_name+'.csv'), 'w')
-		myFile = csv.writer(fp, quoting = csv.QUOTE_MINIMAL)
-		for row in rows:
-			tmp = []
-			for cell in row:
-				if cell == '' or cell == 'N/A':
-					cell = ' '
-				try:
-					tmp.append(cell.decode('utf-8'))
-					
-				except:
-					tmp.append(cell)
-					
-			decoded_rows.append(tuple(tmp))	
-	
-	
-		myFile.writerow(column_names)
-	
-	
-		myFile.writerows(decoded_rows)
-
-	
-		fp.close()
+		df = pd.read_sql_table(table_name, cnx)
+		if table_name == 'userprincipal':
+			print(df)
+		for col, dtype in df.dtypes.items():
+			if dtype == np.object:
+				df[col] = df[col].str.decode('utf-8').fillna(df[col]) 
 			
+		df.to_csv(os.path.join(folder,f"{table_name}.csv"), index = False, encoding='utf-8')
 
 if __name__ == '__main__' :
 	parser = argparse.ArgumentParser()
