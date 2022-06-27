@@ -42,10 +42,12 @@ def export(user, password, host, database, folder):
 		decoded_rows = []
 		column_names = [i[0] for i in cur.description]
 		fp = open(os.path.join(mypath,table_name+'.csv'), 'w')
-		myFile = csv.writer(fp)
+		myFile = csv.writer(fp, quoting = csv.QUOTE_MINIMAL)
 		for row in rows:
 			tmp = []
 			for cell in row:
+				if cell == '' or cell == 'N/A':
+					cell = ' '
 				try:
 					tmp.append(cell.decode('utf-8'))
 					

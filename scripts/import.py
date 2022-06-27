@@ -28,7 +28,7 @@ def create_schema(location):
 	fd = open(location, 'r')
 	sqlFile = fd.read()
 	fd.close()
-	sqlCommands = sqlFile.split(';')
+	sqlCommands = sqlFile.lower().split(';')
 
 	return sqlCommands
 
@@ -90,7 +90,7 @@ def import_csv(username, password, host, database, store_location, schema_name):
 		df = pd.read_csv(os.path.join(mypath, f'{f}.csv'),sep=',', low_memory = False)
 
 		try:
-			df.to_sql(name = f, con=engine,index=False,if_exists='append', chunksize = 1000000 , method='multi') #try changing chunksize to see change in performance
+			df.to_sql(name = f.lower(), con=engine,index=False,if_exists='append', chunksize = 100000 , method='multi') #try changing chunksize to see change in performance
 		except Exception as e:
 
 			print('Could not write ', f, file=sys.stderr)
