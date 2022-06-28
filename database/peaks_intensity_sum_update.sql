@@ -1,4 +1,4 @@
-CREATE TABLE TempTable AS SELECT SpectrumId, MAX(Intensity) AS MaxIntensity FROM Peak GROUP BY SpectrumIdTempTableTempTable;
+CREATE TABLE TempTable AS SELECT SpectrumId, MAX(Intensity) AS MaxIntensity FROM Peak GROUP BY SpectrumId;
 
 CREATE INDEX PrimaryIndex ON TempTable (SpectrumId);
 
@@ -8,5 +8,5 @@ UPDATE Peak set Peak.Intensity = (
 );
 
 UPDATE Spectrum SET OmegaFactor = (
-    SELECT 1.0 / (SUM(Peak.Intensity) - 0.5) FROM Peak WHERE Peak.SpectrumId = Spectrum.Id
+    SELECT IFNULL(1.0 / (SUM(Peak.Intensity) - 0.5), 0) FROM Peak WHERE Peak.SpectrumId = Spectrum.Id
 )
