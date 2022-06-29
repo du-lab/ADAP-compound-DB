@@ -55,7 +55,10 @@ public class GroupSearchService {
             session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
 
             // Calculate total number of spectra
-            long totalSteps = spectrumRepository.countSpectraByFileIds(files.stream().mapToLong(File::getId).toArray());
+            long totalSteps = files.stream()
+                    .map(File::getSpectra).filter(Objects::nonNull)
+                    .mapToInt(List::size)
+                    .sum();
 
             if (totalSteps == 0) {
                 LOGGER.warn("No query spectra for performing a group search");

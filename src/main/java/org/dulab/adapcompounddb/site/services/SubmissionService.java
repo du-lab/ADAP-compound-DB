@@ -53,6 +53,10 @@ public class SubmissionService {
         return submissionRepository.findById(submissionId).orElseThrow(EmptyStackException::new);
     }
 
+    public Submission fetchSubmission(long submissionId) {
+        return submissionRepository.getSubmissionWithFilesSpectraPeaks(submissionId);
+    }
+
     @Transactional
     public List<Submission> findSubmissionsByUserId(final long userId) {
         return MappingUtils.toList(submissionRepository.findByUserId(userId));

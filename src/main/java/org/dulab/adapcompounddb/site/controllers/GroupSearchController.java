@@ -88,7 +88,7 @@ public class GroupSearchController extends BaseController {
                                             HttpServletResponse response, @Valid FilterForm form, Errors errors) {
 
         Submission submission = submissionId
-                .map(submissionService::findSubmission)
+                .map(submissionService::fetchSubmission)
                 .orElseGet(() -> Submission.from(session));
 
         FilterOptions filterOptions = getFilterOptions(getChromatographyTypes(submission));
