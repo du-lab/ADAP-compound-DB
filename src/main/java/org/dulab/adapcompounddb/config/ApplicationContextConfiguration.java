@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.RestController;
 
 @Configuration
 @EnableAsync
@@ -39,7 +40,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 @EnableJpaRepositories(basePackages = "org.dulab.adapcompounddb.site.repositories",
         entityManagerFactoryRef = "entityManagerFactoryBean", transactionManagerRef = "jpaTransactionManager")
 @ComponentScan(basePackages = {"org.dulab.adapcompounddb.site", "org.dulab.adapcompounddb.rest"},
-        excludeFilters = @ComponentScan.Filter({Controller.class, ControllerAdvice.class}))
+        excludeFilters = @ComponentScan.Filter({Controller.class, RestController.class, ControllerAdvice.class}))
 @Import({WebSecurityConfiguration.class})
 public class ApplicationContextConfiguration {
 

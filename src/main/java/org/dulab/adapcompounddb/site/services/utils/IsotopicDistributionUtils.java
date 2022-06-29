@@ -1,13 +1,10 @@
 package org.dulab.adapcompounddb.site.services.utils;
 
-import com.sun.xml.fastinfoset.algorithm.DoubleEncodingAlgorithm;
 import org.apache.commons.math3.special.Gamma;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.print.attribute.standard.MediaSize;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class IsotopicDistributionUtils {
 

@@ -3,7 +3,6 @@ package org.dulab.adapcompounddb.site.controllers;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.entities.*;
-import org.dulab.adapcompounddb.site.controllers.forms.FilterOptions;
 import org.dulab.adapcompounddb.site.controllers.forms.SubmissionForm;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
@@ -68,7 +67,7 @@ public class SubmissionController extends BaseController {
 
         final SubmissionForm submissionForm = new SubmissionForm(submission);
         submissionForm.setAuthorized(authenticated);
-        submissionForm.setIsLibrary(submission.isLibrary());
+        submissionForm.setIsLibrary(submissionService.isLibrary(submission));
         model.addAttribute("submission", submission);
         model.addAttribute("submissionForm", submissionForm);
         model.addAttribute("view_submission", authenticated); // User is logged in
@@ -126,8 +125,9 @@ public class SubmissionController extends BaseController {
         }
         final SubmissionForm submissionForm = new SubmissionForm(submission);
         submissionForm.setAuthorized(authorized);
-        submissionForm.setIsLibrary(submission.isLibrary());
-
+        submissionForm.setIsLibrary(submissionService.isLibrary(submission));
+        submissionForm.setIsInHouseLibrary(submissionService.isInHouseReference(submission));
+        submission.setSearchable(submissionService.isSearchable(submission));
         model.addAttribute("submission", submission);
         model.addAttribute("submissionForm", submissionForm);
         model.addAttribute("view_submission", true);

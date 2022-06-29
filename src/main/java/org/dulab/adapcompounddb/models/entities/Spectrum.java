@@ -111,7 +111,7 @@ public class Spectrum implements Serializable {
 
     private double omegaFactor;
 
-    @NotNull(message = "Spectrum: the field Chromatography Type is required.")
+    @NotNull(message = "Spectrum: the field Chromatography Type is requirexd.")
     @Enumerated(EnumType.STRING)
     private ChromatographyType chromatographyType;
 

@@ -53,6 +53,10 @@ public class SubmissionService {
         return submissionRepository.findById(submissionId).orElseThrow(EmptyStackException::new);
     }
 
+    public Submission fetchSubmission(long submissionId) {
+        return submissionRepository.getSubmissionWithFilesSpectraPeaks(submissionId);
+    }
+
     @Transactional
     public List<Submission> findSubmissionsByUserId(final long userId) {
         return MappingUtils.toList(submissionRepository.findByUserId(userId));
@@ -281,5 +285,20 @@ public class SubmissionService {
         return MappingUtils.toMap(submissionIds.length == 0
                 ? new ArrayList<>(0)
                 : spectrumRepository.getAllSpectrumInHouseReferenceBySubmissionIds(submissionIds));
+    }
+
+    public boolean isInHouseReference(Submission s) {
+        s.setInHouse(submissionRepository.getIsInHouseReference(s.getId()));
+        return s.getIsInHouse();
+    }
+
+    public boolean isLibrary(Submission s) {
+        s.setIsLibrary(submissionRepository.getIsLibrary(s.getId()));
+        return s.isLibrary();
+    }
+
+    public boolean isSearchable(Submission s){
+        s.setSearchable(submissionRepository.getIsSearchable(s.getId()));
+        return s.isSearchable();
     }
 }
