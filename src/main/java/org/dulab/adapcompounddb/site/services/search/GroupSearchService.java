@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
+import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.services.io.ExportSearchResultsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -30,12 +31,15 @@ public class GroupSearchService {
 
     private final IndividualSearchService spectrumSearchService;
     private final ExportSearchResultsService exportSearchResultsService;
+    private final SpectrumRepository spectrumRepository;
 
     @Autowired
     public GroupSearchService(IndividualSearchService spectrumSearchService,
-                              @Qualifier("excelExportSearchResultsService") ExportSearchResultsService exportSearchResultsService) {
+                              @Qualifier("excelExportSearchResultsService") ExportSearchResultsService exportSearchResultsService,
+                              SpectrumRepository spectrumRepository) {
         this.spectrumSearchService = spectrumSearchService;
         this.exportSearchResultsService = exportSearchResultsService;
+        this.spectrumRepository = spectrumRepository;
     }
 
     @Async
@@ -51,10 +55,7 @@ public class GroupSearchService {
             session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
 
             // Calculate total number of spectra
-            long totalSteps = files.stream()
-                    .map(File::getSpectra).filter(Objects::nonNull)
-                    .mapToInt(List::size)
-                    .sum();
+            long totalSteps = spectrumRepository.countSpectraByFileIds(files.stream().mapToLong(File::getId).toArray());
 
             if (totalSteps == 0) {
                 LOGGER.warn("No query spectra for performing a group search");

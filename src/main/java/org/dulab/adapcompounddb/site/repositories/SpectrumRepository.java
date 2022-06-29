@@ -124,4 +124,7 @@ public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, Spec
 
     Iterable<Spectrum> findAllByConsensusTrueAndChromatographyTypeAndIntegerMz(
             ChromatographyType chromatographyType, boolean integerMz);
+
+    @Query("select count(s) from Spectrum s where s.file.id in :fileIds")
+    long countSpectraByFileIds(@Param("fileIds") long[] fileIds);
 }
