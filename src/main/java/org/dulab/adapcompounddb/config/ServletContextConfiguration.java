@@ -5,6 +5,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.ViewResolver;
@@ -19,7 +20,7 @@ import org.springframework.web.servlet.view.JstlView;
 @ComponentScan(
         basePackages = {"org.dulab.adapcompounddb.site", "org.dulab.adapcompounddb.rest"},
         useDefaultFilters = false,
-        includeFilters = @ComponentScan.Filter({Controller.class, ControllerAdvice.class})
+        includeFilters = @ComponentScan.Filter({Controller.class, RestController.class, ControllerAdvice.class})
 )
 public class ServletContextConfiguration implements WebMvcConfigurer {
 

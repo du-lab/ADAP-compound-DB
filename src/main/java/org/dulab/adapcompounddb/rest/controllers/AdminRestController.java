@@ -105,7 +105,7 @@ public class AdminRestController {
 
         Pageable pageable;
         if (sortColumn != null) {
-            Sort sort = new Sort(Sort.Direction.fromString(sortDirection), sortColumn);
+            Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortColumn);
             pageable = PageRequest.of(start / length, length, sort);
         } else {
             pageable = PageRequest.of(start / length, length);
