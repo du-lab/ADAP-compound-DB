@@ -30,16 +30,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>9</maven.compiler.source>
         <maven.compiler.target>9</maven.compiler.target>
-<!--        <spring.version>5.2.4.RELEASE</spring.version>-->
         <spring.version>5.2.22.RELEASE</spring.version>
-<!--        <spring.version>5.3.21</spring.version>-->
-<!--        <spring-security.version>5.2.2.RELEASE</spring-security.version>-->
         <spring-security.version>5.4.10</spring-security.version>
-<!--        <spring-security.version>5.7.2</spring-security.version>-->
-<!--        <spring-data.version>2.1.9.RELEASE</spring-data.version>-->
         <spring-data.version>2.3.9.RELEASE</spring-data.version>
-<!--        <spring-data.version>2.7.1</spring-data.version>-->
-<!--        <log4j.version>2.10.0</log4j.version>-->
         <log4j.version>2.17.2</log4j.version>
         <apache.tomcat.port>8080</apache.tomcat.port>
         <apache.tomcat.path>/</apache.tomcat.path>
@@ -205,7 +198,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>5.4.28.Final</version>
+            <version>5.6.9.Final</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/javax.validation/validation-api -->
         <dependency>
