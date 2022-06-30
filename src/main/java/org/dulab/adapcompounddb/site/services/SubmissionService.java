@@ -1,9 +1,5 @@
 package org.dulab.adapcompounddb.site.services;
 
-import java.math.BigInteger;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,6 +19,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigInteger;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class SubmissionService {
@@ -232,7 +232,7 @@ public class SubmissionService {
         for (Submission submission : submissions) {
             String html = String.format("%s <span class='badge badge-info'>private</span>%s",
                     submission.getName(),
-                    submission.isInHouse() ? " <span class='badge badge-success'>in-house</span>" : "");
+                    submissionRepository.getIsInHouseReference(submission.getId()) ? " <span class='badge badge-success'>in-house</span>" : "");
             submissionIdToNameMap.put(BigInteger.valueOf(submission.getId()), html);
         }
         return submissionIdToNameMap;
