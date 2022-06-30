@@ -16,7 +16,8 @@ public class DataUtils {
      */
     public static Pageable createPageable(int start, int length, String column, String direction) {
         return PageRequest.of(start / length, length, (column != null)
-                ? new Sort(Sort.Direction.fromString(direction), column)
+//                ? new Sort(Sort.Direction.fromString(direction), column)
+                ? Sort.by(Sort.Direction.fromString(direction), column)
                 : Sort.unsorted());
     }
 }

@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
+import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.services.io.ExportSearchResultsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -30,12 +31,15 @@ public class GroupSearchService {
 
     private final IndividualSearchService spectrumSearchService;
     private final ExportSearchResultsService exportSearchResultsService;
+    private final SpectrumRepository spectrumRepository;
 
     @Autowired
     public GroupSearchService(IndividualSearchService spectrumSearchService,
-                              @Qualifier("excelExportSearchResultsService") ExportSearchResultsService exportSearchResultsService) {
+                              @Qualifier("excelExportSearchResultsService") ExportSearchResultsService exportSearchResultsService,
+                              SpectrumRepository spectrumRepository) {
         this.spectrumSearchService = spectrumSearchService;
         this.exportSearchResultsService = exportSearchResultsService;
+        this.spectrumRepository = spectrumRepository;
     }
 
     @Async
