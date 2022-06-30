@@ -1,7 +1,6 @@
 import os
 import argparse
 from datetime import datetime
-import shutil
 
 def export(user, password, database, folder):
 	files = [f for f in os.listdir(folder)]
