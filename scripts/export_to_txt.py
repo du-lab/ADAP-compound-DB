@@ -9,11 +9,11 @@ def export(user, password, database, folder):
 
 if __name__ == '__main__' :
 	parser = argparse.ArgumentParser()
-	parser.add_argument('--save', help='Save location')
-	parser.add_argument('--user', help='Username')
-	parser.add_argument('--password', help='Password')
+	parser.add_argument('--save', help='Save location', required = True)
+	parser.add_argument('--user', help='Username', required = True)
+	parser.add_argument('--password', help='Password', required = True)
 	#parser.add_argument('--host', help='Host')
-	parser.add_argument('--db', help='Database')
+	#parser.add_argument('--db', help='Database')
 	#parser.add_argument('--schema', help='Schema location')
 	args = parser.parse_args()
-	export(args.user, args.password, args.db, args.save)
+	export(args.user, args.password, 'adapcompounddb', args.save)
