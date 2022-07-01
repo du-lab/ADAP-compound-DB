@@ -7,7 +7,7 @@ def export(user, password, database, folder):
 	for f in files:
 		os.system(f'sudo rm {os.path.join(folder,f)}')
 	os.system(f'sudo mysqldump -u {user} -p{password} --tab {folder} {database}')
-	file_name = 'backup_' + datetime.today().strftime('%Y-%m-%d_%H:%M:%S')
+	file_name = 'backup_' + datetime.today().strftime('%Y-%m-%d_%H-%M-%S')
 	os.system(f'sudo zip -r {file_name}.zip {folder}')
 
 if __name__ == '__main__' :
