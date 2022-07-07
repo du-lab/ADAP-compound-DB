@@ -183,79 +183,129 @@
 <script>
     $(document).ready(function () {
 
-        <%--$('#queryInfo').spectrumInfo(--%>
-        <%--    ${pageContext.request.contextPath},--%>
-        <%--    ${querySpectrum.id},--%>
-        <%--    ${dulab:getFileIndexFromURL(requestScope['javax.servlet.forward.request_uri'])},--%>
-        <%--    ${dulab:getSpectrumIndexFromURL(requestScope['javax.servlet.forward.request_uri'])});--%>
-        $('#queryInfo').spectrumInfo('info.json');
-
-        let table = $('#table').DataTable({
+        let table = $('#match_table').DataTable({
             // dom: 'lfrtip',
-            // order: [[5, 'desc']],
-            processing: true,  // Show indicator when loading ajax
+            serverSide: true,
+            order: [[0, 'desc']],
+            processing: true,
             responsive: true,
             scrollX: true,
-            scroller: true,
             select: {style: 'single'},
-            "aoColumnDefs": [
+            // scroller: true,
+            rowId: 'position',
+            ajax: {
+                url: "${pageContext.request.contextPath}/file/individual_search/data.json",
+                data: function (data) {
+
+                    data.columnStr = [];
+                    for (let i = 0; i < data.order.length; i++) {
+                        data.columnStr += data.order[i].column + "-" + data.order[i].dir + ",";
+                    }
+                    data.search = data.search["value"];
+                },
+                dataSrc: function (d) {
+                    // Hide columns with no data
+                    table.column(3).visible(d.data.map(row => row['mass']).join(''));
+                    table.column(4).visible(d.data.map(row => row['size']).join(''));
+                    // table.column(5).visible(d.data.map(row => row['score']).join(''));
+                    // table.column(6).visible(d.data.map(row => row['massError']).join(''));
+                    // table.column(7).visible(d.data.map(row => row['massErrorPPM']).join(''));
+                    // table.column(8).visible(d.data.map(row => row['retTimeError']).join(''));
+                    // table.column(9).visible(d.data.map(row => row['retIndexError']).join(''));
+                    table.column(11).visible(d.data.map(row => row['aveSignificance']).join(''));
+                    table.column(12).visible(d.data.map(row => row['minSignificance']).join(''));
+                    table.column(13).visible(d.data.map(row => row['maxSignificance']).join(''));
+                    return d.data;
+                },
+                error: function (xhr, error, code) {
+                    logging.logToServer('<c:url value="/js-log"/>', `\${xhr.status} - \${error} - \${code}`);
+                }
+            },
+            fnCreatedRow: function (row, data, dataIndex) {
+                $(row).attr('data-position', data.position);
+                $(row).attr('data-matchId', data.spectrumId);
+                $(row).attr('data-queryHRef', data.queryHRef);
+                $(row).attr('data-queryId', data.querySpectrumId);
+                $(row).attr('data-queryFileIndex', data.queryFileIndex);
+                $(row).attr('data-querySpectrumIndex', data.querySpectrumIndex);
+            },
+            columns: [
+                {data: 'position'},
                 {
-                    "targets": 1,
-                    visible: false,
+                    data: function (row) {
+                        const href = (row.querySpectrumId !== 0)
+                            ? `<c:url value="/spectrum/\${row.querySpectrumId}/"/>`
+                            : `<c:url value="/file/\${row.queryFileIndex}/\${row.querySpectrumIndex}/"/>`;
+                        return `<a href="\${href}">\${row.querySpectrumName}</a>`;
+                    }
+                },
+                {data: row => (row.name != null) ? `<a href="<c:url value="/\${row.href}" />">\${row.name}</a>` : ''},
+                {data: row => (row.mass != null) ? row.mass.toFixed(3) : ''},
+                {data: row => (row.size != null) ? row.size : ''},
+                {data: row => (row.score != null) ? row.score.toFixed(3) * 1000 : ''},
+                {data: row => (row.massError != null) ? (1000 * row.massError).toFixed(3) : ''},
+                {data: row => (row.massErrorPPM != null) ? row.massErrorPPM.toFixed(3) : ''},
+                {data: row => (row.retTimeError != null) ? row.retTimeError.toFixed(3) : ''},
+                {data: row => (row.retIndexError != null) ? row.retIndexError.toFixed(1) : ''},
+                {data: row => (row.isotopicSimilarity != null) ? row.isotopicSimilarity.toFixed(3) * 1000 : ''},
+                {data: row => (row.aveSignificance != null) ? row.aveSignificance.toFixed(3) : ''},
+                {data: row => (row.minSignificance != null) ? row.minSignificance.toFixed(3) : ''},
+                {data: row => (row.maxSignificance != null) ? row.maxSignificance.toFixed(3) : ''},
+                {data: 'ontologyLevel'},
+                {
+                    data: row => (row.chromatographyTypeLabel != null)
+                        ? `<span class="badge badge-secondary">\${row.chromatographyTypeLabel}</span>` : ''
+                },
+                {
+                    data: function (row) {
+                        const href = (row.querySpectrumId !== 0)
+                            ? `<c:url value="/spectrum/\${row.querySpectrumId}/search/"/>`
+                            : `<c:url value="/file/\${row.queryFileIndex}/\${row.querySpectrumIndex}/search/"/>`;
+                        return `<a href="\${href}"><i class="material-icons" title="Search spectrum">&#xE8B6;</i></a>`;
+                    }
                 }
             ]
-            // // Hide columns with no data
-            // "fnDrawCallback": function() {
-            //     const api = this.api();
-            //     api.columns().flatten().each(function(colIndex) {
-            //         const column = api.column(colIndex);
-            //         const columnData = column.data().join('');
-            //         column.visible(columnData);
-            //     })
-            // }
         });
-
-        <%--let plot = new TwoSpectraPlot('plot', JSON.parse('${dulab:spectrumToJson(querySpectrum)}'));--%>
 
         table.on('select', function (e, dt, type, indexes) {
 
-            // let chartRow = $('#chartRow');
-            // chartRow.hide();
-
             let row = table.row(indexes).node();
-            let spectrumId = $(row).attr('data-id');
-            $('#matchInfo').spectrumInfo(`${pageContext.request.contextPath}/spectrum/\${spectrumId}/search/info.json`);
-            $('#plot').spectrumPlot(indexes,
-                'positive/peaks.json',
-                `${pageContext.request.contextPath}/spectrum/\${spectrumId}/search/negative/peaks.json`);
+            let position = $(row).attr('data-position');
+            let queryHRef = $(row).attr('data-queryHRef');
+            let queryId = $(row).attr('data-queryId');
+            let queryFileIndex = $(row).attr('data-queryFileIndex');
+            let querySpectrumIndex = $(row).attr('data-querySpectrumIndex');
+            let matchId = $(row).attr('data-matchId');
 
-            // if (spectrum == null) return;
-            //
-            //
-            //
-            // let spectrumJson = JSON.parse(spectrum);
-            // if (spectrumJson["peaks"].length === 0) return;
-            //
-            // plot.update(spectrumJson);
-            // chartRow.show();
+            <%--let queryUrl = `${pageContext.request.contextPath}/file/\${queryFileIndex}/\${querySpectrumIndex}/search/`;--%>
+            let queryUrl = `${pageContext.request.contextPath}\${queryHRef}search/`;
+            let matchUrl = `${pageContext.request.contextPath}/spectrum/\${matchId}/search/`;
+
+            $.ajax({
+                url: `${pageContext.request.contextPath}/ajax/spectrum/info?spectrumId=\${queryId}&fileIndex=\${queryFileIndex}&spectrumIndex=\${querySpectrumIndex}`,
+                success: d => $('#queryInfo').html(d)
+            })
+
+            $.ajax({
+                url: `${pageContext.request.contextPath}/ajax/spectrum/info?spectrumId=\${matchId}`,
+                success: d => $('#matchInfo').html(d)
+            })
+
+            // $('#queryInfo').spectrumInfo(queryUrl + 'info.json');
+            // $('#matchInfo').spectrumInfo(matchUrl + 'info.json');
+            $('#plot').spectrumPlot(position, queryUrl + 'positive/peaks.json', matchUrl + 'negative/peaks.json');
+            $('#queryStructure').spectrumStructure(queryUrl + 'structure.json', function (x) {
+                $('#queryColumn').attr('hidden', !x);
+            });
+            $('#matchStructure').spectrumStructure(matchUrl + 'structure.json', function (x) {
+                $('#matchColumn').attr('hidden', !x);
+            });
+
         });
 
-        table.rows(':eq(0)').select();
 
-        $('#searchButton').click(function () {
-            $('#filterForm').submit();
-            $(this).prop('disabled', true);
-            $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;Search')
-        });
 
-        // $('span[data-id="property_table"]').spa(function () {
-        //     console.log(this.style.overflow);
-        // });
-
-        // $('#filterForm').appendTo('#filter');
-
-        // $('#species, #source, #disease').change(function () {
-        //     $('#filterForm').submit();
-        // });
-    })
+        <%--        <c:if test="${pageContext.request.method == 'GET'}">$('#filterForm').submit();--%>
+        <%--        </c:if>--%>
+    });
 </script>

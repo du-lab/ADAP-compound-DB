@@ -19,6 +19,9 @@ public class SearchParameters implements Cloneable {
         PENALIZE_NO_MATCH_WEAK, ALWAYS_MATCH
     }
 
+    public static final double DEFAULT_MZ_TOLERANCE = 0.01;
+    public static final double DEFAULT_SCORE_THRESHOLD = 0.5;
+
     public enum MzToleranceType {DA, PPM}
 
     private Boolean greedy;
@@ -257,17 +260,17 @@ public class SearchParameters implements Cloneable {
             case GAS:
             case LIQUID_POSITIVE:
             case LIQUID_NEGATIVE:
-                parameters.setMzTolerance(0.01);
-                parameters.setScoreThreshold(0.5);
+                parameters.setMzTolerance(DEFAULT_MZ_TOLERANCE);
+                parameters.setScoreThreshold(DEFAULT_SCORE_THRESHOLD);
                 break;
             case LC_MSMS_POS:
             case LC_MSMS_NEG:
-                parameters.setMzTolerance(0.01);
+                parameters.setMzTolerance(DEFAULT_MZ_TOLERANCE);
                 parameters.setScoreThreshold(0.3);
-                parameters.setPrecursorTolerance(0.01);
+                parameters.setPrecursorTolerance(DEFAULT_MZ_TOLERANCE);
                 break;
             case NONE:
-                parameters.setMassTolerance(0.01);
+                parameters.setMassTolerance(DEFAULT_MZ_TOLERANCE);
                 break;
         }
         return parameters;

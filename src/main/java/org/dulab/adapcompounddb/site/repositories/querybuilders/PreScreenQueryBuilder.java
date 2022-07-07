@@ -166,7 +166,7 @@ public class PreScreenQueryBuilder {
             queryBlock += String.format(" AND (%s)", buildConditionStringWithSubmissionIds());
 
         queryBlock += "\n";
-
+        System.out.println(queryBlock);
         return queryBlock;
     }
 

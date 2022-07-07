@@ -2,15 +2,18 @@ package org.dulab.adapcompounddb.site.controllers;
 
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
-import org.dulab.adapcompounddb.models.entities.*;
+import org.dulab.adapcompounddb.models.entities.Spectrum;
+import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
+import org.dulab.adapcompounddb.site.controllers.forms.CompoundSearchForm;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterForm;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterOptions;
-import org.dulab.adapcompounddb.site.services.*;
+import org.dulab.adapcompounddb.site.services.SpectrumService;
+import org.dulab.adapcompounddb.site.services.SubmissionService;
+import org.dulab.adapcompounddb.site.services.SubmissionTagService;
 import org.dulab.adapcompounddb.site.services.search.IndividualSearchService;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -24,8 +27,8 @@ import org.springframework.web.servlet.view.RedirectView;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.math.BigInteger;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.SortedMap;
 
 @Controller
 public class IndividualSearchController extends BaseController {
@@ -195,6 +198,42 @@ public class IndividualSearchController extends BaseController {
         return searchPost(spectrum, filterForm, model, errors);
     }
 
+    @RequestMapping(value = "/compound/search/", method = RequestMethod.GET)
+    public String searchCompound(CompoundSearchForm compoundSearchForm) {
+        //SearchParameters parameters = SearchParameters.getDefaultParameters(compoundSearchForm.getChromatographyType());
+        //individualSearchService.searchConsensusSpectra(this.getCurrentUserPrincipal(), compoundSearchForm.getSpectrum(), )
+        return "compound/search";
+    }
+
+    @RequestMapping(value = "/compound/search/", method = RequestMethod.POST)
+    public ModelAndView searchCompound(final CompoundSearchForm compoundSearchForm,
+                                       @Valid final Model model, final Errors errors) {
+        //SearchParameters parameters = SearchParameters.getDefaultParameters(compoundSearchForm.getChromatographyType());
+        SearchParameters parameters = new SearchParameters();
+        Spectrum spectrum = new Spectrum();
+        Double mass = compoundSearchForm.getNeutralMass();
+        if(mass != null) {
+            spectrum.setMass(mass);
+            parameters.setMassTolerance(SearchParameters.DEFAULT_MZ_TOLERANCE);
+        }
+        Double precursor = compoundSearchForm.getPrecursorMZ();
+        if(precursor != null) {
+            spectrum.setPrecursor(precursor);
+            parameters.setPrecursorTolerance(SearchParameters.DEFAULT_MZ_TOLERANCE);
+        }
+
+        spectrum.setChromatographyType(compoundSearchForm.getChromatographyType());
+        spectrum.setPrecursor(compoundSearchForm.getPrecursorMZ());
+
+        List<SearchResultDTO> searchResults = individualSearchService.searchConsensusSpectra(this.getCurrentUserPrincipal(), spectrum, parameters);
+        model.addAttribute("querySpectrum", spectrum);
+        model.addAttribute("filterForm", compoundSearchForm);
+        model.addAttribute("filterOptions", getFilterOptions(spectrum.getChromatographyType()));
+        model.addAttribute("searchResults", searchResults);
+        return new ModelAndView("submission/spectrum/search");
+    }
+
+
     private ModelAndView searchPost(final Spectrum querySpectrum,
                                     final FilterForm filterForm,
                                     @Valid final Model model, final Errors errors) {
@@ -232,4 +271,6 @@ public class IndividualSearchController extends BaseController {
 
         return new FilterOptions(speciesList, sourceList, diseaseList, submissions);
     }
+
+
 }
