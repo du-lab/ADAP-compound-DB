@@ -27,7 +27,11 @@
                             </a></li>
 
                             <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#parameters">
-                                Parameters
+                               Parameters
+                                <span id="custom" class="badge badge-info" style="display: none;">Custom Parameters</span>
+
+
+
                             </a></li>
 
                         </ul>
@@ -89,7 +93,7 @@
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <form:label path="scoreThreshold"
+                                <form:label id="scoreThreshold" path="scoreThreshold"
                                             cssClass="col-md-4 col-form-label">Score Threshold:</form:label>
                                 <div class="col-md-8">
                                     <form:input path="scoreThreshold" type="number" cssClass="form-control"/>
@@ -108,7 +112,7 @@
                                 <form:label path="retentionIndexMatch"
                                             cssClass="col-md-4 col-form-label">Retention Index Match:</form:label>
                                 <div class="col-md-8">
-                                    <form:select path="retentionIndexMatch" cssClass="form-control">
+                                    <form:select id="retention" path="retentionIndexMatch" cssClass="form-control">
                                         <form:option value="IGNORE_MATCH">Ignore Retention Index</form:option>
                                         <form:option
                                                 value="PENALIZE_NO_MATCH_STRONG">Penalize matches without Retention Index (Strong)</form:option>
@@ -140,7 +144,7 @@
                                 <form:label path="limit"
                                             cssClass="col-md-4 col-form-label">Matches per Spectrum</form:label>
                                 <div class="col-md-8">
-                                    <form:input path="limit" type="number" cssClass="form-control"/>
+                                    <form:input id="limit" path="limit" type="number" cssClass="form-control"/>
                                 </div>
                             </div>
                         </div>
@@ -152,6 +156,50 @@
         </div>
     </form:form>
 </div>
+
+<script>
+    var somethingChanged = false;
+    $(document).ready(function() {
+
+        $('#parameters input').change(function() {
+           let num = $("#parameters input").filter(function () {
+               return $.trim($(this).val()).length == 0
+           }).length;
+           console.log(num);
+            if(num < 3) {
+                //console.log($("input:empty").length);
+                $("#custom").show();
+            }
+            else {
+                $("#custom").hide();
+            }
+        });
+        $('#retention').change(function() {
+            var isDirty = !this.options[this.selectedIndex].defaultSelected;
+
+            if (isDirty) {
+                $("#custom").show();
+            } else {
+                $("#custom").hide();
+            }
+
+        })
+
+        $('#limit').change(function() {
+            var text = $(this).prop("defaultValue");
+            console.log(text);
+            if(text != $(this).val())
+                $("#custom").show();
+            else
+                $("#custom").hide();
+        })
+
+
+    });
+
+
+
+</script>
 
 <script src="<c:url value="/resources/npm/node_modules/jquery/dist/jquery.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/popper.js/dist/umd/popper.min.js"/>"></script>
