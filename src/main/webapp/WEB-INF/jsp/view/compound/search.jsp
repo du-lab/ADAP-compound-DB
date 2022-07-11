@@ -158,41 +158,58 @@
 </div>
 
 <script>
-    var somethingChanged = false;
+    var showBadge = false;
+
+    function HasFormChanged() {
+        let num = $("#parameters input").filter(function () {
+            return $.trim($(this).val()).length == 0
+        }).length;
+        if(num < 3) return true;
+        var retention = $('#retention').get(0);
+
+
+        var isDirty = !retention.options[retention.selectedIndex].defaultSelected;
+        //console.log(isDirty);
+        if(isDirty) return true;
+
+        console.log($('#limit'));
+        var text = $('#limit').get(0).defaultValue;
+
+        if(text != $('#limit').get(0).value)
+          return true;
+
+        return false;
+
+
+
+    }
     $(document).ready(function() {
 
+
         $('#parameters input').change(function() {
-           let num = $("#parameters input").filter(function () {
-               return $.trim($(this).val()).length == 0
-           }).length;
-           console.log(num);
-            if(num < 3) {
-                //console.log($("input:empty").length);
+           showBadge = HasFormChanged();
+            if(showBadge)
                 $("#custom").show();
-            }
-            else {
+            else
                 $("#custom").hide();
-            }
         });
         $('#retention').change(function() {
-            var isDirty = !this.options[this.selectedIndex].defaultSelected;
-
-            if (isDirty) {
-                $("#custom").show();
-            } else {
-                $("#custom").hide();
-            }
-
-        })
-
-        $('#limit').change(function() {
-            var text = $(this).prop("defaultValue");
-            console.log(text);
-            if(text != $(this).val())
+            showBadge = HasFormChanged();
+            if(showBadge)
                 $("#custom").show();
             else
                 $("#custom").hide();
         })
+
+        $('#limit').change(function() {
+            showBadge = HasFormChanged();
+            if(showBadge)
+                $("#custom").show();
+            else
+                $("#custom").hide();
+        })
+
+
 
 
     });
