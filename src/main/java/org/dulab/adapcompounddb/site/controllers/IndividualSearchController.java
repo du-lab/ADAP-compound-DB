@@ -2,6 +2,7 @@ package org.dulab.adapcompounddb.site.controllers;
 
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
+import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
@@ -14,7 +15,6 @@ import org.dulab.adapcompounddb.site.services.SubmissionTagService;
 import org.dulab.adapcompounddb.site.services.search.IndividualSearchService;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -28,8 +28,11 @@ import org.springframework.web.servlet.view.RedirectView;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Controller
 public class IndividualSearchController extends BaseController {
@@ -213,6 +216,27 @@ public class IndividualSearchController extends BaseController {
         SearchParameters parameters = new SearchParameters();
         Spectrum spectrum = new Spectrum();
         Double mass = compoundSearchForm.getNeutralMass();
+        String peakVals = compoundSearchForm.getSpectrum();
+        if(peakVals != null && !peakVals.trim().isEmpty()) {
+            String[] peakStrings = peakVals.split("\n");
+            ArrayList<Peak> peaks = new ArrayList<>();
+            for(String peakString: peakStrings) {
+                Pattern p = Pattern.compile("[0-9]*\\.?[0-9]+");
+                Matcher m = p.matcher(peakString);
+                Peak peakValue = new Peak();
+                int ct = 0;
+                while (m.find()) {
+                    if(ct == 0)
+                        peakValue.setMz(Double.parseDouble(m.group()));
+                    else
+                        peakValue.setIntensity(Double.parseDouble(m.group()));
+                    ct++;
+                }
+                peaks.add(peakValue);
+            }
+        }
+
+        //System.out.println(peakVals);
         if(mass != null) {
             spectrum.setMass(mass);
             parameters.setMassTolerance(SearchParameters.DEFAULT_MZ_TOLERANCE);
