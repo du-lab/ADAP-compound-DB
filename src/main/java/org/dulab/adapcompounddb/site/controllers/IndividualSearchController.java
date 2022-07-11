@@ -14,6 +14,7 @@ import org.dulab.adapcompounddb.site.services.SubmissionTagService;
 import org.dulab.adapcompounddb.site.services.search.IndividualSearchService;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -220,6 +221,26 @@ public class IndividualSearchController extends BaseController {
         if(precursor != null) {
             spectrum.setPrecursor(precursor);
             parameters.setPrecursorTolerance(SearchParameters.DEFAULT_MZ_TOLERANCE);
+        }
+
+        if(compoundSearchForm.getScoreThreshold() != null) {
+            parameters.setScoreThreshold(compoundSearchForm.getScoreThreshold());
+        }
+
+        if(compoundSearchForm.getRetentionIndexTolerance() != null) {
+            parameters.setRetIndexTolerance(compoundSearchForm.getRetentionIndexTolerance());
+        }
+
+        if(compoundSearchForm.getRetentionIndexMatch() != null) {
+            parameters.setRetIndexMatchType(compoundSearchForm.getRetentionIndexMatch());
+        }
+
+        if(compoundSearchForm.getMzTolerance() != null) {
+            parameters.setMzTolerance(compoundSearchForm.getMzTolerance());
+        }
+
+        if(compoundSearchForm.getLimit() != null) {
+            parameters.setLimit(compoundSearchForm.getLimit());
         }
 
         spectrum.setChromatographyType(compoundSearchForm.getChromatographyType());
