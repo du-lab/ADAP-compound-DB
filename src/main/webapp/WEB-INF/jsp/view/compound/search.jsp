@@ -158,59 +158,51 @@
 </div>
 
 <script>
-    var showBadge = false;
+
 
     function HasFormChanged() {
+        var showBadge = false;
         let num = $("#parameters input").filter(function () {
             return $.trim($(this).val()).length == 0
         }).length;
-        if(num < 3) return true;
+        if(num < 3) showBadge = true;
         var retention = $('#retention').get(0);
 
 
         var isDirty = !retention.options[retention.selectedIndex].defaultSelected;
         //console.log(isDirty);
-        if(isDirty) return true;
+        if(isDirty) showBadge = true;
 
         console.log($('#limit'));
         var text = $('#limit').get(0).defaultValue;
 
         if(text != $('#limit').get(0).value)
-          return true;
+            showBadge = true;
 
-        return false;
+        if(showBadge)
+            $("#custom").show();
+        else
+            $("#custom").hide();
+
 
 
 
     }
     $(document).ready(function() {
 
-
         $('#parameters input').change(function() {
-           showBadge = HasFormChanged();
-            if(showBadge)
-                $("#custom").show();
-            else
-                $("#custom").hide();
+           HasFormChanged();
+
         });
         $('#retention').change(function() {
-            showBadge = HasFormChanged();
-            if(showBadge)
-                $("#custom").show();
-            else
-                $("#custom").hide();
+            HasFormChanged();
+
         })
 
         $('#limit').change(function() {
-            showBadge = HasFormChanged();
-            if(showBadge)
-                $("#custom").show();
-            else
-                $("#custom").hide();
+           HasFormChanged();
+
         })
-
-
-
 
     });
 
