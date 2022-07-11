@@ -8,8 +8,8 @@ import java.util.Set;
 
 public class FilterForm {
 
-    private Integer scoreThreshold;
-    private Integer retentionIndexTolerance;
+    private Double scoreThreshold;
+    private Double retentionIndexTolerance;
     private RetIndexMatchType retentionIndexMatch = RetIndexMatchType.IGNORE_MATCH;
     private Double mzTolerance;
     private MzToleranceType mzToleranceType = MzToleranceType.DA;
@@ -22,19 +22,19 @@ public class FilterForm {
     private boolean sendResultsToEmail;
 
 
-    public Integer getScoreThreshold() {
+    public Double getScoreThreshold() {
         return scoreThreshold;
     }
 
-    public void setScoreThreshold(Integer scoreThreshold) {
+    public void setScoreThreshold(Double scoreThreshold) {
         this.scoreThreshold = scoreThreshold;
     }
 
-    public Integer getRetentionIndexTolerance() {
+    public Double getRetentionIndexTolerance() {
         return retentionIndexTolerance;
     }
 
-    public void setRetentionIndexTolerance(Integer retentionIndexTolerance) {
+    public void setRetentionIndexTolerance(Double retentionIndexTolerance) {
         this.retentionIndexTolerance = retentionIndexTolerance;
     }
 
