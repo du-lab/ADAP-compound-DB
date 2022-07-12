@@ -10,7 +10,7 @@ jQuery.fn.spectrumInfo = function (restURL) {
         url: restURL,
         complete: function (data) {
             const jsonInfo = data.responseJSON
-            console.log(jsonInfo);
+
             // Remove all child elements
             div.text(null);
             while (div.firstChild)
