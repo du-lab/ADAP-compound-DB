@@ -140,7 +140,7 @@
                                     <td>${status.index + 1}</td>
                                     <td>${searchResult.querySpectrumName}</td>
                                     <td>
-                                        <a href="${pageContext.request.contextPath}${searchResult.getHRef()}">
+                                        <a href="${pageContext.request.contextPath}$/{searchResult.getHRef()}">
                                                 ${searchResult.name}
                                         </a>
                                     </td>
@@ -224,9 +224,11 @@
 
             let row = table.row(indexes).node();
             let spectrumId = $(row).attr('data-id');
-            let queryId = $(row).attr('data-queryId');
+            let queryHRef = `${searchResult.getHRef()}`;
+            console.log(queryHRef);
+            let queryUrl = `${pageContext.request.contextPath}\${queryHRef}search/`;
             console.log(`${pageContext.request.contextPath}/spectrum/\${spectrumId}/search/info.json`);
-            $('#queryInfo').spectrumInfo(`${pageContext.request.contextPath}/spectrum/\${spectrumId}/search/info.json`);
+            $('#queryInfo').spectrumInfo(queryUrl + 'info.json');
             $('#matchInfo').spectrumInfo(`${pageContext.request.contextPath}/spectrum/\${spectrumId}/search/info.json`);
             $('#plot').spectrumPlot(indexes,
                 'positive/peaks.json',

@@ -3,6 +3,7 @@
 
 <div class="container">
     <%--@elvariable id="compoundSearchForm" type="org.dulab.adapcompounddb.site.controllers.forms.CompoundSearchForm"--%>
+    <%--@elvariable id="errorMessage" type="java.lang.String"--%>
     <%--@elvariable id="filterOptions" type="org.dulab.adapcompounddb.site.controllers.forms.FilterOptions"--%>
     <form:form modelAttribute="compoundSearchForm" method="post">
         <div class="row row-content">
@@ -38,6 +39,7 @@
                     </div>
 
                     <div class="card-body tab-content">
+                        <div class="alert-danger" style="margin-bottom: 5px;">${errorMessage}</div>
                         <div id="search" class="tab-pane fade show active" role="tabpanel">
                             <div class="row form-group">
                                 <div class="col-md-4">
@@ -96,7 +98,7 @@
                                 <form:label id="scoreThreshold" path="scoreThreshold"
                                             cssClass="col-md-4 col-form-label">Score Threshold:</form:label>
                                 <div class="col-md-8">
-                                    <form:input path="scoreThreshold" type="number" cssClass="form-control"/>
+                                    <form:input path="scoreThreshold" type="number" step="0.1" cssClass="form-control"/>
                                 </div>
                             </div>
 
@@ -183,8 +185,6 @@
             $("#custom").show();
         else
             $("#custom").hide();
-
-
 
 
     }

@@ -203,7 +203,7 @@ public class IndividualSearchController extends BaseController {
     }
 
     @RequestMapping(value = "/compound/search/", method = RequestMethod.GET)
-    public String searchCompound(CompoundSearchForm compoundSearchForm) {
+    public String searchCompound(final CompoundSearchForm compoundSearchForm, final Model model) {
         //SearchParameters parameters = SearchParameters.getDefaultParameters(compoundSearchForm.getChromatographyType());
         //individualSearchService.searchConsensusSpectra(this.getCurrentUserPrincipal(), compoundSearchForm.getSpectrum(), )
         return "compound/search";
@@ -213,6 +213,14 @@ public class IndividualSearchController extends BaseController {
     public ModelAndView searchCompound(final CompoundSearchForm compoundSearchForm,
                                        @Valid final Model model, final Errors errors) {
         //SearchParameters parameters = SearchParameters.getDefaultParameters(compoundSearchForm.getChromatographyType());
+        if(compoundSearchForm.getChromatographyType() == ChromatographyType.LC_MSMS_NEG || compoundSearchForm.getChromatographyType() == ChromatographyType.LC_MSMS_POS) {
+            if(compoundSearchForm.getPrecursorMZ() == null) {
+                model.addAttribute("errorMessage", "You must enter Precursor M/Z for " + compoundSearchForm.getChromatographyType().getLabel());
+                return new ModelAndView("/compound/search");
+            }
+
+
+        }
         SearchParameters parameters = new SearchParameters();
         Spectrum spectrum = new Spectrum();
         Double mass = compoundSearchForm.getNeutralMass();
@@ -234,6 +242,7 @@ public class IndividualSearchController extends BaseController {
                 }
                 peaks.add(peakValue);
             }
+            spectrum.setPeaks(peaks);
         }
 
         //System.out.println(peakVals);
@@ -269,7 +278,7 @@ public class IndividualSearchController extends BaseController {
 
         spectrum.setChromatographyType(compoundSearchForm.getChromatographyType());
         spectrum.setPrecursor(compoundSearchForm.getPrecursorMZ());
-
+        parameters.setPrecursorTolerance(SearchParameters.DEFAULT_MZ_TOLERANCE);
         List<SearchResultDTO> searchResults = individualSearchService.searchConsensusSpectra(this.getCurrentUserPrincipal(), spectrum, parameters);
         model.addAttribute("querySpectrum", spectrum);
         model.addAttribute("filterForm", compoundSearchForm);
