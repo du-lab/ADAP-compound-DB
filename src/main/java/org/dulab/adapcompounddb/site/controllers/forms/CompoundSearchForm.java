@@ -9,13 +9,13 @@ public class CompoundSearchForm extends FilterForm {
     private String Spectrum;
     private ChromatographyType chromatographyType;
 
-    public CompoundSearchForm(String identifier, Double neutralMass, Double precursorMZ, String spectrum, ChromatographyType chromatographyTypes) {
-        Identifier = identifier;
-        NeutralMass = neutralMass;
-        PrecursorMZ = precursorMZ;
-        Spectrum = spectrum;
-        this.chromatographyType = chromatographyTypes;
-    }
+//    public CompoundSearchForm(String identifier, Double neutralMass, Double precursorMZ, String spectrum, ChromatographyType chromatographyTypes) {
+//        Identifier = identifier;
+//        NeutralMass = neutralMass;
+//        PrecursorMZ = precursorMZ;
+//        Spectrum = spectrum;
+//        this.chromatographyType = chromatographyTypes;
+//    }
 
     public String getIdentifier() {
         return Identifier;

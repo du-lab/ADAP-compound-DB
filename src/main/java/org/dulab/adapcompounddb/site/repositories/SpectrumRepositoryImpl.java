@@ -1,23 +1,25 @@
 package org.dulab.adapcompounddb.site.repositories;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.dulab.adapcompounddb.models.SearchType;
+import org.dulab.adapcompounddb.models.entities.*;
+import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
+import org.dulab.adapcompounddb.site.repositories.querybuilders.*;
+import org.dulab.adapcompounddb.site.services.admin.QueryParameters;
+import org.dulab.adapcompounddb.site.services.search.SearchParameters;
+import org.dulab.adapcompounddb.site.services.search.SearchParameters.RetIndexMatchType;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import javax.validation.constraints.NotNull;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.dulab.adapcompounddb.site.repositories.querybuilders.*;
-import org.dulab.adapcompounddb.site.services.admin.QueryParameters;
-import org.dulab.adapcompounddb.models.SearchType;
-import org.dulab.adapcompounddb.models.entities.*;
-import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
-import org.dulab.adapcompounddb.site.services.search.SearchParameters;
-import org.dulab.adapcompounddb.site.services.search.SearchParameters.RetIndexMatchType;
 
 
 public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
@@ -250,7 +252,8 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                         .withUser(user)
                         .withChromatographyType(querySpectrum.getChromatographyType())
                         .withPrecursor(params.getPrecursorTolerance(), params.getPrecursorTolerancePPM(), querySpectrum.getPrecursor())
-                        .withRetTime(params.getRetTimeTolerance(), querySpectrum.getRetentionTime());
+                        .withRetTime(params.getRetTimeTolerance(), querySpectrum.getRetentionTime())
+                        .withID(params.getIdentifier());
 
         if (params.getRetIndexMatchType() == RetIndexMatchType.ALWAYS_MATCH) {
             if (querySpectrum.getRetentionIndex() == null)
@@ -264,6 +267,8 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
         if (!greedy)
             queryBuilder = queryBuilder.withQuerySpectrum(params.getMzTolerance(), params.getMzTolerancePPM(), querySpectrum);
+
+
 
         final String sqlQuery = queryBuilder.build();
 

@@ -2,6 +2,7 @@ package org.dulab.adapcompounddb.site.controllers;
 
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
+import org.dulab.adapcompounddb.models.entities.File;
 import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.Submission;
@@ -9,6 +10,7 @@ import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.site.controllers.forms.CompoundSearchForm;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterForm;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterOptions;
+import org.dulab.adapcompounddb.site.controllers.utils.ConversionsUtils;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.dulab.adapcompounddb.site.services.SubmissionTagService;
@@ -18,21 +20,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.SortedMap;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.SEARCH_PARAMETERS_COOKIE_NAME;
 
 @Controller
 public class IndividualSearchController extends BaseController {
@@ -203,14 +204,24 @@ public class IndividualSearchController extends BaseController {
     }
 
     @RequestMapping(value = "/compound/search/", method = RequestMethod.GET)
-    public String searchCompound(final CompoundSearchForm compoundSearchForm, final Model model) {
-        //SearchParameters parameters = SearchParameters.getDefaultParameters(compoundSearchForm.getChromatographyType());
-        //individualSearchService.searchConsensusSpectra(this.getCurrentUserPrincipal(), compoundSearchForm.getSpectrum(), )
-        return "compound/search";
+    public ModelAndView searchCompound(CompoundSearchForm compoundSearchForm, Model model, HttpSession session, @CookieValue(
+            value = SEARCH_PARAMETERS_COOKIE_NAME,
+            defaultValue = "") String searchParametersCookie) {
+        Submission submission = Submission.from(session);
+
+        compoundSearchForm  = ConversionsUtils.byteStringToForm(searchParametersCookie, CompoundSearchForm.class);
+        //Spectrum spectrum = new Spectrum();
+        FilterOptions filterOptions = getFilterOptions(compoundSearchForm.getChromatographyType());
+       model.addAttribute("filterOptions", filterOptions);
+        if (compoundSearchForm.getSubmissionIds() == null || compoundSearchForm.getSubmissionIds().isEmpty())
+           compoundSearchForm.setSubmissionIds(filterOptions.getSubmissions().keySet());
+       model.addAttribute("compoundSearchForm", compoundSearchForm);
+        return new ModelAndView("compound/search");
+
     }
 
     @RequestMapping(value = "/compound/search/", method = RequestMethod.POST)
-    public ModelAndView searchCompound(final CompoundSearchForm compoundSearchForm,
+    public ModelAndView searchCompound(final CompoundSearchForm compoundSearchForm, HttpServletResponse response,
                                        @Valid final Model model, final Errors errors) {
         //SearchParameters parameters = SearchParameters.getDefaultParameters(compoundSearchForm.getChromatographyType());
         if(compoundSearchForm.getChromatographyType() == ChromatographyType.LC_MSMS_NEG || compoundSearchForm.getChromatographyType() == ChromatographyType.LC_MSMS_POS) {
@@ -243,6 +254,24 @@ public class IndividualSearchController extends BaseController {
                 peaks.add(peakValue);
             }
             spectrum.setPeaks(peaks);
+            if(compoundSearchForm.getScoreThreshold() != null) {
+                parameters.setScoreThreshold(compoundSearchForm.getScoreThreshold());
+            }
+            else{
+                parameters.setScoreThreshold(SearchParameters.DEFAULT_SCORE_THRESHOLD);
+            }
+            if(compoundSearchForm.getMzTolerance() != null) {
+                parameters.setMzTolerance(compoundSearchForm.getMzTolerance());
+            }
+            else
+            {
+                parameters.setMzTolerance(SearchParameters.DEFAULT_MZ_TOLERANCE);
+            }
+
+        }
+
+        if(compoundSearchForm.getIdentifier() != null) {
+            parameters.setIdentifier(compoundSearchForm.getIdentifier());
         }
 
         //System.out.println(peakVals);
@@ -256,9 +285,8 @@ public class IndividualSearchController extends BaseController {
             parameters.setPrecursorTolerance(SearchParameters.DEFAULT_MZ_TOLERANCE);
         }
 
-        if(compoundSearchForm.getScoreThreshold() != null) {
-            parameters.setScoreThreshold(compoundSearchForm.getScoreThreshold());
-        }
+
+
 
         if(compoundSearchForm.getRetentionIndexTolerance() != null) {
             parameters.setRetIndexTolerance(compoundSearchForm.getRetentionIndexTolerance());
@@ -268,25 +296,46 @@ public class IndividualSearchController extends BaseController {
             parameters.setRetIndexMatchType(compoundSearchForm.getRetentionIndexMatch());
         }
 
-        if(compoundSearchForm.getMzTolerance() != null) {
-            parameters.setMzTolerance(compoundSearchForm.getMzTolerance());
-        }
+
+
 
         if(compoundSearchForm.getLimit() != null) {
             parameters.setLimit(compoundSearchForm.getLimit());
         }
+        parameters.setSubmissionIds(compoundSearchForm.getSubmissionIds());
 
         spectrum.setChromatographyType(compoundSearchForm.getChromatographyType());
         spectrum.setPrecursor(compoundSearchForm.getPrecursorMZ());
-        parameters.setPrecursorTolerance(SearchParameters.DEFAULT_MZ_TOLERANCE);
+        //parameters.setPrecursorTolerance(SearchParameters.DEFAULT_MZ_TOLERANCE);
         List<SearchResultDTO> searchResults = individualSearchService.searchConsensusSpectra(this.getCurrentUserPrincipal(), spectrum, parameters);
         model.addAttribute("querySpectrum", spectrum);
         model.addAttribute("filterForm", compoundSearchForm);
         model.addAttribute("filterOptions", getFilterOptions(spectrum.getChromatographyType()));
         model.addAttribute("searchResults", searchResults);
+
+        String byteString = ConversionsUtils.formToByteString(compoundSearchForm);
+        Cookie metaFieldsCookie = new Cookie(SEARCH_PARAMETERS_COOKIE_NAME, byteString);
+        response.addCookie(metaFieldsCookie);
         return new ModelAndView("submission/spectrum/search");
     }
 
+    private Collection<ChromatographyType> getChromatographyTypes(Submission submission) {
+        Collection<ChromatographyType> chromatographyTypes;
+        if (submission.getId() == 0) {
+            chromatographyTypes = new HashSet<>();
+            for (File file : submission.getFiles()) {
+                List<Spectrum> spectra = file.getSpectra();
+                if (spectra == null) continue;
+                for (Spectrum spectrum : spectra)
+                    chromatographyTypes.add(spectrum.getChromatographyType());
+            }
+        } else {
+            Map<Long, List<ChromatographyType>> map =
+                    submissionService.findChromatographyTypes(Collections.singletonList(submission));
+            chromatographyTypes = map.get(submission.getId());
+        }
+        return chromatographyTypes;
+    }
 
     private ModelAndView searchPost(final Spectrum querySpectrum,
                                     final FilterForm filterForm,
@@ -302,6 +351,7 @@ public class IndividualSearchController extends BaseController {
         parameters.setSource(filterForm.getSource().equalsIgnoreCase("all") ? null : filterForm.getSource());
         parameters.setDisease(filterForm.getDisease().equalsIgnoreCase("all") ? null : filterForm.getDisease());
         parameters.setSubmissionIds(filterForm.getSubmissionIds());
+
 
         List<SearchResultDTO> searchResults = individualSearchService.searchConsensusSpectra(
                 this.getCurrentUserPrincipal(), querySpectrum, parameters);
@@ -319,12 +369,28 @@ public class IndividualSearchController extends BaseController {
         List<String> sourceList = submissionTagService.findDistinctTagValuesByTagKey("sample source");
         List<String> diseaseList = submissionTagService.findDistinctTagValuesByTagKey("disease");
 
-        SortedMap<BigInteger, String> submissions = submissionService.findUserPrivateSubmissions(
-                this.getCurrentUserPrincipal(), chromatographyType);
-        submissions.put(BigInteger.ZERO, "Public");
-
+        SortedMap<BigInteger, String> submissions = new TreeMap<>();
+        submissions.putAll(
+                submissionService.findUserPrivateSubmissions(this.getCurrentUserPrincipal(), chromatographyType));
+        submissions.putAll(submissionService.findPublicSubmissions(chromatographyType));
+        submissions.put(BigInteger.ZERO, "ADAP-KDB Consensus Spectra");
         return new FilterOptions(speciesList, sourceList, diseaseList, submissions);
     }
 
+    private FilterOptions getFilterOptions(Collection<ChromatographyType> chromatographyTypes) {
+        List<String> speciesList = submissionTagService.findDistinctTagValuesByTagKey("species (common)");
+        List<String> sourceList = submissionTagService.findDistinctTagValuesByTagKey("sample source");
+        List<String> diseaseList = submissionTagService.findDistinctTagValuesByTagKey("disease");
+
+        SortedMap<BigInteger, String> submissions = new TreeMap<>();
+        for (ChromatographyType chromatographyType : chromatographyTypes) {
+            submissions.putAll(
+                    submissionService.findUserPrivateSubmissions(this.getCurrentUserPrincipal(), chromatographyType));
+            submissions.putAll(submissionService.findPublicSubmissions(chromatographyType));
+        }
+        submissions.put(BigInteger.ZERO, "ADAP-KDB Consensus Spectra");
+
+        return new FilterOptions(speciesList, sourceList, diseaseList, submissions);
+    }
 
 }

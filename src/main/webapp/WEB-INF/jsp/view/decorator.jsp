@@ -113,6 +113,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="<c:url value="/compound/search/"/>">
+                                <i class="material-icons align-middle">search</i>
+                                <span class="align-middle">Search</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a id="uploadPage" class="nav-link" href="<c:url value="/file/upload/" />">
                                 <i class="material-icons align-middle">cloud_upload</i>
                                 <span class="align-middle">Upload Files</span>

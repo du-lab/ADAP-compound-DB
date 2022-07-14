@@ -27,6 +27,10 @@
                                 Individual Search
                             </a></li>
 
+                            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#libraries">
+                                Libraries
+                            </a></li>
+
                             <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#parameters">
                                Parameters
                                 <span id="custom" class="badge badge-info" style="display: none;">Custom Parameters</span>
@@ -39,9 +43,11 @@
                     </div>
 
                     <div class="card-body tab-content">
-                        <div class="alert-danger" style="margin-bottom: 5px;">${errorMessage}</div>
+
                         <div id="search" class="tab-pane fade show active" role="tabpanel">
+                            <div class="alert-danger" style="margin-bottom: 5px;">${errorMessage}</div>
                             <div class="row form-group">
+
                                 <div class="col-md-4">
                                     <form:label path="chromatographyType"
                                                 cssClass="col-form-label">Chromatography type</form:label>&nbsp;
@@ -84,7 +90,30 @@
                                 </div>
                             </div>
                         </div>
-
+                        <div id="libraries" class="tab-pane fade" role="tabpanel">
+                            <div class="row">
+                                <div class="col-md-8 offset-md-2">
+                                    <p>Select the libraries to search against.</p>
+                                    <p>All available public libraries and user's private libraries are listed here.</p>
+                                </div>
+                            </div>
+                            <fieldset class="form-group row">
+                                <form:label path="submissionIds"
+                                            cssClass="col-md-4 col-form-label">Search in Libraries:</form:label>
+                                <div class="col-md-8">
+                                    <c:forEach items="${filterOptions.submissions}" var="submission" varStatus="status">
+                                        <div class="custom-control custom-switch">
+                                            <input class="custom-control-input" type="checkbox" name="submissionIds"
+                                                   id="submissionIds${status.index}" value="${submission.key}"
+                                                   <c:if test="${filterForm.submissionIds.contains(submission.key)}">checked</c:if>>
+                                            <label class="custom-control-label"
+                                                   for="submissionIds${status.index}">${submission.value}</label>
+                                        </div>
+                                    </c:forEach>
+                                </div>
+                                <input type="hidden" name="_submissionIds" value="on">
+                            </fieldset>
+                        </div>
 
 
 
@@ -167,6 +196,7 @@
         let num = $("#parameters input").filter(function () {
             return $.trim($(this).val()).length == 0
         }).length;
+        console.log(num);
         if(num < 3) showBadge = true;
         var retention = $('#retention').get(0);
 
@@ -189,7 +219,7 @@
 
     }
     $(document).ready(function() {
-
+        HasFormChanged();
         $('#parameters input').change(function() {
            HasFormChanged();
 

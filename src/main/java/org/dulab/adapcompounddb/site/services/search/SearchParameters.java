@@ -41,6 +41,9 @@ public class SearchParameters implements Cloneable {
     private String disease;
     private Set<BigInteger> submissionIds;
     private Iterable<BigInteger> spectrumIds;
+
+
+    private String Identifier;
 //    private double[] masses;
 //    private SortedMap<Double, String> massToAdductMap;
     private List<Adduct> adducts;
@@ -298,6 +301,14 @@ public class SearchParameters implements Cloneable {
 
     public void setPenalizeDominantPeak(boolean penalizeDominantPeak) {
         this.penalizeDominantPeak = penalizeDominantPeak;
+    }
+
+    public String getIdentifier() {
+        return Identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        Identifier = identifier;
     }
 
     /**

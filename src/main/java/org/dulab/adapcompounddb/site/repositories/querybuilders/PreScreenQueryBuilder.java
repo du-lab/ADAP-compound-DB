@@ -36,6 +36,7 @@ public class PreScreenQueryBuilder {
     private double[] masses = null;
     private Double massTolerance = null;
     private Integer massTolerancePPM = null;
+    private String Identifier = null;
 
 
     public PreScreenQueryBuilder(boolean searchConsensus, boolean searchReference, boolean searchClusterable,
@@ -94,6 +95,11 @@ public class PreScreenQueryBuilder {
         return this;
     }
 
+    public PreScreenQueryBuilder withID(String id) {
+        this.Identifier = id;
+        return this;
+    }
+
 
     public Spectrum getQuerySpectrum() {
         return querySpectrum;
@@ -112,6 +118,9 @@ public class PreScreenQueryBuilder {
 
         if (chromatographyType != null)
             queryBlock += String.format(" AND Spectrum.ChromatographyType = '%s'", chromatographyType);
+
+        if(Identifier != null && !Identifier.trim().isEmpty())
+            queryBlock += String.format(" AND Spectrum.Name = '%s'", Identifier);
 
         if (precursorMz != null && precursorTolerance != null)
             queryBlock += String.format(" AND Spectrum.Precursor > %f AND Spectrum.Precursor < %f",
