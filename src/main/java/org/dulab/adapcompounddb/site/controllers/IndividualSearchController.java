@@ -211,7 +211,7 @@ public class IndividualSearchController extends BaseController {
 
         //compoundSearchForm  = ConversionsUtils.byteStringToForm(searchParametersCookie, CompoundSearchForm.class);
         //Spectrum spectrum = new Spectrum();
-        FilterOptions filterOptions = getFilterOptions(Arrays.asList(ChromatographyType.values()));
+        FilterOptions filterOptions = getFilterOptions(ChromatographyType.values());
        model.addAttribute("filterOptions", filterOptions);
         if (compoundSearchForm.getSubmissionIds() == null || compoundSearchForm.getSubmissionIds().isEmpty())
            compoundSearchForm.setSubmissionIds(filterOptions.getSubmissions().keySet());
@@ -239,8 +239,8 @@ public class IndividualSearchController extends BaseController {
         if(peakVals != null && !peakVals.trim().isEmpty()) {
             String[] peakStrings = peakVals.split("\n");
             ArrayList<Peak> peaks = new ArrayList<>();
+            Pattern p = Pattern.compile("[0-9]*\\.?[0-9]+");
             for(String peakString: peakStrings) {
-                Pattern p = Pattern.compile("[0-9]*\\.?[0-9]+");
                 Matcher m = p.matcher(peakString);
                 Peak peakValue = new Peak();
                 int ct = 0;
@@ -304,7 +304,7 @@ public class IndividualSearchController extends BaseController {
         }
         parameters.setSubmissionIds(compoundSearchForm.getSubmissionIds());
 
-        spectrum.setChromatographyType(compoundSearchForm.getChromatographyType());
+
         spectrum.setPrecursor(compoundSearchForm.getPrecursorMZ());
         //parameters.setPrecursorTolerance(SearchParameters.DEFAULT_MZ_TOLERANCE);
         List<SearchResultDTO> searchResults = individualSearchService.searchConsensusSpectra(this.getCurrentUserPrincipal(), spectrum, parameters);
@@ -371,20 +371,9 @@ public class IndividualSearchController extends BaseController {
         return new ModelAndView("submission/spectrum/search");
     }
 
-    private FilterOptions getFilterOptions(ChromatographyType chromatographyType) {
-        List<String> speciesList = submissionTagService.findDistinctTagValuesByTagKey("species (common)");
-        List<String> sourceList = submissionTagService.findDistinctTagValuesByTagKey("sample source");
-        List<String> diseaseList = submissionTagService.findDistinctTagValuesByTagKey("disease");
 
-        SortedMap<BigInteger, String> submissions = new TreeMap<>();
-        submissions.putAll(
-                submissionService.findUserPrivateSubmissions(this.getCurrentUserPrincipal(), chromatographyType));
-        submissions.putAll(submissionService.findPublicSubmissions(chromatographyType));
-        submissions.put(BigInteger.ZERO, "ADAP-KDB Consensus Spectra");
-        return new FilterOptions(speciesList, sourceList, diseaseList, submissions);
-    }
 
-    private FilterOptions getFilterOptions(Collection<ChromatographyType> chromatographyTypes) {
+    private FilterOptions getFilterOptions(ChromatographyType ... chromatographyTypes) {
         List<String> speciesList = submissionTagService.findDistinctTagValuesByTagKey("species (common)");
         List<String> sourceList = submissionTagService.findDistinctTagValuesByTagKey("sample source");
         List<String> diseaseList = submissionTagService.findDistinctTagValuesByTagKey("disease");

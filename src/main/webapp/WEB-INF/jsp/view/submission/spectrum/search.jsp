@@ -128,7 +128,7 @@
                             <th title="Average P-value of ANOVA tests">Average P-value</th>
                             <th title="Minimum P-value of ANOVA tests">Minimum P-value</th>
                             <th title="Maximum P-value of ANOVA tests">Maximum P-value</th>
-                            <th title="Ontology Level">Ontology Level</th>
+                            <th title="Library">Submission</th>
                             <th></th>
                         </tr>
                         </thead>
@@ -153,7 +153,10 @@
                                     <td>${dulab:formatDouble(searchResult.aveSignificance)}</td>
                                     <td>${dulab:formatDouble(searchResult.minSignificance)}</td>
                                     <td>${dulab:formatDouble(searchResult.maxSignificance)}</td>
-                                    <td><span class="badge badge-info">${searchResult.ontologyLevel}</span></td>
+                                    <td>
+                                        <a href="${pageContext.request.contextPath}/submission/${searchResult.submissionId}/">${searchResult.submissionName}</a>
+                                        <span class="badge badge-info">${searchResult.chromatographyTypeLabel}</span>
+                                    </td>
                                     <td>
                                         <a href="${pageContext.request.contextPath}/${searchResult.getHRef()}">
                                             <i class="material-icons" title="View">&#xE5D3;</i>
