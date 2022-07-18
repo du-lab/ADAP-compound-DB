@@ -211,7 +211,7 @@ public class IndividualSearchController extends BaseController {
 
         //compoundSearchForm  = ConversionsUtils.byteStringToForm(searchParametersCookie, CompoundSearchForm.class);
         //Spectrum spectrum = new Spectrum();
-        FilterOptions filterOptions = getFilterOptions(compoundSearchForm.getChromatographyType());
+        FilterOptions filterOptions = getFilterOptions(Arrays.asList(ChromatographyType.values()));
        model.addAttribute("filterOptions", filterOptions);
         if (compoundSearchForm.getSubmissionIds() == null || compoundSearchForm.getSubmissionIds().isEmpty())
            compoundSearchForm.setSubmissionIds(filterOptions.getSubmissions().keySet());
@@ -224,14 +224,14 @@ public class IndividualSearchController extends BaseController {
     public ModelAndView searchCompound(final CompoundSearchForm compoundSearchForm, HttpServletResponse response,
                                        @Valid final Model model, final Errors errors) {
         //SearchParameters parameters = SearchParameters.getDefaultParameters(compoundSearchForm.getChromatographyType());
-        if(compoundSearchForm.getChromatographyType() == ChromatographyType.LC_MSMS_NEG || compoundSearchForm.getChromatographyType() == ChromatographyType.LC_MSMS_POS) {
-            if(compoundSearchForm.getPrecursorMZ() == null) {
-                model.addAttribute("errorMessage", "You must enter Precursor M/Z for " + compoundSearchForm.getChromatographyType().getLabel());
-                return new ModelAndView("/compound/search");
-            }
-
-
-        }
+//        if(compoundSearchForm.getChromatographyType() == ChromatographyType.LC_MSMS_NEG || compoundSearchForm.getChromatographyType() == ChromatographyType.LC_MSMS_POS) {
+//            if(compoundSearchForm.getPrecursorMZ() == null) {
+//                model.addAttribute("errorMessage", "You must enter Precursor M/Z for " + compoundSearchForm.getChromatographyType().getLabel());
+//                return new ModelAndView("/compound/search");
+//            }
+//
+//
+//        }
         SearchParameters parameters = new SearchParameters();
         Spectrum spectrum = new Spectrum();
         Double mass = compoundSearchForm.getNeutralMass();
@@ -339,20 +339,7 @@ public class IndividualSearchController extends BaseController {
 
 
 
-    @RequestMapping(value = "ajax/compound/search", method = RequestMethod.GET)
-    public ModelAndView searchCompoundAjax(@RequestParam ChromatographyType chromatographyType, Model model, CompoundSearchForm compoundSearchForm, @CookieValue(
-            value = SEARCH_PARAMETERS_COOKIE_NAME,
-            defaultValue = "") String searchParametersCookie) {
 
-        //compoundSearchForm  = ConversionsUtils.byteStringToForm(searchParametersCookie, CompoundSearchForm.class);
-        //Spectrum spectrum = new Spectrum();
-        FilterOptions filterOptions = getFilterOptions(chromatographyType);
-        model.addAttribute("filterOptions", filterOptions);
-        if (compoundSearchForm.getSubmissionIds() == null || compoundSearchForm.getSubmissionIds().isEmpty())
-            compoundSearchForm.setSubmissionIds(filterOptions.getSubmissions().keySet());
-        model.addAttribute("compoundSearchForm", compoundSearchForm);
-        return new ModelAndView("/compound/search");
-    }
 
 
 

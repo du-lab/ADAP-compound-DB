@@ -15,6 +15,7 @@ public class PreScreenQueryBuilder {
     private final String spectrumTypeQuery;
     private final Set<BigInteger> submissionIds;
 
+    private List<ChromatographyType> chromatographyTypes;
     private ChromatographyType chromatographyType;
 
     private UserPrincipal user = null;
@@ -52,8 +53,13 @@ public class PreScreenQueryBuilder {
                 .filter(Objects::nonNull).collect(Collectors.joining(" OR "));
     }
 
-    public PreScreenQueryBuilder withChromatographyType(ChromatographyType chromatographyType) {
-        this.chromatographyType = chromatographyType;
+    public PreScreenQueryBuilder withChromatographyType(ChromatographyType chromatographyTypes) {
+        this.chromatographyType = chromatographyTypes;
+        return this;
+    }
+
+    public PreScreenQueryBuilder withChromatographyTypes(List<ChromatographyType> chromatographyTypes) {
+        this.chromatographyTypes = chromatographyTypes;
         return this;
     }
 
@@ -116,8 +122,11 @@ public class PreScreenQueryBuilder {
                 "LEFT JOIN UserPrincipal ON UserPrincipal.Id = Submission.UserPrincipalId\n" +
                 "WHERE (%s)", spectrumTypeQuery);
 
+        if (chromatographyTypes != null && !chromatographyTypes.isEmpty())
+            queryBlock += String.format(" AND Spectrum.ChromatographyType IN ('%s')", chromatographyTypes);
+
         if (chromatographyType != null)
-            queryBlock += String.format(" AND Spectrum.ChromatographyType = '%s'", chromatographyType);
+            queryBlock += String.format(" AND Spectrum.ChromatographyType = '%s' or Spectrum.ChromatographyType = 'NONE'", chromatographyType);
 
         if(Identifier != null && !Identifier.trim().isEmpty())
             queryBlock += String.format(" AND Spectrum.Name = '%s'", Identifier);

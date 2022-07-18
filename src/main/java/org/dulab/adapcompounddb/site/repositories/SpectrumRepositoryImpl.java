@@ -250,10 +250,12 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         PreScreenQueryBuilder queryBuilder =
                 new PreScreenQueryBuilder(searchConsensus, searchReference, searchClusterable, params.getSubmissionIds())
                         .withUser(user)
-                        .withChromatographyType(querySpectrum.getChromatographyType())
+
                         .withPrecursor(params.getPrecursorTolerance(), params.getPrecursorTolerancePPM(), querySpectrum.getPrecursor())
                         .withRetTime(params.getRetTimeTolerance(), querySpectrum.getRetentionTime())
                         .withID(params.getIdentifier());
+
+        queryBuilder = (querySpectrum.getChromatographyType() == null) ? queryBuilder.withChromatographyTypes(params.getChromatographyTypes()) : queryBuilder.withChromatographyType(querySpectrum.getChromatographyType());
 
         if (params.getRetIndexMatchType() == RetIndexMatchType.ALWAYS_MATCH) {
             if (querySpectrum.getRetentionIndex() == null)

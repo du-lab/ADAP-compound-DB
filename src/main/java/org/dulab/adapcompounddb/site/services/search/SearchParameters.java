@@ -42,6 +42,7 @@ public class SearchParameters implements Cloneable {
     private Set<BigInteger> submissionIds;
     private Iterable<BigInteger> spectrumIds;
 
+    private List<ChromatographyType> chromatographyTypes;
 
     private String Identifier;
 //    private double[] masses;
@@ -309,6 +310,13 @@ public class SearchParameters implements Cloneable {
 
     public void setIdentifier(String identifier) {
         Identifier = identifier;
+    }
+    public List<ChromatographyType> getChromatographyTypes() {
+        return chromatographyTypes;
+    }
+
+    public void setChromatographyTypes(List<ChromatographyType> chromatographyTypes) {
+        this.chromatographyTypes = chromatographyTypes;
     }
 
     /**

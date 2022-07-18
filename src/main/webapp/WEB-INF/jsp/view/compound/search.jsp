@@ -46,21 +46,7 @@
 
                         <div id="search" class="tab-pane fade show active" role="tabpanel">
                             <div class="alert-danger" style="margin-bottom: 5px;">${errorMessage}</div>
-                            <div class="row form-group">
 
-                                <div class="col-md-4">
-                                    <form:label path="chromatographyType"
-                                                cssClass="col-form-label">Chromatography type</form:label>&nbsp;
-                                </div>
-                                <div class="col-md-8">
-                                    <form:select id="chromatographySelect" path="chromatographyType" cssClass="form-control">
-                                        <form:option id="typeValue" value="" label="Please select..."/>
-                                        <form:options items="${chromatographyTypeList}" itemLabel="label"/>
-                                    </form:select>
-                                    <form:errors path="chromatographyType"
-                                                 cssClass="text-danger form-control-sm"/>
-                                </div>
-                            </div>
                             <div class="form-group row">
                                 <form:label path="identifier"
                                             cssClass="col-md-4 col-form-label">Identifier:</form:label>
@@ -234,14 +220,7 @@
 
         })
 
-        $('#chromatographySelect').change(function (){
-            console.log('chromatography changed');
-            var chrom = $(this).val();
-            $.ajax({
-                url: "${pageContext.request.contextPath}/ajax/compound/search?chromatographyType="+ chrom,
 
-            })
-        });
 
     });
 
