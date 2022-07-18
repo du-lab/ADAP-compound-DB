@@ -209,7 +209,7 @@ public class IndividualSearchController extends BaseController {
             defaultValue = "") String searchParametersCookie) {
         Submission submission = Submission.from(session);
 
-        compoundSearchForm  = ConversionsUtils.byteStringToForm(searchParametersCookie, CompoundSearchForm.class);
+        //compoundSearchForm  = ConversionsUtils.byteStringToForm(searchParametersCookie, CompoundSearchForm.class);
         //Spectrum spectrum = new Spectrum();
         FilterOptions filterOptions = getFilterOptions(compoundSearchForm.getChromatographyType());
        model.addAttribute("filterOptions", filterOptions);
@@ -336,6 +336,26 @@ public class IndividualSearchController extends BaseController {
         }
         return chromatographyTypes;
     }
+
+
+
+    @RequestMapping(value = "ajax/compound/search", method = RequestMethod.GET)
+    public ModelAndView searchCompoundAjax(@RequestParam ChromatographyType chromatographyType, Model model, CompoundSearchForm compoundSearchForm, @CookieValue(
+            value = SEARCH_PARAMETERS_COOKIE_NAME,
+            defaultValue = "") String searchParametersCookie) {
+
+        //compoundSearchForm  = ConversionsUtils.byteStringToForm(searchParametersCookie, CompoundSearchForm.class);
+        //Spectrum spectrum = new Spectrum();
+        FilterOptions filterOptions = getFilterOptions(chromatographyType);
+        model.addAttribute("filterOptions", filterOptions);
+        if (compoundSearchForm.getSubmissionIds() == null || compoundSearchForm.getSubmissionIds().isEmpty())
+            compoundSearchForm.setSubmissionIds(filterOptions.getSubmissions().keySet());
+        model.addAttribute("compoundSearchForm", compoundSearchForm);
+        return new ModelAndView("/compound/search");
+    }
+
+
+
 
     private ModelAndView searchPost(final Spectrum querySpectrum,
                                     final FilterForm filterForm,

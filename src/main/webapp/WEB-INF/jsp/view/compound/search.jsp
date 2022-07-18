@@ -53,7 +53,7 @@
                                                 cssClass="col-form-label">Chromatography type</form:label>&nbsp;
                                 </div>
                                 <div class="col-md-8">
-                                    <form:select path="chromatographyType" cssClass="form-control">
+                                    <form:select id="chromatographySelect" path="chromatographyType" cssClass="form-control">
                                         <form:option id="typeValue" value="" label="Please select..."/>
                                         <form:options items="${chromatographyTypeList}" itemLabel="label"/>
                                     </form:select>
@@ -234,7 +234,18 @@
 
         })
 
+        $('#chromatographySelect').change(function (){
+            console.log('chromatography changed');
+            var chrom = $(this).val();
+            $.ajax({
+                url: "${pageContext.request.contextPath}/ajax/compound/search?chromatographyType="+ chrom,
+
+            })
+        });
+
     });
+
+
 
 
 
