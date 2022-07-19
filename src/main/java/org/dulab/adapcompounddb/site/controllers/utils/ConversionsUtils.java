@@ -78,10 +78,16 @@ public class ConversionsUtils {
                 return image;
 
             // read any errors from the attempted command
-            String error;
-            while ((error = stdError.readLine()) != null) {
-                LOGGER.warn(error);
+            StringBuilder errorOutput = new StringBuilder();
+            String line;
+            while ((line = stdError.readLine()) != null) {
+                errorOutput.append(line);
+                errorOutput.append('\n');
             }
+
+            String error = errorOutput.toString();
+            if (!error.isEmpty())
+                LOGGER.warn(error);
 
         } catch (IOException e) {
             LOGGER.warn("Error while plotting a structure", e);
