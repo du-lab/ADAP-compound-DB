@@ -188,7 +188,7 @@
         <%--    ${querySpectrum.id},--%>
         <%--    ${dulab:getFileIndexFromURL(requestScope['javax.servlet.forward.request_uri'])},--%>
         <%--    ${dulab:getSpectrumIndexFromURL(requestScope['javax.servlet.forward.request_uri'])});--%>
-
+        $('#queryInfo').spectrumInfo(queryUrl + 'info.json');
 
         let table = $('#table').DataTable({
             // dom: 'lfrtip',
@@ -224,7 +224,6 @@
 
             let row = table.row(indexes).node();
             let spectrumId = $(row).attr('data-id');
-            $('#queryInfo').spectrumInfo(queryUrl + 'info.json');
             $('#matchInfo').spectrumInfo(`${pageContext.request.contextPath}/spectrum/\${spectrumId}/search/info.json`);
             $('#plot').spectrumPlot(indexes,
                 'positive/peaks.json',
