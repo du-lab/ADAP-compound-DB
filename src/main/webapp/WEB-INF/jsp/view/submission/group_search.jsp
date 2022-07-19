@@ -35,7 +35,7 @@
     </div>
 
     <div class="row row-content">
-        <div class="col col-compact" id="queryColumn">
+        <div class="col-md-2 col-compact" id="queryColumn">
             <div class="card">
                 <div class="card-header card-header-single">Query Structure</div>
                 <div class="overflow-auto" style="height: 300px">
@@ -43,7 +43,7 @@
                 </div>
             </div>
         </div>
-        <div class="col col-compact">
+        <div class="col-md-2 col-compact">
             <div class="card">
                 <div class="card-header card-header-single">Query</div>
                 <div class="card-body card-body-compact small overflow-auto" style="height: 300px">
@@ -51,7 +51,7 @@
                 </div>
             </div>
         </div>
-        <div class="col col-compact">
+        <div class="col-md-4 col-compact">
             <div class="card">
                 <div class="card-header card-header-single">Plot</div>
                 <%--                <div class="card-body small overflow-auto" style="height: 300px">--%>
@@ -59,7 +59,7 @@
                 <%--                </div>--%>
             </div>
         </div>
-        <div class="col col-compact">
+        <div class="col-md-2 col-compact">
             <div class="card">
                 <div class="card-header card-header-single">Match</div>
                 <div class="card-body card-body-compact small overflow-auto" style="height: 300px">
@@ -67,7 +67,7 @@
                 </div>
             </div>
         </div>
-        <div class="col col-compact" id="matchColumn">
+        <div class="col-md-2 col-compact" id="matchColumn">
             <div class="card">
                 <div class="card-header card-header-single">Match Structure</div>
                 <div class="overflow-auto" style="height: 300px">
@@ -213,6 +213,9 @@
             ]
         });
 
+        let previousQueryUrl = null;
+        let previousMatchUrl = null;
+
         table.on('select', function (e, dt, type, indexes) {
 
             let row = table.row(indexes).node();
@@ -226,6 +229,9 @@
             <%--let queryUrl = `${pageContext.request.contextPath}/file/\${queryFileIndex}/\${querySpectrumIndex}/search/`;--%>
             let queryUrl = `${pageContext.request.contextPath}\${queryHRef}search/`;
             let matchUrl = `${pageContext.request.contextPath}/spectrum/\${matchId}/search/`;
+
+            if (queryUrl === previousQueryUrl && matchUrl === previousMatchUrl)
+                return;
 
             $.ajax({
                 url: `${pageContext.request.contextPath}/ajax/spectrum/info?spectrumId=\${queryId}&fileIndex=\${queryFileIndex}&spectrumIndex=\${querySpectrumIndex}`,
@@ -247,6 +253,8 @@
                 $('#matchColumn').attr('hidden', !x);
             });
 
+            previousQueryUrl = queryUrl;
+            previousMatchUrl = matchUrl;
         });
 
         // refresh the datatable and progress bar every 1 second
