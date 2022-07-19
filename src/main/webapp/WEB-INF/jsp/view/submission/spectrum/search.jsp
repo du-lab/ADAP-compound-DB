@@ -140,7 +140,7 @@
                                     <td>${status.index + 1}</td>
                                     <td>${searchResult.querySpectrumName}</td>
                                     <td>
-                                        <a href="${pageContext.request.contextPath}$/{searchResult.getHRef()}">
+                                        <a href="${pageContext.request.contextPath}${searchResult.getHRef()}">
                                                 ${searchResult.name}
                                         </a>
                                     </td>
