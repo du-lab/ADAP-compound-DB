@@ -16,7 +16,7 @@ public class PreScreenQueryBuilder {
     private final Set<BigInteger> submissionIds;
 
     private List<ChromatographyType> chromatographyTypes;
-    private ChromatographyType chromatographyType;
+
 
     private UserPrincipal user = null;
 
@@ -53,13 +53,9 @@ public class PreScreenQueryBuilder {
                 .filter(Objects::nonNull).collect(Collectors.joining(" OR "));
     }
 
-    public PreScreenQueryBuilder withChromatographyType(ChromatographyType chromatographyTypes) {
-        this.chromatographyType = chromatographyTypes;
-        return this;
-    }
 
-    public PreScreenQueryBuilder withChromatographyTypes(List<ChromatographyType> chromatographyTypes) {
-        this.chromatographyTypes = chromatographyTypes;
+    public PreScreenQueryBuilder withChromatographyTypes(ChromatographyType... chromatographyTypes) {
+        this.chromatographyTypes = List.of(chromatographyTypes);
         return this;
     }
 
@@ -122,11 +118,22 @@ public class PreScreenQueryBuilder {
                 "LEFT JOIN UserPrincipal ON UserPrincipal.Id = Submission.UserPrincipalId\n" +
                 "WHERE (%s)", spectrumTypeQuery);
 
-        if (chromatographyTypes != null && !chromatographyTypes.isEmpty())
-            queryBlock += String.format(" AND Spectrum.ChromatographyType IN ('%s')", chromatographyTypes);
+        if (chromatographyTypes != null && !chromatographyTypes.isEmpty()){
+            if(chromatographyTypes.size() == 1) {
+                ChromatographyType chromatographyType = chromatographyTypes.get(0);
+                queryBlock += String.format(" AND Spectrum.ChromatographyType = '%s' or Spectrum.ChromatographyType = 'NONE'", chromatographyType);
+            }
+            else {
+                String types = chromatographyTypes.stream()
+                        .map(ChromatographyType::toString)
+                        .collect(Collectors.joining("','", "'", "'"));
+                queryBlock += String.format(" AND Spectrum.ChromatographyType IN (%s)", types);
+            }
+        }
 
-        if (chromatographyType != null)
-            queryBlock += String.format(" AND Spectrum.ChromatographyType = '%s' or Spectrum.ChromatographyType = 'NONE'", chromatographyType);
+
+
+
 
         if(Identifier != null && !Identifier.trim().isEmpty())
             queryBlock += String.format(" AND Spectrum.Name = '%s'", Identifier);

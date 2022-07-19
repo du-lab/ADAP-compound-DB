@@ -128,7 +128,7 @@
                             <th title="Average P-value of ANOVA tests">Average P-value</th>
                             <th title="Minimum P-value of ANOVA tests">Minimum P-value</th>
                             <th title="Maximum P-value of ANOVA tests">Maximum P-value</th>
-                            <th title="Ontology Level">Ontology Level</th>
+                            <th title="Library">Submission</th>
                             <th></th>
                         </tr>
                         </thead>
@@ -140,7 +140,7 @@
                                     <td>${status.index + 1}</td>
                                     <td>${searchResult.querySpectrumName}</td>
                                     <td>
-                                        <a href="${pageContext.request.contextPath}$/{searchResult.getHRef()}">
+                                        <a href="${pageContext.request.contextPath}/${searchResult.getHRef()}">
                                                 ${searchResult.name}
                                         </a>
                                     </td>
@@ -153,9 +153,12 @@
                                     <td>${dulab:formatDouble(searchResult.aveSignificance)}</td>
                                     <td>${dulab:formatDouble(searchResult.minSignificance)}</td>
                                     <td>${dulab:formatDouble(searchResult.maxSignificance)}</td>
-                                    <td><span class="badge badge-info">${searchResult.ontologyLevel}</span></td>
                                     <td>
-                                        <a href="${pageContext.request.contextPath}${searchResult.getHRef()}">
+                                        <a href="${pageContext.request.contextPath}/submission/${searchResult.submissionId}/">${searchResult.submissionName}</a>
+                                        <span class="badge badge-info">${searchResult.chromatographyTypeLabel}</span>
+                                    </td>
+                                    <td>
+                                        <a href="${pageContext.request.contextPath}/${searchResult.getHRef()}">
                                             <i class="material-icons" title="View">&#xE5D3;</i>
                                         </a>
                                     </td>
@@ -224,21 +227,17 @@
 
             let row = table.row(indexes).node();
             let spectrumId = $(row).attr('data-id');
-            $('#queryInfo').spectrumInfo(queryUrl + 'info.json');
-            $('#matchInfo').spectrumInfo(`${pageContext.request.contextPath}/spectrum/\${spectrumId}/search/info.json`);
-            $('#plot').spectrumPlot(indexes,
-                'positive/peaks.json',
-                `${pageContext.request.contextPath}/spectrum/\${spectrumId}/search/negative/peaks.json`);
+            let queryHRef = `${searchResult.getHRef()}`;
+            console.log(queryHRef);
+            let queryUrl = `${pageContext.request.contextPath}\${queryHRef}/search/`;
+            console.log(`${pageContext.request.contextPath}/spectrum/${spectrumId}/search/info.json`);
 
-            // if (spectrum == null) return;
-            //
-            //
-            //
-            // let spectrumJson = JSON.parse(spectrum);
-            // if (spectrumJson["peaks"].length === 0) return;
-            //
-            // plot.update(spectrumJson);
-            // chartRow.show();
+            $('#matchInfo').spectrumInfo(`${pageContext.request.contextPath}/spectrum/\${spectrumId}/search/info.json`);
+            $.ajax({
+                url: `${pageContext.request.contextPath}/ajax/spectrum/info?spectrumId=\${queryId}&fileIndex=\${queryFileIndex}&spectrumIndex=\${querySpectrumIndex}`,
+                success: d => $('#queryInfo').html(d)
+            })
+
         });
 
         table.rows(':eq(0)').select();

@@ -140,7 +140,7 @@ public class IndividualSearchController extends BaseController {
         form.setSubmissionIds(filterOptions.getSubmissions().keySet());
         model.addAttribute("filterForm", form);
 
-        return "submission/spectrum/search";
+        return "submission/compound/search_results";
     }
 
     @RequestMapping(
@@ -236,23 +236,23 @@ public class IndividualSearchController extends BaseController {
         Spectrum spectrum = new Spectrum();
         Double mass = compoundSearchForm.getNeutralMass();
         String peakVals = compoundSearchForm.getSpectrum();
+        //peakVals.replace(';','\n');
         if(peakVals != null && !peakVals.trim().isEmpty()) {
-            String[] peakStrings = peakVals.split("\n");
+            //String[] peakStrings = peakVals.split("\n");
             ArrayList<Peak> peaks = new ArrayList<>();
             Pattern p = Pattern.compile("[0-9]*\\.?[0-9]+");
-            for(String peakString: peakStrings) {
-                Matcher m = p.matcher(peakString);
-                Peak peakValue = new Peak();
-                int ct = 0;
-                while (m.find()) {
-                    if(ct == 0)
-                        peakValue.setMz(Double.parseDouble(m.group()));
-                    else
-                        peakValue.setIntensity(Double.parseDouble(m.group()));
-                    ct++;
-                }
+            Matcher m = p.matcher(peakVals);
+            Peak peakValue = new Peak();
+            int ct = 0;
+            while (m.find()) {
+                if(ct % 2 == 0)
+                    peakValue.setMz(Double.parseDouble(m.group()));
+                else
+                    peakValue.setIntensity(Double.parseDouble(m.group()));
                 peaks.add(peakValue);
+                ct++;
             }
+
             spectrum.setPeaks(peaks);
             if(compoundSearchForm.getScoreThreshold() != null) {
                 parameters.setScoreThreshold(compoundSearchForm.getScoreThreshold());
@@ -306,6 +306,10 @@ public class IndividualSearchController extends BaseController {
 
 
         spectrum.setPrecursor(compoundSearchForm.getPrecursorMZ());
+
+        if(spectrum.getChromatographyType() == null) {
+            parameters.setChromatographyTypes(List.of(ChromatographyType.values()));
+        }
         //parameters.setPrecursorTolerance(SearchParameters.DEFAULT_MZ_TOLERANCE);
         List<SearchResultDTO> searchResults = individualSearchService.searchConsensusSpectra(this.getCurrentUserPrincipal(), spectrum, parameters);
         model.addAttribute("querySpectrum", spectrum);
@@ -316,7 +320,7 @@ public class IndividualSearchController extends BaseController {
         String byteString = ConversionsUtils.formToByteString(compoundSearchForm);
         Cookie metaFieldsCookie = new Cookie(SEARCH_PARAMETERS_COOKIE_NAME, byteString);
         response.addCookie(metaFieldsCookie);
-        return new ModelAndView("submission/spectrum/search");
+        return new ModelAndView("submission/compound/search_results");
     }
 
     private Collection<ChromatographyType> getChromatographyTypes(Submission submission) {
