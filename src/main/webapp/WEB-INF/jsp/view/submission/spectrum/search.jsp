@@ -188,7 +188,7 @@
         <%--    ${querySpectrum.id},--%>
         <%--    ${dulab:getFileIndexFromURL(requestScope['javax.servlet.forward.request_uri'])},--%>
         <%--    ${dulab:getSpectrumIndexFromURL(requestScope['javax.servlet.forward.request_uri'])});--%>
-        $('#queryInfo').spectrumInfo(queryUrl + 'info.json');
+        $('#queryInfo').spectrumInfo('info.json');
 
         let table = $('#table').DataTable({
             // dom: 'lfrtip',
