@@ -3,7 +3,6 @@ package org.dulab.adapcompounddb.site.services.search;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.entities.*;
-import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters.RetIndexMatchType;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
@@ -58,8 +57,18 @@ public class JavaSpectrumSimilarityService {
         if (parameters.getGreedy() != null)
             greedy = parameters.getGreedy();
         else
-            greedy = querySpectrum.getChromatographyType() == ChromatographyType.LC_MSMS_POS
-                    || querySpectrum.getChromatographyType() == ChromatographyType.LC_MSMS_NEG;
+        {
+            if(querySpectrum.getPeaks() != null && !querySpectrum.getPeaks().isEmpty()) {
+                if(querySpectrum.getPrecursor() != null)
+                    greedy = true;
+                else
+                    greedy = false;
+
+            }
+            else
+                greedy = true;
+
+        }
 
         Map<BigInteger, List<BigInteger>> commonToSpectrumIdsMap = MappingUtils.toMapBigIntegerOfLists(
                 spectrumRepository.preScreenSpectra(querySpectrum, parameters, user, greedy,

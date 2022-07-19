@@ -251,7 +251,6 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         PreScreenQueryBuilder queryBuilder =
                 new PreScreenQueryBuilder(searchConsensus, searchReference, searchClusterable, params.getSubmissionIds())
                         .withUser(user)
-
                         .withPrecursor(params.getPrecursorTolerance(), params.getPrecursorTolerancePPM(), querySpectrum.getPrecursor())
                         .withRetTime(params.getRetTimeTolerance(), querySpectrum.getRetentionTime())
                         .withID(params.getIdentifier());

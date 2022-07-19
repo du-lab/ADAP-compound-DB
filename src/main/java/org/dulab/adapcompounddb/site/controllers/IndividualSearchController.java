@@ -245,12 +245,19 @@ public class IndividualSearchController extends BaseController {
             Peak peakValue = new Peak();
             int ct = 0;
             while (m.find()) {
+
                 if(ct % 2 == 0)
                     peakValue.setMz(Double.parseDouble(m.group()));
                 else
+                {
                     peakValue.setIntensity(Double.parseDouble(m.group()));
-                peaks.add(peakValue);
+                    peaks.add(peakValue);
+                    peakValue = new Peak();
+
+                }
+
                 ct++;
+
             }
 
             spectrum.setPeaks(peaks);
