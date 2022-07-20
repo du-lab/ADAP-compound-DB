@@ -317,6 +317,17 @@ public class IndividualSearchController extends BaseController {
         if(spectrum.getChromatographyType() == null) {
             parameters.setChromatographyTypes(List.of(ChromatographyType.values()));
         }
+
+        if(spectrum.getPeaks() != null && !spectrum.getPeaks().isEmpty()) {
+            if(spectrum.getPrecursor() != null)
+                parameters.setGreedy(true);
+            else
+                parameters.setGreedy(false);
+
+        }
+        else
+            parameters.setGreedy(true);
+        parameters.setSearchMassLibrary(false);
         //parameters.setPrecursorTolerance(SearchParameters.DEFAULT_MZ_TOLERANCE);
         List<SearchResultDTO> searchResults = individualSearchService.searchConsensusSpectra(this.getCurrentUserPrincipal(), spectrum, parameters);
         model.addAttribute("querySpectrum", spectrum);
@@ -327,7 +338,7 @@ public class IndividualSearchController extends BaseController {
         String byteString = ConversionsUtils.formToByteString(compoundSearchForm);
         Cookie metaFieldsCookie = new Cookie(SEARCH_PARAMETERS_COOKIE_NAME, byteString);
         response.addCookie(metaFieldsCookie);
-        return new ModelAndView("submission/compound/search_results");
+        return new ModelAndView("compound/search_results");
     }
 
     private Collection<ChromatographyType> getChromatographyTypes(Submission submission) {

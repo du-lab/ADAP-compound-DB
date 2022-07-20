@@ -253,7 +253,8 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
                         .withUser(user)
                         .withPrecursor(params.getPrecursorTolerance(), params.getPrecursorTolerancePPM(), querySpectrum.getPrecursor())
                         .withRetTime(params.getRetTimeTolerance(), querySpectrum.getRetentionTime())
-                        .withID(params.getIdentifier());
+                        .withID(params.getIdentifier())
+                        .withSearchMassLibrary(params.isSearchMassLibrary());
         if(querySpectrum.getChromatographyType() == null)
             queryBuilder = queryBuilder.withChromatographyTypes(params.getChromatographyTypes().toArray(new ChromatographyType[0]));
         else

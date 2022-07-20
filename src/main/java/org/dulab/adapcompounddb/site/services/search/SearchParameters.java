@@ -44,6 +44,9 @@ public class SearchParameters implements Cloneable {
 
     private List<ChromatographyType> chromatographyTypes;
 
+
+    private boolean searchMassLibrary = true;
+
     private String Identifier;
 //    private double[] masses;
 //    private SortedMap<Double, String> massToAdductMap;
@@ -318,6 +321,15 @@ public class SearchParameters implements Cloneable {
     public void setChromatographyTypes(List<ChromatographyType> chromatographyTypes) {
         this.chromatographyTypes = chromatographyTypes;
     }
+
+    public boolean isSearchMassLibrary() {
+        return searchMassLibrary;
+    }
+
+    public void setSearchMassLibrary(boolean searchMassLibrary) {
+        this.searchMassLibrary = searchMassLibrary;
+    }
+
 
     /**
      * Sets variables of the current instance to the non-null values of 'other' instance
