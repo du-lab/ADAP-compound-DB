@@ -1,5 +1,6 @@
 from rdkit import Chem
-from rdkit.Chem.PandasTools import ChangeMoleculeRendering
+from rdkit.Chem import rdDepictor
+from rdkit.Chem.Draw import rdMolDraw2D
 import argparse
 
 
@@ -11,8 +12,14 @@ def generateImage(smiles, inchi):
     else:
         return
 
-    ChangeMoleculeRendering(renderer='PNG')
-    print(mol)
+    mc = Chem.Mol(mol.ToBinary())
+    if not mc.GetNumConformers():
+        rdDepictor.Compute2DCoords(mc)
+    drawer = rdMolDraw2D.MolDraw2DSVG(400, 300)
+    drawer.DrawMolecule(mc)
+    drawer.FinishDrawing()
+    svg = drawer.GetDrawingText()
+    print(svg)
 
 
 if __name__ == '__main__':
