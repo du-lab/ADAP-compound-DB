@@ -111,9 +111,9 @@
                             </div>
                             <div class="form-group row">
                                 <form:label id="scoreThreshold" path="scoreThreshold"
-                                            cssClass="col-md-4 col-form-label">Score Threshold:</form:label>
+                                            cssClass="col-md-4 col-form-label">Score Threshold (1 - 5000):</form:label>
                                 <div class="col-md-8">
-                                    <form:input path="scoreThreshold" type="number" step="0.1" cssClass="form-control"/>
+                                    <form:input path="scoreThreshold" type="number" step="1" cssClass="form-control"/>
                                 </div>
                             </div>
 

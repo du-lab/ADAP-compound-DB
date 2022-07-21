@@ -262,7 +262,7 @@ public class IndividualSearchController extends BaseController {
 
             spectrum.setPeaks(peaks);
             if(compoundSearchForm.getScoreThreshold() != null) {
-                parameters.setScoreThreshold(compoundSearchForm.getScoreThreshold());
+                parameters.setScoreThreshold(compoundSearchForm.getScoreThreshold() / 1000.0);
             }
             else{
                 parameters.setScoreThreshold(SearchParameters.DEFAULT_SCORE_THRESHOLD);
@@ -296,7 +296,7 @@ public class IndividualSearchController extends BaseController {
 
 
         if(compoundSearchForm.getRetentionIndexTolerance() != null) {
-            parameters.setRetIndexTolerance(compoundSearchForm.getRetentionIndexTolerance());
+            parameters.setRetIndexTolerance((double)compoundSearchForm.getRetentionIndexTolerance());
         }
 
         if(compoundSearchForm.getRetentionIndexMatch() != null) {
