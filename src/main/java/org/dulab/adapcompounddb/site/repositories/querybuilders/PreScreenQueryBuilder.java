@@ -56,7 +56,7 @@ public class PreScreenQueryBuilder {
 
 
     public PreScreenQueryBuilder withChromatographyTypes(ChromatographyType... chromatographyTypes) {
-        this.chromatographyTypes = List.of(chromatographyTypes);
+        this.chromatographyTypes = new ArrayList<>(Arrays.asList(chromatographyTypes));
         return this;
     }
 
@@ -194,7 +194,6 @@ public class PreScreenQueryBuilder {
             queryBlock += String.format(" AND (%s)", buildConditionStringWithSubmissionIds());
 
         queryBlock += "\n";
-        System.out.println(queryBlock);
         return queryBlock;
     }
 
