@@ -186,11 +186,6 @@
 <script>
     $(document).ready(function () {
 
-        <%--$('#queryInfo').spectrumInfo(--%>
-        <%--    ${pageContext.request.contextPath},--%>
-        <%--    ${querySpectrum.id},--%>
-        <%--    ${dulab:getFileIndexFromURL(requestScope['javax.servlet.forward.request_uri'])},--%>
-        <%--    ${dulab:getSpectrumIndexFromURL(requestScope['javax.servlet.forward.request_uri'])});--%>
 
 
         let table = $('#table').DataTable({
@@ -227,16 +222,17 @@
 
             let row = table.row(indexes).node();
             let spectrumId = $(row).attr('data-id');
-            let queryHRef = `${searchResult.getHRef()}`;
-            console.log(queryHRef);
-            let queryUrl = `${pageContext.request.contextPath}\${queryHRef}/search/`;
-            console.log(`${pageContext.request.contextPath}/spectrum/${spectrumId}/search/info.json`);
-
-            $('#matchInfo').spectrumInfo(`${pageContext.request.contextPath}/spectrum/\${spectrumId}/search/info.json`);
+            console.log(spectrumId);
             $.ajax({
-                url: `${pageContext.request.contextPath}/ajax/spectrum/info?spectrumId=\${queryId}&fileIndex=\${queryFileIndex}&spectrumIndex=\${querySpectrumIndex}`,
+                url: `${pageContext.request.contextPath}/ajax/spectrum/info?spectrumId=\${spectrumId}`,
                 success: d => $('#queryInfo').html(d)
             })
+
+            $('#matchInfo').spectrumInfo(`${pageContext.request.contextPath}/spectrum/\${spectrumId}/search/info.json`);
+            console.log(`${pageContext.request.contextPath}/spectrum/\${spectrumId}/search/negative/peaks.json`);
+            $('#plot').spectrumPlot(indexes,
+                `${pageContext.request.contextPath}/spectrum/\${spectrumId}/search/positive/peaks.json`,
+                `${pageContext.request.contextPath}/spectrum/\${spectrumId}/search/negative/peaks.json`);
 
         });
 

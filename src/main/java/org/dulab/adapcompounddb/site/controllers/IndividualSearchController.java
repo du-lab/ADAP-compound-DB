@@ -207,9 +207,8 @@ public class IndividualSearchController extends BaseController {
     public ModelAndView searchCompound(CompoundSearchForm compoundSearchForm, Model model, HttpSession session, @CookieValue(
             value = SEARCH_PARAMETERS_COOKIE_NAME,
             defaultValue = "") String searchParametersCookie) {
-        Submission submission = Submission.from(session);
 
-        //compoundSearchForm  = ConversionsUtils.byteStringToForm(searchParametersCookie, CompoundSearchForm.class);
+        compoundSearchForm  = ConversionsUtils.byteStringToForm(searchParametersCookie, CompoundSearchForm.class);
         //Spectrum spectrum = new Spectrum();
         FilterOptions filterOptions = getFilterOptions(ChromatographyType.values());
        model.addAttribute("filterOptions", filterOptions);

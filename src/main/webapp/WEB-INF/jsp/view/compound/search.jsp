@@ -58,14 +58,14 @@
                                 <form:label path="neutralMass"
                                             cssClass="col-md-4 col-form-label">Neutral Mass:</form:label>
                                 <div class="col-md-8">
-                                    <form:input path="neutralMass" type="number"  step="0.001" cssClass="form-control"/>
+                                    <form:input path="neutralMass" type="number" step="any" cssClass="form-control"/>
                                 </div>
                             </div>
                             <div class="form-group row">
                                 <form:label path="precursorMZ"
                                             cssClass="col-md-4 col-form-label">Precursor M/Z:</form:label>
                                 <div class="col-md-8">
-                                    <form:input path="precursorMZ" type="number" step="0.001" cssClass="form-control"/>
+                                    <form:input path="precursorMZ" type="number" step="any" cssClass="form-control"/>
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -91,7 +91,7 @@
                                         <div class="custom-control custom-switch">
                                             <input class="custom-control-input" type="checkbox" name="submissionIds"
                                                    id="submissionIds${status.index}" value="${submission.key}"
-                                                   <c:if test="${filterForm.submissionIds.contains(submission.key)}">checked</c:if>>
+                                                   <c:if test="${compoundSearchForm.getSubmissionIds().contains(submission.key)}">checked</c:if>>
                                             <label class="custom-control-label"
                                                    for="submissionIds${status.index}">${submission.value}</label>
                                         </div>
