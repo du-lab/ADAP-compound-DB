@@ -3,23 +3,21 @@ package org.dulab.adapcompounddb.site.controllers.utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.gson.Gson;
-import org.dulab.adapcompounddb.models.enums.ChromatographyType;
-import org.dulab.adapcompounddb.models.ontology.OntologySupplier;
-import org.dulab.adapcompounddb.site.services.admin.QueryParameters;
 import org.dulab.adapcompounddb.models.SearchForm;
-import org.dulab.adapcompounddb.models.enums.UserRole;
 import org.dulab.adapcompounddb.models.dto.TagInfo;
 import org.dulab.adapcompounddb.models.entities.*;
+import org.dulab.adapcompounddb.models.enums.ChromatographyType;
+import org.dulab.adapcompounddb.models.enums.UserRole;
+import org.dulab.adapcompounddb.models.ontology.OntologySupplier;
+import org.dulab.adapcompounddb.site.services.admin.QueryParameters;
 import org.dulab.adapcompounddb.site.services.admin.SpectrumClusterer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
 import javax.json.*;
-import javax.servlet.http.HttpSession;
 import javax.validation.constraints.NotBlank;
 import java.util.*;
-import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 public class ControllerUtils {
@@ -38,6 +36,7 @@ public class ControllerUtils {
 
     public static final String META_FIELDS_COOKIE_NAME = "metaFields";
     public static final String SEARCH_PARAMETERS_COOKIE_NAME = "search_parameters_form";
+    public static final String INDIVIDUAL_SEARCH_PARAMETERS_COOKIE_NAME = "individual_parameters_form";
 
 
     @Autowired

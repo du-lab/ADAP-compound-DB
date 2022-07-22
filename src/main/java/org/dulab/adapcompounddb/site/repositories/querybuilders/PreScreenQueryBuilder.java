@@ -15,7 +15,8 @@ public class PreScreenQueryBuilder {
     private final String spectrumTypeQuery;
     private final Set<BigInteger> submissionIds;
 
-    private ChromatographyType chromatographyType;
+    private List<ChromatographyType> chromatographyTypes;
+
 
     private UserPrincipal user = null;
 
@@ -36,6 +37,8 @@ public class PreScreenQueryBuilder {
     private double[] masses = null;
     private Double massTolerance = null;
     private Integer massTolerancePPM = null;
+    private String Identifier = null;
+    private boolean searchMassLibrary = true;
 
 
     public PreScreenQueryBuilder(boolean searchConsensus, boolean searchReference, boolean searchClusterable,
@@ -51,8 +54,9 @@ public class PreScreenQueryBuilder {
                 .filter(Objects::nonNull).collect(Collectors.joining(" OR "));
     }
 
-    public PreScreenQueryBuilder withChromatographyType(ChromatographyType chromatographyType) {
-        this.chromatographyType = chromatographyType;
+
+    public PreScreenQueryBuilder withChromatographyTypes(ChromatographyType... chromatographyTypes) {
+        this.chromatographyTypes = new ArrayList<>(Arrays.asList(chromatographyTypes));
         return this;
     }
 
@@ -94,6 +98,16 @@ public class PreScreenQueryBuilder {
         return this;
     }
 
+    public PreScreenQueryBuilder withID(String id) {
+        this.Identifier = id;
+        return this;
+    }
+
+    public PreScreenQueryBuilder withSearchMassLibrary(boolean searchMassLibrary) {
+        this.searchMassLibrary = searchMassLibrary;
+        return this;
+    }
+
 
     public Spectrum getQuerySpectrum() {
         return querySpectrum;
@@ -110,8 +124,22 @@ public class PreScreenQueryBuilder {
                 "LEFT JOIN UserPrincipal ON UserPrincipal.Id = Submission.UserPrincipalId\n" +
                 "WHERE (%s)", spectrumTypeQuery);
 
-        if (chromatographyType != null)
-            queryBlock += String.format(" AND Spectrum.ChromatographyType = '%s'", chromatographyType);
+        if (chromatographyTypes != null){
+            if(searchMassLibrary) {
+                chromatographyTypes.add(ChromatographyType.NONE);
+            }
+            String types = chromatographyTypes.stream()
+                    .map(ChromatographyType::toString)
+                    .collect(Collectors.joining("','", "'", "'"));
+            queryBlock += String.format(" AND Spectrum.ChromatographyType IN (%s)", types);
+        }
+
+
+
+
+
+        if(Identifier != null && !Identifier.trim().isEmpty())
+            queryBlock += String.format(" AND Spectrum.Name = '%s'", Identifier);
 
         if (precursorMz != null && precursorTolerance != null)
             queryBlock += String.format(" AND Spectrum.Precursor > %f AND Spectrum.Precursor < %f",
@@ -166,7 +194,6 @@ public class PreScreenQueryBuilder {
             queryBlock += String.format(" AND (%s)", buildConditionStringWithSubmissionIds());
 
         queryBlock += "\n";
-
         return queryBlock;
     }
 
