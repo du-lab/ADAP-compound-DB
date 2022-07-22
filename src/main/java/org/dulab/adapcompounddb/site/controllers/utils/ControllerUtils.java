@@ -16,11 +16,15 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
 import javax.json.*;
+import javax.servlet.http.HttpSession;
 import javax.validation.constraints.NotBlank;
 import java.util.*;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 public class ControllerUtils {
+
+    public static final String GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME = "group_search_async";
 
     public static final String GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME = "group_search_results";
 

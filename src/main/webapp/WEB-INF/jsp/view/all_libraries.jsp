@@ -30,7 +30,9 @@
                     <table id="public_libraries" class="display" style="width: 100%;">
                         <thead>
                         <tr>
-                            <th style="width: 100%; text-align: center">Name</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Size</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -38,11 +40,12 @@
                         <%--@elvariable id="libraries" type="java.util.List<org.dulab.adapcompounddb.models.entities.Submission>"--%>
                         <c:forEach items="${libraries}" var="study" varStatus="loop">
                             <tr>
-                                <td style="text-align: center">
-                                    <a href="${pageContext.request.contextPath}/submission/${study.id}/">${study.name}&nbsp;
-                                    </a><br/>
+                                <td>
+                                    <a href="${pageContext.request.contextPath}/submission/${study.id}/">${study.name}</a>
                                         <%--                        <small>${dulab:abbreviate(study.description, 80)}</small>--%>
                                 </td>
+                                <td>${dulab:abbreviate(study.description, 80)}</td>
+                                <td>${study.size}</td>
                             </tr>
                         </c:forEach>
                         </tbody>
