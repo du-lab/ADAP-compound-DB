@@ -33,7 +33,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.SEARCH_PARAMETERS_COOKIE_NAME;
+import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.INDIVIDUAL_SEARCH_PARAMETERS_COOKIE_NAME;
 
 @Controller
 public class IndividualSearchController extends BaseController {
@@ -205,7 +205,7 @@ public class IndividualSearchController extends BaseController {
 
     @RequestMapping(value = "/compound/search/", method = RequestMethod.GET)
     public ModelAndView searchCompound(CompoundSearchForm compoundSearchForm, Model model, HttpSession session, @CookieValue(
-            value = SEARCH_PARAMETERS_COOKIE_NAME,
+            value = INDIVIDUAL_SEARCH_PARAMETERS_COOKIE_NAME,
             defaultValue = "") String searchParametersCookie) {
 
         compoundSearchForm  = ConversionsUtils.byteStringToForm(searchParametersCookie, CompoundSearchForm.class);
@@ -335,7 +335,7 @@ public class IndividualSearchController extends BaseController {
         model.addAttribute("searchResults", searchResults);
 
         String byteString = ConversionsUtils.formToByteString(compoundSearchForm);
-        Cookie metaFieldsCookie = new Cookie(SEARCH_PARAMETERS_COOKIE_NAME, byteString);
+        Cookie metaFieldsCookie = new Cookie(INDIVIDUAL_SEARCH_PARAMETERS_COOKIE_NAME, byteString);
         response.addCookie(metaFieldsCookie);
         return new ModelAndView("compound/search_results");
     }
