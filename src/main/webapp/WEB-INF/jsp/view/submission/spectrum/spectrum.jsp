@@ -121,9 +121,7 @@
                         <div class="container-fluid">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <div id="plot" style="max-width: 100%; height: auto" class="plot">
-                                        <canvas id="myChart"></canvas>
-                                    </div>
+                                    <div id="plot" style="max-width: 100%; height: auto" class="plot"></div>
                                 </div>
 
                                 <div class="col-md-6">
@@ -247,8 +245,6 @@
 <script src="<c:url value="/resources/d3/d3.min.js"/>"></script>
 <script src="<c:url value="/resources/AdapCompoundDb/js/spectrum_plot.js"/>"></script>
 <%--<script type="text/javascript" src="<c:url value="/resources/AdapCompoundDb/js/tabs.js"/>"></script>--%>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/1.2.1/chartjs-plugin-zoom.min.js" integrity="sha512-klQv6lz2YR+MecyFYMFRuU2eAl8IPRo6zHnsc9n142TJuJHS8CG0ix4Oq9na9ceeg1u5EkBfZsFcV3U7J51iew==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
 
     $(".tabbed-pane").each(function () {
@@ -275,53 +271,6 @@
         });
 
         SpectrumPlot('plot', ${dulab:spectrumToJson(spectrum)});
-        const labels = [
-            'January',
-            'February',
-            'March',
-            'April',
-            'May',
-            'June',
-        ];
-
-        const data = {
-            labels: labels,
-            datasets: [{
-                label: 'My First dataset',
-                backgroundColor: 'rgb(255, 99, 132)',
-                borderColor: 'rgb(255, 99, 132)',
-                barThickness:1,
-                data: [0, 10, 5, 2, 20, 30, 45],
-            }]
-        };
-
-        const config = {
-            type: 'bar',
-            data: data,
-            options: {
-                scales: {
-
-                },
-                plugins: {
-                    zoom: {
-                        zoom: {
-                            wheel: {
-                                enabled: true,
-                            },
-                            drag: {
-                                enabled: true
-                            },
-                            mode: 'xy',
-                        }
-                    }
-                }
-            }
-        };
-        const myChart = new Chart(
-            document.getElementById('myChart'),
-            config
-        );
-        Chart.register(zoomPlugin)
 
     })
 
