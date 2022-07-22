@@ -140,7 +140,7 @@ public class IndividualSearchController extends BaseController {
         form.setSubmissionIds(filterOptions.getSubmissions().keySet());
         model.addAttribute("filterForm", form);
 
-        return "submission/compound/search_results";
+        return "submission/spectrum/search";
     }
 
     @RequestMapping(
