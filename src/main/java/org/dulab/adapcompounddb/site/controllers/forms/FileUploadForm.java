@@ -1,19 +1,16 @@
 package org.dulab.adapcompounddb.site.controllers.forms;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dulab.adapcompounddb.models.enums.ChromatographyType;
-import org.dulab.adapcompounddb.models.enums.FileType;
 import org.dulab.adapcompounddb.models.MetaDataMapping;
 import org.dulab.adapcompounddb.models.MetaDataMapping.Field;
+import org.dulab.adapcompounddb.models.enums.ChromatographyType;
+import org.dulab.adapcompounddb.models.enums.FileType;
 import org.dulab.adapcompounddb.validation.ContainsFiles;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +63,27 @@ public class FileUploadForm {
     private String csvInChiField;
     private String csvInChiKeyField;
     private String csvIsotopeField;
+
+    private String mgfNameField;
+    private String mgfSynonymField;
+    private String mgfExternalIdField;
+    private String mgfCasNoField;
+    private String mgfKeggField;
+    private String mgfHmdbField;
+    private String mgfPubChemField;
+    private String mgfPrecursorMzField;
+    private String mgfRetentionTimeField;
+
+
+
+    private String mgfRetentionIndexField;
+    private String mgfMassField;
+    private String mgfFormulaField;
+    private String mgfCanonicalSmilesField;
+    private String mgfInChiField;
+    private String mgfInChiKeyField;
+    private String mgfIsotopeField;
+    
 
     @JsonIgnore
     @ContainsFiles
@@ -369,11 +387,140 @@ public class FileUploadForm {
         this.files = files;
     }
 
+    public String getMgfNameField() {
+        return mgfNameField;
+    }
+
+    public void setMgfNameField(String mgfNameField) {
+        this.mgfNameField = mgfNameField;
+    }
+
+    public String getMgfSynonymField() {
+        return mgfSynonymField;
+    }
+
+    public void setMgfSynonymField(String mgfSynonymField) {
+        this.mgfSynonymField = mgfSynonymField;
+    }
+
+    public String getMgfExternalIdField() {
+        return mgfExternalIdField;
+    }
+
+    public void setMgfExternalIdField(String mgfExternalIdField) {
+        this.mgfExternalIdField = mgfExternalIdField;
+    }
+
+    public String getMgfCasNoField() {
+        return mgfCasNoField;
+    }
+
+    public void setMgfCasNoField(String mgfCasNoField) {
+        this.mgfCasNoField = mgfCasNoField;
+    }
+
+    public String getMgfKeggField() {
+        return mgfKeggField;
+    }
+
+    public void setMgfKeggField(String mgfKeggField) {
+        this.mgfKeggField = mgfKeggField;
+    }
+
+    public String getMgfHmdbField() {
+        return mgfHmdbField;
+    }
+
+    public void setMgfHmdbField(String mgfHmdbField) {
+        this.mgfHmdbField = mgfHmdbField;
+    }
+
+    public String getMgfPubChemField() {
+        return mgfPubChemField;
+    }
+
+    public void setMgfPubChemField(String mgfPubChemField) {
+        this.mgfPubChemField = mgfPubChemField;
+    }
+
+    public String getMgfPrecursorMzField() {
+        return mgfPrecursorMzField;
+    }
+
+    public void setMgfPrecursorMzField(String mgfPrecursorMzField) {
+        this.mgfPrecursorMzField = mgfPrecursorMzField;
+    }
+
+    public String getMgfRetentionTimeField() {
+        return mgfRetentionTimeField;
+    }
+
+    public void setMgfRetentionTimeField(String mgfRetentionTimeField) {
+        this.mgfRetentionTimeField = mgfRetentionTimeField;
+    }
+
+    public String getMgfRetentionIndexField() {
+        return mgfRetentionIndexField;
+    }
+
+    public void setMgfRetentionIndexField(String mgfRetentionIndexField) {
+        this.mgfRetentionIndexField = mgfRetentionIndexField;
+    }
+
+    public String getMgfMassField() {
+        return mgfMassField;
+    }
+
+    public void setMgfMassField(String mgfMassField) {
+        this.mgfMassField = mgfMassField;
+    }
+
+    public String getMgfFormulaField() {
+        return mgfFormulaField;
+    }
+
+    public void setMgfFormulaField(String mgfFormulaField) {
+        this.mgfFormulaField = mgfFormulaField;
+    }
+
+    public String getMgfCanonicalSmilesField() {
+        return mgfCanonicalSmilesField;
+    }
+
+    public void setMgfCanonicalSmilesField(String mgfCanonicalSmilesField) {
+        this.mgfCanonicalSmilesField = mgfCanonicalSmilesField;
+    }
+
+    public String getMgfInChiField() {
+        return mgfInChiField;
+    }
+
+    public void setMgfInChiField(String mgfInChiField) {
+        this.mgfInChiField = mgfInChiField;
+    }
+
+    public String getMgfInChiKeyField() {
+        return mgfInChiKeyField;
+    }
+
+    public void setMgfInChiKeyField(String mgfInChiKeyField) {
+        this.mgfInChiKeyField = mgfInChiKeyField;
+    }
+
+    public String getMgfIsotopeField() {
+        return mgfIsotopeField;
+    }
+
+    public void setMgfIsotopeField(String mgfIsotopeField) {
+        this.mgfIsotopeField = mgfIsotopeField;
+    }
+
     @JsonIgnore
     public Map<FileType, MetaDataMapping> getMetaDataMappings() {
         Map<FileType, MetaDataMapping> mappings = new HashMap<>();
         mappings.put(FileType.MSP, createMspMapping());
         mappings.put(FileType.CSV, createCsvMapping());
+        mappings.put(FileType.MGF, createMgfMapping());
         return mappings;
     }
 
@@ -435,4 +582,29 @@ public class FileUploadForm {
         mapping.setFieldName(Field.ISOTOPIC_DISTRIBUTION, csvIsotopeField);
         return mapping;
     }
+
+    @JsonIgnore
+    private MetaDataMapping createMgfMapping() {
+        MetaDataMapping mapping = new MetaDataMapping();
+        mapping.setFieldName(Field.NAME, mgfNameField);
+        mapping.setFieldName(Field.SYNONYM, mgfSynonymField);
+        mapping.setFieldName(Field.EXTERNAL_ID, mgfExternalIdField);
+        mapping.setFieldName(Field.CAS_ID, mgfCasNoField);
+        mapping.setFieldName(Field.HMDB_ID, mgfHmdbField);
+        mapping.setFieldName(Field.KEGG_ID, mgfKeggField);
+        mapping.setFieldName(Field.PUBCHEM_ID, mgfPubChemField);
+        mapping.setFieldName(Field.PRECURSOR_MZ, mgfPrecursorMzField);
+        mapping.setFieldName(Field.PRECURSOR_TYPE, null);
+        mapping.setFieldName(Field.RETENTION_TIME, mgfRetentionTimeField);
+        mapping.setFieldName(Field.RETENTION_INDEX, mgfRetentionIndexField);
+        mapping.setFieldName(Field.MASS, mgfMassField);
+        mapping.setFieldName(Field.FORMULA, mgfFormulaField);
+        mapping.setFieldName(Field.SMILES, mgfCanonicalSmilesField);
+        mapping.setFieldName(Field.INCHI_KEY, mgfInChiKeyField);
+        mapping.setFieldName(Field.INCHI, mgfInChiField);
+        mapping.setFieldName(Field.ISOTOPIC_DISTRIBUTION, mgfIsotopeField);
+        return mapping;
+    }
+    
+    
 }
