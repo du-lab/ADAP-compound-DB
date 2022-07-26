@@ -19,6 +19,9 @@ public class SearchParameters implements Cloneable {
         PENALIZE_NO_MATCH_WEAK, ALWAYS_MATCH
     }
 
+    public static final double DEFAULT_MZ_TOLERANCE = 0.01;
+    public static final double DEFAULT_SCORE_THRESHOLD = 0.5;
+
     public enum MzToleranceType {DA, PPM}
 
     private Boolean greedy;
@@ -38,6 +41,13 @@ public class SearchParameters implements Cloneable {
     private String disease;
     private Set<BigInteger> submissionIds;
     private Iterable<BigInteger> spectrumIds;
+
+    private List<ChromatographyType> chromatographyTypes;
+
+
+    private boolean searchMassLibrary = true;
+
+    private String Identifier;
 //    private double[] masses;
 //    private SortedMap<Double, String> massToAdductMap;
     private List<Adduct> adducts;
@@ -257,17 +267,17 @@ public class SearchParameters implements Cloneable {
             case GAS:
             case LIQUID_POSITIVE:
             case LIQUID_NEGATIVE:
-                parameters.setMzTolerance(0.01);
-                parameters.setScoreThreshold(0.5);
+                parameters.setMzTolerance(DEFAULT_MZ_TOLERANCE);
+                parameters.setScoreThreshold(DEFAULT_SCORE_THRESHOLD);
                 break;
             case LC_MSMS_POS:
             case LC_MSMS_NEG:
-                parameters.setMzTolerance(0.01);
+                parameters.setMzTolerance(DEFAULT_MZ_TOLERANCE);
                 parameters.setScoreThreshold(0.3);
-                parameters.setPrecursorTolerance(0.01);
+                parameters.setPrecursorTolerance(DEFAULT_MZ_TOLERANCE);
                 break;
             case NONE:
-                parameters.setMassTolerance(0.01);
+                parameters.setMassTolerance(DEFAULT_MZ_TOLERANCE);
                 break;
         }
         return parameters;
@@ -296,6 +306,30 @@ public class SearchParameters implements Cloneable {
     public void setPenalizeDominantPeak(boolean penalizeDominantPeak) {
         this.penalizeDominantPeak = penalizeDominantPeak;
     }
+
+    public String getIdentifier() {
+        return Identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        Identifier = identifier;
+    }
+    public List<ChromatographyType> getChromatographyTypes() {
+        return chromatographyTypes;
+    }
+
+    public void setChromatographyTypes(List<ChromatographyType> chromatographyTypes) {
+        this.chromatographyTypes = chromatographyTypes;
+    }
+
+    public boolean isSearchMassLibrary() {
+        return searchMassLibrary;
+    }
+
+    public void setSearchMassLibrary(boolean searchMassLibrary) {
+        this.searchMassLibrary = searchMassLibrary;
+    }
+
 
     /**
      * Sets variables of the current instance to the non-null values of 'other' instance

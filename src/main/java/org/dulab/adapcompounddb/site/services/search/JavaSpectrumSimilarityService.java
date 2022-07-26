@@ -61,6 +61,7 @@ public class JavaSpectrumSimilarityService {
             greedy = querySpectrum.getChromatographyType() == ChromatographyType.LC_MSMS_POS
                     || querySpectrum.getChromatographyType() == ChromatographyType.LC_MSMS_NEG;
 
+
         Map<BigInteger, List<BigInteger>> commonToSpectrumIdsMap = MappingUtils.toMapBigIntegerOfLists(
                 spectrumRepository.preScreenSpectra(querySpectrum, parameters, user, greedy,
                         searchConsensus, searchReference, searchClusterable));
