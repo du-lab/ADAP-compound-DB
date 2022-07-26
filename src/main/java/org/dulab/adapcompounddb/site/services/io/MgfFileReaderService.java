@@ -13,9 +13,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class MgfFileReaderService implements FileReaderService {
 
@@ -118,12 +120,12 @@ public class MgfFileReaderService implements FileReaderService {
     private static String[] validateNameValuePair(String[] nameValuePair, MetaDataMapping metaDataMapping) {
         for (int i = 0; i < nameValuePair.length - 1; ++i) {
             String fieldName = nameValuePair[i];
-            System.out.println(fieldName);
-//            if (metaDataMapping.check(fieldName)) {
-//                String fieldValue = Arrays.stream(nameValuePair, i + 1, nameValuePair.length)
-//                        .collect(Collectors.joining("="));
-//                return new String[] {fieldName, fieldValue};
-//            }
+
+            if (metaDataMapping.check(fieldName)) {
+                String fieldValue = Arrays.stream(nameValuePair, i + 1, nameValuePair.length)
+                        .collect(Collectors.joining("="));
+                return new String[] {fieldName, fieldValue};
+            }
         }
         return nameValuePair;
     }
@@ -150,6 +152,14 @@ public class MgfFileReaderService implements FileReaderService {
         String formulaField = mapping.getFieldName(MetaDataMapping.Field.FORMULA);
         if (formulaField == null || formulaField.isEmpty())
             mapping.setFieldName(MetaDataMapping.Field.FORMULA, "Formula");
+
+        String smilesField = mapping.getFieldName(MetaDataMapping.Field.SMILES);
+        if (smilesField == null || smilesField.isEmpty())
+            mapping.setFieldName(MetaDataMapping.Field.SMILES, "Smiles");
+
+        String inChiField = mapping.getFieldName(MetaDataMapping.Field.INCHI);
+        if (inChiField == null || inChiField.isEmpty())
+            mapping.setFieldName(MetaDataMapping.Field.INCHI, "InChi");
 
         return mapping;
     }
