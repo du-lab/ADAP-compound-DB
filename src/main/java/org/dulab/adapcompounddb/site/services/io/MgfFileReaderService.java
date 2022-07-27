@@ -139,27 +139,28 @@ public class MgfFileReaderService implements FileReaderService {
 
         String nameField = mapping.getFieldName(MetaDataMapping.Field.NAME);
         if (nameField == null || nameField.isEmpty())
-            mapping.setFieldName(MetaDataMapping.Field.NAME, "name");
+            mapping.setFieldName(MetaDataMapping.Field.NAME, "NAME");
 
 
         String formulaField = mapping.getFieldName(MetaDataMapping.Field.FORMULA);
         if (formulaField == null || formulaField.isEmpty())
-            mapping.setFieldName(MetaDataMapping.Field.FORMULA, "Formula");
+            mapping.setFieldName(MetaDataMapping.Field.FORMULA, "FORMULA");
 
         String smilesField = mapping.getFieldName(MetaDataMapping.Field.SMILES);
         if (smilesField == null || smilesField.isEmpty())
         {
-            mapping.setFieldName(MetaDataMapping.Field.SMILES, "Smiles");
+            mapping.setFieldName(MetaDataMapping.Field.SMILES, "SMILES");
 
         }
 
         String inChiField = mapping.getFieldName(MetaDataMapping.Field.INCHI);
         if (inChiField == null || inChiField.isEmpty())
-            mapping.setFieldName(MetaDataMapping.Field.INCHI, "InChi");
+            mapping.setFieldName(MetaDataMapping.Field.INCHI, "INCHI");
 
-        String inChiKeyField = mapping.getFieldName(MetaDataMapping.Field.INCHI_KEY);
-        if (inChiKeyField == null || inChiKeyField.isEmpty())
-            mapping.setFieldName(MetaDataMapping.Field.INCHI_KEY, "InChiaux");
+        String precursorMzField = mapping.getFieldName(MetaDataMapping.Field.PRECURSOR_MZ);
+        if (precursorMzField == null || precursorMzField.isEmpty())
+            mapping.setFieldName(MetaDataMapping.Field.PRECURSOR_MZ, "PEPMASS");
+
 
 
         return mapping;
