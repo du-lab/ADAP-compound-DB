@@ -41,7 +41,7 @@ body {
 .wrapper {
     align-items: stretch;
     display: flex;
-    margin: 80px 10px;
+    margin: 5px 10px;
     width: 100%;
 }
 
@@ -702,6 +702,20 @@ progress:after {
     justify-content: space-between;
     background-color: #fdfd96;
     border-radius: 5px;
+    box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+maintenance-banner {
+    position: fixed;
+    top: 10px;
+
+    padding: 5px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #ed2140;
+
     box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.2);
     z-index: 1;
 }
