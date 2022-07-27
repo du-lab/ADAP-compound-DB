@@ -1,6 +1,5 @@
 package org.dulab.adapcompounddb.models;
 
-import org.dulab.adapcompounddb.models.entities.Isotope;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumProperty;
 import org.dulab.adapcompounddb.models.entities.Synonym;
@@ -8,8 +7,6 @@ import org.dulab.adapcompounddb.models.enums.IdentifierType;
 
 import java.util.*;
 import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static org.dulab.adapcompounddb.site.services.utils.MappingUtils.parseDouble;
 

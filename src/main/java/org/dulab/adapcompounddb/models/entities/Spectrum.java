@@ -313,7 +313,7 @@ public class Spectrum implements Serializable {
 
             //System.out.println(peaks.stream().map(p -> Double.toString(p.getIntensity())).collect(Collectors.joining(",")));
 
-            try {
+            if(! peaks.isEmpty()){
                 final Double maxIntensity = peaks.stream()
                         .mapToDouble(Peak::getIntensity)
                         .max().orElseThrow(() -> new IllegalStateException("Cannot find the maximum intensity"));
@@ -333,7 +333,7 @@ public class Spectrum implements Serializable {
                         .sum();
                 omegaFactor = 1 / (totalIntensity - 0.5);
             }
-            catch(Exception e) {}
+
         }
     }
 
