@@ -1,18 +1,17 @@
 package org.dulab.adapcompounddb.models.entities;
 
-import java.io.Serializable;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.regex.Pattern;
-
-import javax.persistence.*;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
 import org.dulab.adapcompounddb.models.MetaDataMapping;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.enums.IdentifierType;
 import org.dulab.adapcompounddb.site.services.utils.IsotopicDistributionUtils;
+
+import javax.persistence.*;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.util.*;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Entity
 @SqlResultSetMapping(name = "SpectrumScoreMapping", columns = {@ColumnResult(name = "SpectrumId", type = Long.class),
@@ -312,21 +311,29 @@ public class Spectrum implements Serializable {
                 this.setTopMz16(peakList.get(15).getMz());
             }
 
-            final double maxIntensity = peaks.stream()
-                    .mapToDouble(Peak::getIntensity)
-                    .max().orElseThrow(() -> new IllegalStateException("Cannot find the maximum intensity"));
+            //System.out.println(peaks.stream().map(p -> Double.toString(p.getIntensity())).collect(Collectors.joining(",")));
 
-            integerMz = true;
-            for (final Peak peak : peaks) {
-                peak.setIntensity(peak.getIntensity() / maxIntensity);
-                if (peak.getMz() % 1 != 0)
-                    integerMz = false;
+            if(! peaks.isEmpty()){
+                final Double maxIntensity = peaks.stream()
+                        .mapToDouble(Peak::getIntensity)
+                        .max().orElseThrow(() -> new IllegalStateException("Cannot find the maximum intensity"));
+
+
+
+
+                integerMz = true;
+                for (final Peak peak : peaks) {
+                    peak.setIntensity(peak.getIntensity() / maxIntensity);
+                    if (peak.getMz() % 1 != 0)
+                        integerMz = false;
+                }
+
+                double totalIntensity = peaks.stream()
+                        .mapToDouble(Peak::getIntensity)
+                        .sum();
+                omegaFactor = 1 / (totalIntensity - 0.5);
             }
 
-            double totalIntensity = peaks.stream()
-                    .mapToDouble(Peak::getIntensity)
-                    .sum();
-            omegaFactor = 1 / (totalIntensity - 0.5);
         }
     }
 
