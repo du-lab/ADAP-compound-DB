@@ -111,16 +111,20 @@ public class PreScreenQueryBuilder {
 
     public String buildQueryBlock(int numberOfTopMz, Double queryMz) {
 
-        String queryBlock = String.format("SELECT Spectrum.Id FROM Spectrum LEFT JOIN File ON File.Id = Spectrum.FileId " +
+        String queryBlock = String.format("SELECT Spectrum.Id FROM Spectrum " +
+                "LEFT JOIN File ON File.Id = Spectrum.FileId " +
                 "LEFT JOIN Submission ON Submission.Id = File.SubmissionId " +
                 "LEFT JOIN UserPrincipal ON UserPrincipal.Id = Submission.UserPrincipalId\n" +
+                "LEFT JOIN Identifier ON Spectrum.Id = Identifier.SpectrumId "+
                 "WHERE (%s)", spectrumTypeQuery);
 
         if (chromatographyType != null)
             queryBlock += String.format(" AND Spectrum.ChromatographyType = '%s'", chromatographyType);
 
         if(Identifier != null && !Identifier.trim().isEmpty())
-            queryBlock += String.format(" AND Spectrum.Name = '%s'", Identifier);
+            queryBlock += String.format(" AND (Spectrum.Name LIKE '%%%1$s%%' " +
+                    "OR Spectrum.InChiKey = '%1$s' " +
+                    "OR Identifier.Value = '%1$s')", Identifier);
 
         if (precursorMz != null && precursorTolerance != null)
             queryBlock += String.format(" AND Spectrum.Precursor > %f AND Spectrum.Precursor < %f",
