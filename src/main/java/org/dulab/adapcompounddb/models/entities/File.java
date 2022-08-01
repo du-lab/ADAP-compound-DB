@@ -47,6 +47,8 @@ public class File implements Comparable<File>, Serializable {
     @Valid
     private List<Spectrum> spectra;
 
+    private int size;
+
     // *******************************
     // ***** Getters and Setters *****
     // *******************************
@@ -108,6 +110,15 @@ public class File implements Comparable<File>, Serializable {
 
     public void setSpectra(final List<Spectrum> spectra) {
         this.spectra = spectra;
+        this.size = (spectra != null) ? spectra.size() : 0;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
     }
 
     // *************************

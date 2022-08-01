@@ -46,21 +46,7 @@
 
                         <div id="search" class="tab-pane fade show active" role="tabpanel">
                             <div class="alert-danger" style="margin-bottom: 5px;">${errorMessage}</div>
-                            <div class="row form-group">
 
-                                <div class="col-md-4">
-                                    <form:label path="chromatographyType"
-                                                cssClass="col-form-label">Chromatography type</form:label>&nbsp;
-                                </div>
-                                <div class="col-md-8">
-                                    <form:select id="chromatographySelect" path="chromatographyType" cssClass="form-control">
-                                        <form:option id="typeValue" value="" label="Please select..."/>
-                                        <form:options items="${chromatographyTypeList}" itemLabel="label"/>
-                                    </form:select>
-                                    <form:errors path="chromatographyType"
-                                                 cssClass="text-danger form-control-sm"/>
-                                </div>
-                            </div>
                             <div class="form-group row">
                                 <form:label path="identifier"
                                             cssClass="col-md-4 col-form-label">Identifier:</form:label>
@@ -72,14 +58,14 @@
                                 <form:label path="neutralMass"
                                             cssClass="col-md-4 col-form-label">Neutral Mass:</form:label>
                                 <div class="col-md-8">
-                                    <form:input path="neutralMass" type="number"  step="0.001" cssClass="form-control"/>
+                                    <form:input path="neutralMass" type="number" step="any" cssClass="form-control"/>
                                 </div>
                             </div>
                             <div class="form-group row">
                                 <form:label path="precursorMZ"
                                             cssClass="col-md-4 col-form-label">Precursor M/Z:</form:label>
                                 <div class="col-md-8">
-                                    <form:input path="precursorMZ" type="number" step="0.001" cssClass="form-control"/>
+                                    <form:input path="precursorMZ" type="number" step="any" cssClass="form-control"/>
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -105,7 +91,7 @@
                                         <div class="custom-control custom-switch">
                                             <input class="custom-control-input" type="checkbox" name="submissionIds"
                                                    id="submissionIds${status.index}" value="${submission.key}"
-                                                   <c:if test="${filterForm.submissionIds.contains(submission.key)}">checked</c:if>>
+                                                   <c:if test="${compoundSearchForm.getSubmissionIds().contains(submission.key)}">checked</c:if>>
                                             <label class="custom-control-label"
                                                    for="submissionIds${status.index}">${submission.value}</label>
                                         </div>
@@ -125,9 +111,9 @@
                             </div>
                             <div class="form-group row">
                                 <form:label id="scoreThreshold" path="scoreThreshold"
-                                            cssClass="col-md-4 col-form-label">Score Threshold:</form:label>
+                                            cssClass="col-md-4 col-form-label">Score Threshold (1 - 5000):</form:label>
                                 <div class="col-md-8">
-                                    <form:input path="scoreThreshold" type="number" step="0.1" cssClass="form-control"/>
+                                    <form:input path="scoreThreshold" type="number" step="1" cssClass="form-control"/>
                                 </div>
                             </div>
 
@@ -234,14 +220,7 @@
 
         })
 
-        $('#chromatographySelect').change(function (){
-            console.log('chromatography changed');
-            var chrom = $(this).val();
-            $.ajax({
-                url: "${pageContext.request.contextPath}/ajax/compound/search?chromatographyType="+ chrom,
 
-            })
-        });
 
     });
 

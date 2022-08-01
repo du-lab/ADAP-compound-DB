@@ -29,8 +29,7 @@ import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.Future;
 
-import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.META_FIELDS_COOKIE_NAME;
-import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.SEARCH_PARAMETERS_COOKIE_NAME;
+import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.*;
 
 @Controller
 public class GroupSearchController extends BaseController {
@@ -43,7 +42,6 @@ public class GroupSearchController extends BaseController {
     private final SubmissionService submissionService;
     private final SubmissionTagService submissionTagService;
     private FilterOptions filterOptions;
-//    private Future<Void> asyncResult;
 
     @Autowired
     public GroupSearchController(GroupSearchService groupSearchService,
@@ -98,9 +96,13 @@ public class GroupSearchController extends BaseController {
             return "submission/group_search_parameters";
         }
 
-//        if (asyncResult != null && !asyncResult.isDone()) {
-//            asyncResult.cancel(true);
-//        }
+        @SuppressWarnings("unchecked")
+        Future<Void> asyncResult = (Future<Void>) session.getAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME);
+
+        if (asyncResult != null && !asyncResult.isDone()) {
+            asyncResult.cancel(true);
+            session.removeAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME);
+        }
 
         String species = ALL.equalsIgnoreCase(form.getSpecies()) ? null : form.getSpecies();
         String source = ALL.equalsIgnoreCase(form.getSource()) ? null : form.getSource();
@@ -118,9 +120,9 @@ public class GroupSearchController extends BaseController {
         parameters.setDisease(disease);
         parameters.setSubmissionIds(form.getSubmissionIds());
 
-//        asyncResult =
-        groupSearchService.groupSearch(this.getCurrentUserPrincipal(), submission.getFiles(), session,
+        asyncResult = groupSearchService.groupSearch(this.getCurrentUserPrincipal(), submission.getFiles(), session,
                 parameters, form.isWithOntologyLevels(), form.isSendResultsToEmail());
+        session.setAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME, asyncResult);
 
         String byteString = ConversionsUtils.formToByteString(form);
         Cookie metaFieldsCookie = new Cookie(SEARCH_PARAMETERS_COOKIE_NAME, byteString);

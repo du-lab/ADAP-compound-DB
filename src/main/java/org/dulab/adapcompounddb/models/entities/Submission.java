@@ -80,21 +80,15 @@ public class Submission implements Serializable {
 
     @URL(message = "Submission: The field Reference must be a valid URL.")
     private String reference;
-
     private String externalId;
-
     private boolean isPrivate;
-
     private boolean raw;
+    private int size;
 
     @Transient
     private boolean isInHouse;
-
     @Transient
     private boolean isLibrary;
-
-
-
     @Transient
     private boolean isSearchable;
 
@@ -166,6 +160,7 @@ public class Submission implements Serializable {
 
     public void setFiles(final List<File> files) {
         this.files = files;
+        this.size = (files != null) ? files.stream().mapToInt(File::getSize).sum() : 0;
     }
 
     public UserPrincipal getUser() {
@@ -214,6 +209,14 @@ public class Submission implements Serializable {
 
     public void setRaw(boolean raw) {
         this.raw = raw;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
     }
 
     public boolean getIsInHouse(){

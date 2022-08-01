@@ -8,11 +8,8 @@ import org.dulab.adapcompounddb.models.entities.File;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.models.enums.MassSpectrometryType;
-import org.dulab.adapcompounddb.site.services.io.CsvFileReaderService;
-import org.dulab.adapcompounddb.site.services.io.FileReaderService;
+import org.dulab.adapcompounddb.site.services.io.*;
 import org.dulab.adapcompounddb.models.MetaDataMapping;
-import org.dulab.adapcompounddb.site.services.io.MspFileReaderService;
-import org.dulab.adapcompounddb.site.services.io.RawFileReaderService;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Nullable;
@@ -33,6 +30,7 @@ public class MultipartFileUtils {
         fileReaderServiceMap.put(FileType.MSP, new MspFileReaderService());
         fileReaderServiceMap.put(FileType.CSV, new CsvFileReaderService());
         fileReaderServiceMap.put(FileType.RAW, new RawFileReaderService());
+        fileReaderServiceMap.put(FileType.MGF, new MgfFileReaderService());
     }
 
 

@@ -1,23 +1,25 @@
 package org.dulab.adapcompounddb.site.services.search;
 
-import org.dulab.adapcompounddb.models.entities.*;
+import org.dulab.adapcompounddb.models.SearchType;
+import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
+import org.dulab.adapcompounddb.models.entities.Adduct;
+import org.dulab.adapcompounddb.models.entities.Spectrum;
+import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
+import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.models.ontology.OntologyLevel;
 import org.dulab.adapcompounddb.models.ontology.OntologySupplier;
 import org.dulab.adapcompounddb.models.ontology.Parameters;
+import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.services.AdductService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.dulab.adapcompounddb.site.services.admin.QueryParameters;
-import org.dulab.adapcompounddb.models.SearchType;
-import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
-import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
-import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -57,6 +59,7 @@ public class IndividualSearchService {
 
             SearchResultDTO searchResult = MappingUtils.mapSpectrumMatchToSpectrumClusterView(
                     match, matchIndex++, parameters.getSpecies(), parameters.getSource(), parameters.getDisease());
+            searchResult.setChromatographyTypeLabel(match.getMatchSpectrum().getChromatographyType().getLabel());
             searchResults.add(searchResult);
         }
 

@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
+import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.site.repositories.querybuilders.*;
 import org.dulab.adapcompounddb.site.services.admin.QueryParameters;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters;
@@ -250,10 +251,14 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
         PreScreenQueryBuilder queryBuilder =
                 new PreScreenQueryBuilder(searchConsensus, searchReference, searchClusterable, params.getSubmissionIds())
                         .withUser(user)
-                        .withChromatographyType(querySpectrum.getChromatographyType())
                         .withPrecursor(params.getPrecursorTolerance(), params.getPrecursorTolerancePPM(), querySpectrum.getPrecursor())
                         .withRetTime(params.getRetTimeTolerance(), querySpectrum.getRetentionTime())
-                        .withID(params.getIdentifier());
+                        .withID(params.getIdentifier())
+                        .withSearchMassLibrary(params.isSearchMassLibrary());
+        if(querySpectrum.getChromatographyType() == null)
+            queryBuilder = queryBuilder.withChromatographyTypes(params.getChromatographyTypes().toArray(new ChromatographyType[0]));
+        else
+            queryBuilder = queryBuilder.withChromatographyTypes(querySpectrum.getChromatographyType());
 
         if (params.getRetIndexMatchType() == RetIndexMatchType.ALWAYS_MATCH) {
             if (querySpectrum.getRetentionIndex() == null)
