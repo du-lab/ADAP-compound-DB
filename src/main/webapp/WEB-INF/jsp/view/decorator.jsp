@@ -76,17 +76,16 @@
     })
 </script>
 
-<div style="z-index: 100; display: none;">
-    <div class="row">
-        <div class="col-12" style="text-align: center; background: #ed2140; vertical-align: center; color: white; padding-top: 5px;">
-            <p>We are actively working on improving the ADAP-KDB website and adding new features and updates every Sunday, 1pm - 11pm GMT. You may experience interactions in the website work during that period.</p>
-        </div>
-    </div>
-</div>
-
 <header  style="z-index: 100; width: 100%; position: sticky; top: 0;">
     <div class="container-fluid">
-
+        <div class="row">
+            <div class="col-12">
+                <div class="small text-warning text-center">
+                    We are actively working on improving the ADAP-KDB website and adding new features and updates every Sunday, 1pm - 11pm GMT.
+                    You may experience interruptions in the website work during that period.
+                </div>
+            </div>
+        </div>
         <div class="row row-header">
             <div class="col-12 col-lg-8">
                 <h1 class="text-nowrap">
