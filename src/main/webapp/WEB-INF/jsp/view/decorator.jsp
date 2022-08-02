@@ -76,8 +76,16 @@
     })
 </script>
 
-<header class="jambotron fixed-top" style="z-index: 100;">
+<header  style="z-index: 100; width: 100%; position: sticky; top: 0;">
     <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="small text-warning text-center">
+                    We are actively working on improving the ADAP-KDB website and adding new features and updates every Sunday, 1pm - 11pm GMT.
+                    You may experience interruptions in the website work during that period.
+                </div>
+            </div>
+        </div>
         <div class="row row-header">
             <div class="col-12 col-lg-8">
                 <h1 class="text-nowrap">

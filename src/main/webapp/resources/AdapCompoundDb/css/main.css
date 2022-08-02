@@ -41,7 +41,7 @@ body {
 .wrapper {
     align-items: stretch;
     display: flex;
-    margin: 80px 10px;
+    margin: 8px 10px;
     width: 100%;
 }
 
@@ -705,6 +705,7 @@ progress:after {
     box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.2);
     z-index: 1;
 }
+
 /*.close {*/
 /*    position:fixed;*/
 /*    bottom: 60px;*/
