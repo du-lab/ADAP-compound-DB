@@ -51,7 +51,7 @@
                                 <form:label path="identifier"
                                             cssClass="col-md-4 col-form-label">Identifier:</form:label>
                                 <div class="col-md-8">
-                                    <form:input path="identifier"  cssClass="form-control"/>
+                                    <form:input path="identifier" placeholder="Input name, CAS, HMDB, KEGG, PubChem ID, or InChIKey" cssClass="form-control"/>
                                 </div>
                             </div>
                             <div class="form-group row">
