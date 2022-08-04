@@ -237,7 +237,7 @@
         })
 
         $('#chromatographySelect').change(function() {
-            console.log($(this).val());
+            
             if($(this).val() === 'GAS') {
 
                 $('#precursorMZInput').val('');
