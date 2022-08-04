@@ -1,11 +1,14 @@
 package org.dulab.adapcompounddb.site.controllers.forms;
 
+import org.dulab.adapcompounddb.models.enums.ChromatographyType;
+
 public class CompoundSearchForm extends FilterForm {
     private String Identifier;
     private Double NeutralMass;
     private Double PrecursorMZ;
     private String Spectrum;
-    // private ChromatographyType chromatographyType;
+
+    private ChromatographyType chromatographyType;
 
 //    public CompoundSearchForm(String identifier, Double neutralMass, Double precursorMZ, String spectrum, ChromatographyType chromatographyTypes) {
 //        Identifier = identifier;
@@ -46,6 +49,16 @@ public class CompoundSearchForm extends FilterForm {
     public void setSpectrum(String spectrum) {
         Spectrum = spectrum;
     }
+
+    public ChromatographyType getChromatographyType() {
+        return chromatographyType;
+    }
+
+    public void setChromatographyType(ChromatographyType chromatographyType) {
+        this.chromatographyType = chromatographyType;
+    }
+
+
 
 
 }

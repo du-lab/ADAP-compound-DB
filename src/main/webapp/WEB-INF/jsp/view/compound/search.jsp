@@ -5,6 +5,7 @@
     <%--@elvariable id="compoundSearchForm" type="org.dulab.adapcompounddb.site.controllers.forms.CompoundSearchForm"--%>
     <%--@elvariable id="errorMessage" type="java.lang.String"--%>
     <%--@elvariable id="filterOptions" type="org.dulab.adapcompounddb.site.controllers.forms.FilterOptions"--%>
+    <%--@elvariable id="chromatographyTypes" type="org.dulab.adapcompounddb.models.enums.ChromatographyType[]"--%>
     <form:form modelAttribute="compoundSearchForm" method="post">
         <div class="row row-content">
             <div class="col">
@@ -48,6 +49,21 @@
                             <div class="alert-danger" style="margin-bottom: 5px;">${errorMessage}</div>
 
                             <div class="form-group row">
+                                <form:label path="chromatographyType"
+                                            cssClass="col-md-4 col-form-label">Chromatography type</form:label>
+                                <div class="col-md-8">
+                                    <form:select id="chromatographySelect" path="chromatographyType" cssClass="form-control">
+                                        <form:option id="typeValue" value="" label="Please select..."/>
+                                        <form:options items="${chromatographyTypes}" itemLabel="label"/>
+                                    </form:select>
+                                    <form:errors path="chromatographyType"
+                                                 cssClass="text-danger form-control-sm"/>
+                                </div>
+                            </div>
+
+
+
+                            <div class="form-group row">
                                 <form:label path="identifier"
                                             cssClass="col-md-4 col-form-label">Identifier:</form:label>
                                 <div class="col-md-8">
@@ -61,18 +77,18 @@
                                     <form:input path="neutralMass" type="number" step="any" cssClass="form-control"/>
                                 </div>
                             </div>
-                            <div class="form-group row">
+                            <div class="form-group row" id="precursorMZ" >
                                 <form:label path="precursorMZ"
                                             cssClass="col-md-4 col-form-label">Precursor M/Z:</form:label>
                                 <div class="col-md-8">
-                                    <form:input path="precursorMZ" type="number" step="any" cssClass="form-control"/>
+                                    <form:input id="precusorMZInput" path="precursorMZ" type="number" step="any" cssClass="form-control"/>
                                 </div>
                             </div>
-                            <div class="form-group row">
+                            <div id="spectrum" class="form-group row">
                                 <form:label path="spectrum"
                                             cssClass="col-md-4 col-form-label">Spectrum:</form:label>
                                 <div class="col-md-8">
-                                    <form:textarea path="spectrum"  cssClass="form-control"/>
+                                    <form:textarea id="spectrumInput"  path="spectrum"  cssClass="form-control"/>
                                 </div>
                             </div>
                         </div>
@@ -182,7 +198,7 @@
         let num = $("#parameters input").filter(function () {
             return $.trim($(this).val()).length == 0
         }).length;
-        console.log(num);
+
         if(num < 3) showBadge = true;
         var retention = $('#retention').get(0);
 
@@ -219,6 +235,26 @@
            HasFormChanged();
 
         })
+
+        $('#chromatographySelect').change(function() {
+            console.log($(this).val());
+            if($(this).val() === 'GAS') {
+
+                $('#precursorMZInput').val('');
+                $('#precursorMZ').hide();
+                $('#spectrum').show();
+
+            }
+            else if($(this).val().startsWith('LIQUID')) {
+                $('#spectrumInput').val('');
+                $('#spectrum').hide();
+                $('#precursorMZ').show();
+            }
+            else {
+                $('#precursorMZ').show();
+                $('#spectrum').show();
+            }
+        });
 
 
 

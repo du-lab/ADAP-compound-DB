@@ -215,6 +215,8 @@ public class IndividualSearchController extends BaseController {
         if (compoundSearchForm.getSubmissionIds() == null || compoundSearchForm.getSubmissionIds().isEmpty())
            compoundSearchForm.setSubmissionIds(filterOptions.getSubmissions().keySet());
        model.addAttribute("compoundSearchForm", compoundSearchForm);
+       model.addAttribute("chromatographyTypes", new ChromatographyType[]{ChromatographyType.GAS, ChromatographyType.LIQUID_POSITIVE, ChromatographyType.LIQUID_NEGATIVE,
+               ChromatographyType.LC_MSMS_POS, ChromatographyType.LC_MSMS_NEG});
         return new ModelAndView("compound/search");
 
     }
