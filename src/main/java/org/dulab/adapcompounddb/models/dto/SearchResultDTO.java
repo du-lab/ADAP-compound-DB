@@ -195,14 +195,14 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
                 this.minPValue = cluster.getMinPValue();
             }
 
-            File file = matchSpectrum.getFile();
-            if (file != null) {
-                Submission submission = file.getSubmission();
-                if (submission != null) {
-                    this.submissionName = submission.getName();
-                    this.submissionId = submission.getId();
-                }
-            }
+//            File file = matchSpectrum.getFile();
+//            if (file != null) {
+//                Submission submission = file.getSubmission();
+//                if (submission != null) {
+//                    this.submissionName = submission.getName();
+//                    this.submissionId = submission.getId();
+//                }
+//            }
         }
     }
 
