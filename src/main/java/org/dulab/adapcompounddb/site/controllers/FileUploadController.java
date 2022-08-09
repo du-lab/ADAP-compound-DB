@@ -8,6 +8,7 @@ import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.site.controllers.forms.FileUploadForm;
 import org.dulab.adapcompounddb.site.controllers.utils.ConversionsUtils;
 import org.dulab.adapcompounddb.site.controllers.utils.MultipartFileUtils;
+import org.dulab.adapcompounddb.site.services.CaptchaService;
 import org.dulab.adapcompounddb.site.services.io.FileReaderService;
 import org.dulab.adapcompounddb.site.services.io.MspFileReaderService;
 import org.springframework.mock.web.MockMultipartFile;
@@ -20,11 +21,13 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,7 +42,10 @@ public class FileUploadController {
 
     private final Map<FileType, FileReaderService> fileReaderServiceMap;
 
-    public FileUploadController() {
+    private final CaptchaService captchaService;
+
+    public FileUploadController(CaptchaService captchaService) {
+        this.captchaService = captchaService;
         fileReaderServiceMap = new HashMap<>();
         fileReaderServiceMap.put(FileType.MSP, new MspFileReaderService());
     }
@@ -87,7 +93,7 @@ public class FileUploadController {
             fileUploadForm.setFiles(Collections.singletonList(multipartFile));
 
             Submission.clear(session);
-            return upload(model, session, fileUploadForm, null, httpServletResponse);
+            return upload(model, session, fileUploadForm, null, httpServletResponse, null);
 
         } catch (IOException e) {
             throw new IllegalStateException(String.format("Cannot read NMDR file %s from archive %s", archive, file), e);
@@ -110,7 +116,17 @@ public class FileUploadController {
 
     @RequestMapping(value = "/file/upload/", method = RequestMethod.POST, consumes = "multipart/form-data")
     public String upload(Model model, HttpSession session, @Valid FileUploadForm form, Errors errors,
-                         HttpServletResponse response) {
+                         HttpServletResponse response, HttpServletRequest request) {
+
+        String responseString = request.getParameter("g-recaptcha-response");
+
+        try{
+            captchaService.processResponse(responseString, request.getRemoteAddr());
+        }
+        catch (Exception e) {
+            model.addAttribute("message", "Verify that you are human");
+            return  "submission/upload";
+        }
 
         if (Submission.from(session) != null) {
             return "redirect:/file/";
