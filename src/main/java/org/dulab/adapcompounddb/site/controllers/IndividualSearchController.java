@@ -2,21 +2,20 @@ package org.dulab.adapcompounddb.site.controllers;
 
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
-import org.dulab.adapcompounddb.models.entities.File;
-import org.dulab.adapcompounddb.models.entities.Peak;
-import org.dulab.adapcompounddb.models.entities.Spectrum;
-import org.dulab.adapcompounddb.models.entities.Submission;
+import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.site.controllers.forms.CompoundSearchForm;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterForm;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterOptions;
 import org.dulab.adapcompounddb.site.controllers.utils.ConversionsUtils;
+import org.dulab.adapcompounddb.site.services.AdductService;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.dulab.adapcompounddb.site.services.SubmissionTagService;
 import org.dulab.adapcompounddb.site.services.search.IndividualSearchService;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -43,16 +42,19 @@ public class IndividualSearchController extends BaseController {
     private final SubmissionTagService submissionTagService;
     private final IndividualSearchService individualSearchService;
 
+    private final AdductService adductService;
+
     @Autowired
     public IndividualSearchController(SubmissionService submissionService,
                                       SubmissionTagService submissionTagService,
                                       SpectrumService spectrumService,
-                                      IndividualSearchService individualSearchService) {  // @Qualifier("spectrumSearchServiceImpl")
+                                      IndividualSearchService individualSearchService, AdductService adductService) {  // @Qualifier("spectrumSearchServiceImpl")
 
         this.submissionService = submissionService;
         this.spectrumService = spectrumService;
         this.submissionTagService = submissionTagService;
         this.individualSearchService = individualSearchService;
+        this.adductService = adductService;
     }
 
     @ModelAttribute
@@ -217,6 +219,9 @@ public class IndividualSearchController extends BaseController {
        model.addAttribute("compoundSearchForm", compoundSearchForm);
        model.addAttribute("chromatographyTypes", new ChromatographyType[]{ChromatographyType.GAS, ChromatographyType.LIQUID_POSITIVE, ChromatographyType.LIQUID_NEGATIVE,
                ChromatographyType.LC_MSMS_POS, ChromatographyType.LC_MSMS_NEG});
+        List<Adduct> existingAdducts = adductService.findAdductsByChromatography(ChromatographyType.LC_MSMS_POS);
+        existingAdducts.addAll(adductService.findAdductsByChromatography(ChromatographyType.LC_MSMS_NEG));
+       model.addAttribute("adductvals", existingAdducts.toArray());
         return new ModelAndView("compound/search");
 
     }
@@ -290,6 +295,26 @@ public class IndividualSearchController extends BaseController {
         Double precursor = compoundSearchForm.getPrecursorMZ();
         if(precursor != null) {
             spectrum.setPrecursor(precursor);
+            List<Adduct> existingAdducts = adductService.findAdductsByChromatography(ChromatographyType.LC_MSMS_POS);
+            existingAdducts.addAll(adductService.findAdductsByChromatography(ChromatographyType.LC_MSMS_NEG));
+            if(compoundSearchForm.getAdducts() != null) {
+                String[] adductIds = compoundSearchForm.getAdducts().split(",");
+
+                ArrayList<Adduct> adducts = new ArrayList<>();
+
+                for(String id: adductIds) {
+                    for(Adduct adduct: existingAdducts) {
+                        if(Long.toString(adduct.getId()) == id) {
+                            adducts.add(adduct);
+
+                        }
+                    }
+                }
+                parameters.setAdducts(adducts);
+            }
+            else {
+                parameters.setAdducts(existingAdducts);
+            }
             parameters.setPrecursorTolerance(SearchParameters.DEFAULT_MZ_TOLERANCE);
         }
 
@@ -328,6 +353,9 @@ public class IndividualSearchController extends BaseController {
         }
         else
             parameters.setGreedy(true);
+
+
+
         parameters.setSearchMassLibrary(false);
         //parameters.setPrecursorTolerance(SearchParameters.DEFAULT_MZ_TOLERANCE);
         List<SearchResultDTO> searchResults = individualSearchService.searchConsensusSpectra(this.getCurrentUserPrincipal(), spectrum, parameters);

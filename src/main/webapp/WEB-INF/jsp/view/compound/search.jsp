@@ -6,7 +6,9 @@
     <%--@elvariable id="errorMessage" type="java.lang.String"--%>
     <%--@elvariable id="filterOptions" type="org.dulab.adapcompounddb.site.controllers.forms.FilterOptions"--%>
     <%--@elvariable id="chromatographyTypes" type="org.dulab.adapcompounddb.models.enums.ChromatographyType[]"--%>
-    <form:form modelAttribute="compoundSearchForm" method="post">
+    <%--@elvariable id="adductvals" type="org.dulab.adapcompounddb.models.entities.Adduct[]"--%>
+
+        <form:form modelAttribute="compoundSearchForm" method="post">
         <div class="row row-content">
             <div class="col">
                 <div class="form-row">
@@ -51,13 +53,26 @@
                             <div class="form-group row">
                                 <form:label path="chromatographyType"
                                             cssClass="col-md-4 col-form-label">Chromatography type</form:label>
+<%--                                <div class="col-md-8">--%>
+<%--                                    <form:select id="chromatographySelect" path="chromatographyType" cssClass="form-control">--%>
+<%--                                        <form:option id="typeValue" value="" label="Please select..."/>--%>
+<%--                                        <form:options items="${chromatographyTypes}" itemLabel="label"/>--%>
+<%--                                    </form:select>--%>
+<%--                                    <form:errors path="chromatographyType"--%>
+<%--                                                 cssClass="text-danger form-control-sm"/>--%>
+<%--                                </div>--%>
                                 <div class="col-md-8">
-                                    <form:select id="chromatographySelect" path="chromatographyType" cssClass="form-control">
-                                        <form:option id="typeValue" value="" label="Please select..."/>
-                                        <form:options items="${chromatographyTypes}" itemLabel="label"/>
-                                    </form:select>
-                                    <form:errors path="chromatographyType"
-                                                 cssClass="text-danger form-control-sm"/>
+                                    <div class="btn-group btn-group-toggle" data-toggle="buttons" cssClass="form-control">
+                                        <label class="btn btn-secondary active">
+                                            <input type="radio" name="chromatography" id="option1" autocomplete="off" value="GC-MS" checked> GC-MS
+                                        </label>
+                                        <label class="btn btn-secondary">
+                                            <input type="radio" name="chromatography" id="option2" autocomplete="off" value="LC-MS"> LC-MS
+                                        </label>
+                                        <label class="btn btn-secondary">
+                                            <input type="radio" name="chromatography" id="option3" autocomplete="off" value="LC-MS/MS"> LC-MS/MS
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
 
@@ -70,25 +85,36 @@
                                     <form:input path="identifier" placeholder="Input name, CAS, HMDB, KEGG, PubChem ID, or InChIKey" cssClass="form-control"/>
                                 </div>
                             </div>
+                            <div id="adduct" class="form-group row">
+                                <form:label path="adducts" cssClass="col-md-4 col-form-label">Adduct:</form:label>
+                                <div class="col-md-8">
+
+                                    <form:select path="adducts" id="adductSelect"  cssClass="form-control"  multiple="multiple" cssStyle="text-align: left;">
+
+                                        <form:options items="${adductvals}" itemValue="Id" itemLabel="Name"></form:options>
+                                    </form:select>
+
+                                </div>
+                            </div>
                             <div class="form-group row">
                                 <form:label path="neutralMass"
                                             cssClass="col-md-4 col-form-label">Neutral Mass:</form:label>
                                 <div class="col-md-8">
-                                    <form:input path="neutralMass" type="number" step="any" cssClass="form-control"/>
+                                    <form:input path="neutralMass" placeholder="Input mass" type="number" step="any" cssClass="form-control"/>
                                 </div>
                             </div>
                             <div class="form-group row" id="precursorMZ" >
                                 <form:label path="precursorMZ"
                                             cssClass="col-md-4 col-form-label">Precursor M/Z:</form:label>
                                 <div class="col-md-8">
-                                    <form:input id="precusorMZInput" path="precursorMZ" type="number" step="any" cssClass="form-control"/>
+                                    <form:input id="precusorMZInput" placeholder="Input precursor m/z" path="precursorMZ" type="number" step="any" cssClass="form-control"/>
                                 </div>
                             </div>
                             <div id="spectrum" class="form-group row">
                                 <form:label path="spectrum"
                                             cssClass="col-md-4 col-form-label">Spectrum:</form:label>
                                 <div class="col-md-8">
-                                    <form:textarea id="spectrumInput"  path="spectrum"  cssClass="form-control"/>
+                                    <form:textarea id="spectrumInput" placeholder="Input m/z-intensity pairs"  path="spectrum"  cssClass="form-control"/>
                                 </div>
                             </div>
                         </div>
@@ -190,6 +216,12 @@
     </form:form>
 </div>
 
+<style>
+    .multiselect.dropdown-toggle {
+        text-align: left;
+    }
+</style>
+
 <script>
 
 
@@ -221,6 +253,12 @@
 
     }
     $(document).ready(function() {
+        $('#adductSelect').multiselect({includeSelectAllOption:true, nonSelectedText:'Please select adduct',
+        buttonWidth:'100%'});
+        $('#precursorMZInput').val('');
+        $('#precursorMZ').hide();
+        $('#spectrum').show();
+        $('#adduct').hide();
         HasFormChanged();
         $('#parameters input').change(function() {
            HasFormChanged();
@@ -236,23 +274,26 @@
 
         })
 
-        $('#chromatographySelect').change(function() {
-            
-            if($(this).val() === 'GAS') {
+        $('input[type=radio][name=chromatography]').change(function() {
+            console.log($(this).val());
+            if($(this).val() === 'GC-MS') {
 
                 $('#precursorMZInput').val('');
                 $('#precursorMZ').hide();
                 $('#spectrum').show();
+                $('#adduct').hide();
 
             }
-            else if($(this).val().startsWith('LIQUID')) {
+            else if($(this).val() === 'LC-MS') {
                 $('#spectrumInput').val('');
                 $('#spectrum').hide();
                 $('#precursorMZ').show();
+                $('#adduct').show();
             }
             else {
                 $('#precursorMZ').show();
                 $('#spectrum').show();
+                $('#adduct').hide();
             }
         });
 
@@ -265,7 +306,8 @@
 
 
 </script>
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/1.1.1/css/bootstrap-multiselect.css">
 <script src="<c:url value="/resources/npm/node_modules/jquery/dist/jquery.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/popper.js/dist/umd/popper.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/bootstrap/dist/js/bootstrap.min.js"/>"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/1.1.1/js/bootstrap-multiselect.js"></script>
