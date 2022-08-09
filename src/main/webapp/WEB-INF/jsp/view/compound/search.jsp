@@ -63,13 +63,13 @@
 <%--                                </div>--%>
                                 <div class="col-md-8">
                                     <div class="btn-group btn-group-toggle" data-toggle="buttons" cssClass="form-control">
-                                        <label class="btn btn-secondary active">
+                                        <label class="btn btn-outline-primary active">
                                             <input type="radio" name="chromatography" id="option1" autocomplete="off" value="GC-MS" checked> GC-MS
                                         </label>
-                                        <label class="btn btn-secondary">
+                                        <label class="btn btn-outline-primary">
                                             <input type="radio" name="chromatography" id="option2" autocomplete="off" value="LC-MS"> LC-MS
                                         </label>
-                                        <label class="btn btn-secondary">
+                                        <label class="btn btn-outline-primary">
                                             <input type="radio" name="chromatography" id="option3" autocomplete="off" value="LC-MS/MS"> LC-MS/MS
                                         </label>
                                     </div>
@@ -85,17 +85,6 @@
                                     <form:input path="identifier" placeholder="Input name, CAS, HMDB, KEGG, PubChem ID, or InChIKey" cssClass="form-control"/>
                                 </div>
                             </div>
-                            <div id="adduct" class="form-group row">
-                                <form:label path="adducts" cssClass="col-md-4 col-form-label">Adduct:</form:label>
-                                <div class="col-md-8">
-
-                                    <form:select path="adducts" id="adductSelect"  cssClass="form-control"  multiple="multiple" cssStyle="text-align: left;">
-
-                                        <form:options items="${adductvals}" itemValue="Id" itemLabel="Name"></form:options>
-                                    </form:select>
-
-                                </div>
-                            </div>
                             <div class="form-group row">
                                 <form:label path="neutralMass"
                                             cssClass="col-md-4 col-form-label">Neutral Mass:</form:label>
@@ -108,6 +97,17 @@
                                             cssClass="col-md-4 col-form-label">Precursor M/Z:</form:label>
                                 <div class="col-md-8">
                                     <form:input id="precusorMZInput" placeholder="Input precursor m/z" path="precursorMZ" type="number" step="any" cssClass="form-control"/>
+                                </div>
+                            </div>
+                            <div id="adduct" class="form-group row">
+                                <form:label path="adducts" cssClass="col-md-4 col-form-label">Adduct:</form:label>
+                                <div class="col-md-8">
+
+                                    <form:select path="adducts" id="adductSelect"  cssClass="form-control"  multiple="multiple" cssStyle="text-align: left;">
+
+                                        <form:options items="${adductvals}" itemValue="Id" itemLabel="Name"></form:options>
+                                    </form:select>
+
                                 </div>
                             </div>
                             <div id="spectrum" class="form-group row">
@@ -217,8 +217,8 @@
 </div>
 
 <style>
-    .multiselect.dropdown-toggle {
-        text-align: left;
+    .multiselect-container {
+        width: 100% !important;
     }
 </style>
 
@@ -254,7 +254,8 @@
     }
     $(document).ready(function() {
         $('#adductSelect').multiselect({includeSelectAllOption:true, nonSelectedText:'Please select adduct',
-        buttonWidth:'100%'});
+        buttonWidth:'100%',
+        maxHeight: 300});
         $('#precursorMZInput').val('');
         $('#precursorMZ').hide();
         $('#spectrum').show();

@@ -219,7 +219,7 @@ public class IndividualSearchController extends BaseController {
        model.addAttribute("compoundSearchForm", compoundSearchForm);
        model.addAttribute("chromatographyTypes", new ChromatographyType[]{ChromatographyType.GAS, ChromatographyType.LIQUID_POSITIVE, ChromatographyType.LIQUID_NEGATIVE,
                ChromatographyType.LC_MSMS_POS, ChromatographyType.LC_MSMS_NEG});
-        List<Adduct> existingAdducts = adductService.findAdductsByChromatography(ChromatographyType.LC_MSMS_POS);
+        LinkedHashSet<Adduct> existingAdducts = new LinkedHashSet<>(adductService.findAdductsByChromatography(ChromatographyType.LC_MSMS_POS));
         existingAdducts.addAll(adductService.findAdductsByChromatography(ChromatographyType.LC_MSMS_NEG));
        model.addAttribute("adductvals", existingAdducts.toArray());
         return new ModelAndView("compound/search");
@@ -295,7 +295,8 @@ public class IndividualSearchController extends BaseController {
         Double precursor = compoundSearchForm.getPrecursorMZ();
         if(precursor != null) {
             spectrum.setPrecursor(precursor);
-            List<Adduct> existingAdducts = adductService.findAdductsByChromatography(ChromatographyType.LC_MSMS_POS);
+
+            LinkedHashSet<Adduct> existingAdducts = new LinkedHashSet<>(adductService.findAdductsByChromatography(ChromatographyType.LC_MSMS_POS));
             existingAdducts.addAll(adductService.findAdductsByChromatography(ChromatographyType.LC_MSMS_NEG));
             if(compoundSearchForm.getAdducts() != null) {
                 String[] adductIds = compoundSearchForm.getAdducts().split(",");
@@ -313,7 +314,7 @@ public class IndividualSearchController extends BaseController {
                 parameters.setAdducts(adducts);
             }
             else {
-                parameters.setAdducts(existingAdducts);
+                parameters.setAdducts(new ArrayList<>(existingAdducts));
             }
             parameters.setPrecursorTolerance(SearchParameters.DEFAULT_MZ_TOLERANCE);
         }
