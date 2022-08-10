@@ -1,7 +1,6 @@
 package org.dulab.adapcompounddb.site.services;
 
 import org.dulab.adapcompounddb.models.GoogleResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestOperations;
@@ -21,10 +20,9 @@ public class CaptchaService {
         if(!responseSanityCheck(response)) {
             throw new IllegalStateException("Response contains invalid characters");
         }
-
         URI verifyUri = URI.create(String.format(
                 "https://www.google.com/recaptcha/api/siteverify?secret=%s&response=%s&remoteip=%s",
-                "6LdY3V8hAAAAABWB0g3AcKLTJAVz-i_8FJQ4EUhZ", response, ip));
+                System.getenv("CAPTCHA_SECRET_KEY"), response, ip));
 
         GoogleResponse googleResponse = restTemplate.getForObject(verifyUri, GoogleResponse.class);
 

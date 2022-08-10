@@ -1,7 +1,12 @@
 <%--@elvariable id="chromatographyTypeList" type="org.dulab.adapcompounddb.models.enums.ChromatographyType[]"--%>
 <%--@elvariable id="fileUploadForm" type="org.dulab.adapcompounddb.site.controllers.FileUploadController.FileUploadForm"--%>
+<%--@elvariable id="message" type="java.lang.String"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+
+<script src="https://www.google.com/recaptcha/api.js">
+
+</script>
 
 <div id="progressModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
@@ -29,10 +34,16 @@
                          data-target="#metaFields">Edit Metadata Fields
                     </div>
                     <input type="submit" name="submit" value="Upload" class="btn btn-primary"/>
+
                 </div>
             </div>
         </div>
-
+        <div class="row row-content" style="margin-left: 15px;">
+            <div class="g-recaptcha" data-sitekey="6LdY3V8hAAAAACkWkUd5G9xYtgnM9vwPvIPsQrWy"/>
+        </div>
+        <div class="col-md-8">
+            <p class="text-danger">${message}</p>
+        </div>
         <div class="row row-content">
             <div class="col">
                 <div class="card">
@@ -41,10 +52,10 @@
                     </div>
                     <div class="card-body">
                         <div class="container">
-                                <%--@elvariable id="message" type="java.lang.String"--%>
+
                             <c:if test="${message}">
                                 <div class="row">
-                                    <div class="col-md-8 offset-md-2">
+                                    <div class="col-md-8">
                                         <p class="text-danger">${message}</p>
                                     </div>
                                 </div>
