@@ -64,13 +64,27 @@
                                 <div class="col-md-8">
                                     <div class="btn-group btn-group-toggle" data-toggle="buttons" cssClass="form-control">
                                         <label class="btn btn-outline-primary active">
-                                            <input type="radio" name="chromatography" id="option1" autocomplete="off" value="GC-MS" checked> GC-MS
+                                            <form:radiobutton path="chromatographyType"
+                                                              name="chromatographyType"
+                                                              value="GC-MS"
+                                                              label="GC-MS"
+                                                              id="gcms"
+                                                              />
                                         </label>
                                         <label class="btn btn-outline-primary">
-                                            <input type="radio" name="chromatography" id="option2" autocomplete="off" value="LC-MS"> LC-MS
+                                            <form:radiobutton
+                                                    path="chromatographyType"
+                                                    name="chromatographyType"
+                                                    value="LC-MS"
+                                                    label="LC-MS"
+                                                    />
                                         </label>
                                         <label class="btn btn-outline-primary">
-                                            <input type="radio" name="chromatography" id="option3" autocomplete="off" value="LC-MS/MS"> LC-MS/MS
+                                            <form:radiobutton path="chromatographyType"
+                                                              name="chromatographyType"
+                                                              value="LC-MS/MS"
+                                                              label="LC-MS/MS"
+                                                              />
                                         </label>
                                     </div>
                                 </div>
@@ -256,10 +270,15 @@
         $('#adductSelect').multiselect({includeSelectAllOption:true, nonSelectedText:'Please select adduct',
         buttonWidth:'100%',
         maxHeight: 300});
+        $("#adductSelect").multiselect('selectAll', false);
         $('#precursorMZInput').val('');
         $('#precursorMZ').hide();
         $('#spectrum').show();
         $('#adduct').hide();
+        if(!$("input[name='chromatographyType']:checked").val()) {
+            $('#gcms').prop("checked", true);
+        }
+
         HasFormChanged();
         $('#parameters input').change(function() {
            HasFormChanged();
@@ -275,7 +294,7 @@
 
         })
 
-        $('input[type=radio][name=chromatography]').change(function() {
+        $("input[type=radio][name='chromatographyType']").change(function() {
             console.log($(this).val());
             if($(this).val() === 'GC-MS') {
 

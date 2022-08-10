@@ -11,7 +11,7 @@ public class CompoundSearchForm extends FilterForm {
     private Double PrecursorMZ;
     private String Spectrum;
 
-    private ChromatographyType chromatographyType;
+    private String chromatographyType;
 
 
     private String adducts;
@@ -56,11 +56,11 @@ public class CompoundSearchForm extends FilterForm {
         Spectrum = spectrum;
     }
 
-    public ChromatographyType getChromatographyType() {
+    public String getChromatographyType() {
         return chromatographyType;
     }
 
-    public void setChromatographyType(ChromatographyType chromatographyType) {
+    public void setChromatographyType(String chromatographyType) {
         this.chromatographyType = chromatographyType;
     }
 
