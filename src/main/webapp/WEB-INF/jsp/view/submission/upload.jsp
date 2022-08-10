@@ -41,6 +41,12 @@
         <div class="row row-content" style="margin-left: 15px;">
             <div class="g-recaptcha" data-sitekey="6LdY3V8hAAAAACkWkUd5G9xYtgnM9vwPvIPsQrWy"/>
         </div>
+        <%--@elvariable id="message" type="java.lang.String"--%>
+        <div class="row">
+            <div class="col-md-8">
+                <p class="text-danger">${message}</p>
+            </div>
+        </div>
 
         <div class="row row-content">
             <div class="col">
@@ -50,12 +56,7 @@
                     </div>
                     <div class="card-body">
                         <div class="container">
-                            <%--@elvariable id="message" type="java.lang.String"--%>
-                                <div class="row">
-                                    <div class="col-md-8">
-                                        <p class="text-danger">${message}</p>
-                                    </div>
-                                </div>
+
                                 <%--@elvariable id="validationErrors" type="java.util.Set<javax.validation.ConstraintViolation>"--%>
                             <c:if test="${validationErrors}">
                                 <div class="row">
