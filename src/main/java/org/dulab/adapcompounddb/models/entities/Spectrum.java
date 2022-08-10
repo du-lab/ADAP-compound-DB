@@ -69,7 +69,7 @@ public class Spectrum implements Serializable {
     @OneToMany(mappedBy = "matchSpectrum", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<SpectrumMatch> matches2;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = {})
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {})
     @JoinColumn(name = "ClusterId", referencedColumnName = "Id")
     private SpectrumCluster cluster;
 

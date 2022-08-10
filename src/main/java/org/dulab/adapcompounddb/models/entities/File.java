@@ -3,17 +3,7 @@ package org.dulab.adapcompounddb.models.entities;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -29,22 +19,33 @@ public class File implements Comparable<File>, Serializable {
     // ***** Entity Fields *****
     // *************************
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank(message = "File: the field Name is required.")
     private String name;
 
     @NotNull(message = "File: the field FileType is required.")
+    @Enumerated(EnumType.STRING)
     private FileType fileType;
 
     @NotNull(message = "File: the field Content is required.")
     private byte[] content;
 
     @NotNull(message = "File: the field Submission is required.")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "SubmissionId", referencedColumnName = "Id")
     private Submission submission;
 
     @NotNull(message = "File: Spectrum list is required.")
     @Valid
+    @OneToMany(
+            mappedBy = "file",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.REFRESH,
+            orphanRemoval = true
+    )
     private List<Spectrum> spectra;
 
     private int size;
@@ -53,8 +54,7 @@ public class File implements Comparable<File>, Serializable {
     // ***** Getters and Setters *****
     // *******************************
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     public Long getId() {
         return id;
     }
@@ -71,7 +71,7 @@ public class File implements Comparable<File>, Serializable {
         this.name = name;
     }
 
-    @Enumerated(EnumType.STRING)
+
     public FileType getFileType() {
         return fileType;
     }
@@ -88,8 +88,7 @@ public class File implements Comparable<File>, Serializable {
         this.content = content;
     }
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "SubmissionId", referencedColumnName = "Id")
+
     public Submission getSubmission() {
         return submission;
     }
@@ -98,12 +97,7 @@ public class File implements Comparable<File>, Serializable {
         this.submission = submission;
     }
 
-    @OneToMany(
-            mappedBy = "file",
-            fetch = FetchType.LAZY,
-            cascade = CascadeType.REFRESH,
-            orphanRemoval = true
-            )
+
     public List<Spectrum> getSpectra() {
         return spectra;
     }

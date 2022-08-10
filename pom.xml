@@ -198,7 +198,9 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>5.6.9.Final</version>
+<!--            <version>6.1.2.Final</version>-->
+            <version>5.6.10.Final</version>
+<!--            <version>5.6.9.Final</version>-->
         </dependency>
         <!-- https://mvnrepository.com/artifact/javax.validation/validation-api -->
         <dependency>
@@ -210,7 +212,7 @@
         <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>6.1.0.Final</version>
+            <version>6.2.4.Final</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/javax.el/javax.el-api -->
         <dependency>
