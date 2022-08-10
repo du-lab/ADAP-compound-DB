@@ -1,6 +1,6 @@
 <%--@elvariable id="chromatographyTypeList" type="org.dulab.adapcompounddb.models.enums.ChromatographyType[]"--%>
 <%--@elvariable id="fileUploadForm" type="org.dulab.adapcompounddb.site.controllers.FileUploadController.FileUploadForm"--%>
-<%--@elvariable id="message" type="java.lang.String"--%>
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
@@ -41,9 +41,7 @@
         <div class="row row-content" style="margin-left: 15px;">
             <div class="g-recaptcha" data-sitekey="6LdY3V8hAAAAACkWkUd5G9xYtgnM9vwPvIPsQrWy"/>
         </div>
-        <div class="col-md-8">
-            <p class="text-danger">${message}</p>
-        </div>
+
         <div class="row row-content">
             <div class="col">
                 <div class="card">
@@ -52,14 +50,12 @@
                     </div>
                     <div class="card-body">
                         <div class="container">
-
-                            <c:if test="${message}">
+                            <%--@elvariable id="message" type="java.lang.String"--%>
                                 <div class="row">
                                     <div class="col-md-8">
                                         <p class="text-danger">${message}</p>
                                     </div>
                                 </div>
-                            </c:if>
                                 <%--@elvariable id="validationErrors" type="java.util.Set<javax.validation.ConstraintViolation>"--%>
                             <c:if test="${validationErrors}">
                                 <div class="row">
