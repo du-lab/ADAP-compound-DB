@@ -63,7 +63,12 @@ public class MultipartFileUtils {
 
             String filename = Objects.requireNonNull(multipartFile.getOriginalFilename());
             FileType fileType = getFileType(filename);
+            MetaDataMapping metaDataMapping = metaDataMappings != null ? metaDataMappings.get(fileType) : null;
             submission.setRaw(fileType == FileType.RAW || submission.isRaw());
+
+            LOGGER.info(String.format("Reading %s file '%s' with meta data: %s)",
+                    fileType.name(), filename,
+                    metaDataMapping != null ? String.join(",", metaDataMapping.getNonEmptyFields()) : "None"));
 
             FileReaderService fileReader = fileReaderServiceMap.get(fileType);
             if (fileReader == null)
@@ -82,9 +87,7 @@ public class MultipartFileUtils {
 
                 file.setContent(zipBytes(filename, multipartFile.getBytes()));
                 file.setSpectra(fileReader.read(
-                        multipartFile.getInputStream(),
-                        metaDataMappings != null ? metaDataMappings.get(fileType) : null,
-                        filename, chromatographyType));
+                        multipartFile.getInputStream(), metaDataMapping, filename, chromatographyType));
 
                 // When reading raw data files, the chromatography type is adjusted based on the polarity.
                 // Below, we assign the adjusted chromatography type to every spectrum.
@@ -160,17 +163,15 @@ public class MultipartFileUtils {
         File mergedFile = files.get(0);
         List<Spectrum> mergedSpectra = mergedFile.getSpectra();
         if (!checkNames(mergedSpectra))
-            throw new IllegalStateException(String.format(
-                    "No Name found for the spectra in file %s. Please check whether the Name Field is correct.",
-                    mergedFile.getName()));
+            throw new IllegalStateException(
+                    "No Name found for the spectra. Please check whether the Name Field is correct.");
 
         for (int i = 1; i < files.size(); ++i) {
             File file = files.get(i);
             List<Spectrum> spectra = file.getSpectra();
             if (!checkNames(spectra))
-                throw new IllegalStateException(String.format(
-                        "No Name found for the spectra in file %s. Please check whether the Name Field is correct.",
-                        mergedFile.getName()));
+                throw new IllegalStateException(
+                        "No Name found for the spectra. Please check whether the Name Field is correct.");
 
             mergedSpectra = mergeSpectra(mergedSpectra, spectra);
             file.setSpectra(null);

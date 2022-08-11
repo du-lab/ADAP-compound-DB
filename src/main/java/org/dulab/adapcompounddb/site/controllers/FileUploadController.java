@@ -37,13 +37,6 @@ public class FileUploadController {
 
     private static final Logger LOG = LogManager.getLogger(FileUploadController.class);
 
-    private final Map<FileType, FileReaderService> fileReaderServiceMap;
-
-    public FileUploadController() {
-        fileReaderServiceMap = new HashMap<>();
-        fileReaderServiceMap.put(FileType.MSP, new MspFileReaderService());
-    }
-
     @ModelAttribute
     public void addAttributes(final Model model) {
         model.addAttribute("chromatographyTypeList", ChromatographyType.values());

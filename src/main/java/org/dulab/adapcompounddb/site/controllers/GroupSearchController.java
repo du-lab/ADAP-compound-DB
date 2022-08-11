@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -83,7 +84,8 @@ public class GroupSearchController extends BaseController {
 
     @RequestMapping(value = "/group_search/parameters", method = RequestMethod.POST)
     public String groupSearchParametersPost(@RequestParam Optional<Long> submissionId, HttpSession session, Model model,
-                                            HttpServletResponse response, @Valid FilterForm form, Errors errors) {
+                                            HttpServletRequest request, HttpServletResponse response,
+                                            @Valid FilterForm form, Errors errors) {
 
         Submission submission = submissionId
                 .map(submissionService::fetchSubmission)
@@ -123,6 +125,9 @@ public class GroupSearchController extends BaseController {
         asyncResult = groupSearchService.groupSearch(this.getCurrentUserPrincipal(), submission.getFiles(), session,
                 parameters, form.isWithOntologyLevels(), form.isSendResultsToEmail());
         session.setAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME, asyncResult);
+
+        LOGGER.info(String.format("Group search is started by user %s with IP = %s",
+                this.getCurrentUserPrincipal(), request.getRemoteAddr()));
 
         String byteString = ConversionsUtils.formToByteString(form);
         Cookie metaFieldsCookie = new Cookie(SEARCH_PARAMETERS_COOKIE_NAME, byteString);
