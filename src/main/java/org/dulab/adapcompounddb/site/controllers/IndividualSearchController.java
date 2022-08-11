@@ -236,14 +236,14 @@ public class IndividualSearchController extends BaseController {
 //
 //
 //        }
-        String responseString = request.getParameter("g-recaptcha-response");
-//        try{
-//            captchaService.processResponse(responseString, request.getRemoteAddr());
-//        }
-//        catch (Exception e) {
-//            model.addAttribute("errorMessage", "Verify that you are human");
-//            return new ModelAndView("compound/search/");
-//        }
+        String responseString = request.getParameter(CaptchaService.GOOGLE_CAPTCHA_REPONSE);
+        try{
+            captchaService.processResponse(responseString, request.getRemoteAddr());
+        }
+        catch (Exception e) {
+            model.addAttribute("errorMessage", "Verify that you are human");
+            return new ModelAndView(new RedirectView("compound/search/"));
+        }
         SearchParameters parameters = new SearchParameters();
         Spectrum spectrum = new Spectrum();
         Double mass = compoundSearchForm.getNeutralMass();

@@ -138,7 +138,7 @@
                                             </div>
                                         </div>
                                         <c:if test="${loggedInUser == null}">
-                                            <div class="g-recaptcha col-md-8 offset-md-4" data-callback="recaptchaCallback"
+                                            <div id="submit" class="g-recaptcha col-md-8 offset-md-4" data-callback="recaptchaCallback"
                                                  data-sitekey="6LdY3V8hAAAAACkWkUd5G9xYtgnM9vwPvIPsQrWy"></div>
                                         </c:if>
 

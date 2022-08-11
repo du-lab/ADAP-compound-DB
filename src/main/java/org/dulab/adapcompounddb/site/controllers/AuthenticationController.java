@@ -113,7 +113,7 @@ public class AuthenticationController extends BaseController {
         if (this.getCurrentUserPrincipal() != null) {
             return getHomeRedirect();
         }
-        String responseString = request.getParameter("g-recaptcha-response");
+        String responseString = request.getParameter(CaptchaService.GOOGLE_CAPTCHA_REPONSE);
         try{
             captchaService.processResponse(responseString, request.getRemoteAddr());
         }

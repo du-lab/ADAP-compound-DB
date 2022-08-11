@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%--@elvariable id="loggedInUser" type="org.dulab.adapcompounddb.models.entities.UserPrincipal"--%>
 
-<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<script src="https://www.google.com/recaptcha/api.js"></script>
 <script>
     function recaptchaCallback() {
         $('#searchButton').removeAttr('disabled');
@@ -19,10 +19,7 @@
                     <div class="col">
 
                         <div class="btn-toolbar justify-content-end" role="toolbar">
-                            <c:if test="${loggedInUser == null}">
-                                <div class="g-recaptcha" data-callback="recaptchaCallback"
-                                     data-sitekey="6LdY3V8hAAAAACkWkUd5G9xYtgnM9vwPvIPsQrWy" style="margin-right: 10px;"></div>
-                            </c:if>
+
 
                             <button id="searchButton" class="btn btn-primary align-self-center" type="submit"
                                     style="height: 100%;"
@@ -94,6 +91,10 @@
                                     <form:textarea path="spectrum"  cssClass="form-control"/>
                                 </div>
                             </div>
+                            <c:if test="${loggedInUser == null}">
+                                <div class="g-recaptcha col-md-8 offset-md-4" data-callback="recaptchaCallback"
+                                     data-sitekey="6LdY3V8hAAAAACkWkUd5G9xYtgnM9vwPvIPsQrWy" style="margin-right: 10px;"></div>
+                            </c:if>
                         </div>
                         <div id="libraries" class="tab-pane fade" role="tabpanel">
                             <div class="row">

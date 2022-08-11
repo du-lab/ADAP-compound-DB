@@ -114,7 +114,7 @@ public class FileUploadController extends BaseController {
     public String upload(Model model, HttpSession session, @Valid FileUploadForm form, Errors errors,
                          HttpServletResponse response, HttpServletRequest request) {
 
-        String responseString = request.getParameter("g-recaptcha-response");
+        String responseString = request.getParameter(CaptchaService.GOOGLE_CAPTCHA_REPONSE);
 
         try{
             captchaService.processResponse(responseString, request.getRemoteAddr());

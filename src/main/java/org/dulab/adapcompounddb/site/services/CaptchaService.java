@@ -15,6 +15,7 @@ public class CaptchaService {
     private RestOperations restTemplate = new RestTemplate();
 
     private static Pattern RESPONSE_PATTERN = Pattern.compile("[A-Za-z0-9_-]+");
+    public static String GOOGLE_CAPTCHA_REPONSE = "g-recaptcha-response";
 
     public void processResponse(String response, String ip) {
         if(!responseSanityCheck(response)) {
