@@ -1,12 +1,19 @@
 <%--@elvariable id="chromatographyTypeList" type="org.dulab.adapcompounddb.models.enums.ChromatographyType[]"--%>
 <%--@elvariable id="fileUploadForm" type="org.dulab.adapcompounddb.site.controllers.FileUploadController.FileUploadForm"--%>
-
+<%--@elvariable id="loggedInUser" type="org.dulab.adapcompounddb.models.entities.UserPrincipal"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <script src="https://www.google.com/recaptcha/api.js">
 
 </script>
+
+<script>
+    function recaptchaCallback() {
+        $('#submit').removeAttr('disabled');
+    }
+</script>
+
 
 <div id="progressModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
@@ -33,14 +40,18 @@
                     <div class="btn btn-secondary" data-toggle="collapse"
                          data-target="#metaFields">Edit Metadata Fields
                     </div>
-                    <input type="submit" name="submit" value="Upload" class="btn btn-primary"/>
+                    <button id="searchButton" class="btn btn-primary align-self-center" type="submit"
+                            style="height: 100%;"
+                            <c:if test="${loggedInUser == null}">
+                                <c:out value="disabled='disabled'"/>
+                            </c:if>>
+                        Upload
+                    </button>
 
                 </div>
             </div>
         </div>
-        <div class="row row-content" style="margin-left: 15px;">
-            <div class="g-recaptcha" data-sitekey="6LdY3V8hAAAAACkWkUd5G9xYtgnM9vwPvIPsQrWy"/>
-        </div>
+
         <%--@elvariable id="message" type="java.lang.String"--%>
         <div class="row">
             <div class="col-md-8">
@@ -71,7 +82,7 @@
                             </c:if>
 
                             <form:errors path="" cssClass="errors"/>
-                            <div class="row">
+                            <div class="row row-content">
                                 <div class="col-md-8">
                                     <div class="container-fluid">
                                         <div class="row form-group">
@@ -126,6 +137,11 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <c:if test="${loggedInUser == null}">
+                                            <div class="g-recaptcha col-md-8 offset-md-4" data-callback="recaptchaCallback"
+                                                 data-sitekey="6LdY3V8hAAAAACkWkUd5G9xYtgnM9vwPvIPsQrWy"></div>
+                                        </c:if>
+
                                     </div>
                                 </div>
 
@@ -142,6 +158,8 @@
                                     </div>
                                 </div>
                             </div>
+
+
 
 
                             <div class="row row-content">

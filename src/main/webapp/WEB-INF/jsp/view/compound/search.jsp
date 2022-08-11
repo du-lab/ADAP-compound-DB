@@ -1,6 +1,13 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%--@elvariable id="loggedInUser" type="org.dulab.adapcompounddb.models.entities.UserPrincipal"--%>
 
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<script>
+    function recaptchaCallback() {
+        $('#searchButton').removeAttr('disabled');
+    }
+</script>
 <div class="container">
     <%--@elvariable id="compoundSearchForm" type="org.dulab.adapcompounddb.site.controllers.forms.CompoundSearchForm"--%>
     <%--@elvariable id="errorMessage" type="java.lang.String"--%>
@@ -10,8 +17,20 @@
             <div class="col">
                 <div class="form-row">
                     <div class="col">
+
                         <div class="btn-toolbar justify-content-end" role="toolbar">
-                            <button id="searchButton" class="btn btn-primary" type="submit">Search</button>
+                            <c:if test="${loggedInUser == null}">
+                                <div class="g-recaptcha" data-callback="recaptchaCallback"
+                                     data-sitekey="6LdY3V8hAAAAACkWkUd5G9xYtgnM9vwPvIPsQrWy" style="margin-right: 10px;"></div>
+                            </c:if>
+
+                            <button id="searchButton" class="btn btn-primary align-self-center" type="submit"
+                                    style="height: 100%;"
+                                    <c:if test="${loggedInUser == null}">
+                                <c:out value="disabled='disabled'"/>
+                                    </c:if>>
+                                    Search
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -233,3 +252,4 @@
 <script src="<c:url value="/resources/npm/node_modules/jquery/dist/jquery.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/popper.js/dist/umd/popper.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/bootstrap/dist/js/bootstrap.min.js"/>"></script>
+

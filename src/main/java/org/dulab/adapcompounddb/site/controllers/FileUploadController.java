@@ -36,7 +36,7 @@ import java.util.Map;
 import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.META_FIELDS_COOKIE_NAME;
 
 @Controller
-public class FileUploadController {
+public class FileUploadController extends BaseController {
 
     private static final Logger LOG = LogManager.getLogger(FileUploadController.class);
 
@@ -111,6 +111,7 @@ public class FileUploadController {
         FileUploadForm form = ConversionsUtils.byteStringToForm(metaFieldsInJson, FileUploadForm.class);
 
         model.addAttribute("fileUploadForm", form);
+        model.addAttribute("loggedInUser", getCurrentUserPrincipal());
         return "submission/upload";
     }
 

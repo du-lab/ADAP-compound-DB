@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.site.services.AuthenticationService;
+import org.dulab.adapcompounddb.site.services.CaptchaService;
 import org.dulab.adapcompounddb.validation.Email;
 import org.dulab.adapcompounddb.validation.FieldMatch;
 import org.dulab.adapcompounddb.validation.Password;
@@ -31,10 +32,12 @@ public class AuthenticationController extends BaseController {
     private static final Logger LOG = LogManager.getLogger(AuthenticationController.class);
 
     private final AuthenticationService authenticationService;
+    private final CaptchaService captchaService;
 
     @Autowired
-    public AuthenticationController(final AuthenticationService authenticationService) {
+    public AuthenticationController(final AuthenticationService authenticationService, CaptchaService captchaService) {
         this.authenticationService = authenticationService;
+        this.captchaService = captchaService;
     }
 
     /****************
@@ -109,6 +112,14 @@ public class AuthenticationController extends BaseController {
                                @Valid final SignUpForm form, final Errors errors) {
         if (this.getCurrentUserPrincipal() != null) {
             return getHomeRedirect();
+        }
+        String responseString = request.getParameter("g-recaptcha-response");
+        try{
+            captchaService.processResponse(responseString, request.getRemoteAddr());
+        }
+        catch (Exception e) {
+            model.addAttribute("validationErrors", "Verify that you are human");
+            return new ModelAndView("signup");
         }
 
         if (errors.hasErrors()) {
