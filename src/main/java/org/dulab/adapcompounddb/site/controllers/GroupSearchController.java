@@ -126,8 +126,8 @@ public class GroupSearchController extends BaseController {
                 parameters, form.isWithOntologyLevels(), form.isSendResultsToEmail());
         session.setAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME, asyncResult);
 
-        LOGGER.info(String.format("Group search is started by user %s with IP = %s",
-                this.getCurrentUserPrincipal(), request.getRemoteAddr()));
+        LOGGER.info(String.format("Group search is started by user %s with IP = %s [%s]",
+                this.getCurrentUserPrincipal(), request.getRemoteAddr(), request.getHeader("X-Forwarded-For")));
 
         String byteString = ConversionsUtils.formToByteString(form);
         Cookie metaFieldsCookie = new Cookie(SEARCH_PARAMETERS_COOKIE_NAME, byteString);
