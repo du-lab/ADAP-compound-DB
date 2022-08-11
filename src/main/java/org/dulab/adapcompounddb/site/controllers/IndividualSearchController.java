@@ -236,7 +236,7 @@ public class IndividualSearchController extends BaseController {
 //
 //
 //        }
-        String responseString = request.getParameter(CaptchaService.GOOGLE_CAPTCHA_REPONSE);
+        String responseString = request.getParameter(CaptchaService.GOOGLE_CAPTCHA_RESPONSE);
         try{
             captchaService.processResponse(responseString, request.getRemoteAddr());
         }
