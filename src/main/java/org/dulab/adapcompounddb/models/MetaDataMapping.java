@@ -7,6 +7,7 @@ import org.dulab.adapcompounddb.models.enums.IdentifierType;
 
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 import static org.dulab.adapcompounddb.site.services.utils.MappingUtils.parseDouble;
 
@@ -80,5 +81,13 @@ public class MetaDataMapping {
             if (fieldName.equals(fieldToNameMap.get(field)))
                 return true;
         return false;
+    }
+
+    public List<String> getNonEmptyFields() {
+        return fieldToNameMap.entrySet().stream()
+                .filter(e -> e.getValue() != null && !e.getValue().isEmpty())
+                .map(Map.Entry::getKey)
+                .map(Enum::name)
+                .collect(Collectors.toList());
     }
 }

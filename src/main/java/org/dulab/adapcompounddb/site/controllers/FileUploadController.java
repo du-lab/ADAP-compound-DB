@@ -39,15 +39,10 @@ import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.ME
 public class FileUploadController extends BaseController {
 
     private static final Logger LOG = LogManager.getLogger(FileUploadController.class);
-
-    private final Map<FileType, FileReaderService> fileReaderServiceMap;
-
     private final CaptchaService captchaService;
 
     public FileUploadController(CaptchaService captchaService) {
         this.captchaService = captchaService;
-        fileReaderServiceMap = new HashMap<>();
-        fileReaderServiceMap.put(FileType.MSP, new MspFileReaderService());
     }
 
     @ModelAttribute
