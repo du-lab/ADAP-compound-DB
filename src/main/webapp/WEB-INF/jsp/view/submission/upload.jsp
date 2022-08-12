@@ -10,7 +10,7 @@
 
 <script>
     function recaptchaCallback() {
-        $('#submit').removeAttr('disabled');
+        $('#uploadBtn').removeAttr('disabled');
     }
 </script>
 
@@ -40,7 +40,7 @@
                     <div class="btn btn-secondary" data-toggle="collapse"
                          data-target="#metaFields">Edit Metadata Fields
                     </div>
-                    <button id="searchButton" class="btn btn-primary align-self-center" type="submit"
+                    <button id="uploadBtn" class="btn btn-primary align-self-center" type="submit"
                             style="height: 100%;"
                             <c:if test="${loggedInUser == null}">
                                 <c:out value="disabled='disabled'"/>
