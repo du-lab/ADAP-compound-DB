@@ -305,7 +305,7 @@ public class IndividualSearchController extends BaseController {
 
                 for(String id: adductIds) {
                     for(Adduct adduct: existingAdducts) {
-                        if(Long.toString(adduct.getId()) == id) {
+                        if(Long.toString(adduct.getId()).equals(id)) {
                             adducts.add(adduct);
 
                         }
