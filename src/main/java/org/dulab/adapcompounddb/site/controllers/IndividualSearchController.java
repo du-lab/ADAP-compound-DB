@@ -244,7 +244,7 @@ public class IndividualSearchController extends BaseController {
         }
         catch (Exception e) {
             model.addAttribute("errorMessage", "Verify that you are human");
-            return new ModelAndView(new RedirectView("compound/search/"));
+            return new ModelAndView("compound/search");
         }
         SearchParameters parameters = new SearchParameters();
         Spectrum spectrum = new Spectrum();
