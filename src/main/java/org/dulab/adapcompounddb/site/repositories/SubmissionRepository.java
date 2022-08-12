@@ -21,7 +21,7 @@ public interface SubmissionRepository extends CrudRepository<Submission, Long>, 
     @Query(value = "select s from Submission s " + "where s.name like %:search%")
     Page<Submission> findAllSubmissions(@Param("search") String searchStr, Pageable pageable);
 
-    @Query("SELECT s FROM Submission s LEFT JOIN FETCH s.tags WHERE s.user.id = ?1")
+    @Query("SELECT DISTINCT s FROM Submission s LEFT JOIN FETCH s.tags WHERE s.user.id = ?1")
     Iterable<Submission> findWithTagsByUserId(long userPrincipalId);
 
     void deleteById(long id);

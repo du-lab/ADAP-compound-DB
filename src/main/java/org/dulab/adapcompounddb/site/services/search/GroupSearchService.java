@@ -48,7 +48,7 @@ public class GroupSearchService {
                                     SearchParameters userParameters,
                                     boolean withOntologyLevels, boolean sendResultsToEmail) {
 
-        LOGGER.info("Group search has started");
+//        LOGGER.info("Group search has started");
 
         try {
             final List<SearchResultDTO> groupSearchDTOList = new ArrayList<>();
