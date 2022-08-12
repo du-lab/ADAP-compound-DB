@@ -266,18 +266,39 @@
 
 
     }
+
+    function chromatographyChanged() {
+        if(!$("input[name='chromatographyType']:checked").val()) {
+            $('#gcms').prop("checked", true);
+        }
+        else if($("input[name='chromatographyType']:checked").val() === 'GC-MS') {
+
+            $('#precursorMZInput').val('');
+            $('#precursorMZ').hide();
+            $('#spectrum').show();
+            $('#adduct').hide();
+
+        }
+        else if($("input[name='chromatographyType']:checked").val() === 'LC-MS') {
+            $('#spectrumInput').val('');
+            $('#spectrum').hide();
+            $('#precursorMZ').show();
+            $('#adduct').show();
+        }
+        else {
+            $('#precursorMZ').show();
+            $('#spectrum').show();
+            $('#adduct').hide();
+        }
+    }
+
     $(document).ready(function() {
         $('#adductSelect').multiselect({includeSelectAllOption:true, nonSelectedText:'Please select adduct',
         buttonWidth:'100%',
         maxHeight: 300});
         $("#adductSelect").multiselect('selectAll', false);
-        $('#precursorMZInput').val('');
-        $('#precursorMZ').hide();
-        $('#spectrum').show();
-        $('#adduct').hide();
-        if(!$("input[name='chromatographyType']:checked").val()) {
-            $('#gcms').prop("checked", true);
-        }
+        chromatographyChanged();
+
 
         HasFormChanged();
         $('#parameters input').change(function() {
@@ -294,32 +315,13 @@
 
         })
 
-        $("input[type=radio][name='chromatographyType']").change(function() {
-            console.log($(this).val());
-            if($(this).val() === 'GC-MS') {
-
-                $('#precursorMZInput').val('');
-                $('#precursorMZ').hide();
-                $('#spectrum').show();
-                $('#adduct').hide();
-
-            }
-            else if($(this).val() === 'LC-MS') {
-                $('#spectrumInput').val('');
-                $('#spectrum').hide();
-                $('#precursorMZ').show();
-                $('#adduct').show();
-            }
-            else {
-                $('#precursorMZ').show();
-                $('#spectrum').show();
-                $('#adduct').hide();
-            }
-        });
+        $("input[type=radio][name='chromatographyType']").change(chromatographyChanged);
 
 
 
     });
+
+
 
 
 
