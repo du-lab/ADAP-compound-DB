@@ -1,2 +1,8 @@
 User-agent: *
-Disallow: /file/upload/nmdr*
+Allow: /
+Disallow: /file/upload/
+Disallow: /ajax/
+Disallow: /compound/
+Disallow: /login/
+Disallow: /submission/
+Disallow: /signup/
