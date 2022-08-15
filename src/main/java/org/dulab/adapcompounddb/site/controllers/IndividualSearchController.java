@@ -8,6 +8,7 @@ import org.dulab.adapcompounddb.site.controllers.forms.CompoundSearchForm;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterForm;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterOptions;
 import org.dulab.adapcompounddb.site.controllers.utils.ConversionsUtils;
+import org.dulab.adapcompounddb.site.services.CaptchaService;
 import org.dulab.adapcompounddb.site.services.AdductService;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
@@ -24,6 +25,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -41,6 +43,7 @@ public class IndividualSearchController extends BaseController {
     private final SpectrumService spectrumService;
     private final SubmissionTagService submissionTagService;
     private final IndividualSearchService individualSearchService;
+    private final CaptchaService captchaService;
 
     private final AdductService adductService;
 
@@ -48,12 +51,14 @@ public class IndividualSearchController extends BaseController {
     public IndividualSearchController(SubmissionService submissionService,
                                       SubmissionTagService submissionTagService,
                                       SpectrumService spectrumService,
+                                      IndividualSearchService individualSearchService, CaptchaService captchaService) {  // @Qualifier("spectrumSearchServiceImpl")
                                       IndividualSearchService individualSearchService, AdductService adductService) {  // @Qualifier("spectrumSearchServiceImpl")
 
         this.submissionService = submissionService;
         this.spectrumService = spectrumService;
         this.submissionTagService = submissionTagService;
         this.individualSearchService = individualSearchService;
+        this.captchaService = captchaService;
         this.adductService = adductService;
     }
 
@@ -216,6 +221,8 @@ public class IndividualSearchController extends BaseController {
        model.addAttribute("filterOptions", filterOptions);
         if (compoundSearchForm.getSubmissionIds() == null || compoundSearchForm.getSubmissionIds().isEmpty())
            compoundSearchForm.setSubmissionIds(filterOptions.getSubmissions().keySet());
+        model.addAttribute("compoundSearchForm", compoundSearchForm);
+        model.addAttribute("loggedInUser", getCurrentUserPrincipal());
        model.addAttribute("compoundSearchForm", compoundSearchForm);
        model.addAttribute("chromatographyTypes", new ChromatographyType[]{ChromatographyType.GAS, ChromatographyType.LIQUID_POSITIVE, ChromatographyType.LIQUID_NEGATIVE,
                ChromatographyType.LC_MSMS_POS, ChromatographyType.LC_MSMS_NEG});
@@ -228,7 +235,7 @@ public class IndividualSearchController extends BaseController {
 
     @RequestMapping(value = "/compound/search/", method = RequestMethod.POST)
     public ModelAndView searchCompound(final CompoundSearchForm compoundSearchForm, HttpServletResponse response,
-                                       @Valid final Model model, final Errors errors) {
+                                       @Valid final Model model, final Errors errors, HttpServletRequest request) {
         //SearchParameters parameters = SearchParameters.getDefaultParameters(compoundSearchForm.getChromatographyType());
 //        if(compoundSearchForm.getChromatographyType() == ChromatographyType.LC_MSMS_NEG || compoundSearchForm.getChromatographyType() == ChromatographyType.LC_MSMS_POS) {
 //            if(compoundSearchForm.getPrecursorMZ() == null) {
@@ -238,6 +245,16 @@ public class IndividualSearchController extends BaseController {
 //
 //
 //        }
+        String responseString = request.getParameter(CaptchaService.GOOGLE_CAPTCHA_RESPONSE);
+        try{
+            if(getCurrentUserPrincipal() == null) {
+                captchaService.processResponse(responseString, request.getRemoteAddr());
+            }
+        }
+        catch (Exception e) {
+            model.addAttribute("errorMessage", "Verify that you are human");
+            return new ModelAndView("compound/search");
+        }
         SearchParameters parameters = new SearchParameters();
         Spectrum spectrum = new Spectrum();
         Double mass = compoundSearchForm.getNeutralMass();

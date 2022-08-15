@@ -1,7 +1,19 @@
 <%--@elvariable id="chromatographyTypeList" type="org.dulab.adapcompounddb.models.enums.ChromatographyType[]"--%>
 <%--@elvariable id="fileUploadForm" type="org.dulab.adapcompounddb.site.controllers.FileUploadController.FileUploadForm"--%>
+<%--@elvariable id="loggedInUser" type="org.dulab.adapcompounddb.models.entities.UserPrincipal"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+
+<script src="https://www.google.com/recaptcha/api.js">
+
+</script>
+
+<script>
+    function recaptchaCallback() {
+        $('#uploadBtn').removeAttr('disabled');
+    }
+</script>
+
 
 <div id="progressModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
@@ -28,8 +40,22 @@
                     <div class="btn btn-secondary" data-toggle="collapse"
                          data-target="#metaFields">Edit Metadata Fields
                     </div>
-                    <input type="submit" name="submit" value="Upload" class="btn btn-primary"/>
+                    <button id="uploadBtn" class="btn btn-primary align-self-center" type="submit"
+                            style="height: 100%;"
+                            <c:if test="${loggedInUser == null}">
+                                <c:out value="disabled='disabled'"/>
+                            </c:if>>
+                        Upload
+                    </button>
+
                 </div>
+            </div>
+        </div>
+
+        <%--@elvariable id="message" type="java.lang.String"--%>
+        <div class="row">
+            <div class="col-md-8">
+                <p class="text-danger">${message}</p>
             </div>
         </div>
 
@@ -41,14 +67,7 @@
                     </div>
                     <div class="card-body">
                         <div class="container">
-                                <%--@elvariable id="message" type="java.lang.String"--%>
-                            <c:if test="${message}">
-                                <div class="row">
-                                    <div class="col-md-8 offset-md-2">
-                                        <p class="text-danger">${message}</p>
-                                    </div>
-                                </div>
-                            </c:if>
+
                                 <%--@elvariable id="validationErrors" type="java.util.Set<javax.validation.ConstraintViolation>"--%>
                             <c:if test="${validationErrors}">
                                 <div class="row">
@@ -63,7 +82,7 @@
                             </c:if>
 
                             <form:errors path="" cssClass="errors"/>
-                            <div class="row">
+                            <div class="row row-content">
                                 <div class="col-md-8">
                                     <div class="container-fluid">
                                         <div class="row form-group">
@@ -118,6 +137,11 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <c:if test="${loggedInUser == null}">
+                                            <div id="submit" class="g-recaptcha col-md-8 offset-md-4" data-callback="recaptchaCallback"
+                                                 data-sitekey="6LdY3V8hAAAAACkWkUd5G9xYtgnM9vwPvIPsQrWy"></div>
+                                        </c:if>
+
                                     </div>
                                 </div>
 
@@ -134,6 +158,8 @@
                                     </div>
                                 </div>
                             </div>
+
+
 
 
                             <div class="row row-content">

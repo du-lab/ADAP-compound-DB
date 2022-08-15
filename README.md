@@ -30,7 +30,9 @@ mysql -u root -p < dump.mysql
 ```
 mvn tomcat7:deploy
 ```
-Alternatively, you can open the repository in IntelliJ IDEA and set it up to deploy the project. 
+Alternatively, you can open the repository in IntelliJ IDEA and set it up to deploy the project.
+
+6. To make the CAPTCHA work properly, set up the environment variable `CAPTCHA_SECRET_KEY`
 
 ### Setup for Amazon Web Services EC2 machine
 See [link](INSTALL_LINUX.md)

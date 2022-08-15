@@ -6,6 +6,14 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
+
+<script src="https://www.google.com/recaptcha/api.js"></script>
+<script>
+    function recaptchaCallback() {
+        $('#submit').removeAttr('disabled');
+    }
+</script>
+
 <div class="container">
     <div class="row row-content">
         <div class="col">
@@ -70,14 +78,18 @@
                                             cssClass="col-md-3 offset-md-3 col-form-label">Confirm password:</form:label>
                                 <form:password path="confirmedPassword" cssClass="col-md-3 form-control"/>
                             </div>
+
                             <div class="row form-group">
                                 <div class="col-md-6 offset-md-3">
                                     <form:errors path="*" element="div" cssClass="text-danger"/>
                                 </div>
                             </div>
+                            <div class="g-recaptcha col-md-2 offset-md-6"
+                                 data-sitekey="6LdY3V8hAAAAACkWkUd5G9xYtgnM9vwPvIPsQrWy" data-callback="recaptchaCallback"></div>
+                            <br/>
                             <div class="row form-group">
                                 <div class="col-md-2 offset-md-6">
-                                    <input id="submit" type="submit" class="btn btn-primary" value="Sign up"/>
+                                    <input id="submit" type="submit" class="btn btn-primary" value="Sign up" disabled/>
                                 </div>
                             </div>
                         </form:form>

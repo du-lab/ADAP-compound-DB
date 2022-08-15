@@ -1,6 +1,13 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%--@elvariable id="loggedInUser" type="org.dulab.adapcompounddb.models.entities.UserPrincipal"--%>
 
+<script src="https://www.google.com/recaptcha/api.js"></script>
+<script>
+    function recaptchaCallback() {
+        $('#searchButton').removeAttr('disabled');
+    }
+</script>
 <div class="container">
     <%--@elvariable id="compoundSearchForm" type="org.dulab.adapcompounddb.site.controllers.forms.CompoundSearchForm"--%>
     <%--@elvariable id="errorMessage" type="java.lang.String"--%>
@@ -13,8 +20,17 @@
             <div class="col">
                 <div class="form-row">
                     <div class="col">
+
                         <div class="btn-toolbar justify-content-end" role="toolbar">
-                            <button id="searchButton" class="btn btn-primary" type="submit">Search</button>
+
+
+                            <button id="searchButton" class="btn btn-primary align-self-center" type="submit"
+                                    style="height: 100%;"
+                                    <c:if test="${loggedInUser == null}">
+                                <c:out value="disabled='disabled'"/>
+                                    </c:if>>
+                                    Search
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -131,6 +147,10 @@
                                     <form:textarea id="spectrumInput" placeholder="Input m/z-intensity pairs"  path="spectrum"  cssClass="form-control"/>
                                 </div>
                             </div>
+                            <c:if test="${loggedInUser == null}">
+                                <div class="g-recaptcha col-md-8 offset-md-4" data-callback="recaptchaCallback"
+                                     data-sitekey="6LdY3V8hAAAAACkWkUd5G9xYtgnM9vwPvIPsQrWy" style="margin-right: 10px;"></div>
+                            </c:if>
                         </div>
                         <div id="libraries" class="tab-pane fade" role="tabpanel">
                             <div class="row">
@@ -332,4 +352,6 @@
 <script src="<c:url value="/resources/npm/node_modules/jquery/dist/jquery.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/popper.js/dist/umd/popper.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/bootstrap/dist/js/bootstrap.min.js"/>"></script>
+
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/1.1.1/js/bootstrap-multiselect.js"></script>
