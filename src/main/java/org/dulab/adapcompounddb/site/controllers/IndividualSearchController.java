@@ -51,7 +51,7 @@ public class IndividualSearchController extends BaseController {
     public IndividualSearchController(SubmissionService submissionService,
                                       SubmissionTagService submissionTagService,
                                       SpectrumService spectrumService,
-                                      IndividualSearchService individualSearchService, CaptchaService captchaService) {  // @Qualifier("spectrumSearchServiceImpl")
+                                     CaptchaService captchaService,
                                       IndividualSearchService individualSearchService, AdductService adductService) {  // @Qualifier("spectrumSearchServiceImpl")
 
         this.submissionService = submissionService;
@@ -255,6 +255,18 @@ public class IndividualSearchController extends BaseController {
             model.addAttribute("errorMessage", "Verify that you are human");
             return new ModelAndView("compound/search");
         }
+        ChromatographyType chromatographyType = ChromatographyType.GAS;
+        switch(compoundSearchForm.getChromatographyType()) {
+            case "GC-MS":
+                chromatographyType = ChromatographyType.GAS;
+                break;
+            case "LC-MS":
+                chromatographyType = ChromatographyType.LIQUID_POSITIVE;
+                break;
+            case "LC-MS/MS":
+                chromatographyType = ChromatographyType.LC_MSMS_POS;
+        }
+
         SearchParameters parameters = new SearchParameters();
         Spectrum spectrum = new Spectrum();
         Double mass = compoundSearchForm.getNeutralMass();
@@ -312,27 +324,55 @@ public class IndividualSearchController extends BaseController {
         Double precursor = compoundSearchForm.getPrecursorMZ();
         if(precursor != null) {
             spectrum.setPrecursor(precursor);
-
             LinkedHashSet<Adduct> existingAdducts = new LinkedHashSet<>(adductService.findAdductsByChromatography(ChromatographyType.LC_MSMS_POS));
             existingAdducts.addAll(adductService.findAdductsByChromatography(ChromatographyType.LC_MSMS_NEG));
-            if(compoundSearchForm.getAdducts() != null) {
-                String[] adductIds = compoundSearchForm.getAdducts().split(",");
+            if(chromatographyType == ChromatographyType.LIQUID_POSITIVE) {
 
-                ArrayList<Adduct> adducts = new ArrayList<>();
+                if(compoundSearchForm.getAdducts() != null) {
+                    String[] adductIds = compoundSearchForm.getAdducts().split(",");
 
-                for(String id: adductIds) {
-                    for(Adduct adduct: existingAdducts) {
-                        if(Long.toString(adduct.getId()).equals(id)) {
-                            adducts.add(adduct);
+                    ArrayList<Adduct> adducts = new ArrayList<>();
 
+                    for(String id: adductIds) {
+                        for(Adduct adduct: existingAdducts) {
+                            if(Long.toString(adduct.getId()).equals(id)) {
+                                adducts.add(adduct);
+
+                            }
                         }
                     }
+                    parameters.setAdducts(adducts);
+                    if(compoundSearchForm.getMzToleranceType() == SearchParameters.MzToleranceType.DA) {
+                        parameters.setMassTolerance(compoundSearchForm.getMzTolerance() == null ?
+                                SearchParameters.DEFAULT_MZ_TOLERANCE : compoundSearchForm.getMzTolerance());
+                        parameters.setMassTolerancePPM(null);
+                    }
+                    else {
+                        parameters.setMassTolerancePPM(compoundSearchForm.getMzToleranceType() == null?
+                                (int) SearchParameters.DEFAULT_MZ_TOLERANCE : compoundSearchForm.getMzTolerance().intValue());
+                    }
+
+                    parameters.setPrecursorTolerance(null,null);
                 }
-                parameters.setAdducts(adducts);
+
             }
+
             else {
+                if(compoundSearchForm.getMzToleranceType() == SearchParameters.MzToleranceType.DA) {
+                    parameters.setPrecursorTolerance(compoundSearchForm.getMzTolerance() == null ?
+                            SearchParameters.DEFAULT_MZ_TOLERANCE : compoundSearchForm.getMzTolerance());
+                    parameters.setMassTolerancePPM(null);
+                }
+                else {
+                    parameters.setPrecursorTolerancePPM(compoundSearchForm.getMzToleranceType() == null?
+                            (int) SearchParameters.DEFAULT_MZ_TOLERANCE : compoundSearchForm.getMzTolerance().intValue());
+                    parameters.setMzTolerance(null);
+                }
+
                 parameters.setAdducts(new ArrayList<>(existingAdducts));
             }
+
+
             parameters.setPrecursorTolerance(SearchParameters.DEFAULT_MZ_TOLERANCE);
         }
 
