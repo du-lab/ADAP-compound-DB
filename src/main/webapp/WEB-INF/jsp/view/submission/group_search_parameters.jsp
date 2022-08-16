@@ -3,6 +3,7 @@
 <div class="container">
     <%--@elvariable id="filterForm" type="org.dulab.adapcompounddb.site.controllers.forms.FilterForm"--%>
     <%--@elvariable id="filterOptions" type="org.dulab.adapcompounddb.site.controllers.forms.FilterOptions"--%>
+    <%--@elvariable id="errors" type="java.lang.String"--%>
     <form:form modelAttribute="filterForm" method="post">
         <div class="row row-content">
             <div class="col">
@@ -38,6 +39,7 @@
 
                     <div class="card-body tab-content">
                         <div id="libraries" class="tab-pane fade show active" role="tabpanel">
+                            <div class="alert-danger" style="margin-bottom: 5px;">${errors}</div>
                             <div class="row">
                                 <div class="col-md-8 offset-md-2">
                                     <p>Select the libraries to search against.</p>

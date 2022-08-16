@@ -28,7 +28,10 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.*;
 
@@ -85,7 +88,7 @@ public class GroupSearchController extends BaseController {
     @RequestMapping(value = "/group_search/parameters", method = RequestMethod.POST)
     public String groupSearchParametersPost(@RequestParam Optional<Long> submissionId, HttpSession session, Model model,
                                             HttpServletRequest request, HttpServletResponse response,
-                                            @Valid FilterForm form, Errors errors) {
+                                            @Valid FilterForm form, Errors errors) throws ExecutionException, InterruptedException, TimeoutException {
 
         Submission submission = submissionId
                 .map(submissionService::fetchSubmission)
@@ -124,16 +127,28 @@ public class GroupSearchController extends BaseController {
 
         asyncResult = groupSearchService.groupSearch(this.getCurrentUserPrincipal(), submission.getFiles(), session,
                 parameters, form.isWithOntologyLevels(), form.isSendResultsToEmail());
-        session.setAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME, asyncResult);
+        try{
+            asyncResult.get(6, TimeUnit.SECONDS);
+            session.setAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME, asyncResult);
 
-        LOGGER.info(String.format("Group search is started by user %s with IP = %s [%s]",
-                this.getCurrentUserPrincipal(), request.getRemoteAddr(), request.getHeader("X-Forwarded-For")));
+            LOGGER.info(String.format("Group search is started by user %s with IP = %s [%s]",
+                    this.getCurrentUserPrincipal(), request.getRemoteAddr(), request.getHeader("X-Forwarded-For")));
 
-        String byteString = ConversionsUtils.formToByteString(form);
-        Cookie metaFieldsCookie = new Cookie(SEARCH_PARAMETERS_COOKIE_NAME, byteString);
-        response.addCookie(metaFieldsCookie);
+            String byteString = ConversionsUtils.formToByteString(form);
+            Cookie metaFieldsCookie = new Cookie(SEARCH_PARAMETERS_COOKIE_NAME, byteString);
+            response.addCookie(metaFieldsCookie);
 
-        return "redirect:/group_search/";
+            return "redirect:/group_search/";
+        }
+        catch (TimeoutException e) {
+            asyncResult.cancel(true);
+            LOGGER.error("Group search timed out");
+            model.addAttribute("errors", "Timed out");
+            return "submission/group_search_parameters";
+        }
+
+
+
     }
 
     @RequestMapping(value = "/group_search/", method = RequestMethod.GET)
