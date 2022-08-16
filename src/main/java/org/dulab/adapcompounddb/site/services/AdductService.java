@@ -7,9 +7,7 @@ import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class AdductService {
@@ -31,5 +29,15 @@ public class AdductService {
 
     public List<Adduct> findAdductsByChromatography(ChromatographyType chromatographyType) {
         return chromatographyToAdductsMap.get(chromatographyType);
+    }
+
+    public List<Adduct> getAllAdducts() {
+        List<Adduct> adducts = new ArrayList<>();
+        for(ChromatographyType chromatography : ChromatographyType.values()) {
+            adducts.addAll(this.findAdductsByChromatography(chromatography));
+
+        }
+
+        return adducts;
     }
 }
