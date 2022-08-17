@@ -28,10 +28,7 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.math.BigInteger;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 
 import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.*;
 
@@ -102,7 +99,7 @@ public class GroupSearchController extends BaseController {
         }
 
         @SuppressWarnings("unchecked")
-        Future<Void> asyncResult = (Future<Void>) session.getAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME);
+        CompletableFuture<Void> asyncResult = (CompletableFuture<Void>) session.getAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME);
 
         if (asyncResult != null && !asyncResult.isDone()) {
             asyncResult.cancel(true);
@@ -128,7 +125,7 @@ public class GroupSearchController extends BaseController {
         asyncResult = groupSearchService.groupSearch(this.getCurrentUserPrincipal(), submission.getFiles(), session,
                 parameters, form.isWithOntologyLevels(), form.isSendResultsToEmail());
         try{
-            asyncResult.get(6, TimeUnit.SECONDS);
+            asyncResult.get(6, TimeUnit.MINUTES);
             session.setAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME, asyncResult);
 
             LOGGER.info(String.format("Group search is started by user %s with IP = %s [%s]",
@@ -138,15 +135,16 @@ public class GroupSearchController extends BaseController {
             Cookie metaFieldsCookie = new Cookie(SEARCH_PARAMETERS_COOKIE_NAME, byteString);
             response.addCookie(metaFieldsCookie);
 
-            return "redirect:/group_search/";
+
         }
         catch (TimeoutException e) {
             asyncResult.cancel(true);
             LOGGER.error("Group search timed out");
-            model.addAttribute("errors", "Timed out");
-            return "submission/group_search_parameters";
+            //model.addAttribute("errors", "Timed out");
+            //return "submission/group_search_parameters";
         }
 
+        return "redirect:/group_search/";
 
 
     }

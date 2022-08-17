@@ -22,6 +22,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 @Service
@@ -44,9 +45,9 @@ public class GroupSearchService {
 
     @Async
 //    @Transactional(propagation = Propagation.REQUIRED)
-    public Future<Void> groupSearch(UserPrincipal userPrincipal, List<File> files, HttpSession session,
-                                    SearchParameters userParameters,
-                                    boolean withOntologyLevels, boolean sendResultsToEmail) {
+    public CompletableFuture<Void> groupSearch(UserPrincipal userPrincipal, List<File> files, HttpSession session,
+                                               SearchParameters userParameters,
+                                               boolean withOntologyLevels, boolean sendResultsToEmail) {
 
 //        LOGGER.info("Group search has started");
 
@@ -63,7 +64,7 @@ public class GroupSearchService {
             if (totalSteps == 0) {
                 LOGGER.warn("No query spectra for performing a group search");
                 session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
-                return new AsyncResult<>(null);
+                return CompletableFuture.completedFuture(null);
             }
 
             long startTime = System.currentTimeMillis();
@@ -115,7 +116,7 @@ public class GroupSearchService {
                             }
                         } else {
                             LOGGER.warn("It looks like the session has been closed. Stopping the group search.");
-                            return new AsyncResult<>(null);
+                            return CompletableFuture.completedFuture(null);
                         }
                     }
 
@@ -156,6 +157,6 @@ public class GroupSearchService {
         if (Thread.currentThread().isInterrupted())
             LOGGER.info("Group search is cancelled");
 
-        return new AsyncResult<>(null);
+        return CompletableFuture.completedFuture(null);
     }
 }
