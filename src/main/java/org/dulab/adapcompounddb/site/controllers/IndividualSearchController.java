@@ -52,7 +52,7 @@ public class IndividualSearchController extends BaseController {
     public IndividualSearchController(SubmissionService submissionService,
                                       SubmissionTagService submissionTagService,
                                       SpectrumService spectrumService,
-                                     CaptchaService captchaService,
+                                      CaptchaService captchaService,
                                       IndividualSearchService individualSearchService, AdductService adductService) {  // @Qualifier("spectrumSearchServiceImpl")
 
         this.submissionService = submissionService;
@@ -216,20 +216,19 @@ public class IndividualSearchController extends BaseController {
             value = INDIVIDUAL_SEARCH_PARAMETERS_COOKIE_NAME,
             defaultValue = "") String searchParametersCookie) {
 
-        compoundSearchForm  = ConversionsUtils.byteStringToForm(searchParametersCookie, CompoundSearchForm.class);
+        compoundSearchForm = ConversionsUtils.byteStringToForm(searchParametersCookie, CompoundSearchForm.class);
         //Spectrum spectrum = new Spectrum();
         FilterOptions filterOptions = getFilterOptions(ChromatographyType.values());
-       model.addAttribute("filterOptions", filterOptions);
+        model.addAttribute("filterOptions", filterOptions);
         if (compoundSearchForm.getSubmissionIds() == null || compoundSearchForm.getSubmissionIds().isEmpty())
-           compoundSearchForm.setSubmissionIds(filterOptions.getSubmissions().keySet());
+            compoundSearchForm.setSubmissionIds(filterOptions.getSubmissions().keySet());
         model.addAttribute("compoundSearchForm", compoundSearchForm);
         model.addAttribute("loggedInUser", getCurrentUserPrincipal());
-       model.addAttribute("compoundSearchForm", compoundSearchForm);
-       model.addAttribute("chromatographyTypes", new ChromatographyType[]{ChromatographyType.GAS, ChromatographyType.LIQUID_POSITIVE, ChromatographyType.LIQUID_NEGATIVE,
-               ChromatographyType.LC_MSMS_POS, ChromatographyType.LC_MSMS_NEG});
-        LinkedHashSet<Adduct> existingAdducts = new LinkedHashSet<>(adductService.findAdductsByChromatography(ChromatographyType.LC_MSMS_POS));
-        existingAdducts.addAll(adductService.findAdductsByChromatography(ChromatographyType.LC_MSMS_NEG));
-       model.addAttribute("adductvals", existingAdducts.toArray());
+        model.addAttribute("compoundSearchForm", compoundSearchForm);
+        model.addAttribute("chromatographyTypes", new ChromatographyType[]{
+                ChromatographyType.GAS, ChromatographyType.LIQUID_POSITIVE, ChromatographyType.LIQUID_NEGATIVE,
+                ChromatographyType.LC_MSMS_POS, ChromatographyType.LC_MSMS_NEG});
+        model.addAttribute("adductvals", adductService.getAllAdducts());
         return new ModelAndView("compound/search");
 
     }
@@ -247,12 +246,11 @@ public class IndividualSearchController extends BaseController {
 //
 //        }
         String responseString = request.getParameter(CaptchaService.GOOGLE_CAPTCHA_RESPONSE);
-        try{
-            if(getCurrentUserPrincipal() == null) {
+        try {
+            if (getCurrentUserPrincipal() == null) {
                 captchaService.processResponse(responseString, request.getRemoteAddr());
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             model.addAttribute("errorMessage", "Verify that you are human");
             return new ModelAndView("compound/search");
         }
@@ -262,30 +260,29 @@ public class IndividualSearchController extends BaseController {
         Double mass = compoundSearchForm.getNeutralMass();
 
 
-        if(compoundSearchForm.getIdentifier() != null) {
+        if (compoundSearchForm.getIdentifier() != null) {
             parameters.setIdentifier(compoundSearchForm.getIdentifier());
         }
 
-        assignPeaks(spectrum,parameters,compoundSearchForm);
-        if(mass != null) {
+        assignPeaks(spectrum, parameters, compoundSearchForm);
+        if (mass != null) {
             spectrum.setMass(mass);
             parameters.setMassTolerance(SearchParameters.DEFAULT_MZ_TOLERANCE);
         }
 
 
-        assignPrecursorAndAdducts(spectrum,parameters,compoundSearchForm);
+        assignPrecursorAndAdducts(spectrum, parameters, compoundSearchForm);
 
 
-
-        if(compoundSearchForm.getRetentionIndexTolerance() != null) {
-            parameters.setRetIndexTolerance((double)compoundSearchForm.getRetentionIndexTolerance());
+        if (compoundSearchForm.getRetentionIndexTolerance() != null) {
+            parameters.setRetIndexTolerance((double) compoundSearchForm.getRetentionIndexTolerance());
         }
 
-        if(compoundSearchForm.getRetentionIndexMatch() != null) {
+        if (compoundSearchForm.getRetentionIndexMatch() != null) {
             parameters.setRetIndexMatchType(compoundSearchForm.getRetentionIndexMatch());
         }
 
-        if(compoundSearchForm.getLimit() != null) {
+        if (compoundSearchForm.getLimit() != null) {
             parameters.setLimit(compoundSearchForm.getLimit());
         }
         parameters.setSubmissionIds(compoundSearchForm.getSubmissionIds());
@@ -293,20 +290,18 @@ public class IndividualSearchController extends BaseController {
 
         spectrum.setPrecursor(compoundSearchForm.getPrecursorMZ());
 
-        if(spectrum.getChromatographyType() == null) {
+        if (spectrum.getChromatographyType() == null) {
             parameters.setChromatographyTypes(List.of(ChromatographyType.values()));
         }
 
-        if(spectrum.getPeaks() != null && !spectrum.getPeaks().isEmpty()) {
-            if(spectrum.getPrecursor() != null)
+        if (spectrum.getPeaks() != null && !spectrum.getPeaks().isEmpty()) {
+            if (spectrum.getPrecursor() != null)
                 parameters.setGreedy(true);
             else
                 parameters.setGreedy(false);
 
-        }
-        else
+        } else
             parameters.setGreedy(true);
-
 
 
         parameters.setSearchMassLibrary(false);
@@ -324,7 +319,7 @@ public class IndividualSearchController extends BaseController {
     }
 
     private ChromatographyType formChromatographyType(CompoundSearchForm compoundSearchForm) {
-        switch(compoundSearchForm.getChromatographyType()) {
+        switch (compoundSearchForm.getChromatographyType()) {
             case "GC-MS":
                 return ChromatographyType.GAS;
 
@@ -341,7 +336,7 @@ public class IndividualSearchController extends BaseController {
     private void assignPeaks(Spectrum spectrum, SearchParameters parameters, CompoundSearchForm compoundSearchForm) {
         String peakVals = compoundSearchForm.getSpectrum();
         //peakVals.replace(';','\n');
-        if(peakVals != null && !peakVals.trim().isEmpty()) {
+        if (peakVals != null && !peakVals.trim().isEmpty()) {
             //String[] peakStrings = peakVals.split("\n");
             ArrayList<Peak> peaks = new ArrayList<>();
             Pattern p = Pattern.compile("[0-9]*\\.?[0-9]+");
@@ -350,10 +345,9 @@ public class IndividualSearchController extends BaseController {
             int ct = 0;
             while (m.find()) {
 
-                if(ct % 2 == 0)
+                if (ct % 2 == 0)
                     peakValue.setMz(Double.parseDouble(m.group()));
-                else
-                {
+                else {
                     peakValue.setIntensity(Double.parseDouble(m.group()));
                     peaks.add(peakValue);
                     peakValue = new Peak();
@@ -365,17 +359,14 @@ public class IndividualSearchController extends BaseController {
             }
 
             spectrum.setPeaks(peaks);
-            if(compoundSearchForm.getScoreThreshold() != null) {
+            if (compoundSearchForm.getScoreThreshold() != null) {
                 parameters.setScoreThreshold(compoundSearchForm.getScoreThreshold() / 1000.0);
-            }
-            else{
+            } else {
                 parameters.setScoreThreshold(SearchParameters.DEFAULT_SCORE_THRESHOLD);
             }
-            if(compoundSearchForm.getMzTolerance() != null) {
+            if (compoundSearchForm.getMzTolerance() != null) {
                 parameters.setMzTolerance(compoundSearchForm.getMzTolerance());
-            }
-            else
-            {
+            } else {
                 parameters.setMzTolerance(SearchParameters.DEFAULT_MZ_TOLERANCE);
             }
 
@@ -384,47 +375,43 @@ public class IndividualSearchController extends BaseController {
 
     private void assignPrecursorAndAdducts(Spectrum spectrum, SearchParameters parameters, CompoundSearchForm compoundSearchForm) {
         Double precursor = compoundSearchForm.getPrecursorMZ();
-        if(precursor != null) {
+        if (precursor != null) {
             spectrum.setPrecursor(precursor);
             LinkedHashSet<Adduct> existingAdducts = new LinkedHashSet<>(adductService.getAllAdducts());
             HashMap<String, Adduct> adductMap = new HashMap<>();
-            for(Adduct adduct : existingAdducts) {
+            for (Adduct adduct : existingAdducts) {
                 adductMap.putIfAbsent(Long.toString(adduct.getId()), adduct);
 
             }
             ChromatographyType chromatographyType = formChromatographyType(compoundSearchForm);
-            if(chromatographyType == ChromatographyType.LIQUID_POSITIVE) { // LC-MS
+            if (chromatographyType == ChromatographyType.LIQUID_POSITIVE) { // LC-MS
 
-                if(compoundSearchForm.getAdducts() != null) {
+                if (compoundSearchForm.getAdducts() != null) {
                     String[] adductIds = compoundSearchForm.getAdducts().split(",");
 
                     ArrayList<Adduct> adducts = new ArrayList<>();
 
-                    for(String id: adductIds) {
-                        if(adductMap.containsKey(id))
+                    for (String id : adductIds) {
+                        if (adductMap.containsKey(id))
                             adducts.add(adductMap.get(id));
                     }
                     parameters.setAdducts(adducts);
-                    if(compoundSearchForm.getMzTolerance() != null) {
+                    if (compoundSearchForm.getMzTolerance() != null) {
                         parameters.setMassToleranceWithType(compoundSearchForm.getMzTolerance(), compoundSearchForm.getMzToleranceType());
-                    }
-                    else {
+                    } else {
                         parameters.setMassTolerance(SearchParameters.DEFAULT_MZ_TOLERANCE, null);
                     }
 
-                    parameters.setPrecursorTolerance(null,null);
+                    parameters.setPrecursorTolerance(null, null);
                 }
 
-            }
-
-            else { // NOT LC-MS
-                if(compoundSearchForm.getMzTolerance() != null) {
+            } else { // NOT LC-MS
+                if (compoundSearchForm.getMzTolerance() != null) {
                     parameters.setPrecursorToleranceWithType(compoundSearchForm.getMzTolerance(), compoundSearchForm.getMzToleranceType());
-                }
-                else {
+                } else {
                     parameters.setPrecursorTolerance(SearchParameters.DEFAULT_MZ_TOLERANCE, null);
                 }
-                parameters.setMassTolerance(null,null);
+                parameters.setMassTolerance(null, null);
                 parameters.setAdducts(new ArrayList<>(existingAdducts));
             }
 
@@ -478,8 +465,7 @@ public class IndividualSearchController extends BaseController {
     }
 
 
-
-    private FilterOptions getFilterOptions(ChromatographyType ... chromatographyTypes) {
+    private FilterOptions getFilterOptions(ChromatographyType... chromatographyTypes) {
         List<String> speciesList = submissionTagService.findDistinctTagValuesByTagKey("species (common)");
         List<String> sourceList = submissionTagService.findDistinctTagValuesByTagKey("sample source");
         List<String> diseaseList = submissionTagService.findDistinctTagValuesByTagKey("disease");
