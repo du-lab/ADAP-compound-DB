@@ -3,7 +3,9 @@ package org.dulab.adapcompounddb.site.services.search;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
-import org.dulab.adapcompounddb.models.entities.*;
+import org.dulab.adapcompounddb.models.entities.File;
+import org.dulab.adapcompounddb.models.entities.Spectrum;
+import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.services.io.ExportSearchResultsService;
@@ -22,7 +24,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 @Service
@@ -45,7 +46,7 @@ public class GroupSearchService {
 
     @Async
 //    @Transactional(propagation = Propagation.REQUIRED)
-    public CompletableFuture<Void> groupSearch(UserPrincipal userPrincipal, List<File> files, HttpSession session,
+    public Future<Void> groupSearch(UserPrincipal userPrincipal, List<File> files, HttpSession session,
                                                SearchParameters userParameters,
                                                boolean withOntologyLevels, boolean sendResultsToEmail) {
 
@@ -64,7 +65,7 @@ public class GroupSearchService {
             if (totalSteps == 0) {
                 LOGGER.warn("No query spectra for performing a group search");
                 session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
-                return CompletableFuture.completedFuture(null);
+                return new AsyncResult<>(null);
             }
 
             long startTime = System.currentTimeMillis();
@@ -116,7 +117,7 @@ public class GroupSearchService {
                             }
                         } else {
                             LOGGER.warn("It looks like the session has been closed. Stopping the group search.");
-                            return CompletableFuture.completedFuture(null);
+                            return new AsyncResult<>(null);
                         }
                     }
 
@@ -157,6 +158,6 @@ public class GroupSearchService {
         if (Thread.currentThread().isInterrupted())
             LOGGER.info("Group search is cancelled");
 
-        return CompletableFuture.completedFuture(null);
+        return new AsyncResult<>(null);
     }
 }
