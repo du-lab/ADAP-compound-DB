@@ -29,7 +29,7 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.math.BigInteger;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.Future;
 
 import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME;
 import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.SEARCH_PARAMETERS_COOKIE_NAME;
@@ -87,7 +87,7 @@ public class GroupSearchController extends BaseController {
     @RequestMapping(value = "/group_search/parameters", method = RequestMethod.POST)
     public String groupSearchParametersPost(@RequestParam Optional<Long> submissionId, HttpSession session, Model model,
                                             HttpServletRequest request, HttpServletResponse response,
-                                            @Valid FilterForm form, Errors errors) throws ExecutionException, InterruptedException, TimeoutException {
+                                            @Valid FilterForm form, Errors errors) {
 
         Submission submission = submissionId
                 .map(submissionService::fetchSubmission)
@@ -134,6 +134,7 @@ public class GroupSearchController extends BaseController {
         String byteString = ConversionsUtils.formToByteString(form);
         Cookie metaFieldsCookie = new Cookie(SEARCH_PARAMETERS_COOKIE_NAME, byteString);
         response.addCookie(metaFieldsCookie);
+
         return "redirect:/group_search/";
     }
 
@@ -176,3 +177,4 @@ public class GroupSearchController extends BaseController {
         return new FilterOptions(speciesList, sourceList, diseaseList, submissions);
     }
 }
+
