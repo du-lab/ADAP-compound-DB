@@ -101,7 +101,7 @@ public class GroupSearchController extends BaseController {
         }
 
         @SuppressWarnings("unchecked")
-        Future<Void> asyncResult = (CompletableFuture<Void>) session.getAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME);
+        Future<Void> asyncResult = (Future<Void>) session.getAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME);
 
         if (asyncResult != null && !asyncResult.isDone()) {
             asyncResult.cancel(true);
@@ -126,7 +126,6 @@ public class GroupSearchController extends BaseController {
 
         asyncResult = groupSearchService.groupSearch(this.getCurrentUserPrincipal(), submission.getFiles(), session,
                 parameters, form.isWithOntologyLevels(), form.isSendResultsToEmail());
-        asyncResult.get(6, TimeUnit.MINUTES);
         session.setAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME, asyncResult);
 
         LOGGER.info(String.format("Group search is started by user %s with IP = %s [%s]",
@@ -135,7 +134,6 @@ public class GroupSearchController extends BaseController {
         String byteString = ConversionsUtils.formToByteString(form);
         Cookie metaFieldsCookie = new Cookie(SEARCH_PARAMETERS_COOKIE_NAME, byteString);
         response.addCookie(metaFieldsCookie);
-        
         return "redirect:/group_search/";
     }
 

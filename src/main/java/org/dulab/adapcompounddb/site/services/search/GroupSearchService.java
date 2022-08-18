@@ -47,8 +47,8 @@ public class GroupSearchService {
     @Async
 //    @Transactional(propagation = Propagation.REQUIRED)
     public Future<Void> groupSearch(UserPrincipal userPrincipal, List<File> files, HttpSession session,
-                                               SearchParameters userParameters,
-                                               boolean withOntologyLevels, boolean sendResultsToEmail) {
+                                    SearchParameters userParameters,
+                                    boolean withOntologyLevels, boolean sendResultsToEmail) {
 
 //        LOGGER.info("Group search has started");
 
