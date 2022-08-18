@@ -142,6 +142,7 @@ public class GroupSearchController extends BaseController {
         catch (TimeoutException e) {
 
             LOGGER.error("Group search timed out");
+            session.setAttribute(GROUP_SEARCH_ERROR_ATTRIBUTE_NAME, "Group search timed out");
 
         }
 
