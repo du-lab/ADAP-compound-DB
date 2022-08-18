@@ -22,7 +22,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeoutException;
 
 @Service
 public class GroupSearchService {
@@ -45,8 +47,8 @@ public class GroupSearchService {
     @Async
 //    @Transactional(propagation = Propagation.REQUIRED)
     public Future<Void> groupSearch(UserPrincipal userPrincipal, List<File> files, HttpSession session,
-                                    SearchParameters userParameters,
-                                    boolean withOntologyLevels, boolean sendResultsToEmail) {
+                                               SearchParameters userParameters,
+                                               boolean withOntologyLevels, boolean sendResultsToEmail) throws TimeoutException {
 
 //        LOGGER.info("Group search has started");
 
@@ -74,6 +76,11 @@ public class GroupSearchService {
             float progress = 0F;
             int position = 0;
             for (int fileIndex = 0; fileIndex < files.size(); ++fileIndex) {
+                if(System.currentTimeMillis() - startTime > 6 * 60 * 60 * 1000)
+                {
+                    session.setAttribute(ControllerUtils.GROUP_SEARCH_ERROR_ATTRIBUTE_NAME, "Group search timed out");
+                    throw new TimeoutException("Group search timed out");
+                }
                 File file = files.get(fileIndex);
                 List<Spectrum> spectra = file.getSpectra();
                 if (spectra == null) continue;
@@ -101,6 +108,9 @@ public class GroupSearchService {
                     }
 
                     if (Thread.currentThread().isInterrupted()) break;
+
+
+
 
                     progress = (float) ++progressStep / totalSteps;
                     groupSearchDTOList.addAll(individualSearchResults);
@@ -150,6 +160,7 @@ public class GroupSearchService {
 
         } catch (Throwable t) {
             LOGGER.error(String.format("Error during the group search: %s", t.getMessage()), t);
+            //session.setAttribute("GROUP_SEARCH_ERROR", t.getMessage());
             throw t;
         }
 

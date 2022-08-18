@@ -33,6 +33,7 @@ public class ControllerUtils {
     public static final String GROUP_SEARCH_PROGRESS_ATTRIBUTE_NAME = "group_search_progress";
 
     public static final String INDIVIDUAL_SEARCH_RESULTS_ATTRIBUTE_NAME = "individual_search_results";
+    public static final String GROUP_SEARCH_ERROR_ATTRIBUTE_NAME = "group_search_error";
 
     public static final String META_FIELDS_COOKIE_NAME = "metaFields";
     public static final String SEARCH_PARAMETERS_COOKIE_NAME = "search_parameters_form";
