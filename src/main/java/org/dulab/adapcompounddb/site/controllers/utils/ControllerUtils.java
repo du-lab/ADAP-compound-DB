@@ -38,6 +38,8 @@ public class ControllerUtils {
     public static final String SEARCH_PARAMETERS_COOKIE_NAME = "search_parameters_form";
     public static final String INDIVIDUAL_SEARCH_PARAMETERS_COOKIE_NAME = "individual_parameters_form";
 
+    public static boolean INTEG_TEST = System.getenv("CAPTCHA_INTEG_TEST") == null || System.getenv("CAPTCHA_INTEG_TEST").isEmpty();
+
 
     @Autowired
     SpectrumClusterer spectrumClusterer;

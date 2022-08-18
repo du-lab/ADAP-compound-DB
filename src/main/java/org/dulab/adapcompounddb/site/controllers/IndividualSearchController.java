@@ -10,6 +10,7 @@ import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.site.controllers.forms.CompoundSearchForm;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterForm;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterOptions;
+import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
 import org.dulab.adapcompounddb.site.controllers.utils.ConversionsUtils;
 import org.dulab.adapcompounddb.site.services.CaptchaService;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
@@ -45,6 +46,7 @@ public class IndividualSearchController extends BaseController {
     private final SubmissionTagService submissionTagService;
     private final IndividualSearchService individualSearchService;
     private final CaptchaService captchaService;
+    private boolean integTest = ControllerUtils.INTEG_TEST;
 
     @Autowired
     public IndividualSearchController(SubmissionService submissionService,
@@ -220,6 +222,15 @@ public class IndividualSearchController extends BaseController {
            compoundSearchForm.setSubmissionIds(filterOptions.getSubmissions().keySet());
         model.addAttribute("compoundSearchForm", compoundSearchForm);
         model.addAttribute("loggedInUser", getCurrentUserPrincipal());
+        boolean disableBtn = true;
+        if(getCurrentUserPrincipal() == null && integTest)
+        {
+            disableBtn = false;
+        }
+        else if(getCurrentUserPrincipal() != null) {
+            disableBtn = false;
+        }
+        model.addAttribute("disableBtn", disableBtn);
         return new ModelAndView("compound/search");
 
     }
@@ -237,14 +248,16 @@ public class IndividualSearchController extends BaseController {
 //
 //        }
         String responseString = request.getParameter(CaptchaService.GOOGLE_CAPTCHA_RESPONSE);
-        try{
-            if(getCurrentUserPrincipal() == null) {
-                captchaService.processResponse(responseString, request.getRemoteAddr());
+        if(responseString != null && !responseString.isEmpty()) {
+            try{
+                if(getCurrentUserPrincipal() == null) {
+                    captchaService.processResponse(responseString, request.getRemoteAddr());
+                }
             }
-        }
-        catch (Exception e) {
-            model.addAttribute("errorMessage", "Verify that you are human");
-            return new ModelAndView("compound/search");
+            catch (Exception e) {
+                model.addAttribute("errorMessage", "Verify that you are human");
+                return new ModelAndView("compound/search");
+            }
         }
         SearchParameters parameters = new SearchParameters();
         Spectrum spectrum = new Spectrum();
