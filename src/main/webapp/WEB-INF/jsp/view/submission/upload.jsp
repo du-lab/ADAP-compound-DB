@@ -1,6 +1,7 @@
 <%--@elvariable id="chromatographyTypeList" type="org.dulab.adapcompounddb.models.enums.ChromatographyType[]"--%>
 <%--@elvariable id="fileUploadForm" type="org.dulab.adapcompounddb.site.controllers.FileUploadController.FileUploadForm"--%>
 <%--@elvariable id="loggedInUser" type="org.dulab.adapcompounddb.models.entities.UserPrincipal"--%>
+<%--@elvariable id="integTest" type="java.lang.Boolean"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
@@ -40,9 +41,9 @@
                     <div class="btn btn-secondary" data-toggle="collapse"
                          data-target="#metaFields">Edit Metadata Fields
                     </div>
-                    <button id="uploadBtn" class="btn btn-primary align-self-center" type="submit"
+                    <button id="uploadBtn" name="submit" class="btn btn-primary align-self-center" type="submit"
                             style="height: 100%;"
-                            <c:if test="${loggedInUser == null}">
+                            <c:if test="${loggedInUser == null && !integTest}">
                                 <c:out value="disabled='disabled'"/>
                             </c:if>>
                         Upload

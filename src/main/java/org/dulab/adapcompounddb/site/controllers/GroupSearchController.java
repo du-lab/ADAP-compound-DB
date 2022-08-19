@@ -8,18 +8,19 @@ import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterForm;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterOptions;
-import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
 import org.dulab.adapcompounddb.site.controllers.utils.ConversionsUtils;
-import org.dulab.adapcompounddb.site.services.search.GroupSearchService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.dulab.adapcompounddb.site.services.SubmissionTagService;
+import org.dulab.adapcompounddb.site.services.search.GroupSearchService;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -28,9 +29,11 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.concurrent.Future;
 import java.util.concurrent.*;
 
-import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.*;
+import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME;
+import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.SEARCH_PARAMETERS_COOKIE_NAME;
 
 @Controller
 public class GroupSearchController extends BaseController {
@@ -85,7 +88,7 @@ public class GroupSearchController extends BaseController {
     @RequestMapping(value = "/group_search/parameters", method = RequestMethod.POST)
     public String groupSearchParametersPost(@RequestParam Optional<Long> submissionId, HttpSession session, Model model,
                                             HttpServletRequest request, HttpServletResponse response,
-                                            @Valid FilterForm form, Errors errors) throws ExecutionException, InterruptedException, TimeoutException {
+                                            @Valid FilterForm form, Errors errors) {
 
         Submission submission = submissionId
                 .map(submissionService::fetchSubmission)
@@ -122,33 +125,18 @@ public class GroupSearchController extends BaseController {
         parameters.setDisease(disease);
         parameters.setSubmissionIds(form.getSubmissionIds());
 
+        asyncResult = groupSearchService.groupSearch(this.getCurrentUserPrincipal(), submission.getFiles(), session,
+                parameters, form.isWithOntologyLevels(), form.isSendResultsToEmail());
+        session.setAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME, asyncResult);
 
+        LOGGER.info(String.format("Group search is started by user %s with IP = %s [%s]",
+                this.getCurrentUserPrincipal(), request.getRemoteAddr(), request.getHeader("X-Forwarded-For")));
 
-        try{
-
-            asyncResult = groupSearchService.groupSearch(this.getCurrentUserPrincipal(), submission.getFiles(), session,
-                    parameters, form.isWithOntologyLevels(), form.isSendResultsToEmail());
-
-            session.setAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME, asyncResult);
-
-            LOGGER.info(String.format("Group search is started by user %s with IP = %s [%s]",
-                    this.getCurrentUserPrincipal(), request.getRemoteAddr(), request.getHeader("X-Forwarded-For")));
-
-            String byteString = ConversionsUtils.formToByteString(form);
-            Cookie metaFieldsCookie = new Cookie(SEARCH_PARAMETERS_COOKIE_NAME, byteString);
-            response.addCookie(metaFieldsCookie);
-
-        }
-        catch (TimeoutException e) {
-
-            LOGGER.error("Group search timed out");
-            session.setAttribute(GROUP_SEARCH_ERROR_ATTRIBUTE_NAME, "Group search timed out");
-
-        }
+        String byteString = ConversionsUtils.formToByteString(form);
+        Cookie metaFieldsCookie = new Cookie(SEARCH_PARAMETERS_COOKIE_NAME, byteString);
+        response.addCookie(metaFieldsCookie);
 
         return "redirect:/group_search/";
-
-
     }
 
     @RequestMapping(value = "/group_search/", method = RequestMethod.GET)

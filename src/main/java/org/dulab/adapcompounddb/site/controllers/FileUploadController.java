@@ -2,15 +2,14 @@ package org.dulab.adapcompounddb.site.controllers;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.enums.FileType;
-import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.site.controllers.forms.FileUploadForm;
+import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
 import org.dulab.adapcompounddb.site.controllers.utils.ConversionsUtils;
 import org.dulab.adapcompounddb.site.controllers.utils.MultipartFileUtils;
 import org.dulab.adapcompounddb.site.services.CaptchaService;
-import org.dulab.adapcompounddb.site.services.io.FileReaderService;
-import org.dulab.adapcompounddb.site.services.io.MspFileReaderService;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,11 +26,8 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URL;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.META_FIELDS_COOKIE_NAME;
 
@@ -40,6 +36,8 @@ public class FileUploadController extends BaseController {
 
     private static final Logger LOG = LogManager.getLogger(FileUploadController.class);
     private final CaptchaService captchaService;
+
+    private final Boolean integTest = ControllerUtils.INTEG_TEST;
 
     public FileUploadController(CaptchaService captchaService) {
         this.captchaService = captchaService;
@@ -107,6 +105,7 @@ public class FileUploadController extends BaseController {
 
         model.addAttribute("fileUploadForm", form);
         model.addAttribute("loggedInUser", getCurrentUserPrincipal());
+        model.addAttribute("integTest", integTest);
         return "submission/upload";
     }
 
@@ -116,8 +115,10 @@ public class FileUploadController extends BaseController {
 
         String responseString = request.getParameter(CaptchaService.GOOGLE_CAPTCHA_RESPONSE);
 
+
+
         try{
-            if(getCurrentUserPrincipal() == null) {
+            if(getCurrentUserPrincipal() == null && !integTest ) {
                 captchaService.processResponse(responseString, request.getRemoteAddr());
             }
         }
