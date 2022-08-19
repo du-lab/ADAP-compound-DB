@@ -13,7 +13,10 @@
     <%--@elvariable id="compoundSearchForm" type="org.dulab.adapcompounddb.site.controllers.forms.CompoundSearchForm"--%>
     <%--@elvariable id="errorMessage" type="java.lang.String"--%>
     <%--@elvariable id="filterOptions" type="org.dulab.adapcompounddb.site.controllers.forms.FilterOptions"--%>
-    <form:form modelAttribute="compoundSearchForm" method="post">
+    <%--@elvariable id="chromatographyTypes" type="org.dulab.adapcompounddb.models.enums.ChromatographyType[]"--%>
+    <%--@elvariable id="adductvals" type="org.dulab.adapcompounddb.models.entities.Adduct[]"--%>
+
+        <form:form modelAttribute="compoundSearchForm" method="post">
         <div class="row row-content">
             <div class="col">
                 <div class="form-row">
@@ -65,6 +68,48 @@
                             <div class="alert-danger" style="margin-bottom: 5px;">${errorMessage}</div>
 
                             <div class="form-group row">
+                                <form:label path="chromatographyType"
+                                            cssClass="col-md-4 col-form-label">Chromatography type</form:label>
+<%--                                <div class="col-md-8">--%>
+<%--                                    <form:select id="chromatographySelect" path="chromatographyType" cssClass="form-control">--%>
+<%--                                        <form:option id="typeValue" value="" label="Please select..."/>--%>
+<%--                                        <form:options items="${chromatographyTypes}" itemLabel="label"/>--%>
+<%--                                    </form:select>--%>
+<%--                                    <form:errors path="chromatographyType"--%>
+<%--                                                 cssClass="text-danger form-control-sm"/>--%>
+<%--                                </div>--%>
+                                <div class="col-md-8">
+                                    <div class="btn-group btn-group-toggle" data-toggle="buttons" cssClass="form-control">
+                                        <label class="btn btn-outline-primary active">
+                                            <form:radiobutton path="chromatographyType"
+                                                              name="chromatographyType"
+                                                              value="GC-MS"
+                                                              label="GC-MS"
+                                                              id="gcms"
+                                                              />
+                                        </label>
+                                        <label class="btn btn-outline-primary">
+                                            <form:radiobutton
+                                                    path="chromatographyType"
+                                                    name="chromatographyType"
+                                                    value="LC-MS"
+                                                    label="LC-MS"
+                                                    />
+                                        </label>
+                                        <label class="btn btn-outline-primary">
+                                            <form:radiobutton path="chromatographyType"
+                                                              name="chromatographyType"
+                                                              value="LC-MS/MS"
+                                                              label="LC-MS/MS"
+                                                              />
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <div class="form-group row">
                                 <form:label path="identifier"
                                             cssClass="col-md-4 col-form-label">Identifier:</form:label>
                                 <div class="col-md-8">
@@ -75,21 +120,32 @@
                                 <form:label path="neutralMass"
                                             cssClass="col-md-4 col-form-label">Neutral Mass:</form:label>
                                 <div class="col-md-8">
-                                    <form:input path="neutralMass" type="number" step="any" cssClass="form-control"/>
+                                    <form:input path="neutralMass" placeholder="Input mass" type="number" step="any" cssClass="form-control"/>
                                 </div>
                             </div>
-                            <div class="form-group row">
+                            <div class="form-group row" id="precursorMZ" >
                                 <form:label path="precursorMZ"
                                             cssClass="col-md-4 col-form-label">Precursor M/Z:</form:label>
                                 <div class="col-md-8">
-                                    <form:input path="precursorMZ" type="number" step="any" cssClass="form-control"/>
+                                    <form:input id="precusorMZInput" placeholder="Input precursor m/z" path="precursorMZ" type="number" step="any" cssClass="form-control"/>
                                 </div>
                             </div>
-                            <div class="form-group row">
+                            <div id="adduct" class="form-group row">
+                                <form:label path="adducts" cssClass="col-md-4 col-form-label">Adduct:</form:label>
+                                <div class="col-md-8">
+
+                                    <form:select path="adducts" id="adductSelect"  cssClass="form-control"  multiple="multiple" cssStyle="text-align: left;">
+
+                                        <form:options items="${adductvals}" itemValue="Id" itemLabel="Name"></form:options>
+                                    </form:select>
+
+                                </div>
+                            </div>
+                            <div id="spectrum" class="form-group row">
                                 <form:label path="spectrum"
                                             cssClass="col-md-4 col-form-label">Spectrum:</form:label>
                                 <div class="col-md-8">
-                                    <form:textarea path="spectrum"  cssClass="form-control"/>
+                                    <form:textarea id="spectrumInput" placeholder="Input m/z-intensity pairs"  path="spectrum"  cssClass="form-control"/>
                                 </div>
                             </div>
                             <c:if test="${loggedInUser == null}">
@@ -195,6 +251,12 @@
     </form:form>
 </div>
 
+<style>
+    .multiselect-container {
+        width: 100% !important;
+    }
+</style>
+
 <script>
 
 
@@ -203,7 +265,7 @@
         let num = $("#parameters input").filter(function () {
             return $.trim($(this).val()).length == 0
         }).length;
-        console.log(num);
+
         if(num < 3) showBadge = true;
         var retention = $('#retention').get(0);
 
@@ -225,7 +287,40 @@
 
 
     }
+
+    function chromatographyChanged() {
+        if(!$("input[name='chromatographyType']:checked").val()) {
+            $('#gcms').prop("checked", true);
+        }
+        else if($("input[name='chromatographyType']:checked").val() === 'GC-MS') {
+
+            $('#precursorMZInput').val('');
+            $('#precursorMZ').hide();
+            $('#spectrum').show();
+            $('#adduct').hide();
+
+        }
+        else if($("input[name='chromatographyType']:checked").val() === 'LC-MS') {
+            $('#spectrumInput').val('');
+            $('#spectrum').hide();
+            $('#precursorMZ').show();
+            $('#adduct').show();
+        }
+        else {
+            $('#precursorMZ').show();
+            $('#spectrum').show();
+            $('#adduct').hide();
+        }
+    }
+
     $(document).ready(function() {
+        $('#adductSelect').multiselect({includeSelectAllOption:true, nonSelectedText:'Please select adduct',
+        buttonWidth:'100%',
+        maxHeight: 300});
+        $("#adductSelect").multiselect('selectAll', false);
+        chromatographyChanged();
+
+
         HasFormChanged();
         $('#parameters input').change(function() {
            HasFormChanged();
@@ -241,6 +336,8 @@
 
         })
 
+        $("input[type=radio][name='chromatographyType']").change(chromatographyChanged);
+
 
 
     });
@@ -249,9 +346,13 @@
 
 
 
-</script>
 
+
+</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/1.1.1/css/bootstrap-multiselect.css">
 <script src="<c:url value="/resources/npm/node_modules/jquery/dist/jquery.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/popper.js/dist/umd/popper.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/bootstrap/dist/js/bootstrap.min.js"/>"></script>
 
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/1.1.1/js/bootstrap-multiselect.js"></script>

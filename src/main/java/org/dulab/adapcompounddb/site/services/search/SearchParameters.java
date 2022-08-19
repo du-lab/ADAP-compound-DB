@@ -84,6 +84,7 @@ public class SearchParameters implements Cloneable {
     public SearchParameters setMzTolerance(Double mzTolerance, Integer mzTolerancePPM) {
         this.mzTolerance = mzTolerance;
         this.mzTolerancePPM = mzTolerancePPM;
+        this.mzTolerancePPM = mzTolerancePPM;
         return this;
     }
 
@@ -122,6 +123,18 @@ public class SearchParameters implements Cloneable {
         return this;
     }
 
+    public SearchParameters setPrecursorToleranceWithType(Double tolerance, MzToleranceType type) {
+        if(type == MzToleranceType.DA) {
+            this.precursorTolerance = tolerance;
+            this.precursorTolerancePPM = null;
+        }
+        else {
+            this.precursorTolerance = null;
+            this.precursorTolerancePPM = tolerance.intValue();
+        }
+        return this;
+    }
+
     public Integer getPrecursorTolerancePPM() {
         return precursorTolerancePPM;
     }
@@ -143,6 +156,18 @@ public class SearchParameters implements Cloneable {
     public SearchParameters setMassTolerance(Double tolerance, Integer ppm) {
         this.massTolerance = tolerance;
         this.massTolerancePPM = ppm;
+        return this;
+    }
+
+    public SearchParameters setMassToleranceWithType(Double tolerance, MzToleranceType type) {
+        if(type == MzToleranceType.DA) {
+            this.massTolerance = tolerance;
+            this.massTolerancePPM = null;
+        }
+        else {
+            this.massTolerance = null;
+            this.massTolerancePPM = tolerance.intValue();
+        }
         return this;
     }
 
