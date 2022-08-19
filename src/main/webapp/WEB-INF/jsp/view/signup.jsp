@@ -1,6 +1,7 @@
 <%--@elvariable id="errorMsg" type="java.lang.String"--%>
 <%--@elvariable id="validationErrors" type="java.util.Set<javax.validation.ConstraintViolation>--%>
 <%--@elvariable id="signUpForm" type="org.dulab.site.controllers.SignUpForm"--%>
+<%--@elvariable id="integTest" type="java.lang.Boolean"--%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
@@ -89,7 +90,11 @@
                             <br/>
                             <div class="row form-group">
                                 <div class="col-md-2 offset-md-6">
-                                    <input id="submit" type="submit" class="btn btn-primary" value="Sign up" disabled/>
+                                    <input id="submit" name="submit" type="submit" class="btn btn-primary" value="Sign up"
+                                            <c:if test="${!integTest}">
+                                                <c:out value="disabled='disabled'"/>
+                                            </c:if>
+                                    />
                                 </div>
                             </div>
                         </form:form>

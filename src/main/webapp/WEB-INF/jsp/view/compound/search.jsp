@@ -1,6 +1,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%--@elvariable id="loggedInUser" type="org.dulab.adapcompounddb.models.entities.UserPrincipal"--%>
+<%--@elvariable id="disableBtn" type="java.lang.Boolean"--%>
 
 <script src="https://www.google.com/recaptcha/api.js"></script>
 <script>
@@ -26,7 +27,7 @@
 
                             <button id="searchButton" class="btn btn-primary align-self-center" type="submit"
                                     style="height: 100%;"
-                                    <c:if test="${loggedInUser == null}">
+                                    <c:if test="${disableBtn}">
                                 <c:out value="disabled='disabled'"/>
                                     </c:if>>
                                     Search

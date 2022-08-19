@@ -8,6 +8,7 @@ import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.site.controllers.forms.CompoundSearchForm;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterForm;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterOptions;
+import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
 import org.dulab.adapcompounddb.site.controllers.utils.ConversionsUtils;
 import org.dulab.adapcompounddb.site.services.CaptchaService;
 import org.dulab.adapcompounddb.site.services.AdductService;
@@ -45,6 +46,7 @@ public class IndividualSearchController extends BaseController {
     private final SubmissionTagService submissionTagService;
     private final IndividualSearchService individualSearchService;
     private final CaptchaService captchaService;
+    private boolean integTest = ControllerUtils.INTEG_TEST;
 
     private final AdductService adductService;
 
@@ -229,6 +231,15 @@ public class IndividualSearchController extends BaseController {
                 ChromatographyType.GAS, ChromatographyType.LIQUID_POSITIVE, ChromatographyType.LIQUID_NEGATIVE,
                 ChromatographyType.LC_MSMS_POS, ChromatographyType.LC_MSMS_NEG});
         model.addAttribute("adductvals", adductService.getAllAdducts());
+        boolean disableBtn = true;
+        if(getCurrentUserPrincipal() == null && integTest)
+        {
+            disableBtn = false;
+        }
+        else if(getCurrentUserPrincipal() != null) {
+            disableBtn = false;
+        }
+        model.addAttribute("disableBtn", disableBtn);
         return new ModelAndView("compound/search");
 
     }
@@ -246,19 +257,62 @@ public class IndividualSearchController extends BaseController {
 //
 //        }
         String responseString = request.getParameter(CaptchaService.GOOGLE_CAPTCHA_RESPONSE);
-        try {
-            if (getCurrentUserPrincipal() == null) {
-                captchaService.processResponse(responseString, request.getRemoteAddr());
+        if(responseString != null && !responseString.isEmpty()) {
+            try{
+                if(getCurrentUserPrincipal() == null) {
+                    captchaService.processResponse(responseString, request.getRemoteAddr());
+                }
             }
-        } catch (Exception e) {
-            model.addAttribute("errorMessage", "Verify that you are human");
-            return new ModelAndView("compound/search");
+            catch (Exception e) {
+                model.addAttribute("errorMessage", "Verify that you are human");
+                return new ModelAndView("compound/search");
+            }
         }
 
         SearchParameters parameters = new SearchParameters();
         Spectrum spectrum = new Spectrum();
         Double mass = compoundSearchForm.getNeutralMass();
+        String peakVals = compoundSearchForm.getSpectrum();
+        //peakVals.replace(';','\n');
+        if(peakVals != null && !peakVals.trim().isEmpty()) {
+            //String[] peakStrings = peakVals.split("\n");
+            ArrayList<Peak> peaks = new ArrayList<>();
+            Pattern p = Pattern.compile("[0-9]*\\.?[0-9]+");
+            Matcher m = p.matcher(peakVals);
+            Peak peakValue = new Peak();
+            int ct = 0;
+            while (m.find()) {
 
+                if(ct % 2 == 0)
+                    peakValue.setMz(Double.parseDouble(m.group()));
+                else
+                {
+                    peakValue.setIntensity(Double.parseDouble(m.group()));
+                    peaks.add(peakValue);
+                    peakValue = new Peak();
+
+                }
+
+                ct++;
+
+            }
+
+            spectrum.setPeaks(peaks);
+            if(compoundSearchForm.getScoreThreshold() != null) {
+                parameters.setScoreThreshold(compoundSearchForm.getScoreThreshold() / 1000.0);
+            }
+            else{
+                parameters.setScoreThreshold(SearchParameters.DEFAULT_SCORE_THRESHOLD);
+            }
+            if(compoundSearchForm.getMzTolerance() != null) {
+                parameters.setMzTolerance(compoundSearchForm.getMzTolerance());
+            }
+            else
+            {
+                parameters.setMzTolerance(SearchParameters.DEFAULT_MZ_TOLERANCE);
+            }
+
+        }
 
         if (compoundSearchForm.getIdentifier() != null) {
             parameters.setIdentifier(compoundSearchForm.getIdentifier());

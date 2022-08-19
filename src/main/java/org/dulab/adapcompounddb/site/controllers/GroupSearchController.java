@@ -8,18 +8,19 @@ import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterForm;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterOptions;
-import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
 import org.dulab.adapcompounddb.site.controllers.utils.ConversionsUtils;
-import org.dulab.adapcompounddb.site.services.search.GroupSearchService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.dulab.adapcompounddb.site.services.SubmissionTagService;
+import org.dulab.adapcompounddb.site.services.search.GroupSearchService;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -30,7 +31,8 @@ import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.Future;
 
-import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.*;
+import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME;
+import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.SEARCH_PARAMETERS_COOKIE_NAME;
 
 @Controller
 public class GroupSearchController extends BaseController {
@@ -175,3 +177,4 @@ public class GroupSearchController extends BaseController {
         return new FilterOptions(speciesList, sourceList, diseaseList, submissions);
     }
 }
+
