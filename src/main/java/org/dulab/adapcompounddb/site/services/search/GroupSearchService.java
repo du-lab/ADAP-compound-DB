@@ -160,7 +160,7 @@ public class GroupSearchService {
 
         } catch (Throwable t) {
             LOGGER.error(String.format("Error during the group search: %s", t.getMessage()), t);
-            //session.setAttribute("GROUP_SEARCH_ERROR", t.getMessage());
+            session.setAttribute("GROUP_SEARCH_ERROR", t.getMessage());
             throw t;
         }
 

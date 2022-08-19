@@ -32,8 +32,7 @@ import java.util.*;
 import java.util.concurrent.Future;
 import java.util.concurrent.*;
 
-import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME;
-import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.SEARCH_PARAMETERS_COOKIE_NAME;
+import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.*;
 
 @Controller
 public class GroupSearchController extends BaseController {
