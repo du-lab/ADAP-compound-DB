@@ -87,7 +87,7 @@ public class GroupSearchController extends BaseController {
     @RequestMapping(value = "/group_search/parameters", method = RequestMethod.POST)
     public String groupSearchParametersPost(@RequestParam Optional<Long> submissionId, HttpSession session, Model model,
                                             HttpServletRequest request, HttpServletResponse response,
-                                            @Valid FilterForm form, Errors errors) {
+                                            @Valid FilterForm form, Errors errors) throws TimeoutException {
 
         Submission submission = submissionId
                 .map(submissionService::fetchSubmission)

@@ -76,15 +76,17 @@ public class GroupSearchService {
             float progress = 0F;
             int position = 0;
             for (int fileIndex = 0; fileIndex < files.size(); ++fileIndex) {
-                if(System.currentTimeMillis() - startTime > 6 * 60 * 60 * 1000)
-                {
-                    session.setAttribute(ControllerUtils.GROUP_SEARCH_ERROR_ATTRIBUTE_NAME, "Group search timed out");
-                    throw new TimeoutException("Group search timed out");
-                }
+
                 File file = files.get(fileIndex);
                 List<Spectrum> spectra = file.getSpectra();
                 if (spectra == null) continue;
                 for (int spectrumIndex = 0; spectrumIndex < spectra.size(); ++spectrumIndex) {  // Spectrum querySpectrum : file.getSpectra()
+                    if(System.currentTimeMillis() - startTime > 6 * 60 * 60 * 1000)
+                    {
+                        session.setAttribute(ControllerUtils.GROUP_SEARCH_ERROR_ATTRIBUTE_NAME, "Group search timed out");
+                        throw new TimeoutException("Group search timed out");
+                    }
+
                     Spectrum querySpectrum = spectra.get(spectrumIndex);
 
                     if (Thread.currentThread().isInterrupted()) break;
