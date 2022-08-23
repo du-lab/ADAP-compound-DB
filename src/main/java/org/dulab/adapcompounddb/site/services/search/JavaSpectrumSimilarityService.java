@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
+import org.dulab.adapcompounddb.site.repositories.MultiFetchRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters.RetIndexMatchType;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
@@ -23,10 +24,13 @@ public class JavaSpectrumSimilarityService {
     private static final double RET_INDEX_WEAK_PENALTY = 0.9;
 
     private final SpectrumRepository spectrumRepository;
+    private final MultiFetchRepository multiFetchRepository;
 
 
-    public JavaSpectrumSimilarityService(SpectrumRepository spectrumRepository) {
+    public JavaSpectrumSimilarityService(SpectrumRepository spectrumRepository,
+                                         MultiFetchRepository multiFetchRepository) {
         this.spectrumRepository = spectrumRepository;
+        this.multiFetchRepository = multiFetchRepository;
     }
 
     public List<SpectrumMatch> searchConsensusAndReference(
@@ -80,7 +84,8 @@ public class JavaSpectrumSimilarityService {
                 .mapToLong(BigInteger::longValue)
                 .boxed()
                 .collect(Collectors.toSet());
-        Iterable<Spectrum> preScreenedSpectra = spectrumRepository.findSpectraWithPeaksById(preScreenedSpectrumIdsSet);
+        Iterable<Spectrum> preScreenedSpectra =
+                multiFetchRepository.getSpectraWithPeaksIsotopes(preScreenedSpectrumIdsSet);
 
         List<SpectrumMatch> matches = calculateSimilarity(querySpectrum, preScreenedSpectra, parameters);
 
