@@ -13,7 +13,7 @@ public class FilterForm {
     private RetIndexMatchType retentionIndexMatch = RetIndexMatchType.IGNORE_MATCH;
     private Double mzTolerance;
     private MzToleranceType mzToleranceType = MzToleranceType.DA;
-    private Integer limit = 10;
+    private Integer limit = 100;
     private String species;
     private String source;
     private String disease;

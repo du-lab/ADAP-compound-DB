@@ -14,7 +14,7 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Set;
 
-public interface SubmissionRepository extends CrudRepository<Submission, Long>, SubmissionRepositoryCustom {
+public interface SubmissionRepository extends CrudRepository<Submission, Long> {
 
     Iterable<Submission> findByUserId(long userPrincipalId);
 
