@@ -7,7 +7,15 @@
 <div class="container-fluid">
     <div class="row row-content">
         <div class="col">
+            <div id="errorDiv" class="alert-danger"  style="margin-bottom: 5px;">
+                <c:out value="${sessionScope.group_search_error}"/>
+            </div>
+        </div>
+    </div>
+    <div class="row row-content">
+        <div class="col">
             <div class="btn-toolbar justify-content-end" role="toolbar">
+
                 <div class="dropdown">
                     <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
                         Export
@@ -269,6 +277,11 @@
 
         // refresh the datatable and progress bar every 1 second
         setInterval(function () {
+            $.ajax({
+                url: `${pageContext.request.contextPath}/ajax/group_search/error`,
+                success: d => $('#errorDiv').html(d)
+            });
+
             table.ajax.reload(null, false);
             $.getJSON(window.location.origin + window.location.pathname + 'progress', function (x) {
                 const width = x + '%';

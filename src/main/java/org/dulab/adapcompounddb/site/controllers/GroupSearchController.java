@@ -30,9 +30,9 @@ import javax.validation.Valid;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
-import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME;
-import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.SEARCH_PARAMETERS_COOKIE_NAME;
+import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.*;
 
 @Controller
 public class GroupSearchController extends BaseController {
@@ -87,7 +87,7 @@ public class GroupSearchController extends BaseController {
     @RequestMapping(value = "/group_search/parameters", method = RequestMethod.POST)
     public String groupSearchParametersPost(@RequestParam Optional<Long> submissionId, HttpSession session, Model model,
                                             HttpServletRequest request, HttpServletResponse response,
-                                            @Valid FilterForm form, Errors errors) {
+                                            @Valid FilterForm form, Errors errors) throws TimeoutException {
 
         Submission submission = submissionId
                 .map(submissionService::fetchSubmission)
@@ -95,7 +95,7 @@ public class GroupSearchController extends BaseController {
 
         FilterOptions filterOptions = getFilterOptions(getChromatographyTypes(submission));
         model.addAttribute("filterOptions", filterOptions);
-
+        session.removeAttribute(GROUP_SEARCH_ERROR_ATTRIBUTE_NAME);
         if (errors.hasErrors()) {
             return "submission/group_search_parameters";
         }
@@ -177,4 +177,3 @@ public class GroupSearchController extends BaseController {
         return new FilterOptions(speciesList, sourceList, diseaseList, submissions);
     }
 }
-
