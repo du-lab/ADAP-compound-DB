@@ -2,6 +2,7 @@ package org.dulab.adapcompounddb.site.services.search;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dulab.adapcompounddb.exceptions.IllegalSpectrumSearchException;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
@@ -20,6 +21,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -96,9 +98,18 @@ public class GroupSearchService {
                     parameters.merge(userParameters);
 //                    parameters.setLimit(10);
 
-                    List<SearchResultDTO> individualSearchResults = (withOntologyLevels)
-                            ? spectrumSearchService.searchWithOntologyLevels(userPrincipal, querySpectrum, parameters)
-                            : spectrumSearchService.searchConsensusSpectra(userPrincipal, querySpectrum, parameters);
+                    List<SearchResultDTO> individualSearchResults;
+                    try {
+                        individualSearchResults = (withOntologyLevels)
+                                ? spectrumSearchService.searchWithOntologyLevels(userPrincipal, querySpectrum, parameters)
+                                : spectrumSearchService.searchConsensusSpectra(userPrincipal, querySpectrum, parameters);
+                    } catch (IllegalSpectrumSearchException e) {
+                        LOGGER.error(String.format("Error when searching %s [%d]: %s",
+                                querySpectrum.getName(), querySpectrum.getId(), e.getMessage()));
+                        SearchResultDTO searchResultDTO = new SearchResultDTO(querySpectrum);
+                        searchResultDTO.setErrorMessage(e.getMessage());
+                        individualSearchResults = Collections.singletonList(searchResultDTO);
+                    }
 
                     if (individualSearchResults.isEmpty())
                         individualSearchResults.add(new SearchResultDTO(querySpectrum));

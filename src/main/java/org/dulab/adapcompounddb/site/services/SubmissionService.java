@@ -8,10 +8,7 @@ import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
-import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
-import org.dulab.adapcompounddb.site.repositories.SubmissionCategoryRepository;
-import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
-import org.dulab.adapcompounddb.site.repositories.SubmissionTagRepository;
+import org.dulab.adapcompounddb.site.repositories.*;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -34,18 +31,21 @@ public class SubmissionService {
     private final SubmissionTagRepository submissionTagRepository;
     private final SubmissionCategoryRepository submissionCategoryRepository;
     private final SpectrumRepository spectrumRepository;
+    private final MultiFetchRepository multiFetchRepository;
 
 
     @Autowired
     public SubmissionService(final SubmissionRepository submissionRepository,
                              final SubmissionTagRepository submissionTagRepository,
                              final SubmissionCategoryRepository submissionCategoryRepository,
-                             final SpectrumRepository spectrumRepository) {
+                             final SpectrumRepository spectrumRepository,
+                             final MultiFetchRepository multiFetchRepository) {
 
         this.submissionRepository = submissionRepository;
         this.submissionTagRepository = submissionTagRepository;
         this.submissionCategoryRepository = submissionCategoryRepository;
         this.spectrumRepository = spectrumRepository;
+        this.multiFetchRepository = multiFetchRepository;
     }
 
     @Transactional
@@ -54,7 +54,7 @@ public class SubmissionService {
     }
 
     public Submission fetchSubmission(long submissionId) {
-        return submissionRepository.getSubmissionWithFilesSpectraPeaks(submissionId);
+        return multiFetchRepository.getSubmissionWithFilesSpectraPeaksIsotopes(submissionId);
     }
 
     @Transactional

@@ -135,6 +135,7 @@
 <script src="<c:url value="/resources/AdapCompoundDb/js/spectrumPlot.js"/>"></script>
 <script src="<c:url value="/resources/AdapCompoundDb/js/spectrumStructure.js"/>"></script>
 <script>
+
     $(document).ready(function () {
 
         let table = $('#match_table').DataTable({
@@ -193,7 +194,16 @@
                         return `<a href="\${href}">\${row.querySpectrumName}</a>`;
                     }
                 },
-                {data: row => (row.name != null) ? `<a href="<c:url value="/\${row.href}" />">\${row.name}</a>` : ''},
+                {
+                    data: row => {
+                        let string = '';
+                        if (row.name != null)
+                            string += `<a href="<c:url value="/\${row.href}" />">\${row.name}</a>`;
+                        if (row.errorMessage != null)
+                            string += `<span class="badge badge-danger" title="\${row.errorMessage}">ERROR</span>`
+                        return string;
+                    }
+                },
                 {data: row => (row.mass != null) ? row.mass.toFixed(3) : ''},
                 {data: row => (row.size != null) ? row.size : ''},
                 {data: row => (row.score != null) ? row.score.toFixed(3) * 1000 : ''},
