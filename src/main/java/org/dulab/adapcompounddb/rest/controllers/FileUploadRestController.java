@@ -67,7 +67,10 @@ public class FileUploadRestController {
             metaDataMapping.setFieldName(Field.NAME, "Name");
             metaDataMapping.setFieldName(Field.MASS, "Mass");
             metaDataMapping.setFieldName(Field.FORMULA, "Formula");
-            metaDataMapping.setFieldName(Field.EXTERNAL_ID, "CASNO");
+            //TODO Replace Field.EXTENRAL_ID with Field.CAS_ID
+            //TODO Map "NIST Id" to Field.EXTENRAL_ID
+            metaDataMapping.setFieldName(Field.CAS_ID, "CASNO");
+            metaDataMapping.setFieldName(Field.EXTERNAL_ID, "NIST Id");
             metaDataMapping.setFieldName(Field.INCHI_KEY, "INCHI_KEY");
             metaDataMapping.setFieldName(Field.RETENTION_TIME, "RT");
             metaDataMapping.setFieldName(Field.PRECURSOR_MZ, "PrecursorMz");
