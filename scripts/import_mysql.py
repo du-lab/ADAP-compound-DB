@@ -37,7 +37,7 @@ def import_into_sql(username, password, host, database, store_location):
 	onlyfiles = [f.split('.')[0] for f in listdir(store_location) if isfile(join(store_location, f)) and f.split('.')[1] == 'txt']
 	for f in onlyfiles:
 		file_name = f + ".txt"
-		query = f'mysqlimport -u {username} -p{password} -d {database} {join(store_location,file_name)}'
+		query = f'mysqlimport -u {username} -p{password} -d {database} --local {join(store_location,file_name)}'
 		print('Executing ', query)
 		os.system(query)
 

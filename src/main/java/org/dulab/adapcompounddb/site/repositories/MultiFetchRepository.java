@@ -4,12 +4,11 @@ import org.dulab.adapcompounddb.models.entities.*;
 import org.springframework.stereotype.Repository;
 
 
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.lang.reflect.Field;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -46,10 +45,11 @@ public class MultiFetchRepository {
                 .setParameter("spectrumIds", spectra.stream().map(Spectrum::getId).collect(Collectors.toList()))
                 .getResultList();
 
-        assignChildrenToParents(peaks, Peak::getSpectrum, spectra, Spectrum::setPeaks);
-        assignChildrenToParents(isotopes, Isotope::getSpectrum, spectra, Spectrum::setIsotopes);
-        assignChildrenToParents(spectra, Spectrum::getFile, files, File::setSpectra);
-        assignChildrenToParents(files, File::getSubmission, Collections.singletonList(submission), Submission::setFiles);
+        assignChildrenToParents(peaks, Peak::getSpectrum, spectra, Spectrum::setPeaks, Spectrum::getId);
+        assignChildrenToParents(isotopes, Isotope::getSpectrum, spectra, Spectrum::setIsotopes, Spectrum::getId);
+        assignChildrenToParents(spectra, Spectrum::getFile, files, File::setSpectra, File::getId);
+        assignChildrenToParents(files, File::getSubmission, Collections.singletonList(submission), Submission::setFiles,
+                Submission::getId);
 
         return submission;
     }
@@ -70,20 +70,26 @@ public class MultiFetchRepository {
                 .setParameter("spectrumIds", spectrumIds)
                 .getResultList();
 
-        assignChildrenToParents(peaks, Peak::getSpectrum, spectra, Spectrum::setPeaks);
-        assignChildrenToParents(isotopes, Isotope::getSpectrum, spectra, Spectrum::setIsotopes);
+        assignChildrenToParents(peaks, Peak::getSpectrum, spectra, Spectrum::setPeaks, Spectrum::getId);
+        assignChildrenToParents(isotopes, Isotope::getSpectrum, spectra, Spectrum::setIsotopes, Spectrum::getId);
 
         return spectra;
     }
 
     private <C, P> void assignChildrenToParents(List<C> children, Function<C, P> parentGetter,
-                                                List<P> parents, BiConsumer<P, List<C>> childrenSetter) {
+                                                List<P> parents, BiConsumer<P, List<C>> childrenSetter,
+                                                Function<P, Long> idGetter) {
 
-        Map<P, List<C>> parentToChildrenMap = children.stream()
-                .collect(Collectors.groupingBy(parentGetter));
+        Map<Long, List<C>> parentToChildrenMap = new HashMap<>();
+        for (C child : children) {
+            P parent = parentGetter.apply(child);
+            Long id = idGetter.apply(parent);
+            parentToChildrenMap.computeIfAbsent(id, k -> new ArrayList<>())
+                    .add(child);
+        }
 
         for (P parent : parents) {
-            childrenSetter.accept(parent, parentToChildrenMap.get(parent));
+            childrenSetter.accept(parent, parentToChildrenMap.get(idGetter.apply(parent)));
         }
     }
 }
