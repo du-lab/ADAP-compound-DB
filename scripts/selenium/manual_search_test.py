@@ -2,7 +2,7 @@ from selenium import webdriver
 import argparse
 import time
 
-def manual_search_test(homepage_url, identifier):
+def manual_search_test(homepage_url, identifier = 'eicosatrienoic acid', spectrum = '79 100\n 67 90.3325\n 80 75.8722\n 81 59.0838\n 93 54.0933'):
 	driver = webdriver.Chrome('scripts/selenium/drivers/chromedriver')
 
 	try:
@@ -11,15 +11,15 @@ def manual_search_test(homepage_url, identifier):
 		search_page_button.click()
 		identifier_input = driver.find_element_by_id('identifierInput')
 		identifier_input.send_keys(identifier)
-		#spectrum_input = driver.get_element_by_id('spectrumInput')
-		#spectrum_input.send_keys('79 100; 67 90.3325; 80 75.8722; 81 59.0838; 93 54.0933')
+		spectrum_input = driver.find_element_by_id('spectrumInput')
+		spectrum_input.send_keys(spectrum)
 		search_button = driver.find_element_by_id('searchButton')
 		search_button.click()
 		time.sleep(30)
 		assert (driver.find_element_by_id('plot'))
 
 	except Exception as e:
-		driver.quit()
+		#driver.quit()
 		raise e
 
 
@@ -28,12 +28,13 @@ def main():
 
 	parser = argparse.ArgumentParser('Download all data into a folder')
 	parser.add_argument('--homepage_url', help='url for adap-kdb homepage', required=True)
-	parser.add_argument('--identifier', help='identifier string', required=True)
+	parser.add_argument('--identifier', help='identifier string')
+	parser.add_argument('--spectrum', help='spectrum string')
 	args = parser.parse_args()
 	homepage_url = args.homepage_url
 	identifier = args.identifier
-
-	manual_search_test(homepage_url, identifier)
+	spectrum = args.spectrum
+	manual_search_test(homepage_url)
 
 if __name__ == '__main__':
 	main()
