@@ -16,6 +16,7 @@ build:
     - merge_requests
   script:
     - mvn clean install tomcat7:redeploy -Denvironment=test
+    - python scripts\selenium\initial_test.py
 
 test:
   stage: test
@@ -26,7 +27,6 @@ test:
     - pwd
     - python --version
     - python scripts\selenium\ontology_level_test.py --homepage-url $HOMEPAGE_URL --username $ADAP_KDB_TEST_USERNAME --password $ADAP_KDB_TEST_PASSWORD
-    - python scripts\selenium\initial_test.py
     - python scripts\selenium\msp_upload_process_test.py --homepage_url $HOMEPAGE_URL --msp_path $CI_PROJECT_DIR\scripts\selenium\combined.msp
     - python scripts\selenium\login_register_test.py --homepage_url $HOMEPAGE_URL
     - python scripts\selenium\individual_search_test_without_login.py --homepage_url $HOMEPAGE_URL --msp_path $CI_PROJECT_DIR\scripts\selenium\combined.msp

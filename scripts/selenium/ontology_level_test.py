@@ -42,7 +42,7 @@ def ontology_level_test(homepage_url, username, password):
         driver.find_element_by_xpath('//table[@id="match_table"]//*[text()="OL_1"]')
 
         # Log out
-        driver.find_element_by_xpath('//a[@href="/logout"]').click()
+        driver.find_element_by_xpath('//a[@id="logoutPage"]').click()
         assert driver.find_elements_by_id('accountPage').size() < 1
 
     except Exception as e:
