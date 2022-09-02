@@ -412,7 +412,7 @@ public class IndividualSearchController extends BaseController {
 
             }
 
-            spectrum.setPeaks(peaks);
+            spectrum.setPeaks(peaks, true);
             if (compoundSearchForm.getScoreThreshold() != null) {
                 parameters.setScoreThreshold(compoundSearchForm.getScoreThreshold() / 1000.0);
             } else {
