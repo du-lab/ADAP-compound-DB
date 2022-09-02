@@ -27,14 +27,11 @@ def main():
 	"""Main function that is called from a command line"""
 
 	parser = argparse.ArgumentParser('Download all data into a folder')
-	parser.add_argument('--homepage_url', help='url for adap-kdb homepage', required=True)
-	parser.add_argument('--identifier', help='identifier string')
-	parser.add_argument('--spectrum', help='spectrum string')
+	parser.add_argument('--homepage-url', help='url for adap-kdb homepage', required=True)
+	parser.add_argument('--identifier', help='identifier string', required=True)
+	parser.add_argument('--spectrum', help='spectrum string', required=True)
 	args = parser.parse_args()
-	homepage_url = args.homepage_url
-	identifier = args.identifier
-	spectrum = args.spectrum
-	manual_search_test(homepage_url)
+	manual_search_test(args.homepage_url, args.identifier, args.spectrum)
 
 if __name__ == '__main__':
 	main()
