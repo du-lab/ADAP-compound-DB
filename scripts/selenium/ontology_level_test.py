@@ -35,7 +35,7 @@ def ontology_level_test(homepage_url, username, password):
         # Search parameters page
         assert '/group_search/parameters' in driver.current_url.__str__()
         driver.find_element_by_id('searchButton').click()
-        time.sleep(30)
+        time.sleep(60)
 
         # Search results page
         assert '/group_search/' in driver.current_url.__str__()
@@ -43,7 +43,7 @@ def ontology_level_test(homepage_url, username, password):
 
         # Log out
         driver.find_element_by_xpath('//a[@id="logoutPage"]').click()
-        assert driver.find_elements_by_id('accountPage').size() < 1
+        assert len(driver.find_elements_by_id('accountPage')) < 1
 
     except Exception as e:
         driver.quit()
