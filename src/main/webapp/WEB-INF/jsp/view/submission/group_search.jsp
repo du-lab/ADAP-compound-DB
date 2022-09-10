@@ -34,7 +34,7 @@
                         </a>
                     </div>
                 </div>
-                <div class="progress flex-grow-1 align-self-center mx-2">sio
+                <div class="progress flex-grow-1 align-self-center mx-2">
                     <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow="0"
                          aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
@@ -42,6 +42,7 @@
                    href="<c:url value="/group_search/parameters"><c:if test="${submission.id != 0}">
                             <c:param name="submissionId" value="${submission.id}"/></c:if></c:url>">
                         Search Parameters</a>
+            </div>
             </div>
         </div>
     </div>
