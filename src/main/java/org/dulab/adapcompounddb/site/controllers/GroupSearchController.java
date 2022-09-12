@@ -88,7 +88,7 @@ public class GroupSearchController extends BaseController {
     }
 
     @RequestMapping(value = "/group_search/parameters", method = RequestMethod.POST)
-    public RedirectView groupSearchParametersPost(@RequestParam Optional<Long> submissionId, HttpSession session, Model model,
+    public String groupSearchParametersPost(@RequestParam Optional<Long> submissionId, HttpSession session, Model model,
                                                   HttpServletRequest request, HttpServletResponse response,
                                                   @Valid FilterForm form, Errors errors, RedirectAttributes redirectAttributes) throws TimeoutException {
 
@@ -100,7 +100,7 @@ public class GroupSearchController extends BaseController {
         model.addAttribute("filterOptions", filterOptions);
         session.removeAttribute(GROUP_SEARCH_ERROR_ATTRIBUTE_NAME);
         if (errors.hasErrors()) {
-            return new RedirectView("submission/group_search_parameters", true);
+            return "submission/group_search_parameters";
         }
 
         @SuppressWarnings("unchecked")
@@ -140,9 +140,9 @@ public class GroupSearchController extends BaseController {
         redirectAttributes.addFlashAttribute("submission", submission);
 
 
-        return new RedirectView("/group_search/",true);
+        return "redirect:/group_search/";
     }
-
+    
     @RequestMapping(value = "/group_search/", method = RequestMethod.GET)
     public String groupSearch(Model model, HttpSession session) {
         Submission submission = (Submission) model.getAttribute("submission");
