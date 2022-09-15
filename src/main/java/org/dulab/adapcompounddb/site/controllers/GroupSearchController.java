@@ -21,6 +21,9 @@ import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -86,8 +89,8 @@ public class GroupSearchController extends BaseController {
 
     @RequestMapping(value = "/group_search/parameters", method = RequestMethod.POST)
     public String groupSearchParametersPost(@RequestParam Optional<Long> submissionId, HttpSession session, Model model,
-                                            HttpServletRequest request, HttpServletResponse response,
-                                            @Valid FilterForm form, Errors errors) throws TimeoutException {
+                                                  HttpServletRequest request, HttpServletResponse response,
+                                                  @Valid FilterForm form, Errors errors, RedirectAttributes redirectAttributes) throws TimeoutException {
 
         Submission submission = submissionId
                 .map(submissionService::fetchSubmission)
@@ -134,12 +137,18 @@ public class GroupSearchController extends BaseController {
         String byteString = ConversionsUtils.formToByteString(form);
         Cookie metaFieldsCookie = new Cookie(SEARCH_PARAMETERS_COOKIE_NAME, byteString);
         response.addCookie(metaFieldsCookie);
+        redirectAttributes.addFlashAttribute("submission", submission);
+
 
         return "redirect:/group_search/";
     }
-
+    
     @RequestMapping(value = "/group_search/", method = RequestMethod.GET)
-    public String groupSearch() {
+    public String groupSearch(Model model, HttpSession session) {
+        Submission submission = (Submission) model.getAttribute("submission");
+
+
+        model.addAttribute("submission", submission);
         return "submission/group_search";
     }
 

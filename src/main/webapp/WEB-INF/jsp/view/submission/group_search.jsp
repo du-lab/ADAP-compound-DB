@@ -3,6 +3,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%--@elvariable id="submission" type="org.dulab.adapcompounddb.models.entities.Submission"--%>
 
 <div class="container-fluid">
     <div class="row row-content">
@@ -37,7 +38,11 @@
                     <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow="0"
                          aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
-                <a class="btn btn-primary mr-2" href="<c:url value="parameters"/>">Search Parameters</a>
+                <a class="btn btn-primary mr-2"
+                   href="<c:url value="/group_search/parameters"><c:if test="${submission.id != 0}">
+                            <c:param name="submissionId" value="${submission.id}"/></c:if></c:url>">
+                        Search Parameters</a>
+            </div>
             </div>
         </div>
     </div>
