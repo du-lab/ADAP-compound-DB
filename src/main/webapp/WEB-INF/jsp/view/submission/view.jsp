@@ -15,13 +15,13 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Study Uploaded</h4>
+                <h4 class="modal-title">Study Upload</h4>
                 <button type="button" class="close" data-dismiss="modal">
                     &times;
                 </button>
             </div>
             <div class="modal-body">
-                <p>${message}</p>
+                <p>Study is being submitted....</p>
             </div>
         </div>
     </div>
@@ -409,10 +409,12 @@
 
     $(document).ready(function () {
         $('.toast').toast('show');
-        if("${message}" != null && "${message}".length > 0) {
-            $('#modalView').modal('show');
-        }
+
     });
+
+    $('#submissionForm').submit(function() {
+        $("#modalView").modal('show');
+    })
 
     // $(document).ready(function () {
     // Table with a list of spectra
