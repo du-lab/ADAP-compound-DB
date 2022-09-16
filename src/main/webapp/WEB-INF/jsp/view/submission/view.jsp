@@ -7,7 +7,25 @@
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 
 <script src="<c:url value="/resources/AdapCompoundDb/js/tagsColor.js"/>"></script>
+<%--@elvariable id="message" type="java.lang.String"--%>
 
+
+
+<div id="modalView" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Study Uploaded</h4>
+                <button type="button" class="close" data-dismiss="modal">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>${message}</p>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="container">
 
     <c:if test="${!submission.isSearchable()}">
@@ -391,6 +409,9 @@
 
     $(document).ready(function () {
         $('.toast').toast('show');
+        if("${message}" != null && "${message}".length > 0) {
+            $('#modalView').modal('show');
+        }
     });
 
     // $(document).ready(function () {
