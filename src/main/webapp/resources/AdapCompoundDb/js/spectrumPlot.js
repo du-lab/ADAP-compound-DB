@@ -18,24 +18,27 @@ jQuery.fn.spectrumPlot = function (id, restURL1, restURL2) {
     $.when($.ajax({dataType: 'json', url: restURL1}), $.ajax({dataType: 'json', url: restURL2}))
         .then(function (resp1, resp2) {
 
-            chart = st.chart.ms()
-                .legend(true)
-                .labels(true)
-                // .xlabel('m/z')
-                // .ylabel('Intensity')
-                .margins([10, 60, 40, 100]);
-            chart.render(div[0]);
+            //render graph if there's both peaks
+            if(resp1[0].peaks.length != 0 || resp2[0].peaks.length !=0) {
+                chart = st.chart.ms()
+                    .legend(true)
+                    .labels(true)
+                    // .xlabel('m/z')
+                    // .ylabel('Intensity')
+                    .margins([10, 60, 40, 100]);
+                chart.render(div[0]);
 
-            let handle = st.data.set()
-                .x('peaks.mz')
-                .y('peaks.intensity')
-                .title('name');
+                let handle = st.data.set()
+                    .x('peaks.mz')
+                    .y('peaks.intensity')
+                    .title('name');
 
-            chart.load(handle);
-            query = resp1[0];
-            query['name'] = 'Query';
-            match = resp2[0];
-            match['name'] = 'Match';
-            handle.add([query, match]);
+                chart.load(handle);
+                query = resp1[0];
+                query['name'] = 'Query';
+                match = resp2[0];
+                match['name'] = 'Match';
+                handle.add([query, match]);
+            }
         });
 }
