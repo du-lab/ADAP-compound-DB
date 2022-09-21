@@ -4,7 +4,7 @@
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-//hide the query, plot and match when user hasn't clicked on table row
+<%--hide the query, plot and match when user hasn't clicked on table row--%>
 <style>
     #query_plot_match row{
         display:none;
@@ -74,7 +74,7 @@
             <div class="card" style="height: auto">
                 <div class="card-header card-header-single">Plot</div>
                 <%--                <div class="card-body small overflow-auto" style="height: 300px">--%>
-                    <div class="card-body card-body-compact small overflow-auto" style="height: auto">
+                    <div id = "bar_under_plot" class="card-body card-body-compact small overflow-auto" style="height: auto">
                         <div id="plot"style="height: 400px"></div>
 
                     </div>
@@ -277,7 +277,13 @@
 
             // $('#queryInfo').spectrumInfo(queryUrl + 'info.json');
             // $('#matchInfo').spectrumInfo(matchUrl + 'info.json');
+
+
             $('#plot').spectrumPlot(position, queryUrl + 'positive/peaks.json', matchUrl + 'negative/peaks.json');
+
+
+
+
             $('#queryStructure').spectrumStructure(queryUrl + 'structure.json', function (x) {
                 $('#queryColumn').attr('hidden', !x);
             });
@@ -291,8 +297,19 @@
             previousMatchUrl = matchUrl;
 
 
-            //show the query, plot and match div
+            // show the query, plot and match div
             $('#query_plot_match_row').show();
+
+
+            //hide graph if there's no data
+
+            // if(response.response1.empty() && response.response2.empty()){
+            //     $('#plot').hide();
+            //     $('#bar_under_plot').hide();
+            // }
+
+
+
 
         });
 
