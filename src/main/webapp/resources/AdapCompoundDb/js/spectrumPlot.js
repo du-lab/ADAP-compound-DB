@@ -20,7 +20,7 @@ jQuery.fn.spectrumPlot = function (id, restURL1, restURL2) {
 
 
             //render graph if there's both peaks
-            if(resp1[0].peaks.length != 0 || resp2[0].peaks.length !=0) {
+            if(resp1[0].peaks.length != 0 && resp2[0].peaks.length !=0) {
                 chart = st.chart.ms()
                     .legend(true)
                     .labels(true)
@@ -41,7 +41,20 @@ jQuery.fn.spectrumPlot = function (id, restURL1, restURL2) {
                 match['name'] = 'Match';
                 handle.add([query, match]);
             }
+            if($('#plot').children().length == 0){
+                $('#plot_content').hide();
+                $('#query_content').css('padding-right', '0px')
+                $('#query_content').addClass('col').removeClass('col-4')
+                $('#match_content').addClass('col').removeClass('col-4')
+                $('#match_content').css('padding-left', '0px')
 
+
+
+            }
+            else {
+                $('#plot_content').show();
+
+            }
         });
 
 

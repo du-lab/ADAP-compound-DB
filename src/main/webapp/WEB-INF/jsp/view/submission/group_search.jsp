@@ -51,7 +51,7 @@
 
     <div class="row row-content" id="query_plot_match_row">
 
-        <div class="col-md-4 col-compact">
+        <div class="col-4" id = "query_content">
             <div class="card" style="height: auto">
                 <div class="card-header card-header-single">Query</div>
 
@@ -70,7 +70,7 @@
 
             </div>
         </div>
-        <div class="col-md-4 col-compact">
+        <div class="col-4" id = "plot_content">
             <div class="card" style="height: auto">
                 <div class="card-header card-header-single">Plot</div>
                 <%--                <div class="card-body small overflow-auto" style="height: 300px">--%>
@@ -81,7 +81,7 @@
                 <%--                </div>--%>
             </div>
         </div>
-        <div class="col-md-4 col-compact">
+        <div class="col-4" id = "match_content">
             <div class="card" style="height: auto">
                 <div class="card-header card-header-single">Match</div>
                 <div class="card-body card-body-compact small overflow-auto" style="height: auto">
@@ -300,15 +300,17 @@
             // show the query, plot and match div
             $('#query_plot_match_row').show();
 
+            
 
-            //hide graph if there's no data
-
-            // if(response.response1.empty() && response.response2.empty()){
-            //     $('#plot').hide();
-            //     $('#bar_under_plot').hide();
-            // }
+            //reset to display plot
+            $('#plot_content').show();
 
 
+            //reset styles
+            $('#query_content').css('padding-right', '')
+            $('#match_content').css('padding-left', '')
+            $('#query_content').removeClass('col').addClass('col-4')
+            $('#match_content').removeClass('col').addClass('col-4')
 
 
         });
