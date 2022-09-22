@@ -146,6 +146,7 @@ public class Submission implements Serializable {
         return null;
     }
 
+    //properties
     public List<SubmissionTag> getTags() {
         return tags;
     }

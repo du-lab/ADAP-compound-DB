@@ -301,4 +301,8 @@ public class SubmissionService {
         s.setSearchable(submissionRepository.getIsSearchable(s.getId()));
         return s.isSearchable();
     }
+
+    public Iterable<Submission> findSubmissionByClusterableTrueAndConsensusFalseAndInHouseFalse(){
+        return submissionRepository.findSubmissionByClusterableTrueAndConsensusFalseAndInHouseFalse();
+    }
 }
