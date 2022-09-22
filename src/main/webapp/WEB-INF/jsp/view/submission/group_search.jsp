@@ -51,18 +51,18 @@
 
     <div class="row row-content" id="query_plot_match_row">
 
-        <div class="col-md-4 col-compact">
-            <div class="card" style="height: auto">
+        <div class="col-4">
+            <div class="card" >
                 <div class="card-header card-header-single">Query</div>
 
-                    <div class="card-body card-body-compact small overflow-auto" style="height: auto">
+                    <div class="card-body card-body-compact small overflow-auto" >
                         <div id="queryInfo"></div>
                     </div>
 
                 <div  id="queryColumn">
                     <div >
 <%--                        <div class="card-header card-header-single">Query Structure</div>--%>
-                        <div class="overflow-auto" style="height: auto">
+                        <div class="overflow-auto" >
                             <div id="queryStructure" class="d-flex justify-content-center h-100"></div>
                         </div>
                     </div>
@@ -70,26 +70,26 @@
 
             </div>
         </div>
-        <div class="col-md-4 col-compact">
+        <div class="col-4">
             <div class="card" style="height: auto">
                 <div class="card-header card-header-single">Plot</div>
                 <%--                <div class="card-body small overflow-auto" style="height: 300px">--%>
-                    <div id = "bar_under_plot" class="card-body card-body-compact small overflow-auto" style="height: auto">
+                    <div id = "bar_under_plot" class="card-body card-body-compact small overflow-auto" >
                         <div id="plot"style="height: 400px"></div>
 
                     </div>
                 <%--                </div>--%>
             </div>
         </div>
-        <div class="col-md-4 col-compact">
-            <div class="card" style="height: auto">
+        <div class="col-4">
+            <div class="card" >
                 <div class="card-header card-header-single">Match</div>
-                <div class="card-body card-body-compact small overflow-auto" style="height: auto">
+                <div class="card-body card-body-compact small overflow-auto" >
                     <div id="matchInfo"></div>
                 </div>
                 <div  id="matchColumn">
 
-                        <div class="overflow-auto" style="height: auto">
+                        <div class="overflow-auto" >
                             <div id="matchStructure" class="d-flex justify-content-center h-100"></div>
                         </div>
                 </div>
@@ -301,12 +301,14 @@
             $('#query_plot_match_row').show();
 
 
-            //hide graph if there's no data
+            //reset to display plot
+            $('#plot_content').show();
 
-            // if(response.response1.empty() && response.response2.empty()){
-            //     $('#plot').hide();
-            //     $('#bar_under_plot').hide();
-            // }
+            //reset styles
+            $('#query_content').css('padding-right', '')
+            $('#match_content').css('padding-left', '')
+            $('#query_content').removeClass('col-lg').addClass('col-4')
+            $('#match_content').removeClass('col-lg').addClass('col-4')
 
 
 

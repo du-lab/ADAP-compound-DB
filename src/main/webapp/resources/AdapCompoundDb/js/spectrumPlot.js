@@ -40,5 +40,19 @@ jQuery.fn.spectrumPlot = function (id, restURL1, restURL2) {
                 match['name'] = 'Match';
                 handle.add([query, match]);
             }
+            if($('#plot').children().length == 0){
+                $('#plot_content').hide();
+                 $('#query_content').css('padding-right', '0px')
+                $('#query_content').addClass('col').removeClass('col-4')
+                 $('#match_content').addClass('col').removeClass('col-4')
+                 $('#match_content').css('padding-left', '0px')
+
+
+
+            }
+            else {
+                $('#plot_content').show();
+
+            }
         });
 }
