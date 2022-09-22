@@ -300,7 +300,7 @@
             // show the query, plot and match div
             $('#query_plot_match_row').show();
 
-            
+
 
             //reset to display plot
             $('#plot_content').show();
