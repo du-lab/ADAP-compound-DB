@@ -2,7 +2,7 @@
  * @requires jQuery, D3, SpeckTackle
  */
 
-jQuery.fn.spectrumPlot = function (id, restURL1, restURL2, onComplete, hidePlot) {
+jQuery.fn.spectrumPlot = function (id, restURL1, restURL2, onComplete) {
     let div = $(this);
 
     let oldId = div.attr('data-id')
@@ -45,7 +45,7 @@ jQuery.fn.spectrumPlot = function (id, restURL1, restURL2, onComplete, hidePlot)
             }
             else
             {
-                hidePlot();
+
                 onComplete(false);
 
             }

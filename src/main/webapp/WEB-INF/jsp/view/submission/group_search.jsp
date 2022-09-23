@@ -291,13 +291,16 @@
                     $('#query_content').removeClass('col').addClass('col-4')
                     $('#match_content').removeClass('col').addClass('col-4')
                 }
-            }, function(){
-                $('#plot_content').hide();
-                $('#query_content').css('padding-right', '0px')
-                $('#query_content').addClass('col').removeClass('col-4')
-                $('#match_content').addClass('col').removeClass('col-4')
-                $('#match_content').css('padding-left', '0px')
+                else
+                {
+                    $('#plot_content').hide();
+                    $('#query_content').css('padding-right', '0px')
+                    $('#query_content').addClass('col').removeClass('col-4')
+                    $('#match_content').addClass('col').removeClass('col-4')
+                    $('#match_content').css('padding-left', '0px')
+                }
             }
+
            );
 
 
