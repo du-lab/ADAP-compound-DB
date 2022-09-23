@@ -279,7 +279,26 @@
             // $('#matchInfo').spectrumInfo(matchUrl + 'info.json');
 
 
-            $('#plot').spectrumPlot(position, queryUrl + 'positive/peaks.json', matchUrl + 'negative/peaks.json');
+            $('#plot').spectrumPlot(position, queryUrl + 'positive/peaks.json', matchUrl + 'negative/peaks.json',
+                function(complete){
+                if(complete) {
+                    //reset to display plot
+                    $('#plot_content').show();
+
+                    //reset styles
+                    $('#query_content').css('padding-right', '')
+                    $('#match_content').css('padding-left', '')
+                    $('#query_content').removeClass('col').addClass('col-4')
+                    $('#match_content').removeClass('col').addClass('col-4')
+                }
+            }, function(){
+                $('#plot_content').hide();
+                $('#query_content').css('padding-right', '0px')
+                $('#query_content').addClass('col').removeClass('col-4')
+                $('#match_content').addClass('col').removeClass('col-4')
+                $('#match_content').css('padding-left', '0px')
+            }
+           );
 
 
 
@@ -301,16 +320,6 @@
             $('#query_plot_match_row').show();
 
 
-
-            //reset to display plot
-            $('#plot_content').show();
-
-
-            //reset styles
-            $('#query_content').css('padding-right', '')
-            $('#match_content').css('padding-left', '')
-            $('#query_content').removeClass('col').addClass('col-4')
-            $('#match_content').removeClass('col').addClass('col-4')
 
 
         });

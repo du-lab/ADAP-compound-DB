@@ -16,8 +16,6 @@ import java.util.Set;
 
 public interface SubmissionRepository extends CrudRepository<Submission, Long> {
 
-    //query all submissions with clusterable = true, consensus = false and inHouseReference = false;
-    //@Query(value = "select s from Submission s where s.)
     Iterable<Submission> findByUserId(long userPrincipalId);
 
     @Query(value = "select s from Submission s " + "where s.name like %:search%")

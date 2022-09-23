@@ -15,7 +15,6 @@ import java.util.Set;
 
 public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, SpectrumRepositoryCustom {
 
-    //
     @Query("SELECT s FROM Spectrum s WHERE s.matches IS EMPTY")
     Iterable<Spectrum> findAllByMatchesIsEmpty();
 

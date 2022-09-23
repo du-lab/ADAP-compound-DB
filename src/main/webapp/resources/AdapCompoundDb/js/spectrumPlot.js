@@ -2,7 +2,7 @@
  * @requires jQuery, D3, SpeckTackle
  */
 
-jQuery.fn.spectrumPlot = function (id, restURL1, restURL2) {
+jQuery.fn.spectrumPlot = function (id, restURL1, restURL2, onComplete, hidePlot) {
     let div = $(this);
 
     let oldId = div.attr('data-id')
@@ -40,21 +40,19 @@ jQuery.fn.spectrumPlot = function (id, restURL1, restURL2) {
                 match = resp2[0];
                 match['name'] = 'Match';
                 handle.add([query, match]);
+
+                onComplete(true);
             }
-            if($('#plot').children().length == 0){
-                $('#plot_content').hide();
-                $('#query_content').css('padding-right', '0px')
-                $('#query_content').addClass('col').removeClass('col-4')
-                $('#match_content').addClass('col').removeClass('col-4')
-                $('#match_content').css('padding-left', '0px')
-
-
+            else
+            {
+                hidePlot();
+                onComplete(false);
 
             }
-            else {
-                $('#plot_content').show();
 
-            }
+
+
+
         });
 
 
