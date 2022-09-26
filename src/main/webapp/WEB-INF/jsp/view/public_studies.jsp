@@ -23,7 +23,7 @@
                                 <tr>
                                     <th>ID</th>
                                     <th>Date</th>
-                                    <th>Name / Time</th>
+                                    <th>Title</th>
                                     <th>External ID</th>
                                     <th>Properties</th>
                                 </tr>
