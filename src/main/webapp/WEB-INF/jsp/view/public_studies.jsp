@@ -35,6 +35,7 @@
                                     <td>${submission.id}</td>
                                     <td><fmt:formatDate value="${submission.dateTime}" type="DATE" pattern="yyyy-MM-dd"/></td>
                                     <td>${submission.name}</td>
+<%--                                    <a href="${pageContext.request.contextPath}/submission/${study.id}/">${study.name}&nbsp</a>--%>
                                     <td>${submission.externalId}</td>
                                     <td>
                                         <c:forEach items="${submission.tags}" var="tag" varStatus="status">
@@ -61,15 +62,13 @@
 
 
 <script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
-<%--<script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>--%>
+<script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
 <script src="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.js"/>"></script>
 <script src="<c:url value="/resources/AdapCompoundDb/js/dialogs.js"/>"></script>
-<%--<script src="<c:url value="/resources/DataTables/Select-1.3.1/js/dataTables.select.min.js"/>"></script>--%>
+<script src="<c:url value="/resources/DataTables/Select-1.3.1/js/dataTables.select.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/bootstrap/dist/js/bootstrap.min.js"/>"></script>
 
-        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.css">
 
-        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.js"></script>
 
 <script>
 
