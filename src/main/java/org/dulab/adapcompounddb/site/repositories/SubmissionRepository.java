@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 import javax.persistence.NamedQuery;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public interface SubmissionRepository extends CrudRepository<Submission, Long> {
@@ -92,5 +93,11 @@ public interface SubmissionRepository extends CrudRepository<Submission, Long> {
             "org.dulab.adapcompounddb.models.enums.ChromatographyType.LC_MSMS_NEG) and s.id = :id")
     boolean getIsSearchable(@Param("id") Long id);
 
+    //get studies with inhousereference = false, clusterable = true, consensus = false
+    @Query(value = "select distinct s from Submission s join s.files f join f.spectra spectrum join s.tags t where spectrum.inHouseReference = false " +
+            "and spectrum.clusterable = true " +
+            "and spectrum.consensus = false "
+            , nativeQuery = false)
+    Iterable<Submission> findSubmissionByClusterableTrueAndConsensusFalseAndInHouseFalse();
 
 }
