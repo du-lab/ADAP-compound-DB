@@ -14,7 +14,7 @@
         <div class="col">
             <div class="card">
                 <div class="card-header card-header-single">
-                    Public Submissions
+                    Public Studies
                 </div>
                 <div class="card-body tab-content small">
                     <div id="studies" class="tab-pane active" role="tabpanel">
@@ -34,8 +34,8 @@
                                 <tr>
                                     <td>${submission.id}</td>
                                     <td><fmt:formatDate value="${submission.dateTime}" type="DATE" pattern="yyyy-MM-dd"/></td>
-                                    <td>${submission.name}</td>
-<%--                                    <a href="${pageContext.request.contextPath}/submission/${study.id}/">${study.name}&nbsp</a>--%>
+<%--                                    <td>${submission.name}</td>--%>
+                                    <td><a href="${pageContext.request.contextPath}/submission/${submission.id}/">${submission.name}&nbsp</a></td>
                                     <td>${submission.externalId}</td>
                                     <td>
                                         <c:forEach items="${submission.tags}" var="tag" varStatus="status">

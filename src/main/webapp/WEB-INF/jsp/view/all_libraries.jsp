@@ -16,7 +16,7 @@
                         <a id="consensusPage" href="${pageContext.request.contextPath}/allClusters/"
                            class="btn btn-primary">View All Consensus Spectra</a>
                         <a id="publicSubmissionPage" href="${pageContext.request.contextPath}/publicSubmission/"
-                           class="btn btn-primary">View All Public Submissions</a>
+                           class="btn btn-primary">View All Public Studies</a>
                     </div>
                 </section>
             </div>
