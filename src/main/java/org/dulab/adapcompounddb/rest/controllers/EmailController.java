@@ -12,21 +12,26 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 @RestController
 public class EmailController {
 
-    @Autowired
-    JavaMailSender javaMailSender;
 
+    private final JavaMailSender javaMailSender;
+
+
+    public EmailController(final JavaMailSender javaMailSender){
+        this.javaMailSender = javaMailSender;
+    }
 
     @PostMapping(value = "/sendEmail")
-    public ResponseEntity<String> sendEmail(final @RequestBody CommonsMultipartFile file) {
+    //public ResponseEntity<String> sendEmail(final @RequestBody CommonsMultipartFile file) {
+    public ResponseEntity<String> sendEmail() {
         //JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
 
-        SimpleMailMessage msg = new SimpleMailMessage();
-        msg.setTo("tnguy271@uncc.edu");
-
-        msg.setSubject("Testing email");
-        msg.setText("Hello World \n ");
-
-        javaMailSender.send(msg);
-        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+//        SimpleMailMessage msg = new SimpleMailMessage();
+//        msg.setTo("tnguy271@uncc.edu");
+//
+//        msg.setSubject("Testing email");
+//        msg.setText("Hello World \n ");
+//
+//        javaMailSender.send(msg);
+        return new ResponseEntity<String>("DONE",HttpStatus.ACCEPTED);
     }
 }
