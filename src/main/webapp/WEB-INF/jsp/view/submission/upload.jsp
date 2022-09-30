@@ -5,6 +5,17 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
+<style>
+    .checkbox-grid li{
+        display: block;
+        float: left;
+        width: 25%;
+    }
+    input[type=checkbox] {
+        margin-right: 5px;
+    }
+</style>
+
 <script src="https://www.google.com/recaptcha/api.js">
 
 </script>
@@ -138,6 +149,18 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="row form-group">
+                                            <div class="col-md-8 offset-md-4">
+                                                <div class="custom-control custom-switch">
+                                                    <input type="checkbox" class="custom-control-input"
+                                                           name="editMetadata" id="editMetadata" data-toggle="collapse" data-target="#metaFields"
+                                                           <c:if test="${fileUploadForm.editMetadata}">checked</c:if>/>
+                                                    <label class="custom-control-label" for="editMetadata">
+                                                        Edit Metadata
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
                                         <c:if test="${loggedInUser == null}">
                                             <div id="submit" class="g-recaptcha col-md-8 offset-md-4" data-callback="recaptchaCallback"
                                                  data-sitekey="6LdY3V8hAAAAACkWkUd5G9xYtgnM9vwPvIPsQrWy"></div>
@@ -160,254 +183,39 @@
                                 </div>
                             </div>
 
-
-
-
                             <div class="row row-content">
                                 <div class="col">
-                                    <div id="metaFields" class="collapse">
-                                        <div class="card card-body">
-                                            <div class="container-fluid">
-                                                <div class="row form-group">
-                                                    <div class="col-md-3 offset-3">MSP Files</div>
-                                                    <div class="col-md-3">CSV Files</div>
-                                                    <div class="col-md-3">MGF Files</div>
-                                                </div>
-                                                <div class="row form-group">
-                                                    <form:label path="mspNameField"
-                                                                cssClass="col-md-3 col-form-label">Name Field</form:label>
-                                                    <div class="col-md-3">
-                                                        <form:input path="mspNameField" cssClass="form-control"/>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <form:input path="csvNameField" cssClass="form-control"/>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <form:input path="mgfNameField" cssClass="form-control"/>
-                                                    </div>
+                                    <div id = "metaFields" class="collapse">
+                                        <ul class="checkbox-grid">
+                                            <li><form:checkbox  name="nameField" path="editNameField"/><label for="nameField">Name</label></li>
+                                            <li><form:checkbox  name="synonymField" path="editSynonymField"/><label for="synonymField">Synonym</label></li>
+                                            <li><form:checkbox  name="idField" path="editExternalIdField"/><label for="idField">ID</label></li>
+                                            <li><form:checkbox  name="casIdField" path="editCasNoField"/><label for="casIdField">Cas ID</label></li>
+                                            <li><form:checkbox  name="hmdbIdField" path="editHmdbField"/><label for="hmdbIdField">HMDB ID</label></li>
+                                            <li><form:checkbox  name="keggIdField" path="editKeggField"/><label for="keggIdField">KEGG ID</label></li>
+                                            <li><form:checkbox  name="pubChemIdField" path="editPubChemField"/><label for="pubChemIdField">Pub Chem ID</label></li>
+                                            <li><form:checkbox  name="precursorMzField" path="editPrecursorMzField"/><label for="precursorMzField">Precursor Mz</label></li>
+                                            <li><form:checkbox  name="editRetentionTimeField" path="editRetentionTimeField"/><label for="editRetentionTimeField">Retention Time</label></li>
+                                            <li><form:checkbox  name="editRetentionIndexField" path="editRetentionIndexField"/><label for="editRetentionIndexField">Retention Index</label></li>
+                                            <li><form:checkbox  name="editMassField" path="editMassField"/><label for="editMassField">Mass</label></li>
+                                            <li><form:checkbox  name="editFormulaField" path="editFormulaField"/><label for="editFormulaField">Formula</label></li>
+                                            <li><form:checkbox  name="editCanonicalSmilesField" path="editCanonicalSmilesField"/><label for="editCanonicalSmilesField">Canonical Smiles</label></li>
+                                            <li><form:checkbox  name="editInChiField" path="editInChiField"/><label for="editInChiField">InChi</label></li>
+                                            <li><form:checkbox  name="editInChiKeyField" path="editInChiKeyField"/><label for="editInChiKeyField">InChIKey</label></li>
+                                            <li><form:checkbox  name="editIsotopeField" path="editIsotopeField"/><label for="editIsotopeField">Isotopic Distribution</label></li>
 
-                                                </div>
-                                                <div class="row form-group">
-                                                    <form:label path="mspSynonymField"
-                                                                cssClass="col-md-3 col-form-label">Synonym Field</form:label>
-                                                    <div class="col-md-3">
-                                                        <form:input path="mspSynonymField" cssClass="form-control"/>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <form:input path="csvSynonymField" cssClass="form-control"/>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <form:input path="mgfSynonymField" cssClass="form-control"/>
-                                                    </div>
-                                                </div>
-                                                <div class="row form-group">
-                                                    <form:label path="mspExternalIdField"
-                                                                cssClass="col-md-3 col-form-label">ID Field</form:label>
-                                                    <div class="col-md-3">
-                                                        <form:input path="mspExternalIdField" cssClass="form-control"/>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <form:input path="csvExternalIdField" cssClass="form-control"/>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <form:input path="mgfExternalIdField" cssClass="form-control"/>
-                                                    </div>
-                                                </div>
-                                                <div class="row form-group">
-                                                    <form:label path="mspCasNoField"
-                                                                cssClass="col-md-3 col-form-label">CAS ID Field</form:label>
-                                                    <div class="col-md-3">
-                                                        <form:input path="mspCasNoField" cssClass="form-control"/>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <form:input path="csvCasNoField" cssClass="form-control"/>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <form:input path="mgfCasNoField" cssClass="form-control"/>
-                                                    </div>
-                                                </div>
-                                                <div class="row form-group">
-                                                    <form:label path="mspHmdbField"
-                                                                cssClass="col-md-3 col-form-label">HMDB ID Field</form:label>
-                                                    <div class="col-md-3">
-                                                        <form:input path="mspHmdbField" cssClass="form-control"/>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <form:input path="csvHmdbField" cssClass="form-control"/>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <form:input path="mgfHmdbField" cssClass="form-control"/>
-                                                    </div>
-                                                </div>
-                                                <div class="row form-group">
-                                                    <form:label path="mspKeggField"
-                                                                cssClass="col-md-3 col-form-label">KEGG ID Field</form:label>
-                                                    <div class="col-md-3">
-                                                        <form:input path="mspKeggField" cssClass="form-control"/>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <form:input path="csvKeggField" cssClass="form-control"/>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <form:input path="mgfKeggField" cssClass="form-control"/>
-                                                    </div>
-                                                </div>
-                                                <div class="row form-group">
-                                                    <form:label path="mspPubChemField"
-                                                                cssClass="col-md-3 col-form-label">PubChem ID Field</form:label>
-                                                    <div class="col-md-3">
-                                                        <form:input path="mspPubChemField" cssClass="form-control"/>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <form:input path="csvPubChemField" cssClass="form-control"/>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <form:input path="mgfPubChemField" cssClass="form-control"/>
-                                                    </div>
-                                                </div>
-                                                <div class="row form-group">
-                                                    <form:label path="mspPrecursorMzField"
-                                                                cssClass="col-md-3 col-form-label">Precursor m/z Field</form:label>
-                                                    <div class="col-md-3">
-                                                        <form:input path="mspPrecursorMzField" cssClass="form-control"/>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <form:input path="csvPrecursorMzField" cssClass="form-control"/>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <form:input path="mgfPrecursorMzField" cssClass="form-control"/>
-                                                    </div>
-                                                </div>
-                                                <div class="row form-group">
-                                                    <form:label path="mspRetentionTimeField"
-                                                                cssClass="col-md-3 col-form-label">Retention Time Field</form:label>
-                                                    <div class="col-md-3">
-                                                        <form:input path="mspRetentionTimeField"
-                                                                    cssClass="form-control"/>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <form:input path="csvRetentionTimeField"
-                                                                    cssClass="form-control"/>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <form:input path="mgfRetentionTimeField"
-                                                                    cssClass="form-control"/>
-                                                    </div>
-                                                </div>
-                                                <div class="row form-group">
-                                                    <form:label path="mspRetentionIndexField"
-                                                                cssClass="col-md-3 col-form-label">Retention Index Field</form:label>
-                                                    <div class="col-md-3">
-                                                        <form:input path="mspRetentionIndexField"
-                                                                    cssClass="form-control"/>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <form:input path="csvRetentionIndexField"
-                                                                    cssClass="form-control"/>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <form:input path="mgfRetentionIndexField"
-                                                                    cssClass="form-control"/>
-                                                    </div>
-                                                </div>
-                                                <div class="row form-group">
-                                                    <form:label path="mspMassField"
-                                                                cssClass="col-md-3 col-form-label">Neutral Mass Field</form:label>
-                                                    <div class="col-md-3">
-                                                        <form:input path="mspMassField"
-                                                                    cssClass="form-control"/>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <form:input path="csvMassField"
-                                                                    cssClass="form-control"/>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <form:input path="mgfMassField"
-                                                                    cssClass="form-control"/>
-                                                    </div>
-                                                </div>
-                                                <div class="row form-group">
-                                                    <form:label path="mspFormulaField"
-                                                                cssClass="col-md-3 col-form-label">Formula Field</form:label>
-                                                    <div class="col-md-3">
-                                                        <form:input path="mspFormulaField"
-                                                                    cssClass="form-control"/>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <form:input path="csvFormulaField"
-                                                                    cssClass="form-control"/>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <form:input path="mgfFormulaField"
-                                                                    cssClass="form-control"/>
-                                                    </div>
-                                                </div>
-                                                <div class="row form-group">
-                                                    <form:label path="mspCanonicalSmilesField"
-                                                                cssClass="col-md-3 col-form-label">Canonical Smiles Field</form:label>
-                                                    <div class="col-md-3">
-                                                        <form:input path="mspCanonicalSmilesField"
-                                                                    cssClass="form-control"/>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <form:input path="csvCanonicalSmilesField"
-                                                                    cssClass="form-control"/>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <form:input path="mgfCanonicalSmilesField"
-                                                                    cssClass="form-control"/>
-                                                    </div>
-                                                </div>
-                                                <div class="row form-group">
-                                                    <form:label path="mspInChiField"
-                                                                cssClass="col-md-3 col-form-label">InChI Field</form:label>
-                                                    <div class="col-md-3">
-                                                        <form:input path="mspInChiField"
-                                                                    cssClass="form-control"/>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <form:input path="csvInChiField"
-                                                                    cssClass="form-control"/>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <form:input path="mgfInChiField"
-                                                                    cssClass="form-control"/>
-                                                    </div>
-                                                </div>
-                                                <div class="row form-group">
-                                                    <form:label path="mspInChiKeyField"
-                                                                cssClass="col-md-3 col-form-label">InChIKey Field</form:label>
-                                                    <div class="col-md-3">
-                                                        <form:input path="mspInChiKeyField"
-                                                                    cssClass="form-control"/>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <form:input path="csvInChiKeyField"
-                                                                    cssClass="form-control"/>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <form:input path="mgfInChiKeyField"
-                                                                    cssClass="form-control"/>
-                                                    </div>
-                                                </div>
-                                                <div class="row form-group">
-                                                    <form:label path="mspIsotopeField"
-                                                                cssClass="col-md-3 col-form-label">Isotopic Distribution Field</form:label>
-                                                    <div class="col-md-3">
-                                                        <form:input path="mspIsotopeField" cssClass="form-control"/>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <form:input path="csvIsotopeField" cssClass="form-control"/>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <form:input path="mgfIsotopeField" cssClass="form-control"/>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+
+
+                                        </ul>
+
                                     </div>
                                 </div>
                             </div>
+
+
+
+
+
                         </div>
                     </div>
                 </div>
