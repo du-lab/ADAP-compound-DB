@@ -8,6 +8,11 @@ import com.google.gson.JsonParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.entities.Peak;
+//rdkit java wrapper
+import org.RDKit.*;
+
+
+
 
 import javax.annotation.Nullable;
 import java.io.BufferedReader;
@@ -48,7 +53,20 @@ public class ConversionsUtils {
         if (x == null) return null;
         return String.format("%.3f", x);
     }
+    public static String toImage2(@Nullable String smiles, @Nullable String inchi){
+        Object mol = null;
+        if (smiles != null)
+        {
+            mol = RWMol.MolFromSmiles(smiles);
 
+
+
+        }
+        //mol.compute2DCoords();
+        //RDDepict::compute2DCoords( mol );
+        System.out.println(mol);
+        return null;
+    }
     public static String toImage(@Nullable String smiles, @Nullable String inchi) {
 
         String parameters;
@@ -124,5 +142,12 @@ public class ConversionsUtils {
             LOGGER.warn("Cannot convert Form to Json: " + e.getMessage(), e);
             return "";
         }
+    }
+
+    public static void main (String args[]){
+        System.load("/Users/tnguy271/Desktop/rdkit/rdkit/code/JavaWrappers/gmwrapper/libGraphMolWrap.jnilib");
+        System.load("/Users/tnguy271/Desktop/rdkit/rdkit/code/JavaWrappers/gmwrapper/libGraphMolWrap.jnilib");
+        System.out.println(toImage2("Cc1ccccc1",null));
+        System.out.println(System.getProperty("java.library.path"));
     }
 }
