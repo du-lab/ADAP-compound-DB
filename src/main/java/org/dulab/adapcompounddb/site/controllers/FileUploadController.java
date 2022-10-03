@@ -169,12 +169,12 @@ public class FileUploadController extends BaseController {
 
     @RequestMapping(value = "/submission/metadata", method = RequestMethod.GET)
     public String submitMetadata(Model model, HttpSession session, HttpServletResponse response) {
-        List<SpectrumProperty> propertyList = new ArrayList<>();
+        List<List<SpectrumProperty>> propertyList = new ArrayList<>();
         List<FileType> fileTypes = new ArrayList<>();
         Submission submission = Submission.from(session);
         FileUploadForm form = (FileUploadForm) model.getAttribute("form");
         for(File file : submission.getFiles()) {
-            propertyList.addAll(file.getSpectra().get(0).getProperties());
+            propertyList.add(file.getSpectra().get(0).getProperties());
             fileTypes.add(file.getFileType());
 
         }

@@ -48,12 +48,9 @@
 
         <div class="row row-content">
             <div class="col">
-                <div class="btn-toolbar justify-content-between" role="toolbar">
-                    <div class="btn btn-secondary" data-toggle="collapse"
-                         data-target="#metaFields">Edit Metadata Fields
-                    </div>
-                    <button id="uploadBtn" name="submit" class="btn btn-primary align-self-center" type="submit"
-                            style="height: 100%;"
+                <div>
+                    <button id="uploadBtn" name="submit" class="btn btn-primary align-right" type="submit"
+                            style="height: 100%; float: right;"
                             <c:if test="${loggedInUser == null && !integTest}">
                                 <c:out value="disabled='disabled'"/>
                             </c:if>>
