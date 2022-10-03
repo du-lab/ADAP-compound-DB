@@ -12,9 +12,9 @@
 <body>
 
 <div class="container">
-    <%--<div>--%>
-    <%--    <h1>Edit Metadata</h1>--%>
-    <%--</div>--%>
+    <div class="row row-content">
+        <h2>Edit Metadata</h2>
+    </div>
     <form:form method="POST" modelAttribute="metadataForm" enctype="multipart/form-data">
     <div class="row row-content">
         <div class="col">
