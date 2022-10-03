@@ -131,7 +131,7 @@ public class ApplicationContextConfiguration {
     @Bean
     public Executor threadPoolTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(6);
+        executor.setCorePoolSize(8);
         return executor;
     }
 }

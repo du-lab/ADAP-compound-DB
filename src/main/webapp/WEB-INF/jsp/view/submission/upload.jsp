@@ -115,9 +115,9 @@
                                                             cssClass="col-form-label">Files (max 256MB)</form:label>&nbsp;
                                             </div>
                                             <div class="col-md-8">
-                                                <input type="file" name="files" accept=".msp,.csv,.cdf,.mzml,.mzxml,.mgf"
-                                                       class="form-control-file"
-                                                       multiple/>
+                                                <input type="file" name="files"
+                                                       accept=".msp,.msl,.csv,.cdf,.mzml,.mzxml,.mgf"
+                                                       class="form-control-file" multiple/>
                                                 <form:errors path="files" cssClass="text-danger form-control-sm"/>
                                             </div>
                                         </div>

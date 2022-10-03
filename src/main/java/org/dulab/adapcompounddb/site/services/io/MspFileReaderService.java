@@ -59,7 +59,7 @@ public class MspFileReaderService implements FileReaderService {
 
             } else if (line.contains(":")) {
                 // Add property
-                String[] nameValuePair = line.split(":");
+                String[] nameValuePair = line.split(":", 2);
                 if (nameValuePair.length >= 2) {
                     nameValuePair = validateNameValuePair(nameValuePair, mapping);
                     SpectrumProperty property = new SpectrumProperty();
@@ -94,7 +94,10 @@ public class MspFileReaderService implements FileReaderService {
     private void addPeak(Spectrum spectrum, List<Peak> peaks, String line) {
 
         line = line.replaceAll("\".+\"", "");
-        String[] pairs = line.split("[:;\\s]+");
+        String[] pairs = line.split("[:;\\s()]+");
+        pairs = Arrays.stream(pairs)
+                .filter(s -> s.length() > 0)
+                .toArray(String[]::new);
         for (int i = 0; i < pairs.length; i += 2) {
             try {
                 Peak peak = new Peak();

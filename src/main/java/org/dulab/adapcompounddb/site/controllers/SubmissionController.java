@@ -408,4 +408,12 @@ public class SubmissionController extends BaseController {
         model.addAttribute("errorMessage", "Cannot find submission ID = " + submissionId);
         return "/notfound/";
     }
+
+    @GetMapping(value = "/publicSubmission")
+    public String publicSubmissions(Model model) {
+        Iterable<Submission> e = submissionService.findSubmissionByClusterableTrueAndConsensusFalseAndInHouseFalse();
+        model.addAttribute("publicSubmissions", submissionService.findSubmissionByClusterableTrueAndConsensusFalseAndInHouseFalse());
+
+        return "public_studies";
+    }
 }
