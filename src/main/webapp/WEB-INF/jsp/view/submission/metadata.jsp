@@ -12,9 +12,9 @@
 <body>
 
 <div class="container">
-    <div class="row row-content">
-        <h2>Edit Metadata</h2>
-    </div>
+<%--    <div class="row row-content align-center">--%>
+<%--        <h2>Edit Metadata</h2>--%>
+<%--    </div>--%>
     <form:form method="POST" modelAttribute="metadataForm" enctype="multipart/form-data">
     <div class="row row-content">
         <div class="col">
@@ -24,7 +24,7 @@
                         <%--                        <c:if test="${loggedInUser == null && !integTest}">--%>
                         <%--                            <c:out value="disabled='disabled'"/>--%>
                         <%--                        </c:if>>--%>
-                    Submit
+                    Add Metadata
                 </button>
             </div>
         </div>
@@ -40,8 +40,9 @@
 
 
             <div id="metaFields">
-                <div class="card card-body">
-                    <div class="container-fluid">
+                <div>
+                    <div class="card-header card-header-single"> Edit Metadata</div>
+                    <div class="container-fluid card card-body">
                         <div class="row form-group">
                             <c:forEach items="${fileTypes}" var="fileType" varStatus="loop">
                                 <div class="${loop.index == 0 ? 'col-md-3 offset-3' : 'col-md-3'}">
