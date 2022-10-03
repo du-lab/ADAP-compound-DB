@@ -39,14 +39,22 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import javax.persistence.Basic;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+
 @RunWith(MockitoJUnitRunner.class)
 public class BasicMoleculeTests  {
+    static{
+        System.out.println(System.getProperty("java.library.path"));
+        System.loadLibrary("GraphMolWrap");
 
+    }
     private ROMol mol1;
-    @Before public void setUp() {
-        //System.load("/Users/tnguy271/Desktop/rdkit/rdkit/code/JavaWrappers/gmwrapper/libGraphMolWrap.jnilib");
-        System.load("/Users/tnguy271/Desktop/rdkit/rdkit/code/JavaWrappers/gmwrapper/libGraphMolWrap.jnilib");
-        //System.load("/libs/org/gmwrapper/libGraphMolWrap.jnilib");
+    @Before public void setUp() throws IOException {
         String smiles="c1ccccc1";
         mol1 = RWMol.MolFromSmiles(smiles);
     }
