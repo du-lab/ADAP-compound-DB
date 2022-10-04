@@ -89,8 +89,9 @@ public class GroupSearchController extends BaseController {
 
     @RequestMapping(value = "/group_search/parameters", method = RequestMethod.POST)
     public String groupSearchParametersPost(@RequestParam Optional<Long> submissionId, HttpSession session, Model model,
-                                                  HttpServletRequest request, HttpServletResponse response,
-                                                  @Valid FilterForm form, Errors errors, RedirectAttributes redirectAttributes) throws TimeoutException {
+                                            HttpServletRequest request, HttpServletResponse response,
+                                            @Valid FilterForm form, Errors errors,
+                                            RedirectAttributes redirectAttributes) throws TimeoutException {
 
         Submission submission = submissionId
                 .map(submissionService::fetchSubmission)
@@ -117,6 +118,7 @@ public class GroupSearchController extends BaseController {
 
         SearchParameters parameters = new SearchParameters();
         parameters.setScoreThreshold(form.getScoreThreshold() != null ? form.getScoreThreshold() / 1000.0 : null);
+        parameters.setRetTimeTolerance(form.getRetentionTimeTolerance());
         parameters.setRetIndexTolerance(
                 form.getRetentionIndexTolerance() != null ? (double) form.getRetentionIndexTolerance() : null);
         parameters.setRetIndexMatchType(form.getRetentionIndexMatch());
@@ -142,7 +144,7 @@ public class GroupSearchController extends BaseController {
 
         return "redirect:/group_search/";
     }
-    
+
     @RequestMapping(value = "/group_search/", method = RequestMethod.GET)
     public String groupSearch(Model model, HttpSession session) {
         Submission submission = (Submission) model.getAttribute("submission");
