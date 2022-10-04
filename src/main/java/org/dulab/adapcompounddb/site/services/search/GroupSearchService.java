@@ -7,6 +7,7 @@ import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
+import org.dulab.adapcompounddb.site.services.EmailService;
 import org.dulab.adapcompounddb.site.services.io.ExportSearchResultsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -14,10 +15,11 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
+
 import javax.servlet.http.HttpSession;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -38,6 +40,8 @@ public class GroupSearchService {
     private final SpectrumRepository spectrumRepository;
 
     @Autowired
+    EmailService emailService;
+    @Autowired
     public GroupSearchService(IndividualSearchService spectrumSearchService,
                               @Qualifier("excelExportSearchResultsService") ExportSearchResultsService exportSearchResultsService,
                               SpectrumRepository spectrumRepository) {
@@ -49,8 +53,8 @@ public class GroupSearchService {
     @Async
 //    @Transactional(propagation = Propagation.REQUIRED)
     public Future<Void> groupSearch(UserPrincipal userPrincipal, List<File> files, HttpSession session,
-                                               SearchParameters userParameters,
-                                               boolean withOntologyLevels, boolean sendResultsToEmail) throws TimeoutException {
+                                    SearchParameters userParameters,
+                                    boolean withOntologyLevels, boolean sendResultsToEmail) throws TimeoutException {
 
 //        LOGGER.info("Group search has started");
 
@@ -162,13 +166,28 @@ public class GroupSearchService {
                     LOGGER.warn(String.format("Error when writing to file '%s': %s", filePath, e.getMessage()), e);
                 }
 
-                filePath = Paths.get(userHome, String.format("advanced_output_%s.xlsx", date)).toString();
-                LOGGER.info(String.format("Writing to file '%s'", filePath));
-                try (FileOutputStream fileOutputStream = new FileOutputStream(filePath)) {
-                    exportSearchResultsService.exportAll(fileOutputStream, groupSearchDTOList);
-                } catch (IOException e) {
-                    LOGGER.warn(String.format("Error when writing to file '%s': %s", filePath, e.getMessage()), e);
+                if(userPrincipal != null) {
+                    //send email
+                    emailService.sendEmailWithAttachment(filePath, userPrincipal.getEmail());
+                    //delete the local file
+                    Path path = FileSystems.getDefault().getPath(filePath);
+                    try {
+                        Files.delete(path);
+                    } catch (NoSuchFileException x) {
+                        System.err.format("%s: no such" + " file or directory%n", path);
+                    } catch (IOException x) {
+                        System.err.println(x);
+                    }
+
                 }
+
+//                filePath = Paths.get(userHome, String.format("advanced_output_%s.xlsx", date)).toString();
+//                LOGGER.info(String.format("Writing to file '%s'", filePath));
+//                try (FileOutputStream fileOutputStream = new FileOutputStream(filePath)) {
+//                    exportSearchResultsService.exportAll(fileOutputStream, groupSearchDTOList);
+//                } catch (IOException e) {
+//                    LOGGER.warn(String.format("Error when writing to file '%s': %s", filePath, e.getMessage()), e);
+//                }
             }
 
         } catch (Throwable t) {
