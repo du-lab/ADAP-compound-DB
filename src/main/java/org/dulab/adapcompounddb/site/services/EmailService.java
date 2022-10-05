@@ -29,9 +29,11 @@ public class EmailService {
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper (message, true);
             InternetAddress sendTo = new InternetAddress(receiptant);
             mimeMessageHelper.setTo(sendTo);
-            message.setFrom("mr.toan49@gmail.com");
+
+            //change email here
+            message.setFrom("adap.helpdesk@gmail.com");
             mimeMessageHelper.setSubject("Generated output");
-            mimeMessageHelper.setText("Here is the generated output",true);
+            mimeMessageHelper.setText("Here is the generated output for the group search",true);
 
             FileSystemResource  fileSystemResource  = new FileSystemResource(filepath);
             mimeMessageHelper.addAttachment(fileSystemResource.getFilename(), fileSystemResource);

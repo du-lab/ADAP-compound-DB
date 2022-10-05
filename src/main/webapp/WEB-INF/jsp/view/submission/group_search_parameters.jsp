@@ -162,7 +162,7 @@
                                 <div class="col">
                                     <div class="form-check">
                                         <form:checkbox path="sendResultsToEmail"
-                                                       label="Send matching results to Email (in development)"
+                                                       label="Send matching results to Email"
                                                        cssClass="form-check-input"/>
                                     </div>
                                 </div>
