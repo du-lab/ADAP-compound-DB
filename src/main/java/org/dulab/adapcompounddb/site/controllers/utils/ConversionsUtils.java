@@ -10,14 +10,12 @@ import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.entities.Peak;
 //rdkit java wrapper
 import org.RDKit.*;
-
-
-
-
 import javax.annotation.Nullable;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -26,11 +24,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ConversionsUtils {
-    static{
 
-        System.load("/Users/tnguy271/Desktop/adap-kdb/adap-kdb/libs/org/gmwrapper/libGraphMolWrap.jnilib");
+//    static{
+//        System.loadLibrary("GraphMolWrap");
+//    }
 
-    }
     private static final Logger LOGGER = LogManager.getLogger(ConversionsUtils.class);
 
 
@@ -58,15 +56,20 @@ public class ConversionsUtils {
         return String.format("%.3f", x);
     }
     public static String toImage(@Nullable String smiles, @Nullable String inchi){
-        System.load("/Users/tnguy271/Desktop/adap-kdb/adap-kdb/libs/org/gmwrapper/libGraphMolWrap.jnilib");
+        //System.loadLibrary("GraphMolWrap");
+
+        //TODO Add absolute path to native library (/basedir/libs/org/native/MacOS/libGraphMolWrap.jnilib
+        System.load("");
         RWMol mol = null;
         if (smiles != null)
         {
             mol = RWMol.MolFromSmiles(smiles);
         }
-        //mol.ToBinary();
+        else return null;
 
+        mol.compute2DCoords();
         MolDraw2DSVG drawer = new MolDraw2DSVG(400,300);
+
         drawer.drawMolecule(mol);
         drawer.finishDrawing();
         return drawer.getDrawingText();
@@ -149,9 +152,5 @@ public class ConversionsUtils {
         }
     }
 
-//    public static void main (String args[]){
-//
-//       System.out.println(toImage2("CCNC(=O)[C@@H]1CCCN1C(=O)[C@H](CCCNC(N)=N)NC(=O)[C@H](CC(C)C)NC(=O)[C@@H](CC(C)C)NC(=O)[C@H](CC1=CC=C(O)C=C1)NC(=O)[C@H](CO)NC(=O)[C@H](CC1=CNC2=C1C=CC=C2)NC(=O)[C@H](CC1=CNC=N1)NC(=O)[C@@H]1CCC(=O)N1",null));
-//        System.out.println(toImage("CCNC(=O)[C@@H]1CCCN1C(=O)[C@H](CCCNC(N)=N)NC(=O)[C@H](CC(C)C)NC(=O)[C@@H](CC(C)C)NC(=O)[C@H](CC1=CC=C(O)C=C1)NC(=O)[C@H](CO)NC(=O)[C@H](CC1=CNC2=C1C=CC=C2)NC(=O)[C@H](CC1=CNC=N1)NC(=O)[C@@H]1CCC(=O)N1",null));
-//    }
+
 }

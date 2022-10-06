@@ -46,7 +46,8 @@
         </repository>
     </repositories>
 
-        <dependencies>
+    <dependencies>
+
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -426,6 +427,20 @@
             <artifactId>input</artifactId>
             <version>0.1.0</version>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.rdkit</groupId>-->
+<!--            <artifactId>rdkit</artifactId>-->
+<!--            <version>1.0.0</version>-->
+<!--            <scope>system</scope>-->
+<!--            <systemPath>${project.basedir}/libs/org/rdkit/rdkit/1.0.0/rdkit-1.0.0.jar</systemPath>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.rdkit</groupId>-->
+<!--            <artifactId>rdkit-doc</artifactId>-->
+<!--            <version>1.0.0</version>-->
+<!--            <scope>system</scope>-->
+<!--            <systemPath>${project.basedir}/libs/org/rdkit/rdkit-doc/1.0.0/rdkit-doc-1.0.0.jar</systemPath>-->
+<!--        </dependency>-->
     </dependencies>
     <build>
         <finalName>adap-compound-db</finalName>

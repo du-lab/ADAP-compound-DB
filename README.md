@@ -37,11 +37,12 @@ Alternatively, you can open the repository in IntelliJ IDEA and set it up to dep
 ### Setup for Amazon Web Services EC2 machine
 See [link](INSTALL_LINUX.md)
 
-### Setup for RDkit (for Mac now)
-1. In terminal open .bash_profile, create one if it's not there already
-2. Set the library path to point to directory where the jnilib file is(which is in adapted-kdb/libs/org/gmwrapper). To do this, put this line in .bash_profile: export DYLD_LIBRARY_PATH="/Users/tnguy271/Desktop/adap-kdb/adap-kdb/libs/org/gmwrapper"
-3. Run the project
-4. 
+### Setup for RDkit
+- Add rdkit jar files to class path
+1. In IntelliJ, open File -> Project Structure -> Libraries -> New Project Library (+ sign top left) -> Java
+2. Locate the jar file ( which is in libs/gmwrapper)
+
+
 ### Package structure
 * `org.dulab.adapcompounddb.config` configure the web application
 * `org.dulab.adapcompounddb.models.entities` represent entities of tables in the MySQL database
