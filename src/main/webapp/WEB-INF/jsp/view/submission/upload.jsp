@@ -6,11 +6,17 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <style>
-    .checkbox-grid li{
-        display: block;
-        float: left;
-        width: 25%;
+    .checkbox-grid{
+        border: 1px solid black;
+        margin-right: 10px;
+        padding: 5px;
+        list-style-type: none;
     }
+    /*.checkbox-grid li{*/
+    /*    display: block;*/
+    /*    float: left;*/
+    /*    width: 25%;*/
+    /*}*/
     input[type=checkbox] {
         margin-right: 5px;
     }
@@ -182,8 +188,8 @@
 
                             <div class="row row-content">
                                 <div class="col">
-                                    <div id = "metaFields" class="collapse">
-                                        <ul class="checkbox-grid">
+                                    <div id = "metaFields" class="row row-content">
+                                        <ul class="col-md-3 checkbox-grid">
                                             <li><form:checkbox  name="nameField" path="editNameField"/><label for="nameField">Name</label></li>
                                             <li><form:checkbox  name="synonymField" path="editSynonymField"/><label for="synonymField">Synonym</label></li>
                                             <li><form:checkbox  name="idField" path="editExternalIdField"/><label for="idField">ID</label></li>
@@ -191,16 +197,19 @@
                                             <li><form:checkbox  name="hmdbIdField" path="editHmdbField"/><label for="hmdbIdField">HMDB ID</label></li>
                                             <li><form:checkbox  name="keggIdField" path="editKeggField"/><label for="keggIdField">KEGG ID</label></li>
                                             <li><form:checkbox  name="pubChemIdField" path="editPubChemField"/><label for="pubChemIdField">Pub Chem ID</label></li>
+                                        </ul>
+                                        <ul class="col-md-3 checkbox-grid">
                                             <li><form:checkbox  name="precursorMzField" path="editPrecursorMzField"/><label for="precursorMzField">Precursor Mz</label></li>
                                             <li><form:checkbox  name="editRetentionTimeField" path="editRetentionTimeField"/><label for="editRetentionTimeField">Retention Time</label></li>
                                             <li><form:checkbox  name="editRetentionIndexField" path="editRetentionIndexField"/><label for="editRetentionIndexField">Retention Index</label></li>
                                             <li><form:checkbox  name="editMassField" path="editMassField"/><label for="editMassField">Mass</label></li>
+                                        </ul>
+                                        <ul class="col-md-3 checkbox-grid">
                                             <li><form:checkbox  name="editFormulaField" path="editFormulaField"/><label for="editFormulaField">Formula</label></li>
                                             <li><form:checkbox  name="editCanonicalSmilesField" path="editCanonicalSmilesField"/><label for="editCanonicalSmilesField">Canonical Smiles</label></li>
                                             <li><form:checkbox  name="editInChiField" path="editInChiField"/><label for="editInChiField">InChi</label></li>
                                             <li><form:checkbox  name="editInChiKeyField" path="editInChiKeyField"/><label for="editInChiKeyField">InChIKey</label></li>
                                             <li><form:checkbox  name="editIsotopeField" path="editIsotopeField"/><label for="editIsotopeField">Isotopic Distribution</label></li>
-
 
 
                                         </ul>
