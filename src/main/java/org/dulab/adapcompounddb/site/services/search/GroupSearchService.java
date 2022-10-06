@@ -155,10 +155,10 @@ public class GroupSearchService {
                 }
             }
 
-            if (!groupSearchDTOList.isEmpty() && sendResultsToEmail) {
-                String userHome = System.getProperty("user.home");
+            if (!groupSearchDTOList.isEmpty() && sendResultsToEmail && userPrincipal != null) {
+                String tmpdir = System.getProperty("java.io.tmpdir");
                 String date = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").format(LocalDateTime.now());
-                String filePath = Paths.get(userHome, String.format("simple_output_%s.xlsx", date)).toString();
+                String filePath = Paths.get(tmpdir, String.format("simple_output_%s.xlsx", date)).toString();
                 LOGGER.info(String.format("Writing to file '%s'", filePath));
                 try (FileOutputStream fileOutputStream = new FileOutputStream(filePath)) {
                     exportSearchResultsService.export(fileOutputStream, groupSearchDTOList);
@@ -166,7 +166,7 @@ public class GroupSearchService {
                     LOGGER.warn(String.format("Error when writing to file '%s': %s", filePath, e.getMessage()), e);
                 }
 
-                if(userPrincipal != null) {
+
                     //send email
                     emailService.sendEmailWithAttachment(filePath, userPrincipal.getEmail());
                     //delete the local file
@@ -179,7 +179,7 @@ public class GroupSearchService {
                         System.err.println(x);
                     }
 
-                }
+
 
 //                filePath = Paths.get(userHome, String.format("advanced_output_%s.xlsx", date)).toString();
 //                LOGGER.info(String.format("Writing to file '%s'", filePath));
@@ -201,4 +201,5 @@ public class GroupSearchService {
 
         return new AsyncResult<>(null);
     }
+
 }
