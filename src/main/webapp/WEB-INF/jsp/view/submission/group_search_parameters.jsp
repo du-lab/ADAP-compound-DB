@@ -109,6 +109,14 @@
                             </div>
 
                             <div class="form-group row">
+                                <form:label path="retentionTimeTolerance"
+                                            cssClass="col-md-4 col-form-label">Retention Time Tolerance:</form:label>
+                                <div class="col-md-8">
+                                    <form:input path="retentionTimeTolerance" type="number" step="any" cssClass="form-control"/>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
                                 <form:label path="retentionIndexTolerance"
                                             cssClass="col-md-4 col-form-label">Retention Index Tolerance:</form:label>
                                 <div class="col-md-8">
