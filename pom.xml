@@ -427,25 +427,26 @@
             <artifactId>input</artifactId>
             <version>0.1.0</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.rdkit</groupId>-->
-<!--            <artifactId>rdkit</artifactId>-->
-<!--            <version>1.0.0</version>-->
-<!--            <scope>system</scope>-->
-<!--            <systemPath>${project.basedir}/libs/org/rdkit/rdkit/1.0.0/rdkit-1.0.0.jar</systemPath>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.rdkit</groupId>-->
-<!--            <artifactId>rdkit-doc</artifactId>-->
-<!--            <version>1.0.0</version>-->
-<!--            <scope>system</scope>-->
-<!--            <systemPath>${project.basedir}/libs/org/rdkit/rdkit-doc/1.0.0/rdkit-doc-1.0.0.jar</systemPath>-->
-<!--        </dependency>-->
+
+        <dependency>
+            <groupId>org.RDKit</groupId>
+            <artifactId>org.RDKit</artifactId>
+            <scope>system</scope>
+            <version>1.0.0</version>
+            <systemPath>${basedir}/libs/org/gmwrapper/org.RDKit.jar</systemPath>
+        </dependency>
     </dependencies>
     <build>
         <finalName>adap-compound-db</finalName>
         <testSourceDirectory>src/main/test</testSourceDirectory>
-
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>native</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

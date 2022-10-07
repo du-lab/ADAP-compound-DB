@@ -11,23 +11,15 @@ import org.dulab.adapcompounddb.models.entities.Peak;
 //rdkit java wrapper
 import org.RDKit.*;
 import javax.annotation.Nullable;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.reflect.Field;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collection;
-import java.util.List;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ConversionsUtils {
 
-//    static{
-//        System.loadLibrary("GraphMolWrap");
-//    }
 
     private static final Logger LOGGER = LogManager.getLogger(ConversionsUtils.class);
 
@@ -56,10 +48,24 @@ public class ConversionsUtils {
         return String.format("%.3f", x);
     }
     public static String toImage(@Nullable String smiles, @Nullable String inchi){
-        //System.loadLibrary("GraphMolWrap");
 
-        //TODO Add absolute path to native library (/basedir/libs/org/native/MacOS/libGraphMolWrap.jnilib
-        System.load("");
+        //get absolute path of native library from maven project structure
+//        String filename = "/libGraphMolWrap.jnilib";
+//        URL url = ConversionsUtils.class.getResource(filename);
+//
+//        InputStream is = getClass().getClassLoader().getResourceAsStream(filename);
+//        File file = null;
+//        try {
+//            file = new File(url.toURI());
+//        } catch (URISyntaxException e) {
+//            throw new RuntimeException(e);
+//        }
+//        String absolutePath = file.getAbsolutePath();
+
+        //load absolute path of native lib
+        String pathToNative = "/Users/tnguy271/Desktop/adap-kdb/adap-kdb/libs/org/native/MacOS/libGraphMolWrap.jnilib";
+        System.load(pathToNative);
+
         RWMol mol = null;
         if (smiles != null)
         {
@@ -151,6 +157,15 @@ public class ConversionsUtils {
             return "";
         }
     }
+    public static void main(String[] args){
+        String librarypath = System.getenv("DYLD_LIBRARY_PATH");
+        System.out.println("#####"+librarypath);
 
+        Map<String, String> envMap = System.getenv();
+
+        for (String envName : envMap.keySet()) {
+            System.out.format("%s = %s%n", envName, envMap.get(envName));
+        }
+    }
 
 }

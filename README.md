@@ -38,9 +38,9 @@ Alternatively, you can open the repository in IntelliJ IDEA and set it up to dep
 See [link](INSTALL_LINUX.md)
 
 ### Setup for RDkit
-- Add rdkit jar files to class path
-1. In IntelliJ, open File -> Project Structure -> Libraries -> New Project Library (+ sign top left) -> Java
-2. Locate the jar file ( which is in libs/gmwrapper)
+-load absolute path of native library
+1. In ConversionsUtils.java, in toImage() method, change the value of pathToNative to where the libGraphMolWrap.jnilib (or libGraphMolWrap.so) is stored, under project_base_dir/libs/org/native
+2. Run the program
 
 
 ### Package structure
