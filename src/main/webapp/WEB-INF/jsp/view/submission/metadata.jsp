@@ -1,7 +1,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/functions" prefix = "fn" %>
-<%--@elvariable id="fileUploadForm" type="org.dulab.adapcompounddb.site.controllers.FileUploadController.FileUploadForm"--%>
+<%--@elvariable id="cookieForm" type="java.util.Map<java.lang.String, java.lang.Object>"--%>
 <%--@elvariable id="metadataForm" type="org.dulab.adapcompounddb.site.controllers.FileUploadController.FileUploadForm"--%>
 <%--@elvariable id="spectrumProperties" type="java.util.List<java.util.List<org.dulab.adapcompounddb.models.entities.SpectrumProperty>>"--%>
 <%--@elvariable id="fileTypes" type="java.util.List<dulab.adapcompounddb.models.enums.FileType>"--%>
@@ -34,7 +34,7 @@
             <%--@elvariable id="showMSP" type="java.lang.Boolean"--%>
             <%--@elvariable id="showCSV" type="java.lang.Boolean"--%>
             <%--@elvariable id="showMGF" type="java.lang.Boolean"--%>
-            <%--@elvariable id="fieldList" type="java.util.List<org.dulab.adapcompounddb.models.FormField>"--%>
+
 
         <div class="col">
 
@@ -56,10 +56,12 @@
                                 <c:forEach items="${fileTypes}" var="fileType" varStatus="loop">
                                     <div class="col-md-3">
                                         <form:select path="${fn:toLowerCase(fileType)}${field.id}" cssClass="form-control">
-                                            <form:option value=""/>
+                                            <form:option value="" label=""></form:option>
                                             <c:forEach items="${spectrumProperties[loop.index]}" var="property">
+                                                <c:set var="fieldName" value="${fn:toLowerCase(fileType)}${field.id}"/>
                                                 <form:option
-                                                        value="${property.getName()}">${property.getName()}</form:option>
+                                                        value="${property.getName()}" label="${property.getName()}"
+                                                        selected="${property.getName() == cookieForm[fieldName] ? 'selected' : ''}"/>
                                             </c:forEach>
                                         </form:select>
                                     </div>

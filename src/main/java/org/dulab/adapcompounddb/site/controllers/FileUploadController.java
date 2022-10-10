@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.FormField;
@@ -31,10 +32,7 @@ import javax.validation.Valid;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.META_FIELDS_COOKIE_NAME;
 
@@ -155,6 +153,9 @@ public class FileUploadController extends BaseController {
 //        }
 
         Submission.assign(session, submission);
+        String byteString = ConversionsUtils.formToByteString(form);
+        Cookie metaFieldsCookie = new Cookie(META_FIELDS_COOKIE_NAME, byteString);
+        response.addCookie(metaFieldsCookie);
 
 
         if(form.isEditMetadata()) {
@@ -168,11 +169,18 @@ public class FileUploadController extends BaseController {
     }
 
     @RequestMapping(value = "/submission/metadata", method = RequestMethod.GET)
-    public String submitMetadata(Model model, HttpSession session, HttpServletResponse response) {
+    public String submitMetadata(Model model, HttpSession session, HttpServletResponse response,
+                                 @CookieValue(value = META_FIELDS_COOKIE_NAME, defaultValue = "") String metaFieldsInJson) {
         List<List<SpectrumProperty>> propertyList = new ArrayList<>();
         List<FileType> fileTypes = new ArrayList<>();
         Submission submission = Submission.from(session);
         FileUploadForm form = (FileUploadForm) model.getAttribute("form");
+        FileUploadForm cookieForm = ConversionsUtils.byteStringToForm(metaFieldsInJson, FileUploadForm.class);
+        MetaDataMapping  map = new MetaDataMapping();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map cookieMap = objectMapper.convertValue(cookieForm, Map.class);
+
         for(File file : submission.getFiles()) {
             propertyList.add(file.getSpectra().get(0).getProperties());
             fileTypes.add(file.getFileType());
@@ -180,11 +188,13 @@ public class FileUploadController extends BaseController {
         }
 
         model.addAttribute("spectrumProperties", propertyList);
+        model.addAttribute("cookieForm", cookieMap);
         List<FormField> fields = GetRequiredFormFields(form);
         model.addAttribute("fieldList", fields);
         model.addAttribute("fileTypes", fileTypes);
         model.addAttribute("metadataForm", form);
         tempFileFormUpload = form;
+
         model.addAttribute("loggedInUser", getCurrentUserPrincipal());
         model.addAttribute("integTest", integTest);
 
@@ -193,16 +203,17 @@ public class FileUploadController extends BaseController {
 
     @RequestMapping(value = "/submission/metadata", method = RequestMethod.POST)
     public String submitMetadata(Model model, HttpSession session, @Valid @ModelAttribute("metadataForm") FileUploadForm form, Errors errors,
-                                 HttpServletResponse response, HttpServletRequest request,
-                                 @CookieValue(value = META_FIELDS_COOKIE_NAME, defaultValue = "") String metaFieldsInJson ){
+                                 HttpServletResponse response, HttpServletRequest request){
         Submission submission = Submission.from(session);
 
         FileUploadForm form_temp = tempFileFormUpload;
 
-        form.setFiles(form_temp.getFiles());
-        form.setChromatographyType(form_temp.getChromatographyType());
-        form.setMergeFiles(form_temp.isMergeFiles());
-        form.setRoundMzValues(form_temp.isRoundMzValues());
+        //form.setFiles(form_temp.getFiles());
+        //form.setChromatographyType(form_temp.getChromatographyType());
+        //form.setMergeFiles(form_temp.isMergeFiles());
+        //form.setRoundMzValues(form_temp.isRoundMzValues());
+        //form.setEditMetadata(form_temp.isEditMetadata());
+
         for(File file : submission.getFiles()) {
             MetaDataMapping metaDataMapping = form.getMetaDataMappings() != null ? form.getMetaDataMappings().get(file.getFileType()) : null;
             for(Spectrum spectrum: file.getSpectra()) {
