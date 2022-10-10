@@ -3,7 +3,7 @@ package org.dulab.adapcompounddb.site.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dulab.adapcompounddb.models.FormField;
+import org.dulab.adapcompounddb.site.controllers.forms.FormField;
 import org.dulab.adapcompounddb.models.MetaDataMapping;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
@@ -23,7 +23,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.mail.Session;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,8 +42,6 @@ public class FileUploadController extends BaseController {
     private final CaptchaService captchaService;
 
     private final Boolean integTest = ControllerUtils.INTEG_TEST;
-
-    private FileUploadForm tempFileFormUpload;
 
     public FileUploadController(CaptchaService captchaService) {
         this.captchaService = captchaService;
@@ -193,7 +190,7 @@ public class FileUploadController extends BaseController {
         model.addAttribute("fieldList", fields);
         model.addAttribute("fileTypes", fileTypes);
         model.addAttribute("metadataForm", form);
-        tempFileFormUpload = form;
+        session.setAttribute("FileUploadForm", form);
 
         model.addAttribute("loggedInUser", getCurrentUserPrincipal());
         model.addAttribute("integTest", integTest);
@@ -206,7 +203,7 @@ public class FileUploadController extends BaseController {
                                  HttpServletResponse response, HttpServletRequest request){
         Submission submission = Submission.from(session);
 
-        FileUploadForm form_temp = tempFileFormUpload;
+        FileUploadForm formTemp= (FileUploadForm) session.getAttribute("FileUploadForm");
 
         //form.setFiles(form_temp.getFiles());
         //form.setChromatographyType(form_temp.getChromatographyType());
@@ -221,7 +218,7 @@ public class FileUploadController extends BaseController {
             }
 
         }
-        if(form_temp.getFiles().size() > 1 && form_temp.isMergeFiles()) {
+        if(formTemp.getFiles().size() > 1 && formTemp.isMergeFiles()) {
             submission.setFiles(MultipartFileUtils.mergeFiles(submission.getFiles()));
         }
         Submission.assign(session, submission);
