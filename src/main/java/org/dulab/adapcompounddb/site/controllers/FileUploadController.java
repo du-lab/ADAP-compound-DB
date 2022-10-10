@@ -9,6 +9,7 @@ import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.enums.FileType;
 import org.dulab.adapcompounddb.site.controllers.forms.FileUploadForm;
+import org.dulab.adapcompounddb.site.controllers.forms.MetadataForm;
 import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
 import org.dulab.adapcompounddb.site.controllers.utils.ConversionsUtils;
 import org.dulab.adapcompounddb.site.controllers.utils.MultipartFileUtils;
@@ -33,6 +34,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
+import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.FILE_UPLOAD_FIELDS_COOKIE_NAME;
 import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.META_FIELDS_COOKIE_NAME;
 
 @Controller
@@ -99,7 +101,7 @@ public class FileUploadController extends BaseController {
 
     @RequestMapping(value = "/file/upload/", method = RequestMethod.GET)
     public String upload(Model model, HttpSession session,
-                         @CookieValue(value = META_FIELDS_COOKIE_NAME, defaultValue = "") String metaFieldsInJson) {
+                         @CookieValue(value = FILE_UPLOAD_FIELDS_COOKIE_NAME, defaultValue = "") String metaFieldsInJson) {
 
         if (Submission.from(session) != null) {
             return "redirect:/file/";
@@ -142,7 +144,7 @@ public class FileUploadController extends BaseController {
         Submission submission = new Submission();
 //        try {
         MultipartFileUtils.readMultipartFile(submission, form.getFiles(), form.getChromatographyType(),
-                form.getMetaDataMappings(), form.isMergeFiles() && !form.isEditMetadata(), form.isRoundMzValues());
+                null, form.isMergeFiles() && !form.isEditMetadata(), form.isRoundMzValues());
 //        } catch (IllegalStateException e) {
 //            LOG.warn(e.getMessage(), e);
 //            model.addAttribute("message", e.getMessage());
@@ -150,8 +152,9 @@ public class FileUploadController extends BaseController {
 //        }
 
         Submission.assign(session, submission);
+        session.setAttribute("FileUploadForm", form);
         String byteString = ConversionsUtils.formToByteString(form);
-        Cookie metaFieldsCookie = new Cookie(META_FIELDS_COOKIE_NAME, byteString);
+        Cookie metaFieldsCookie = new Cookie(FILE_UPLOAD_FIELDS_COOKIE_NAME, byteString);
         response.addCookie(metaFieldsCookie);
 
 
@@ -171,26 +174,23 @@ public class FileUploadController extends BaseController {
         List<List<SpectrumProperty>> propertyList = new ArrayList<>();
         List<FileType> fileTypes = new ArrayList<>();
         Submission submission = Submission.from(session);
-        FileUploadForm form = (FileUploadForm) model.getAttribute("form");
-        FileUploadForm cookieForm = ConversionsUtils.byteStringToForm(metaFieldsInJson, FileUploadForm.class);
-        MetaDataMapping  map = new MetaDataMapping();
+        //MetadataForm form = (MetadataForm) model.getAttribute("form");
+        MetadataForm form = ConversionsUtils.byteStringToForm(metaFieldsInJson, MetadataForm.class);
 
         ObjectMapper objectMapper = new ObjectMapper();
-        Map cookieMap = objectMapper.convertValue(cookieForm, Map.class);
+        Map cookieMap = objectMapper.convertValue(form, Map.class);
 
         for(File file : submission.getFiles()) {
             propertyList.add(file.getSpectra().get(0).getProperties());
             fileTypes.add(file.getFileType());
 
         }
-
+        model.addAttribute("metadataForm", form);
         model.addAttribute("spectrumProperties", propertyList);
         model.addAttribute("cookieForm", cookieMap);
-        List<FormField> fields = GetRequiredFormFields(form);
+        List<FormField> fields = GetRequiredFormFields((FileUploadForm) session.getAttribute("FileUploadForm"));
         model.addAttribute("fieldList", fields);
         model.addAttribute("fileTypes", fileTypes);
-        model.addAttribute("metadataForm", form);
-        session.setAttribute("FileUploadForm", form);
 
         model.addAttribute("loggedInUser", getCurrentUserPrincipal());
         model.addAttribute("integTest", integTest);
@@ -199,17 +199,11 @@ public class FileUploadController extends BaseController {
     }
 
     @RequestMapping(value = "/submission/metadata", method = RequestMethod.POST)
-    public String submitMetadata(Model model, HttpSession session, @Valid @ModelAttribute("metadataForm") FileUploadForm form, Errors errors,
+    public String submitMetadata(Model model, HttpSession session, @Valid @ModelAttribute("metadataForm") MetadataForm form, Errors errors,
                                  HttpServletResponse response, HttpServletRequest request){
         Submission submission = Submission.from(session);
 
         FileUploadForm formTemp= (FileUploadForm) session.getAttribute("FileUploadForm");
-
-        //form.setFiles(form_temp.getFiles());
-        //form.setChromatographyType(form_temp.getChromatographyType());
-        //form.setMergeFiles(form_temp.isMergeFiles());
-        //form.setRoundMzValues(form_temp.isRoundMzValues());
-        //form.setEditMetadata(form_temp.isEditMetadata());
 
         for(File file : submission.getFiles()) {
             MetaDataMapping metaDataMapping = form.getMetaDataMappings() != null ? form.getMetaDataMappings().get(file.getFileType()) : null;
