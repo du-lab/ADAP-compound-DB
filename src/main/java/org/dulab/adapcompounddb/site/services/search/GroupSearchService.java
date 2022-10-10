@@ -160,25 +160,22 @@ public class GroupSearchService {
                 String date = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").format(LocalDateTime.now());
                 String filePath = Paths.get(tmpdir, String.format("simple_output_%s.xlsx", date)).toString();
                 LOGGER.info(String.format("Writing to file '%s'", filePath));
-                try (FileOutputStream fileOutputStream = new FileOutputStream(filePath)) {
+
+                try  {
+                    FileOutputStream fileOutputStream = new FileOutputStream(filePath);
+                    //export file locally
                     exportSearchResultsService.export(fileOutputStream, groupSearchDTOList);
-                } catch (IOException e) {
-                    LOGGER.warn(String.format("Error when writing to file '%s': %s", filePath, e.getMessage()), e);
-                }
-
-
-                    //send email
+                    //send email with that file
                     emailService.sendEmailWithAttachment(filePath, userPrincipal.getEmail());
                     //delete the local file
                     Path path = FileSystems.getDefault().getPath(filePath);
-                    try {
-                        Files.delete(path);
-                    } catch (NoSuchFileException x) {
-                        System.err.format("%s: no such" + " file or directory%n", path);
-                    } catch (IOException x) {
-                        System.err.println(x);
-                    }
+                    Files.delete(path);
 
+                } catch (NoSuchFileException e) {
+                    LOGGER.error(String.format("%s: no such" + " file or directory%n", filePath, e.getMessage()), e);
+                }catch (IOException e) {
+                    LOGGER.warn(String.format("Error when writing to file '%s': %s", filePath, e.getMessage()), e);
+                }
 
 
 //                filePath = Paths.get(userHome, String.format("advanced_output_%s.xlsx", date)).toString();

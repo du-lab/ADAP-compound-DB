@@ -120,7 +120,7 @@ public class ApplicationContextConfiguration {
         mailSender.setPort(587);
 
         String email = System.getenv("ADAP_EMAIL_LOGIN");
-        String password = System.getenv("ADAP_PASSWORD");
+        String password = System.getenv("ADAP_EMAIL_PASSWORD");
         mailSender.setUsername(email);
         mailSender.setPassword(password);
 
