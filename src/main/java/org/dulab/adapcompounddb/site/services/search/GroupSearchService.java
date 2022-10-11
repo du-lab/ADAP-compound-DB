@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 
@@ -161,8 +160,7 @@ public class GroupSearchService {
                 String filePath = Paths.get(tmpdir, String.format("simple_output_%s.xlsx", date)).toString();
                 LOGGER.info(String.format("Writing to file '%s'", filePath));
 
-                try  {
-                    FileOutputStream fileOutputStream = new FileOutputStream(filePath);
+                try (FileOutputStream fileOutputStream = new FileOutputStream(filePath)) {
                     //export file locally
                     exportSearchResultsService.export(fileOutputStream, groupSearchDTOList);
                     //send email with that file
@@ -172,8 +170,8 @@ public class GroupSearchService {
                     Files.delete(path);
 
                 } catch (NoSuchFileException e) {
-                    LOGGER.error(String.format("%s: no such" + " file or directory%n", filePath, e.getMessage()), e);
-                }catch (IOException e) {
+                    LOGGER.error(String.format("%s: no such file or directory: %s", filePath, e.getMessage()), e);
+                } catch (IOException e) {
                     LOGGER.warn(String.format("Error when writing to file '%s': %s", filePath, e.getMessage()), e);
                 }
 
