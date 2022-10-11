@@ -7,6 +7,7 @@ import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
+import org.dulab.adapcompounddb.site.services.EmailService;
 import org.dulab.adapcompounddb.site.services.io.ExportSearchResultsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -14,17 +15,17 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
+
 import javax.servlet.http.HttpSession;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 
@@ -38,6 +39,8 @@ public class GroupSearchService {
     private final SpectrumRepository spectrumRepository;
 
     @Autowired
+    EmailService emailService;
+    @Autowired
     public GroupSearchService(IndividualSearchService spectrumSearchService,
                               @Qualifier("excelExportSearchResultsService") ExportSearchResultsService exportSearchResultsService,
                               SpectrumRepository spectrumRepository) {
@@ -49,8 +52,8 @@ public class GroupSearchService {
     @Async
 //    @Transactional(propagation = Propagation.REQUIRED)
     public Future<Void> groupSearch(UserPrincipal userPrincipal, List<File> files, HttpSession session,
-                                               SearchParameters userParameters,
-                                               boolean withOntologyLevels, boolean sendResultsToEmail) throws TimeoutException {
+                                    SearchParameters userParameters,
+                                    boolean withOntologyLevels, boolean sendResultsToEmail) throws TimeoutException {
 
 //        LOGGER.info("Group search has started");
 
@@ -151,24 +154,35 @@ public class GroupSearchService {
                 }
             }
 
-            if (!groupSearchDTOList.isEmpty() && sendResultsToEmail) {
-                String userHome = System.getProperty("user.home");
+            if (!groupSearchDTOList.isEmpty() && sendResultsToEmail && userPrincipal != null) {
+                String tmpdir = System.getProperty("java.io.tmpdir");
                 String date = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").format(LocalDateTime.now());
-                String filePath = Paths.get(userHome, String.format("simple_output_%s.xlsx", date)).toString();
+                String filePath = Paths.get(tmpdir, String.format("simple_output_%s.xlsx", date)).toString();
                 LOGGER.info(String.format("Writing to file '%s'", filePath));
+
                 try (FileOutputStream fileOutputStream = new FileOutputStream(filePath)) {
+                    //export file locally
                     exportSearchResultsService.export(fileOutputStream, groupSearchDTOList);
+                    //send email with that file
+                    emailService.sendEmailWithAttachment(filePath, userPrincipal.getEmail());
+                    //delete the local file
+                    Path path = FileSystems.getDefault().getPath(filePath);
+                    Files.delete(path);
+
+                } catch (NoSuchFileException e) {
+                    LOGGER.error(String.format("%s: no such file or directory: %s", filePath, e.getMessage()), e);
                 } catch (IOException e) {
                     LOGGER.warn(String.format("Error when writing to file '%s': %s", filePath, e.getMessage()), e);
                 }
 
-                filePath = Paths.get(userHome, String.format("advanced_output_%s.xlsx", date)).toString();
-                LOGGER.info(String.format("Writing to file '%s'", filePath));
-                try (FileOutputStream fileOutputStream = new FileOutputStream(filePath)) {
-                    exportSearchResultsService.exportAll(fileOutputStream, groupSearchDTOList);
-                } catch (IOException e) {
-                    LOGGER.warn(String.format("Error when writing to file '%s': %s", filePath, e.getMessage()), e);
-                }
+
+//                filePath = Paths.get(userHome, String.format("advanced_output_%s.xlsx", date)).toString();
+//                LOGGER.info(String.format("Writing to file '%s'", filePath));
+//                try (FileOutputStream fileOutputStream = new FileOutputStream(filePath)) {
+//                    exportSearchResultsService.exportAll(fileOutputStream, groupSearchDTOList);
+//                } catch (IOException e) {
+//                    LOGGER.warn(String.format("Error when writing to file '%s': %s", filePath, e.getMessage()), e);
+//                }
             }
 
         } catch (Throwable t) {
@@ -182,4 +196,5 @@ public class GroupSearchService {
 
         return new AsyncResult<>(null);
     }
+
 }

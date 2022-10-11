@@ -84,6 +84,10 @@ public class GroupSearchController extends BaseController {
             form.setSubmissionIds(filterOptions.getSubmissions().keySet());
         form.setWithOntologyLevels(withOntologyLevels.orElse(false));
         model.addAttribute("filterForm", form);
+
+        //check if user is login
+        model.addAttribute("isLoggedIn", this.getCurrentUserPrincipal() != null);
+
         return "submission/group_search_parameters";
     }
 
@@ -140,6 +144,9 @@ public class GroupSearchController extends BaseController {
         Cookie metaFieldsCookie = new Cookie(SEARCH_PARAMETERS_COOKIE_NAME, byteString);
         response.addCookie(metaFieldsCookie);
         redirectAttributes.addFlashAttribute("submission", submission);
+
+
+
 
 
         return "redirect:/group_search/";
