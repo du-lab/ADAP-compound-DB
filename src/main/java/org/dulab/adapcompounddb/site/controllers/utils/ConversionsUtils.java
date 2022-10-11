@@ -47,24 +47,10 @@ public class ConversionsUtils {
         if (x == null) return null;
         return String.format("%.3f", x);
     }
-    public static String toImage(@Nullable String smiles, @Nullable String inchi){
+    public static String toImage(@Nullable String smiles, @Nullable String inchi) throws URISyntaxException {
 
-        //get absolute path of native library from maven project structure
-//        String filename = "/libGraphMolWrap.jnilib";
-//        URL url = ConversionsUtils.class.getResource(filename);
-//
-//        InputStream is = getClass().getClassLoader().getResourceAsStream(filename);
-//        File file = null;
-//        try {
-//            file = new File(url.toURI());
-//        } catch (URISyntaxException e) {
-//            throw new RuntimeException(e);
-//        }
-//        String absolutePath = file.getAbsolutePath();
+        loadLibrary();
 
-        //load absolute path of native lib
-        String pathToNative = "/Users/tnguy271/Desktop/adap-kdb/adap-kdb/libs/org/native/MacOS/libGraphMolWrap.jnilib";
-        System.load(pathToNative);
 
         RWMol mol = null;
         if (smiles != null)
@@ -157,15 +143,42 @@ public class ConversionsUtils {
             return "";
         }
     }
-    public static void main(String[] args){
-        String librarypath = System.getenv("DYLD_LIBRARY_PATH");
-        System.out.println("#####"+librarypath);
+    private static String getOs() {
+        String osname = System.getProperty("os.name");
 
-        Map<String, String> envMap = System.getenv();
+        osname  = osname.toLowerCase();
 
-        for (String envName : envMap.keySet()) {
-            System.out.format("%s = %s%n", envName, envMap.get(envName));
+        if (osname.contains("linux")) {
+            osname = "linux";
+        } else if (osname.contains("mac")) {
+            osname = "macos";
+        }else if (osname.contains("windows")) {
+            osname = "win32";
         }
+//        else throw new RuntimeException("Couuld not determine os properly");
+
+        return osname;
+    }
+
+    private static void loadLibrary() throws URISyntaxException {
+        //get os name
+        String osname = getOs();
+
+        URL url = null;
+        if(osname == null)
+            throw new RuntimeException("Couuld not determine os properly");
+        else if(osname.equals("linux"))
+            url = ConversionsUtils.class.getResource("/libGraphMolWrap.so");
+        else if(osname.equals("macos"))
+            url = ConversionsUtils.class.getResource("/libGraphMolWrap.jnilib");
+        else if(osname.equals("win32"))
+            url = ConversionsUtils.class.getResource("/GraphMolWrap.dll");
+
+
+        File file = new File(url.toURI());
+        String path = file.getAbsolutePath();
+
+        System.load(path);
     }
 
 }

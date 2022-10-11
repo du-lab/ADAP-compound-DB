@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
+import java.net.URISyntaxException;
 import java.util.List;
 
 @RestController
@@ -118,6 +119,8 @@ public class SpectrumRestController1 {
             return smilesImage.toString();
         } catch (EmptySearchResultException e) {
             LOGGER.warn("Cannot find spectrum with ID = " + spectrumId);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
         }
         return null;
     }
@@ -154,6 +157,8 @@ public class SpectrumRestController1 {
 
         } catch (IndexOutOfBoundsException e) {
             LOGGER.warn(e.getMessage(), e);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
         }
 
         return null;

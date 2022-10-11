@@ -37,10 +37,6 @@ Alternatively, you can open the repository in IntelliJ IDEA and set it up to dep
 ### Setup for Amazon Web Services EC2 machine
 See [link](INSTALL_LINUX.md)
 
-### Setup for RDkit
--load absolute path of native library
-1. In ConversionsUtils.java, in toImage() method, change the value of pathToNative to where the libGraphMolWrap.jnilib (or libGraphMolWrap.so) is stored, under project_base_dir/libs/org/native
-2. Run the program
 
 
 ### Package structure

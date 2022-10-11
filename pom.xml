@@ -433,20 +433,13 @@
             <artifactId>org.RDKit</artifactId>
             <scope>system</scope>
             <version>1.0.0</version>
-            <systemPath>${basedir}/libs/org/gmwrapper/org.RDKit.jar</systemPath>
+            <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/org.RDKit.jar</systemPath>
         </dependency>
     </dependencies>
     <build>
         <finalName>adap-compound-db</finalName>
         <testSourceDirectory>src/main/test</testSourceDirectory>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <includes>
-                    <include>native</include>
-                </includes>
-            </resource>
-        </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
