@@ -431,9 +431,8 @@
         <dependency>
             <groupId>org.RDKit</groupId>
             <artifactId>org.RDKit</artifactId>
-            <scope>system</scope>
             <version>1.0.0</version>
-            <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/org.RDKit.jar</systemPath>
+
         </dependency>
     </dependencies>
     <build>

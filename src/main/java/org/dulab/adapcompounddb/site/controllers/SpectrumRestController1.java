@@ -119,8 +119,9 @@ public class SpectrumRestController1 {
             return smilesImage.toString();
         } catch (EmptySearchResultException e) {
             LOGGER.warn("Cannot find spectrum with ID = " + spectrumId);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+        }
+        catch (URISyntaxException e) {
+            LOGGER.error(e.getMessage(), e);
         }
         return null;
     }
@@ -157,8 +158,9 @@ public class SpectrumRestController1 {
 
         } catch (IndexOutOfBoundsException e) {
             LOGGER.warn(e.getMessage(), e);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+        }
+        catch (URISyntaxException e) {
+            LOGGER.error(e.getMessage(), e);
         }
 
         return null;
