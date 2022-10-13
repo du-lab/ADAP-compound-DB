@@ -144,7 +144,7 @@ public class FileUploadController extends BaseController {
         Submission submission = new Submission();
 //        try {
         MultipartFileUtils.readMultipartFile(submission, form.getFiles(), form.getChromatographyType(),
-                null, form.isMergeFiles() && !form.isEditMetadata(), form.isRoundMzValues());
+                null, false, form.isRoundMzValues());
 //        } catch (IllegalStateException e) {
 //            LOG.warn(e.getMessage(), e);
 //            model.addAttribute("message", e.getMessage());
@@ -203,7 +203,7 @@ public class FileUploadController extends BaseController {
                                  HttpServletResponse response, HttpServletRequest request){
         Submission submission = Submission.from(session);
 
-        FileUploadForm formTemp= (FileUploadForm) session.getAttribute("FileUploadForm");
+
 
         for(File file : submission.getFiles()) {
             MetaDataMapping metaDataMapping = form.getMetaDataMappings() != null ? form.getMetaDataMappings().get(file.getFileType()) : null;
@@ -212,7 +212,7 @@ public class FileUploadController extends BaseController {
             }
 
         }
-        if(formTemp.getFiles().size() > 1 && formTemp.isMergeFiles()) {
+        if(form.isMergeFiles()) {
             submission.setFiles(MultipartFileUtils.mergeFiles(submission.getFiles()));
         }
         Submission.assign(session, submission);

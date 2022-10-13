@@ -27,7 +27,7 @@ public class FileUploadForm {
 //    @NotNull(message = "File format must be chosen.")
 //    private FileType fileType;
 
-    private boolean mergeFiles;
+
     private boolean roundMzValues;
     private boolean editMetadata;
 
@@ -81,13 +81,6 @@ public class FileUploadForm {
 //    }
 
 
-    public boolean isMergeFiles() {
-        return mergeFiles;
-    }
-
-    public void setMergeFiles(boolean mergeFiles) {
-        this.mergeFiles = mergeFiles;
-    }
 
     public boolean isRoundMzValues() {
         return roundMzValues;

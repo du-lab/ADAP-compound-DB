@@ -64,6 +64,15 @@ public class MetadataForm {
     private String mgfInChiField;
     private String mgfInChiKeyField;
     private String mgfIsotopeField;
+    private boolean mergeFiles;
+    public boolean isMergeFiles() {
+        return mergeFiles;
+    }
+
+    public void setMergeFiles(boolean mergeFiles) {
+        this.mergeFiles = mergeFiles;
+    }
+
 
     public String getMspNameField() {
         return mspNameField;

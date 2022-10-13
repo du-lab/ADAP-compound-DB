@@ -128,17 +128,6 @@
                                             </div>
                                         </div>
 
-                                        <div class="row form-group">
-                                            <div class="col-md-8 offset-md-4">
-                                                <div class="custom-control custom-switch">
-                                                    <input type="checkbox" class="custom-control-input"
-                                                           name="mergeFiles" id="mergeFiles"
-                                                           <c:if test="${fileUploadForm.mergeFiles}">checked</c:if>/>
-                                                    <label class="custom-control-label" for="mergeFiles">Merge
-                                                        Files</label>
-                                                </div>
-                                            </div>
-                                        </div>
 
                                         <div class="row form-group">
                                             <div class="col-md-8 offset-md-4">
@@ -159,7 +148,7 @@
                                                            name="editMetadata" id="editMetadata"
                                                            <c:if test="${fileUploadForm.editMetadata}">checked</c:if>/>
                                                     <label class="custom-control-label" for="editMetadata">
-                                                        Edit Metadata
+                                                        Edit Metadata and Merge Files (Optional)
                                                     </label>
                                                 </div>
                                             </div>

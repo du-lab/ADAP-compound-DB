@@ -19,6 +19,7 @@
     <div class="row row-content">
         <div class="col">
             <div>
+
                 <button id="uploadBtn" name="submit" class="btn btn-primary align-right" type="submit"
                         style="height: 100%; float: right;">
                         <%--                        <c:if test="${loggedInUser == null && !integTest}">--%>
@@ -43,6 +44,17 @@
                 <div>
                     <div class="card-header card-header-single"> Edit Metadata</div>
                     <div class="container-fluid card card-body">
+                        <div class="row form-group">
+                            <div class="col-md-3 offset-3">
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input"
+                                           name="mergeFiles" id="mergeFiles"
+                                           <c:if test="${metadata.mergeFiles}">checked</c:if>/>
+                                    <label class="custom-control-label" for="mergeFiles">Merge
+                                        Files</label>
+                                </div>
+                            </div>
+                        </div>
                         <div class="row form-group">
                             <c:forEach items="${fileTypes}" var="fileType" varStatus="loop">
                                 <div class="${loop.index == 0 ? 'col-md-3 offset-3' : 'col-md-3'}">
