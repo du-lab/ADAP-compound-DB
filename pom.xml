@@ -432,8 +432,9 @@
             <groupId>org.RDKit</groupId>
             <artifactId>org.RDKit</artifactId>
             <version>1.0.0</version>
-
         </dependency>
+
+
     </dependencies>
     <build>
         <finalName>adap-compound-db</finalName>

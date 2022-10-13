@@ -114,7 +114,8 @@ public class SpectrumRestController1 {
             spectrum = spectrumService.find(spectrumId);
 
             JSONObject smilesImage = new JSONObject();
-            smilesImage.put("image", ConversionsUtils.toImage(spectrum.getCanonicalSmiles(), spectrum.getInChi()));
+
+                smilesImage.put("image", ConversionsUtils.toImage(spectrum.getCanonicalSmiles(), spectrum.getInChi()));
 
             return smilesImage.toString();
         } catch (EmptySearchResultException e) {

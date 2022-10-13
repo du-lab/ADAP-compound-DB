@@ -56,9 +56,15 @@ public class ConversionsUtils {
     public static String toImage(@Nullable String smiles, @Nullable String inchi) throws URISyntaxException {
         loadLibrary();
         RWMol mol = null;
+
         if (smiles != null)
         {
             mol = RWMol.MolFromSmiles(smiles);
+        }
+        else if (inchi !=null){
+            RDKFuncs f = new RDKFuncs();
+            ExtraInchiReturnValues rv = new ExtraInchiReturnValues();
+            mol = f.InchiToMol(inchi, rv);
         }
         else return null;
 
@@ -70,7 +76,7 @@ public class ConversionsUtils {
         return drawer.getDrawingText();
 
     }
-    public static String toImagePython(@Nullable String smiles, @Nullable String inchi) {
+    public static String toImagePython(@Nullable String smiles, @Nullable String inchi)  {
 
         String parameters;
         if (smiles != null && !smiles.isEmpty())
