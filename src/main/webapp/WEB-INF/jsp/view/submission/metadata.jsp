@@ -5,8 +5,6 @@
 <%--@elvariable id="metadataForm" type="org.dulab.adapcompounddb.site.controllers.forms.MetadataForm"--%>
 <%--@elvariable id="spectrumProperties" type="java.util.List<java.util.List<org.dulab.adapcompounddb.models.entities.SpectrumProperty>>"--%>
 <%--@elvariable id="fileTypes" type="java.util.List<dulab.adapcompounddb.models.enums.FileType>"--%>
-<%--@elvariable id="loggedInUser" type="org.dulab.adapcompounddb.models.entities.UserPrincipal"--%>
-<%--@elvariable id="integTest" type="java.lang.Boolean"--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <body>
@@ -49,7 +47,7 @@
                                 <div class="custom-control custom-switch">
                                     <input type="checkbox" class="custom-control-input"
                                            name="mergeFiles" id="mergeFiles"
-                                           <c:if test="${metadata.mergeFiles}">checked</c:if>/>
+                                           <c:if test="${metadataForm.mergeFiles}">checked</c:if>/>
                                     <label class="custom-control-label" for="mergeFiles">Merge
                                         Files</label>
                                 </div>

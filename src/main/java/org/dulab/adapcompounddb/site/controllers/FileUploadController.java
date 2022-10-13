@@ -188,13 +188,9 @@ public class FileUploadController extends BaseController {
         model.addAttribute("metadataForm", form);
         model.addAttribute("spectrumProperties", propertyList);
         model.addAttribute("cookieForm", cookieMap);
-        List<FormField> fields = GetRequiredFormFields((FileUploadForm) session.getAttribute("FileUploadForm"));
+        List<FormField> fields = getRequiredFormFields((FileUploadForm) session.getAttribute("FileUploadForm"));
         model.addAttribute("fieldList", fields);
         model.addAttribute("fileTypes", fileTypes);
-
-        model.addAttribute("loggedInUser", getCurrentUserPrincipal());
-        model.addAttribute("integTest", integTest);
-
         return "submission/metadata";
     }
 
@@ -224,7 +220,7 @@ public class FileUploadController extends BaseController {
         return "redirect:/file/";
     }
 
-    private List<FormField> GetRequiredFormFields(FileUploadForm form) {
+    private List<FormField> getRequiredFormFields(FileUploadForm form) {
         List<FormField> formFields = new ArrayList<>();
         if(form.isEditMetadata()) {
             if(form.isEditNameField())
