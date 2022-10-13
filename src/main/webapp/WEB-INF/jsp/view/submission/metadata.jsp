@@ -56,7 +56,7 @@
                         <div class="row form-group">
                             <c:forEach items="${fileTypes}" var="fileType" varStatus="loop">
                                 <div class="${loop.index == 0 ? 'col-md-3 offset-3' : 'col-md-3'}">
-                                        ${fileType} Files
+                                        ${fileType.name} Files
                                 </div>
                             </c:forEach>
                         </div>
