@@ -156,7 +156,7 @@ public class MultipartFileUtils {
         throw new IllegalArgumentException("Cannot determine the file type: " + filename);
     }
 
-    private static List<File> mergeFiles(List<File> files) {
+    public static List<File> mergeFiles(List<File> files) {
         if (files == null || files.size() <= 1)
             return files;
 
