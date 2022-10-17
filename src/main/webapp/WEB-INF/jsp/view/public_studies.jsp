@@ -29,27 +29,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <c:forEach items="${publicSubmissions}" var="submission">
 
-                                <tr>
-                                    <td>${submission.id}</td>
-                                    <td><fmt:formatDate value="${submission.dateTime}" type="DATE" pattern="yyyy-MM-dd"/></td>
-<%--                                    <td>${submission.name}</td>--%>
-                                    <td><a href="${pageContext.request.contextPath}/submission/${submission.id}/">${submission.name}&nbsp</a></td>
-                                    <td>${submission.externalId}</td>
-                                    <td>
-                                        <c:forEach items="${submission.tags}" var="tag" varStatus="status">
-                                            <span id="${submission.id}color${status.index}">${tag.toString()}&nbsp;</span>
-                                            <script>
-                                                var spanId = '${fn:length(submission.tags)}';
-                                                spanColor(${submission.id}, spanId);
-                                            </script>
-                                        </c:forEach>
-                                    </td>
-
-                                </tr>
-
-                                </c:forEach>
                             </tbody>
                         </table>
 
@@ -75,7 +55,8 @@
 
     $(document).ready(function () {
        $('#submission_table').DataTable({
-
+           serverSide: true,
+           ajax: ''
         });
 
     });

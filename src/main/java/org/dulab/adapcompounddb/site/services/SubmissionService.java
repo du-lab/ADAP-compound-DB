@@ -9,6 +9,7 @@ import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.site.repositories.*;
+import org.dulab.adapcompounddb.site.services.utils.DataUtils;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,6 +25,37 @@ import java.util.stream.Collectors;
 @Service
 public class SubmissionService {
 
+    private enum ColumnInformation {
+
+        ID(0, "id"),
+        DATETIME(1, "datetime"),
+        NAME(2, "name"),
+        EXTERNAL_ID(3, "externalId"),
+        PROPERTIES(4,"properties");
+
+        private final int position;
+        private final String sortColumnName;
+
+        public int getPosition() {
+            return position;
+        }
+
+        public String getSortColumnName() {
+            return sortColumnName;
+        }
+
+        ColumnInformation(int position, String sortColumnName) {
+            this.position = position;
+            this.sortColumnName = sortColumnName;
+        }
+
+        public static String getColumnNameFromPosition(int position) {
+            for (ColumnInformation columnInformation : ColumnInformation.values())
+                if (position == columnInformation.getPosition())
+                    return columnInformation.getSortColumnName();
+            return null;
+        }
+    }
     private static final Logger LOG = LogManager.getLogger(SubmissionService.class);
 
     //    private static final String DESC = "DESC";
@@ -302,7 +334,19 @@ public class SubmissionService {
         return s.isSearchable();
     }
 
-    public Iterable<Submission> findSubmissionByClusterableTrueAndConsensusFalseAndInHouseFalse(){
-        return submissionRepository.findSubmissionByClusterableTrueAndConsensusFalseAndInHouseFalse();
+//    public Iterable<Submission> findSubmissionByClusterableTrueAndConsensusFalseAndInHouseFalse(){
+//        return submissionRepository.findSubmissionByClusterableTrueAndConsensusFalseAndInHouseFalse();
+//    }
+
+    public List<Submission> findSubmissionsPagable(int start, int length, int column, String sortDirection) {
+
+        //get column name that is sorted
+        final String sortColumn = ColumnInformation.getColumnNameFromPosition(column);
+
+        Pageable pageable = DataUtils.createPageable(start, length, sortColumn, sortDirection);
+
+        Page<Submission> pagedResult = submissionRepository.findSubmissionByClusterableTrueAndConsensusFalseAndInHouseFalse(pageable);
+        return pagedResult.getContent();
+
     }
 }
