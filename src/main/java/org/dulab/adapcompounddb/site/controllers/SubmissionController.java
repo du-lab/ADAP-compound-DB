@@ -409,11 +409,11 @@ public class SubmissionController extends BaseController {
         return "/notfound/";
     }
 
-//    @GetMapping(value = "/publicSubmission")
-//    public String publicSubmissions(Model model) {
+    @GetMapping(value = "/publicSubmission")
+    public String publicSubmissions() {
 //        Iterable<Submission> e = submissionService.findSubmissionByClusterableTrueAndConsensusFalseAndInHouseFalse();
-//        model.addAttribute("publicSubmissions", submissionService.findSubmissionByClusterableTrueAndConsensusFalseAndInHouseFalse());
-//
-//        return "public_studies";
-//    }
+//        model.addAttribute("publicSubmissions", e);
+
+        return "public_studies";
+    }
 }

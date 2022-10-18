@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
+import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
@@ -334,19 +335,32 @@ public class SubmissionService {
         return s.isSearchable();
     }
 
-//    public Iterable<Submission> findSubmissionByClusterableTrueAndConsensusFalseAndInHouseFalse(){
-//        return submissionRepository.findSubmissionByClusterableTrueAndConsensusFalseAndInHouseFalse();
-//    }
+    public Iterable<Submission> findSubmissionByClusterableTrueAndConsensusFalseAndInHouseFalse(){
+        return submissionRepository.findSubmissionByClusterableTrueAndConsensusFalseAndInHouseFalse();
+    }
 
-    public List<Submission> findSubmissionsPagable(int start, int length, int column, String sortDirection) {
+    public DataTableResponse findSubmissionsPagable(int start, int length, int column, String sortDirection) {
 
         //get column name that is sorted
         final String sortColumn = ColumnInformation.getColumnNameFromPosition(column);
 
+        //get page format
         Pageable pageable = DataUtils.createPageable(start, length, sortColumn, sortDirection);
 
-        Page<Submission> pagedResult = submissionRepository.findSubmissionByClusterableTrueAndConsensusFalseAndInHouseFalse(pageable);
-        return pagedResult.getContent();
+        // fetch x records at a time based on start page .
+        Page<Submission>pagedResult = submissionRepository.findSubmissionByClusterableTrueAndConsensusFalseAndInHouseFalse(pageable);
+
+        //create submission dto
+        List<SubmissionDTO> submissionDTOList = new ArrayList<>();
+        for(Submission s : pagedResult.getContent()) {
+            submissionDTOList.add(new SubmissionDTO(s,s.isLibrary(),false, true));
+        }
+        final DataTableResponse response = new DataTableResponse(submissionDTOList);
+        response.setRecordsTotal(pagedResult.getTotalElements());
+        response.setRecordsFiltered(pagedResult.getTotalElements());
+
+        return response;
+
 
     }
 }

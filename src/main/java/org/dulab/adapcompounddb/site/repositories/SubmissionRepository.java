@@ -101,4 +101,10 @@ public interface SubmissionRepository extends CrudRepository<Submission,Long> {
             , nativeQuery = false)
     Page<Submission> findSubmissionByClusterableTrueAndConsensusFalseAndInHouseFalse(Pageable p);
 
+    @Query(value = "select distinct s from Submission s join s.files f join f.spectra spectrum where spectrum.inHouseReference = false " +
+            "and spectrum.clusterable = true " +
+            "and spectrum.consensus = false "
+            , nativeQuery = false)
+    Iterable<Submission> findSubmissionByClusterableTrueAndConsensusFalseAndInHouseFalse();
+
 }
