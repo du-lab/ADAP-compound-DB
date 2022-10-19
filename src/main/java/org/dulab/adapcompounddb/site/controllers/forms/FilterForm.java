@@ -9,6 +9,7 @@ import java.util.Set;
 public class FilterForm {
 
     private Integer scoreThreshold;
+    private Double retentionTimeTolerance;
     private Integer retentionIndexTolerance;
     private RetIndexMatchType retentionIndexMatch = RetIndexMatchType.IGNORE_MATCH;
     private Double mzTolerance;
@@ -28,6 +29,14 @@ public class FilterForm {
 
     public void setScoreThreshold(Integer scoreThreshold) {
         this.scoreThreshold = scoreThreshold;
+    }
+
+    public Double getRetentionTimeTolerance() {
+        return retentionTimeTolerance;
+    }
+
+    public void setRetentionTimeTolerance(Double retentionTimeTolerance) {
+        this.retentionTimeTolerance = retentionTimeTolerance;
     }
 
     public Integer getRetentionIndexTolerance() {
