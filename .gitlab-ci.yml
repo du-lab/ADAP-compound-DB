@@ -15,6 +15,7 @@ build:
     - master
     - merge_requests
   script:
+    - mvn -version
     - mvn clean install tomcat7:redeploy -Denvironment=test
     - python scripts\selenium\initial_test.py
 

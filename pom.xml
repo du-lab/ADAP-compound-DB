@@ -37,6 +37,7 @@
         <apache.tomcat.port>8080</apache.tomcat.port>
         <apache.tomcat.path>/</apache.tomcat.path>
     </properties>
+<!--    mvn deploy:deploy-file -DgroupId=[GROUP] -DartifactId=[ARTIFACT] -Dversion=[VERS] -Durl=file:./local-maven-repo/ -DrepositoryId=local-maven-repo -DupdateReleaseInfo=true -Dfile=[FILE_PATH]-->
 
     <repositories>
         <repository>
@@ -438,6 +439,14 @@
             <artifactId>input</artifactId>
             <version>0.1.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.RDKit</groupId>
+            <artifactId>org.RDKit</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+
     </dependencies>
     <build>
         <finalName>adap-compound-db</finalName>
