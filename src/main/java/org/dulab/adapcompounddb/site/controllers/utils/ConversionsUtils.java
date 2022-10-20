@@ -19,16 +19,18 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ConversionsUtils {
-//    static{
-//        try {
-//            loadLibrary();
-//        } catch (URISyntaxException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
+
 
     private static final Logger LOGGER = LogManager.getLogger(ConversionsUtils.class);
 
+    static{
+        try {
+            loadLibrary();
+        } catch (URISyntaxException e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new RuntimeException(e.getMessage());
+        }
+    }
 
     public static String peaksToJson(Collection<Peak> peaks) {
         return String.format("[%s]", peaks.stream()
@@ -53,8 +55,8 @@ public class ConversionsUtils {
         if (x == null) return null;
         return String.format("%.3f", x);
     }
-    public static String toImage(@Nullable String smiles, @Nullable String inchi) throws URISyntaxException {
-        loadLibrary();
+    public static String toImage(@Nullable String smiles, @Nullable String inchi)  {
+
         RWMol mol = null;
 
         if (smiles != null)
@@ -156,6 +158,7 @@ public class ConversionsUtils {
 
     private static void loadLibrary() throws URISyntaxException {
         //get os name
+        System.out.println("***************" + System.getProperty("java.version"));
         String osname = System.getProperty("os.name");
         osname = osname.toLowerCase();
         URL url = null;

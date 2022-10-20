@@ -35,6 +35,7 @@ public class ControllerUtils {
     public static final String GROUP_SEARCH_ERROR_ATTRIBUTE_NAME = "group_search_error";
 
     public static final String META_FIELDS_COOKIE_NAME = "metaFields";
+    public static final String FILE_UPLOAD_FIELDS_COOKIE_NAME= "fileUploadFields";
     public static final String SEARCH_PARAMETERS_COOKIE_NAME = "search_parameters_form";
     public static final String INDIVIDUAL_SEARCH_PARAMETERS_COOKIE_NAME = "individual_parameters_form";
     public static boolean INTEG_TEST = System.getenv("DISABLE_CAPTCHA") != null && !System.getenv("DISABLE_CAPTCHA").isEmpty();
