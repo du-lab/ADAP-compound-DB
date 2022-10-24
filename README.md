@@ -37,6 +37,10 @@ Alternatively, you can open the repository in IntelliJ IDEA and set it up to dep
 ### Setup for Amazon Web Services EC2 machine
 See [link](INSTALL_LINUX.md)
 
+### Setup email and password for gmail server
+1. Create an app password for your email. See [link](https://support.google.com/accounts/answer/185833?hl=en#zippy=%2Cwhy-you-may-need-an-app-password)
+2. Set email and password as your environmental variables. Use ADAP_EMAIL_LOGIN and ADAP_PASSWORD
+
 ### Package structure
 * `org.dulab.adapcompounddb.config` configure the web application
 * `org.dulab.adapcompounddb.models.entities` represent entities of tables in the MySQL database

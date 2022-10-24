@@ -109,6 +109,14 @@
                             </div>
 
                             <div class="form-group row">
+                                <form:label path="retentionTimeTolerance"
+                                            cssClass="col-md-4 col-form-label">Retention Time Tolerance:</form:label>
+                                <div class="col-md-8">
+                                    <form:input path="retentionTimeTolerance" type="number" step="any" cssClass="form-control"/>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
                                 <form:label path="retentionIndexTolerance"
                                             cssClass="col-md-4 col-form-label">Retention Index Tolerance:</form:label>
                                 <div class="col-md-8">
@@ -161,9 +169,22 @@
                             <div class="form-group row">
                                 <div class="col">
                                     <div class="form-check">
-                                        <form:checkbox path="sendResultsToEmail"
-                                                       label="Send matching results to Email (in development)"
-                                                       cssClass="form-check-input"/>
+                                        <c:choose>
+                                            <c:when test="${isLoggedIn}">
+                                                <form:checkbox path="sendResultsToEmail"
+                                                               label="Send matching results to Email"
+                                                               cssClass="form-check-input"/>
+
+                                            </c:when>
+                                            <c:otherwise>
+                                                <p>
+                                                    Please login to enable this feature
+                                                </p>
+
+                                            </c:otherwise>
+
+                                        </c:choose>
+
                                     </div>
                                 </div>
                             </div>

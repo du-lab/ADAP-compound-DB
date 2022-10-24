@@ -18,9 +18,8 @@ import java.util.regex.Pattern;
 public class CaptchaService {
 
     private static final Logger LOGGER = LogManager.getLogger(CaptchaService.class);
-    private RestOperations restTemplate = new RestTemplate();
-
-    private static Pattern RESPONSE_PATTERN = Pattern.compile("[A-Za-z0-9_-]+");
+    private final RestOperations restTemplate = new RestTemplate();
+    private static final Pattern RESPONSE_PATTERN = Pattern.compile("[A-Za-z0-9_-]+");
     public static String GOOGLE_CAPTCHA_RESPONSE = "g-recaptcha-response";
 
     public void processResponse(String response, String ip) {
@@ -34,11 +33,13 @@ public class CaptchaService {
 
         GoogleResponse googleResponse = restTemplate.getForObject(verifyUri, GoogleResponse.class);
 
+        if (googleResponse == null)
+            throw new IllegalStateException("reCaptcha was not successfully validated");
+
         if(!googleResponse.isSuccess()) {
-            String errors = "";
             GoogleResponse.ErrorCode[] errorCodes = googleResponse.getErrorCodes();
             String[] arrStr = Arrays.stream(errorCodes)
-                    .map(e -> e.toString())
+                    .map(Enum::toString)
                     .toArray(String[]::new);
             LOGGER.error("Google captcha errors: " + String.join(",", arrStr));
 
