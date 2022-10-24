@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.enums.MassSpectrometryType;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.validator.constraints.URL;
 
 @Entity
@@ -82,6 +83,8 @@ public class Submission implements Serializable {
     private String reference;
     private String externalId;
     private boolean isPrivate;
+
+    private boolean clusterable;
     private boolean raw;
     private int size;
 
@@ -91,6 +94,8 @@ public class Submission implements Serializable {
     private boolean isLibrary;
     @Transient
     private boolean isSearchable;
+
+
 
     // *******************************
     // ***** Getters and Setters *****
@@ -198,6 +203,14 @@ public class Submission implements Serializable {
 
     public boolean isPrivate() {
         return isPrivate;
+    }
+
+    public boolean isClusterable() {
+        return clusterable;
+    }
+
+    public void setClusterable(boolean clusterable) {
+        this.clusterable = clusterable;
     }
 
     public void setPrivate(boolean aPrivate) {

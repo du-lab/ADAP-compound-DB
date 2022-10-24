@@ -335,9 +335,9 @@ public class SubmissionService {
         return s.isSearchable();
     }
 
-    public Iterable<Submission> findSubmissionByClusterableTrueAndConsensusFalseAndInHouseFalse(){
-        return submissionRepository.findSubmissionByClusterableTrueAndConsensusFalseAndInHouseFalse();
-    }
+//    public Iterable<Submission> findSubmissionByClusterableTrueAndConsensusFalseAndInHouseFalse(){
+//        return submissionRepository.findSubmissionByClusterableTrueAndConsensusFalseAndInHouseFalse();
+//    }
 
     public DataTableResponse findSubmissionsPagable(int start, int length, int column, String sortDirection) {
 

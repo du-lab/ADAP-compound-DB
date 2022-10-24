@@ -89,18 +89,34 @@
                         }
                     },
 
-                    columns: [
-                        { data: 'id' },
-                        { data: 'dateTime' },
+                    "columnDefs": [
                         {
-                            data: name,
+                            "targets": 0,
+                            "data": 'id'
+                        },
+                        {
+                            "targets": 1,
+                            "data": "formattedDate"
+
+                        },
+                        {
+                            "targets": 2,
+                            "data": "name",
 
                                 render: function (data, type, row, meta) {
                                  return `<a href="${pageContext.request.contextPath}/submission/\${row.id}/">\${row.name}&nbsp</a>`;
                             }
                         },
-                        { data: 'externalId' },
-                        { data: 'tags' },
+                        {
+                            "targets": 3,
+                            "data": "externalId"
+
+                        },
+                        {
+                            "targets":4,
+                            "data" : "tags"
+
+                        },
                     ]
                     });
 
