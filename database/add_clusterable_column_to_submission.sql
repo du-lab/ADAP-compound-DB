@@ -1,4 +1,4 @@
-
+alter table submission add column Clusterable TINYINT(4) NOT NULL DEFAULT 0;
 SET SQL_SAFE_UPDATES = 0;
 update submission s
     Inner join file f on f.submissionId = s.id
