@@ -348,7 +348,7 @@ public class SubmissionService {
         Pageable pageable = DataUtils.createPageable(start, length, sortColumn, sortDirection);
 
         // fetch x records at a time based on start page .
-        Page<Submission>pagedResult = submissionRepository.findSubmissionByClusterableTrueAndConsensusFalseAndInHouseFalse(pageable);
+        Page<Submission>pagedResult = submissionRepository.findSubmissionByClusterableTrue(pageable);
 
         //create submission dto
         List<SubmissionDTO> submissionDTOList = new ArrayList<>();

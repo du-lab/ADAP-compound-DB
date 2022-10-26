@@ -98,7 +98,7 @@ public interface SubmissionRepository extends CrudRepository<Submission,Long> {
     //get studies with inhousereference = false, clusterable = true, consensus = false
     @Query(value = "select distinct s from Submission s where s.clusterable = true "
             , nativeQuery = false)
-    Page<Submission> findSubmissionByClusterableTrueAndConsensusFalseAndInHouseFalse(Pageable p);
+    Page<Submission> findSubmissionByClusterableTrue(Pageable p);
 
     //update clusterable by submission ID
     @Modifying

@@ -16,7 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.enums.MassSpectrometryType;
-import org.hibernate.annotations.BatchSize;
 import org.hibernate.validator.constraints.URL;
 
 @Entity

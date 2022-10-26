@@ -114,7 +114,13 @@
                         },
                         {
                             "targets":4,
-                            "data" : "tags"
+                            "data" : "tags",
+
+                            render: function(data, type, row, meta){
+                                const str = data.toString();
+                                // return str.replaceAll(',', ', ');
+                                return str.split(',').join(', ');
+                            }
 
                         },
                     ]
