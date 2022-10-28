@@ -34,9 +34,10 @@
         <spring-security.version>5.4.10</spring-security.version>
         <spring-data.version>2.3.9.RELEASE</spring-data.version>
         <log4j.version>2.17.2</log4j.version>
-        <apache.tomcat.port>8080</apache.tomcat.port>
+        <apache.tomcat.port>80</apache.tomcat.port>
         <apache.tomcat.path>/</apache.tomcat.path>
     </properties>
+<!--    mvn deploy:deploy-file -DgroupId=[GROUP] -DartifactId=[ARTIFACT] -Dversion=[VERS] -Durl=file:./local-maven-repo/ -DrepositoryId=local-maven-repo -DupdateReleaseInfo=true -Dfile=[FILE_PATH]-->
 
     <repositories>
         <repository>
@@ -438,6 +439,14 @@
             <artifactId>input</artifactId>
             <version>0.1.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.RDKit</groupId>
+            <artifactId>org.RDKit</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+
     </dependencies>
     <build>
         <finalName>adap-compound-db</finalName>
