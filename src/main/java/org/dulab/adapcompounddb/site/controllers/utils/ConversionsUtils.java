@@ -158,18 +158,18 @@ public class ConversionsUtils {
 
     private static void loadLibrary() throws URISyntaxException {
         //get os name
-        System.out.println("***************" + System.getProperty("java.version"));
+        //System.out.println("***************" + System.getProperty("java.version"));
         String osname = System.getProperty("os.name");
         osname = osname.toLowerCase();
         URL url = null;
         if(osname == null)
             throw new RuntimeException("Couuld not determine os properly");
         else if(osname.contains("linux"))
-            url = ConversionsUtils.class.getResource("libGraphMolWrap.so");
+            url = ConversionsUtils.class.getResource("linux-aarch64/libGraphMolWrap.so");
         else if(osname.contains("mac"))
-            url = ConversionsUtils.class.getResource("libGraphMolWrap.jnilib");
+            url = ConversionsUtils.class.getResource("mac-amd64/libGraphMolWrap.jnilib");
         else if(osname.contains("windows"))
-            url = ConversionsUtils.class.getResource("GraphMolWrap.dll");
+            url = ConversionsUtils.class.getResource("windows-amd64/GraphMolWrap.dll");
 
 
         File file = new File(url.toURI());
