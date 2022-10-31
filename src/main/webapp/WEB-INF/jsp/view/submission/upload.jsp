@@ -150,23 +150,11 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-4">
-                                    <div class="card card-body small">
-                                        <p>When option <span class="text-primary">Merge Files</span> is selected,
-                                            data from multiple files are merged together.</p>
-                                        <p>During merging, corresponding features from different files are determined
-                                            based on values of the <span class="text-primary">Name Fields</span>. These
-                                            Name Fields must be specified in the
-                                            <a href="#metaFields" data-toggle="collapse">Metadata Fields</a>
-                                            panel for each file type.
-                                        </p>
-                                    </div>
-                                </div>
                             </div>
 
                             <div id = "metaFields" class="row row-content">
                                 <div class="col">
-                                    <div class="row row-content">Select metadata fields</div>
+                                    <div class="row row-content">Read metadata</div>
                                     <div  class="row row-content">
 
                                         <ul class="card card-body small checkbox-grid">
