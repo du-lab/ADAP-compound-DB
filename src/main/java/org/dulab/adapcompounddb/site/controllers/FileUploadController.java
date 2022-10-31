@@ -167,7 +167,39 @@ public class FileUploadController extends BaseController {
 
         return "redirect:/file/";
     }
+    @PostMapping(value ="/testUpload")
+    public String upload2(@RequestBody MultipartFile file, @ModelAttribute Submission submission, RedirectAttributes redirectAttributes)
+    {
+        // Submission submission = new Submission();
+        List<MultipartFile> fileList = new ArrayList<>();
+        fileList.add(file);
 
+        MultipartFileUtils.readMultipartFile(submission, fileList, null, null, false , false);
+
+
+
+//        ModelAndView modelAndView = new ModelAndView();
+//
+//        final SubmissionForm submissionForm = new SubmissionForm(submission);
+//        submissionForm.setAuthorized(true);
+//        submissionForm.setIsLibrary(submissionService.isLibrary(submission));
+//
+//        modelAndView.setViewName("submission/view");
+//        modelAndView.addObject("submission", submission);
+//        modelAndView.addObject("submissionForm", submissionForm);
+//        modelAndView.addObject("view_submission", true);
+//        modelAndView.addObject("edit_submission", true);
+//        modelAndView.addObject("availableTags", submissionService.findUniqueTagStrings());
+
+        // Submission.assign(session, submission);
+
+
+        //return modelAndView;
+
+        redirectAttributes.addFlashAttribute("submission", submission);
+        return "redirect:/file2/";
+
+    }
     @RequestMapping(value = "/submission/metadata", method = RequestMethod.GET)
     public String submitMetadata(Model model, HttpSession session, HttpServletResponse response,
                                  @CookieValue(value = META_FIELDS_COOKIE_NAME, defaultValue = "") String metaFieldsInJson) {
