@@ -115,7 +115,7 @@ public class SpectrumRestController1 {
 
             JSONObject smilesImage = new JSONObject();
 
-                smilesImage.put("image", ConversionsUtils.toImage(spectrum.getCanonicalSmiles(), spectrum.getInChi()));
+                smilesImage.put("image", ConversionsUtils.toImagePython(spectrum.getCanonicalSmiles(), spectrum.getInChi()));
 
             return smilesImage.toString();
         } catch (EmptySearchResultException e) {
