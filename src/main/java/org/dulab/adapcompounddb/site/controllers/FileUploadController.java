@@ -158,7 +158,7 @@ public class FileUploadController extends BaseController {
         response.addCookie(metaFieldsCookie);
 
 
-        if(form.isEditMetadata()) {
+        if(getRequiredFormFields(form).size() > 0) {
             redirectAttributes.addFlashAttribute("form", form);
             return "redirect:/submission/metadata";
         }
@@ -222,42 +222,38 @@ public class FileUploadController extends BaseController {
 
     private List<FormField> getRequiredFormFields(FileUploadForm form) {
         List<FormField> formFields = new ArrayList<>();
-        if(form.isEditMetadata()) {
-            if(form.isEditNameField())
-                formFields.add(new FormField("NameField", "Name Field"));
-            if(form.isEditCanonicalSmilesField())
-                formFields.add(new FormField("CanonicalSmilesField", "Canonical Smiles Field"));
-            if(form.isEditFormulaField())
-                formFields.add(new FormField("FormulaField", "Formula Field"));
-            if(form.isEditInChiField())
-                formFields.add(new FormField("InChiField", "InChI Field"));
-            if (form.isEditInChiKeyField())
-                formFields.add(new FormField("InChiKeyField", "InChIKey Field"));
-            if(form.isEditIsotopeField())
-                formFields.add(new FormField("IsotopeField", "Isotopic Distribution Field"));
-            if(form.isEditKeggField())
-                formFields.add(new FormField("KeggField", "KEGG ID Field"));
-            if(form.isEditCasNoField())
-                formFields.add(new FormField("CasNoField","Cas ID Field"));
-            if(form.isEditHmdbField())
-                formFields.add(new FormField("HmdbField", "HMDB ID Field"));
-            if(form.isEditExternalIdField())
-                formFields.add(new FormField("ExternalIdField","External ID Field"));
-            if(form.isEditMassField())
-                formFields.add(new FormField("MassField", "Neutral Mass"));
-            if(form.isEditPrecursorMzField())
-                formFields.add(new FormField("PrecursorMzField", "Precursor m/z Field"));
-            if(form.isEditSynonymField())
-                formFields.add(new FormField("SynonymField","Synonym Field"));
-            if(form.isEditPubChemField())
-                formFields.add(new FormField("PubChemField", "PubChem ID Field"));
-            if(form.isEditRetentionTimeField())
-                formFields.add(new FormField("RetentionTimeField", "Retention Time Field"));
-            if (form.isEditRetentionIndexField())
-                formFields.add(new FormField("RetentionIndexField", "Retention Index Field"));
-
-
-        }
+        if(form.isEditNameField())
+            formFields.add(new FormField("NameField", "Name Field"));
+        if(form.isEditCanonicalSmilesField())
+            formFields.add(new FormField("CanonicalSmilesField", "Canonical Smiles Field"));
+        if(form.isEditFormulaField())
+            formFields.add(new FormField("FormulaField", "Formula Field"));
+        if(form.isEditInChiField())
+            formFields.add(new FormField("InChiField", "InChI Field"));
+        if (form.isEditInChiKeyField())
+            formFields.add(new FormField("InChiKeyField", "InChIKey Field"));
+        if(form.isEditIsotopeField())
+            formFields.add(new FormField("IsotopeField", "Isotopic Distribution Field"));
+        if(form.isEditKeggField())
+            formFields.add(new FormField("KeggField", "KEGG ID Field"));
+        if(form.isEditCasNoField())
+            formFields.add(new FormField("CasNoField","Cas ID Field"));
+        if(form.isEditHmdbField())
+            formFields.add(new FormField("HmdbField", "HMDB ID Field"));
+        if(form.isEditExternalIdField())
+            formFields.add(new FormField("ExternalIdField","External ID Field"));
+        if(form.isEditMassField())
+            formFields.add(new FormField("MassField", "Neutral Mass"));
+        if(form.isEditPrecursorMzField())
+            formFields.add(new FormField("PrecursorMzField", "Precursor m/z Field"));
+        if(form.isEditSynonymField())
+            formFields.add(new FormField("SynonymField","Synonym Field"));
+        if(form.isEditPubChemField())
+            formFields.add(new FormField("PubChemField", "PubChem ID Field"));
+        if(form.isEditRetentionTimeField())
+            formFields.add(new FormField("RetentionTimeField", "Retention Time Field"));
+        if (form.isEditRetentionIndexField())
+            formFields.add(new FormField("RetentionIndexField", "Retention Index Field"));
         return formFields;
 
     }

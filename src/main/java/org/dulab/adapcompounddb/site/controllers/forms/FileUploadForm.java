@@ -29,7 +29,7 @@ public class FileUploadForm {
 
 
     private boolean roundMzValues;
-    private boolean editMetadata;
+
 
     @JsonIgnore
     @ContainsFiles
@@ -90,13 +90,6 @@ public class FileUploadForm {
         this.roundMzValues = roundMzValues;
     }
 
-    public boolean isEditMetadata() {
-        return editMetadata;
-    }
-
-    public void setEditMetadata(boolean editMetadata) {
-        this.editMetadata = editMetadata;
-    }
 
     public boolean isEditNameField() {
         return editNameField;
