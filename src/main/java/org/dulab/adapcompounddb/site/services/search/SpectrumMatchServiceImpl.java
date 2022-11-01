@@ -366,9 +366,12 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 //            pageable = PageRequest.of(start / length, length);
 //        }
 
+        //get page format
         Pageable pageable = DataUtils.createPageable(start, length, sortColumn, sortDirection);
         Iterable<BigInteger> submissionIds = submissionRepository.findSubmissionIdsByUserAndSubmissionTags(
                 user != null ? user.getId() : null, species, source, disease);
+
+        // fetch x records at a time based on start page .
         Page<SpectrumClusterView> spectrumPage =
                 spectrumClusterRepository.findClusters(chromatographyType, search, submissionIds, pageable);
         List<SearchResultDTO> dtoList = spectrumPage.stream()

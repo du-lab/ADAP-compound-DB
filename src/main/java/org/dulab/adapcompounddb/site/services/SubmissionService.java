@@ -5,10 +5,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
+import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.site.repositories.*;
+import org.dulab.adapcompounddb.site.services.utils.DataUtils;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,6 +26,37 @@ import java.util.stream.Collectors;
 @Service
 public class SubmissionService {
 
+    private enum ColumnInformation {
+
+        ID(0, "id"),
+        DATETIME(1, "datetime"),
+        NAME(2, "name"),
+        EXTERNAL_ID(3, "externalId"),
+        PROPERTIES(4,"properties");
+
+        private final int position;
+        private final String sortColumnName;
+
+        public int getPosition() {
+            return position;
+        }
+
+        public String getSortColumnName() {
+            return sortColumnName;
+        }
+
+        ColumnInformation(int position, String sortColumnName) {
+            this.position = position;
+            this.sortColumnName = sortColumnName;
+        }
+
+        public static String getColumnNameFromPosition(int position) {
+            for (ColumnInformation columnInformation : ColumnInformation.values())
+                if (position == columnInformation.getPosition())
+                    return columnInformation.getSortColumnName();
+            return null;
+        }
+    }
     private static final Logger LOG = LogManager.getLogger(SubmissionService.class);
 
     //    private static final String DESC = "DESC";
@@ -302,7 +335,32 @@ public class SubmissionService {
         return s.isSearchable();
     }
 
-    public Iterable<Submission> findSubmissionByClusterableTrueAndConsensusFalseAndInHouseFalse(){
-        return submissionRepository.findSubmissionByClusterableTrueAndConsensusFalseAndInHouseFalse();
+//    public Iterable<Submission> findSubmissionByClusterableTrueAndConsensusFalseAndInHouseFalse(){
+//        return submissionRepository.findSubmissionByClusterableTrueAndConsensusFalseAndInHouseFalse();
+//    }
+
+    public DataTableResponse findSubmissionsPagable(int start, int length, int column, String sortDirection) {
+
+        //get column name that is sorted
+        final String sortColumn = ColumnInformation.getColumnNameFromPosition(column);
+
+        //get page format
+        Pageable pageable = DataUtils.createPageable(start, length, sortColumn, sortDirection);
+
+        // fetch x records at a time based on start page .
+        Page<Submission>pagedResult = submissionRepository.findSubmissionByClusterableTrue(pageable);
+
+        //create submission dto
+        List<SubmissionDTO> submissionDTOList = new ArrayList<>();
+        for(Submission s : pagedResult.getContent()) {
+            submissionDTOList.add(new SubmissionDTO(s,s.isLibrary(),false, true));
+        }
+        final DataTableResponse response = new DataTableResponse(submissionDTOList);
+        response.setRecordsTotal(pagedResult.getTotalElements());
+        response.setRecordsFiltered(pagedResult.getTotalElements());
+
+        return response;
+
+
     }
 }
