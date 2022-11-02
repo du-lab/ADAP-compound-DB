@@ -1,6 +1,15 @@
 package org.dulab.adapcompounddb.site.controllers;
 
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.site.controllers.forms.FormField;
@@ -40,6 +49,10 @@ import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.ME
 @Controller
 public class FileUploadController extends BaseController {
 
+    //hardcoded s3 credentials
+    private static final String ACCESS_ID = "AKIA57CZCFX53PQDCA6K";
+    private static final String ACCESS_KEY = "Z8YWRt6b4iGe73Lx90NgMvHaDhfZm+ABpNICNazK";
+    private static final String AWS_BUCKET = "adapbigbucket";
     private static final Logger LOG = LogManager.getLogger(FileUploadController.class);
     private final CaptchaService captchaService;
 
@@ -167,38 +180,76 @@ public class FileUploadController extends BaseController {
 
         return "redirect:/file/";
     }
-    @PostMapping(value ="/testUpload")
-    public String upload2(@RequestBody MultipartFile file, @ModelAttribute Submission submission, RedirectAttributes redirectAttributes)
-    {
-        // Submission submission = new Submission();
-        List<MultipartFile> fileList = new ArrayList<>();
-        fileList.add(file);
-
-        MultipartFileUtils.readMultipartFile(submission, fileList, null, null, false , false);
-
-
-
-//        ModelAndView modelAndView = new ModelAndView();
+//    @PostMapping(value ="/testUpload")
+//    public String upload2(@RequestBody MultipartFile file, @ModelAttribute Submission submission, RedirectAttributes redirectAttributes)
+//    {
+//        // Submission submission = new Submission();
+//        List<MultipartFile> fileList = new ArrayList<>();
+//        fileList.add(file);
 //
-//        final SubmissionForm submissionForm = new SubmissionForm(submission);
-//        submissionForm.setAuthorized(true);
-//        submissionForm.setIsLibrary(submissionService.isLibrary(submission));
+//        MultipartFileUtils.readMultipartFile(submission, fileList, null, null, false , false);
 //
-//        modelAndView.setViewName("submission/view");
-//        modelAndView.addObject("submission", submission);
-//        modelAndView.addObject("submissionForm", submissionForm);
-//        modelAndView.addObject("view_submission", true);
-//        modelAndView.addObject("edit_submission", true);
-//        modelAndView.addObject("availableTags", submissionService.findUniqueTagStrings());
+//
+//
+////        ModelAndView modelAndView = new ModelAndView();
+////
+////        final SubmissionForm submissionForm = new SubmissionForm(submission);
+////        submissionForm.setAuthorized(true);
+////        submissionForm.setIsLibrary(submissionService.isLibrary(submission));
+////
+////        modelAndView.setViewName("submission/view");
+////        modelAndView.addObject("submission", submission);
+////        modelAndView.addObject("submissionForm", submissionForm);
+////        modelAndView.addObject("view_submission", true);
+////        modelAndView.addObject("edit_submission", true);
+////        modelAndView.addObject("availableTags", submissionService.findUniqueTagStrings());
+//
+//        // Submission.assign(session, submission);
+//
+//
+//        //return modelAndView;
+//
+//        redirectAttributes.addFlashAttribute("submission", submission);
+//        return "redirect:/file2/";
+//
+//    }
+    @GetMapping(value = "/downloadFile")
+    public String downloadFromS3 (@RequestParam(value="filename") String fileName, HttpSession session,  HttpServletResponse response) throws IOException {
 
-        // Submission.assign(session, submission);
+        AWSCredentials credentials = new BasicAWSCredentials(
+                ACCESS_ID,
+                ACCESS_KEY
+        );
 
+        AmazonS3 s3client = AmazonS3ClientBuilder
+                .standard()
+                .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                .withRegion(Regions.US_EAST_1)
+                .build();
 
-        //return modelAndView;
+        S3Object s3object = s3client.getObject(AWS_BUCKET, fileName);
 
-        redirectAttributes.addFlashAttribute("submission", submission);
-        return "redirect:/file2/";
+        S3ObjectInputStream inputStream = s3object.getObjectContent();
 
+        MultipartFile multipartFile = new MockMultipartFile(fileName, fileName, "multipart/form-data", inputStream);
+
+        Submission submission = new Submission();
+
+        //create "fake" upload form
+        FileUploadForm fileUploadForm = new FileUploadForm();
+        fileUploadForm.setChromatographyType(ChromatographyType.GAS);
+        fileUploadForm.setFiles(Collections.singletonList(multipartFile));
+
+        MultipartFileUtils.readMultipartFile(submission, fileUploadForm.getFiles(), fileUploadForm.getChromatographyType(),
+                null, false, false);
+
+        Submission.assign(session, submission);
+        session.setAttribute("FileUploadForm", fileUploadForm);
+        String byteString = ConversionsUtils.formToByteString(fileUploadForm);
+        Cookie metaFieldsCookie = new Cookie(FILE_UPLOAD_FIELDS_COOKIE_NAME, byteString);
+        response.addCookie(metaFieldsCookie);
+
+        return "redirect:/file/";
     }
     @RequestMapping(value = "/submission/metadata", method = RequestMethod.GET)
     public String submitMetadata(Model model, HttpSession session, HttpServletResponse response,
