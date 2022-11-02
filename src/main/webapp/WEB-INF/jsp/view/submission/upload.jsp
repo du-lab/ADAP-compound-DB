@@ -141,18 +141,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="row form-group">
-                                            <div class="col-md-8 offset-md-4">
-                                                <div class="custom-control custom-switch">
-                                                    <input type="checkbox" class="custom-control-input"
-                                                           name="editMetadata" id="editMetadata"
-                                                           <c:if test="${fileUploadForm.editMetadata}">checked</c:if>/>
-                                                    <label class="custom-control-label" for="editMetadata">
-                                                        Edit Metadata and Merge Files (Optional)
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
+
                                         <c:if test="${loggedInUser == null}">
                                             <div id="submit" class="g-recaptcha col-md-8 offset-md-4" data-callback="recaptchaCallback"
                                                  data-sitekey="6LdY3V8hAAAAACkWkUd5G9xYtgnM9vwPvIPsQrWy"></div>
@@ -225,16 +214,6 @@
 <script src="<c:url value="/resources/npm/node_modules/popper.js/dist/umd/popper.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/bootstrap/dist/js/bootstrap.min.js"/>"></script>
 <%--<script src="<c:url value="/resources/npm/node_modules/bootstrap4-toggle/js/bootstrap4-toggle.min.js"/>"></script>--%>
-<script>
-    $(document).ready(function() {
-        if($('#editMetadata')[0].checked) {
-            $('#metaFields').show();
-        }
-        else {
-            $('#metaFields').hide();
-        }
-    });
-</script>
 
 <script>
     $('#editMetadata').change(function () {
