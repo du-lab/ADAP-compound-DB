@@ -5,8 +5,10 @@ import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 
 import javax.persistence.NamedQuery;
@@ -15,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public interface SubmissionRepository extends CrudRepository<Submission, Long> {
+public interface SubmissionRepository extends CrudRepository<Submission,Long> {
 
     Iterable<Submission> findByUserId(long userPrincipalId);
 
@@ -94,10 +96,15 @@ public interface SubmissionRepository extends CrudRepository<Submission, Long> {
     boolean getIsSearchable(@Param("id") Long id);
 
     //get studies with inhousereference = false, clusterable = true, consensus = false
-    @Query(value = "select distinct s from Submission s join s.files f join f.spectra spectrum join s.tags t where spectrum.inHouseReference = false " +
-            "and spectrum.clusterable = true " +
-            "and spectrum.consensus = false "
+    @Query(value = "select distinct s from Submission s where s.clusterable = true "
             , nativeQuery = false)
-    Iterable<Submission> findSubmissionByClusterableTrueAndConsensusFalseAndInHouseFalse();
+    Page<Submission> findSubmissionByClusterableTrue(Pageable p);
+
+    //update clusterable by submission ID
+    @Modifying
+    @Query(value = "update Submission s set s.clusterable=:clusterable where s.id=:submissionId")
+    void updateClusterableBySubmissinoid(@Param("submissionId") long submissionId, @Param("clusterable") boolean clusterable);
+
+
 
 }

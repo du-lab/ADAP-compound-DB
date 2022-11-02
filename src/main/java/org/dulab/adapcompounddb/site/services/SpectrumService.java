@@ -13,6 +13,7 @@ import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.enums.MassSpectrometryType;
 import org.dulab.adapcompounddb.site.repositories.SpectrumPropertyRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
+import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
 import org.dulab.adapcompounddb.site.services.utils.DataUtils;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.dulab.adapcompounddb.utils.ObjectMapperUtils;
@@ -28,6 +29,8 @@ public class SpectrumService {
     private static final Logger LOGGER = LogManager.getLogger(SpectrumService.class);
 
     private final SpectrumRepository spectrumRepository;
+
+    private final SubmissionRepository submissionRepository;
     private final SpectrumPropertyRepository spectrumPropertyRepository;
 
 
@@ -66,9 +69,11 @@ public class SpectrumService {
 
     @Autowired
     public SpectrumService(SpectrumRepository spectrumRepository,
+                           SubmissionRepository submissionRepository,
                            SpectrumPropertyRepository spectrumPropertyRepository) {
 
         this.spectrumRepository = spectrumRepository;
+        this.submissionRepository = submissionRepository;
         this.spectrumPropertyRepository = spectrumPropertyRepository;
     }
 
@@ -120,6 +125,7 @@ public class SpectrumService {
     @Transactional
     public void updateClusterableBySubmissionId(long submissionId, boolean clusterable) {
         spectrumRepository.updateClusterableBySubmissionId(submissionId, clusterable);
+       submissionRepository.updateClusterableBySubmissinoid(submissionId, clusterable);
     }
 
     public List<SpectrumProperty> findSpectrumPropertiesBySpectrumId(long... spectrumIds) {

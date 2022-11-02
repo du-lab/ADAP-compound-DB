@@ -20,65 +20,112 @@
                     <div id="studies" class="tab-pane active" role="tabpanel">
                         <table id="submission_table" class="display nowrwap" style="width: 100%;">
                             <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Date</th>
-                                    <th>Title</th>
-                                    <th>External ID</th>
-                                    <th>Properties</th>
-                                </tr>
+                            <tr>
+                                <th>ID</th>
+                                <th>Date</th>
+                                <th>Title</th>
+                                <th>External ID</th>
+                                <th>Properties</th>
+                            </tr>
                             </thead>
                             <tbody>
-                                <c:forEach items="${publicSubmissions}" var="submission">
+<%--                            <c:forEach items="${publicSubmissions}" var="submission">--%>
 
-                                <tr>
-                                    <td>${submission.id}</td>
-                                    <td><fmt:formatDate value="${submission.dateTime}" type="DATE" pattern="yyyy-MM-dd"/></td>
-<%--                                    <td>${submission.name}</td>--%>
-                                    <td><a href="${pageContext.request.contextPath}/submission/${submission.id}/">${submission.name}&nbsp</a></td>
-                                    <td>${submission.externalId}</td>
-                                    <td>
-                                        <c:forEach items="${submission.tags}" var="tag" varStatus="status">
-                                            <span id="${submission.id}color${status.index}">${tag.toString()}&nbsp;</span>
-                                            <script>
-                                                var spanId = '${fn:length(submission.tags)}';
-                                                spanColor(${submission.id}, spanId);
-                                            </script>
-                                        </c:forEach>
-                                    </td>
+<%--                                <tr>--%>
+<%--                                    <td>${submission.id}</td>--%>
+<%--                                    <td><fmt:formatDate value="${submission.dateTime}" type="DATE" pattern="yyyy-MM-dd"/></td>--%>
+<%--                                        &lt;%&ndash;                                    <td>${submission.name}</td>&ndash;%&gt;--%>
+<%--                                    <td><a href="${pageContext.request.contextPath}/submission/${submission.id}/">${submission.name}&nbsp</a></td>--%>
+<%--                                    <td>${submission.externalId}</td>--%>
+<%--                                    <td>--%>
+<%--                                        <c:forEach items="${submission.tags}" var="tag" varStatus="status">--%>
+<%--                                            <span id="${submission.id}color${status.index}">${tag.toString()}&nbsp;</span>--%>
+<%--                                            <script>--%>
+<%--                                                var spanId = '${fn:length(submission.tags)}';--%>
+<%--                                                spanColor(${submission.id}, spanId);--%>
+<%--                                            </script>--%>
+<%--                                        </c:forEach>--%>
+<%--                                    </td>--%>
 
-                                </tr>
+<%--                                </tr>--%>
 
-                                </c:forEach>
+<%--                            </c:forEach>--%>
                             </tbody>
                         </table>
 
                     </div>
 
+                </div>
+            </div>
         </div>
-    </div>
-</div>
 
 
 
-<script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
-<script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
-<script src="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.js"/>"></script>
-<script src="<c:url value="/resources/AdapCompoundDb/js/dialogs.js"/>"></script>
-<script src="<c:url value="/resources/DataTables/Select-1.3.1/js/dataTables.select.min.js"/>"></script>
-<script src="<c:url value="/resources/npm/node_modules/bootstrap/dist/js/bootstrap.min.js"/>"></script>
+        <script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
+        <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
+        <script src="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.js"/>"></script>
+        <script src="<c:url value="/resources/AdapCompoundDb/js/dialogs.js"/>"></script>
+        <script src="<c:url value="/resources/DataTables/Select-1.3.1/js/dataTables.select.min.js"/>"></script>
+        <script src="<c:url value="/resources/npm/node_modules/bootstrap/dist/js/bootstrap.min.js"/>"></script>
 
 
 
-<script>
+        <script>
 
+            $(document).ready(function () {
+                $('#submission_table').DataTable({
+                    serverSide: true,
+                    processing: true,
+                    sortable: true,
 
-    $(document).ready(function () {
-       $('#submission_table').DataTable({
+                    ajax: {
+                        type: "GET",
 
-        });
+                        url: "${pageContext.request.contextPath}/findStudies.json",
+                        data: function (d) {
+                            //column index
+                            d.column = d.order[0].column;
+                            d.sortDirection = d.order[0].dir;
+                        }
+                    },
 
-    });
+                    "columnDefs": [
+                        {
+                            "targets": 0,
+                            "data": 'id'
+                        },
+                        {
+                            "targets": 1,
+                            "data": "formattedDate"
 
+                        },
+                        {
+                            "targets": 2,
+                            "data": "name",
 
-</script>
+                                render: function (data, type, row, meta) {
+                                 return `<a href="${pageContext.request.contextPath}/submission/\${row.id}/">\${row.name}&nbsp</a>`;
+                            }
+                        },
+                        {
+                            "targets": 3,
+                            "data": "externalId"
+
+                        },
+                        {
+                            "targets":4,
+                            "data" : "tags",
+
+                            render: function(data, type, row, meta){
+                                const str = data.toString();
+                                // return str.replaceAll(',', ', ');
+                                return str.split(',').join(', ');
+                            }
+
+                        },
+                    ]
+                    });
+
+            });
+
+        </script>
