@@ -30,9 +30,6 @@ public class File implements Comparable<File>, Serializable {
     @Enumerated(EnumType.STRING)
     private FileType fileType;
 
-    @NotNull(message = "File: the field Content is required.")
-    private byte[] content;
-
     @NotNull(message = "File: the field Submission is required.")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "SubmissionId", referencedColumnName = "Id")
@@ -48,7 +45,15 @@ public class File implements Comparable<File>, Serializable {
     )
     private List<Spectrum> spectra;
 
+
+    @OneToOne(mappedBy = "file",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    FileContent fileContent;
+
     private int size;
+
 
     // *******************************
     // ***** Getters and Setters *****
@@ -80,13 +85,7 @@ public class File implements Comparable<File>, Serializable {
         this.fileType = fileType;
     }
 
-    public byte[] getContent() {
-        return content;
-    }
 
-    public void setContent(final byte[] content) {
-        this.content = content;
-    }
 
 
     public Submission getSubmission() {
@@ -106,6 +105,15 @@ public class File implements Comparable<File>, Serializable {
         this.spectra = spectra;
         this.size = (spectra != null) ? spectra.size() : 0;
     }
+
+    public FileContent getFileContent() {
+        return fileContent;
+    }
+
+    public void setFileContent(FileContent fileContent) {
+        this.fileContent = fileContent;
+    }
+
 
     public int getSize() {
         return size;
