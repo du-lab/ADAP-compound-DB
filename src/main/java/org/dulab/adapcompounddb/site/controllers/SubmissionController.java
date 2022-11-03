@@ -367,7 +367,11 @@ public class SubmissionController extends BaseController {
 
         try {
             final long time = System.currentTimeMillis();
-            submissionService.saveSubmission(submission);
+            Submission s = submissionService.saveSubmission(submission);
+            if(s == null){
+               String storageErrorMsg = "You have reached a limit of data stored in ADAP-KDB. Before saving new data to ADAP-KDB, please delete some of your existing studies/libraries";
+                return "redirect:/error?errorMsg=" + storageErrorMsg;
+            }
             LOGGER.info(String.format(
                     "New submission is saved to the database in %.3f sec.",
                     (System.currentTimeMillis() - time) / 1000.0));

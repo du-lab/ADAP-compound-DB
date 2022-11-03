@@ -66,6 +66,8 @@ public class SubmissionService {
     private final SpectrumRepository spectrumRepository;
     private final MultiFetchRepository multiFetchRepository;
 
+    private final int peakThreshold = 15000000;
+
 
     @Autowired
     public SubmissionService(final SubmissionRepository submissionRepository,
@@ -138,7 +140,17 @@ public class SubmissionService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void saveSubmission(final Submission submission) {
+    public Submission saveSubmission(final Submission submission) {
+
+        //only save submission if it doens't surpass peak threshold
+        String userName = submission.getUser().getUsername();
+        if(!submission.getUser().isAdmin()) {
+            int count = submissionRepository.getPeaksByUserName(userName);
+            if (count > peakThreshold) {
+                return null;
+            }
+        }
+
         final List<File> fileList = submission.getFiles();
 
         final Submission submissionObj = submissionRepository.save(submission);
@@ -155,6 +167,8 @@ public class SubmissionService {
         if (ids.contains(0L)) {
             spectrumRepository.saveSpectra(fileList, savedFileIds);
         }
+
+        return submissionObj;
     }
 
     @Transactional
