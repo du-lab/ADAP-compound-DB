@@ -98,7 +98,7 @@
 
                                 <div class="col-md-6">
                                     <c:set var="image" scope="session"
-                                           value="${dulab:toImage(spectrum.canonicalSmiles, spectrum.inChi)}"/>
+                                           value="${dulab:toImagePython(spectrum.canonicalSmiles, spectrum.inChi)}"/>
                                     <c:if test="${image != null}">
                                         <h4>Molecular Structure</h4>
                                         <div style="text-align:center" ;>${image}</div>
