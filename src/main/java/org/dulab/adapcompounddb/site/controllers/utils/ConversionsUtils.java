@@ -23,14 +23,14 @@ public class ConversionsUtils {
 
     private static final Logger LOGGER = LogManager.getLogger(ConversionsUtils.class);
 
-    static{
-        try {
-            loadLibrary();
-        } catch (URISyntaxException e) {
-            LOGGER.error(e.getMessage(), e);
-            throw new RuntimeException(e.getMessage());
-        }
-    }
+//    static{
+//        try {
+//            loadLibrary();
+//        } catch (URISyntaxException e) {
+//            LOGGER.error(e.getMessage(), e);
+//            throw new RuntimeException(e.getMessage());
+//        }
+//    }
 
     public static String peaksToJson(Collection<Peak> peaks) {
         return String.format("[%s]", peaks.stream()
