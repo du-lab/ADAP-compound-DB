@@ -5,7 +5,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
-import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
@@ -58,6 +57,7 @@ public class SubmissionService {
         }
     }
     private static final Logger LOG = LogManager.getLogger(SubmissionService.class);
+    private static final int PEAK_THRESHOLD = 15000000; //  Roughly 2 GB
 
     //    private static final String DESC = "DESC";
     private final SubmissionRepository submissionRepository;
@@ -65,8 +65,6 @@ public class SubmissionService {
     private final SubmissionCategoryRepository submissionCategoryRepository;
     private final SpectrumRepository spectrumRepository;
     private final MultiFetchRepository multiFetchRepository;
-
-    private final int peakThreshold = 15000000;
 
 
     @Autowired
@@ -146,8 +144,9 @@ public class SubmissionService {
         String userName = submission.getUser().getUsername();
         if(!submission.getUser().isAdmin()) {
             int count = submissionRepository.getPeaksByUserName(userName);
-            if (count > peakThreshold) {
-                return null;
+            if (count > PEAK_THRESHOLD) {
+                throw new IllegalStateException("You have reached a limit of data allowed to store in ADAP-KDB. Before " +
+                        "saving new data to ADAP-KDB, please delete some of your existing studies/libraries");
             }
         }
 
