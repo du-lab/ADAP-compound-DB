@@ -9,7 +9,6 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.site.controllers.forms.FormField;
@@ -49,10 +48,13 @@ import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.ME
 @Controller
 public class FileUploadController extends BaseController {
 
-    //hardcoded s3 credentials
-    private static final String ACCESS_ID = "AKIA57CZCFX53PQDCA6K";
-    private static final String ACCESS_KEY = "Z8YWRt6b4iGe73Lx90NgMvHaDhfZm+ABpNICNazK";
-    private static final String AWS_BUCKET = "adapbigbucket";
+
+    private static final String ACCESS_ID = System.getenv("ACCESS_ID");
+    private static final String ACCESS_KEY = System.getenv("ACCESS_KEY");
+
+
+
+    private static final String AWS_BUCKET = "adap-big-export";
     private static final Logger LOG = LogManager.getLogger(FileUploadController.class);
     private final CaptchaService captchaService;
 
@@ -180,41 +182,9 @@ public class FileUploadController extends BaseController {
 
         return "redirect:/file/";
     }
-//    @PostMapping(value ="/testUpload")
-//    public String upload2(@RequestBody MultipartFile file, @ModelAttribute Submission submission, RedirectAttributes redirectAttributes)
-//    {
-//        // Submission submission = new Submission();
-//        List<MultipartFile> fileList = new ArrayList<>();
-//        fileList.add(file);
-//
-//        MultipartFileUtils.readMultipartFile(submission, fileList, null, null, false , false);
-//
-//
-//
-////        ModelAndView modelAndView = new ModelAndView();
-////
-////        final SubmissionForm submissionForm = new SubmissionForm(submission);
-////        submissionForm.setAuthorized(true);
-////        submissionForm.setIsLibrary(submissionService.isLibrary(submission));
-////
-////        modelAndView.setViewName("submission/view");
-////        modelAndView.addObject("submission", submission);
-////        modelAndView.addObject("submissionForm", submissionForm);
-////        modelAndView.addObject("view_submission", true);
-////        modelAndView.addObject("edit_submission", true);
-////        modelAndView.addObject("availableTags", submissionService.findUniqueTagStrings());
-//
-//        // Submission.assign(session, submission);
-//
-//
-//        //return modelAndView;
-//
-//        redirectAttributes.addFlashAttribute("submission", submission);
-//        return "redirect:/file2/";
-//
-//    }
-    @GetMapping(value = "/downloadFile")
-    public String downloadFromS3 (@RequestParam(value="filename") String fileName, HttpSession session,  HttpServletResponse response) throws IOException {
+
+    @GetMapping(value = "/file/upload/s3")
+    public String downloadFromS3 (@RequestParam(value="filename") String fileName, @RequestParam(value="chromatographyType") String chromatography, HttpSession session,  HttpServletResponse response) throws IOException {
 
         AWSCredentials credentials = new BasicAWSCredentials(
                 ACCESS_ID,
@@ -224,24 +194,49 @@ public class FileUploadController extends BaseController {
         AmazonS3 s3client = AmazonS3ClientBuilder
                 .standard()
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                .withRegion(Regions.US_EAST_1)
+                .withRegion(Regions.US_EAST_2)
                 .build();
 
         S3Object s3object = s3client.getObject(AWS_BUCKET, fileName);
-
         S3ObjectInputStream inputStream = s3object.getObjectContent();
 
-        MultipartFile multipartFile = new MockMultipartFile(fileName, fileName, "multipart/form-data", inputStream);
+         MultipartFile multipartFile = new MockMultipartFile(fileName, fileName, "multipart/form-data", inputStream);
 
         Submission submission = new Submission();
 
+        ChromatographyType chromatographyType = null;
+        chromatography = chromatography.toLowerCase();
+        for (ChromatographyType type : ChromatographyType.values()) {
+            if (type.name().toLowerCase().startsWith(chromatography)) {
+                chromatographyType = type;
+                break;
+            }
+        }
+
+        if (chromatographyType == null)
+            throw new IllegalStateException(
+                    String.format("Chromatography of type %s is not supported", chromatography));
+
         //create "fake" upload form
         FileUploadForm fileUploadForm = new FileUploadForm();
-        fileUploadForm.setChromatographyType(ChromatographyType.GAS);
+        fileUploadForm.setChromatographyType(chromatographyType);
         fileUploadForm.setFiles(Collections.singletonList(multipartFile));
 
+        MetaDataMapping metaDataMapping = new MetaDataMapping();
+        metaDataMapping.setFieldName(MetaDataMapping.Field.NAME, "Name");
+        metaDataMapping.setFieldName(MetaDataMapping.Field.MASS, "Mass");
+        metaDataMapping.setFieldName(MetaDataMapping.Field.FORMULA, "Formula");
+        metaDataMapping.setFieldName(MetaDataMapping.Field.CAS_ID, "CASNO");
+        metaDataMapping.setFieldName(MetaDataMapping.Field.EXTERNAL_ID, "NIST Id");
+        metaDataMapping.setFieldName(MetaDataMapping.Field.INCHI_KEY, "INCHI_KEY");
+        metaDataMapping.setFieldName(MetaDataMapping.Field.RETENTION_TIME, "RT");
+        metaDataMapping.setFieldName(MetaDataMapping.Field.PRECURSOR_MZ, "PrecursorMz");
+        metaDataMapping.setFieldName(MetaDataMapping.Field.PRECURSOR_TYPE, "Precursor_type");
+
+        Map<FileType, MetaDataMapping> metaDataMappingMap = new HashMap<>();
+        metaDataMappingMap.put(FileType.MSP, metaDataMapping);
         MultipartFileUtils.readMultipartFile(submission, fileUploadForm.getFiles(), fileUploadForm.getChromatographyType(),
-                null, false, false);
+                metaDataMappingMap, false, false);
 
         Submission.assign(session, submission);
         session.setAttribute("FileUploadForm", fileUploadForm);
