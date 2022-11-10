@@ -39,7 +39,6 @@
                                     <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow=${currentDiskSpace}
                                             aria-valuemin="0" aria-valuemax=${maxDiskSpace}></div>
                                 </div>
-
                                 Maximum
                             </div>
                         </div>
@@ -289,13 +288,14 @@
             .css('width', width)
             .attr('aria-valuenow', widthpercent)
             .html(valuenow.toFixed(2));
-        if (0 < widthpercent && widthpercent < 100)
-            progressBar.addClass('progress-bar-striped progress-bar-animated');
-        else {
-            progressBar.removeClass('progress-bar-striped progress-bar-animated');
-        }
+        // if (0 < widthpercent && widthpercent < 100)
+        //     progressBar.addClass('progress-bar-striped progress-bar-animated');
+        // else {
+        //     progressBar.removeClass('progress-bar-striped progress-bar-animated');
+        // }
 
     });
+
 
     // Adjust column widths when a table becomes visible
     $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
