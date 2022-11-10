@@ -40,7 +40,7 @@
                                             aria-valuemin="0" aria-valuemax=${maxDiskSpace}></div>
                                 </div>
 
-                                Maximum: ${maxDiskSpace} GB
+                                Maximum
                             </div>
                         </div>
                     </div>
