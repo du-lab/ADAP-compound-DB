@@ -20,6 +20,7 @@ public class AccountController extends BaseController {
 
     private final SubmissionService submissionService;
 
+
     @Autowired
     public AccountController(SubmissionService submissionService) {
         this.submissionService = submissionService;
@@ -42,6 +43,10 @@ public class AccountController extends BaseController {
                         false))
                 .collect(Collectors.toList());
 
+
+        double currentDiskSpace = submissionService.getPeakDiskSpaceByUser(user.getUsername());
+        model.addAttribute(("currentDiskSpace"), currentDiskSpace);
+        model.addAttribute(("maxDiskSpace"), 2);
         model.addAttribute("user", user);
         model.addAttribute("submissionList", submissionDTOs);
         model.addAttribute("submissionIdToChromatographyListMap", submissionIdToChromatographyListMap);

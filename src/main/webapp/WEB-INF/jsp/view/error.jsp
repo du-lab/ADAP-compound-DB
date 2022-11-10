@@ -14,7 +14,7 @@
                     </c:if>
                     <p>
                         Please contact the support team if this error occurs again:
-                        <a href="mailto:dulab.binf@gmail.com">dulab.binf@gmail.com</a>
+                        <a href="mailto:adap.helpdesk@gmail.com">adap.helpdesk@gmail.com</a>
                     </p>
                 </div>
             </div>

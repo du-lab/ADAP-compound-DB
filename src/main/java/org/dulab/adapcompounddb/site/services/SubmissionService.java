@@ -5,7 +5,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
-import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
@@ -59,8 +58,12 @@ public class SubmissionService {
     }
     private static final Logger LOG = LogManager.getLogger(SubmissionService.class);
 
+    private static final double MEMORY_PER_PEAK = 1.3e-7; //in GB
+
     //    private static final String DESC = "DESC";
     private final SubmissionRepository submissionRepository;
+
+    private final UserPrincipalRepository userPrincipalRepository;
     private final SubmissionTagRepository submissionTagRepository;
     private final SubmissionCategoryRepository submissionCategoryRepository;
     private final SpectrumRepository spectrumRepository;
@@ -69,12 +72,14 @@ public class SubmissionService {
 
     @Autowired
     public SubmissionService(final SubmissionRepository submissionRepository,
+                             final UserPrincipalRepository userPrincipalRepository,
                              final SubmissionTagRepository submissionTagRepository,
                              final SubmissionCategoryRepository submissionCategoryRepository,
                              final SpectrumRepository spectrumRepository,
                              final MultiFetchRepository multiFetchRepository) {
 
         this.submissionRepository = submissionRepository;
+        this.userPrincipalRepository = userPrincipalRepository;
         this.submissionTagRepository = submissionTagRepository;
         this.submissionCategoryRepository = submissionCategoryRepository;
         this.spectrumRepository = spectrumRepository;
@@ -138,7 +143,22 @@ public class SubmissionService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void saveSubmission(final Submission submission) {
+    public Submission saveSubmission(final Submission submission) {
+
+        //only save submission if it doens't surpass peak capacity
+        UserPrincipal user = submission.getUser();
+        String userName = user.getUsername();
+        if(!user.isAdmin()) {
+            int count = submissionRepository.getPeaksByUserName(userName);
+
+            //default peak capacity
+            int peakCapacity = user.getPeakCapacity();
+            if (count > peakCapacity) {
+                throw new IllegalStateException("You have reached a limit of data allowed to store in ADAP-KDB. Before " +
+                        "saving new data to ADAP-KDB, please delete some of your existing studies/libraries");
+            }
+        }
+
         final List<File> fileList = submission.getFiles();
 
         final Submission submissionObj = submissionRepository.save(submission);
@@ -155,6 +175,8 @@ public class SubmissionService {
         if (ids.contains(0L)) {
             spectrumRepository.saveSpectra(fileList, savedFileIds);
         }
+
+        return submissionObj;
     }
 
     @Transactional
@@ -361,6 +383,14 @@ public class SubmissionService {
 
         return response;
 
+
+    }
+
+    public double getPeakDiskSpaceByUser(String userName) {
+        int peakPerUser = submissionRepository.getPeaksByUserName(userName) ;
+        double totalMemory = peakPerUser * MEMORY_PER_PEAK;
+
+        return totalMemory;
 
     }
 }
