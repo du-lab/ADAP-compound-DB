@@ -57,10 +57,13 @@ public class SubmissionService {
         }
     }
     private static final Logger LOG = LogManager.getLogger(SubmissionService.class);
-    private static final int PEAK_THRESHOLD = 15000000; //  Roughly 2 GB
+
+    private static final double MEMORY_PER_PEAK = 1.3e-7; //in GB
 
     //    private static final String DESC = "DESC";
     private final SubmissionRepository submissionRepository;
+
+    private final UserPrincipalRepository userPrincipalRepository;
     private final SubmissionTagRepository submissionTagRepository;
     private final SubmissionCategoryRepository submissionCategoryRepository;
     private final SpectrumRepository spectrumRepository;
@@ -69,12 +72,14 @@ public class SubmissionService {
 
     @Autowired
     public SubmissionService(final SubmissionRepository submissionRepository,
+                             final UserPrincipalRepository userPrincipalRepository,
                              final SubmissionTagRepository submissionTagRepository,
                              final SubmissionCategoryRepository submissionCategoryRepository,
                              final SpectrumRepository spectrumRepository,
                              final MultiFetchRepository multiFetchRepository) {
 
         this.submissionRepository = submissionRepository;
+        this.userPrincipalRepository = userPrincipalRepository;
         this.submissionTagRepository = submissionTagRepository;
         this.submissionCategoryRepository = submissionCategoryRepository;
         this.spectrumRepository = spectrumRepository;
@@ -140,11 +145,24 @@ public class SubmissionService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Submission saveSubmission(final Submission submission) {
 
-        //only save submission if it doens't surpass peak threshold
+        //only save submission if it doens't surpass peak capacity
         String userName = submission.getUser().getUsername();
         if(!submission.getUser().isAdmin()) {
             int count = submissionRepository.getPeaksByUserName(userName);
-            if (count > PEAK_THRESHOLD) {
+
+            //default peak capacity
+            int peakCapacity = 15000000;
+            Optional<UserPrincipal> user = userPrincipalRepository.findUserPrincipalByUsername(userName);
+            if(user.isPresent())
+            {
+                 peakCapacity = user.get().getPeakCapacity();
+            }
+            else {
+                throw new IllegalArgumentException(
+                        "Fail to get user because this user is not in the database" + userName);
+            }
+
+            if (count > peakCapacity) {
                 throw new IllegalStateException("You have reached a limit of data allowed to store in ADAP-KDB. Before " +
                         "saving new data to ADAP-KDB, please delete some of your existing studies/libraries");
             }
@@ -374,6 +392,14 @@ public class SubmissionService {
 
         return response;
 
+
+    }
+
+    public double getPeakDiskSpaceByUser(String userName) {
+        int peakPerUser = submissionRepository.getPeaksByUserName(userName) ;
+        double totalMemory = peakPerUser * MEMORY_PER_PEAK;
+
+        return totalMemory;
 
     }
 }

@@ -1,0 +1,1 @@
+alter table userprincipal add column PeakCapacity INT default  15000000;
