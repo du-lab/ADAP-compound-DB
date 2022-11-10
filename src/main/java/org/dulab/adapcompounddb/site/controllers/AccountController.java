@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Controller
 public class AccountController extends BaseController {
-
+    private static final double MEMORY_PER_PEAK = 1.3e-7; //in GB
     private final SubmissionService submissionService;
 
 
@@ -43,10 +43,12 @@ public class AccountController extends BaseController {
                         false))
                 .collect(Collectors.toList());
 
-
+        int peakCapacity = user.getPeakCapacity();
+        double maxDiskSpace = MEMORY_PER_PEAK * peakCapacity;
         double currentDiskSpace = submissionService.getPeakDiskSpaceByUser(user.getUsername());
+
         model.addAttribute(("currentDiskSpace"), currentDiskSpace);
-        model.addAttribute(("maxDiskSpace"), 2);
+        model.addAttribute(("maxDiskSpace"), maxDiskSpace);
         model.addAttribute("user", user);
         model.addAttribute("submissionList", submissionDTOs);
         model.addAttribute("submissionIdToChromatographyListMap", submissionIdToChromatographyListMap);

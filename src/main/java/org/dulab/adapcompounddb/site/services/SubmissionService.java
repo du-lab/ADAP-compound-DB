@@ -146,22 +146,13 @@ public class SubmissionService {
     public Submission saveSubmission(final Submission submission) {
 
         //only save submission if it doens't surpass peak capacity
-        String userName = submission.getUser().getUsername();
-        if(!submission.getUser().isAdmin()) {
+        UserPrincipal user = submission.getUser();
+        String userName = user.getUsername();
+        if(!user.isAdmin()) {
             int count = submissionRepository.getPeaksByUserName(userName);
 
             //default peak capacity
-            int peakCapacity = 15000000;
-            Optional<UserPrincipal> user = userPrincipalRepository.findUserPrincipalByUsername(userName);
-            if(user.isPresent())
-            {
-                 peakCapacity = user.get().getPeakCapacity();
-            }
-            else {
-                throw new IllegalArgumentException(
-                        "Fail to get user because this user is not in the database" + userName);
-            }
-
+            int peakCapacity = user.getPeakCapacity();
             if (count > peakCapacity) {
                 throw new IllegalStateException("You have reached a limit of data allowed to store in ADAP-KDB. Before " +
                         "saving new data to ADAP-KDB, please delete some of your existing studies/libraries");
