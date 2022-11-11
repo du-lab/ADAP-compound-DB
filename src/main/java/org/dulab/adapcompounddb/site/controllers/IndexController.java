@@ -2,8 +2,6 @@ package org.dulab.adapcompounddb.site.controllers;
 
 import javax.validation.Valid;
 
-import org.dulab.adapcompounddb.models.dto.FeedbackDTO;
-import org.dulab.adapcompounddb.site.services.FeedbackService;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,12 +16,10 @@ public class IndexController extends BaseController {
 
     private static final String successMessage = "Thank you for your feedback. We appreciate your views and will work on it, in case any action is required based on your message.";
     final private SpectrumService spectrumService;
-    final private FeedbackService feedbackService;
 
     @Autowired
-    public IndexController(final SpectrumService spectrumService, final FeedbackService feedbackService) {
+    public IndexController(final SpectrumService spectrumService) {
         this.spectrumService = spectrumService;
-        this.feedbackService = feedbackService;
     }
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
@@ -37,26 +33,5 @@ public class IndexController extends BaseController {
     public String about() {
         return "about";
     }
-
-    @RequestMapping(value = "/feedback", method = RequestMethod.GET)
-    @Deprecated
-    public String feedback(final Model model) {
-        model.addAttribute("feedbackForm", new FeedbackDTO());
-        return "feedback";
-    }
-
-    @RequestMapping(value = "/feedback", method = RequestMethod.POST)
-    @Deprecated
-    public ModelAndView feedback(final Model model, @Valid final FeedbackDTO form, final Errors errors) {
-        if(errors.hasErrors()) {
-            model.addAttribute("feedbackForm", form);
-            model.addAttribute("errors", errors.getFieldErrors());
-            return new ModelAndView("feedback");
-        }
-        feedbackService.saveFeedback(form);
-
-        model.addAttribute("feedbackForm", new FeedbackDTO());
-        model.addAttribute("status", successMessage);
-        return new ModelAndView("feedback");
-    }
 }
+
