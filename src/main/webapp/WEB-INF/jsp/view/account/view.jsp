@@ -39,7 +39,7 @@
                                     <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow=${currentDiskSpace}
                                             aria-valuemin="0" aria-valuemax=${maxDiskSpace}></div>
                                 </div>
-                                Maximum: ${maxDiskSpace} GB
+                                Maximum
                             </div>
                         </div>
                     </div>
@@ -295,6 +295,7 @@
         // }
 
     });
+
 
     // Adjust column widths when a table becomes visible
     $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
