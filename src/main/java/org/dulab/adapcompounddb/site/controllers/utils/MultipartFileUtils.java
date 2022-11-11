@@ -2,6 +2,7 @@ package org.dulab.adapcompounddb.site.controllers.utils;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dulab.adapcompounddb.models.entities.FileContent;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.enums.FileType;
 import org.dulab.adapcompounddb.models.entities.File;
@@ -84,8 +85,9 @@ public class MultipartFileUtils {
             file.setFileType(fileType);
             file.setSubmission(submission);
             try {
-
-                file.setContent(zipBytes(filename, multipartFile.getBytes()));
+                FileContent fileContent = new FileContent();
+                fileContent.setContent(zipBytes(filename, multipartFile.getBytes()));
+                file.setFileContent(fileContent);
                 file.setSpectra(fileReader.read(
                         multipartFile.getInputStream(), metaDataMapping, filename, chromatographyType));
 
@@ -112,6 +114,7 @@ public class MultipartFileUtils {
                         break;
                     }
                 }
+                fileContent.setFile(file);
                 files.add(file);
 
             } catch (final IOException e) {
@@ -156,7 +159,7 @@ public class MultipartFileUtils {
         throw new IllegalArgumentException("Cannot determine the file type: " + filename);
     }
 
-    private static List<File> mergeFiles(List<File> files) {
+    public static List<File> mergeFiles(List<File> files) {
         if (files == null || files.size() <= 1)
             return files;
 

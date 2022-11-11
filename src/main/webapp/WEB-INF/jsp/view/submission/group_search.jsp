@@ -4,10 +4,25 @@
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
+<%--hide the query, plot and match when user hasn't clicked on table row--%>
+<style>
+    #query_plot_match row{
+        display:none;
+    }
+
+</style>
 <div class="container-fluid">
     <div class="row row-content">
         <div class="col">
+            <div id="errorDiv" class="alert-danger"  style="margin-bottom: 5px;">
+                <c:out value="${sessionScope.group_search_error}"/>
+            </div>
+        </div>
+    </div>
+    <div class="row row-content">
+        <div class="col">
             <div class="btn-toolbar justify-content-end" role="toolbar">
+
                 <div class="dropdown">
                     <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
                         Export
@@ -34,47 +49,54 @@
         </div>
     </div>
 
-    <div class="row row-content">
-        <div class="col-md-2 col-compact" id="queryColumn">
-            <div class="card">
-                <div class="card-header card-header-single">Query Structure</div>
-                <div class="overflow-auto" style="height: 300px">
-                    <div id="queryStructure" class="d-flex justify-content-center h-100"></div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-2 col-compact">
-            <div class="card">
+    <div class="row row-content" id="query_plot_match_row">
+
+        <div class="col-4" id = "query_content">
+            <div class="card" style="height: auto">
                 <div class="card-header card-header-single">Query</div>
-                <div class="card-body card-body-compact small overflow-auto" style="height: 300px">
-                    <div id="queryInfo"></div>
+
+                    <div class="card-body card-body-compact small overflow-auto" style="height: auto">
+                        <div id="queryInfo"></div>
+                    </div>
+
+                <div  id="queryColumn">
+                    <div >
+<%--                        <div class="card-header card-header-single">Query Structure</div>--%>
+                        <div class="overflow-auto" style="height: auto">
+                            <div id="queryStructure" class="d-flex justify-content-center h-100"></div>
+                        </div>
+                    </div>
                 </div>
+
             </div>
         </div>
-        <div class="col-md-4 col-compact">
-            <div class="card">
+        <div class="col-4" id = "plot_content">
+            <div class="card" style="height: auto">
                 <div class="card-header card-header-single">Plot</div>
                 <%--                <div class="card-body small overflow-auto" style="height: 300px">--%>
-                <div id="plot" style="height: 300px"></div>
+                    <div id = "bar_under_plot" class="card-body card-body-compact small overflow-auto" style="height: auto">
+                        <div id="plot"style="height: 400px"></div>
+
+                    </div>
                 <%--                </div>--%>
             </div>
         </div>
-        <div class="col-md-2 col-compact">
-            <div class="card">
+        <div class="col-4" id = "match_content">
+            <div class="card" style="height: auto">
                 <div class="card-header card-header-single">Match</div>
-                <div class="card-body card-body-compact small overflow-auto" style="height: 300px">
+                <div class="card-body card-body-compact small overflow-auto" style="height: auto">
                     <div id="matchInfo"></div>
                 </div>
-            </div>
-        </div>
-        <div class="col-md-2 col-compact" id="matchColumn">
-            <div class="card">
-                <div class="card-header card-header-single">Match Structure</div>
-                <div class="overflow-auto" style="height: 300px">
-                    <div id="matchStructure" class="d-flex justify-content-center h-100"></div>
+                <div  id="matchColumn">
+
+                        <div class="overflow-auto" style="height: auto">
+                            <div id="matchStructure" class="d-flex justify-content-center h-100"></div>
+                        </div>
                 </div>
+
             </div>
         </div>
+
     </div>
 
     <div class="row row-content">
@@ -127,8 +149,9 @@
 <script src="<c:url value="/resources/AdapCompoundDb/js/spectrumPlot.js"/>"></script>
 <script src="<c:url value="/resources/AdapCompoundDb/js/spectrumStructure.js"/>"></script>
 <script>
-    $(document).ready(function () {
 
+    $(document).ready(function () {
+        $('#query_plot_match_row').hide();
         let table = $('#match_table').DataTable({
             // dom: 'lfrtip',
             serverSide: true,
@@ -185,7 +208,16 @@
                         return `<a href="\${href}">\${row.querySpectrumName}</a>`;
                     }
                 },
-                {data: row => (row.name != null) ? `<a href="<c:url value="/\${row.href}" />">\${row.name}</a>` : ''},
+                {
+                    data: row => {
+                        let string = '';
+                        if (row.name != null)
+                            string += `<a href="<c:url value="/\${row.href}" />">\${row.name}</a>`;
+                        if (row.errorMessage != null)
+                            string += `<span class="badge badge-danger" title="\${row.errorMessage}">ERROR</span>`
+                        return string;
+                    }
+                },
                 {data: row => (row.mass != null) ? row.mass.toFixed(3) : ''},
                 {data: row => (row.size != null) ? row.size : ''},
                 {data: row => (row.score != null) ? row.score.toFixed(3) * 1000 : ''},
@@ -245,7 +277,35 @@
 
             // $('#queryInfo').spectrumInfo(queryUrl + 'info.json');
             // $('#matchInfo').spectrumInfo(matchUrl + 'info.json');
-            $('#plot').spectrumPlot(position, queryUrl + 'positive/peaks.json', matchUrl + 'negative/peaks.json');
+
+
+            $('#plot').spectrumPlot(position, queryUrl + 'positive/peaks.json', matchUrl + 'negative/peaks.json',
+                function(complete){
+                if(complete) {
+                    //reset to display plot
+                    $('#plot_content').show();
+
+                    //reset styles
+                    $('#query_content').css('padding-right', '')
+                    $('#match_content').css('padding-left', '')
+                    $('#query_content').removeClass('col').addClass('col-4')
+                    $('#match_content').removeClass('col').addClass('col-4')
+                }
+                else
+                {
+                    $('#plot_content').hide();
+                    $('#query_content').css('padding-right', '0px')
+                    $('#query_content').addClass('col').removeClass('col-4')
+                    $('#match_content').addClass('col').removeClass('col-4')
+                    $('#match_content').css('padding-left', '0px')
+                }
+            }
+
+           );
+
+
+
+
             $('#queryStructure').spectrumStructure(queryUrl + 'structure.json', function (x) {
                 $('#queryColumn').attr('hidden', !x);
             });
@@ -253,12 +313,31 @@
                 $('#matchColumn').attr('hidden', !x);
             });
 
+
+
             previousQueryUrl = queryUrl;
             previousMatchUrl = matchUrl;
+
+
+            // show the query, plot and match div
+            $('#query_plot_match_row').show();
+
+
+
+
         });
+
+
+
+
 
         // refresh the datatable and progress bar every 1 second
         setInterval(function () {
+            $.ajax({
+                url: `${pageContext.request.contextPath}/ajax/group_search/error`,
+                success: d => $('#errorDiv').html(d)
+            });
+
             table.ajax.reload(null, false);
             $.getJSON(window.location.origin + window.location.pathname + 'progress', function (x) {
                 const width = x + '%';

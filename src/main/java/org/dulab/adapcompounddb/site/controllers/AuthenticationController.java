@@ -1,13 +1,9 @@
 package org.dulab.adapcompounddb.site.controllers;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
+import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
 import org.dulab.adapcompounddb.site.services.AuthenticationService;
 import org.dulab.adapcompounddb.site.services.CaptchaService;
 import org.dulab.adapcompounddb.validation.Email;
@@ -25,6 +21,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+
 
 @Controller
 public class AuthenticationController extends BaseController {
@@ -33,6 +35,7 @@ public class AuthenticationController extends BaseController {
 
     private final AuthenticationService authenticationService;
     private final CaptchaService captchaService;
+    private final boolean integTest = ControllerUtils.INTEG_TEST;
 
     @Autowired
     public AuthenticationController(final AuthenticationService authenticationService, CaptchaService captchaService) {
@@ -103,6 +106,7 @@ public class AuthenticationController extends BaseController {
 
         model.addAttribute("signupFailed", false);
         model.addAttribute("signUpForm", new SignUpForm());
+        model.addAttribute("integTest", true);
 
         return new ModelAndView("signup");
     }
@@ -114,13 +118,16 @@ public class AuthenticationController extends BaseController {
             return getHomeRedirect();
         }
         String responseString = request.getParameter(CaptchaService.GOOGLE_CAPTCHA_RESPONSE);
-        try{
-            captchaService.processResponse(responseString, request.getRemoteAddr());
+        if(responseString != null && !responseString.isEmpty()) {
+            try{
+                captchaService.processResponse(responseString, request.getRemoteAddr());
+            }
+            catch (Exception e) {
+                model.addAttribute("errorMsg", "Verify that you are human");
+                return new ModelAndView("signup");
+            }
         }
-        catch (Exception e) {
-            model.addAttribute("validationErrors", "Verify that you are human");
-            return new ModelAndView("signup");
-        }
+
 
         if (errors.hasErrors()) {
             form.setPassword(null);

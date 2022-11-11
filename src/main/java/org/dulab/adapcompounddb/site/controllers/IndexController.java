@@ -14,7 +14,6 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class IndexController extends BaseController {
 
-    private static final String successMessage = "Thank you for your feedback. We appreciate your views and will work on it, in case any action is required based on your message.";
     final private SpectrumService spectrumService;
 
     @Autowired
@@ -34,4 +33,3 @@ public class IndexController extends BaseController {
         return "about";
     }
 }
-

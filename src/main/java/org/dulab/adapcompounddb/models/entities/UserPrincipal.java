@@ -47,7 +47,7 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
     private String hashedPassword;
 
 //    private List<Submission> submissions;
-
+    private int peakCapacity;
     private Set<UserRole> roles;
 
     @Id
@@ -101,6 +101,15 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
     }
 
     //    @Override
+
+
+    public int getPeakCapacity() {
+        return peakCapacity;
+    }
+
+    public void setPeakCapacity(int peakCapacity) {
+        this.peakCapacity = peakCapacity;
+    }
 
     @Transient
     public boolean isAdmin() {

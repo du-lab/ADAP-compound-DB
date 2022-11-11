@@ -1,5 +1,8 @@
 package org.dulab.adapcompounddb.site.controllers.utils;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -21,7 +24,7 @@ public class ArchiveUtils {
             return byteArrayOutputStream.toByteArray();
 
         } catch (IOException e) {
-            throw new IllegalStateException("Cannot create an archive: " + filename);
+            throw new IllegalStateException("Cannot create an archive: " + filename, e);
         }
     }
 
@@ -43,7 +46,7 @@ public class ArchiveUtils {
             return byteArrayOutputStream.toByteArray();
 
         } catch (IOException e) {
-            throw new IllegalStateException("Cannot read an archive");
+            throw new IllegalStateException("Cannot read an archive", e);
         }
     }
 }

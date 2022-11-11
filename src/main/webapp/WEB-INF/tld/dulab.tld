@@ -149,8 +149,8 @@
     </function>
 
     <function>
-        <name>toImage</name>
+        <name>toImagePython</name>
         <function-class>org.dulab.adapcompounddb.site.controllers.utils.ConversionsUtils</function-class>
-        <function-signature>java.lang.String toImage(java.lang.String, java.lang.String)</function-signature>
+        <function-signature>java.lang.String toImagePython(java.lang.String, java.lang.String)</function-signature>
     </function>
 </taglib>

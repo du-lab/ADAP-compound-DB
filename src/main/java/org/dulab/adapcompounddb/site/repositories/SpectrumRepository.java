@@ -11,7 +11,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
-import java.math.BigInteger;
 import java.util.Set;
 
 public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, SpectrumRepositoryCustom {

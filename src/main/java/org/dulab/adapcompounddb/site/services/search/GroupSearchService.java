@@ -2,10 +2,12 @@ package org.dulab.adapcompounddb.site.services.search;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dulab.adapcompounddb.exceptions.IllegalSpectrumSearchException;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
+import org.dulab.adapcompounddb.site.services.EmailService;
 import org.dulab.adapcompounddb.site.services.io.ExportSearchResultsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -13,16 +15,19 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
+
 import javax.servlet.http.HttpSession;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeoutException;
 
 @Service
 public class GroupSearchService {
@@ -33,6 +38,8 @@ public class GroupSearchService {
     private final ExportSearchResultsService exportSearchResultsService;
     private final SpectrumRepository spectrumRepository;
 
+    @Autowired
+    EmailService emailService;
     @Autowired
     public GroupSearchService(IndividualSearchService spectrumSearchService,
                               @Qualifier("excelExportSearchResultsService") ExportSearchResultsService exportSearchResultsService,
@@ -46,7 +53,7 @@ public class GroupSearchService {
 //    @Transactional(propagation = Propagation.REQUIRED)
     public Future<Void> groupSearch(UserPrincipal userPrincipal, List<File> files, HttpSession session,
                                     SearchParameters userParameters,
-                                    boolean withOntologyLevels, boolean sendResultsToEmail) {
+                                    boolean withOntologyLevels, boolean sendResultsToEmail) throws TimeoutException {
 
 //        LOGGER.info("Group search has started");
 
@@ -74,10 +81,17 @@ public class GroupSearchService {
             float progress = 0F;
             int position = 0;
             for (int fileIndex = 0; fileIndex < files.size(); ++fileIndex) {
+
                 File file = files.get(fileIndex);
                 List<Spectrum> spectra = file.getSpectra();
                 if (spectra == null) continue;
                 for (int spectrumIndex = 0; spectrumIndex < spectra.size(); ++spectrumIndex) {  // Spectrum querySpectrum : file.getSpectra()
+                    if(System.currentTimeMillis() - startTime > 6 * 60 * 60 * 1000)
+                    {
+                        session.setAttribute(ControllerUtils.GROUP_SEARCH_ERROR_ATTRIBUTE_NAME, "Group search timed out");
+                        throw new TimeoutException("Group search timed out");
+                    }
+
                     Spectrum querySpectrum = spectra.get(spectrumIndex);
 
                     if (Thread.currentThread().isInterrupted()) break;
@@ -87,9 +101,18 @@ public class GroupSearchService {
                     parameters.merge(userParameters);
 //                    parameters.setLimit(10);
 
-                    List<SearchResultDTO> individualSearchResults = (withOntologyLevels)
-                            ? spectrumSearchService.searchWithOntologyLevels(userPrincipal, querySpectrum, parameters)
-                            : spectrumSearchService.searchConsensusSpectra(userPrincipal, querySpectrum, parameters);
+                    List<SearchResultDTO> individualSearchResults;
+                    try {
+                        individualSearchResults = (withOntologyLevels)
+                                ? spectrumSearchService.searchWithOntologyLevels(userPrincipal, querySpectrum, parameters)
+                                : spectrumSearchService.searchConsensusSpectra(userPrincipal, querySpectrum, parameters);
+                    } catch (IllegalSpectrumSearchException e) {
+                        LOGGER.error(String.format("Error when searching %s [%d]: %s",
+                                querySpectrum.getName(), querySpectrum.getId(), e.getMessage()));
+                        SearchResultDTO searchResultDTO = new SearchResultDTO(querySpectrum);
+                        searchResultDTO.setErrorMessage(e.getMessage());
+                        individualSearchResults = Collections.singletonList(searchResultDTO);
+                    }
 
                     if (individualSearchResults.isEmpty())
                         individualSearchResults.add(new SearchResultDTO(querySpectrum));
@@ -101,6 +124,9 @@ public class GroupSearchService {
                     }
 
                     if (Thread.currentThread().isInterrupted()) break;
+
+
+
 
                     progress = (float) ++progressStep / totalSteps;
                     groupSearchDTOList.addAll(individualSearchResults);
@@ -128,28 +154,40 @@ public class GroupSearchService {
                 }
             }
 
-            if (!groupSearchDTOList.isEmpty() && sendResultsToEmail) {
-                String userHome = System.getProperty("user.home");
+            if (!groupSearchDTOList.isEmpty() && sendResultsToEmail && userPrincipal != null) {
+                String tmpdir = System.getProperty("java.io.tmpdir");
                 String date = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").format(LocalDateTime.now());
-                String filePath = Paths.get(userHome, String.format("simple_output_%s.xlsx", date)).toString();
+                String filePath = Paths.get(tmpdir, String.format("simple_output_%s.xlsx", date)).toString();
                 LOGGER.info(String.format("Writing to file '%s'", filePath));
+
                 try (FileOutputStream fileOutputStream = new FileOutputStream(filePath)) {
+                    //export file locally
                     exportSearchResultsService.export(fileOutputStream, groupSearchDTOList);
+                    //send email with that file
+                    emailService.sendEmailWithAttachment(filePath, userPrincipal.getEmail());
+                    //delete the local file
+                    Path path = FileSystems.getDefault().getPath(filePath);
+                    Files.delete(path);
+
+                } catch (NoSuchFileException e) {
+                    LOGGER.error(String.format("%s: no such file or directory: %s", filePath, e.getMessage()), e);
                 } catch (IOException e) {
                     LOGGER.warn(String.format("Error when writing to file '%s': %s", filePath, e.getMessage()), e);
                 }
 
-                filePath = Paths.get(userHome, String.format("advanced_output_%s.xlsx", date)).toString();
-                LOGGER.info(String.format("Writing to file '%s'", filePath));
-                try (FileOutputStream fileOutputStream = new FileOutputStream(filePath)) {
-                    exportSearchResultsService.exportAll(fileOutputStream, groupSearchDTOList);
-                } catch (IOException e) {
-                    LOGGER.warn(String.format("Error when writing to file '%s': %s", filePath, e.getMessage()), e);
-                }
+
+//                filePath = Paths.get(userHome, String.format("advanced_output_%s.xlsx", date)).toString();
+//                LOGGER.info(String.format("Writing to file '%s'", filePath));
+//                try (FileOutputStream fileOutputStream = new FileOutputStream(filePath)) {
+//                    exportSearchResultsService.exportAll(fileOutputStream, groupSearchDTOList);
+//                } catch (IOException e) {
+//                    LOGGER.warn(String.format("Error when writing to file '%s': %s", filePath, e.getMessage()), e);
+//                }
             }
 
         } catch (Throwable t) {
             LOGGER.error(String.format("Error during the group search: %s", t.getMessage()), t);
+            session.setAttribute("GROUP_SEARCH_ERROR", t.getMessage());
             throw t;
         }
 
@@ -158,4 +196,5 @@ public class GroupSearchService {
 
         return new AsyncResult<>(null);
     }
+
 }

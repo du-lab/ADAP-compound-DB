@@ -5,16 +5,19 @@ import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 
 import javax.persistence.NamedQuery;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
-public interface SubmissionRepository extends CrudRepository<Submission, Long>, SubmissionRepositoryCustom {
+public interface SubmissionRepository extends CrudRepository<Submission,Long> {
 
     Iterable<Submission> findByUserId(long userPrincipalId);
 
@@ -92,5 +95,17 @@ public interface SubmissionRepository extends CrudRepository<Submission, Long>, 
             "org.dulab.adapcompounddb.models.enums.ChromatographyType.LC_MSMS_NEG) and s.id = :id")
     boolean getIsSearchable(@Param("id") Long id);
 
+    //get studies with inhousereference = false, clusterable = true, consensus = false
+    @Query(value = "select distinct s from Submission s where s.clusterable = true "
+            , nativeQuery = false)
+    Page<Submission> findSubmissionByClusterableTrue(Pageable p);
 
+    //update clusterable by submission ID
+    @Modifying
+    @Query(value = "update Submission s set s.clusterable=:clusterable where s.id=:submissionId")
+    void updateClusterableBySubmissinoid(@Param("submissionId") long submissionId, @Param("clusterable") boolean clusterable);
+
+    //get number of peaks by username
+    @Query(value = "select count(s.id) from Submission s join s.user u join s.files f join f.spectra sp join sp.peaks where u.username= :userName")
+    int getPeaksByUserName(@Param("userName") String userName);
 }

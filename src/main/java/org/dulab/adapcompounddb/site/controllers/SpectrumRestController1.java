@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
+import java.net.URISyntaxException;
 import java.util.List;
 
 @RestController
@@ -113,12 +114,14 @@ public class SpectrumRestController1 {
             spectrum = spectrumService.find(spectrumId);
 
             JSONObject smilesImage = new JSONObject();
-            smilesImage.put("image", ConversionsUtils.toImage(spectrum.getCanonicalSmiles(), spectrum.getInChi()));
+
+                smilesImage.put("image", ConversionsUtils.toImagePython(spectrum.getCanonicalSmiles(), spectrum.getInChi()));
 
             return smilesImage.toString();
         } catch (EmptySearchResultException e) {
             LOGGER.warn("Cannot find spectrum with ID = " + spectrumId);
         }
+
         return null;
     }
 
@@ -148,13 +151,14 @@ public class SpectrumRestController1 {
             spectrum = submission.getFiles().get(fileIndex).getSpectra().get(spectrumIndex);
 
             JSONObject smilesImage = new JSONObject();
-            smilesImage.put("image", ConversionsUtils.toImage(spectrum.getCanonicalSmiles(), spectrum.getInChi()));
+            smilesImage.put("image", ConversionsUtils.toImagePython(spectrum.getCanonicalSmiles(), spectrum.getInChi()));
 
             return smilesImage.toString();
 
         } catch (IndexOutOfBoundsException e) {
             LOGGER.warn(e.getMessage(), e);
         }
+
 
         return null;
     }

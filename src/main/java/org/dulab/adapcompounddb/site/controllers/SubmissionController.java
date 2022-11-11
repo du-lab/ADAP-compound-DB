@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -56,7 +57,6 @@ public class SubmissionController extends BaseController {
     /********************************
      ***** View File / Submission *****
      ********************************/
-
     @RequestMapping(value = "/file/", method = RequestMethod.GET)
     public String fileView(final HttpSession session, final Model model) {
         final Submission submission = Submission.from(session);
@@ -213,8 +213,8 @@ public class SubmissionController extends BaseController {
 
     private void rawView(final HttpServletResponse response, final File file) throws IOException {
         response.setContentType("text/plain");
-        response.setHeader("Content-Disposition", "inline; filename=\"" + file.getName() + "\"");
-        response.getOutputStream().write(unzipBytes(file.getContent()));
+        //response.setHeader("Content-Disposition", "inline; \"" + file.getFileContent().getContent() + "\"");
+        response.getOutputStream().write(unzipBytes(file.getFileContent().getContent()));
     }
 
     /****************************************
@@ -251,8 +251,8 @@ public class SubmissionController extends BaseController {
 
     private void rawDownload(final HttpServletResponse response, final File file) throws IOException {
         response.setContentType("text/plain");
-        response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
-        response.getOutputStream().write(unzipBytes(file.getContent()));
+        response.setHeader("Content-Disposition", "attachment;");
+        response.getOutputStream().write(unzipBytes(file.getFileContent().getContent()));
     }
 
     /**********************************
@@ -260,7 +260,7 @@ public class SubmissionController extends BaseController {
      **********************************/
     @RequestMapping(value = "/file", method = RequestMethod.POST)
     public String fileView(final HttpSession session, final Model model, @Valid final SubmissionForm submissionForm,
-                           final Errors errors) {
+                           final Errors errors, RedirectAttributes redirectAttributes) {
 
         final Submission submission = Submission.from(session);
         if (errors.hasErrors()) {
@@ -277,6 +277,8 @@ public class SubmissionController extends BaseController {
         submission.setUser(getCurrentUserPrincipal());
 
         final String response = submit(submission, model, submissionForm);
+        if(response.startsWith("redirect:"))
+            redirectAttributes.addFlashAttribute("message", model.getAttribute("message"));
         Submission.clear(session);
         return response;
     }
@@ -404,5 +406,13 @@ public class SubmissionController extends BaseController {
     private String submissionNotFound(final Model model, final long submissionId) {
         model.addAttribute("errorMessage", "Cannot find submission ID = " + submissionId);
         return "/notfound/";
+    }
+
+    @GetMapping(value = "/publicSubmission")
+    public String publicSubmissions() {
+//        Iterable<Submission> e = submissionService.findSubmissionByClusterableTrueAndConsensusFalseAndInHouseFalse();
+//        model.addAttribute("publicSubmissions", e);
+
+        return "public_studies";
     }
 }

@@ -8,22 +8,29 @@ import com.google.gson.JsonParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.entities.Peak;
-
+//rdkit java wrapper
+import org.RDKit.*;
 import javax.annotation.Nullable;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collection;
-import java.util.List;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ConversionsUtils {
 
+
     private static final Logger LOGGER = LogManager.getLogger(ConversionsUtils.class);
 
+//    static{
+//        try {
+//            loadLibrary();
+//        } catch (URISyntaxException e) {
+//            LOGGER.error(e.getMessage(), e);
+//            throw new RuntimeException(e.getMessage());
+//        }
+//    }
 
     public static String peaksToJson(Collection<Peak> peaks) {
         return String.format("[%s]", peaks.stream()
@@ -48,8 +55,30 @@ public class ConversionsUtils {
         if (x == null) return null;
         return String.format("%.3f", x);
     }
+    public static String toImage(@Nullable String smiles, @Nullable String inchi)  {
 
-    public static String toImage(@Nullable String smiles, @Nullable String inchi) {
+        RWMol mol = null;
+
+        if (smiles != null)
+        {
+            mol = RWMol.MolFromSmiles(smiles);
+        }
+        else if (inchi !=null){
+            RDKFuncs f = new RDKFuncs();
+            ExtraInchiReturnValues rv = new ExtraInchiReturnValues();
+            mol = f.InchiToMol(inchi, rv);
+        }
+        else return null;
+
+        mol.compute2DCoords();
+        MolDraw2DSVG drawer = new MolDraw2DSVG(400,300);
+
+        drawer.drawMolecule(mol);
+        drawer.finishDrawing();
+        return drawer.getDrawingText();
+
+    }
+    public static String toImagePython(@Nullable String smiles, @Nullable String inchi)  {
 
         String parameters;
         if (smiles != null && !smiles.isEmpty())
@@ -125,4 +154,28 @@ public class ConversionsUtils {
             return "";
         }
     }
+
+
+    private static void loadLibrary() throws URISyntaxException {
+        //get os name
+        //System.out.println("***************" + System.getProperty("java.version"));
+        String osname = System.getProperty("os.name");
+        osname = osname.toLowerCase();
+        URL url = null;
+        if(osname == null)
+            throw new RuntimeException("Couuld not determine os properly");
+        else if(osname.contains("linux"))
+            url = ConversionsUtils.class.getResource("linux-aarch64/libGraphMolWrap.so");
+        else if(osname.contains("mac"))
+            url = ConversionsUtils.class.getResource("mac-amd64/libGraphMolWrap.jnilib");
+        else if(osname.contains("windows"))
+            url = ConversionsUtils.class.getResource("windows-amd64/GraphMolWrap.dll");
+
+
+        File file = new File(url.toURI());
+        String path = file.getAbsolutePath();
+
+        System.load(path);
+    }
+
 }

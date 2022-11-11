@@ -8,10 +8,8 @@ import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
-import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
-import org.dulab.adapcompounddb.site.repositories.SubmissionCategoryRepository;
-import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
-import org.dulab.adapcompounddb.site.repositories.SubmissionTagRepository;
+import org.dulab.adapcompounddb.site.repositories.*;
+import org.dulab.adapcompounddb.site.services.utils.DataUtils;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,25 +25,65 @@ import java.util.stream.Collectors;
 @Service
 public class SubmissionService {
 
+    private enum ColumnInformation {
+
+        ID(0, "id"),
+        DATETIME(1, "datetime"),
+        NAME(2, "name"),
+        EXTERNAL_ID(3, "externalId"),
+        PROPERTIES(4,"properties");
+
+        private final int position;
+        private final String sortColumnName;
+
+        public int getPosition() {
+            return position;
+        }
+
+        public String getSortColumnName() {
+            return sortColumnName;
+        }
+
+        ColumnInformation(int position, String sortColumnName) {
+            this.position = position;
+            this.sortColumnName = sortColumnName;
+        }
+
+        public static String getColumnNameFromPosition(int position) {
+            for (ColumnInformation columnInformation : ColumnInformation.values())
+                if (position == columnInformation.getPosition())
+                    return columnInformation.getSortColumnName();
+            return null;
+        }
+    }
     private static final Logger LOG = LogManager.getLogger(SubmissionService.class);
+
+    private static final double MEMORY_PER_PEAK = 1.3e-7; //in GB
 
     //    private static final String DESC = "DESC";
     private final SubmissionRepository submissionRepository;
+
+    private final UserPrincipalRepository userPrincipalRepository;
     private final SubmissionTagRepository submissionTagRepository;
     private final SubmissionCategoryRepository submissionCategoryRepository;
     private final SpectrumRepository spectrumRepository;
+    private final MultiFetchRepository multiFetchRepository;
 
 
     @Autowired
     public SubmissionService(final SubmissionRepository submissionRepository,
+                             final UserPrincipalRepository userPrincipalRepository,
                              final SubmissionTagRepository submissionTagRepository,
                              final SubmissionCategoryRepository submissionCategoryRepository,
-                             final SpectrumRepository spectrumRepository) {
+                             final SpectrumRepository spectrumRepository,
+                             final MultiFetchRepository multiFetchRepository) {
 
         this.submissionRepository = submissionRepository;
+        this.userPrincipalRepository = userPrincipalRepository;
         this.submissionTagRepository = submissionTagRepository;
         this.submissionCategoryRepository = submissionCategoryRepository;
         this.spectrumRepository = spectrumRepository;
+        this.multiFetchRepository = multiFetchRepository;
     }
 
     @Transactional
@@ -54,7 +92,7 @@ public class SubmissionService {
     }
 
     public Submission fetchSubmission(long submissionId) {
-        return submissionRepository.getSubmissionWithFilesSpectraPeaks(submissionId);
+        return multiFetchRepository.getSubmissionWithFilesSpectraPeaksIsotopes(submissionId);
     }
 
     @Transactional
@@ -105,7 +143,22 @@ public class SubmissionService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void saveSubmission(final Submission submission) {
+    public Submission saveSubmission(final Submission submission) {
+
+        //only save submission if it doens't surpass peak capacity
+        UserPrincipal user = submission.getUser();
+        String userName = user.getUsername();
+        if(!user.isAdmin()) {
+            int count = submissionRepository.getPeaksByUserName(userName);
+
+            //default peak capacity
+            int peakCapacity = user.getPeakCapacity();
+            if (count > peakCapacity) {
+                throw new IllegalStateException("You have reached a limit of data allowed to store in ADAP-KDB. Before " +
+                        "saving new data to ADAP-KDB, please delete some of your existing studies/libraries");
+            }
+        }
+
         final List<File> fileList = submission.getFiles();
 
         final Submission submissionObj = submissionRepository.save(submission);
@@ -122,6 +175,8 @@ public class SubmissionService {
         if (ids.contains(0L)) {
             spectrumRepository.saveSpectra(fileList, savedFileIds);
         }
+
+        return submissionObj;
     }
 
     @Transactional
@@ -300,5 +355,42 @@ public class SubmissionService {
     public boolean isSearchable(Submission s){
         s.setSearchable(submissionRepository.getIsSearchable(s.getId()));
         return s.isSearchable();
+    }
+
+//    public Iterable<Submission> findSubmissionByClusterableTrueAndConsensusFalseAndInHouseFalse(){
+//        return submissionRepository.findSubmissionByClusterableTrueAndConsensusFalseAndInHouseFalse();
+//    }
+
+    public DataTableResponse findSubmissionsPagable(int start, int length, int column, String sortDirection) {
+
+        //get column name that is sorted
+        final String sortColumn = ColumnInformation.getColumnNameFromPosition(column);
+
+        //get page format
+        Pageable pageable = DataUtils.createPageable(start, length, sortColumn, sortDirection);
+
+        // fetch x records at a time based on start page .
+        Page<Submission>pagedResult = submissionRepository.findSubmissionByClusterableTrue(pageable);
+
+        //create submission dto
+        List<SubmissionDTO> submissionDTOList = new ArrayList<>();
+        for(Submission s : pagedResult.getContent()) {
+            submissionDTOList.add(new SubmissionDTO(s,s.isLibrary(),false, true));
+        }
+        final DataTableResponse response = new DataTableResponse(submissionDTOList);
+        response.setRecordsTotal(pagedResult.getTotalElements());
+        response.setRecordsFiltered(pagedResult.getTotalElements());
+
+        return response;
+
+
+    }
+
+    public double getPeakDiskSpaceByUser(String userName) {
+        int peakPerUser = submissionRepository.getPeaksByUserName(userName) ;
+        double totalMemory = peakPerUser * MEMORY_PER_PEAK;
+
+        return totalMemory;
+
     }
 }

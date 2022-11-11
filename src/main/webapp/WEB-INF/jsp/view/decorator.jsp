@@ -121,7 +121,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="<c:url value="/compound/search/"/>">
+                            <a id="manualSearchPage" class="nav-link" href="<c:url value="/compound/search/"/>">
                                 <i class="material-icons align-middle">search</i>
                                 <span class="align-middle">Search</span>
                             </a>
@@ -189,7 +189,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="<c:url value="/logout/"/>">
+                                <a id="logoutPage" class="nav-link" href="<c:url value="/logout/"/>">
                                     <i class="material-icons align-middle">transit_enterexit</i>
                                     <span class="align-middle">Log out</span>
                                 </a>

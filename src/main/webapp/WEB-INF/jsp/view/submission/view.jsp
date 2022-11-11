@@ -7,7 +7,25 @@
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 
 <script src="<c:url value="/resources/AdapCompoundDb/js/tagsColor.js"/>"></script>
+<%--@elvariable id="message" type="java.lang.String"--%>
 
+
+
+<div id="modalView" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Study Upload</h4>
+                <button type="button" class="close" data-dismiss="modal">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Study is being submitted....</p>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="container">
 
     <c:if test="${!submission.isSearchable()}">
@@ -57,7 +75,7 @@
                                title="Search based on the spectral similarity">
                                 Search for similar spectra
                             </a>
-                            <a class="dropdown-item <c:if test="${!dulab:checkOntologyLevels(submission)}">disabled</c:if>"
+                            <a id="searchWithOntologyLevels" class="dropdown-item <c:if test="${!dulab:checkOntologyLevels(submission)}">disabled</c:if>"
                                href="<c:url value="/group_search/parameters"><c:if test="${submission.id != 0}"><c:param name="submissionId" value="${submission.id}"/></c:if><c:param name="withOntologyLevels">true</c:param></c:url>"
                                title="Search based on the mass, retention time, and spectral similarity">
                                 Search for similar spectra (with Ontology Levels)
@@ -391,7 +409,12 @@
 
     $(document).ready(function () {
         $('.toast').toast('show');
+
     });
+
+    $('#submissionForm').submit(function() {
+        $("#modalView").modal('show');
+    })
 
     // $(document).ready(function () {
     // Table with a list of spectra

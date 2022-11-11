@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.repositories.querybuilders;
 
+import org.dulab.adapcompounddb.exceptions.IllegalSpectrumSearchException;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
@@ -136,48 +137,46 @@ public class PreScreenQueryBuilder {
             queryBlock += String.format(" AND Spectrum.ChromatographyType IN (%s)", types);
         }
 
-
-
-
+        String whereBlock = "";
 
         if(Identifier != null && !Identifier.trim().isEmpty())
-            queryBlock += String.format(" AND (Spectrum.Name LIKE '%%%1$s%%' " +
+            whereBlock += String.format(" AND (Spectrum.Name LIKE '%%%1$s%%' " +
                     "OR Spectrum.InChiKey = '%1$s' " +
                     "OR Identifier.Value = '%1$s')", Identifier);
 
         if (precursorMz != null && precursorTolerance != null)
-            queryBlock += String.format(" AND Spectrum.Precursor > %f AND Spectrum.Precursor < %f",
+            whereBlock += String.format(" AND Spectrum.Precursor > %f AND Spectrum.Precursor < %f",
                     precursorMz - precursorTolerance, precursorMz + precursorTolerance);
 
         if (precursorMz != null && precursorTolerancePPM != null)
-            queryBlock += String.format(" AND Spectrum.Precursor > %f AND Spectrum.Precursor < %f",
+            whereBlock += String.format(" AND Spectrum.Precursor > %f AND Spectrum.Precursor < %f",
                     getLowerLimit(precursorMz, precursorTolerancePPM),
                     getUpperLimit(precursorMz, precursorTolerancePPM));
 
         if (masses != null && massTolerance != null)
-            queryBlock += String.format(" AND (%s)", Arrays.stream(masses)
+            whereBlock += String.format(" AND (%s)", Arrays.stream(masses)
                     .mapToObj(mass -> String.format(
                             "(Spectrum.Mass > %f AND Spectrum.Mass < %f)",
                             mass - massTolerance, mass + massTolerance))
                     .collect(Collectors.joining(" OR ")));
 
         if (masses != null && massTolerancePPM != null)
-            queryBlock += String.format(" AND (%s)", Arrays.stream(masses)
+            whereBlock += String.format(" AND (%s)", Arrays.stream(masses)
                     .mapToObj(mass -> String.format(
                             "(Spectrum.Mass > %f AND Spectrum.Mass < %f)",
                             getLowerLimit(mass, massTolerancePPM), getUpperLimit(mass, massTolerancePPM)))
                     .collect(Collectors.joining(" OR ")));
 
         if (retTime != null && retTimeTolerance != null)
-            queryBlock += String.format(" AND Spectrum.RetentionTime > %f AND Spectrum.RetentionTime < %f",
+            whereBlock += String.format(" AND Spectrum.RetentionTime > %f AND Spectrum.RetentionTime < %f",
                     retTime - retTimeTolerance, retTime + retTimeTolerance);
 
         if (retIndex != null && retIndexTolerance != null)
-            queryBlock += String.format(" AND Spectrum.RetentionIndex > %f AND Spectrum.RetentionIndex < %f",
+            whereBlock += String.format(" AND Spectrum.RetentionIndex > %f AND Spectrum.RetentionIndex < %f",
                     retIndex - retIndexTolerance, retIndex + retIndexTolerance);
 
         if (querySpectrum != null && mzTolerance != null) {
-            queryBlock += String.format(" AND (%s)", IntStream.range(1, numberOfTopMz + 1)
+            whereBlock += String.format(" AND (%s)", IntStream.range(1, numberOfTopMz + 1)
                     .mapToObj(i -> String.format("(TopMz%d > %f AND TopMz%d < %f)",
                             i, queryMz - mzTolerance,
                             i, queryMz + mzTolerance))
@@ -185,14 +184,18 @@ public class PreScreenQueryBuilder {
         }
 
         if (querySpectrum != null && mzTolerancePPM != null) {
-            queryBlock += String.format(" AND (%s)", IntStream.range(1, numberOfTopMz + 1)
+            whereBlock += String.format(" AND (%s)", IntStream.range(1, numberOfTopMz + 1)
                     .mapToObj(i -> String.format("(TopMz%d > %f AND TopMz%d < %f)",
                             i, getLowerLimit(queryMz, mzTolerancePPM),
                             i, getUpperLimit(queryMz, mzTolerancePPM)))
                     .collect(Collectors.joining(" OR ")));
         }
 
-        queryBlock += String.format(" AND (Spectrum.FileId IS NULL OR Submission.IsPrivate IS FALSE%s)",
+        if (whereBlock.isEmpty())
+            throw new IllegalSpectrumSearchException();
+
+        queryBlock += String.format("%s AND (Spectrum.FileId IS NULL OR Submission.IsPrivate IS FALSE%s)",
+                whereBlock,
                 user != null ? " OR UserPrincipal.Id = " + user.getId() : "");
         if (submissionIds != null)
             queryBlock += String.format(" AND (%s)", buildConditionStringWithSubmissionIds());

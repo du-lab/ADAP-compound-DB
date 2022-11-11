@@ -95,6 +95,7 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
     private Double retTimeError;
     private Double retIndexError;
     private boolean marked;
+    private String errorMessage = null;
 
 
     public SearchResultDTO() {}
@@ -682,6 +683,14 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
 
     public void setMarked(boolean marked) {
         this.marked = marked;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 
     @Override

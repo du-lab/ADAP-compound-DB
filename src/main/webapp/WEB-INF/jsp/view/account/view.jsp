@@ -30,6 +30,19 @@
                         <a href="${pageContext.request.contextPath}/account/changePassword" class="btn btn-secondary">Change
                             Password</a>
                     </div>
+                    <hr>
+                    <div class="row row-content" align = "center">
+                        <div class="col">
+                            <div class="btn-toolbar justify-content-end" role="toolbar">
+                                Current Disk Space (in GB)
+                                <div class="progress flex-grow-1 align-self-center mx-2">
+                                    <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow=${currentDiskSpace}
+                                            aria-valuemin="0" aria-valuemax=${maxDiskSpace}></div>
+                                </div>
+                                Maximum
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -40,9 +53,9 @@
             <div class="card">
                 <div class="card-header card-header-tabs">
                     <ul class="nav nav-tabs nav-fill nav-justified" role="tablist">
-                        <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#studies">Studies</a>
+                        <li class="nav-item"><a id="studiesTab" class="nav-link active" data-toggle="tab" href="#studies">Studies</a>
                         </li>
-                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#libraries">Libraries</a></li>
+                        <li class="nav-item"><a id="librariesTab" class="nav-link" data-toggle="tab" href="#libraries">Libraries</a></li>
                     </ul>
                 </div>
 
@@ -265,7 +278,24 @@
                 cell.innerHTML = i + 1;
             });
         }).draw();
+
+        const valuenow = parseFloat($("#progressBar").attr("aria-valuenow"));
+        const valuemax = parseFloat($("#progressBar").attr("aria-valuemax"));
+
+        const widthpercent = (valuenow/valuemax)*100 ;
+        const width = widthpercent +  '%'
+        const progressBar = $('#progressBar')
+            .css('width', width)
+            .attr('aria-valuenow', widthpercent)
+            .html(valuenow.toFixed(2));
+        // if (0 < widthpercent && widthpercent < 100)
+        //     progressBar.addClass('progress-bar-striped progress-bar-animated');
+        // else {
+        //     progressBar.removeClass('progress-bar-striped progress-bar-animated');
+        // }
+
     });
+
 
     // Adjust column widths when a table becomes visible
     $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
