@@ -29,4 +29,8 @@ public interface SpectrumMatchRepository extends JpaRepository<SpectrumMatch, Lo
 
     @Query("SELECT sm FROM SpectrumMatch sm WHERE sm.querySpectrum.id in :ids AND sm.matchSpectrum.id in :ids")
     Iterable<SpectrumMatch> findBySpectrumIds(@Param("ids") Set<Long> ids);
+
+    @Query(value= "Select sm from SpectrumMatch sm")
+    Page<SpectrumMatch> findAllSpectrumMatch(Pageable pageable);
+
 }

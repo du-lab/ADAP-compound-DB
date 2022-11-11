@@ -161,7 +161,7 @@
             scrollX: true,
             select: {style: 'single'},
             // scroller: true,
-            rowId: 'position',
+            //rowId: 'position',
             ajax: {
                 url: "${pageContext.request.contextPath}/file/group_search/data.json",
                 data: function (data) {
@@ -191,7 +191,8 @@
                 }
             },
             fnCreatedRow: function (row, data, dataIndex) {
-                $(row).attr('data-position', data.position);
+
+                $(row).attr('data-position', dataIndex);
                 $(row).attr('data-matchId', data.spectrumId);
                 $(row).attr('data-queryHRef', data.queryHRef);
                 $(row).attr('data-queryId', data.querySpectrumId);
@@ -199,7 +200,9 @@
                 $(row).attr('data-querySpectrumIndex', data.querySpectrumIndex);
             },
             columns: [
-                {data: 'position'},
+                {data: function(row, type,val, meta) {
+                    return meta.row + 1;
+                    }},
                 {
                     data: function (row) {
                         const href = (row.querySpectrumId !== 0)
@@ -244,7 +247,7 @@
                 }
             ]
         });
-
+        //console.log(table);
         let previousQueryUrl = null;
         let previousMatchUrl = null;
 

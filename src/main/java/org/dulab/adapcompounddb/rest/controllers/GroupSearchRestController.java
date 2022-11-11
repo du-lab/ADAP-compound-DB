@@ -5,10 +5,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
+import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
+import org.dulab.adapcompounddb.site.controllers.BaseController;
 import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
+import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.dulab.adapcompounddb.site.services.search.GroupSearchService;
 import org.dulab.adapcompounddb.site.services.search.SpectrumMatchService;
+import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,11 +28,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RestController
-public class GroupSearchRestController {
+public class GroupSearchRestController extends BaseController {
 
     public static final ObjectMapper mapper = new ObjectMapper();
     public static final List<SearchResultDTO> EMPTY_LIST = new ArrayList<>(0);
     private final SpectrumMatchService spectrumMatchService;
+    private final SpectrumMatchRepository spectrumMatchRepository;
     private final GroupSearchService groupSearchService;
 
     static {
@@ -34,8 +41,9 @@ public class GroupSearchRestController {
     }
 
     @Autowired
-    public GroupSearchRestController(final SpectrumMatchService spectrumMatchService, final GroupSearchService groupSearchService) {
+    public GroupSearchRestController(final SpectrumMatchService spectrumMatchService, SpectrumMatchRepository spectrumMatchRepository, final GroupSearchService groupSearchService) {
         this.spectrumMatchService = spectrumMatchService;
+        this.spectrumMatchRepository = spectrumMatchRepository;
         this.groupSearchService = groupSearchService;
     }
 
@@ -50,6 +58,8 @@ public class GroupSearchRestController {
         List<SearchResultDTO> matches;
 
         Object sessionObject = session.getAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
+        Page<SpectrumMatch> spectrumMatchPage;
+        DataTableResponse response = new DataTableResponse();
         if (sessionObject != null) {
 
             @SuppressWarnings("unchecked")
@@ -57,11 +67,29 @@ public class GroupSearchRestController {
 
             //Avoid ConcurrentModificationException by make a copy for sorting
             matches = new ArrayList<>(sessionMatches);
+            response = groupSearchSort(searchStr, start, length, matches, columnStr);
+
 
         } else {
-            matches = new ArrayList<>(EMPTY_LIST);
+            matches = new ArrayList<>();
+           if(getCurrentUserPrincipal() != null) {
+               int matchIndex = 0;
+               int progressStep = 0;
+               //List<SpectrumMatch> spectrumMatchList = spectrumMatchRepository.findAll();
+                spectrumMatchPage = spectrumMatchRepository.findAllSpectrumMatch(PageRequest.of(start/length,length));
+               for(SpectrumMatch match: spectrumMatchPage.getContent()) {
+                   SearchResultDTO searchResult = MappingUtils.mapSpectrumMatchToSpectrumClusterView(
+                           match, matchIndex++, null, null, null);
+                   searchResult.setChromatographyTypeLabel(match.getMatchSpectrum().getChromatographyType().getLabel());
+                   matches.add(searchResult);
+               }
+               response = groupSearchSort(searchStr, start, length, matches, columnStr);
+               response.setRecordsTotal(spectrumMatchPage.getTotalElements());
+               response.setRecordsFiltered(spectrumMatchPage.getTotalElements());
+           }
+
         }
-        final DataTableResponse response = groupSearchSort(searchStr, start, length, matches, columnStr);
+
         return mapper.writeValueAsString(response);
     }
 
@@ -125,7 +153,7 @@ public class GroupSearchRestController {
         final List<SearchResultDTO> spectrumMatchList = new ArrayList<>();
         for (int i = 0; i < spectrumList.size(); i++) {
 
-            if (i < start || spectrumMatchList.size() >= length)
+            if (spectrumMatchList.size() >= length)
                 continue;
             spectrumMatchList.add(spectrumList.get(i));
 
