@@ -57,7 +57,6 @@ public class SubmissionController extends BaseController {
     /********************************
      ***** View File / Submission *****
      ********************************/
-
     @RequestMapping(value = "/file/", method = RequestMethod.GET)
     public String fileView(final HttpSession session, final Model model) {
         final Submission submission = Submission.from(session);

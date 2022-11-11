@@ -1,5 +1,13 @@
 package org.dulab.adapcompounddb.site.controllers;
 
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,6 +48,13 @@ import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.ME
 @Controller
 public class FileUploadController extends BaseController {
 
+
+    private static final String ACCESS_ID = System.getenv("ACCESS_ID");
+    private static final String ACCESS_KEY = System.getenv("ACCESS_KEY");
+
+
+
+    private static final String AWS_BUCKET = "adap-big-export";
     private static final Logger LOG = LogManager.getLogger(FileUploadController.class);
     private final CaptchaService captchaService;
 
@@ -168,6 +183,69 @@ public class FileUploadController extends BaseController {
         return "redirect:/file/";
     }
 
+    @GetMapping(value = "/file/upload/s3")
+    public String downloadFromS3 (@RequestParam(value="filename") String fileName, @RequestParam(value="chromatographyType") String chromatography, HttpSession session,  HttpServletResponse response) throws IOException {
+
+        AWSCredentials credentials = new BasicAWSCredentials(
+                ACCESS_ID,
+                ACCESS_KEY
+        );
+
+        AmazonS3 s3client = AmazonS3ClientBuilder
+                .standard()
+                .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                .withRegion(Regions.US_EAST_2)
+                .build();
+
+        S3Object s3object = s3client.getObject(AWS_BUCKET, fileName);
+        S3ObjectInputStream inputStream = s3object.getObjectContent();
+
+         MultipartFile multipartFile = new MockMultipartFile(fileName, fileName, "multipart/form-data", inputStream);
+
+        Submission submission = new Submission();
+
+        ChromatographyType chromatographyType = null;
+        chromatography = chromatography.toLowerCase();
+        for (ChromatographyType type : ChromatographyType.values()) {
+            if (type.name().toLowerCase().startsWith(chromatography)) {
+                chromatographyType = type;
+                break;
+            }
+        }
+
+        if (chromatographyType == null)
+            throw new IllegalStateException(
+                    String.format("Chromatography of type %s is not supported", chromatography));
+
+        //create "fake" upload form
+        FileUploadForm fileUploadForm = new FileUploadForm();
+        fileUploadForm.setChromatographyType(chromatographyType);
+        fileUploadForm.setFiles(Collections.singletonList(multipartFile));
+
+        MetaDataMapping metaDataMapping = new MetaDataMapping();
+        metaDataMapping.setFieldName(MetaDataMapping.Field.NAME, "Name");
+        metaDataMapping.setFieldName(MetaDataMapping.Field.MASS, "Mass");
+        metaDataMapping.setFieldName(MetaDataMapping.Field.FORMULA, "Formula");
+        metaDataMapping.setFieldName(MetaDataMapping.Field.CAS_ID, "CASNO");
+        metaDataMapping.setFieldName(MetaDataMapping.Field.EXTERNAL_ID, "NIST Id");
+        metaDataMapping.setFieldName(MetaDataMapping.Field.INCHI_KEY, "INCHI_KEY");
+        metaDataMapping.setFieldName(MetaDataMapping.Field.RETENTION_TIME, "RT");
+        metaDataMapping.setFieldName(MetaDataMapping.Field.PRECURSOR_MZ, "PrecursorMz");
+        metaDataMapping.setFieldName(MetaDataMapping.Field.PRECURSOR_TYPE, "Precursor_type");
+
+        Map<FileType, MetaDataMapping> metaDataMappingMap = new HashMap<>();
+        metaDataMappingMap.put(FileType.MSP, metaDataMapping);
+        MultipartFileUtils.readMultipartFile(submission, fileUploadForm.getFiles(), fileUploadForm.getChromatographyType(),
+                metaDataMappingMap, false, false);
+
+        Submission.assign(session, submission);
+        session.setAttribute("FileUploadForm", fileUploadForm);
+        String byteString = ConversionsUtils.formToByteString(fileUploadForm);
+        Cookie metaFieldsCookie = new Cookie(FILE_UPLOAD_FIELDS_COOKIE_NAME, byteString);
+        response.addCookie(metaFieldsCookie);
+
+        return "redirect:/file/";
+    }
     @RequestMapping(value = "/submission/metadata", method = RequestMethod.GET)
     public String submitMetadata(Model model, HttpSession session, HttpServletResponse response,
                                  @CookieValue(value = META_FIELDS_COOKIE_NAME, defaultValue = "") String metaFieldsInJson) {

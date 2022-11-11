@@ -105,6 +105,7 @@ public interface SubmissionRepository extends CrudRepository<Submission,Long> {
     @Query(value = "update Submission s set s.clusterable=:clusterable where s.id=:submissionId")
     void updateClusterableBySubmissinoid(@Param("submissionId") long submissionId, @Param("clusterable") boolean clusterable);
 
-
-
+    //get number of peaks by username
+    @Query(value = "select count(s.id) from Submission s join s.user u join s.files f join f.spectra sp join sp.peaks where u.username= :userName")
+    int getPeaksByUserName(@Param("userName") String userName);
 }
