@@ -198,6 +198,13 @@
                     </ul>
                 </div>
             </div>
+            <div class="row mt-5">
+                <div class="col-12">
+                    <a class="feedback" href="https://forms.gle/zYPXt463DC1WjJMy8" target="_blank">
+                        <strong>Leave Feedback</strong>
+                    </a>
+                </div>
+            </div>
         </div>
     </nav>
 
