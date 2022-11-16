@@ -11,10 +11,7 @@ import org.dulab.adapcompounddb.site.services.admin.QueryParameters;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters.RetIndexMatchType;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -34,8 +31,12 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     public static final String COMMA = ",";
 
 
-    @PersistenceContext
+    @PersistenceContext()
     private EntityManager entityManager;
+
+    // Add Extended to speed up queries
+    @PersistenceContext(type = PersistenceContextType.EXTENDED)
+    private EntityManager preScreenEntityManager;
 
     @Deprecated
     @Override
@@ -277,7 +278,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
         final String sqlQuery = queryBuilder.build();
 
-        @SuppressWarnings("unchecked") final Iterable<Object[]> resultList = entityManager
+        @SuppressWarnings("unchecked") final Iterable<Object[]> resultList = preScreenEntityManager
                 .createNativeQuery(sqlQuery)
                 .getResultList();
 
