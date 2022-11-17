@@ -47,7 +47,7 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
     private String hashedPassword;
 
 //    private List<Submission> submissions;
-    private int peakCapacity;
+    private int peakCapacity = 15000000;
     private Set<UserRole> roles;
 
     @Id
