@@ -123,7 +123,7 @@
                         <li class="nav-item">
                             <a id="manualSearchPage" class="nav-link" href="<c:url value="/compound/search/"/>">
                                 <i class="material-icons align-middle">search</i>
-                                <span class="align-middle">Search</span>
+                                <span class="align-middle">Manual Search</span>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -137,7 +137,7 @@
                                <c:if test="${sessionScope[dulab:groupSearchResultsAttributeName()] == null}">hidden</c:if>
                                href="<c:url value="/group_search/"/>">
                                 <i class="material-icons align-middle">search</i>
-                                <span class="align-middle">Search</span>
+                                <span class="align-middle">Group Search</span>
                             </a>
                         </li>
                         <li class="nav-item">

@@ -51,12 +51,9 @@
                                 Libraries
                             </a></li>
 
-                            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#parameters">
+                            <li class="nav-item"><a id="parametersTab" class="nav-link" data-toggle="tab" href="#parameters">
                                Parameters
                                 <span id="custom" class="badge badge-info" style="display: none;">Custom Parameters</span>
-
-
-
                             </a></li>
 
                         </ul>
@@ -188,7 +185,7 @@
                             </div>
                             <div class="form-group row">
                                 <form:label id="scoreThreshold" path="scoreThreshold"
-                                            cssClass="col-md-4 col-form-label">Score Threshold (1 - 5000):</form:label>
+                                            cssClass="col-md-4 col-form-label">Score Threshold (1 - 1000):</form:label>
                                 <div class="col-md-8">
                                     <form:input path="scoreThreshold" type="number" step="1" cssClass="form-control"/>
                                 </div>
