@@ -1,25 +1,52 @@
 # ADAP Compound Database
 
+### Setup Dev/Local
+
 ### Requirements
 - Java 9
 - Maven
-- Tomcat 8.5
 - MySQL 8.0
 
-### Setup
+1. Clone GitLab repository of the project and run `mvn clean install`
+```
+https://cci-scm.uncc.edu/du-lab/adap-kdb.git
+```
+
+2. Install MySQL. Choose username and password for connecting to MySQL.
+3. To populate the database, download a backup file from Google Drive and run (Import only table structure if data is not required)
+```
+python3 scripts/import_mysql.py --save GOOGLEDRIVEBACKUPFOLDER --user USERNAME --password PASSWORD
+```
+If above command throws error, consider turning off foriegn key checks using in sql console and turn it on after table creation
+```
+SET FOREIGN_KEY_CHECKS=0;
+```
+4. Navigate to application-local.properties and edit database spring.datasource.username and spring.datasource.password with MySql username and password
+5. Open the code using IntelliJ and add a new configuration - type springboot to run the application. In the configuration select the main class as `org.dulab.adapcompounddb.Application` and active profiles as `local`. Alternatively you can find the Application.java class and run the class to create the configuration automatically, and edit the configuration to add active profiles as `local`.
+6. Edit run configuration and add DISABLE_CAPTCHA=1 to disable google captcha checks
+
+Note: Do not edit the application.properties file and for local development
+
+### Setup Server
+
+### Requirements
+- Java 9
+- Maven
+- MySQL 8.0
+- Tomcat 8.5
 1. Clone GitLab repository of the project
 ```
 https://cci-scm.uncc.edu/du-lab/adap-kdb.git
 ```
-2. Install Apache Tomcat 8.5 server. Download the zip archive 
-([link](https://mirrors.ocf.berkeley.edu/apache/tomcat/tomcat-8/v8.5.61/bin/apache-tomcat-8.5.61.zip)) 
-, unzip it, and copy it to your project folder or somewhere else.
-Then add the content of the file 
-**[repository]/server/context.xml** to the file **[tomcat]/conf/context.xml**
+2. Install Apache Tomcat 8.5 server. Download the zip archive
+   ([link](https://mirrors.ocf.berkeley.edu/apache/tomcat/tomcat-8/v8.5.61/bin/apache-tomcat-8.5.61.zip))
+   , unzip it, and copy it to your project folder or somewhere else.
+   Then add the content of the file
+   **[repository]/server/context.xml** to the file **[tomcat]/conf/context.xml**
 
-3. Install MySQL. Choose username and password for connecting to MySQL. Update fields `username` and 
-`password` in file **[tomcat]/conf/context.xml**. Then, download MySQL JDBC driver and put it into 
-**[tomcat]/lib** directory. To populate the database, download a backup file from Google Drive and run
+3. Install MySQL. Choose username and password for connecting to MySQL. Update fields `username` and
+   `password` in file **[tomcat]/conf/context.xml**. Then, download MySQL JDBC driver and put it into
+   **[tomcat]/lib** directory. To populate the database, download a backup file from Google Drive and run
 ```
 mysql -u root -p < dump.mysql
 ```
