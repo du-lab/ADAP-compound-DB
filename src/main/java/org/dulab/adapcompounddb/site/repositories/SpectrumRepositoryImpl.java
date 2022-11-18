@@ -11,6 +11,8 @@ import org.dulab.adapcompounddb.site.services.admin.QueryParameters;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters.RetIndexMatchType;
 
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.math.BigInteger;
@@ -249,6 +251,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
      * @param searchClusterable if true then clusterable spectra are returned
      * @return collection of Spectrum IDs and the number of common m/z peaks
      */
+    @TransactionAttribute(TransactionAttributeType.NEVER)
     @Override
     public Iterable<Object[]> preScreenSpectra(Spectrum querySpectrum, SearchParameters params, UserPrincipal user,
                                                boolean greedy, boolean searchConsensus, boolean searchReference,

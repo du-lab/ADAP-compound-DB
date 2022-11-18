@@ -4,6 +4,8 @@ import org.dulab.adapcompounddb.models.entities.*;
 import org.springframework.stereotype.Repository;
 
 
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.*;
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -57,13 +59,14 @@ public class MultiFetchRepository {
         return submission;
     }
 
+    @TransactionAttribute(TransactionAttributeType.NEVER)
     public List<Spectrum> getSpectraWithPeaksIsotopes(Set<Long> spectrumIds) {
 
         if (spectrumIds.stream().anyMatch(Objects::isNull))
             throw new IllegalStateException("Some if spectrum IDs are null: " + spectrumIds);
 
         List<Spectrum> spectra = entityManager
-                .createQuery("select distinct s from Spectrum s join fetch s.peaks where s.id in (:spectrumIds)", Spectrum.class)
+                .createQuery("select distinct s from Spectrum s left join fetch s.peaks where s.id in (:spectrumIds)", Spectrum.class)
                 .setParameter("spectrumIds", spectrumIds)
                 .getResultList();
 
