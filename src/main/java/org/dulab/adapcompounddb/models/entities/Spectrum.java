@@ -497,7 +497,7 @@ public class Spectrum implements Serializable {
     }
 
     public void setClusterable(boolean clusterable) {
-        this.clusterable = clusterable;
+        this.clusterable = false;
     }
 
     public boolean isIntegerMz() {

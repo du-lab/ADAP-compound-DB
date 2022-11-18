@@ -24,9 +24,6 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private static final String SESSION_ATTRIBUTE_KEY = "currentUser";
 
     @Autowired
-    DataSource dataSource;
-
-    @Autowired
     UserDetailsService userDetailsService;
 
     @Autowired

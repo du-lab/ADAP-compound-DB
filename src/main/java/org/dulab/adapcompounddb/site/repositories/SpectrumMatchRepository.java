@@ -11,6 +11,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.stereotype.Repository;
+
+@Repository
 public interface SpectrumMatchRepository extends JpaRepository<SpectrumMatch, Long> {
 
     List<SpectrumMatch> findAllByQuerySpectrumId(long querySpectrumId);

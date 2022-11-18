@@ -13,6 +13,9 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Set;
 
+import org.springframework.stereotype.Repository;
+
+@Repository
 public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, SpectrumRepositoryCustom {
 
     @Query("SELECT s FROM Spectrum s WHERE s.matches IS EMPTY")

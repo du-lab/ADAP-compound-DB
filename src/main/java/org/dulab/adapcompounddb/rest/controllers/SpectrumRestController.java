@@ -83,7 +83,7 @@ public class SpectrumRestController extends BaseController {
         this.individualSearchService = individualSearchService;
     }
 
-    @RequestMapping(value = "/findSpectrumBySubmissionId", produces = "application/json")
+    @RequestMapping(value = "/findSpectrumBySubmissionId.json", produces = "application/json")
     public String findSpectrumBySubmissionId(@RequestParam("submissionId") final Long submissionId,
                                              @RequestParam("start") final Integer start, @RequestParam("length") final Integer length,
                                              @RequestParam("column") final Integer column, @RequestParam("sortDirection") final String sortDirection,

@@ -10,6 +10,9 @@ import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters;
 
+import org.springframework.stereotype.Repository;
+
+@Repository
 public interface SpectrumRepositoryCustom {
 
     @Deprecated

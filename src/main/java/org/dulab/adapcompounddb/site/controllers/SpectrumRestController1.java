@@ -35,8 +35,8 @@ public class SpectrumRestController1 {
     }
 
     @RequestMapping(value = {
-            "/spectrum/{spectrumId:\\d+}/search/{sign}/peaks",
-            "/submission/*/spectrum/{spectrumId:\\d+}/search/{sign}/peaks"},
+            "/spectrum/{spectrumId:\\d+}/search/{sign}/peaks.json",
+            "/submission/*/spectrum/{spectrumId:\\d+}/search/{sign}/peaks.json"},
             produces = "application/json")
     public String spectrumSearchPeaks(@PathVariable("spectrumId") long spectrumId,
                                       @PathVariable("sign") String sign) {
@@ -49,7 +49,7 @@ public class SpectrumRestController1 {
         return spectrumToJsonPeaks(spectrum, sign);
     }
 
-    @RequestMapping(value = "/file/{fileIndex:\\d+}/{spectrumIndex:\\d+}/search/{sign}/peaks", produces = "application/json")
+    @RequestMapping(value = "/file/{fileIndex:\\d+}/{spectrumIndex:\\d+}/search/{sign}/peaks.json", produces = "application/json")
     public String spectrumSearchPeaks(@PathVariable("fileIndex") int fileIndex,
                                       @PathVariable("spectrumIndex") int spectrumIndex,
                                       @PathVariable("sign") String sign, HttpSession session) {
@@ -90,8 +90,8 @@ public class SpectrumRestController1 {
     }
 
     @RequestMapping(value = {
-            "/spectrum/{spectrumId:\\d+}/search/info",
-            "/submission/*/spectrum/{spectrumId:\\d+}/search/info"},
+            "/spectrum/{spectrumId:\\d+}/search/info.json",
+            "/submission/*/spectrum/{spectrumId:\\d+}/search/info.json"},
             produces = "application/json")
     public String spectrumSearchInfo(@PathVariable("spectrumId") long spectrumId) {
         Spectrum spectrum = null;
@@ -104,8 +104,8 @@ public class SpectrumRestController1 {
     }
 
     @RequestMapping(value = {
-            "/spectrum/{spectrumId:\\d+}/search/structure",
-            "/submission/*/spectrum/{spectrumId:\\d+}/search/structure"},
+            "/spectrum/{spectrumId:\\d+}/search/structure.json",
+            "/submission/*/spectrum/{spectrumId:\\d+}/search/structure.json"},
             produces = "application/json")
     public String spectrumSearchStructure(@PathVariable("spectrumId") long spectrumId) {
         Spectrum spectrum = null;
@@ -141,7 +141,7 @@ public class SpectrumRestController1 {
         return spectrumToJsonInfo(spectrum, fileIndex, spectrumIndex);
     }
 
-    @RequestMapping(value = "/file/{fileIndex:\\d+}/{spectrumIndex:\\d+}/search/structure",
+    @RequestMapping(value = "/file/{fileIndex:\\d+}/{spectrumIndex:\\d+}/search/structure.json",
             produces = "application/json")
     public String spectrumSearchStructure(@PathVariable("fileIndex") int fileIndex,
                                           @PathVariable("spectrumIndex") int spectrumIndex, HttpSession session) {

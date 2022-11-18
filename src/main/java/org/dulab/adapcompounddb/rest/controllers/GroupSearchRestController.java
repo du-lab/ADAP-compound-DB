@@ -39,7 +39,7 @@ public class GroupSearchRestController {
         this.groupSearchService = groupSearchService;
     }
 
-    @RequestMapping(value = "/file/group_search/data", produces = "application/json")
+    @RequestMapping(value = "/file/group_search/data.json", produces = "application/json")
     public String fileGroupSearchResults(
             @RequestParam("start") final Integer start,
             @RequestParam("length") final Integer length,

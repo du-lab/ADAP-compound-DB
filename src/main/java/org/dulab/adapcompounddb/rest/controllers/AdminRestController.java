@@ -90,7 +90,7 @@ public class AdminRestController {
         return "OK";
     }
 
-    @RequestMapping(value = "/get/submissions", produces = "application/json")
+    @RequestMapping(value = "/get/submissions.json", produces = "application/json")
     public String getSubmissions(@RequestParam("start") Integer start,
                                  @RequestParam("length") Integer length,
                                  @RequestParam("column") Integer column,

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<%@ taglib prefix="decorator" uri="http://www.opensymphony.com/sitemesh/decorator" %>
+<%--<%@ taglib prefix="decorator" uri="http://www.opensymphony.com/sitemesh/decorator" %>--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 <!DOCTYPE html>
@@ -19,8 +19,7 @@
         gtag('config', 'UA-163158069-1');
     </script>
 
-
-    <title><decorator:title default="ADAP-KDB Compound Knowledgebase"/></title>
+    <title>ADAP-KDB Compound Knowledgebase</title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="icon" type="image/png" href="<c:url value="/resources/static/favicon-32x32.png"/>" sizes="32x32"/>
     <link rel="icon" type="image/png" href="<c:url value="/resources/static/favicon-16x16.png"/>" sizes="16x16"/>
@@ -46,7 +45,7 @@
           href="<c:url value="https://fonts.googleapis.com/css?family=Crimson+Text|Proza+Libre|Lato:300,400"/>">
     <link rel="stylesheet" href="<c:url value="/resources/tagify-master/tagify.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/SpeckTackle/st.css"/>">
-    <decorator:head/>
+    <sitemesh:write property="head"/>
 </head>
 
 <body>
@@ -209,7 +208,7 @@
     </nav>
 
     <article style="margin: 0 auto; width: 100%">
-        <decorator:body/>
+        <sitemesh:write property='body' />
     </article>
 </div>
 
