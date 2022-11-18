@@ -39,7 +39,9 @@ public class AccountController extends BaseController {
                 submissionService.findChromatographyTypes(submissions);
 
         List<SubmissionDTO> submissionDTOs = submissions.stream()
-                .map(s -> new SubmissionDTO(s, idToIsLibraryMap.get(s.getId()), idToIsInHouseLibraryMap.get(s.getId()),
+                .map(s -> new SubmissionDTO(s,
+                        idToIsLibraryMap.getOrDefault(s.getId(), false),
+                        idToIsInHouseLibraryMap.getOrDefault(s.getId(), false),
                         false))
                 .collect(Collectors.toList());
 
