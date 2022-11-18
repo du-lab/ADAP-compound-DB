@@ -5,7 +5,6 @@ import org.springframework.stereotype.Repository;
 
 
 import javax.persistence.*;
-import java.lang.reflect.Field;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -17,6 +16,10 @@ public class MultiFetchRepository {
     // Add Extended to speed up queries
     @PersistenceContext(type = PersistenceContextType.EXTENDED)
     EntityManager entityManager;
+
+    public void resetEntityManager() {
+        entityManager.clear();
+    }
 
     public Submission getSubmissionWithFilesSpectraPeaksIsotopes(long submissionId) {
 
@@ -55,6 +58,9 @@ public class MultiFetchRepository {
     }
 
     public List<Spectrum> getSpectraWithPeaksIsotopes(Set<Long> spectrumIds) {
+
+        if (spectrumIds.stream().anyMatch(Objects::isNull))
+            throw new IllegalStateException("Some if spectrum IDs are null: " + spectrumIds);
 
         List<Spectrum> spectra = entityManager
                 .createQuery("select distinct s from Spectrum s join fetch s.peaks where s.id in (:spectrumIds)", Spectrum.class)

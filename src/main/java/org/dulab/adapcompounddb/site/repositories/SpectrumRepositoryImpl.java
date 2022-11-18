@@ -38,6 +38,11 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     @PersistenceContext(type = PersistenceContextType.EXTENDED)
     private EntityManager preScreenEntityManager;
 
+    @Override
+    public void resetEntityManager() {
+        preScreenEntityManager.clear();
+    }
+
     @Deprecated
     @Override
     public List<SpectrumMatch> spectrumSearch(final SearchType searchType, final Spectrum querySpectrum, final QueryParameters params) {
