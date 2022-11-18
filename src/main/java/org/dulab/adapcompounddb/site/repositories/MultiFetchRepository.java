@@ -59,7 +59,7 @@ public class MultiFetchRepository {
         return submission;
     }
 
-    @TransactionAttribute(TransactionAttributeType.NEVER)
+//    @TransactionAttribute(TransactionAttributeType.NEVER)
     public List<Spectrum> getSpectraWithPeaksIsotopes(Set<Long> spectrumIds) {
 
         if (spectrumIds.stream().anyMatch(Objects::isNull))
