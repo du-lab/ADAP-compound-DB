@@ -1,6 +1,9 @@
 package org.dulab.adapcompounddb.site.repositories;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.entities.*;
+import org.hibernate.annotations.QueryHints;
 import org.springframework.stereotype.Repository;
 
 
@@ -15,12 +18,15 @@ import java.util.stream.Collectors;
 @Repository
 public class MultiFetchRepository {
 
+    private static final Logger LOGGER = LogManager.getLogger(MultiFetchRepository.class);
+
     // Add Extended to speed up queries
-    @PersistenceContext(type = PersistenceContextType.EXTENDED)
+    @PersistenceContext()  // type = PersistenceContextType.EXTENDED
     EntityManager entityManager;
 
     public void resetEntityManager() {
         entityManager.clear();
+        LOGGER.info("Cleared entity manager");
     }
 
     public Submission getSubmissionWithFilesSpectraPeaksIsotopes(long submissionId) {
@@ -68,6 +74,7 @@ public class MultiFetchRepository {
         List<Spectrum> spectra = entityManager
                 .createQuery("select distinct s from Spectrum s left join fetch s.peaks where s.id in (:spectrumIds)", Spectrum.class)
                 .setParameter("spectrumIds", spectrumIds)
+                .setHint(QueryHints.READ_ONLY, true)
                 .getResultList();
 
 //        List<Peak> peaks = entityManager
@@ -78,6 +85,7 @@ public class MultiFetchRepository {
         List<Isotope> isotopes = entityManager
                 .createQuery("select i from Isotope i where i.spectrum.id in (:spectrumIds)", Isotope.class)
                 .setParameter("spectrumIds", spectrumIds)
+                .setHint(QueryHints.READ_ONLY, true)
                 .getResultList();
 
 //        assignChildrenToParents(peaks, Peak::getSpectrum, spectra, Spectrum::setPeaks, Spectrum::getId);

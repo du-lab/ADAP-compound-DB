@@ -10,6 +10,7 @@ import org.dulab.adapcompounddb.site.repositories.querybuilders.*;
 import org.dulab.adapcompounddb.site.services.admin.QueryParameters;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters.RetIndexMatchType;
+import org.hibernate.annotations.QueryHints;
 
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -37,12 +38,13 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     private EntityManager entityManager;
 
     // Add Extended to speed up queries
-    @PersistenceContext(type = PersistenceContextType.EXTENDED)
+    @PersistenceContext()  // type = PersistenceContextType.EXTENDED
     private EntityManager preScreenEntityManager;
 
     @Override
     public void resetEntityManager() {
         preScreenEntityManager.clear();
+        LOGGER.info("Cleared entity manager");
     }
 
     @Deprecated
@@ -288,6 +290,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
         @SuppressWarnings("unchecked") final Iterable<Object[]> resultList = preScreenEntityManager
                 .createNativeQuery(sqlQuery)
+                .setHint(QueryHints.READ_ONLY, true)
                 .getResultList();
 
         return resultList;
