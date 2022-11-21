@@ -125,7 +125,7 @@ public class SpectrumRestController1 {
         return null;
     }
 
-    @RequestMapping(value = "/file/{fileIndex:\\d+}/{spectrumIndex:\\d+}/search/info", produces = "application/json")
+    @RequestMapping(value = "/file/{fileIndex:\\d+}/{spectrumIndex:\\d+}/search/info.json", produces = "application/json")
     public String spectrumSearchInfo(@PathVariable("fileIndex") int fileIndex,
                                      @PathVariable("spectrumIndex") int spectrumIndex, HttpSession session) {
 
