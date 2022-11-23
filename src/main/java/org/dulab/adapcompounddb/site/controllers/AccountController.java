@@ -30,10 +30,13 @@ public class AccountController extends BaseController {
     public String view(Model model) {
 
         UserPrincipal user = getCurrentUserPrincipal();
+
         List<Submission> submissions = submissionService.findSubmissionsWithTagsByUserId(user.getId());
 
         Map<Long, Boolean> idToIsLibraryMap = submissionService.getIdToIsLibraryMap(submissions);
+
         Map<Long, Boolean> idToIsInHouseLibraryMap = submissionService.getIdToIsInHouseLibraryMap(submissions);
+
 
         Map<Long, List<ChromatographyType>> submissionIdToChromatographyListMap =
                 submissionService.findChromatographyTypes(submissions);
