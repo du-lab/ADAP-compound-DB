@@ -32,8 +32,8 @@
         <maven.compiler.target>9</maven.compiler.target>
         <spring.version>5.2.22.RELEASE</spring.version>
         <spring-security.version>5.4.10</spring-security.version>
-        <spring-data.version>2.3.9.RELEASE</spring-data.version>
-        <log4j.version>2.17.2</log4j.version>
+        <spring-data.version>2.0.14.RELEASE</spring-data.version>
+        <log4j.version>2.19.0</log4j.version>
         <apache.tomcat.port>80</apache.tomcat.port>
         <apache.tomcat.path>/</apache.tomcat.path>
     </properties>
@@ -73,11 +73,11 @@
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.codehaus.jackson/jackson-mapper-asl -->
-        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
-            <version>1.9.13</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.codehaus.jackson</groupId>-->
+<!--            <artifactId>jackson-mapper-asl</artifactId>-->
+<!--            <version>1.9.13</version>-->
+<!--        </dependency>-->
 
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-math3 -->
         <dependency>
@@ -100,19 +100,19 @@
         <!--        </dependency>-->
 
 
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>2.9.5</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-<!--            <version>2.9.10.4</version>-->
-            <version>2.9.10.8</version>
-            <scope>compile</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.fasterxml.jackson.core</groupId>-->
+<!--            <artifactId>jackson-core</artifactId>-->
+<!--            <version>2.9.5</version>-->
+<!--            <scope>compile</scope>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>com.fasterxml.jackson.core</groupId>-->
+<!--            <artifactId>jackson-databind</artifactId>-->
+<!--&lt;!&ndash;            <version>2.9.10.4</version>&ndash;&gt;-->
+<!--            <version>2.9.10.8</version>-->
+<!--            <scope>compile</scope>-->
+<!--        </dependency>-->
 
         <!-- https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple -->
         <dependency>
@@ -167,6 +167,7 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
             <version>${log4j.version}</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -190,7 +191,7 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-taglib</artifactId>
             <version>${log4j.version}</version>
-            <scope>runtime</scope>
+<!--            <scope>runtime</scope>-->
         </dependency>
         <!--                           -->
         <!-- END of Log4j dependencies -->
@@ -218,7 +219,7 @@
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
 <!--            <version>6.1.2.Final</version>-->
-            <version>5.6.10.Final</version>
+            <version>5.4.33.Final</version>
 <!--            <version>5.6.9.Final</version>-->
         </dependency>
         <!-- https://mvnrepository.com/artifact/javax.validation/validation-api -->
@@ -231,7 +232,7 @@
         <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>6.2.4.Final</version>
+            <version>8.0.0.Final</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/javax.el/javax.el-api -->
         <dependency>
@@ -310,6 +311,7 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.7.25</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -362,31 +364,31 @@
             <version>3.2.0</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.dbunit</groupId>
-            <artifactId>dbunit</artifactId>
-            <version>2.5.1</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>junit</artifactId>
-                    <groupId>junit</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.github.springtestdbunit</groupId>
-            <artifactId>spring-test-dbunit</artifactId>
-            <version>1.2.1</version>
-            <scope>test</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.dbunit</groupId>-->
+<!--            <artifactId>dbunit</artifactId>-->
+<!--            <version>2.5.1</version>-->
+<!--            <scope>test</scope>-->
+<!--            <exclusions>-->
+<!--                <exclusion>-->
+<!--                    <artifactId>junit</artifactId>-->
+<!--                    <groupId>junit</groupId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>com.github.springtestdbunit</groupId>-->
+<!--            <artifactId>spring-test-dbunit</artifactId>-->
+<!--            <version>1.2.1</version>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
 
 
-        <dependency>
-            <groupId>com.github.haifengl</groupId>
-            <artifactId>smile-core</artifactId>
-            <version>1.5.1</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.github.haifengl</groupId>-->
+<!--            <artifactId>smile-core</artifactId>-->
+<!--            <version>1.5.1</version>-->
+<!--        </dependency>-->
 
         <!-- https://mvnrepository.com/artifact/org.sitemesh/sitemesh -->
         <!-- https://mvnrepository.com/artifact/opensymphony/sitemesh -->
@@ -460,6 +462,12 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/net.sf.trove4j/trove4j -->
+        <dependency>
+            <groupId>net.sf.trove4j</groupId>
+            <artifactId>trove4j</artifactId>
+            <version>3.0.3</version>
+        </dependency>
 
     </dependencies>
     <build>
