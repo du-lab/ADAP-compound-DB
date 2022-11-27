@@ -38,13 +38,17 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     private EntityManager entityManager;
 
     // Add Extended to speed up queries
-    @PersistenceContext()  // type = PersistenceContextType.EXTENDED
+    @PersistenceContext(type = PersistenceContextType.EXTENDED)  // type = PersistenceContextType.EXTENDED
     private EntityManager preScreenEntityManager;
 
     @Override
     public void resetEntityManager() {
-        preScreenEntityManager.clear();
-        LOGGER.info("Cleared entity manager");
+        try {
+            preScreenEntityManager.clear();
+            LOGGER.info("Cleared entity manager");
+        } catch (Exception e) {
+            LOGGER.warn("Cannot clean entity manager");
+        }
     }
 
     @Deprecated
@@ -253,7 +257,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
      * @param searchClusterable if true then clusterable spectra are returned
      * @return collection of Spectrum IDs and the number of common m/z peaks
      */
-//    @TransactionAttribute(TransactionAttributeType.NEVER)
+    @TransactionAttribute(TransactionAttributeType.NEVER)
     @Override
     public Iterable<Object[]> preScreenSpectra(Spectrum querySpectrum, SearchParameters params, UserPrincipal user,
                                                boolean greedy, boolean searchConsensus, boolean searchReference,
