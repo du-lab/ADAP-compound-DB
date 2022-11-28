@@ -323,44 +323,6 @@ public class SubmissionService {
     }
 
 
-    public Map<Long, Boolean> getIdToIsLibraryMap(List<Submission> submissions) {
-        long[] submissionIds = submissions.stream()
-                .mapToLong(Submission::getId)
-                .toArray();
-
-        return MappingUtils.toMap(submissionIds.length == 0
-                ? new ArrayList<>(0)
-                : submissionRepository.getAllSpectrumReferenceBySubmissionIds(submissionIds));
-    }
-    public Map<Long, Boolean> getIdToIsLibraryMap2(List<Submission> submissions) {
-        long[] submissionIds = submissions.stream()
-                .mapToLong(Submission::getId)
-                .toArray();
-
-        return MappingUtils.toMap(submissionIds.length == 0
-                ? new ArrayList<>(0)
-                : spectrumRepository.getAllSpectrumReferenceBySubmissionIds(submissionIds));
-    }
-
-    public Map<Long, Boolean> getIdToIsInHouseLibraryMap(List<Submission> submissions) {
-        long[] submissionIds = submissions.stream()
-                .mapToLong(Submission::getId)
-                .toArray();
-
-        return MappingUtils.toMap(submissionIds.length == 0
-                ? new ArrayList<>(0)
-                : submissionRepository.getAllSpectrumInHouseReferenceBySubmissionIds(submissionIds));
-    }
-    public Map<Long, Boolean> getIdToIsInHouseLibraryMap2(List<Submission> submissions) {
-        long[] submissionIds = submissions.stream()
-                .mapToLong(Submission::getId)
-                .toArray();
-
-        return MappingUtils.toMap(submissionIds.length == 0
-                ? new ArrayList<>(0)
-                : spectrumRepository.getAllSpectrumInHouseReferenceBySubmissionIds(submissionIds));
-    }
-
     public boolean isInHouseReference(Submission s) {
         s.setInHouse(submissionRepository.getIsInHouseReference(s.getId()));
         return s.getIsInHouse();

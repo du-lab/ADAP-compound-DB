@@ -72,11 +72,6 @@ public interface SubmissionRepository extends CrudRepository<Submission,Long> {
     @Query("select distinct s.id, s.chromatographyType from Submission s where s.id in :ids")
     Iterable<Object[]> findChromatographyTypesBySubmissionId(@Param("ids") List<Long> submissionIds);
 
-    @Query("select s.id, s.isReference from Submission s where s.id in :ids ")
-    Iterable<Object[]> getAllSpectrumReferenceBySubmissionIds(@Param("ids") long[] submissionIds);
-
-    @Query("select s.id, s.isInHouseReference from Submission s where s.id in :ids ")
-    Iterable<Object[]> getAllSpectrumInHouseReferenceBySubmissionIds(@Param("ids") long[] submissionIds);
 
     Iterable<Submission> findByExternalId(String externalId);
 

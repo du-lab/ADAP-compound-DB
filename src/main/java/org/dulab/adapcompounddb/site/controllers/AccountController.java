@@ -33,18 +33,13 @@ public class AccountController extends BaseController {
 
         List<Submission> submissions = submissionService.findSubmissionsWithTagsByUserId(user.getId());
 
-        Map<Long, Boolean> idToIsLibraryMap = submissionService.getIdToIsLibraryMap(submissions);
-
-        Map<Long, Boolean> idToIsInHouseLibraryMap = submissionService.getIdToIsInHouseLibraryMap(submissions);
-
-
         Map<Long, List<ChromatographyType>> submissionIdToChromatographyListMap =
                 submissionService.findChromatographyTypes(submissions);
 
         List<SubmissionDTO> submissionDTOs = submissions.stream()
                 .map(s -> new SubmissionDTO(s,
-                        idToIsLibraryMap.getOrDefault(s.getId(), false),
-                        idToIsInHouseLibraryMap.getOrDefault(s.getId(), false),
+                        s.isReference(),
+                        s.isInHouse(),
                         false))
                 .collect(Collectors.toList());
 
