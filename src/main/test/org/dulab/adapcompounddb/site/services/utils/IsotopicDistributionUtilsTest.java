@@ -1,8 +1,13 @@
 package org.dulab.adapcompounddb.site.services.utils;
 
+import gnu.trove.iterator.TDoubleDoubleIterator;
+import gnu.trove.map.hash.TDoubleDoubleHashMap;
+import gnu.trove.map.hash.TObjectIntHashMap;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
 
@@ -39,35 +44,47 @@ public class IsotopicDistributionUtilsTest {
     @Test
     public void testDistributionOfAtoms() {
         SortedMap<Double, Double> atomDistribution = IsotopicDistributionUtils.ISOTOPE_TABLE.get("C");
-        SortedMap<Double, Double> distributionOfAtoms =
+        TDoubleDoubleHashMap distributionOfAtoms =
                 IsotopicDistributionUtils.calculateDistributionOfAtoms(atomDistribution, 10);
 
         assertEquals(11, distributionOfAtoms.size());
 
-        Iterator<Map.Entry<Double, Double>> iterator = distributionOfAtoms.entrySet().iterator();
-        assertEquals(100.0, iterator.next().getValue(), 0.01);
-        assertEquals(10.82, iterator.next().getValue(), 0.01);
-        assertEquals(0.53, iterator.next().getValue(), 0.01);
-        assertEquals(0.02, iterator.next().getValue(), 0.01);
+        double[] keys = distributionOfAtoms.keys();
+        double[] values = distributionOfAtoms.values();
+        double[] sortedValues = IntStream.range(0, keys.length).boxed()
+                .sorted(Comparator.comparingDouble(i -> keys[i]))
+                .mapToDouble(i -> values[i])
+                .toArray();
+
+        assertEquals(100.0, sortedValues[0], 0.01);
+        assertEquals(10.82, sortedValues[1], 0.01);
+        assertEquals(0.53, sortedValues[2], 0.01);
+        assertEquals(0.02, sortedValues[3], 0.01);
     }
 
     @Test
     public void testReadFormula() {
-        Map<String, Integer> atoms = IsotopicDistributionUtils.readFormula("CH2O");
+        TObjectIntHashMap<String> atoms = IsotopicDistributionUtils.readFormula("CH2O");
         assertEquals(3, atoms.size());
-        assertEquals(Integer.valueOf(1), atoms.get("C"));
-        assertEquals(Integer.valueOf(2), atoms.get("H"));
-        assertEquals(Integer.valueOf(1), atoms.get("O"));
+        assertEquals(1, atoms.get("C"));
+        assertEquals(2, atoms.get("H"));
+        assertEquals(1, atoms.get("O"));
     }
 
     @Test
     public void testCalculateDistribution() {
-        SortedMap<Double, Double> distribution = IsotopicDistributionUtils.calculateDistribution("CH2O");
+        TDoubleDoubleHashMap distribution = IsotopicDistributionUtils.calculateDistribution("CH2O");
 
-        Iterator<Map.Entry<Double, Double>> iterator = distribution.entrySet().iterator();
-        assertEquals(100.0, iterator.next().getValue(), 0.01);
-        assertEquals(1.1537, iterator.next().getValue(), 0.01);
-        assertEquals(0.2013, iterator.next().getValue(), 0.01);
+        double[] keys = distribution.keys();
+        double[] values = distribution.values();
+        double[] sortedValues = IntStream.range(0, keys.length).boxed()
+                .sorted(Comparator.comparingDouble(i -> keys[i]))
+                .mapToDouble(i -> values[i])
+                .toArray();
+
+        assertEquals(100.0, sortedValues[0], 0.01);
+        assertEquals(1.1537, sortedValues[1], 0.01);
+        assertEquals(0.2013, sortedValues[2], 0.01);
 //        assertEquals(0.0022, iterator.next().getValue(), 0.01);
     }
 

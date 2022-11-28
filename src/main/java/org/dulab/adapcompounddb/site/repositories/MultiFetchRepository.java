@@ -21,12 +21,16 @@ public class MultiFetchRepository {
     private static final Logger LOGGER = LogManager.getLogger(MultiFetchRepository.class);
 
     // Add Extended to speed up queries
-    @PersistenceContext()  // type = PersistenceContextType.EXTENDED
+    @PersistenceContext(type = PersistenceContextType.EXTENDED)  // type = PersistenceContextType.EXTENDED
     EntityManager entityManager;
 
     public void resetEntityManager() {
-        entityManager.clear();
-        LOGGER.info("Cleared entity manager");
+        try {
+            entityManager.clear();
+            LOGGER.info("Cleared entity manager");
+        } catch (Exception e) {
+            LOGGER.warn("Cannot clear entity manager");
+        }
     }
 
     public Submission getSubmissionWithFilesSpectraPeaksIsotopes(long submissionId) {
@@ -65,7 +69,7 @@ public class MultiFetchRepository {
         return submission;
     }
 
-//    @TransactionAttribute(TransactionAttributeType.NEVER)
+    @TransactionAttribute(TransactionAttributeType.NEVER)
     public List<Spectrum> getSpectraWithPeaksIsotopes(Set<Long> spectrumIds) {
 
         if (spectrumIds.stream().anyMatch(Objects::isNull))
