@@ -23,14 +23,14 @@ public class ConversionsUtils {
 
     private static final Logger LOGGER = LogManager.getLogger(ConversionsUtils.class);
 
-//    static{
-//        try {
-//            loadLibrary();
-//        } catch (URISyntaxException e) {
-//            LOGGER.error(e.getMessage(), e);
-//            throw new RuntimeException(e.getMessage());
-//        }
-//    }
+    static{
+        try {
+            loadLibrary();
+        } catch (URISyntaxException e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new RuntimeException(e.getMessage());
+        }
+    }
 
     public static String peaksToJson(Collection<Peak> peaks) {
         return String.format("[%s]", peaks.stream()
@@ -55,7 +55,7 @@ public class ConversionsUtils {
         if (x == null) return null;
         return String.format("%.3f", x);
     }
-    public static String toImage(@Nullable String smiles, @Nullable String inchi)  {
+    public static String toImagePython(@Nullable String smiles, @Nullable String inchi)  {
 
         RWMol mol = null;
 
@@ -78,7 +78,7 @@ public class ConversionsUtils {
         return drawer.getDrawingText();
 
     }
-    public static String toImagePython(@Nullable String smiles, @Nullable String inchi)  {
+    public static String toImage(@Nullable String smiles, @Nullable String inchi)  {
 
         String parameters;
         if (smiles != null && !smiles.isEmpty())
