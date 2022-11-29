@@ -1,11 +1,15 @@
 package org.dulab.adapcompounddb.site.repositories;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.entities.*;
+import org.hibernate.annotations.QueryHints;
 import org.springframework.stereotype.Repository;
 
 
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.*;
-import java.lang.reflect.Field;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -14,9 +18,20 @@ import java.util.stream.Collectors;
 @Repository
 public class MultiFetchRepository {
 
+    private static final Logger LOGGER = LogManager.getLogger(MultiFetchRepository.class);
+
     // Add Extended to speed up queries
-    @PersistenceContext(type = PersistenceContextType.EXTENDED)
+    @PersistenceContext(type = PersistenceContextType.EXTENDED)  // type = PersistenceContextType.EXTENDED
     EntityManager entityManager;
+
+    public void resetEntityManager() {
+        try {
+            entityManager.clear();
+            LOGGER.info("Cleared entity manager");
+        } catch (Exception e) {
+            LOGGER.warn("Cannot clear entity manager");
+        }
+    }
 
     public Submission getSubmissionWithFilesSpectraPeaksIsotopes(long submissionId) {
 
@@ -54,11 +69,16 @@ public class MultiFetchRepository {
         return submission;
     }
 
+    @TransactionAttribute(TransactionAttributeType.NEVER)
     public List<Spectrum> getSpectraWithPeaksIsotopes(Set<Long> spectrumIds) {
 
+        if (spectrumIds.stream().anyMatch(Objects::isNull))
+            throw new IllegalStateException("Some if spectrum IDs are null: " + spectrumIds);
+
         List<Spectrum> spectra = entityManager
-                .createQuery("select distinct s from Spectrum s join fetch s.peaks where s.id in (:spectrumIds)", Spectrum.class)
+                .createQuery("select distinct s from Spectrum s left join fetch s.peaks where s.id in (:spectrumIds)", Spectrum.class)
                 .setParameter("spectrumIds", spectrumIds)
+                .setHint(QueryHints.READ_ONLY, true)
                 .getResultList();
 
 //        List<Peak> peaks = entityManager
@@ -69,6 +89,7 @@ public class MultiFetchRepository {
         List<Isotope> isotopes = entityManager
                 .createQuery("select i from Isotope i where i.spectrum.id in (:spectrumIds)", Isotope.class)
                 .setParameter("spectrumIds", spectrumIds)
+                .setHint(QueryHints.READ_ONLY, true)
                 .getResultList();
 
 //        assignChildrenToParents(peaks, Peak::getSpectrum, spectra, Spectrum::setPeaks, Spectrum::getId);

@@ -6,6 +6,7 @@ import org.dulab.adapcompounddb.exceptions.IllegalSpectrumSearchException;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
+import org.dulab.adapcompounddb.site.repositories.MultiFetchRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.services.EmailService;
 import org.dulab.adapcompounddb.site.services.io.ExportSearchResultsService;
@@ -37,16 +38,19 @@ public class GroupSearchService {
     private final IndividualSearchService spectrumSearchService;
     private final ExportSearchResultsService exportSearchResultsService;
     private final SpectrumRepository spectrumRepository;
-
-    @Autowired
-    EmailService emailService;
+    private final MultiFetchRepository multiFetchRepository;
+    private final EmailService emailService;
     @Autowired
     public GroupSearchService(IndividualSearchService spectrumSearchService,
                               @Qualifier("excelExportSearchResultsService") ExportSearchResultsService exportSearchResultsService,
-                              SpectrumRepository spectrumRepository) {
+                              SpectrumRepository spectrumRepository,
+                              MultiFetchRepository multiFetchRepository,
+                              EmailService emailService) {
         this.spectrumSearchService = spectrumSearchService;
         this.exportSearchResultsService = exportSearchResultsService;
         this.spectrumRepository = spectrumRepository;
+        this.multiFetchRepository = multiFetchRepository;
+        this.emailService = emailService;
     }
 
     @Async
@@ -72,6 +76,10 @@ public class GroupSearchService {
                 session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
                 return new AsyncResult<>(null);
             }
+
+            // Reset entity manager. Otherwise it'll eventually use up the entire memory.
+            multiFetchRepository.resetEntityManager();
+            spectrumRepository.resetEntityManager();
 
             long startTime = System.currentTimeMillis();
 
@@ -150,6 +158,12 @@ public class GroupSearchService {
                         LOGGER.info(String.format(
                                 "Searched %d spectra with the average time %.3f seconds per spectrum",
                                 spectrumCount, 1E-3 * (time - startTime) / spectrumCount));
+                    }
+
+                    if (spectrumCount % 1000 == 0) {
+                        // Reset entity manager. Otherwise it'll eventually use up the entire memory.
+                        multiFetchRepository.resetEntityManager();
+                        spectrumRepository.resetEntityManager();
                     }
                 }
             }

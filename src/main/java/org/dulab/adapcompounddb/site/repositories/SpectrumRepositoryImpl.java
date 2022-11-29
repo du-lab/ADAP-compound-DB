@@ -10,7 +10,10 @@ import org.dulab.adapcompounddb.site.repositories.querybuilders.*;
 import org.dulab.adapcompounddb.site.services.admin.QueryParameters;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters.RetIndexMatchType;
+import org.hibernate.annotations.QueryHints;
 
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.math.BigInteger;
@@ -38,8 +41,18 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     private EntityManager entityManager;
 
     // Add Extended to speed up queries
-    @PersistenceContext(type = PersistenceContextType.EXTENDED)
+    @PersistenceContext(type = PersistenceContextType.EXTENDED)  // type = PersistenceContextType.EXTENDED
     private EntityManager preScreenEntityManager;
+
+    @Override
+    public void resetEntityManager() {
+        try {
+            preScreenEntityManager.clear();
+            LOGGER.info("Cleared entity manager");
+        } catch (Exception e) {
+            LOGGER.warn("Cannot clean entity manager");
+        }
+    }
 
     @Deprecated
     @Override
@@ -247,6 +260,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
      * @param searchClusterable if true then clusterable spectra are returned
      * @return collection of Spectrum IDs and the number of common m/z peaks
      */
+    @TransactionAttribute(TransactionAttributeType.NEVER)
     @Override
     public Iterable<Object[]> preScreenSpectra(Spectrum querySpectrum, SearchParameters params, UserPrincipal user,
                                                boolean greedy, boolean searchConsensus, boolean searchReference,
@@ -283,6 +297,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
         @SuppressWarnings("unchecked") final Iterable<Object[]> resultList = preScreenEntityManager
                 .createNativeQuery(sqlQuery)
+                .setHint(QueryHints.READ_ONLY, true)
                 .getResultList();
 
         return resultList;

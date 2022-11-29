@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SpectrumRepositoryCustom {
 
+    void resetEntityManager();
     @Deprecated
     List<SpectrumMatch> spectrumSearch(SearchType searchType, Spectrum querySpectrum, QueryParameters params);
 
