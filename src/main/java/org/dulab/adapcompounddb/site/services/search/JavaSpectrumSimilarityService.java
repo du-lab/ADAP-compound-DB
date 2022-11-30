@@ -65,10 +65,12 @@ public class JavaSpectrumSimilarityService {
             greedy = querySpectrum.getChromatographyType() == ChromatographyType.LC_MSMS_POS
                     || querySpectrum.getChromatographyType() == ChromatographyType.LC_MSMS_NEG;
 
-
+        long time1 = System.currentTimeMillis();
         Map<BigInteger, List<BigInteger>> commonToSpectrumIdsMap = MappingUtils.toMapBigIntegerOfLists(
                 spectrumRepository.preScreenSpectra(querySpectrum, parameters, user, greedy,
                         searchConsensus, searchReference, searchClusterable));
+        long time2 = System.currentTimeMillis();
+        double preScreenTime = (time2 - time1) / 1000.0;
 
         if (commonToSpectrumIdsMap.isEmpty())
             return new ArrayList<>(0);
@@ -84,8 +86,14 @@ public class JavaSpectrumSimilarityService {
                 .mapToLong(BigInteger::longValue)
                 .boxed()
                 .collect(Collectors.toSet());
+        long time3 = System.currentTimeMillis();
         Iterable<Spectrum> preScreenedSpectra =
                 multiFetchRepository.getSpectraWithPeaksIsotopes(preScreenedSpectrumIdsSet);
+        long time4 = System.currentTimeMillis();
+        double fetchSpectraTime = (time4 - time3) / 1000.0;
+        double totalTime = (time4 - time1) / 1000.0;
+
+        LOGGER.info(String.format("Pre-screen: %.2f; Fetch: %.2f; Total: %.2f", preScreenTime, fetchSpectraTime, totalTime));
 
         List<SpectrumMatch> matches = calculateSimilarity(querySpectrum, preScreenedSpectra, parameters);
 

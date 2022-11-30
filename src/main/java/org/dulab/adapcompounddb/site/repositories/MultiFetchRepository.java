@@ -21,16 +21,16 @@ public class MultiFetchRepository {
     private static final Logger LOGGER = LogManager.getLogger(MultiFetchRepository.class);
 
     // Add Extended to speed up queries
-    @PersistenceContext(type = PersistenceContextType.EXTENDED)  // type = PersistenceContextType.EXTENDED
+    @PersistenceContext()  // type = PersistenceContextType.EXTENDED
     EntityManager entityManager;
 
     public void resetEntityManager() {
-        try {
-            entityManager.clear();
-            LOGGER.info("Cleared entity manager");
-        } catch (Exception e) {
-            LOGGER.warn("Cannot clear entity manager");
-        }
+//        try {
+//            entityManager.clear();
+//            LOGGER.info("Cleared entity manager");
+//        } catch (Exception e) {
+//            LOGGER.warn("Cannot clear entity manager");
+//        }
     }
 
     public Submission getSubmissionWithFilesSpectraPeaksIsotopes(long submissionId) {

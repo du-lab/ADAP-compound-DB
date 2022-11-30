@@ -38,17 +38,17 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     private EntityManager entityManager;
 
     // Add Extended to speed up queries
-    @PersistenceContext(type = PersistenceContextType.EXTENDED)  // type = PersistenceContextType.EXTENDED
+    @PersistenceContext()  // type = PersistenceContextType.EXTENDED
     private EntityManager preScreenEntityManager;
 
     @Override
     public void resetEntityManager() {
-        try {
-            preScreenEntityManager.clear();
-            LOGGER.info("Cleared entity manager");
-        } catch (Exception e) {
-            LOGGER.warn("Cannot clean entity manager");
-        }
+//        try {
+//            preScreenEntityManager.clear();
+//            LOGGER.info("Cleared entity manager");
+//        } catch (Exception e) {
+//            LOGGER.warn("Cannot clean entity manager");
+//        }
     }
 
     @Deprecated
