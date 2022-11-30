@@ -253,7 +253,7 @@ public class Submission implements Serializable {
         return isReference;
     }
 
-    public void setReference(boolean reference) {
+    public void setIsReference(boolean reference) {
         isReference = reference;
     }
 

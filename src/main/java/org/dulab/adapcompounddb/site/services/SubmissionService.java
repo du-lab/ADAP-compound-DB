@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 @Service
 public class SubmissionService {
 
+
+
     private enum ColumnInformation {
 
         ID(0, "id"),
@@ -373,5 +375,10 @@ public class SubmissionService {
 
         return totalMemory;
 
+    }
+
+    @Transactional
+    public void updateReferenceBySubmissionId(long submissionId, boolean value) {
+        submissionRepository.updateReferenceBySubmissionId(submissionId, value);
     }
 }

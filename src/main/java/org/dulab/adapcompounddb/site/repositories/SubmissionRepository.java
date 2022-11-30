@@ -109,4 +109,8 @@ public interface SubmissionRepository extends CrudRepository<Submission,Long> {
     //get number of peaks by username
     @Query(value = "select count(s.id) from Submission s join s.user u join s.files f join f.spectra sp join sp.peaks where u.username= :userName")
     int getPeaksByUserName(@Param("userName") String userName);
+
+    @Modifying
+    @Query(value = "update Submission s set s.isReference=:isReference where s.id=:submissionId")
+    void updateReferenceBySubmissionId(@Param("submissionId") long submissionId, @Param("isReference") boolean isReference);
 }
