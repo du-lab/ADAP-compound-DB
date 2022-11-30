@@ -93,8 +93,15 @@ public class MultiFetchRepository {
                 .setHint(QueryHints.READ_ONLY, true)
                 .getResultList();
 
+        List<Identifier> identifiers = entityManager
+                .createQuery("select i from Identifier i where i.spectrum.id in (:spectrumIds)", Identifier.class)
+                .setParameter("spectrumIds", spectrumIds)
+                .setHint(QueryHints.READ_ONLY, true)
+                .getResultList();
+
         assignChildrenToParents(peaks, Peak::getSpectrum, spectra, Spectrum::setPeaks, Spectrum::getId);
         assignChildrenToParents(isotopes, Isotope::getSpectrum, spectra, Spectrum::setIsotopes, Spectrum::getId);
+        assignChildrenToParents(identifiers, Identifier::getSpectrum, spectra, Spectrum::setIdentifiers, Spectrum::getId);
 
         return spectra;
     }
