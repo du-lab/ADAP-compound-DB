@@ -91,11 +91,15 @@ public class JavaSpectrumSimilarityService {
                 multiFetchRepository.getSpectraWithPeaksIsotopes(preScreenedSpectrumIdsSet);
         long time4 = System.currentTimeMillis();
         double fetchSpectraTime = (time4 - time3) / 1000.0;
-        double totalTime = (time4 - time1) / 1000.0;
 
-        LOGGER.info(String.format("Pre-screen: %.2f; Fetch: %.2f; Total: %.2f", preScreenTime, fetchSpectraTime, totalTime));
-
+        long time5 = System.currentTimeMillis();
         List<SpectrumMatch> matches = calculateSimilarity(querySpectrum, preScreenedSpectra, parameters);
+        long time6 = System.currentTimeMillis();
+        double similarityTime = (time6 - time5) / 1000.0;
+
+        double totalTime = (time6 - time1) / 1000.0;
+//        LOGGER.info(String.format("Pre-screen: %.2f; Fetch (%d): %.2f; Similarity: %.2f; Total: %.2f",
+//                preScreenTime, preScreenedSpectrumIdsSet.size(), fetchSpectraTime, similarityTime, totalTime));
 
         return new ArrayList<>(matches.subList(0, Math.min(parameters.getLimit(), matches.size())));
     }
