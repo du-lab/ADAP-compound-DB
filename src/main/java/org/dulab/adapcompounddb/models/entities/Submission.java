@@ -94,7 +94,12 @@ public class Submission implements Serializable {
     @Transient
     private boolean isSearchable;
 
+    @NotNull(message = "Spectrum: the field Chromatography Type is requirexd.")
+    @Enumerated(EnumType.STRING)
+    private ChromatographyType chromatographyType;
 
+    private boolean isReference;
+    private boolean isInHouseReference;
 
     // *******************************
     // ***** Getters and Setters *****
@@ -230,6 +235,30 @@ public class Submission implements Serializable {
 
     public void setSize(int size) {
         this.size = size;
+    }
+
+    public ChromatographyType getChromatographyType() {
+        return chromatographyType;
+    }
+
+    public void setChromatographyType(ChromatographyType chromatographyType) {
+        this.chromatographyType = chromatographyType;
+    }
+
+    public boolean isInHouseReference() {
+        return isInHouseReference;
+    }
+
+    public boolean isReference() {
+        return isReference;
+    }
+
+    public void setIsReference(boolean reference) {
+        isReference = reference;
+    }
+
+    public void setInHouseReference(boolean inHouseReference) {
+        isInHouseReference = inHouseReference;
     }
 
     public boolean getIsInHouse(){

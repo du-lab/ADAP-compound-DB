@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 @Service
 public class SubmissionService {
 
+
+
     private enum ColumnInformation {
 
         ID(0, "id"),
@@ -322,25 +324,6 @@ public class SubmissionService {
                 : submissionRepository.findChromatographyTypesBySubmissionId(submissionIds));
     }
 
-    public Map<Long, Boolean> getIdToIsLibraryMap(List<Submission> submissions) {
-        long[] submissionIds = submissions.stream()
-                .mapToLong(Submission::getId)
-                .toArray();
-
-        return MappingUtils.toMap(submissionIds.length == 0
-                ? new ArrayList<>(0)
-                : spectrumRepository.getAllSpectrumReferenceBySubmissionIds(submissionIds));
-    }
-
-    public Map<Long, Boolean> getIdToIsInHouseLibraryMap(List<Submission> submissions) {
-        long[] submissionIds = submissions.stream()
-                .mapToLong(Submission::getId)
-                .toArray();
-
-        return MappingUtils.toMap(submissionIds.length == 0
-                ? new ArrayList<>(0)
-                : spectrumRepository.getAllSpectrumInHouseReferenceBySubmissionIds(submissionIds));
-    }
 
     public boolean isInHouseReference(Submission s) {
         s.setInHouse(submissionRepository.getIsInHouseReference(s.getId()));
@@ -392,5 +375,10 @@ public class SubmissionService {
 
         return totalMemory;
 
+    }
+
+    @Transactional
+    public void updateReferenceBySubmissionId(long submissionId, boolean value) {
+        submissionRepository.updateReferenceBySubmissionId(submissionId, value);
     }
 }
