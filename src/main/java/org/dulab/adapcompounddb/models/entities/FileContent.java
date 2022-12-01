@@ -12,8 +12,7 @@ public class FileContent implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "fileid", referencedColumnName = "Id")
+    @OneToOne(mappedBy = "fileContent")
     private File file;
     @NotNull(message = "File: the field Content is required.")
     private byte[] content;

@@ -110,6 +110,7 @@ public class GroupSearchService {
 //                    parameters.setLimit(10);
 
                     List<SearchResultDTO> individualSearchResults;
+
                     try {
                         individualSearchResults = (withOntologyLevels)
                                 ? spectrumSearchService.searchWithOntologyLevels(userPrincipal, querySpectrum, parameters)
