@@ -15,27 +15,22 @@ import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class ConversionsUtils {
 
-
+    private static final Logger LOGGER = LogManager.getLogger(ConversionsUtils.class);
     static{
-        //System.gc();
-        loadNativeUtils l = new loadNativeUtils();
+        try {
+            loadLibrary();
+        } catch (URISyntaxException | IOException e) {
+            LOGGER.error(e.getMessage(), e) ;
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
-    private static final Logger LOGGER = LogManager.getLogger(ConversionsUtils.class);
-//    static{
-//        try {
-//            loadLibrary();
-//        } catch (URISyntaxException | UnsatisfiedLinkError  e) {
-//            LOGGER.error(e.getMessage(), e);
-//            throw new RuntimeException(e.getMessage());
-//        }
-//
-//    }
 
     public static String peaksToJson(Collection<Peak> peaks) {
         return String.format("[%s]", peaks.stream()
@@ -60,7 +55,7 @@ public class ConversionsUtils {
         if (x == null) return null;
         return String.format("%.3f", x);
     }
-    public static String toImagePython(@Nullable String smiles, @Nullable String inchi)  {
+    public static String toImageJava(@Nullable String smiles, @Nullable String inchi)  {
 
         RWMol mol = null;
 
@@ -83,7 +78,7 @@ public class ConversionsUtils {
         return drawer.getDrawingText();
 
     }
-    public static String toImage(@Nullable String smiles, @Nullable String inchi)  {
+    public static String toImagePython(@Nullable String smiles, @Nullable String inchi)  {
 
         String parameters;
         if (smiles != null && !smiles.isEmpty())
@@ -159,29 +154,34 @@ public class ConversionsUtils {
             return "";
         }
     }
-//    private static void loadLibrary() throws URISyntaxException {
-//        //get os name
-//        //System.out.println("***************" + System.getProperty("java.version"));
-//        String osname = System.getProperty("os.name");
-//        osname = osname.toLowerCase();
-//        URL url = null;
-//        if(osname == null)
-//            throw new RuntimeException("Couuld not determine os properly");
-//        else if(osname.contains("linux"))
-//            url = ConversionsUtils.class.getResource("linux-aarch64/libGraphMolWrap.so");
-//        else if(osname.contains("mac"))
-//            url = ConversionsUtils.class.getResource("mac-amd64/libGraphMolWrap.jnilib");
-//        else if(osname.contains("windows"))
-//            url = ConversionsUtils.class.getResource("windows-amd64/GraphMolWrap.dll");
-//
-//
-//        File file = new File(url.toURI());
-//        String path = file.getAbsolutePath();
-//
-////        org.apache.tomcat.jni.Library.load(path);load
-//
-//        System.load(path);
-//    }
+    private static void loadLibrary() throws URISyntaxException, IOException {
+        //get os name
+        //System.out.println("***************" + System.getProperty("java.version"));
+        String osname = System.getProperty("os.name");
+        osname = osname.toLowerCase();
+        URL url = null;
+        if(osname == null)
+            throw new RuntimeException("Couuld not determine os properly");
+        else if(osname.contains("linux"))
+            url = ConversionsUtils.class.getResource("linux-aarch64/libGraphMolWrap.so");
+        else if(osname.contains("mac"))
+            url = ConversionsUtils.class.getResource("mac-amd64/libGraphMolWrap.jnilib");
+        else if(osname.contains("windows"))
+            url = ConversionsUtils.class.getResource("windows-amd64/GraphMolWrap.dll");
+
+        //get path to native library, create duplicate and load it then delete
+        File file = new File(url.toURI());
+        File tmpDir = Files.createTempDirectory("my-native-lib").toFile();
+        tmpDir.deleteOnExit();
+        File nativeLibTmpFile = new File(tmpDir, file.getName());
+        nativeLibTmpFile.deleteOnExit();
+        try (InputStream in = url.openStream()) {
+            Files.copy(in, nativeLibTmpFile.toPath());
+        }
+        System.load(nativeLibTmpFile.getAbsolutePath());
+
+
+    }
 
 
 
