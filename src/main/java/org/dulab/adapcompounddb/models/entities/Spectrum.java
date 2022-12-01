@@ -45,7 +45,7 @@ public class Spectrum implements Serializable {
     @Column(name = "value")
     private Map<IdentifierType, String> identifiers;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "FileId", referencedColumnName = "Id")
     private File file;
 
@@ -132,6 +132,16 @@ public class Spectrum implements Serializable {
 
     public void setIdentifiers(Map<IdentifierType, String> identifiers) {
         this.identifiers = identifiers;
+    }
+
+    @Transient
+    public void setIdentifiers(Collection<Identifier> identifiers) {
+        if (identifiers == null) {
+            this.identifiers = null;
+        } else {
+            this.identifiers = new HashMap<>();
+            identifiers.forEach(i -> this.identifiers.put(i.getType(), i.getValue()));
+        }
     }
 
     public String getStringOfIdentifiers() {

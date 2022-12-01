@@ -108,12 +108,11 @@ public class IndividualSearchService {
         List<SpectrumMatch> matches =
                 javaSpectrumSimilarityService.searchConsensusAndReference(spectrum, modifiedParameters, user);
 
-        List<SearchResultDTO> results = IntStream.range(0, matches.size())
-                .mapToObj(i -> MappingUtils.mapSpectrumMatchToSpectrumClusterView(matches.get(i), i,
-                        modifiedParameters.getSpecies(),
-                        modifiedParameters.getSource(),
-                        modifiedParameters.getDisease()))
-                .collect(Collectors.toList());
+        List<SearchResultDTO> results = new ArrayList<>(matches.size());
+        for (int i = 0; i < matches.size(); ++i) {
+            results.add(MappingUtils.mapSpectrumMatchToSpectrumClusterView(matches.get(i), i,
+                    modifiedParameters.getSpecies(), modifiedParameters.getSource(), modifiedParameters.getDisease()));
+        }
 
         List<SearchResultDTO> resultsWithOntology = new ArrayList<>();
         for (SearchResultDTO result : results) {

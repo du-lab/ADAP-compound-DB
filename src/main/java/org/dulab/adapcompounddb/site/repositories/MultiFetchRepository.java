@@ -25,8 +25,12 @@ public class MultiFetchRepository {
     EntityManager entityManager;
 
     public void resetEntityManager() {
-        entityManager.clear();
-        LOGGER.info("Cleared entity manager");
+//        try {
+//            entityManager.clear();
+//            LOGGER.info("Cleared entity manager");
+//        } catch (Exception e) {
+//            LOGGER.warn("Cannot clear entity manager");
+//        }
     }
 
     public Submission getSubmissionWithFilesSpectraPeaksIsotopes(long submissionId) {
@@ -65,22 +69,23 @@ public class MultiFetchRepository {
         return submission;
     }
 
-//    @TransactionAttribute(TransactionAttributeType.NEVER)
+    @TransactionAttribute(TransactionAttributeType.NEVER)
     public List<Spectrum> getSpectraWithPeaksIsotopes(Set<Long> spectrumIds) {
 
         if (spectrumIds.stream().anyMatch(Objects::isNull))
             throw new IllegalStateException("Some if spectrum IDs are null: " + spectrumIds);
 
         List<Spectrum> spectra = entityManager
-                .createQuery("select distinct s from Spectrum s left join fetch s.peaks where s.id in (:spectrumIds)", Spectrum.class)
+                .createQuery("select s from Spectrum s where s.id in (:spectrumIds)", Spectrum.class)
                 .setParameter("spectrumIds", spectrumIds)
                 .setHint(QueryHints.READ_ONLY, true)
                 .getResultList();
 
-//        List<Peak> peaks = entityManager
-//                .createQuery("select p from Peak p where p.spectrum.id in (:spectrumIds)", Peak.class)
-//                .setParameter("spectrumIds", spectrumIds)
-//                .getResultList();
+        List<Peak> peaks = entityManager
+                .createQuery("select p from Peak p where p.spectrum.id in (:spectrumIds)", Peak.class)
+                .setParameter("spectrumIds", spectrumIds)
+                .setHint(QueryHints.READ_ONLY, true)
+                .getResultList();
 
         List<Isotope> isotopes = entityManager
                 .createQuery("select i from Isotope i where i.spectrum.id in (:spectrumIds)", Isotope.class)
@@ -88,8 +93,15 @@ public class MultiFetchRepository {
                 .setHint(QueryHints.READ_ONLY, true)
                 .getResultList();
 
-//        assignChildrenToParents(peaks, Peak::getSpectrum, spectra, Spectrum::setPeaks, Spectrum::getId);
+        List<Identifier> identifiers = entityManager
+                .createQuery("select i from Identifier i where i.spectrum.id in (:spectrumIds)", Identifier.class)
+                .setParameter("spectrumIds", spectrumIds)
+                .setHint(QueryHints.READ_ONLY, true)
+                .getResultList();
+
+        assignChildrenToParents(peaks, Peak::getSpectrum, spectra, Spectrum::setPeaks, Spectrum::getId);
         assignChildrenToParents(isotopes, Isotope::getSpectrum, spectra, Spectrum::setIsotopes, Spectrum::getId);
+        assignChildrenToParents(identifiers, Identifier::getSpectrum, spectra, Spectrum::setIdentifiers, Spectrum::getId);
 
         return spectra;
     }

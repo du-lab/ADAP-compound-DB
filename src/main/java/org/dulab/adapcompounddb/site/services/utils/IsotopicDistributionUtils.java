@@ -1,10 +1,18 @@
 package org.dulab.adapcompounddb.site.services.utils;
 
+import gnu.trove.function.TDoubleFunction;
+import gnu.trove.iterator.TDoubleDoubleIterator;
+import gnu.trove.iterator.TObjectIntIterator;
+import gnu.trove.map.hash.TDoubleDoubleHashMap;
+import gnu.trove.map.hash.TObjectIntHashMap;
+import gnu.trove.procedure.TDoubleProcedure;
 import org.apache.commons.math3.special.Gamma;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.persistence.jpa.config.TenantTableDiscriminator;
 
 import java.util.*;
+import java.util.stream.IntStream;
 
 public class IsotopicDistributionUtils {
 
@@ -37,12 +45,12 @@ public class IsotopicDistributionUtils {
         ISOTOPE_TABLE.put("B", new TreeMap<>(Map.of(10.0, 24.6883, 11.0, 100.0)));
         ISOTOPE_TABLE.put("Ba", new TreeMap<>(Map.of(130.0, 0.1534, 131.0, ZERO, 132.0, 0.1395,
                 133.0, ZERO, 134.0, 3.3752, 135.0, 9.1911, 136.0, 10.9484,
-                137.0, 15.6625,138.0, 100.0)));
+                137.0, 15.6625, 138.0, 100.0)));
         ISOTOPE_TABLE.put("Bi", new TreeMap<>(Map.of(209.0, 100.0)));
-        ISOTOPE_TABLE.put("Br", new TreeMap<>(Map.of(79.0, 50.65, 80.0, ZERO,81.0, 49.35)));
+        ISOTOPE_TABLE.put("Br", new TreeMap<>(Map.of(79.0, 50.65, 80.0, ZERO, 81.0, 49.35)));
         ISOTOPE_TABLE.put("C", new TreeMap<>(Map.of(12.0, 100.0, 13.0, 1.0816)));
         ISOTOPE_TABLE.put("Ca", new TreeMap<>(Map.of(40.0, 100.0, 41.0, ZERO, 42.0, 0.6704,
-                43.0, 0.1444,44.0, 2.1516, 45.0, ZERO, 46.0, 0.0041, 47.0, ZERO,
+                43.0, 0.1444, 44.0, 2.1516, 45.0, ZERO, 46.0, 0.0041, 47.0, ZERO,
                 48.0, 0.196)));
         ISOTOPE_TABLE.put("Cl", new TreeMap<>(Map.of(35.0, 75.8, 36.0, ZERO, 37.0, 24.2)));
         ISOTOPE_TABLE.put("Cr", new TreeMap<>(Map.of(50.0, 5.1916, 51.0, ZERO, 52.0, 100.0,
@@ -57,7 +65,7 @@ public class IsotopicDistributionUtils {
                 57.0, 2.3986, 58.0, 0.3053)));
         ISOTOPE_TABLE.put("Ga", new TreeMap<>(Map.of(69.0, 100.0, 70.0, ZERO, 71.0, 66.3894)));
         ISOTOPE_TABLE.put("Gd", new TreeMap<>(Map.of(152.0, 0.8052, 153.0, ZERO, 154.0, 8.7762,
-                155.0, 59.5813,156.0, 82.4074, 157.0, 63.0032, 158.0, 100.0,
+                155.0, 59.5813, 156.0, 82.4074, 157.0, 63.0032, 158.0, 100.0,
                 159.0, ZERO, 160.0, 88.0032)));
         ISOTOPE_TABLE.put("H", new TreeMap<>(Map.of(1.0, 99.9855, 2.0, 0.0145)));
         ISOTOPE_TABLE.put("Hg", new TreeMap<>(Map.of(196.0, 0.5059, 197.0, ZERO, 198.0, 34.0641,
@@ -65,14 +73,14 @@ public class IsotopicDistributionUtils {
                 203.0, ZERO, 204.0, 22.9342)));
         ISOTOPE_TABLE.put("I", new TreeMap<>(Map.of(127.0, 100.0)));
         ISOTOPE_TABLE.put("K", new TreeMap<>(Map.of(39.0, 100.0, 40.0, 0.0129, 41.0, 7.221)));
-        ISOTOPE_TABLE.put("Lu", new TreeMap<>(Map.of(175.0, 100.0,176.0, 2.6694)));
+        ISOTOPE_TABLE.put("Lu", new TreeMap<>(Map.of(175.0, 100.0, 176.0, 2.6694)));
         ISOTOPE_TABLE.put("Mg", new TreeMap<>(Map.of(24.0, 100.0, 25.0, 12.6743, 26.0, 14.0684)));
         ISOTOPE_TABLE.put("Mn", new TreeMap<>(Map.of(55.0, 100.0)));
         ISOTOPE_TABLE.put("N", new TreeMap<>(Map.of(14.0, 99.6205, 15.0, 0.3795)));
         ISOTOPE_TABLE.put("Na", new TreeMap<>(Map.of(23.0, 100.0)));
         ISOTOPE_TABLE.put("Ni", new TreeMap<>(Map.of(58.0, 100.0, 59.0, ZERO, 60.0, 38.2306,
                 61.0, 1.6552, 62.0, 5.2585, 63.0, ZERO, 64.0, 1.3329)));
-        ISOTOPE_TABLE.put("O", new TreeMap<>(Map.of(16.0, 99.757, 17.0, 0.03835,18.0, 0.2045)));
+        ISOTOPE_TABLE.put("O", new TreeMap<>(Map.of(16.0, 99.757, 17.0, 0.03835, 18.0, 0.2045)));
         ISOTOPE_TABLE.put("Os", new TreeMap<>(Map.of(184.0, 0.0488, 185.0, ZERO, 186.0, 3.8537,
                 187.0, 3.9024, 188.0, 32.439, 189.0, 39.2683, 190.0, 64.3902,
                 191.0, ZERO, 192.0, 100.0)));
@@ -89,7 +97,7 @@ public class IsotopicDistributionUtils {
         ISOTOPE_TABLE.put("Se", new TreeMap<>(Map.of(74.0, 1.8145, 75.0, ZERO, 76.0, 18.1452,
                 77.0, 15.3226, 78.0, 47.379, 79.0, ZERO, 80.0, 100.0, 81.0, ZERO,
                 82.0, 18.9516)));
-        ISOTOPE_TABLE.put("Si", new TreeMap<>(Map.of(28.0, 92.2545, 29.0, 4.672,30.0, 3.0735)));
+        ISOTOPE_TABLE.put("Si", new TreeMap<>(Map.of(28.0, 92.2545, 29.0, 4.672, 30.0, 3.0735)));
         ISOTOPE_TABLE.put("Sn", new TreeMap<>(Map.of(116.0, 45.3704, 117.0, 23.7654, 118.0, 75.0,
                 119.0, 26.5432, 120.0, 100.0, 121.0, ZERO, 122.0, 14.1975, 123.0, ZERO,
                 124.0, 17.284)));
@@ -101,7 +109,7 @@ public class IsotopicDistributionUtils {
         ISOTOPE_TABLE.put("W", new TreeMap<>(Map.of(180.0, 0.4239, 181.0, ZERO, 182.0, 85.7515,
                 183.0, 46.6254, 184.0, 100.0, 185.0, ZERO, 186.0, 76.9482)));
         ISOTOPE_TABLE.put("Zn", new TreeMap<>(Map.of(64.0, 100.0, 65.0, ZERO, 66.0, 57.4074,
-                67.0, 8.4362, 68.0, 38.6831, 69.0, ZERO,70.0, 1.2346)));
+                67.0, 8.4362, 68.0, 38.6831, 69.0, ZERO, 70.0, 1.2346)));
     }
 
     /**
@@ -145,13 +153,13 @@ public class IsotopicDistributionUtils {
      * @param n            number of atoms
      * @return isotopic distribution
      */
-    public static SortedMap<Double, Double> calculateDistributionOfAtoms(
+    public static TDoubleDoubleHashMap calculateDistributionOfAtoms(
             SortedMap<Double, Double> distribution, int n) {
 
         int k = distribution.size();
         List<int[]> combinations = getCombinations(n, k);
 
-        SortedMap<Double, Double> outputDistribution = new TreeMap<>();
+        TDoubleDoubleHashMap outputDistribution = new TDoubleDoubleHashMap();
         double lnFactorialN = Gamma.logGamma(n + 1);
         for (int[] combination : combinations) {
             double lnCoefficient = lnFactorialN;
@@ -162,7 +170,9 @@ public class IsotopicDistributionUtils {
                 lnCoefficient += combination[i] * Math.log(entry.getValue()) - Gamma.logGamma(combination[i] + 1);
                 mass += entry.getKey() * combination[i];
             }
-            outputDistribution.merge(mass, Math.exp(lnCoefficient), Double::sum);
+            double value = Math.exp(lnCoefficient);
+            outputDistribution.adjustOrPutValue(mass, value, value);
+//            outputDistribution.merge(mass, Math.exp(lnCoefficient), Double::sum);
         }
 
         scale(outputDistribution);
@@ -172,21 +182,25 @@ public class IsotopicDistributionUtils {
 
     /**
      * Returns isotopic distribution of two different atoms
+     *
      * @param distribution1 distribution of the first atom
      * @param distribution2 distribution of the second atom
      * @return isotopic distribution
      */
-    public static SortedMap<Double, Double> calculateDistributionOfTwoAtoms(
-            SortedMap<Double, Double> distribution1, SortedMap<Double, Double> distribution2) {
+    public static TDoubleDoubleHashMap calculateDistributionOfTwoAtoms(
+            TDoubleDoubleHashMap distribution1, TDoubleDoubleHashMap distribution2) {
 
         if (distribution1.isEmpty()) return distribution2;
         if (distribution2.isEmpty()) return distribution1;
 
-        SortedMap<Double, Double> outputDistribution = new TreeMap<>();
-        for (Map.Entry<Double, Double> entry1 : distribution1.entrySet()) {
-            for (Map.Entry<Double, Double> entry2 : distribution2.entrySet()) {
-                double mass = entry1.getKey() + entry2.getKey();
-                outputDistribution.merge(mass, entry1.getValue() * entry2.getValue(), Double::sum);
+        TDoubleDoubleHashMap outputDistribution = new TDoubleDoubleHashMap();
+        for (TDoubleDoubleIterator iterator1 = distribution1.iterator(); iterator1.hasNext();) {
+            iterator1.advance();
+            for (TDoubleDoubleIterator iterator2 = distribution2.iterator(); iterator2.hasNext();) {
+                iterator2.advance();
+                double mass = iterator1.key() + iterator2.key();
+                double value = iterator1.value() * iterator2.value();
+                outputDistribution.adjustOrPutValue(mass, value, value);
             }
         }
 
@@ -197,32 +211,41 @@ public class IsotopicDistributionUtils {
 
     /**
      * Returns the isotopic distribution for the given formula
+     *
      * @param formula molecular formula
      * @return isotopic distribution
      */
-    public static SortedMap<Double, Double> calculateDistribution(String formula) {
-        Map<String, Integer> atoms = readFormula(formula);
-        SortedMap<Double, Double> distribution = new TreeMap<>();
-        for (Map.Entry<String, Integer> entry : atoms.entrySet()) {
-            SortedMap<Double, Double> atomDistribution = ISOTOPE_TABLE.get(entry.getKey());
+    public static TDoubleDoubleHashMap calculateDistribution(String formula) {
+        TObjectIntHashMap<String> atoms = readFormula(formula);
+        TDoubleDoubleHashMap distribution = new TDoubleDoubleHashMap();
+        for (TObjectIntIterator<String> atomIterator = atoms.iterator(); atomIterator.hasNext(); ) {
+            atomIterator.advance();
+            SortedMap<Double, Double> atomDistribution = ISOTOPE_TABLE.get(atomIterator.key());
             if (atomDistribution == null) {
-                LOGGER.warn("Unknown distribution of atom " + entry.getKey());
-                return Collections.emptySortedMap();
+                LOGGER.warn("Unknown distribution of atom " + atomIterator.key());
+                return new TDoubleDoubleHashMap(0);
             }
 
             distribution = calculateDistributionOfTwoAtoms(
-                    distribution, calculateDistributionOfAtoms(atomDistribution, entry.getValue()));
+                    distribution, calculateDistributionOfAtoms(atomDistribution, atomIterator.value()));
         }
         return trim(distribution);
     }
 
     public static double[] calculateDistributionAsArray(String formula) {
-        SortedMap<Double, Double> distribution = calculateDistribution(formula);
-        return distribution.values().stream().mapToDouble(Double::doubleValue).toArray();
+        TDoubleDoubleHashMap distribution = calculateDistribution(formula);
+        double[] keys = distribution.keys();
+        double[] values = distribution.values();
+        return IntStream.range(0, keys.length)
+                .boxed()
+                .sorted(Comparator.comparingDouble(i -> keys[i]))
+                .mapToDouble(i -> values[i])
+                .toArray();
+//        return distribution.values().stream().mapToDouble(Double::doubleValue).toArray();
     }
 
-    public static Map<String, Integer> readFormula(String formula) {
-        Map<String, Integer> atoms = new HashMap<>();
+    public static TObjectIntHashMap<String> readFormula(String formula) {
+        TObjectIntHashMap<String> atoms = new TObjectIntHashMap<>();
 
         StringBuilder atomName = new StringBuilder();
         StringBuilder atomCount = new StringBuilder();
@@ -248,19 +271,24 @@ public class IsotopicDistributionUtils {
     }
 
 
-    private static void scale(Map<Double, Double> distribution) {
-        distribution.values()
-                .stream()
-                .mapToDouble(Double::doubleValue)
+    private static void scale(TDoubleDoubleHashMap distribution) {
+        Arrays.stream(distribution.values())
                 .max()
-                .ifPresent(max -> distribution.replaceAll((key, value) -> value * 100 / max));
+                .ifPresent(max -> distribution.transformValues(v -> v * 100 / max));
+//        distribution.values()
+//                .stream()
+//                .mapToDouble(Double::doubleValue)
+//                .max()
+//                .ifPresent(max -> distribution.replaceAll((key, value) -> value * 100 / max));
     }
 
-    private static SortedMap<Double, Double> trim(SortedMap<Double, Double> distribution) {
-        SortedMap<Double, Double> trimmedDistribution = new TreeMap<>();
-        for (Map.Entry<Double, Double> entry : distribution.entrySet())
-            if (entry.getValue() >= MIN_INTENSITY)
-                trimmedDistribution.put(entry.getKey(), entry.getValue());
+    private static TDoubleDoubleHashMap trim(TDoubleDoubleHashMap distribution) {
+        TDoubleDoubleHashMap trimmedDistribution = new TDoubleDoubleHashMap();
+        for (TDoubleDoubleIterator iterator = distribution.iterator(); iterator.hasNext();) {
+            iterator.advance();
+            if (iterator.value() >= MIN_INTENSITY)
+                trimmedDistribution.put(iterator.key(), iterator.value());
+        }
         return trimmedDistribution;
     }
 }

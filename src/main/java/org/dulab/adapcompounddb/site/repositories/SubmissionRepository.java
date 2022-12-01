@@ -69,8 +69,9 @@ public interface SubmissionRepository extends CrudRepository<Submission,Long> {
             "where s.user = :user and s.isPrivate = true and sp.reference = true")
     Iterable<Submission> findByPrivateTrueAndReferenceTrueAndUser(@Param("user") UserPrincipal user);
 
-    @Query("select distinct s.id, sp.chromatographyType from Spectrum sp join sp.file.submission s where s.id in :ids")
+    @Query("select distinct s.id, s.chromatographyType from Submission s where s.id in :ids")
     Iterable<Object[]> findChromatographyTypesBySubmissionId(@Param("ids") List<Long> submissionIds);
+
 
     Iterable<Submission> findByExternalId(String externalId);
 
@@ -108,4 +109,8 @@ public interface SubmissionRepository extends CrudRepository<Submission,Long> {
     //get number of peaks by username
     @Query(value = "select count(s.id) from Submission s join s.user u join s.files f join f.spectra sp join sp.peaks where u.username= :userName")
     int getPeaksByUserName(@Param("userName") String userName);
+
+    @Modifying
+    @Query(value = "update Submission s set s.isReference=:isReference where s.id=:submissionId")
+    void updateReferenceBySubmissionId(@Param("submissionId") long submissionId, @Param("isReference") boolean isReference);
 }

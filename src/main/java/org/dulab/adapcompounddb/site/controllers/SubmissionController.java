@@ -317,6 +317,8 @@ public class SubmissionController extends BaseController {
         submission.setPrivate(submissionForm.getIsPrivate());
         submission.setReference(submissionForm.getReference());
         submission.setDateTime(new Date());
+        submission.setIsReference(submissionForm.getIsLibrary());
+        submission.setInHouseReference(submissionForm.getIsInHouseLibrary());
 
         // Set the field isReference of all spectra
         List<File> files = submission.getFiles();
