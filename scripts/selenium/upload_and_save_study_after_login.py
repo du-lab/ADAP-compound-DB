@@ -8,7 +8,7 @@ from selenium.webdriver.common.by import By
 from urllib.parse import urljoin
 
 
-def upload_and_save_test(homepage_url, msp_path, username, password):
+def upload_and_save_test(homepage_url, msp_path, user_name, user_password):
     driver = webdriver.Chrome('scripts/selenium/drivers/chromedriver')
 
     try:
@@ -19,10 +19,10 @@ def upload_and_save_test(homepage_url, msp_path, username, password):
         upload_page_button.click()
 
         username_login = driver.find_element(By.ID, 'username')
-        username_login.send_keys(username)
+        username_login.send_keys(user_name)
 
         password_login = driver.find_element(By.ID, 'password')
-        password_login.send_keys(password)
+        password_login.send_keys(user_password)
 
         driver.find_element(By.NAME, "submit").click()
 
@@ -74,16 +74,16 @@ def main():
     parser = argparse.ArgumentParser('Download all data into a folder')
     parser.add_argument('--homepage_url', help='url for adap-kdb homepage', required=True)
     parser.add_argument('--msp_path', help='path for msp file', required=True)
-    parser.add_argument('--username', help='username for adap-kdb', required=True)
-    parser.add_argument('--password', help='password', required=True)
+    parser.add_argument('--user_name', help='username for adap-kdb', required=True)
+    parser.add_argument('--user_password', help='password', required=True)
     args = parser.parse_args()
 
     homepage_url = args.homepage_url
     msp_path = args.msp_path
-    username = args.username
-    password = args.password
+    user_name = args.user_name
+    user_password = args.user_password
 
-    upload_and_save_test(homepage_url, msp_path,username, password)
+    upload_and_save_test(homepage_url, msp_path,user_name, user_password)
 
 
 if __name__ == '__main__':
