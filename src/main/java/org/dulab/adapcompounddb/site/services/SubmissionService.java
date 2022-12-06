@@ -289,7 +289,7 @@ public class SubmissionService {
         for (Submission submission : submissions) {
             String html = String.format("%s <span class='badge badge-info'>private</span>%s",
                     submission.getName(),
-                    submissionRepository.getIsInHouseReference(submission.getId()) ? " <span class='badge badge-success'>in-house</span>" : "");
+                    submission.isInHouseReference() ? " <span class='badge badge-success'>in-house</span>" : "");
             submissionIdToNameMap.put(BigInteger.valueOf(submission.getId()), html);
         }
         return submissionIdToNameMap;
