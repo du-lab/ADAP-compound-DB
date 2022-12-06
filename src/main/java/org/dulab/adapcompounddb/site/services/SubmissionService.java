@@ -289,7 +289,7 @@ public class SubmissionService {
         for (Submission submission : submissions) {
             String html = String.format("%s <span class='badge badge-info'>private</span>%s",
                     submission.getName(),
-                    submissionRepository.getIsInHouseReference(submission.getId()) ? " <span class='badge badge-success'>in-house</span>" : "");
+                    submission.isInHouseReference() ? " <span class='badge badge-success'>in-house</span>" : "");
             submissionIdToNameMap.put(BigInteger.valueOf(submission.getId()), html);
         }
         return submissionIdToNameMap;
@@ -324,16 +324,6 @@ public class SubmissionService {
                 : submissionRepository.findChromatographyTypesBySubmissionId(submissionIds));
     }
 
-
-    public boolean isInHouseReference(Submission s) {
-        s.setInHouse(submissionRepository.getIsInHouseReference(s.getId()));
-        return s.getIsInHouse();
-    }
-
-    public boolean isLibrary(Submission s) {
-        s.setIsLibrary(submissionRepository.getIsLibrary(s.getId()));
-        return s.isLibrary();
-    }
 
     public boolean isSearchable(Submission s){
         s.setSearchable(submissionRepository.getIsSearchable(s.getId()));
