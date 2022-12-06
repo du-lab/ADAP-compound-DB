@@ -263,7 +263,7 @@
                                         <tr>
                                             <td><strong>Library:</strong></td>
                                             <td><span
-                                                    class="badge badge-warning">${submission.isReference() ? "Yes" : "No"}</span>
+                                                    class="badge badge-warning">${submission.getIsLibrary() ? "Yes" : "No"}</span>
                                             </td>
                                         </tr>
                                         <tr>

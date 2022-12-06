@@ -86,11 +86,7 @@ public class Submission implements Serializable {
     private boolean clusterable;
     private boolean raw;
     private int size;
-
-    @Transient
-    private boolean isInHouse;
-    @Transient
-    private boolean isLibrary;
+    
     @Transient
     private boolean isSearchable;
 
@@ -98,7 +94,7 @@ public class Submission implements Serializable {
     @Enumerated(EnumType.STRING)
     private ChromatographyType chromatographyType;
 
-    private boolean isReference;
+    private boolean isLibrary;
     private boolean isInHouseReference;
 
     // *******************************
@@ -249,68 +245,24 @@ public class Submission implements Serializable {
         return isInHouseReference;
     }
 
-    public boolean isReference() {
-        return isReference;
+    public boolean getIsLibrary() {
+        return isLibrary;
     }
 
-    public void setIsReference(boolean reference) {
-        isReference = reference;
+    public void setIsLibrary(boolean library) {
+        isLibrary = library;
     }
 
     public void setInHouseReference(boolean inHouseReference) {
         isInHouseReference = inHouseReference;
     }
 
-    public boolean getIsInHouse(){
-        return isInHouse;
-    }
-
-    public void setInHouse(boolean inHouse) {
-        this.isInHouse = inHouse;
-    }
-
-    public boolean getIsLibrary(){
-        return isLibrary;
-    }
-
-    public void setIsLibrary(boolean isLibrary) {
-        this.isLibrary = isLibrary;
-    }
 
     // *************************
     // ***** Other methods *****
     // *************************
 
-    public boolean isLibrary() {
-//        if (files != null) {
-//            for (File file : files) {
-//                List<Spectrum> spectra = file.getSpectra();
-//                if (spectra != null && !spectra.isEmpty()) {
-//                    Spectrum spectrum = spectra.get(0);
-//                    if (spectrum.isReference()) {
-//                        return true;
-//                    }
-//                }
-//            }
-//        }
-//        return false;
-        return isLibrary;
-    }
 
-    public boolean isInHouse() {
-//        if (files != null) {
-//            for (File file : files) {
-//                List<Spectrum> spectra = file.getSpectra();
-//                if (spectra != null && !spectra.isEmpty()) {
-//                    Spectrum spectrum = spectra.get(0);
-//                    if (spectrum.isInHouseReference()) {
-//                        return true;
-//                    }
-//                }
-//            }
-//        }
-        return isInHouse;
-    }
 
     public boolean isAuthorized(final UserPrincipal user) {
         boolean authorized = false;

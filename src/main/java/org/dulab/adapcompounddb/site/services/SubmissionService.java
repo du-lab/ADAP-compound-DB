@@ -348,7 +348,7 @@ public class SubmissionService {
         //create submission dto
         List<SubmissionDTO> submissionDTOList = new ArrayList<>();
         for(Submission s : pagedResult.getContent()) {
-            submissionDTOList.add(new SubmissionDTO(s,s.isLibrary(),false, true));
+            submissionDTOList.add(new SubmissionDTO(s,s.getIsLibrary(),false, true));
         }
         final DataTableResponse response = new DataTableResponse(submissionDTOList);
         response.setRecordsTotal(pagedResult.getTotalElements());
