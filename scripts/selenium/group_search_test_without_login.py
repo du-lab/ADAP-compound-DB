@@ -60,7 +60,7 @@ def group_search_test(homepage_url, msp_path):
 
 
     except Exception as e:
-        driver.quit()
+        #driver.quit()
         raise e
 
 

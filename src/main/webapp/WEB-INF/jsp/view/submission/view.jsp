@@ -217,7 +217,7 @@
 
                                     <div class="form-row form-group">
                                         <div class="col-md-2 offset-md-2">
-                                            <input class="btn btn-primary w-100" type="submit"
+                                            <input id="submit_button" class="btn btn-primary w-100" type="submit"
                                                    value="${(submissionForm.id > 0) ? "Save" : "Submit"}"/>
                                         </div>
                                     </div>
