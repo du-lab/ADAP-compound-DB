@@ -60,13 +60,15 @@ public interface SubmissionRepository extends CrudRepository<Submission,Long> {
     @Query("select distinct s from Submission s join s.files f join f.spectra spectrum left join fetch s.tags where spectrum.id in (:spectrumIds)")
     Iterable<Submission> findSubmissionsWithTagsBySpectrumId(@Param("spectrumIds") Set<Long> spectrumIds);
 
-    @Query("select distinct s from Spectrum sp join sp.file.submission s " +
-            "where s.user = :user and s.isPrivate = true and sp.chromatographyType = :type and sp.reference = true")
+    
+    @Query("select distinct s from Submission s " +
+            "where s.user = :user and s.isPrivate = true and s.chromatographyType = :type and s.isReference = true")
     Iterable<Submission> findByPrivateTrueAndReferenceTrueAndUserAndChromatographyType(
             @Param("user") UserPrincipal user, @Param("type") ChromatographyType type);
 
-    @Query("select distinct s from Spectrum sp join sp.file.submission s " +
-            "where s.user = :user and s.isPrivate = true and sp.reference = true")
+
+    @Query("select distinct s from Submission s " +
+            "where s.user = :user and s.isPrivate = true and s.isReference = true")
     Iterable<Submission> findByPrivateTrueAndReferenceTrueAndUser(@Param("user") UserPrincipal user);
 
     @Query("select distinct s.id, s.chromatographyType from Submission s where s.id in :ids")
@@ -75,21 +77,17 @@ public interface SubmissionRepository extends CrudRepository<Submission,Long> {
 
     Iterable<Submission> findByExternalId(String externalId);
 
-    @Query("select distinct s from Spectrum sp join sp.file.submission s " + "where s.isPrivate = false and sp.reference = true")
+
+    @Query("select distinct s from Submission s " + "where s.isPrivate = false and s.isReference = true")
     Iterable<Submission> findByPrivateFalseAndReferenceTrue();
 
-    @Query("select distinct s from Spectrum sp join sp.file.submission s " +
-            "where s.isPrivate = false and sp.chromatographyType = :type and sp.reference = true")
+    @Query("select distinct s from Submission s " +
+            "where s.isPrivate = false and s.chromatographyType = :type and s.isReference = true")
     Iterable<Submission> findByPrivateFalseAndReferenceTrueAndChromatographyType(@Param("type") ChromatographyType type);
 
     @Query("select s.id, min(sp.reference) = 1 from Spectrum sp join sp.file.submission s where s.id in :ids group by s.id")
     Iterable<Object[]> findAnySpectrumReferenceBySubmissionIds(@Param("ids") List<Long> submissionIds);
 
-    @Query(value = "select count(s.id) > 0 from Submission s join s.files f join f.spectra spectrum where spectrum.inHouseReference = true and s.id = :id", nativeQuery = false)
-    boolean getIsInHouseReference(@Param("id") Long id);
-
-    @Query(value = "select count(s.id) > 0 from Submission s join s.files f join f.spectra spectrum where spectrum.reference = true and s.id = :id", nativeQuery = false)
-    boolean getIsLibrary(@Param("id") Long id);
 
     @Query(value = "select count(s.id) > 0 from Submission s join s.files f join f.spectra spectrum where " +
             "spectrum.chromatographyType in (org.dulab.adapcompounddb.models.enums.ChromatographyType.LC_MSMS_POS, " +

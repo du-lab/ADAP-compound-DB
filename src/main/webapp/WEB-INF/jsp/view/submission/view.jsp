@@ -263,13 +263,13 @@
                                         <tr>
                                             <td><strong>Library:</strong></td>
                                             <td><span
-                                                    class="badge badge-warning">${submission.library ? "Yes" : "No"}</span>
+                                                    class="badge badge-warning">${submission.isReference() ? "Yes" : "No"}</span>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td><strong>In-House:</strong></td>
                                             <td><span
-                                                    class="badge badge-success">${submission.inHouse ? "Yes" : "No"}</span>
+                                                    class="badge badge-success">${submission.isInHouseReference() ? "Yes" : "No"}</span>
                                             </td>
                                         </tr>
                                         <c:if test="${submission.reference != null}">
