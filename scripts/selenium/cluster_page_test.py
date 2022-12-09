@@ -84,13 +84,13 @@ def main():
     """Main function that is called from a command line"""
 
     parser = argparse.ArgumentParser('parameter for testing')
-    parser.add_argument('--homepage_url', help='url for adap-kdb homepage', required=True)
+    parser.add_argument('--homepage-url', help='url for adap-kdb homepage', required=True)
 
     args = parser.parse_args()
 
-    homepage_url = args.homepage_url
+    homepage_url = args.homepage-url
 
-    cluster_page_test(homepage_url)
+    cluster_page_test(homepage-url)
 
 if __name__ == '__main__':
     main()
