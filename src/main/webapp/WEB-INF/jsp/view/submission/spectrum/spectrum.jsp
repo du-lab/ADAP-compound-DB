@@ -103,15 +103,15 @@
                                         <h4>Molecular Structure</h4>
                                         <div style="text-align:center" ;>${image}</div>
                                     </c:if>
-                                    <h4>Other Properties</h4>
-                                    <ul class="list-group list-group-flush">
-                                        <c:forEach items="${spectrum.properties}" var="property">
-                                            <li class="list-group-item py-1">
-                                                <strong>${property.name}:</strong>&nbsp;
-                                                <span style="word-break: break-all">${property.value}</span>
-                                            </li>
-                                        </c:forEach>
-                                    </ul>
+<%--                                    <h4>Other Properties</h4>--%>
+<%--                                    <ul class="list-group list-group-flush">--%>
+<%--                                        <c:forEach items="${spectrum.properties}" var="property">--%>
+<%--                                            <li class="list-group-item py-1">--%>
+<%--                                                <strong>${property.name}:</strong>&nbsp;--%>
+<%--                                                <span style="word-break: break-all">${property.value}</span>--%>
+<%--                                            </li>--%>
+<%--                                        </c:forEach>--%>
+<%--                                    </ul>--%>
                                 </div>
                             </div>
                         </div>

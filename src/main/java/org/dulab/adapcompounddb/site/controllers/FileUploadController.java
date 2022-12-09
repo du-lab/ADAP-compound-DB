@@ -11,6 +11,7 @@ import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dulab.adapcompounddb.models.dto.SpectrumProperty;
 import org.dulab.adapcompounddb.site.controllers.forms.FormField;
 import org.dulab.adapcompounddb.models.MetaDataMapping;
 import org.dulab.adapcompounddb.models.entities.*;

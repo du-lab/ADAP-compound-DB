@@ -1,32 +1,21 @@
-package org.dulab.adapcompounddb.models.entities;
+package org.dulab.adapcompounddb.models.dto;
 
-import javax.persistence.*;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.dulab.adapcompounddb.models.entities.Spectrum;
 
 import java.io.Serializable;
 
-@Entity
 public class SpectrumProperty implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private long id;
 
-    @NotNull(message = "SpectrumProperty requires to specify Spectrum.")
-    @Valid
     private Spectrum spectrum;
 
-    @NotBlank(message = "Spectrum property name is required.")
     private String name;
 
     private String value;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public long getId() {
         return id;
     }
@@ -35,9 +24,6 @@ public class SpectrumProperty implements Serializable {
         this.id = id;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "SpectrumId", referencedColumnName = "Id")
-    @JsonIgnore
     public Spectrum getSpectrum() {
         return spectrum;
     }

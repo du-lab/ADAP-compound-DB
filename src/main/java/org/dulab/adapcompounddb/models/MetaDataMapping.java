@@ -1,7 +1,7 @@
 package org.dulab.adapcompounddb.models;
 
 import org.dulab.adapcompounddb.models.entities.Spectrum;
-import org.dulab.adapcompounddb.models.entities.SpectrumProperty;
+import org.dulab.adapcompounddb.models.dto.SpectrumProperty;
 import org.dulab.adapcompounddb.models.entities.Synonym;
 import org.dulab.adapcompounddb.models.enums.IdentifierType;
 
