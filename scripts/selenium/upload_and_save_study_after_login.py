@@ -8,7 +8,7 @@ from selenium.webdriver.common.by import By
 from urllib.parse import urljoin
 
 
-def upload_and_save_test(homepage_url, msp_path,, user_name, user_password):
+def upload_and_save_test(homepage_url, msp_path, user_name, user_password):
     driver = webdriver.Chrome('scripts/selenium/drivers/chromedriver')
 
     try:
@@ -19,7 +19,7 @@ def upload_and_save_test(homepage_url, msp_path,, user_name, user_password):
         upload_page_button.click()
 
         username_login = driver.find_element(By.ID, 'username')
-        username_login.send_keys, user_name
+        username_login.send_keys(user_name)
 
         password_login = driver.find_element(By.ID, 'password')
         password_login.send_keys(user_password)
@@ -80,7 +80,7 @@ def main():
 
     homepage_url = args.homepage_url
     msp_path = args.msp_path
-    user_name = args, user_name
+    user_name = args.user_name
     user_password = args.user_password
 
     upload_and_save_test(homepage_url, msp_path, user_name, user_password)
