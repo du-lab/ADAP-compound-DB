@@ -79,18 +79,14 @@ public class Submission implements Serializable {
     private UserPrincipal user;
 
     @URL(message = "Submission: The field Reference must be a valid URL.")
-    private String reference;
+    private String url;
     private String externalId;
     private boolean isPrivate;
 
     private boolean clusterable;
     private boolean raw;
     private int size;
-
-    @Transient
-    private boolean isInHouse;
-    @Transient
-    private boolean isLibrary;
+    
     @Transient
     private boolean isSearchable;
 
@@ -189,12 +185,12 @@ public class Submission implements Serializable {
         this.dateTime = dateTime;
     }
 
-    public String getReference() {
-        return reference;
+    public String getUrl() {
+        return url;
     }
 
-    public void setReference(final String reference) {
-        this.reference = reference;
+    public void setUrl(final String reference) {
+        this.url = url;
     }
 
     public String getExternalId() {
@@ -249,68 +245,24 @@ public class Submission implements Serializable {
         return isInHouseReference;
     }
 
-    public boolean isReference() {
+    public boolean getIsReference() {
         return isReference;
     }
 
-    public void setIsReference(boolean reference) {
-        isReference = reference;
+    public void setIsReference(boolean isReference) {
+        isReference = isReference;
     }
 
     public void setInHouseReference(boolean inHouseReference) {
         isInHouseReference = inHouseReference;
     }
 
-    public boolean getIsInHouse(){
-        return isInHouse;
-    }
-
-    public void setInHouse(boolean inHouse) {
-        this.isInHouse = inHouse;
-    }
-
-    public boolean getIsLibrary(){
-        return isLibrary;
-    }
-
-    public void setIsLibrary(boolean isLibrary) {
-        this.isLibrary = isLibrary;
-    }
 
     // *************************
     // ***** Other methods *****
     // *************************
 
-    public boolean isLibrary() {
-//        if (files != null) {
-//            for (File file : files) {
-//                List<Spectrum> spectra = file.getSpectra();
-//                if (spectra != null && !spectra.isEmpty()) {
-//                    Spectrum spectrum = spectra.get(0);
-//                    if (spectrum.isReference()) {
-//                        return true;
-//                    }
-//                }
-//            }
-//        }
-//        return false;
-        return isLibrary;
-    }
 
-    public boolean isInHouse() {
-//        if (files != null) {
-//            for (File file : files) {
-//                List<Spectrum> spectra = file.getSpectra();
-//                if (spectra != null && !spectra.isEmpty()) {
-//                    Spectrum spectrum = spectra.get(0);
-//                    if (spectrum.isInHouseReference()) {
-//                        return true;
-//                    }
-//                }
-//            }
-//        }
-        return isInHouse;
-    }
 
     public boolean isAuthorized(final UserPrincipal user) {
         boolean authorized = false;

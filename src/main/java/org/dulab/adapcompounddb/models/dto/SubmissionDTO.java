@@ -44,7 +44,7 @@ public class SubmissionDTO implements Serializable {
                 .toArray(String[]::new);
         this.userName = submission.getUser().getUsername();
         this.userEMail = submission.getUser().getEmail();
-        this.url = submission.getReference();
+        this.url = submission.getUrl();
         this.isPrivate = submission.isPrivate();
         this.reference = isLibrary;
         this.clusterable = clusterable;
