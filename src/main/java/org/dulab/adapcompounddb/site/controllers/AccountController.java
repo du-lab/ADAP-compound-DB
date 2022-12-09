@@ -38,7 +38,7 @@ public class AccountController extends BaseController {
 
         List<SubmissionDTO> submissionDTOs = submissions.stream()
                 .map(s -> new SubmissionDTO(s,
-                        s.isReference(),
+                        s.getIsReference(),
                         s.isInHouseReference(),
                         false))
                 .collect(Collectors.toList());

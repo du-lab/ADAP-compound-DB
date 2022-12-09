@@ -217,7 +217,7 @@
 
                                     <div class="form-row form-group">
                                         <div class="col-md-2 offset-md-2">
-                                            <input class="btn btn-primary w-100" type="submit"
+                                            <input id="submit_button" class="btn btn-primary w-100" type="submit"
                                                    value="${(submissionForm.id > 0) ? "Save" : "Submit"}"/>
                                         </div>
                                     </div>
@@ -263,7 +263,7 @@
                                         <tr>
                                             <td><strong>Library:</strong></td>
                                             <td><span
-                                                    class="badge badge-warning">${submission.isReference() ? "Yes" : "No"}</span>
+                                                    class="badge badge-warning">${submission.getIsReference() ? "Yes" : "No"}</span>
                                             </td>
                                         </tr>
                                         <tr>
@@ -272,12 +272,12 @@
                                                     class="badge badge-success">${submission.isInHouseReference() ? "Yes" : "No"}</span>
                                             </td>
                                         </tr>
-                                        <c:if test="${submission.reference != null}">
+                                        <c:if test="${submission.url != null}">
                                             <tr>
                                                 <td><strong>URL:</strong></td>
-                                                <td><a href="${submission.reference}"
-                                                       title="${submission.reference}"
-                                                       target="_blank">${dulab:abbreviate(submission.reference, 80)}</a>
+                                                <td><a href="${submission.url}"
+                                                       title="${submission.url}"
+                                                       target="_blank">${dulab:abbreviate(submission.url, 80)}</a>
                                                 </td>
                                             </tr>
                                         </c:if>
