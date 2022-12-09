@@ -1,25 +1,27 @@
-from selenium import webdriver
 import argparse
 import time
+
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+
 
 def manual_search_test(homepage_url, identifier = 'eicosatrienoic acid', spectrum = '79 100\n 67 90.3325\n 80 75.8722\n 81 59.0838\n 93 54.0933'):
 	driver = webdriver.Chrome('scripts/selenium/drivers/chromedriver')
 
 	try:
 		driver.get(homepage_url)
-		search_page_button = driver.find_element_by_id('manualSearchPage')
-		search_page_button.click()
-		identifier_input = driver.find_element_by_id('identifierInput')
-		identifier_input.send_keys(identifier)
-		spectrum_input = driver.find_element_by_id('spectrumInput')
-		spectrum_input.send_keys(spectrum)
-		search_button = driver.find_element_by_id('searchButton')
-		search_button.click()
-		time.sleep(30)
-		assert (driver.find_element_by_id('plot'))
+		driver.find_element(By.ID, 'manualSearchPage').click()
+		driver.find_element(By.ID, 'identifierInput').send_keys(identifier)
+		driver.find_element(By.ID, 'spectrumInput').send_keys(spectrum)
+		driver.find_element(By.ID, 'parametersTab').click()
+		time.sleep(5)
+		driver.find_element(By.NAME, 'scoreThreshold').send_keys('1')
+		driver.find_element(By.ID, 'searchButton').click()
+		time.sleep(10)
+		assert (driver.find_element(By.ID, 'plot'))
 
 	except Exception as e:
-		#driver.quit()
+		driver.quit()
 		raise e
 
 

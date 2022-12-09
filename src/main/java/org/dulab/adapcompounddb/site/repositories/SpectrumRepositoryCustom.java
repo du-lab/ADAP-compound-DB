@@ -12,6 +12,7 @@ import org.dulab.adapcompounddb.site.services.search.SearchParameters;
 
 public interface SpectrumRepositoryCustom {
 
+    void resetEntityManager();
     @Deprecated
     List<SpectrumMatch> spectrumSearch(SearchType searchType, Spectrum querySpectrum, QueryParameters params);
 

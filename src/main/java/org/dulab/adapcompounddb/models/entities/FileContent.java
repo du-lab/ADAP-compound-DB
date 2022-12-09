@@ -10,14 +10,13 @@ public class FileContent implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "fileid", referencedColumnName = "Id")
+    @OneToOne(mappedBy = "fileContent")
     private File file;
     @NotNull(message = "File: the field Content is required.")
     private byte[] content;
-    public Long getId() {
+    public long getId() {
         return id;
     }
 

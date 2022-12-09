@@ -138,7 +138,7 @@ public class MultipartFileUtils {
             files.sort(Comparator.comparingInt(f -> -f.getFileType().getPriority()));
             files = mergeFiles(files);
         }
-
+        submission.setChromatographyType(chromatographyType);
         submission.setFiles(files);
     }
 

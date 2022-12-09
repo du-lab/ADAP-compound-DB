@@ -76,7 +76,7 @@ public class GroupSearchController extends BaseController {
         if (submission == null)
             return "redirect:/file/upload/";
 
-        FilterOptions filterOptions = getFilterOptions(getChromatographyTypes(submission));
+        FilterOptions filterOptions = getFilterOptions(Collections.singletonList(submission.getChromatographyType()));
         model.addAttribute("filterOptions", filterOptions);
 
         FilterForm form = ConversionsUtils.byteStringToForm(searchParametersCookie, FilterForm.class);
@@ -101,7 +101,7 @@ public class GroupSearchController extends BaseController {
                 .map(submissionService::fetchSubmission)
                 .orElseGet(() -> Submission.from(session));
 
-        FilterOptions filterOptions = getFilterOptions(getChromatographyTypes(submission));
+        FilterOptions filterOptions = getFilterOptions(Collections.singletonList(submission.getChromatographyType()));
         model.addAttribute("filterOptions", filterOptions);
         session.removeAttribute(GROUP_SEARCH_ERROR_ATTRIBUTE_NAME);
         if (errors.hasErrors()) {

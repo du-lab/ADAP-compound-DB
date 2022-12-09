@@ -1,13 +1,15 @@
 package org.dulab.adapcompounddb.site.repositories;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.entities.*;
+import org.hibernate.annotations.QueryHints;
 import org.springframework.stereotype.Repository;
 
 
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.lang.reflect.Field;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.persistence.*;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -16,10 +18,23 @@ import java.util.stream.Collectors;
 @Repository
 public class MultiFetchRepository {
 
-    @PersistenceContext
+    private static final Logger LOGGER = LogManager.getLogger(MultiFetchRepository.class);
+
+    // Add Extended to speed up queries
+    @PersistenceContext()  // type = PersistenceContextType.EXTENDED
     EntityManager entityManager;
 
+    public void resetEntityManager() {
+//        try {
+//            entityManager.clear();
+//            LOGGER.info("Cleared entity manager");
+//        } catch (Exception e) {
+//            LOGGER.warn("Cannot clear entity manager");
+//        }
+    }
+
     public Submission getSubmissionWithFilesSpectraPeaksIsotopes(long submissionId) {
+
         Submission submission = entityManager
                 .createQuery("select s from Submission s where s.id = :submissionId", Submission.class)
                 .setParameter("submissionId", submissionId)
@@ -54,24 +69,39 @@ public class MultiFetchRepository {
         return submission;
     }
 
+    @TransactionAttribute(TransactionAttributeType.NEVER)
     public List<Spectrum> getSpectraWithPeaksIsotopes(Set<Long> spectrumIds) {
+
+        if (spectrumIds.stream().anyMatch(Objects::isNull))
+            throw new IllegalStateException("Some if spectrum IDs are null: " + spectrumIds);
+
         List<Spectrum> spectra = entityManager
                 .createQuery("select s from Spectrum s where s.id in (:spectrumIds)", Spectrum.class)
                 .setParameter("spectrumIds", spectrumIds)
+                .setHint(QueryHints.READ_ONLY, true)
                 .getResultList();
 
         List<Peak> peaks = entityManager
                 .createQuery("select p from Peak p where p.spectrum.id in (:spectrumIds)", Peak.class)
                 .setParameter("spectrumIds", spectrumIds)
+                .setHint(QueryHints.READ_ONLY, true)
                 .getResultList();
 
         List<Isotope> isotopes = entityManager
                 .createQuery("select i from Isotope i where i.spectrum.id in (:spectrumIds)", Isotope.class)
                 .setParameter("spectrumIds", spectrumIds)
+                .setHint(QueryHints.READ_ONLY, true)
+                .getResultList();
+
+        List<Identifier> identifiers = entityManager
+                .createQuery("select i from Identifier i where i.spectrum.id in (:spectrumIds)", Identifier.class)
+                .setParameter("spectrumIds", spectrumIds)
+                .setHint(QueryHints.READ_ONLY, true)
                 .getResultList();
 
         assignChildrenToParents(peaks, Peak::getSpectrum, spectra, Spectrum::setPeaks, Spectrum::getId);
         assignChildrenToParents(isotopes, Isotope::getSpectrum, spectra, Spectrum::setIsotopes, Spectrum::getId);
+        assignChildrenToParents(identifiers, Identifier::getSpectrum, spectra, Spectrum::setIdentifiers, Spectrum::getId);
 
         return spectra;
     }

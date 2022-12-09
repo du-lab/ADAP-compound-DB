@@ -28,8 +28,8 @@ public class ErrorHandlingFilter implements Filter {
             chain.doFilter(request, response);
         } catch (NestedServletException e) {
             Throwable t = e.getCause();
-            boolean withStackTrance = !(t instanceof EmptySearchResultException);
-            processError(request, response, t, withStackTrance);
+            boolean withStackTrace = !(t instanceof EmptySearchResultException);
+            processError(request, response, t, withStackTrace);
 
         } catch (Exception e) {
             processError(request, response, e, true);
@@ -38,14 +38,16 @@ public class ErrorHandlingFilter implements Filter {
 
     private void processError(ServletRequest request, ServletResponse response, Throwable t, boolean withStackTrace)
             throws IOException, ServletException {
-        RequestDispatcher requestDispatcher = request.getRequestDispatcher(
-                String.format("/error?errorMsg=%s",
-                        URLEncoder.encode(t.getMessage(), "UTF-8")));
-        requestDispatcher.forward(request, response);
+
+        String errorMessage = (t != null) ? t.getMessage() : "Unknown error";
         LOG.error(String.format("(%s): %s",
                         request instanceof HttpServletRequest ? ((HttpServletRequest) request).getRequestURI() : "",
-                        t.getMessage()),
-                withStackTrace ? t : null);
+                        errorMessage),
+                (withStackTrace) ? t : null);
+
+        String errorUrl = String.format("/error?errorMsg=%s", URLEncoder.encode(errorMessage, "UTF-8"));
+        RequestDispatcher requestDispatcher = request.getRequestDispatcher(errorUrl);
+        requestDispatcher.forward(request, response);
     }
 
     @Override
