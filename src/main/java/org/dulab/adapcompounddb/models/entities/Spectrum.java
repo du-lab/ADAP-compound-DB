@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.models.entities;
 
 import org.dulab.adapcompounddb.models.MetaDataMapping;
+import org.dulab.adapcompounddb.models.dto.SpectrumProperty;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.enums.IdentifierType;
 import org.dulab.adapcompounddb.site.services.utils.IsotopicDistributionUtils;
@@ -57,7 +58,7 @@ public class Spectrum implements Serializable {
     @OneToMany(targetEntity = Isotope.class, mappedBy = "spectrum", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
     private List<Isotope> isotopes;
 
-    @OneToMany(targetEntity = SpectrumProperty.class, mappedBy = "spectrum", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
+    @javax.persistence.Transient
     private List<SpectrumProperty> properties;
 
     @OneToMany(targetEntity = Synonym.class, mappedBy = "spectrum", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
