@@ -263,7 +263,7 @@
                                         <tr>
                                             <td><strong>Library:</strong></td>
                                             <td><span
-                                                    class="badge badge-warning">${submission.isReference() ? "Yes" : "No"}</span>
+                                                    class="badge badge-warning">${submission.getIsReference() ? "Yes" : "No"}</span>
                                             </td>
                                         </tr>
                                         <tr>
@@ -272,12 +272,12 @@
                                                     class="badge badge-success">${submission.isInHouseReference() ? "Yes" : "No"}</span>
                                             </td>
                                         </tr>
-                                        <c:if test="${submission.reference != null}">
+                                        <c:if test="${submission.url != null}">
                                             <tr>
                                                 <td><strong>URL:</strong></td>
-                                                <td><a href="${submission.reference}"
-                                                       title="${submission.reference}"
-                                                       target="_blank">${dulab:abbreviate(submission.reference, 80)}</a>
+                                                <td><a href="${submission.url}"
+                                                       title="${submission.url}"
+                                                       target="_blank">${dulab:abbreviate(submission.url, 80)}</a>
                                                 </td>
                                             </tr>
                                         </c:if>
