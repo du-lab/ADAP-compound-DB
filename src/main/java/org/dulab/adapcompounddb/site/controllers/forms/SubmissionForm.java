@@ -43,7 +43,7 @@ public class SubmissionForm {
         setDescription(submission.getDescription());
         setIsPrivate(submission.isPrivate());
         //setIsInHouseLibrary(submission.isInHouse());
-        setReference(submission.getReference());
+        setReference(submission.getUrl());
 
         if (submission.getTags() != null) {
             //format tag into the same format created by tagify which is JsonArray

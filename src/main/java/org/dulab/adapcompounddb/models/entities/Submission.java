@@ -79,7 +79,7 @@ public class Submission implements Serializable {
     private UserPrincipal user;
 
     @URL(message = "Submission: The field Reference must be a valid URL.")
-    private String reference;
+    private String url;
     private String externalId;
     private boolean isPrivate;
 
@@ -94,7 +94,7 @@ public class Submission implements Serializable {
     @Enumerated(EnumType.STRING)
     private ChromatographyType chromatographyType;
 
-    private boolean isLibrary;
+    private boolean isReference;
     private boolean isInHouseReference;
 
     // *******************************
@@ -185,12 +185,12 @@ public class Submission implements Serializable {
         this.dateTime = dateTime;
     }
 
-    public String getReference() {
-        return reference;
+    public String getUrl() {
+        return url;
     }
 
-    public void setReference(final String reference) {
-        this.reference = reference;
+    public void setUrl(final String reference) {
+        this.url = url;
     }
 
     public String getExternalId() {
@@ -245,12 +245,12 @@ public class Submission implements Serializable {
         return isInHouseReference;
     }
 
-    public boolean getIsLibrary() {
-        return isLibrary;
+    public boolean getIsReference() {
+        return isReference;
     }
 
-    public void setIsLibrary(boolean library) {
-        isLibrary = library;
+    public void setIsReference(boolean isReference) {
+        isReference = isReference;
     }
 
     public void setInHouseReference(boolean inHouseReference) {
