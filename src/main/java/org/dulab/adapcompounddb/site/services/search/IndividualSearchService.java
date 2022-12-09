@@ -59,7 +59,8 @@ public class IndividualSearchService {
         int matchIndex = 0;
         List<SpectrumMatch> matches = javaSpectrumSimilarityService.searchConsensusAndReference(querySpectrum, parameters, user);
         if(user != null) {
-
+            List<Long> deleteIds = matches.stream().map(SpectrumMatch::getQuerySpectrum).map(Spectrum::getId).collect(Collectors.toList());
+            spectrumMatchRepository.deleteByQuerySpectrum(deleteIds);
             spectrumMatchRepository.saveAll(matches);
         }
         for (SpectrumMatch match: matches) {
@@ -115,7 +116,9 @@ public class IndividualSearchService {
         List<SpectrumMatch> matches =
                 javaSpectrumSimilarityService.searchConsensusAndReference(spectrum, modifiedParameters, user);
         if(user != null) {
-            spectrumMatchRepository.deleteAll();
+            //spectrumMatchRepository.deleteAll();
+            List<Long> deleteIds = matches.stream().map(SpectrumMatch::getQuerySpectrum).map(Spectrum::getId).collect(Collectors.toList());
+            spectrumMatchRepository.deleteByQuerySpectrum(deleteIds);
             spectrumMatchRepository.saveAll(matches);
         }
         List<SearchResultDTO> results = IntStream.range(0, matches.size())

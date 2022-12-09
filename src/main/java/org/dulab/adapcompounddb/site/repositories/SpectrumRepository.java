@@ -1,9 +1,7 @@
 package org.dulab.adapcompounddb.site.repositories;
 
+import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
-import org.dulab.adapcompounddb.models.entities.Peak;
-import org.dulab.adapcompounddb.models.entities.Spectrum;
-import org.dulab.adapcompounddb.models.entities.SpectrumCluster;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
@@ -11,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Set;
 
 public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, SpectrumRepositoryCustom {
@@ -126,4 +125,9 @@ public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, Spec
 
     @Query("select count(s) from Spectrum s where s.file.id in :fileIds")
     long countSpectraByFileIds(@Param("fileIds") long[] fileIds);
+
+    @Query("Select DISTINCT s.file from Spectrum s where s.id in :spectrumIds")
+    List<File> getFilesFromSpectrum(@Param("spectrumIds") long[] spectrumIds);
+
+
 }

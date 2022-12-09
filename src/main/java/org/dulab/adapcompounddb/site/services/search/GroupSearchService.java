@@ -64,7 +64,7 @@ public class GroupSearchService {
 
         try {
             final List<SearchResultDTO> groupSearchDTOList = new ArrayList<>();
-            spectrumMatchRepository.deleteAll();
+            //spectrumMatchRepository.deleteAll();
             session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
 
             // Calculate total number of spectra
