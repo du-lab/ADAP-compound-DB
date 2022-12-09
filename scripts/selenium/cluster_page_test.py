@@ -88,9 +88,9 @@ def main():
 
     args = parser.parse_args()
 
-    homepage_url = args.homepage-url
+    homepage_url = args.homepage_url
 
-    cluster_page_test(homepage-url)
+    cluster_page_test(homepage_url)
 
 if __name__ == '__main__':
     main()

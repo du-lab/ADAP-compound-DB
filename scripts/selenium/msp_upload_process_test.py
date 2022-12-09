@@ -38,8 +38,8 @@ def main():
     parser.add_argument('--msp-path', help='path for msv file', required=True)
     args = parser.parse_args()
 
-    homepage_url = args.homepage-url
-    msp_path = args.msp-path
+    homepage_url = args.homepage_url
+    msp_path = args.msp_path
 
     upload_process_test(homepage_url, msp_path)
 
