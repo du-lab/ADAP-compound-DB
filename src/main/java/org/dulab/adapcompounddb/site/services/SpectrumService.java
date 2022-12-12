@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -8,10 +9,9 @@ import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.SpectrumDTO;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
-import org.dulab.adapcompounddb.models.entities.SpectrumProperty;
+import org.dulab.adapcompounddb.models.dto.SpectrumProperty;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.enums.MassSpectrometryType;
-import org.dulab.adapcompounddb.site.repositories.SpectrumPropertyRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
 import org.dulab.adapcompounddb.site.services.utils.DataUtils;
@@ -31,7 +31,6 @@ public class SpectrumService {
     private final SpectrumRepository spectrumRepository;
 
     private final SubmissionRepository submissionRepository;
-    private final SpectrumPropertyRepository spectrumPropertyRepository;
 
 
     private enum ColumnInformation {
@@ -69,12 +68,10 @@ public class SpectrumService {
 
     @Autowired
     public SpectrumService(SpectrumRepository spectrumRepository,
-                           SubmissionRepository submissionRepository,
-                           SpectrumPropertyRepository spectrumPropertyRepository) {
+                           SubmissionRepository submissionRepository) {
 
         this.spectrumRepository = spectrumRepository;
         this.submissionRepository = submissionRepository;
-        this.spectrumPropertyRepository = spectrumPropertyRepository;
     }
 
     @Transactional
@@ -129,7 +126,7 @@ public class SpectrumService {
     }
 
     public List<SpectrumProperty> findSpectrumPropertiesBySpectrumId(long... spectrumIds) {
-        return MappingUtils.toList(spectrumPropertyRepository.findBySpectrumId(spectrumIds));
+        return new ArrayList<>();
     }
 
     public List<Spectrum> findConsensusSpectraByChromatographyType(

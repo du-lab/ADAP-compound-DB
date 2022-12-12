@@ -194,12 +194,12 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
             peakQuery.executeUpdate();
         }
 
-        String[] propertySqls = new SavePropertiesQueryBuilder(spectrumList, spectrumIds).build();
-        for (String propertySql : propertySqls) {
-            LOGGER.info(String.format("Saving spectrum properties to the database (%d bytes)...", propertySql.length() * 2));
-            Query propertyQuery = entityManager.createNativeQuery(propertySql);
-            propertyQuery.executeUpdate();
-        }
+//        String[] propertySqls = new SavePropertiesQueryBuilder(spectrumList, spectrumIds).build();
+//        for (String propertySql : propertySqls) {
+//            LOGGER.info(String.format("Saving spectrum properties to the database (%d bytes)...", propertySql.length() * 2));
+//            Query propertyQuery = entityManager.createNativeQuery(propertySql);
+//            propertyQuery.executeUpdate();
+//        }
 
         String[] synonymSqls = new SaveSynonymsQueryBuilder(spectrumList, spectrumIds).build();
         for (String synonymSql : synonymSqls) {
@@ -217,7 +217,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
     }
 
     @Override
-    public void savePeaksAndProperties(final Long spectrumId, final List<Peak> peaks, final List<SpectrumProperty> properties) {
+    public void savePeaks(final Long spectrumId, final List<Peak> peaks) {
         final StringBuilder peakSql = new StringBuilder("INSERT INTO `Peak` (`Mz`,`Intensity`,`SpectrumId`) VALUES ");
         final StringBuilder propertySql = new StringBuilder("INSERT INTO `SpectrumProperty` (`SpectrumId`,`Name`,`Value`) VALUES ");
 
@@ -228,14 +228,6 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
             final Peak p = peaks.get(j);
 
             peakSql.append(String.format(PEAK_VALUE_SQL_STRING, p.getMz(), p.getIntensity(), spectrumId));
-        }
-
-        for (int j = 0; j < properties.size(); j++) {
-            if (j != 0) {
-                propertySql.append(COMMA);
-            }
-            final SpectrumProperty sp = properties.get(j);
-            propertySql.append(String.format(PROPERTY_VALUE_SQL_STRING, spectrumId, DOUBLE_QUOTE + sp.getName() + DOUBLE_QUOTE, DOUBLE_QUOTE + sp.getValue() + DOUBLE_QUOTE));
         }
 
         entityManager.flush();

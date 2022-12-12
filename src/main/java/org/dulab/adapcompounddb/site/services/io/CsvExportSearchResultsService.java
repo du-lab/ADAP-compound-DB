@@ -2,7 +2,7 @@ package org.dulab.adapcompounddb.site.services.io;
 
 import com.opencsv.CSVWriter;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
-import org.dulab.adapcompounddb.models.entities.SpectrumProperty;
+import org.dulab.adapcompounddb.models.dto.SpectrumProperty;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
