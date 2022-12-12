@@ -112,11 +112,11 @@ public class SubmissionService {
         if (!submissions.isEmpty()) {
             long[] submissionIds = submissions.stream().mapToLong(Submission::getId).toArray();
             Map<Long, Boolean> references = MappingUtils.toMap(
-                    spectrumRepository.getAllSpectrumReferenceBySubmissionIds(submissionIds));
+                    submissionRepository.getAllReferenceBySubmissionIds(submissionIds));
             Map<Long, Boolean> inHouseReferences = MappingUtils.toMap(
-                    spectrumRepository.getAllSpectrumInHouseReferenceBySubmissionIds(submissionIds));
+                    submissionRepository.getAllInHouseReferenceBySubmissionIds(submissionIds));
             Map<Long, Boolean> clusterables = MappingUtils.toMap(
-                    spectrumRepository.getAllSpectrumClusterableBySubmissionIds(submissionIds));
+                    submissionRepository.getAllClusterableBySubmissionIds(submissionIds));
 
             submissionDTOs = submissions.stream()
                     .map(s -> new SubmissionDTO(s, references.get(s.getId()), inHouseReferences.get(s.getId()),

@@ -111,4 +111,13 @@ public interface SubmissionRepository extends CrudRepository<Submission,Long> {
     @Modifying
     @Query(value = "update Submission s set s.isReference=:isLibrary where s.id=:submissionId")
     void updateReferenceBySubmissionId(@Param("submissionId") long submissionId, @Param("isLibrary") boolean isLibrary);
+
+    @Query("select distinct s.id, s.isReference from Submission s where s.id in :ids")
+    Iterable<Object[]> getAllReferenceBySubmissionIds(@Param("ids") long[] submissionIds);
+
+    @Query("select distinct s.id, s.isInHouseReference from Submission s where s.id in :ids")
+    Iterable<Object[]> getAllInHouseReferenceBySubmissionIds(@Param("ids") long[] submissionIds);
+
+    @Query("select distinct s.id, s.clusterable from Submission s where s.id in :ids")
+    Iterable<Object[]> getAllClusterableBySubmissionIds(@Param("ids") long[] submissionIds);
 }
