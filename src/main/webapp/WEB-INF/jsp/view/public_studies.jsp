@@ -25,6 +25,7 @@
                                 <th>Date</th>
                                 <th>Title</th>
                                 <th>External ID</th>
+                                <th>Source</th>
                                 <th>Properties</th>
                             </tr>
                             </thead>
@@ -113,7 +114,12 @@
 
                         },
                         {
-                            "targets":4,
+                            "targets": 4,
+                            "data": "source"
+
+                        },
+                        {
+                            "targets":5,
                             "data" : "tags",
 
                             render: function(data, type, row, meta){

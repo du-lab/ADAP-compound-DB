@@ -81,6 +81,8 @@ public class Submission implements Serializable {
     @URL(message = "Submission: The field Reference must be a valid URL.")
     private String url;
     private String externalId;
+
+    private String source;
     private boolean isPrivate;
 
     private boolean clusterable;
@@ -201,6 +203,14 @@ public class Submission implements Serializable {
         this.externalId = externalId;
     }
 
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
     public boolean isPrivate() {
         return isPrivate;
     }
@@ -250,7 +260,7 @@ public class Submission implements Serializable {
     }
 
     public void setIsReference(boolean isReference) {
-        isReference = isReference;
+        this.isReference = isReference;
     }
 
     public void setInHouseReference(boolean inHouseReference) {

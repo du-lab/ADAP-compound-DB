@@ -21,6 +21,8 @@ public class SubmissionDTO implements Serializable {
     private String name;
     private String description;
     private String externalId;
+
+    private String source;
     private Date dateTime;
     private String tagsAsString;
     private String userName;
@@ -51,6 +53,7 @@ public class SubmissionDTO implements Serializable {
         this.isLibrary = isLibrary;
         this.isInHouseLibrary = isInHouseLibrary;
         this.externalId = submission.getExternalId();
+        this.source = submission.getSource();
     }
 
 //    public SubmissionDTO(Submission submission) {
@@ -171,6 +174,14 @@ public class SubmissionDTO implements Serializable {
 
     public void setExternalId(String externalId) {
         this.externalId = externalId;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 
     public String[] getTags() {
