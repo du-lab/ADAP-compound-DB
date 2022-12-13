@@ -104,7 +104,7 @@ public class SpectrumRestController extends BaseController {
         return objectMapper.writeValueAsString(response);
     }
 
-    @RequestMapping(value = "/findClusters", produces = "application/json")
+    @RequestMapping(value = "/findClusters.json", produces = "application/json")
     public String findClusters(@RequestParam("start") final Integer start,
                                @RequestParam("length") final Integer length,
                                @RequestParam("column") final Integer column,
