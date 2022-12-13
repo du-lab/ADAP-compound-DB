@@ -319,7 +319,7 @@ public class SubmissionController extends BaseController {
         submission.setDateTime(new Date());
         submission.setIsReference(submissionForm.getIsLibrary());
         submission.setInHouseReference(submissionForm.getIsInHouseLibrary());
-
+        submission.setSource(submissionForm.getSource());
         // Set the field isReference of all spectra
         List<File> files = submission.getFiles();
         if (files != null) {
