@@ -67,7 +67,7 @@ public class SubmissionController extends BaseController {
 
         final SubmissionForm submissionForm = new SubmissionForm(submission);
         submissionForm.setAuthorized(authenticated);
-        submissionForm.setIsLibrary(submissionService.isLibrary(submission));
+        submissionForm.setIsLibrary(submission.getIsReference());
         model.addAttribute("submission", submission);
         model.addAttribute("submissionForm", submissionForm);
         model.addAttribute("view_submission", authenticated); // User is logged in
@@ -125,8 +125,8 @@ public class SubmissionController extends BaseController {
         }
         final SubmissionForm submissionForm = new SubmissionForm(submission);
         submissionForm.setAuthorized(authorized);
-        submissionForm.setIsLibrary(submissionService.isLibrary(submission));
-        submissionForm.setIsInHouseLibrary(submissionService.isInHouseReference(submission));
+        submissionForm.setIsLibrary(submission.getIsReference());
+        submissionForm.setIsInHouseLibrary(submission.isInHouseReference());
         submission.setSearchable(submissionService.isSearchable(submission));
         model.addAttribute("submission", submission);
         model.addAttribute("submissionForm", submissionForm);
@@ -315,8 +315,10 @@ public class SubmissionController extends BaseController {
         submission.setExternalId(submissionForm.getExternalId());
         submission.setDescription(submissionForm.getDescription());
         submission.setPrivate(submissionForm.getIsPrivate());
-        submission.setReference(submissionForm.getReference());
+        submission.setUrl(submissionForm.getReference());
         submission.setDateTime(new Date());
+        submission.setIsReference(submissionForm.getIsLibrary());
+        submission.setInHouseReference(submissionForm.getIsInHouseLibrary());
 
         // Set the field isReference of all spectra
         List<File> files = submission.getFiles();

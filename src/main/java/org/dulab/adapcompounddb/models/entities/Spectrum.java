@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.models.entities;
 
 import org.dulab.adapcompounddb.models.MetaDataMapping;
+import org.dulab.adapcompounddb.models.dto.SpectrumProperty;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.enums.IdentifierType;
 import org.dulab.adapcompounddb.site.services.utils.IsotopicDistributionUtils;
@@ -45,7 +46,7 @@ public class Spectrum implements Serializable {
     @Column(name = "value")
     private Map<IdentifierType, String> identifiers;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "FileId", referencedColumnName = "Id")
     private File file;
 
@@ -57,7 +58,7 @@ public class Spectrum implements Serializable {
     @OneToMany(targetEntity = Isotope.class, mappedBy = "spectrum", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
     private List<Isotope> isotopes;
 
-    @OneToMany(targetEntity = SpectrumProperty.class, mappedBy = "spectrum", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
+    @javax.persistence.Transient
     private List<SpectrumProperty> properties;
 
     @OneToMany(targetEntity = Synonym.class, mappedBy = "spectrum", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
@@ -132,6 +133,16 @@ public class Spectrum implements Serializable {
 
     public void setIdentifiers(Map<IdentifierType, String> identifiers) {
         this.identifiers = identifiers;
+    }
+
+    @Transient
+    public void setIdentifiers(Collection<Identifier> identifiers) {
+        if (identifiers == null) {
+            this.identifiers = null;
+        } else {
+            this.identifiers = new HashMap<>();
+            identifiers.forEach(i -> this.identifiers.put(i.getType(), i.getValue()));
+        }
     }
 
     public String getStringOfIdentifiers() {

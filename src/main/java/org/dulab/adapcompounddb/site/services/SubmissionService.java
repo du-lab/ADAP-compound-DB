@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 @Service
 public class SubmissionService {
 
+
+
     private enum ColumnInformation {
 
         ID(0, "id"),
@@ -287,7 +289,7 @@ public class SubmissionService {
         for (Submission submission : submissions) {
             String html = String.format("%s <span class='badge badge-info'>private</span>%s",
                     submission.getName(),
-                    submissionRepository.getIsInHouseReference(submission.getId()) ? " <span class='badge badge-success'>in-house</span>" : "");
+                    submission.isInHouseReference() ? " <span class='badge badge-success'>in-house</span>" : "");
             submissionIdToNameMap.put(BigInteger.valueOf(submission.getId()), html);
         }
         return submissionIdToNameMap;
@@ -322,35 +324,6 @@ public class SubmissionService {
                 : submissionRepository.findChromatographyTypesBySubmissionId(submissionIds));
     }
 
-    public Map<Long, Boolean> getIdToIsLibraryMap(List<Submission> submissions) {
-        long[] submissionIds = submissions.stream()
-                .mapToLong(Submission::getId)
-                .toArray();
-
-        return MappingUtils.toMap(submissionIds.length == 0
-                ? new ArrayList<>(0)
-                : spectrumRepository.getAllSpectrumReferenceBySubmissionIds(submissionIds));
-    }
-
-    public Map<Long, Boolean> getIdToIsInHouseLibraryMap(List<Submission> submissions) {
-        long[] submissionIds = submissions.stream()
-                .mapToLong(Submission::getId)
-                .toArray();
-
-        return MappingUtils.toMap(submissionIds.length == 0
-                ? new ArrayList<>(0)
-                : spectrumRepository.getAllSpectrumInHouseReferenceBySubmissionIds(submissionIds));
-    }
-
-    public boolean isInHouseReference(Submission s) {
-        s.setInHouse(submissionRepository.getIsInHouseReference(s.getId()));
-        return s.getIsInHouse();
-    }
-
-    public boolean isLibrary(Submission s) {
-        s.setIsLibrary(submissionRepository.getIsLibrary(s.getId()));
-        return s.isLibrary();
-    }
 
     public boolean isSearchable(Submission s){
         s.setSearchable(submissionRepository.getIsSearchable(s.getId()));
@@ -375,7 +348,7 @@ public class SubmissionService {
         //create submission dto
         List<SubmissionDTO> submissionDTOList = new ArrayList<>();
         for(Submission s : pagedResult.getContent()) {
-            submissionDTOList.add(new SubmissionDTO(s,s.isLibrary(),false, true));
+            submissionDTOList.add(new SubmissionDTO(s,s.getIsReference(),false, true));
         }
         final DataTableResponse response = new DataTableResponse(submissionDTOList);
         response.setRecordsTotal(pagedResult.getTotalElements());
@@ -392,5 +365,10 @@ public class SubmissionService {
 
         return totalMemory;
 
+    }
+
+    @Transactional
+    public void updateReferenceBySubmissionId(long submissionId, boolean value) {
+        submissionRepository.updateReferenceBySubmissionId(submissionId, value);
     }
 }

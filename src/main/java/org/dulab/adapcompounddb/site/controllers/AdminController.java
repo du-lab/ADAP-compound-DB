@@ -10,6 +10,7 @@ import org.dulab.adapcompounddb.models.Statistics;
 import org.dulab.adapcompounddb.models.enums.UserRole;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.dulab.adapcompounddb.site.services.StatisticsService;
+import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.dulab.adapcompounddb.site.services.UserPrincipalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,16 +24,19 @@ public class AdminController {
     private final UserPrincipalService userPrincipalService;
     private final SpectrumService spectrumService;
 
+    private final SubmissionService submissionService;
 //    private final Progress progress;
 
     @Autowired
     public AdminController(StatisticsService statisticsService,
                            UserPrincipalService userPrincipalService,
-                           SpectrumService spectrumService) {
+                           SpectrumService spectrumService,
+                           SubmissionService submissionSerivce) {
 
         this.statisticsService = statisticsService;
         this.userPrincipalService = userPrincipalService;
         this.spectrumService = spectrumService;
+        this.submissionService=submissionSerivce;
 
 //        progress = new Progress();
     }
@@ -56,6 +60,7 @@ public class AdminController {
     public String setSubmissionReference(@PathVariable("submissionId") long submissionId,
                                          @PathVariable("value") boolean value) throws JsonProcessingException {
         spectrumService.updateReferenceBySubmissionId(submissionId, value);
+        submissionService.updateReferenceBySubmissionId(submissionId, value);
         return "redirect:/admin/";
     }
 

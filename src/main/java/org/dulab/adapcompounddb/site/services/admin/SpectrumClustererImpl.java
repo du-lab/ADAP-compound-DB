@@ -3,6 +3,7 @@ package org.dulab.adapcompounddb.site.services.admin;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
+import org.dulab.adapcompounddb.models.dto.SpectrumProperty;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.DistanceMatrixWrapper;
 import org.dulab.adapcompounddb.models.dto.TagInfo;
@@ -176,7 +177,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
                     saveClusterTotalTime += System.currentTimeMillis() - time;
 
                     time = System.currentTimeMillis();
-                    spectrumRepository.savePeaksAndProperties(consensusSpectrum.getId(), peaks, properties);
+                    spectrumRepository.savePeaks(consensusSpectrum.getId(), peaks);
                     savePeakTotalTime += System.currentTimeMillis() - time;
 
                     time = System.currentTimeMillis();

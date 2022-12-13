@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
-import org.dulab.adapcompounddb.models.entities.SpectrumProperty;
+import org.dulab.adapcompounddb.models.dto.SpectrumProperty;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.site.controllers.utils.ConversionsUtils;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
-import java.net.URISyntaxException;
 import java.util.List;
 
 @RestController
@@ -115,7 +114,7 @@ public class SpectrumRestController1 {
 
             JSONObject smilesImage = new JSONObject();
 
-                smilesImage.put("image", ConversionsUtils.toImagePython(spectrum.getCanonicalSmiles(), spectrum.getInChi()));
+                smilesImage.put("image", ConversionsUtils.toImageJava(spectrum.getCanonicalSmiles(), spectrum.getInChi()));
 
             return smilesImage.toString();
         } catch (EmptySearchResultException e) {
@@ -151,7 +150,7 @@ public class SpectrumRestController1 {
             spectrum = submission.getFiles().get(fileIndex).getSpectra().get(spectrumIndex);
 
             JSONObject smilesImage = new JSONObject();
-            smilesImage.put("image", ConversionsUtils.toImagePython(spectrum.getCanonicalSmiles(), spectrum.getInChi()));
+            smilesImage.put("image", ConversionsUtils.toImageJava(spectrum.getCanonicalSmiles(), spectrum.getInChi()));
 
             return smilesImage.toString();
 

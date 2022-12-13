@@ -6,7 +6,7 @@ import org.dulab.adapcompounddb.models.MetaDataMapping;
 import org.dulab.adapcompounddb.models.MetaDataMapping.Field;
 import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
-import org.dulab.adapcompounddb.models.entities.SpectrumProperty;
+import org.dulab.adapcompounddb.models.dto.SpectrumProperty;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;

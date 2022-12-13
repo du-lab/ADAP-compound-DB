@@ -21,7 +21,7 @@ public class File implements Comparable<File>, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
 
     @NotBlank(message = "File: the field Name is required.")
     private String name;
@@ -31,7 +31,7 @@ public class File implements Comparable<File>, Serializable {
     private FileType fileType;
 
     @NotNull(message = "File: the field Submission is required.")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "SubmissionId", referencedColumnName = "Id")
     private Submission submission;
 
@@ -45,11 +45,8 @@ public class File implements Comparable<File>, Serializable {
     )
     private List<Spectrum> spectra;
 
-
-    @OneToOne(mappedBy = "file",
-            fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL,
-            orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "fileContentId", referencedColumnName = "Id")
     FileContent fileContent;
 
     private int size;
@@ -60,7 +57,7 @@ public class File implements Comparable<File>, Serializable {
     // *******************************
 
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
@@ -84,8 +81,6 @@ public class File implements Comparable<File>, Serializable {
     public void setFileType(final FileType fileType) {
         this.fileType = fileType;
     }
-
-
 
 
     public Submission getSubmission() {
@@ -141,14 +136,14 @@ public class File implements Comparable<File>, Serializable {
         if (!(other instanceof File)) {
             return false;
         }
-        if(id == null || id == 0) {
+        if (id == 0) {
             return super.equals(other);
         }
-        return id.equals(((File) other).id);
+        return id == (((File) other).id);
     }
 
     @Override
     public int hashCode() {
-        return (id != null) ? Long.hashCode(id) : super.hashCode();
+        return Long.hashCode(id);
     }
 }

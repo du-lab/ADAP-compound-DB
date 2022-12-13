@@ -35,18 +35,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Configuration
 public class ApplicationContextConfiguration {
-//    @Bean
-//    public LocalValidatorFactoryBean localValidatorFactoryBean() {
-//        final LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
-//        validator.setProviderClass(HibernateValidator.class);
-//        return validator;
-//    }
-//
-//    @Bean
-//    public MethodValidationPostProcessor methodValidationPostProcessor() {
-//        final MethodValidationPostProcessor processor = new MethodValidationPostProcessor();
-//        processor.setValidator(localValidatorFactoryBean());
-//        return processor;
-//    }
+    @Bean
+    public LocalValidatorFactoryBean localValidatorFactoryBean() {
+        final LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
+        validator.setProviderClass(HibernateValidator.class);
+        return validator;
+    }
 
+    @Bean
+    public MethodValidationPostProcessor methodValidationPostProcessor() {
+        final MethodValidationPostProcessor processor = new MethodValidationPostProcessor();
+        processor.setValidator(localValidatorFactoryBean());
+        return processor;
+    }
 }

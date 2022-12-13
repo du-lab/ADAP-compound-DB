@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%--@elvariable id="cookieForm" type="java.util.Map<java.lang.String, java.lang.Object>"--%>
 <%--@elvariable id="metadataForm" type="org.dulab.adapcompounddb.site.controllers.forms.MetadataForm"--%>
-<%--@elvariable id="spectrumProperties" type="java.util.List<java.util.List<org.dulab.adapcompounddb.models.entities.SpectrumProperty>>"--%>
+<%--@elvariable id="spectrumProperties" type="java.util.List<java.util.List<org.dulab.adapcompounddb.models.dto.SpectrumProperty>>"--%>
 <%--@elvariable id="fileTypes" type="java.util.List<dulab.adapcompounddb.models.enums.FileType>"--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>

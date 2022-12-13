@@ -81,10 +81,10 @@ def main():
     """Main function that is called from a command line"""
 
     parser = argparse.ArgumentParser('Download all data into a folder')
-    parser.add_argument('--homepage_url', help='url for adap-kdb homepage', required=True)
-    parser.add_argument('--msp_path', help='path for msv file', required=True)
-    parser.add_argument('--user_name', help='username for login', required=True)
-    parser.add_argument('--user_password', help='user password fpr login', required=True)
+    parser.add_argument('--homepage-url', help='url for adap-kdb homepage', required=True)
+    parser.add_argument('--msp-path', help='path for msv file', required=True)
+    parser.add_argument('--user-name', help='username for login', required=True)
+    parser.add_argument('--user-password', help='user password fpr login', required=True)
     args = parser.parse_args()
 
     homepage_url = args.homepage_url

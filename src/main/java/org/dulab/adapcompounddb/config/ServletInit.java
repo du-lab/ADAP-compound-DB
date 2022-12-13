@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class ServletInit extends SpringBootServletInitializer {
-
     @Bean
     public FilterRegistrationBean siteMeshFilter() {
         FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
