@@ -22,6 +22,8 @@ public class SubmissionForm {
     @NotBlank(message = "The field Name is required.")
     private String name;
     private String externalId;
+
+    private String source;
     private String description;
     private boolean isPrivate;
     private boolean isLibrary;
@@ -146,5 +148,13 @@ public class SubmissionForm {
 
     public void setSubmissionCategoryIds(final List<Long> submissionCategoryIds) {
         this.submissionCategoryIds = submissionCategoryIds;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 }

@@ -1,0 +1,4 @@
+alter table submission add source varchar(50) null;
+SET SQL_SAFE_UPDATES = 0;
+update submission set source ='Metabolomics Workbench' where externalId like 'ST%';
+SET SQL_SAFE_UPDATES = 1;

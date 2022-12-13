@@ -159,7 +159,12 @@
                                         <form:input path="externalId" cssClass="col-12 col-md-6 form-control"/>
                                         <form:errors path="externalId" cssClass="text-danger"/>
                                     </div>
-
+                                    <div class="form-row form-group">
+                                        <form:label path="source"
+                                                    cssClass="col-12 col-md-2 col-form-label">Source</form:label>
+                                        <form:input path="source" cssClass="col-12 col-md-6 form-control"/>
+                                        <form:errors path="source" cssClass="text-danger"/>
+                                    </div>
                                     <div class="form-row form-group">
                                         <form:label path="description"
                                                     cssClass="col-12 col-md-2 col-form-label">Description</form:label>
@@ -247,6 +252,10 @@
                                         <tr>
                                             <td><strong>External ID:</strong></td>
                                             <td>${submission.externalId}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Source:</strong></td>
+                                            <td>${submission.source}</td>
                                         </tr>
                                         <tr>
                                             <td><strong>Description:</strong></td>
