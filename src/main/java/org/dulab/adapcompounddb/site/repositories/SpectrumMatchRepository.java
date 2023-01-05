@@ -1,10 +1,12 @@
 package org.dulab.adapcompounddb.site.repositories;
 
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
+import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -29,4 +31,11 @@ public interface SpectrumMatchRepository extends JpaRepository<SpectrumMatch, Lo
 
     @Query("SELECT sm FROM SpectrumMatch sm WHERE sm.querySpectrum.id in :ids AND sm.matchSpectrum.id in :ids")
     Iterable<SpectrumMatch> findBySpectrumIds(@Param("ids") Set<Long> ids);
+
+    @Query("SELECT sm FROM SpectrumMatch sm WHERE sm.querySpectrum.id in :ids")
+    Page<SpectrumMatch> findSpectrumMatchById(Pageable page, @Param("ids") List<Long> ids);
+
+    @Modifying
+    @Query("DELETE FROM SpectrumMatch sm WHERE sm.querySpectrum.id in :ids")
+    void deleteByQuerySpectrum(@Param("ids") List<Long> ids);
 }

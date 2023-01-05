@@ -137,7 +137,7 @@
                                <c:if test="${sessionScope[dulab:groupSearchResultsAttributeName()] == null}">hidden</c:if>
                                href="<c:url value="/group_search/"/>">
                                 <i class="material-icons align-middle">search</i>
-                                <span class="align-middle">Group Search</span>
+                                <span class="align-middle">Group Search Results</span>
                             </a>
                         </li>
                         <li class="nav-item">

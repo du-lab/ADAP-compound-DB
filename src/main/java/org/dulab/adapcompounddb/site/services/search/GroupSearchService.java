@@ -3,10 +3,12 @@ package org.dulab.adapcompounddb.site.services.search;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.exceptions.IllegalSpectrumSearchException;
+import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
 import org.dulab.adapcompounddb.site.repositories.MultiFetchRepository;
+import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.services.EmailService;
 import org.dulab.adapcompounddb.site.services.io.ExportSearchResultsService;
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import javax.servlet.http.HttpSession;
@@ -40,15 +43,20 @@ public class GroupSearchService {
     private final SpectrumRepository spectrumRepository;
     private final MultiFetchRepository multiFetchRepository;
     private final EmailService emailService;
+    private final SpectrumMatchRepository spectrumMatchRepository;
+
     @Autowired
     public GroupSearchService(IndividualSearchService spectrumSearchService,
                               @Qualifier("excelExportSearchResultsService") ExportSearchResultsService exportSearchResultsService,
                               SpectrumRepository spectrumRepository,
                               MultiFetchRepository multiFetchRepository,
-                              EmailService emailService) {
+                              EmailService emailService,
+                              SpectrumMatchRepository spectrumMatchRepository) {
+
         this.spectrumSearchService = spectrumSearchService;
         this.exportSearchResultsService = exportSearchResultsService;
         this.spectrumRepository = spectrumRepository;
+        this.spectrumMatchRepository = spectrumMatchRepository;
         this.multiFetchRepository = multiFetchRepository;
         this.emailService = emailService;
     }
@@ -63,6 +71,7 @@ public class GroupSearchService {
 
         try {
             final List<SearchResultDTO> groupSearchDTOList = new ArrayList<>();
+            //spectrumMatchRepository.deleteAll();
             session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
 
             // Calculate total number of spectra
@@ -76,10 +85,6 @@ public class GroupSearchService {
                 session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
                 return new AsyncResult<>(null);
             }
-
-            // Reset entity manager. Otherwise it'll eventually use up the entire memory.
-            multiFetchRepository.resetEntityManager();
-            spectrumRepository.resetEntityManager();
 
             long startTime = System.currentTimeMillis();
 
@@ -110,7 +115,6 @@ public class GroupSearchService {
 //                    parameters.setLimit(10);
 
                     List<SearchResultDTO> individualSearchResults;
-
                     try {
                         individualSearchResults = (withOntologyLevels)
                                 ? spectrumSearchService.searchWithOntologyLevels(userPrincipal, querySpectrum, parameters)
@@ -150,7 +154,7 @@ public class GroupSearchService {
                             }
                         } else {
                             LOGGER.warn("It looks like the session has been closed. Stopping the group search.");
-                            return new AsyncResult<>(null);
+                            //return new AsyncResult<>(null);
                         }
                     }
 

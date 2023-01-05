@@ -445,4 +445,9 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         }
         return clusters;
     }
+
+    @Override
+    public Page<SpectrumMatch> findAllSpectrumMatchById(Pageable page, List<Long> ids) {
+        return spectrumMatchRepository.findSpectrumMatchById(page, ids);
+    }
 }

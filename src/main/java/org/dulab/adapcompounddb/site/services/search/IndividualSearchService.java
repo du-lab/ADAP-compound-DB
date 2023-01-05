@@ -9,6 +9,7 @@ import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.models.ontology.OntologyLevel;
 import org.dulab.adapcompounddb.models.ontology.OntologySupplier;
 import org.dulab.adapcompounddb.models.ontology.Parameters;
+import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.services.AdductService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
@@ -30,17 +31,19 @@ public class IndividualSearchService {
     private final SubmissionService submissionService;
     private final AdductService adductService;
     private final JavaSpectrumSimilarityService javaSpectrumSimilarityService;
+    private final SpectrumMatchRepository spectrumMatchRepository;
 
     @Autowired
     public IndividualSearchService(SpectrumRepository spectrumRepository,
                                    AdductService adductService,
                                    JavaSpectrumSimilarityService javaSpectrumSimilarityService,
-                                   SubmissionService submissionService) {
+                                   SubmissionService submissionService, SpectrumMatchRepository spectrumMatchRepository) {
 
         this.spectrumRepository = spectrumRepository;
         this.adductService = adductService;
         this.javaSpectrumSimilarityService = javaSpectrumSimilarityService;
         this.submissionService = submissionService;
+        this.spectrumMatchRepository = spectrumMatchRepository;
     }
 
     @Transactional
@@ -54,8 +57,13 @@ public class IndividualSearchService {
 
         List<SearchResultDTO> searchResults = new ArrayList<>();
         int matchIndex = 0;
-        for (SpectrumMatch match
-                : javaSpectrumSimilarityService.searchConsensusAndReference(querySpectrum, parameters, user)) {
+        List<SpectrumMatch> matches = javaSpectrumSimilarityService.searchConsensusAndReference(querySpectrum, parameters, user);
+        if(user != null) {
+            List<Long> deleteIds = matches.stream().map(SpectrumMatch::getQuerySpectrum).map(Spectrum::getId).collect(Collectors.toList());
+            spectrumMatchRepository.deleteByQuerySpectrum(deleteIds);
+            spectrumMatchRepository.saveAll(matches);
+        }
+        for (SpectrumMatch match: matches) {
 
             SearchResultDTO searchResult = MappingUtils.mapSpectrumMatchToSpectrumClusterView(
                     match, matchIndex++, parameters.getSpecies(), parameters.getSource(), parameters.getDisease());
@@ -107,6 +115,12 @@ public class IndividualSearchService {
 
         List<SpectrumMatch> matches =
                 javaSpectrumSimilarityService.searchConsensusAndReference(spectrum, modifiedParameters, user);
+        if(user != null) {
+            //spectrumMatchRepository.deleteAll();
+            List<Long> deleteIds = matches.stream().map(SpectrumMatch::getQuerySpectrum).map(Spectrum::getId).collect(Collectors.toList());
+            spectrumMatchRepository.deleteByQuerySpectrum(deleteIds);
+            spectrumMatchRepository.saveAll(matches);
+        }
 
         List<SearchResultDTO> results = new ArrayList<>(matches.size());
         for (int i = 0; i < matches.size(); ++i) {

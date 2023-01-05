@@ -290,6 +290,13 @@
                                                 </td>
                                             </tr>
                                         </c:if>
+                                        <tr>
+                                            <td><strong>Last Group Search:</strong></td>
+                                            <td>
+                                                <a href="${pageContext.request.contextPath}/submission/group_search/${submission.id}"
+                                                   target="_blank">Group search</a>
+                                            </td>
+                                        </tr>
                                         <c:if test="${submission.tagsAsString.length() > 0}">
                                             <tr>
                                                 <td><strong>Tags:</strong></td>

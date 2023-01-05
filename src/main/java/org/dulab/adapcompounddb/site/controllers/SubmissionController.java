@@ -4,11 +4,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.controllers.forms.SubmissionForm;
+import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
+import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -33,11 +37,13 @@ public class SubmissionController extends BaseController {
 
     private static final String SESSION_ATTRIBUTE_KEY = "currentUser";
     private final SubmissionService submissionService;
+    private final SpectrumMatchRepository spectrumMatchRepository;
 
     @Autowired
-    public SubmissionController(final SubmissionService submissionService, final SpectrumService spectrumService) {
+    public SubmissionController(final SubmissionService submissionService, final SpectrumService spectrumService, SpectrumMatchRepository spectrumMatchRepository) {
 
         this.submissionService = submissionService;
+        this.spectrumMatchRepository = spectrumMatchRepository;
     }
 
 //    @ModelAttribute
@@ -133,6 +139,7 @@ public class SubmissionController extends BaseController {
         model.addAttribute("view_submission", true);
         model.addAttribute("edit_submission", edit);
         model.addAttribute("availableTags", submissionService.findUniqueTagStrings());
+        //List<SpectrumMatch> spectrumMatchList = spectrumMatchRepository.findAllSpectrumMatchByUser(getCurrentUserPrincipal());
 
         return "submission/view";
     }
@@ -416,5 +423,21 @@ public class SubmissionController extends BaseController {
 //        model.addAttribute("publicSubmissions", e);
 
         return "public_studies";
+    }
+
+    @RequestMapping(value = "/submission/group_search/{submissionId:\\d+}", method = RequestMethod.GET)
+    public String groupSubmission(@PathVariable("submissionId") long submissionId, final Model model) {
+        Submission submission = submissionService.fetchSubmission(submissionId);
+        List<File> files = submission.getFiles();
+        List<Spectrum> spectrumList = new ArrayList<>();
+        for(File file: files) {
+            spectrumList.addAll(file.getSpectra());
+        }
+
+        model.addAttribute("spectrumList", spectrumList);
+        model.addAttribute("submission", submission);
+        return "/submission/group_search";
+
+
     }
 }
