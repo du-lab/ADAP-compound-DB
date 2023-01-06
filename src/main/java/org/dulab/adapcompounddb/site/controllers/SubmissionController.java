@@ -434,8 +434,10 @@ public class SubmissionController extends BaseController {
             spectrumList.addAll(file.getSpectra());
         }
 
+
         model.addAttribute("spectrumList", spectrumList);
         model.addAttribute("submission", submission);
+
         return "/submission/group_search";
 
 

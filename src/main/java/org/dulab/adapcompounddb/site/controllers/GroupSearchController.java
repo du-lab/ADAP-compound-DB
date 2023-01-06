@@ -143,10 +143,6 @@ public class GroupSearchController extends BaseController {
         String byteString = ConversionsUtils.formToByteString(form);
         Cookie metaFieldsCookie = new Cookie(SEARCH_PARAMETERS_COOKIE_NAME, byteString);
         response.addCookie(metaFieldsCookie);
-        redirectAttributes.addFlashAttribute("submission", submission);
-
-
-
 
 
         return "redirect:/group_search/";
@@ -154,10 +150,8 @@ public class GroupSearchController extends BaseController {
 
     @RequestMapping(value = "/group_search/", method = RequestMethod.GET)
     public String groupSearch(Model model, HttpSession session) {
-        Submission submission = (Submission) model.getAttribute("submission");
 
 
-        model.addAttribute("submission", submission);
         return "submission/group_search";
     }
 

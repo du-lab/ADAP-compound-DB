@@ -51,7 +51,7 @@ public class GroupSearchRestController extends BaseController {
 
     @RequestMapping(value = "/file/group_search/data", produces = "application/json")
     public String fileGroupSearchResultsSession(
-            @PathVariable("submissionId") long submissionId,
+
             @RequestParam("start") final Integer start,
             @RequestParam("length") final Integer length,
             @RequestParam("search") final String searchStr,
@@ -64,7 +64,7 @@ public class GroupSearchRestController extends BaseController {
         Object sessionObject = session.getAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
         Page<SpectrumMatch> spectrumMatchPage;
         DataTableResponse response = new DataTableResponse();
-        if (sessionObject != null && submissionId == 0) {
+        if (sessionObject != null ) {
 
             @SuppressWarnings("unchecked")
             List<SearchResultDTO> sessionMatches = (List<SearchResultDTO>) sessionObject;
