@@ -178,7 +178,14 @@
 
 
                         <div id="parameters" class="tab-pane fade" role="tabpanel">
-                            <jsp:include page="./user_search_parameters.jsp"/>
+                            <jsp:include page="./user_search_parameters.jsp">
+                                <jsp:param name="SCORE_THRESHOLD" value="0.5"/>
+                                <jsp:param name="RETENTION_INDEX_TOLERANCE" value="50"/>
+                                <jsp:param name="RETENTION_INDEX_MATCH" value="IGNORE_MATCH"/>
+                                <jsp:param name="MZ_TOLERANCE" value="0.01"/>
+                                <jsp:param name="MATCHES_PER_SPECTRUM" value="100"/>
+                                <jsp:param name="MZ_TOLERANCE_TYPE" value="DA"/>
+                            </jsp:include>
                         </div>
 
 

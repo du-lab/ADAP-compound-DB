@@ -207,15 +207,19 @@
                         <%--@elvariable id="filterForm" type="org.dulab.adapcompounddb.site.controllers.forms.FilterForm"--%>
                             <%--@elvariable id="disableBtn" type="java.lang.Boolean"--%>
                         <form:form modelAttribute="filterForm" action="${pageContext.request.contextPath}/account/saveparameters" method="POST">
-                            <jsp:include page="../compound/user_search_parameters.jsp"/>
+                            <jsp:include page="../compound/user_search_parameters.jsp">
+                                <jsp:param name="SCORE_THRESHOLD" value="${searchParameters.scoreThreshold}"/>
+                                <jsp:param name="RETENTION_INDEX_TOLERANCE" value="${searchParameters.retentionIndexTolerance}"/>
+                                <jsp:param name="RETENTION_INDEX_MATCH" value="${searchParameters.retentionIndexMatch}"/>
+                                <jsp:param name="MZ_TOLERANCE" value="${searchParameters.mzTolerance}"/>
+                                <jsp:param name="MATCHES_PER_SPECTRUM" value="${searchParameters.limit}"/>
+                                <jsp:param name="MZ_TOLERANCE_TYPE" value="${searchParameters.mzToleranceType}"/>
+                            </jsp:include>
                             <div class="row row-content">
                                 <div class="col">
                                     <div class="form-row">
                                         <div class="col">
-
                                             <div class="btn-toolbar justify-content-end" role="toolbar">
-
-
                                                 <button id="searchButton" class="btn btn-primary align-self-end" type="submit"
                                                         style="height: 100%;"
                                                         <c:if test="${disableBtn}">
