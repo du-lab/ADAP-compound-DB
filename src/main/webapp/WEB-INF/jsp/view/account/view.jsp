@@ -3,7 +3,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <script src="<c:url value="/resources/AdapCompoundDb/js/tagsColor.js"/>"></script>
 <div class="container">
@@ -56,6 +56,7 @@
                         <li class="nav-item"><a id="studiesTab" class="nav-link active" data-toggle="tab" href="#studies">Studies</a>
                         </li>
                         <li class="nav-item"><a id="librariesTab" class="nav-link" data-toggle="tab" href="#libraries">Libraries</a></li>
+                        <li class="nav-item"><a id="parametersTab" class="nav-link" data-toggle="tab" href="#parameters">Parameters</a></li>
                     </ul>
                 </div>
 
@@ -201,6 +202,33 @@
                             </c:forEach>
                             </tbody>
                         </table>
+                    </div>
+                    <div id="parameters" class="tab-pane" role="tabpanel">
+                        <%--@elvariable id="filterForm" type="org.dulab.adapcompounddb.site.controllers.forms.FilterForm"--%>
+                            <%--@elvariable id="disableBtn" type="java.lang.Boolean"--%>
+                        <form:form modelAttribute="filterForm" action="${pageContext.request.contextPath}/account/saveparameters" method="POST">
+                            <jsp:include page="../compound/user_search_parameters.jsp"/>
+                            <div class="row row-content">
+                                <div class="col">
+                                    <div class="form-row">
+                                        <div class="col">
+
+                                            <div class="btn-toolbar justify-content-end" role="toolbar">
+
+
+                                                <button id="searchButton" class="btn btn-primary align-self-end" type="submit"
+                                                        style="height: 100%;"
+                                                        <c:if test="${disableBtn}">
+                                                            <c:out value="disabled='disabled'"/>
+                                                        </c:if>>
+                                                    Save
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form:form>
                     </div>
                 </div>
             </div>
