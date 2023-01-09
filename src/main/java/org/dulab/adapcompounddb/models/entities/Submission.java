@@ -359,4 +359,5 @@ public class Submission implements Serializable {
     public static void clear(final HttpSession session) {
         session.removeAttribute(SESSION_ATTRIBUTE_KEY);
     }
+
 }

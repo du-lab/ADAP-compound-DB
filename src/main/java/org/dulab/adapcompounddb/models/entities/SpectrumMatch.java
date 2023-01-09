@@ -1,8 +1,10 @@
 package org.dulab.adapcompounddb.models.entities;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 
+import javax.annotation.Nullable;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
@@ -17,7 +19,6 @@ public class SpectrumMatch implements Serializable {
 
     private Spectrum querySpectrum;
 
-    @NotNull(message = "Match Spectrum is required.")
     private Spectrum matchSpectrum;
 
     private Double score;
@@ -29,6 +30,10 @@ public class SpectrumMatch implements Serializable {
     private Double massErrorPPM;
     private Double retTimeError;
     private Double retIndexError;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinTable(name= "UserPrincipal", joinColumns = @JoinColumn(name ="UserPrincipalId", referencedColumnName = "Id"))
+    private UserPrincipal user;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,11 +56,11 @@ public class SpectrumMatch implements Serializable {
         this.querySpectrum = querySpectrum;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade={})
+    @ManyToOne(fetch = FetchType.LAZY, cascade={})
     @JoinColumn(name = "MatchSpectrumId", referencedColumnName = "Id")
     @JsonIgnore
     public Spectrum getMatchSpectrum() {
-        return matchSpectrum;
+        return matchSpectrum ;
     }
 
     public void setMatchSpectrum(final Spectrum matchSpectrum) {
@@ -135,6 +140,16 @@ public class SpectrumMatch implements Serializable {
         this.retIndexError = retIndexError;
     }
 
+    public UserPrincipal getUser() {
+        return user;
+    }
+
+    public void setUser(UserPrincipal user) {
+        this.user = user;
+    }
+
+    public SpectrumMatch(){}
+
     @Override
     public boolean equals(final Object other) {
         if (this == other) {
@@ -154,7 +169,8 @@ public class SpectrumMatch implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("Match between spectra ID = %d and ID = %d: %f",
-                querySpectrum.getId(), matchSpectrum.getId(), score);
+         return (querySpectrum != null && matchSpectrum != null && score != null) ?
+                 String.format("Match between spectra ID = %d and ID = %d: %f", querySpectrum.getId(), matchSpectrum.getId(), score)
+                 :"No match";
     }
 }

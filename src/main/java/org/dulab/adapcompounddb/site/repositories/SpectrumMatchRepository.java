@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.repositories;
 
+import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
@@ -37,5 +38,6 @@ public interface SpectrumMatchRepository extends JpaRepository<SpectrumMatch, Lo
 
     @Modifying
     @Query("DELETE FROM SpectrumMatch sm WHERE sm.querySpectrum.id in :ids")
-    void deleteByQuerySpectrum(@Param("ids") List<Long> ids);
+    void deleteByQuerySpectrums(@Param("ids") List<Long> ids);
+
 }

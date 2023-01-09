@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -58,10 +59,23 @@ public class IndividualSearchService {
         List<SearchResultDTO> searchResults = new ArrayList<>();
         int matchIndex = 0;
         List<SpectrumMatch> matches = javaSpectrumSimilarityService.searchConsensusAndReference(querySpectrum, parameters, user);
-        if(user != null && !matches.isEmpty()) {
-            List<Long> deleteIds = matches.stream().map(SpectrumMatch::getQuerySpectrum).map(Spectrum::getId).collect(Collectors.toList());
-            spectrumMatchRepository.deleteByQuerySpectrum(deleteIds);
-            spectrumMatchRepository.saveAll(matches);
+        if(user != null ) {
+            if(!matches.isEmpty()) {
+                matches.forEach(match -> match.setUser(user));
+                List<Long> deleteIds = matches.stream().map(SpectrumMatch::getQuerySpectrum).map(Spectrum::getId).collect(Collectors.toList());
+                spectrumMatchRepository.deleteByQuerySpectrums(deleteIds);
+                spectrumMatchRepository.saveAll(matches);
+            }
+            else
+            {
+                //save query spectrum even when there's no match
+                spectrumMatchRepository.deleteByQuerySpectrums(Collections.singletonList(querySpectrum.getId()));
+                SpectrumMatch emptyMatch = new SpectrumMatch();
+                emptyMatch.setQuerySpectrum(querySpectrum);
+                emptyMatch.setUser(user);
+                spectrumMatchRepository.save(emptyMatch);
+
+            }
         }
         for (SpectrumMatch match: matches) {
 
@@ -120,7 +134,7 @@ public class IndividualSearchService {
 
             //get list of query spectrum ids in spectrum match
             List<Long> deleteIds = matches.stream().map(SpectrumMatch::getQuerySpectrum).map(Spectrum::getId).collect(Collectors.toList());
-            spectrumMatchRepository.deleteByQuerySpectrum(deleteIds);
+            spectrumMatchRepository.deleteByQuerySpectrums(deleteIds);
             spectrumMatchRepository.saveAll(matches);
         }
 

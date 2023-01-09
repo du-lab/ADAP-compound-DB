@@ -67,7 +67,7 @@ public class Spectrum implements Serializable {
     @OneToMany(targetEntity = SpectrumMatch.class, mappedBy = "querySpectrum", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<SpectrumMatch> matches;
 
-    @OneToMany(mappedBy = "matchSpectrum", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(targetEntity = SpectrumMatch.class, mappedBy = "matchSpectrum", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<SpectrumMatch> matches2;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = {})
