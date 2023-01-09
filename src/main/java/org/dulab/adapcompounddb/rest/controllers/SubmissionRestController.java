@@ -27,7 +27,7 @@ public class SubmissionRestController {
 
     private static final Logger LOGGER = LogManager.getLogger(SubmissionController.class);
 
-    @RequestMapping(value = "/findStudies",method = RequestMethod.GET, produces ="application/json")
+    @RequestMapping(value = "/findStudies.json",method = RequestMethod.GET, produces ="application/json")
     public String findPublicStudies(@RequestParam("start") Integer start,
                                                @RequestParam("length") Integer length,
                                                @RequestParam("column")  Integer column,

@@ -5,6 +5,7 @@ import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Id;
 
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 
@@ -13,6 +14,7 @@ public class SubmissionCategoryDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @Id
     private long id;
 
     private String name;

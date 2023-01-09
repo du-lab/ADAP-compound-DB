@@ -17,10 +17,10 @@ public class BootstrapFramework implements WebApplicationInitializer {
         container.getServletRegistration("default")
                 .addMapping("/resources/*");
 
-        AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
-        applicationContext.register(ApplicationContextConfiguration.class);
-        container.addListener(new ContextLoaderListener(applicationContext));
-
+//        AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
+//        applicationContext.register(ApplicationContextConfiguration.class);
+//        container.addListener(new ContextLoaderListener(applicationContext));
+        container.addFilter("sitemeshFilter", new SitemeshConfig());
         AnnotationConfigWebApplicationContext servletContext = new AnnotationConfigWebApplicationContext();
         servletContext.register(ServletContextConfiguration.class);
 

@@ -4,6 +4,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
+import org.springframework.stereotype.Component;
 import org.springframework.web.util.NestedServletException;
 
 import javax.servlet.*;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
 
+@Component
 @WebFilter(
         filterName = "errorHandling",
         urlPatterns = "/*")

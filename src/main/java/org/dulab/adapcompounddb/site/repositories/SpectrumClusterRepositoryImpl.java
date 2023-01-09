@@ -14,6 +14,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.stereotype.Repository;
+
+@Repository
 public class SpectrumClusterRepositoryImpl implements SpectrumClusterRepositoryCustom {
 
 //    private static final String FIND_CLUSTERS_SQL_QUERY =

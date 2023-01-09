@@ -3,6 +3,7 @@ package org.dulab.adapcompounddb.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,13 +18,13 @@ import org.springframework.web.servlet.view.JstlView;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(
-        basePackages = {"org.dulab.adapcompounddb.site", "org.dulab.adapcompounddb.rest"},
-        useDefaultFilters = false,
-        includeFilters = @ComponentScan.Filter({Controller.class, RestController.class, ControllerAdvice.class})
-)
+@ComponentScan
 public class ServletContextConfiguration implements WebMvcConfigurer {
 
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer getPropertySourcesPlaceholderConfigurer() {
+        return new PropertySourcesPlaceholderConfigurer();
+    }
     @Bean
     public ViewResolver viewResolver() {
         InternalResourceViewResolver resolver = new InternalResourceViewResolver();
@@ -44,5 +45,7 @@ public class ServletContextConfiguration implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/robots.txt")
                 .addResourceLocations("/resources/static/robots.txt");
+        registry.addResourceHandler("/resources/**")
+                .addResourceLocations("/resources/");
     }
 }
