@@ -54,22 +54,22 @@ public class IndividualSearchService {
 
     @Transactional
     public List<SearchResultDTO> searchConsensusSpectra(UserPrincipal user, Spectrum querySpectrum,
-                                                        SearchParameters parameters) {
+                                                        SearchParameters parameters, boolean savedSubmission) {
 
         List<SearchResultDTO> searchResults = new ArrayList<>();
         int matchIndex = 0;
         List<SpectrumMatch> matches = javaSpectrumSimilarityService.searchConsensusAndReference(querySpectrum, parameters, user);
-        if(user != null ) {
+        if(user != null && savedSubmission) {
             if(!matches.isEmpty()) {
                 matches.forEach(match -> match.setUserPrincipalId(user.getId()));
                 List<Long> deleteIds = matches.stream().map(SpectrumMatch::getQuerySpectrum).map(Spectrum::getId).collect(Collectors.toList());
-                spectrumMatchRepository.deleteByQuerySpectrums(deleteIds);
+                spectrumMatchRepository.deleteByQuerySpectrumsAndUserId( user.getId(),deleteIds);
                 spectrumMatchRepository.saveAll(matches);
             }
             else
             {
                 //save query spectrum even when there's no match
-                spectrumMatchRepository.deleteByQuerySpectrums(Collections.singletonList(querySpectrum.getId()));
+                spectrumMatchRepository.deleteByQuerySpectrumsAndUserId(user.getId(), Collections.singletonList(querySpectrum.getId()));
                 SpectrumMatch emptyMatch = new SpectrumMatch();
                 emptyMatch.setQuerySpectrum(querySpectrum);
                 emptyMatch.setUserPrincipalId(user.getId());
@@ -90,7 +90,7 @@ public class IndividualSearchService {
 
     //    @Transactional
     public List<SearchResultDTO> searchWithOntologyLevels(UserPrincipal user, Spectrum spectrum,
-                                                          SearchParameters parameters) {
+                                                          SearchParameters parameters, boolean savedSubmission) {
 
         // Check if there are ontology levels for a given chromatography type
         int[] priorities = OntologySupplier.findPrioritiesByChromatographyType(spectrum.getChromatographyType());
@@ -129,13 +129,23 @@ public class IndividualSearchService {
 
         List<SpectrumMatch> matches =
                 javaSpectrumSimilarityService.searchConsensusAndReference(spectrum, modifiedParameters, user);
-        if(user != null) {
-            //spectrumMatchRepository.deleteAll();
+        if(user != null || !savedSubmission) {
+            if(!matches.isEmpty()) {
+                matches.forEach(match -> match.setUserPrincipalId(user.getId()));
+                List<Long> deleteIds = matches.stream().map(SpectrumMatch::getQuerySpectrum).map(Spectrum::getId).collect(Collectors.toList());
+                spectrumMatchRepository.deleteByQuerySpectrums(deleteIds);
+                spectrumMatchRepository.saveAll(matches);
+            }
+            else
+            {
+                //save query spectrum even when there's no match
+                spectrumMatchRepository.deleteByQuerySpectrums(Collections.singletonList(spectrum.getId()));
+                SpectrumMatch emptyMatch = new SpectrumMatch();
+                emptyMatch.setQuerySpectrum(spectrum);
+                emptyMatch.setUserPrincipalId(user.getId());
+                spectrumMatchRepository.save(emptyMatch);
 
-            //get list of query spectrum ids in spectrum match
-            List<Long> deleteIds = matches.stream().map(SpectrumMatch::getQuerySpectrum).map(Spectrum::getId).collect(Collectors.toList());
-            spectrumMatchRepository.deleteByQuerySpectrums(deleteIds);
-            spectrumMatchRepository.saveAll(matches);
+            }
         }
 
         List<SearchResultDTO> results = new ArrayList<>(matches.size());

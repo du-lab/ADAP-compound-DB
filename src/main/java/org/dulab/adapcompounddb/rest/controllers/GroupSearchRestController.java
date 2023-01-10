@@ -109,18 +109,19 @@ public class GroupSearchRestController extends BaseController {
             matches = new ArrayList<>();
            if(getCurrentUserPrincipal() != null) {
                int matchIndex = 0;
-//               Submission submission = submissionService.fetchSubmission(submissionId);
-//               List<File> files = submission.getFiles();
-//               List<Spectrum> spectrumList = new ArrayList<>();
-//               for(File file: files) {
-//                   spectrumList.addAll(file.getSpectra());
-//               }
-//               List<Long> spectrumIds = spectrumList.stream().map(Spectrum::getId).collect(Collectors.toList());
-//               int progressStep = 0;
+               Submission submission = submissionService.fetchSubmission(submissionId);
+               List<File> files = submission.getFiles();
+               List<Spectrum> spectrumList = new ArrayList<>();
+               for(File file: files) {
+                   spectrumList.addAll(file.getSpectra());
+               }
+               List<Long> spectrumIds = spectrumList.stream().map(Spectrum::getId).collect(Collectors.toList());
+               int progressStep = 0;
 
                //spectrumMatchPage = spectrumMatchService.findAllSpectrumMatchById(PageRequest.of(start/length, length), spectrumIds);
 
-               spectrumMatchPage = spectrumMatchService.findAllSpectrumMatchByUserId(PageRequest.of(start/length, length), getCurrentUserPrincipal().getId());
+               spectrumMatchPage = spectrumMatchService.findAllSpectrumMatchByUserIdAndQuerySpectrums
+                       (PageRequest.of(start/length, length), getCurrentUserPrincipal().getId(), spectrumIds);
 
                for(SpectrumMatch match: spectrumMatchPage.getContent()) {
                    SearchResultDTO searchResult = MappingUtils.mapSpectrumMatchToSpectrumClusterView(

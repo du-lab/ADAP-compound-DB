@@ -41,6 +41,7 @@ public class GroupSearchService {
     private final IndividualSearchService spectrumSearchService;
     private final ExportSearchResultsService exportSearchResultsService;
     private final SpectrumRepository spectrumRepository;
+
     private final MultiFetchRepository multiFetchRepository;
     private final EmailService emailService;
     private final SpectrumMatchRepository spectrumMatchRepository;
@@ -62,10 +63,11 @@ public class GroupSearchService {
     }
 
     @Async
+    @Transactional
 //    @Transactional(propagation = Propagation.REQUIRED)
     public Future<Void> groupSearch(UserPrincipal userPrincipal, List<File> files, HttpSession session,
                                     SearchParameters userParameters,
-                                    boolean withOntologyLevels, boolean sendResultsToEmail) throws TimeoutException {
+                                    boolean withOntologyLevels, boolean sendResultsToEmail, boolean savedSubmission) throws TimeoutException {
 
 //        LOGGER.info("Group search has started");
 
@@ -88,11 +90,17 @@ public class GroupSearchService {
 
             long startTime = System.currentTimeMillis();
 
+
+
             boolean showSessionEndedMessage = true;
             int spectrumCount = 0;
             int progressStep = 0;
             float progress = 0F;
             int position = 0;
+
+            //delete old spectrum match by user id before every group search
+            //spectrumMatchRepository.deleteByuserPrincipalId(userPrincipal.getId());
+
             for (int fileIndex = 0; fileIndex < files.size(); ++fileIndex) {
 
                 File file = files.get(fileIndex);
@@ -117,8 +125,8 @@ public class GroupSearchService {
                     List<SearchResultDTO> individualSearchResults;
                     try {
                         individualSearchResults = (withOntologyLevels)
-                                ? spectrumSearchService.searchWithOntologyLevels(userPrincipal, querySpectrum, parameters)
-                                : spectrumSearchService.searchConsensusSpectra(userPrincipal, querySpectrum, parameters);
+                                ? spectrumSearchService.searchWithOntologyLevels(userPrincipal, querySpectrum, parameters, savedSubmission)
+                                : spectrumSearchService.searchConsensusSpectra(userPrincipal, querySpectrum, parameters, savedSubmission);
                     } catch (IllegalSpectrumSearchException e) {
                         LOGGER.error(String.format("Error when searching %s [%d]: %s",
                                 querySpectrum.getName(), querySpectrum.getId(), e.getMessage()));
