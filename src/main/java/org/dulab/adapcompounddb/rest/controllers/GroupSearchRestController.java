@@ -109,23 +109,23 @@ public class GroupSearchRestController extends BaseController {
             matches = new ArrayList<>();
            if(getCurrentUserPrincipal() != null) {
                int matchIndex = 0;
-               Submission submission = submissionService.fetchSubmission(submissionId);
-               List<File> files = submission.getFiles();
-               List<Spectrum> spectrumList = new ArrayList<>();
-               for(File file: files) {
-                   spectrumList.addAll(file.getSpectra());
-               }
-               List<Long> spectrumIds = spectrumList.stream().map(Spectrum::getId).collect(Collectors.toList());
-               int progressStep = 0;
-               //List<SpectrumMatch> spectrumMatchList  = spectrumMatchRepository.findAllSpectrumMatchByUser()
-               //List<File> files = spectrumRepository.getFilesFromSpectrum()
-               //List<SpectrumMatch> spectrumMatchList = spectrumMatchRepository.findAllSpectrumMatchByUser(PageRequest.of(start, length/start), getCurrentUserPrincipal());
-               spectrumMatchPage = spectrumMatchService.findAllSpectrumMatchById(PageRequest.of(start/length, length), spectrumIds);
+//               Submission submission = submissionService.fetchSubmission(submissionId);
+//               List<File> files = submission.getFiles();
+//               List<Spectrum> spectrumList = new ArrayList<>();
+//               for(File file: files) {
+//                   spectrumList.addAll(file.getSpectra());
+//               }
+//               List<Long> spectrumIds = spectrumList.stream().map(Spectrum::getId).collect(Collectors.toList());
+//               int progressStep = 0;
+
+               //spectrumMatchPage = spectrumMatchService.findAllSpectrumMatchById(PageRequest.of(start/length, length), spectrumIds);
+
+               spectrumMatchPage = spectrumMatchService.findAllSpectrumMatchByUserId(PageRequest.of(start/length, length), getCurrentUserPrincipal().getId());
 
                for(SpectrumMatch match: spectrumMatchPage.getContent()) {
                    SearchResultDTO searchResult = MappingUtils.mapSpectrumMatchToSpectrumClusterView(
                            match, matchIndex++, null, null, null);
-                   searchResult.setChromatographyTypeLabel(match.getMatchSpectrum().getChromatographyType().getLabel());
+                   searchResult.setChromatographyTypeLabel(match.getMatchSpectrum() != null ? match.getMatchSpectrum().getChromatographyType().getLabel() : null);
                    matches.add(searchResult);
                }
                response = groupSearchSort(searchStr, start, length, matches, columnStr);

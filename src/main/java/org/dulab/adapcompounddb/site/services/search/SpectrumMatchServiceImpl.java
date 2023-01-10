@@ -450,4 +450,9 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     public Page<SpectrumMatch> findAllSpectrumMatchById(Pageable page, List<Long> ids) {
         return spectrumMatchRepository.findSpectrumMatchById(page, ids);
     }
+
+    @Override
+    public Page<SpectrumMatch> findAllSpectrumMatchByUserId(Pageable page, long id) {
+        return spectrumMatchRepository.findSpectrumMatchByUserId(page, id);
+    }
 }

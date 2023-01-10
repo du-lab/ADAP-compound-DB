@@ -31,9 +31,7 @@ public class SpectrumMatch implements Serializable {
     private Double retTimeError;
     private Double retIndexError;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinTable(name= "UserPrincipal", joinColumns = @JoinColumn(name ="UserPrincipalId", referencedColumnName = "Id"))
-    private UserPrincipal user;
+    private long userPrincipalId;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -140,12 +138,12 @@ public class SpectrumMatch implements Serializable {
         this.retIndexError = retIndexError;
     }
 
-    public UserPrincipal getUser() {
-        return user;
+    public long getUserPrincipalId() {
+        return userPrincipalId;
     }
 
-    public void setUser(UserPrincipal user) {
-        this.user = user;
+    public void setUserPrincipalId(long userPrincipalId) {
+        this.userPrincipalId = userPrincipalId;
     }
 
     public SpectrumMatch(){}
