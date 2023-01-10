@@ -130,12 +130,22 @@ public class IndividualSearchService {
         List<SpectrumMatch> matches =
                 javaSpectrumSimilarityService.searchConsensusAndReference(spectrum, modifiedParameters, user);
         if(user != null) {
-            //spectrumMatchRepository.deleteAll();
+            if(!matches.isEmpty()) {
+                matches.forEach(match -> match.setUserPrincipalId(user.getId()));
+                List<Long> deleteIds = matches.stream().map(SpectrumMatch::getQuerySpectrum).map(Spectrum::getId).collect(Collectors.toList());
+                spectrumMatchRepository.deleteByQuerySpectrums(deleteIds);
+                spectrumMatchRepository.saveAll(matches);
+            }
+            else
+            {
+                //save query spectrum even when there's no match
+                spectrumMatchRepository.deleteByQuerySpectrums(Collections.singletonList(spectrum.getId()));
+                SpectrumMatch emptyMatch = new SpectrumMatch();
+                emptyMatch.setQuerySpectrum(spectrum);
+                emptyMatch.setUserPrincipalId(user.getId());
+                spectrumMatchRepository.save(emptyMatch);
 
-            //get list of query spectrum ids in spectrum match
-            List<Long> deleteIds = matches.stream().map(SpectrumMatch::getQuerySpectrum).map(Spectrum::getId).collect(Collectors.toList());
-            spectrumMatchRepository.deleteByQuerySpectrums(deleteIds);
-            spectrumMatchRepository.saveAll(matches);
+            }
         }
 
         List<SearchResultDTO> results = new ArrayList<>(matches.size());

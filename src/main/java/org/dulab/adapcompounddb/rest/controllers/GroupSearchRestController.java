@@ -5,10 +5,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
+import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
+import org.dulab.adapcompounddb.site.controllers.BaseController;
 import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
 import org.dulab.adapcompounddb.site.services.search.GroupSearchService;
 import org.dulab.adapcompounddb.site.services.search.SpectrumMatchService;
+import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,7 +28,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RestController
-public class GroupSearchRestController {
+public class GroupSearchRestController extends BaseController {
 
     public static final ObjectMapper mapper = new ObjectMapper();
     public static final List<SearchResultDTO> EMPTY_LIST = new ArrayList<>(0);
@@ -68,7 +74,7 @@ public class GroupSearchRestController {
     }
 
 
-    @RequestMapping(value = "/file/group_search/{submissionId:\\d+}/data", produces = "application/json")
+    @RequestMapping(value = "/file/group_search/{submissionId:\\d+}/data.json", produces = "application/json")
     public String fileGroupSearchResults(
             @PathVariable("submissionId") long submissionId,
             @RequestParam("start") final Integer start,
@@ -122,11 +128,11 @@ public class GroupSearchRestController {
            }
 
         }
-        final DataTableResponse response = groupSearchSort(searchStr, start, length, matches, columnStr);
+
         return mapper.writeValueAsString(response);
     }
 
-    @RequestMapping(value = "/group_search/{submissionId:\\d+}/progress", produces = "application/json")
+    @RequestMapping(value = "/group_search/{submissionId:\\d+}/progress.json", produces = "application/json")
     public int fileGroupSearchProgress(@PathVariable("submissionId") long submissionId,  HttpSession session) {
         Object progressObject = session.getAttribute(ControllerUtils.GROUP_SEARCH_PROGRESS_ATTRIBUTE_NAME);
         if (!(progressObject instanceof Float))
@@ -137,7 +143,7 @@ public class GroupSearchRestController {
         return Math.round(100 * progress);
     }
 
-    @RequestMapping(value = "/submission/group_search/{submissionId:\\d+}/progress", produces = "application/json")
+    @RequestMapping(value = "/submission/group_search/{submissionId:\\d+}/progress.json", produces = "application/json")
     public int groupSearchProgress(@PathVariable("submissionId") long submissionId,  HttpSession session) {
         Object progressObject = session.getAttribute(ControllerUtils.GROUP_SEARCH_PROGRESS_ATTRIBUTE_NAME);
         if (!(progressObject instanceof Float))
