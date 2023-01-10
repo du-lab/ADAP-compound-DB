@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.Map;
 
 
+import org.springframework.stereotype.Repository;
+
+@Repository
 public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
     private static final Logger LOGGER = LogManager.getLogger(SpectrumRepositoryImpl.class);

@@ -8,6 +8,9 @@ import org.springframework.data.domain.Pageable;
 import java.math.BigInteger;
 import java.util.Collection;
 
+import org.springframework.stereotype.Repository;
+
+@Repository
 public interface SpectrumClusterRepositoryCustom {
 
     Page<SpectrumClusterView> findClusters(ChromatographyType chromatographyType,

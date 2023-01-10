@@ -6,6 +6,9 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;
 
+import org.springframework.stereotype.Repository;
+
+@Repository
 public interface UserPrincipalRepository extends CrudRepository<UserPrincipal, Long> {
 
     Optional<UserPrincipal> findUserPrincipalByUsername(String username);

@@ -10,9 +10,10 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface
+import org.springframework.stereotype.Repository;
 
-SpectrumClusterRepository extends JpaRepository<SpectrumCluster, Long>, SpectrumClusterRepositoryCustom {
+@Repository
+public interface SpectrumClusterRepository extends JpaRepository<SpectrumCluster, Long>, SpectrumClusterRepositoryCustom {
 
     void deleteByIdNotIn(List<Long> ids);
 
