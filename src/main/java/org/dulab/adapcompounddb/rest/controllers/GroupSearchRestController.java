@@ -5,10 +5,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
+import org.dulab.adapcompounddb.models.entities.*;
+import org.dulab.adapcompounddb.site.controllers.BaseController;
 import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
+import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.dulab.adapcompounddb.site.services.search.GroupSearchService;
 import org.dulab.adapcompounddb.site.services.search.SpectrumMatchService;
+import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,11 +29,13 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RestController
-public class GroupSearchRestController {
+public class GroupSearchRestController extends BaseController {
 
     public static final ObjectMapper mapper = new ObjectMapper();
     public static final List<SearchResultDTO> EMPTY_LIST = new ArrayList<>(0);
     private final SpectrumMatchService spectrumMatchService;
+    private final SubmissionService submissionService;
+
     private final GroupSearchService groupSearchService;
 
     static {
@@ -34,8 +43,9 @@ public class GroupSearchRestController {
     }
 
     @Autowired
-    public GroupSearchRestController(final SpectrumMatchService spectrumMatchService, final GroupSearchService groupSearchService) {
+    public GroupSearchRestController(final SpectrumMatchService spectrumMatchService, SubmissionService submissionService, final GroupSearchService groupSearchService) {
         this.spectrumMatchService = spectrumMatchService;
+        this.submissionService = submissionService;
         this.groupSearchService = groupSearchService;
     }
 
@@ -122,7 +132,7 @@ public class GroupSearchRestController {
            }
 
         }
-        final DataTableResponse response = groupSearchSort(searchStr, start, length, matches, columnStr);
+
         return mapper.writeValueAsString(response);
     }
 
