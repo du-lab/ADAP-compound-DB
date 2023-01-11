@@ -13,3 +13,6 @@ target/
 
 # Docker-compose environment file (with passwords)
 .env
+
+src/main/resources/application-local.properties
+
