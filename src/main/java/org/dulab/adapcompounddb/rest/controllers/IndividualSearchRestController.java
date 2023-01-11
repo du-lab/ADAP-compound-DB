@@ -61,7 +61,7 @@ public class IndividualSearchRestController extends BaseController {
         parameters.setDisease(disease);
 
         List<SearchResultDTO> clusters = spectrumSearchService.searchConsensusSpectra(this.getCurrentUserPrincipal(),
-                querySpectrum, parameters);
+                querySpectrum, parameters, false);
 
         List<SearchResultDTO> page = PaginationUtils.getPage(clusters, start, length, column, sortDirection);
 

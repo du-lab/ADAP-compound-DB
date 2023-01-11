@@ -360,7 +360,7 @@ public class IndividualSearchController extends BaseController {
 
         parameters.setSearchMassLibrary(false);
         //parameters.setPrecursorTolerance(SearchParameters.DEFAULT_MZ_TOLERANCE);
-        List<SearchResultDTO> searchResults = individualSearchService.searchConsensusSpectra(this.getCurrentUserPrincipal(), spectrum, parameters);
+        List<SearchResultDTO> searchResults = individualSearchService.searchConsensusSpectra(this.getCurrentUserPrincipal(), spectrum, parameters, false);
         model.addAttribute("querySpectrum", spectrum);
         model.addAttribute("filterForm", compoundSearchForm);
         model.addAttribute("filterOptions", getFilterOptions(spectrum.getChromatographyType()));
@@ -508,7 +508,7 @@ public class IndividualSearchController extends BaseController {
 
 
         List<SearchResultDTO> searchResults = individualSearchService.searchConsensusSpectra(
-                this.getCurrentUserPrincipal(), querySpectrum, parameters);
+                this.getCurrentUserPrincipal(), querySpectrum, parameters, false);
 
         model.addAttribute("querySpectrum", querySpectrum);
         model.addAttribute("filterOptions", getFilterOptions(querySpectrum.getChromatographyType()));

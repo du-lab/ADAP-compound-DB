@@ -101,6 +101,9 @@ public class GroupSearchController extends BaseController {
                 .map(submissionService::fetchSubmission)
                 .orElseGet(() -> Submission.from(session));
 
+        boolean savedSubmission =  (submission.getId() != 0)? true : false;
+
+
         FilterOptions filterOptions = getFilterOptions(Collections.singletonList(submission.getChromatographyType()));
         model.addAttribute("filterOptions", filterOptions);
         session.removeAttribute(GROUP_SEARCH_ERROR_ATTRIBUTE_NAME);
@@ -134,7 +137,7 @@ public class GroupSearchController extends BaseController {
         parameters.setSubmissionIds(form.getSubmissionIds());
 
         asyncResult = groupSearchService.groupSearch(this.getCurrentUserPrincipal(), submission.getFiles(), session,
-                parameters, form.isWithOntologyLevels(), form.isSendResultsToEmail());
+                parameters, form.isWithOntologyLevels(), form.isSendResultsToEmail(), savedSubmission);
         session.setAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME, asyncResult);
 
         LOGGER.info(String.format("Group search is started by user %s with IP = %s [%s]",
