@@ -94,7 +94,7 @@ public class GroupSearchRestController extends BaseController {
         List<SearchResultDTO> matches;
 
         Object sessionObject = session.getAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
-        Page<SpectrumMatch> spectrumMatchPage;
+        List<SpectrumMatch> spectrumMatches;
         DataTableResponse response = new DataTableResponse();
         if (sessionObject != null && submissionId == 0) {
 
@@ -121,18 +121,17 @@ public class GroupSearchRestController extends BaseController {
 
                //spectrumMatchPage = spectrumMatchService.findAllSpectrumMatchById(PageRequest.of(start/length, length), spectrumIds);
 
-               spectrumMatchPage = spectrumMatchService.findAllSpectrumMatchByUserIdAndQuerySpectrums
-                       (PageRequest.of(start/length, length), getCurrentUserPrincipal().getId(), spectrumIds);
+               spectrumMatches = spectrumMatchService.findAllSpectrumMatchByUserIdAndQuerySpectrums
+                       ( getCurrentUserPrincipal().getId(), spectrumIds);
 
-               for(SpectrumMatch match: spectrumMatchPage.getContent()) {
+               for(SpectrumMatch match: spectrumMatches) {
                    SearchResultDTO searchResult = MappingUtils.mapSpectrumMatchToSpectrumClusterView(
                            match, matchIndex++, null, null, null);
                    searchResult.setChromatographyTypeLabel(match.getMatchSpectrum() != null ? match.getMatchSpectrum().getChromatographyType().getLabel() : null);
                    matches.add(searchResult);
                }
                response = groupSearchSort(searchStr, start, length, matches, columnStr);
-               response.setRecordsTotal(spectrumMatchPage.getTotalElements());
-               response.setRecordsFiltered(spectrumMatchPage.getTotalElements());
+
            }
 
         }

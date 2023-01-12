@@ -36,9 +36,6 @@ public interface SpectrumMatchService {
 
     List<SearchResultDTO> convertSpectrumMatchToClusterDTO(List<SpectrumMatch> matches);
 
-//    public Page<SpectrumMatch> findAllSpectrumMatchById(Pageable page, List<Long> ids);
-//
-//    public Page<SpectrumMatch> findAllSpectrumMatchByUserId(Pageable page, long id);
 
-    Page<SpectrumMatch> findAllSpectrumMatchByUserIdAndQuerySpectrums(Pageable page, long userId, List<Long> spectrumIds);
+    List<SpectrumMatch> findAllSpectrumMatchByUserIdAndQuerySpectrums(Long userId, List<Long> spectrumIds);
 }

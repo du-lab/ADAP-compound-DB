@@ -31,7 +31,7 @@ public class SpectrumMatch implements Serializable {
     private Double retTimeError;
     private Double retIndexError;
 
-    private long userPrincipalId;
+    private Long userPrincipalId;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -138,11 +138,11 @@ public class SpectrumMatch implements Serializable {
         this.retIndexError = retIndexError;
     }
 
-    public long getUserPrincipalId() {
+    public Long getUserPrincipalId() {
         return userPrincipalId;
     }
 
-    public void setUserPrincipalId(long userPrincipalId) {
+    public void setUserPrincipalId(Long userPrincipalId) {
         this.userPrincipalId = userPrincipalId;
     }
 

@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -51,29 +52,53 @@ public class IndividualSearchService {
     public List<SpectrumMatch> search(Spectrum querySpectrum, QueryParameters parameters) {
         return spectrumRepository.spectrumSearch(SearchType.SIMILARITY_SEARCH, querySpectrum, parameters);
     }
-
     @Transactional
     public List<SearchResultDTO> searchConsensusSpectra(UserPrincipal user, Spectrum querySpectrum,
-                                                        SearchParameters parameters, boolean savedSubmission) {
+                                                        SearchParameters parameters) {
 
         List<SearchResultDTO> searchResults = new ArrayList<>();
         int matchIndex = 0;
+        for (SpectrumMatch match
+                : javaSpectrumSimilarityService.searchConsensusAndReference(querySpectrum, parameters, user)) {
+
+            SearchResultDTO searchResult = MappingUtils.mapSpectrumMatchToSpectrumClusterView(
+                    match, matchIndex++, parameters.getSpecies(), parameters.getSource(), parameters.getDisease());
+            searchResult.setChromatographyTypeLabel(match.getMatchSpectrum().getChromatographyType().getLabel());
+            searchResults.add(searchResult);
+        }
+
+        return searchResults;
+    }
+
+    @Transactional
+    public List<SearchResultDTO> searchConsensusSpectra(UserPrincipal user, Spectrum querySpectrum,
+                                                        SearchParameters parameters, boolean savedSubmission, List<SpectrumMatch> saveMatches, Set<Long> deleteMatches) {
+
+        long time1 = System.currentTimeMillis();
+
+        List<SearchResultDTO> searchResults = new ArrayList<>();
+        int matchIndex = 0;
+
+        long t1 = System.currentTimeMillis();
         List<SpectrumMatch> matches = javaSpectrumSimilarityService.searchConsensusAndReference(querySpectrum, parameters, user);
+        long t2 = System.currentTimeMillis();
+        double preScreenTime = (t2 - t1) / 1000.0;
+
         if(user != null && savedSubmission) {
             if(!matches.isEmpty()) {
                 matches.forEach(match -> match.setUserPrincipalId(user.getId()));
-                List<Long> deleteIds = matches.stream().map(SpectrumMatch::getQuerySpectrum).map(Spectrum::getId).collect(Collectors.toList());
-                spectrumMatchRepository.deleteByQuerySpectrumsAndUserId( user.getId(),deleteIds);
-                spectrumMatchRepository.saveAll(matches);
+                saveMatches.addAll(matches);
+                deleteMatches.addAll(matches.stream().map(SpectrumMatch::getQuerySpectrum).map(Spectrum::getId).collect(Collectors.toList()));
+
             }
             else
             {
                 //save query spectrum even when there's no match
-                spectrumMatchRepository.deleteByQuerySpectrumsAndUserId(user.getId(), Collections.singletonList(querySpectrum.getId()));
+                deleteMatches.add(querySpectrum.getId());
                 SpectrumMatch emptyMatch = new SpectrumMatch();
                 emptyMatch.setQuerySpectrum(querySpectrum);
                 emptyMatch.setUserPrincipalId(user.getId());
-                spectrumMatchRepository.save(emptyMatch);
+                saveMatches.add(emptyMatch);
 
             }
         }
@@ -85,12 +110,15 @@ public class IndividualSearchService {
             searchResults.add(searchResult);
         }
 
+        long time2 = System.currentTimeMillis();
+        double total = (time2 - time1) / 1000.0;
         return searchResults;
     }
 
+
     //    @Transactional
     public List<SearchResultDTO> searchWithOntologyLevels(UserPrincipal user, Spectrum spectrum,
-                                                          SearchParameters parameters, boolean savedSubmission) {
+                                                          SearchParameters parameters, boolean savedSubmission, List<SpectrumMatch> savedMatches, Set<Long> deleteMatches) {
 
         // Check if there are ontology levels for a given chromatography type
         int[] priorities = OntologySupplier.findPrioritiesByChromatographyType(spectrum.getChromatographyType());

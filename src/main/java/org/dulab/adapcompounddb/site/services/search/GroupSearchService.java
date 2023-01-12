@@ -26,10 +26,7 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 
@@ -70,6 +67,9 @@ public class GroupSearchService {
                                     boolean withOntologyLevels, boolean sendResultsToEmail, boolean savedSubmission) throws TimeoutException {
 
 //        LOGGER.info("Group search has started");
+        List<SpectrumMatch> savedMatches = new ArrayList<>();
+        Set<Long> deleteMatches = new HashSet<>();
+
 
         try {
             final List<SearchResultDTO> groupSearchDTOList = new ArrayList<>();
@@ -125,8 +125,8 @@ public class GroupSearchService {
                     List<SearchResultDTO> individualSearchResults;
                     try {
                         individualSearchResults = (withOntologyLevels)
-                                ? spectrumSearchService.searchWithOntologyLevels(userPrincipal, querySpectrum, parameters, savedSubmission)
-                                : spectrumSearchService.searchConsensusSpectra(userPrincipal, querySpectrum, parameters, savedSubmission);
+                                ? spectrumSearchService.searchWithOntologyLevels(userPrincipal, querySpectrum, parameters, savedSubmission, savedMatches, deleteMatches)
+                                : spectrumSearchService.searchConsensusSpectra(userPrincipal, querySpectrum, parameters, savedSubmission, savedMatches, deleteMatches);
                     } catch (IllegalSpectrumSearchException e) {
                         LOGGER.error(String.format("Error when searching %s [%d]: %s",
                                 querySpectrum.getName(), querySpectrum.getId(), e.getMessage()));
@@ -180,6 +180,8 @@ public class GroupSearchService {
                     }
                 }
             }
+            spectrumMatchRepository.deleteByQuerySpectrumsAndUserId( userPrincipal.getId(),deleteMatches);
+            spectrumMatchRepository.saveAll(savedMatches);
 
             if (!groupSearchDTOList.isEmpty() && sendResultsToEmail && userPrincipal != null) {
                 String tmpdir = System.getProperty("java.io.tmpdir");
