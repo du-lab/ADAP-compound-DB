@@ -1,7 +1,7 @@
 package org.dulab.adapcompounddb.rest.controllers;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.enums.MassSpectrometryType;
@@ -20,7 +20,7 @@ import java.util.List;
 @RestController
 public class DownloadRestController {
 
-    private static final Logger LOGGER = LogManager.getLogger(DownloadRestController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DownloadRestController.class);
 
     private final MspFileWriterService mspFileWriterService;
     private final SpectrumService spectrumService;
@@ -65,7 +65,7 @@ public class DownloadRestController {
         try {
             mspFileWriterService.writeMspFile(spectra, response.getOutputStream());
         } catch (IOException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage());
             throw new IllegalStateException("Cannot create a file of consensus spectra: " + e.getMessage(), e);
         }
     }

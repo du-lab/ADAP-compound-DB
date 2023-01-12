@@ -1,8 +1,8 @@
 package org.dulab.adapcompounddb.validation;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -10,7 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 
 public class LogicalAOrNotBValidator implements ConstraintValidator<LogicalAOrNotB, Object> {
 
-    private static final Logger LOG = LogManager.getLogger(LogicalAOrNotBValidator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LogicalAOrNotBValidator.class);
 
     private String fieldAName;
     private String fieldBName;
@@ -29,7 +29,7 @@ public class LogicalAOrNotBValidator implements ConstraintValidator<LogicalAOrNo
             return isA || !isB;
         }
         catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            LOG.warn(e);
+            LOG.warn(e.getMessage());
             return false;
         }
     }

@@ -1,8 +1,8 @@
 package org.dulab.adapcompounddb.site.services;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
@@ -58,7 +58,7 @@ public class SubmissionService {
             return null;
         }
     }
-    private static final Logger LOG = LogManager.getLogger(SubmissionService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SubmissionService.class);
 
     private static final double MEMORY_PER_PEAK = 1.3e-7; //in GB
 

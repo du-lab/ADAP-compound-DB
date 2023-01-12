@@ -1,7 +1,7 @@
 package org.dulab.adapcompounddb.site.controllers;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
@@ -23,7 +23,7 @@ import java.util.List;
 @RestController
 public class SpectrumRestController1 {
 
-    private static final Logger LOGGER = LogManager.getLogger(SpectrumRestController1.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SpectrumRestController1.class);
 
     private final SpectrumService spectrumService;
 

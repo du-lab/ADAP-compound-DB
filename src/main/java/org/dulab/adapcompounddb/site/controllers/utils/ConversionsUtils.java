@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.entities.Peak;
 //rdkit java wrapper
 import org.RDKit.*;
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 public class ConversionsUtils {
 
-    private static final Logger LOGGER = LogManager.getLogger(ConversionsUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConversionsUtils.class);
     static{
         try {
             loadLibrary();

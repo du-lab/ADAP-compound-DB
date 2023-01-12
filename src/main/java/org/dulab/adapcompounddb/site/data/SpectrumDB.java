@@ -1,7 +1,7 @@
 package org.dulab.adapcompounddb.site.data;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 public class SpectrumDB {
 
-    private static final Logger LOG = LogManager.getLogger(SpectrumDB.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SpectrumDB.class);
 
     public static void selectSpectrum() {
         ConnectionPool pool = ConnectionPool.getInstance();
@@ -26,7 +26,7 @@ public class SpectrumDB {
             rs = ps.executeQuery();
         }
         catch (SQLException e) {
-            LOG.error(e);
+            LOG.error(e.getMessage());
         }
         finally {
             pool.freeConnection(connection);

@@ -1,7 +1,7 @@
 package org.dulab.adapcompounddb.site.controllers;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.controllers.forms.SubmissionForm;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
@@ -29,7 +29,7 @@ import static org.dulab.adapcompounddb.site.controllers.utils.ArchiveUtils.unzip
 //@SessionAttributes({"availableTags"})
 public class SubmissionController extends BaseController {
 
-    private static final Logger LOGGER = LogManager.getLogger(SubmissionController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SubmissionController.class);
 
     private static final String SESSION_ATTRIBUTE_KEY = "currentUser";
     private final SubmissionService submissionService;
