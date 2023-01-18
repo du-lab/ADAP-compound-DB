@@ -100,7 +100,6 @@ public class AuthenticationController extends BaseController {
 
     @RequestMapping(value = "/signup", method = RequestMethod.GET)
     public ModelAndView signup(final Model model, final HttpSession session) {
-        int a = 3/0;
         if (this.getCurrentUserPrincipal() != null) {
             return getHomeRedirect();
         }

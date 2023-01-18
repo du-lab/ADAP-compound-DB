@@ -31,7 +31,7 @@ public class FieldMatchValidator implements ConstraintValidator<FieldMatch, Obje
                     || first != null && first.equals(second);
         }
         catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            LOG.warn(e.getMessage());
+            LOG.warn(e.toString());
             return false;
         }
     }
