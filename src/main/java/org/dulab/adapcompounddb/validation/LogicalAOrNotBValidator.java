@@ -29,7 +29,7 @@ public class LogicalAOrNotBValidator implements ConstraintValidator<LogicalAOrNo
             return isA || !isB;
         }
         catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            LOG.warn(e.toString());
+            LOG.warn(e.getMessage(),e);
             return false;
         }
     }
