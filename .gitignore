@@ -13,3 +13,4 @@ target/
 
 # Docker-compose environment file (with passwords)
 .env
+
