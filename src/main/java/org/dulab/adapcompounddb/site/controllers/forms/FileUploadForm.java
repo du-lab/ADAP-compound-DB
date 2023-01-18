@@ -1,8 +1,8 @@
 package org.dulab.adapcompounddb.site.controllers.forms;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.MetaDataMapping;
 import org.dulab.adapcompounddb.models.MetaDataMapping.Field;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class FileUploadForm {
 
-    private static final Logger LOGGER = LogManager.getLogger(FileUploadForm.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileUploadForm.class);
 
 
     @JsonIgnore

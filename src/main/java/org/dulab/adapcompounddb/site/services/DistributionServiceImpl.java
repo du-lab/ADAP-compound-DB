@@ -1,7 +1,7 @@
 package org.dulab.adapcompounddb.site.services;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.DbAndClusterValuePair;
 import org.dulab.adapcompounddb.models.entities.*;
@@ -27,7 +27,7 @@ public class DistributionServiceImpl implements DistributionService {
     private DistributionRepository distributionRepository;
     private SpectrumClusterRepository spectrumClusterRepository;
 
-    private static final Logger LOGGER = LogManager.getLogger(DistributionService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DistributionService.class);
 
     @Autowired
     public DistributionServiceImpl(@Lazy final SubmissionTagRepository submissionTagRepository,

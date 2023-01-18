@@ -1,7 +1,7 @@
 package org.dulab.adapcompounddb.site.data;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -11,7 +11,7 @@ import java.sql.SQLException;
 
 public class ConnectionPool {
 
-    private static final Logger LOG = LogManager.getLogger(ConnectionPool.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ConnectionPool.class);
 
     private static ConnectionPool pool = null;
     private static DataSource dataSource = null;
@@ -28,7 +28,7 @@ public class ConnectionPool {
             dataSource = (DataSource) ic.lookup("java:/comp/env/jdbc/adapcompounddb");
         }
         catch (NamingException e) {
-            LOG.error(e);
+            LOG.error(e.getMessage());
         }
     }
 
@@ -37,7 +37,7 @@ public class ConnectionPool {
             return dataSource.getConnection();
         }
         catch (SQLException e) {
-            LOG.error(e);
+            LOG.error(e.getMessage());
             return null;
         }
     }
@@ -47,7 +47,7 @@ public class ConnectionPool {
             c.close();
         }
         catch (SQLException e) {
-            LOG.error(e);
+            LOG.error(e.getMessage());
         }
     }
 }

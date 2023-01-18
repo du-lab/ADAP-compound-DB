@@ -1,7 +1,7 @@
 package org.dulab.adapcompounddb.site.services.admin;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.dto.SpectrumProperty;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
@@ -33,7 +33,7 @@ public class SpectrumClustererImpl implements SpectrumClusterer {
 
     private static final double PEAK_INTENSITY_FRACTION = 0.005;
 
-    private static final Logger LOGGER = LogManager.getLogger(SpectrumClusterer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SpectrumClusterer.class);
 
     private final SpectrumRepository spectrumRepository;
     private final SpectrumMatchRepository spectrumMatchRepository;

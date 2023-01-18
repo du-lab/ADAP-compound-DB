@@ -1,7 +1,7 @@
 package org.dulab.adapcompounddb.site.controllers;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.entities.File;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.Submission;
@@ -40,7 +40,7 @@ import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.*;
 @Controller
 public class GroupSearchController extends BaseController {
 
-    private static final Logger LOGGER = LogManager.getLogger(GroupSearchController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GroupSearchController.class);
 
     private static final String ALL = "all";
 

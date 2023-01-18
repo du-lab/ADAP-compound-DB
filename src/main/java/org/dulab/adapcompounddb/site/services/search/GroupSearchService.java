@@ -1,7 +1,7 @@
 package org.dulab.adapcompounddb.site.services.search;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.exceptions.IllegalSpectrumSearchException;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
@@ -33,7 +33,7 @@ import java.util.concurrent.TimeoutException;
 @Service
 public class GroupSearchService {
 
-    private static final Logger LOGGER = LogManager.getLogger(GroupSearchService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GroupSearchService.class);
 
     private final IndividualSearchService spectrumSearchService;
     private final ExportSearchResultsService exportSearchResultsService;

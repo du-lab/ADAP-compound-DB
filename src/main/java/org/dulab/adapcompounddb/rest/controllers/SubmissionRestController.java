@@ -3,8 +3,8 @@ package org.dulab.adapcompounddb.rest.controllers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.site.controllers.SubmissionController;
@@ -25,7 +25,7 @@ public class SubmissionRestController {
     @Autowired
     SubmissionService submissionService;
 
-    private static final Logger LOGGER = LogManager.getLogger(SubmissionController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SubmissionController.class);
 
     @RequestMapping(value = "/findStudies.json",method = RequestMethod.GET, produces ="application/json")
     public String findPublicStudies(@RequestParam("start") Integer start,

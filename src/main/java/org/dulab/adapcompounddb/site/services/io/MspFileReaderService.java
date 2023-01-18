@@ -1,7 +1,7 @@
 package org.dulab.adapcompounddb.site.services.io;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.MetaDataMapping;
 import org.dulab.adapcompounddb.models.MetaDataMapping.Field;
 import org.dulab.adapcompounddb.models.entities.Peak;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @Service
 public class MspFileReaderService implements FileReaderService {
 
-    private static final Logger LOG = LogManager.getLogger(MspFileReaderService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MspFileReaderService.class);
     private static final Pattern PEAK_PATTERN = Pattern.compile("([0-9]+[:\\s][0-9]+[;\\s]?)+");
 
     private boolean roundMzValues = false;

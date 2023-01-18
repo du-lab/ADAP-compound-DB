@@ -1,7 +1,7 @@
 package org.dulab.adapcompounddb.site.controllers;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.site.services.io.ExcelExportSubmissionService;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @RestController
 public class ExportRestController {
 
-    private static final Logger LOGGER = LogManager.getLogger(ExportRestController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExportRestController.class);
 
     private final ExportSearchResultsService exportSearchResultsService;
     private final ExcelExportSubmissionService exportSubmissionService;

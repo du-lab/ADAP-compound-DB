@@ -1,8 +1,8 @@
 package org.dulab.adapcompounddb.site.services;
 
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.site.services.search.GroupSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -20,7 +20,7 @@ import java.time.LocalDate;
 
 @Component
 public class EmailService {
-    private static final Logger LOGGER = LogManager.getLogger(GroupSearchService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GroupSearchService.class);
     @Autowired
     JavaMailSender mailSender;
 

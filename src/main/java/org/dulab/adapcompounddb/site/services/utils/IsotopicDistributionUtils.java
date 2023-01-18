@@ -7,8 +7,8 @@ import gnu.trove.map.hash.TDoubleDoubleHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import gnu.trove.procedure.TDoubleProcedure;
 import org.apache.commons.math3.special.Gamma;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.eclipse.persistence.jpa.config.TenantTableDiscriminator;
 
 import java.util.*;
@@ -16,7 +16,7 @@ import java.util.stream.IntStream;
 
 public class IsotopicDistributionUtils {
 
-    private static final Logger LOGGER = LogManager.getLogger(IsotopicDistributionUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(IsotopicDistributionUtils.class);
 
     private static final double MIN_INTENSITY = 0.01;
     private static final double ZERO = 1e-300;

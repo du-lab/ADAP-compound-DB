@@ -1,7 +1,7 @@
 package org.dulab.adapcompounddb.site.services.search;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.entities.Adduct;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 
@@ -12,7 +12,7 @@ import java.util.*;
 
 public class SearchParameters implements Cloneable {
 
-    private static final Logger LOGGER = LogManager.getLogger(SearchParameters.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SearchParameters.class);
 
     public enum RetIndexMatchType {
         IGNORE_MATCH, PENALIZE_NO_MATCH_STRONG, PENALIZE_NO_MATCH_AVERAGE,
