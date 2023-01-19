@@ -60,7 +60,7 @@ public class GroupSearchService {
                                     boolean withOntologyLevels, boolean sendResultsToEmail) throws TimeoutException {
 
 //        LOGGER.info("Group search has started");
-
+        long start = System.currentTimeMillis();
         try {
             final List<SearchResultDTO> groupSearchDTOList = new ArrayList<>();
             session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
@@ -168,7 +168,8 @@ public class GroupSearchService {
                     }
                 }
             }
-
+            long end = System.currentTimeMillis();
+            long total = (end - start)/1000;
             if (!groupSearchDTOList.isEmpty() && sendResultsToEmail && userPrincipal != null) {
                 String tmpdir = System.getProperty("java.io.tmpdir");
                 String date = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").format(LocalDateTime.now());

@@ -51,7 +51,7 @@ public class IndividualSearchService {
     @Transactional
     public List<SearchResultDTO> searchConsensusSpectra(UserPrincipal user, Spectrum querySpectrum,
                                                         SearchParameters parameters) {
-
+        long startTime = System.currentTimeMillis();
         List<SearchResultDTO> searchResults = new ArrayList<>();
         int matchIndex = 0;
         for (SpectrumMatch match
@@ -62,7 +62,8 @@ public class IndividualSearchService {
             searchResult.setChromatographyTypeLabel(match.getMatchSpectrum().getChromatographyType().getLabel());
             searchResults.add(searchResult);
         }
-
+        long end = System.currentTimeMillis();
+        long total = (end - startTime)/1000;
         return searchResults;
     }
 
