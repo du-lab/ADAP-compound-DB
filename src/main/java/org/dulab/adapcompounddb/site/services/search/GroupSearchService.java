@@ -65,7 +65,7 @@ public class GroupSearchService {
     public Future<Void> groupSearch(UserPrincipal userPrincipal, List<File> files, HttpSession session,
                                     SearchParameters userParameters,
                                     boolean withOntologyLevels, boolean sendResultsToEmail, boolean savedSubmission) throws TimeoutException {
-
+        long time1 = System.currentTimeMillis();
 //        LOGGER.info("Group search has started");
         List<SpectrumMatch> savedMatches = new ArrayList<>();
         Set<Long> deleteMatches = new HashSet<>();
@@ -183,6 +183,8 @@ public class GroupSearchService {
             spectrumMatchRepository.deleteByQuerySpectrumsAndUserId( userPrincipal.getId(),deleteMatches);
             spectrumMatchRepository.saveAll(savedMatches);
 
+            long time2 = System.currentTimeMillis();
+            double total = (time2 - time1) / 1000.0;
             if (!groupSearchDTOList.isEmpty() && sendResultsToEmail && userPrincipal != null) {
                 String tmpdir = System.getProperty("java.io.tmpdir");
                 String date = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").format(LocalDateTime.now());
