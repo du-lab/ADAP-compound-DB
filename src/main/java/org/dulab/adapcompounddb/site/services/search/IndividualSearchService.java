@@ -54,8 +54,13 @@ public class IndividualSearchService {
         long startTime = System.currentTimeMillis();
         List<SearchResultDTO> searchResults = new ArrayList<>();
         int matchIndex = 0;
+
+        long ti1 = System.currentTimeMillis();
+        List<SpectrumMatch> matches = javaSpectrumSimilarityService.searchConsensusAndReference(querySpectrum, parameters, user);
+        long ti2 = System.currentTimeMillis();
+        long prescreen = (ti2 - ti1) /100;
         for (SpectrumMatch match
-                : javaSpectrumSimilarityService.searchConsensusAndReference(querySpectrum, parameters, user)) {
+                : matches) {
 
             SearchResultDTO searchResult = MappingUtils.mapSpectrumMatchToSpectrumClusterView(
                     match, matchIndex++, parameters.getSpecies(), parameters.getSource(), parameters.getDisease());
