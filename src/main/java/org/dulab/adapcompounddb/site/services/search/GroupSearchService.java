@@ -60,7 +60,6 @@ public class GroupSearchService {
     }
 
     @Async
-    @Transactional
 //    @Transactional(propagation = Propagation.REQUIRED)
     public Future<Void> groupSearch(UserPrincipal userPrincipal, List<File> files, HttpSession session,
                                     SearchParameters userParameters,

@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface SpectrumMatchRepository extends JpaRepository<SpectrumMatch, Long> {
@@ -48,6 +49,7 @@ public interface SpectrumMatchRepository extends JpaRepository<SpectrumMatch, Lo
     List<SpectrumMatch> findAllSpectrumMatchByUserIdAndQuerySpectrums(@Param("userid") Long userId, @Param("ids")List<Long> spectrumIds);
 
     @Modifying
+    @Transactional
     @Query("DELETE FROM SpectrumMatch sm WHERE (sm.userPrincipalId=:userid and sm.querySpectrum.id in :ids)")
     void deleteByQuerySpectrumsAndUserId(@Param("userid") long userId, @Param("ids")Set<Long> spectrumIds);
 }
