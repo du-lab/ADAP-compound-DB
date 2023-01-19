@@ -73,26 +73,35 @@ public class IndividualSearchService {
     @Transactional
     public List<SearchResultDTO> searchConsensusSpectra(UserPrincipal user, Spectrum querySpectrum,
                                                         SearchParameters parameters, boolean savedSubmission, List<SpectrumMatch> saveMatches, Set<Long> deleteMatches) {
+        long saveDeleteTime = 0;
+        long saveMatchTime = 0;
 
         long time1 = System.currentTimeMillis();
 
         List<SearchResultDTO> searchResults = new ArrayList<>();
         int matchIndex = 0;
 
-        long t1 = System.currentTimeMillis();
+        long ti1 = System.currentTimeMillis();
         List<SpectrumMatch> matches = javaSpectrumSimilarityService.searchConsensusAndReference(querySpectrum, parameters, user);
-        long t2 = System.currentTimeMillis();
-        double preScreenTime = (t2 - t1) / 1000.0;
+        long ti2 = System.currentTimeMillis();
+        long prescreenTime = (ti2 - ti1) / 1000;
 
         if(user != null && savedSubmission) {
             if(!matches.isEmpty()) {
+                long t1 = System.currentTimeMillis();
+
+
                 matches.forEach(match -> match.setUserPrincipalId(user.getId()));
                 saveMatches.addAll(matches);
                 deleteMatches.addAll(matches.stream().map(SpectrumMatch::getQuerySpectrum).map(Spectrum::getId).collect(Collectors.toList()));
 
+                long t2 = System.currentTimeMillis();
+                 saveMatchTime = (t2 - t1) / 1000;
+
             }
             else
             {
+                long t1 = System.currentTimeMillis();
                 //save query spectrum even when there's no match
                 deleteMatches.add(querySpectrum.getId());
                 SpectrumMatch emptyMatch = new SpectrumMatch();
@@ -100,8 +109,13 @@ public class IndividualSearchService {
                 emptyMatch.setUserPrincipalId(user.getId());
                 saveMatches.add(emptyMatch);
 
+                long t2 = System.currentTimeMillis();
+                 saveDeleteTime = (t2 - t1) / 1000;
+
             }
         }
+        long tim1 = System.currentTimeMillis();
+
         for (SpectrumMatch match: matches) {
 
             SearchResultDTO searchResult = MappingUtils.mapSpectrumMatchToSpectrumClusterView(
@@ -109,6 +123,11 @@ public class IndividualSearchService {
             searchResult.setChromatographyTypeLabel(match.getMatchSpectrum().getChromatographyType().getLabel());
             searchResults.add(searchResult);
         }
+        long tim2 = System.currentTimeMillis();
+        long lastloop = (tim2 - tim1) /1000;
+
+
+
 
         long time2 = System.currentTimeMillis();
         double total = (time2 - time1) / 1000.0;
