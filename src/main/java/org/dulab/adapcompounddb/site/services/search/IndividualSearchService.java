@@ -137,7 +137,7 @@ public class IndividualSearchService {
 
     //    @Transactional
     public List<SearchResultDTO> searchWithOntologyLevels(UserPrincipal user, Spectrum spectrum,
-                                                          SearchParameters parameters, boolean savedSubmission, List<SpectrumMatch> savedMatches, Set<Long> deleteMatches) {
+                                                          SearchParameters parameters, boolean savedSubmission, List<SpectrumMatch> saveMatches, Set<Long> deleteMatches) {
 
         // Check if there are ontology levels for a given chromatography type
         int[] priorities = OntologySupplier.findPrioritiesByChromatographyType(spectrum.getChromatographyType());
@@ -179,18 +179,17 @@ public class IndividualSearchService {
         if(user != null || !savedSubmission) {
             if(!matches.isEmpty()) {
                 matches.forEach(match -> match.setUserPrincipalId(user.getId()));
-                List<Long> deleteIds = matches.stream().map(SpectrumMatch::getQuerySpectrum).map(Spectrum::getId).collect(Collectors.toList());
-                spectrumMatchRepository.deleteByQuerySpectrums(deleteIds);
-                spectrumMatchRepository.saveAll(matches);
+                saveMatches.addAll(matches);
+                deleteMatches.addAll(matches.stream().map(SpectrumMatch::getQuerySpectrum).map(Spectrum::getId).collect(Collectors.toList()));
             }
             else
             {
                 //save query spectrum even when there's no match
-                spectrumMatchRepository.deleteByQuerySpectrums(Collections.singletonList(spectrum.getId()));
+                deleteMatches.add(spectrum.getId());
                 SpectrumMatch emptyMatch = new SpectrumMatch();
                 emptyMatch.setQuerySpectrum(spectrum);
                 emptyMatch.setUserPrincipalId(user.getId());
-                spectrumMatchRepository.save(emptyMatch);
+                saveMatches.add(emptyMatch);
 
             }
         }
