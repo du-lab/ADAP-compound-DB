@@ -65,7 +65,7 @@ public class GroupSearchRestController extends BaseController {
         Object sessionObject = session.getAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
         Page<SpectrumMatch> spectrumMatchPage;
         DataTableResponse response = new DataTableResponse();
-        if (sessionObject != null ) {
+        if (sessionObject != null) {
 
             @SuppressWarnings("unchecked")
             List<SearchResultDTO> sessionMatches = (List<SearchResultDTO>) sessionObject;
@@ -108,31 +108,33 @@ public class GroupSearchRestController extends BaseController {
 
         } else {
             matches = new ArrayList<>();
-           if(getCurrentUserPrincipal() != null) {
-               int matchIndex = 0;
-               Submission submission = submissionService.fetchSubmission(submissionId);
-               List<File> files = submission.getFiles();
-               List<Spectrum> spectrumList = new ArrayList<>();
-               for(File file: files) {
-                   spectrumList.addAll(file.getSpectra());
-               }
-               List<Long> spectrumIds = spectrumList.stream().map(Spectrum::getId).collect(Collectors.toList());
-               int progressStep = 0;
+            if (getCurrentUserPrincipal() != null) {
+                int matchIndex = 0;
+                Submission submission = submissionService.fetchSubmission(submissionId);
+                List<File> files = submission.getFiles();
+                List<Spectrum> spectrumList = new ArrayList<>();
+                for (File file : files) {
+                    if (file != null && file.getSpectra() != null) {
+                        spectrumList.addAll(file.getSpectra());
+                    }
+                }
+                List<Long> spectrumIds = spectrumList.stream().map(Spectrum::getId).collect(Collectors.toList());
+                int progressStep = 0;
 
-               //spectrumMatchPage = spectrumMatchService.findAllSpectrumMatchById(PageRequest.of(start/length, length), spectrumIds);
+                //spectrumMatchPage = spectrumMatchService.findAllSpectrumMatchById(PageRequest.of(start/length, length), spectrumIds);
 
-               spectrumMatches = spectrumMatchService.findAllSpectrumMatchByUserIdAndQuerySpectrums
-                       ( getCurrentUserPrincipal().getId(), spectrumIds);
+                spectrumMatches = spectrumMatchService.findAllSpectrumMatchByUserIdAndQuerySpectrums
+                        (getCurrentUserPrincipal().getId(), spectrumIds);
 
-               for(SpectrumMatch match: spectrumMatches) {
-                   SearchResultDTO searchResult = MappingUtils.mapSpectrumMatchToSpectrumClusterView(
-                           match, matchIndex++, null, null, null);
-                   searchResult.setChromatographyTypeLabel(match.getMatchSpectrum() != null ? match.getMatchSpectrum().getChromatographyType().getLabel() : null);
-                   matches.add(searchResult);
-               }
-               response = groupSearchSort(searchStr, start, length, matches, columnStr);
+                for (SpectrumMatch match : spectrumMatches) {
+                    SearchResultDTO searchResult = MappingUtils.mapSpectrumMatchToSpectrumClusterView(
+                            match, matchIndex++, null, null, null);
+                    searchResult.setChromatographyTypeLabel(match.getMatchSpectrum() != null ? match.getMatchSpectrum().getChromatographyType().getLabel() : null);
+                    matches.add(searchResult);
+                }
+                response = groupSearchSort(searchStr, start, length, matches, columnStr);
 
-           }
+            }
 
         }
 
@@ -140,7 +142,7 @@ public class GroupSearchRestController extends BaseController {
     }
 
     @RequestMapping(value = "/group_search/{submissionId:\\d+}/progress", produces = "application/json")
-    public int fileGroupSearchProgress(@PathVariable("submissionId") long submissionId,  HttpSession session) {
+    public int fileGroupSearchProgress(@PathVariable("submissionId") long submissionId, HttpSession session) {
         Object progressObject = session.getAttribute(ControllerUtils.GROUP_SEARCH_PROGRESS_ATTRIBUTE_NAME);
         if (!(progressObject instanceof Float))
             return 0;
@@ -151,7 +153,7 @@ public class GroupSearchRestController extends BaseController {
     }
 
     @RequestMapping(value = "/submission/group_search/{submissionId:\\d+}/progress", produces = "application/json")
-    public int groupSearchProgress(@PathVariable("submissionId") long submissionId,  HttpSession session) {
+    public int groupSearchProgress(@PathVariable("submissionId") long submissionId, HttpSession session) {
         Object progressObject = session.getAttribute(ControllerUtils.GROUP_SEARCH_PROGRESS_ATTRIBUTE_NAME);
         if (!(progressObject instanceof Float))
             return 0;
@@ -160,7 +162,6 @@ public class GroupSearchRestController extends BaseController {
         float progress = (Float) progressObject;
         return Math.round(100 * progress);
     }
-
 
 
     private DataTableResponse groupSearchSort(final String searchStr, final Integer start, final Integer length,

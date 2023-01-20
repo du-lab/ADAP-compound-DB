@@ -431,7 +431,9 @@ public class SubmissionController extends BaseController {
         List<File> files = submission.getFiles();
         List<Spectrum> spectrumList = new ArrayList<>();
         for(File file: files) {
-            spectrumList.addAll(file.getSpectra());
+            if (file != null && file.getSpectra() != null) {
+                spectrumList.addAll(file.getSpectra());
+            }
         }
 
 
