@@ -28,28 +28,29 @@
         <div class="col">
             <div class="btn-toolbar justify-content-end" role="toolbar">
 
-                <div class="dropdown">
-                    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
-                        Export
-                    </button>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item"
-                           href="${pageContext.request.contextPath}/export/session/${dulab:groupSearchResultsAttributeName()}/simple_csv"
-                           title="Exports the top match for each query feature">
-                            Simple export...
-                        </a>
-                        <a class="dropdown-item"
-                           href="${pageContext.request.contextPath}/export/session/${dulab:groupSearchResultsAttributeName()}/advanced_csv"
-                           title="Exports all matches for each query feature">
-                            Advanced export...
-                        </a>
+                    <div class="dropdown" >
+                        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                            Export
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item"
+                               href="${pageContext.request.contextPath}/export/session/${dulab:groupSearchResultsAttributeName()}/simple_csv"
+                               title="Exports the top match for each query feature">
+                                Simple export...
+                            </a>
+                            <a class="dropdown-item"
+                               href="${pageContext.request.contextPath}/export/session/${dulab:groupSearchResultsAttributeName()}/advanced_csv"
+                               title="Exports all matches for each query feature">
+                                Advanced export...
+                            </a>
+                        </div>
                     </div>
-                </div>
-                <div class="progress flex-grow-1 align-self-center mx-2">
-                    <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow="0"
-                         aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-                <a class="btn btn-primary mr-2" href="<c:url value="parameters"/>">Search Parameters</a>
+                    <div  style="visibility: hidden;" class="progress flex-grow-1 align-self-center mx-2">
+                        <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow="0"
+                             aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <a class="btn btn-primary mr-2" href="<c:url value="parameters"/>">Search Parameters</a>
+
             </div>
         </div>
     </div>
@@ -60,13 +61,13 @@
             <div class="card" style="height: auto">
                 <div class="card-header card-header-single">Query</div>
 
-                    <div class="card-body card-body-compact small overflow-auto" style="height: auto">
-                        <div id="queryInfo"></div>
-                    </div>
+                <div class="card-body card-body-compact small overflow-auto" style="height: auto">
+                    <div id="queryInfo"></div>
+                </div>
 
                 <div  id="queryColumn">
                     <div >
-<%--                        <div class="card-header card-header-single">Query Structure</div>--%>
+                        <%--                        <div class="card-header card-header-single">Query Structure</div>--%>
                         <div class="overflow-auto" style="height: auto">
                             <div id="queryStructure" class="d-flex justify-content-center h-100"></div>
                         </div>
@@ -79,10 +80,10 @@
             <div class="card" style="height: auto">
                 <div class="card-header card-header-single">Plot</div>
                 <%--                <div class="card-body small overflow-auto" style="height: 300px">--%>
-                    <div id = "bar_under_plot" class="card-body card-body-compact small overflow-auto" style="height: auto">
-                        <div id="plot"style="height: 400px"></div>
+                <div id = "bar_under_plot" class="card-body card-body-compact small overflow-auto" style="height: auto">
+                    <div id="plot"style="height: 400px"></div>
 
-                    </div>
+                </div>
                 <%--                </div>--%>
             </div>
         </div>
@@ -94,9 +95,9 @@
                 </div>
                 <div  id="matchColumn">
 
-                        <div class="overflow-auto" style="height: auto">
-                            <div id="matchStructure" class="d-flex justify-content-center h-100"></div>
-                        </div>
+                    <div class="overflow-auto" style="height: auto">
+                        <div id="matchStructure" class="d-flex justify-content-center h-100"></div>
+                    </div>
                 </div>
 
             </div>
@@ -161,7 +162,9 @@
         $('#query_plot_match_row').hide();
         let table = $('#match_table').DataTable({
             // dom: 'lfrtip',
-
+            "language": {
+                "emptyTable": "No matches found. Please run the " + '<a href = "${pageContext.request.contextPath}/submission/${submission.getId()}/">group search.</a>'
+            },
             serverSide: true,
             order: [[0, 'desc']],
             processing: true,
@@ -171,19 +174,19 @@
             // scroller: true,
             //rowId: 'position',
             ajax: {
-                url: "${pageContext.request.contextPath}/file/group_search/data.json",
+                url: "${pageContext.request.contextPath}/file/group_search_matches/${submission.getId()}/data.json",
                 data: function (data) {
 
-                        data.columnStr = [];
-                        for (let i = 0; i < data.order.length; i++) {
-                            data.columnStr += data.order[i].column + "-" + data.order[i].dir + ",";
-                        }
-                        console.log(data);
-                        data.search = data.search["value"];
+                    data.columnStr = [];
+                    for (let i = 0; i < data.order.length; i++) {
+                        data.columnStr += data.order[i].column + "-" + data.order[i].dir + ",";
+                    }
+                    console.log(data);
+                    data.search = data.search["value"];
 
-                        <%--console.log(${spectrumIds});--%>
-                        <%--data.spectrumIds = ${spectrumIds}--%>
-                    },
+                    <%--console.log(${spectrumIds});--%>
+                    <%--data.spectrumIds = ${spectrumIds}--%>
+                },
                 dataSrc: function (d) {
                     // Hide columns with no data
                     table.column(3).visible(d.data.map(row => row['mass']).join(''));
@@ -213,7 +216,7 @@
             },
             columns: [
                 {data: function(row, type,val, meta) {
-                    return meta.row + 1;
+                        return meta.row + 1;
                     }},
                 {
                     data: function (row) {
@@ -296,30 +299,27 @@
 
             $('#plot').spectrumPlot(position, queryUrl + 'positive/peaks.json', matchUrl + 'negative/peaks.json',
                 function(complete){
-                if(complete) {
-                    //reset to display plot
-                    $('#plot_content').show();
+                    if(complete) {
+                        //reset to display plot
+                        $('#plot_content').show();
 
-                    //reset styles
-                    $('#query_content').css('padding-right', '')
-                    $('#match_content').css('padding-left', '')
-                    $('#query_content').removeClass('col').addClass('col-4')
-                    $('#match_content').removeClass('col').addClass('col-4')
+                        //reset styles
+                        $('#query_content').css('padding-right', '')
+                        $('#match_content').css('padding-left', '')
+                        $('#query_content').removeClass('col').addClass('col-4')
+                        $('#match_content').removeClass('col').addClass('col-4')
+                    }
+                    else
+                    {
+                        $('#plot_content').hide();
+                        $('#query_content').css('padding-right', '0px')
+                        $('#query_content').addClass('col').removeClass('col-4')
+                        $('#match_content').addClass('col').removeClass('col-4')
+                        $('#match_content').css('padding-left', '0px')
+                    }
                 }
-                else
-                {
-                    $('#plot_content').hide();
-                    $('#query_content').css('padding-right', '0px')
-                    $('#query_content').addClass('col').removeClass('col-4')
-                    $('#match_content').addClass('col').removeClass('col-4')
-                    $('#match_content').css('padding-left', '0px')
-                }
-            }
 
-           );
-
-
-
+            );
 
             $('#queryStructure').spectrumStructure(queryUrl + 'structure.json', function (x) {
                 $('#queryColumn').attr('hidden', !x);
@@ -328,8 +328,6 @@
                 $('#matchColumn').attr('hidden', !x);
             });
 
-
-
             previousQueryUrl = queryUrl;
             previousMatchUrl = matchUrl;
 
@@ -337,36 +335,9 @@
             // show the query, plot and match div
             $('#query_plot_match_row').show();
 
-
-
-
         });
 
 
-
-
-
-        // refresh the datatable and progress bar every 1 second
-        setInterval(function () {
-            $.ajax({
-                url: `${pageContext.request.contextPath}/ajax/group_search/error`,
-                success: d => $('#errorDiv').html(d)
-            });
-
-            table.ajax.reload(null, false);
-            $.getJSON(window.location.origin + window.location.pathname + 'progress', function (x) {
-                const width = x + '%';
-                const progressBar = $('#progressBar')
-                    .css('width', width)
-                    .attr('aria-valuenow', x)
-                    .html(width);
-                if (0 < x && x < 100)
-                    progressBar.addClass('progress-bar-striped progress-bar-animated');
-                else {
-                    progressBar.removeClass('progress-bar-striped progress-bar-animated');
-                }
-            });
-        }, 1000);
         <%--        <c:if test="${pageContext.request.method == 'GET'}">$('#filterForm').submit();--%>
         <%--        </c:if>--%>
     });

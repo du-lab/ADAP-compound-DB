@@ -139,6 +139,7 @@ public class SubmissionController extends BaseController {
         model.addAttribute("view_submission", true);
         model.addAttribute("edit_submission", edit);
         model.addAttribute("availableTags", submissionService.findUniqueTagStrings());
+        model.addAttribute("is_logged_in", (getCurrentUserPrincipal()  != null)?true: false);
         //List<SpectrumMatch> spectrumMatchList = spectrumMatchRepository.findAllSpectrumMatchByUser(getCurrentUserPrincipal());
 
         return "submission/view";
@@ -427,6 +428,9 @@ public class SubmissionController extends BaseController {
 
     @RequestMapping(value = "/submission/group_search/{submissionId:\\d+}", method = RequestMethod.GET)
     public String groupSubmission(@PathVariable("submissionId") long submissionId, final Model model) {
+
+        if(getCurrentUserPrincipal() == null)
+            return "redirect:/submission/{submissionId}/";
         Submission submission = submissionService.fetchSubmission(submissionId);
         List<File> files = submission.getFiles();
         List<Spectrum> spectrumList = new ArrayList<>();
@@ -440,7 +444,7 @@ public class SubmissionController extends BaseController {
         model.addAttribute("spectrumList", spectrumList);
         model.addAttribute("submission", submission);
 
-        return "/submission/group_search";
+        return "/submission/spectrum/matches";
 
 
     }

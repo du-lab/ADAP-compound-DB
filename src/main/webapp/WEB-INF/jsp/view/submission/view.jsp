@@ -62,8 +62,14 @@
                     <a href="<c:url value="/export/submission/${submission.id}/"><c:param name="name" value="${submission.name}"/></c:url>"
                        type="button" class="btn btn-primary">Export</a>
                 </div>
+
                 <div>
-                    <div class="dropdown">
+                    <c:if test ="${is_logged_in}">
+                        <a href="${pageContext.request.contextPath}/submission/group_search/${submission.id}" type="button" class="btn btn-primary">View Matches</a>
+                    </c:if>
+
+                    <div class="dropdown" style="display:inline-block;" >
+
                         <button id="searchMenu"
                                 class="btn btn-primary dropdown-toggle <c:if test="${!submission.isSearchable()}">disabled</c:if>"
                                 type="button" data-toggle="dropdown">
@@ -290,13 +296,7 @@
                                                 </td>
                                             </tr>
                                         </c:if>
-                                        <tr>
-                                            <td><strong>Last Group Search:</strong></td>
-                                            <td>
-                                                <a href="${pageContext.request.contextPath}/submission/group_search/${submission.id}"
-                                                   target="_blank">Group search</a>
-                                            </td>
-                                        </tr>
+
                                         <c:if test="${submission.tagsAsString.length() > 0}">
                                             <tr>
                                                 <td><strong>Tags:</strong></td>

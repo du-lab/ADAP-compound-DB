@@ -80,69 +80,53 @@ public class GroupSearchRestController extends BaseController {
         return mapper.writeValueAsString(response);
     }
 
-
-    @RequestMapping(value = "/file/group_search/{submissionId:\\d+}/data.json", produces = "application/json")
-    public String fileGroupSearchResults(
+    @RequestMapping(value = "/file/group_search_matches/{submissionId:\\d+}/data.json", produces = "application/json")
+    public String groupSearchMatchesResults(
             @PathVariable("submissionId") long submissionId,
             @RequestParam("start") final Integer start,
             @RequestParam("length") final Integer length,
             @RequestParam("search") final String searchStr,
             @RequestParam("columnStr") final String columnStr,
-
             final HttpSession session) throws JsonProcessingException {
 
-        List<SearchResultDTO> matches;
-
-        Object sessionObject = session.getAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
         List<SpectrumMatch> spectrumMatches;
+        List<SearchResultDTO> matches = new ArrayList<>();
         DataTableResponse response = new DataTableResponse();
-        if (sessionObject != null && submissionId == 0) {
 
-            @SuppressWarnings("unchecked")
-            List<SearchResultDTO> sessionMatches = (List<SearchResultDTO>) sessionObject;
-
-            //Avoid ConcurrentModificationException by make a copy for sorting
-            matches = new ArrayList<>(sessionMatches);
-            response = groupSearchSort(searchStr, start, length, matches, columnStr);
-
-
-        } else {
-            matches = new ArrayList<>();
-            if (getCurrentUserPrincipal() != null) {
-                int matchIndex = 0;
-                Submission submission = submissionService.fetchSubmission(submissionId);
-                List<File> files = submission.getFiles();
-                List<Spectrum> spectrumList = new ArrayList<>();
-                for (File file : files) {
-                    if (file != null && file.getSpectra() != null) {
-                        spectrumList.addAll(file.getSpectra());
-                    }
+        if (getCurrentUserPrincipal() != null) {
+            int matchIndex = 0;
+            Submission submission = submissionService.fetchSubmission(submissionId);
+            List<File> files = submission.getFiles();
+            List<Spectrum> spectrumList = new ArrayList<>();
+            for (File file : files) {
+                if (file != null && file.getSpectra() != null) {
+                    spectrumList.addAll(file.getSpectra());
                 }
-                List<Long> spectrumIds = spectrumList.stream().map(Spectrum::getId).collect(Collectors.toList());
-                int progressStep = 0;
-
-                //spectrumMatchPage = spectrumMatchService.findAllSpectrumMatchById(PageRequest.of(start/length, length), spectrumIds);
-
-                spectrumMatches = spectrumMatchService.findAllSpectrumMatchByUserIdAndQuerySpectrums
-                        (getCurrentUserPrincipal().getId(), spectrumIds);
-
-                for (SpectrumMatch match : spectrumMatches) {
-                    SearchResultDTO searchResult = MappingUtils.mapSpectrumMatchToSpectrumClusterView(
-                            match, matchIndex++, null, null, null);
-                    searchResult.setChromatographyTypeLabel(match.getMatchSpectrum() != null ? match.getMatchSpectrum().getChromatographyType().getLabel() : null);
-                    matches.add(searchResult);
-                }
-                response = groupSearchSort(searchStr, start, length, matches, columnStr);
-
             }
+            List<Long> spectrumIds = spectrumList.stream().map(Spectrum::getId).collect(Collectors.toList());
+            int progressStep = 0;
+
+            //spectrumMatchPage = spectrumMatchService.findAllSpectrumMatchById(PageRequest.of(start/length, length), spectrumIds);
+
+            spectrumMatches = spectrumMatchService.findAllSpectrumMatchByUserIdAndQuerySpectrums
+                    (getCurrentUserPrincipal().getId(), spectrumIds);
+
+            for (SpectrumMatch match : spectrumMatches) {
+                SearchResultDTO searchResult = MappingUtils.mapSpectrumMatchToSpectrumClusterView(
+                        match, matchIndex++, null, null, null);
+                searchResult.setChromatographyTypeLabel(match.getMatchSpectrum() != null ? match.getMatchSpectrum().getChromatographyType().getLabel() : null);
+                matches.add(searchResult);
+            }
+            response = groupSearchSort(searchStr, start, length, matches, columnStr);
 
         }
 
         return mapper.writeValueAsString(response);
     }
 
-    @RequestMapping(value = "/group_search/{submissionId:\\d+}/progress", produces = "application/json")
-    public int fileGroupSearchProgress(@PathVariable("submissionId") long submissionId, HttpSession session) {
+
+    @RequestMapping(value = "/group_search/progress", produces = "application/json")
+    public int fileGroupSearchProgress( HttpSession session) {
         Object progressObject = session.getAttribute(ControllerUtils.GROUP_SEARCH_PROGRESS_ATTRIBUTE_NAME);
         if (!(progressObject instanceof Float))
             return 0;
