@@ -1,7 +1,7 @@
 package org.dulab.adapcompounddb.site.services.search;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dulab.adapcompounddb.exceptions.IllegalSpectrumSearchException;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
 
 
 import javax.servlet.http.HttpSession;
@@ -33,7 +33,7 @@ import java.util.concurrent.TimeoutException;
 @Service
 public class GroupSearchService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GroupSearchService.class);
+    private static final Logger LOGGER = LogManager.getLogger(GroupSearchService.class);
 
     private final IndividualSearchService spectrumSearchService;
     private final ExportSearchResultsService exportSearchResultsService;
@@ -86,6 +86,10 @@ public class GroupSearchService {
                 session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
                 return new AsyncResult<>(null);
             }
+
+            // Reset entity manager. Otherwise it'll eventually use up the entire memory.
+            multiFetchRepository.resetEntityManager();
+            spectrumRepository.resetEntityManager();
 
             long startTime = System.currentTimeMillis();
 
