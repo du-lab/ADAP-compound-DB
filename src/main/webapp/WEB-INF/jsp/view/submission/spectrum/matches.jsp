@@ -157,13 +157,12 @@
 <script>
 
     $(document).ready(function () {
-        console.log('hello world');
-        console.log('${submission.getId()}');
+
         $('#query_plot_match_row').hide();
         let table = $('#match_table').DataTable({
             // dom: 'lfrtip',
             "language": {
-                "emptyTable": "No matches found. Please run the " + '<a href = "${pageContext.request.contextPath}/submission/${submission.getId()}/">group search.</a>'
+                "emptyTable": "No matches found. Please run the " + '<a href = "${pageContext.request.contextPath}/submission/${submissionId}/">group search.</a>'
             },
             serverSide: true,
             order: [[0, 'desc']],
@@ -174,7 +173,7 @@
             // scroller: true,
             //rowId: 'position',
             ajax: {
-                url: "${pageContext.request.contextPath}/file/group_search_matches/${submission.getId()}/data.json",
+                url: "${pageContext.request.contextPath}/file/group_search_matches/${submissionId}/data.json",
                 data: function (data) {
 
                     data.columnStr = [];

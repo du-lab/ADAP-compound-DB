@@ -431,18 +431,18 @@ public class SubmissionController extends BaseController {
 
         if(getCurrentUserPrincipal() == null)
             return "redirect:/submission/{submissionId}/";
-        Submission submission = submissionService.fetchSubmission(submissionId);
-        List<File> files = submission.getFiles();
-        List<Spectrum> spectrumList = new ArrayList<>();
-        for(File file: files) {
-            if (file != null && file.getSpectra() != null) {
-                spectrumList.addAll(file.getSpectra());
-            }
-        }
-
-
-        model.addAttribute("spectrumList", spectrumList);
-        model.addAttribute("submission", submission);
+//        Submission submission = submissionService.fetchSubmission(submissionId);
+//        List<File> files = submission.getFiles();
+//        List<Spectrum> spectrumList = new ArrayList<>();
+//        for(File file: files) {
+//            if (file != null && file.getSpectra() != null) {
+//                spectrumList.addAll(file.getSpectra());
+//            }
+//        }
+//
+//
+//        model.addAttribute("spectrumList", spectrumList);
+        model.addAttribute("submissionId", submissionId);
 
         return "/submission/spectrum/matches";
 

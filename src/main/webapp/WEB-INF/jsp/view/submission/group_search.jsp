@@ -156,8 +156,7 @@
 <script>
 
     $(document).ready(function () {
-        console.log('hello world');
-        console.log('${submission.getId()}');
+
         $('#query_plot_match_row').hide();
         let table = $('#match_table').DataTable({
             // dom: 'lfrtip',
