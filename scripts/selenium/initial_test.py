@@ -3,7 +3,7 @@ from selenium.webdriver.common.keys import Keys
 import argparse
 
 
-def initial_test(homepage_url)
+def initial_test(homepage_url):
     # Open the Chrome browser
     driver = webdriver.Chrome('scripts/selenium/drivers/chromedriver.exe')
 
