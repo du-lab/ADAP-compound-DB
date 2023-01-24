@@ -1,10 +1,5 @@
 package org.dulab.adapcompounddb.utils;
 
-import org.dulab.adapcompounddb.models.entities.Spectrum;
-import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
-import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
-import org.springframework.stereotype.Repository;
-
 import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
 
@@ -30,14 +25,6 @@ public class MathUtils {
 
         // Calculate the diversity index
         return java.lang.Math.exp(entropy);
-    }
-
-    public static void main (String[] args){
-        SpectrumMatch emptyMatch = new SpectrumMatch();
-        emptyMatch.setQuerySpectrum(new Spectrum());
-//        emptyMatch.setQuerySpectrum(querySpectrum);
-//        spectrumMatchRepository.save(emptyMatch);
-
     }
 
 }
