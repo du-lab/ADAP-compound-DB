@@ -8,12 +8,12 @@ def initial_test(homepage_url)
     driver = webdriver.Chrome('scripts/selenium/drivers/chromedriver.exe')
 
     # Open a web page
-    driver.get("http://localhost:8080/")
-
-    assert driver.title == 'ADAP-KDB Compound Knowledgebase'
+    driver.get(homepage_url)
 
     # Print out a title of the web page
     print(driver.title)
+
+    assert driver.title == 'ADAP-KDB Compound Knowledgebase'
 
     # Close the browser
     driver.quit()
