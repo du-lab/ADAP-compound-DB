@@ -1,10 +1,13 @@
 package org.dulab.adapcompounddb.site.repositories;
 
+import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
+import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -12,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface SpectrumMatchRepository extends JpaRepository<SpectrumMatch, Long> {
@@ -32,4 +36,20 @@ public interface SpectrumMatchRepository extends JpaRepository<SpectrumMatch, Lo
 
     @Query("SELECT sm FROM SpectrumMatch sm WHERE sm.querySpectrum.id in :ids AND sm.matchSpectrum.id in :ids")
     Iterable<SpectrumMatch> findBySpectrumIds(@Param("ids") Set<Long> ids);
+
+    @Query("SELECT sm FROM SpectrumMatch sm WHERE sm.querySpectrum.id in :ids")
+    Page<SpectrumMatch> findSpectrumMatchById(Pageable page, @Param("ids") List<Long> ids);
+
+    @Modifying
+    @Query("DELETE FROM SpectrumMatch sm WHERE sm.querySpectrum.id in :ids")
+    void deleteByQuerySpectrums(@Param("ids") List<Long> ids);
+
+
+    @Query("SELECT sm FROM SpectrumMatch sm WHERE (sm.userPrincipalId=:userid and sm.querySpectrum.id in :ids)")
+    List<SpectrumMatch> findAllSpectrumMatchByUserIdAndQuerySpectrums(@Param("userid") Long userId, @Param("ids")List<Long> spectrumIds);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM SpectrumMatch sm WHERE (sm.userPrincipalId=:userid and sm.querySpectrum.id in :ids)")
+    void deleteByQuerySpectrumsAndUserId(@Param("userid") long userId, @Param("ids")Set<Long> spectrumIds);
 }

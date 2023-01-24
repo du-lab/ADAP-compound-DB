@@ -101,6 +101,9 @@ public class GroupSearchController extends BaseController {
                 .map(submissionService::fetchSubmission)
                 .orElseGet(() -> Submission.from(session));
 
+        boolean savedSubmission =  (submission.getId() != 0)? true : false;
+
+
         FilterOptions filterOptions = getFilterOptions(Collections.singletonList(submission.getChromatographyType()));
         model.addAttribute("filterOptions", filterOptions);
         session.removeAttribute(GROUP_SEARCH_ERROR_ATTRIBUTE_NAME);
@@ -134,7 +137,7 @@ public class GroupSearchController extends BaseController {
         parameters.setSubmissionIds(form.getSubmissionIds());
 
         asyncResult = groupSearchService.groupSearch(this.getCurrentUserPrincipal(), submission.getFiles(), session,
-                parameters, form.isWithOntologyLevels(), form.isSendResultsToEmail());
+                parameters, form.isWithOntologyLevels(), form.isSendResultsToEmail(), savedSubmission);
         session.setAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME, asyncResult);
 
         LOGGER.info(String.format("Group search is started by user %s with IP = %s [%s]",
@@ -143,10 +146,6 @@ public class GroupSearchController extends BaseController {
         String byteString = ConversionsUtils.formToByteString(form);
         Cookie metaFieldsCookie = new Cookie(SEARCH_PARAMETERS_COOKIE_NAME, byteString);
         response.addCookie(metaFieldsCookie);
-        redirectAttributes.addFlashAttribute("submission", submission);
-
-
-
 
 
         return "redirect:/group_search/";
@@ -154,10 +153,8 @@ public class GroupSearchController extends BaseController {
 
     @RequestMapping(value = "/group_search/", method = RequestMethod.GET)
     public String groupSearch(Model model, HttpSession session) {
-        Submission submission = (Submission) model.getAttribute("submission");
 
 
-        model.addAttribute("submission", submission);
         return "submission/group_search";
     }
 

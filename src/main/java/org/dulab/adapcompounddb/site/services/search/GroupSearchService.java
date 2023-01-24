@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.services.search;
 
+import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.exceptions.IllegalSpectrumSearchException;
@@ -17,16 +18,14 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
 
+
 import javax.servlet.http.HttpSession;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 
@@ -38,17 +37,23 @@ public class GroupSearchService {
     private final IndividualSearchService spectrumSearchService;
     private final ExportSearchResultsService exportSearchResultsService;
     private final SpectrumRepository spectrumRepository;
+
     private final MultiFetchRepository multiFetchRepository;
     private final EmailService emailService;
+    private final SpectrumMatchRepository spectrumMatchRepository;
+
     @Autowired
     public GroupSearchService(IndividualSearchService spectrumSearchService,
                               @Qualifier("excelExportSearchResultsService") ExportSearchResultsService exportSearchResultsService,
                               SpectrumRepository spectrumRepository,
                               MultiFetchRepository multiFetchRepository,
-                              EmailService emailService) {
+                              EmailService emailService,
+                              SpectrumMatchRepository spectrumMatchRepository) {
+
         this.spectrumSearchService = spectrumSearchService;
         this.exportSearchResultsService = exportSearchResultsService;
         this.spectrumRepository = spectrumRepository;
+        this.spectrumMatchRepository = spectrumMatchRepository;
         this.multiFetchRepository = multiFetchRepository;
         this.emailService = emailService;
     }
@@ -57,12 +62,16 @@ public class GroupSearchService {
 //    @Transactional(propagation = Propagation.REQUIRED)
     public Future<Void> groupSearch(UserPrincipal userPrincipal, List<File> files, HttpSession session,
                                     SearchParameters userParameters,
-                                    boolean withOntologyLevels, boolean sendResultsToEmail) throws TimeoutException {
-
+                                    boolean withOntologyLevels, boolean sendResultsToEmail, boolean savedSubmission) throws TimeoutException {
+        long time1 = System.currentTimeMillis();
 //        LOGGER.info("Group search has started");
+        List<SpectrumMatch> savedMatches = new ArrayList<>();
+        Set<Long> deleteMatches = new HashSet<>();
+
 
         try {
             final List<SearchResultDTO> groupSearchDTOList = new ArrayList<>();
+            //spectrumMatchRepository.deleteAll();
             session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
 
             // Calculate total number of spectra
@@ -83,11 +92,17 @@ public class GroupSearchService {
 
             long startTime = System.currentTimeMillis();
 
+
+
             boolean showSessionEndedMessage = true;
             int spectrumCount = 0;
             int progressStep = 0;
             float progress = 0F;
             int position = 0;
+
+            //delete old spectrum match by user id before every group search
+            //spectrumMatchRepository.deleteByuserPrincipalId(userPrincipal.getId());
+
             for (int fileIndex = 0; fileIndex < files.size(); ++fileIndex) {
 
                 File file = files.get(fileIndex);
@@ -110,11 +125,10 @@ public class GroupSearchService {
 //                    parameters.setLimit(10);
 
                     List<SearchResultDTO> individualSearchResults;
-
                     try {
                         individualSearchResults = (withOntologyLevels)
-                                ? spectrumSearchService.searchWithOntologyLevels(userPrincipal, querySpectrum, parameters)
-                                : spectrumSearchService.searchConsensusSpectra(userPrincipal, querySpectrum, parameters);
+                                ? spectrumSearchService.searchWithOntologyLevels(userPrincipal, querySpectrum, parameters, savedSubmission, savedMatches, deleteMatches)
+                                : spectrumSearchService.searchConsensusSpectra(userPrincipal, querySpectrum, parameters, savedSubmission, savedMatches, deleteMatches);
                     } catch (IllegalSpectrumSearchException e) {
                         LOGGER.error(String.format("Error when searching %s [%d]: %s",
                                 querySpectrum.getName(), querySpectrum.getId(), e.getMessage()));
@@ -150,7 +164,7 @@ public class GroupSearchService {
                             }
                         } else {
                             LOGGER.warn("It looks like the session has been closed. Stopping the group search.");
-                            return new AsyncResult<>(null);
+                            //return new AsyncResult<>(null);
                         }
                     }
 
@@ -168,7 +182,11 @@ public class GroupSearchService {
                     }
                 }
             }
+            spectrumMatchRepository.deleteByQuerySpectrumsAndUserId( userPrincipal.getId(),deleteMatches);
+            spectrumMatchRepository.saveAll(savedMatches);
 
+            long time2 = System.currentTimeMillis();
+            double total = (time2 - time1) / 1000.0;
             if (!groupSearchDTOList.isEmpty() && sendResultsToEmail && userPrincipal != null) {
                 String tmpdir = System.getProperty("java.io.tmpdir");
                 String date = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").format(LocalDateTime.now());

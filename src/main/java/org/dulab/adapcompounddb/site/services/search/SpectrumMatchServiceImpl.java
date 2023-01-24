@@ -445,4 +445,13 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         }
         return clusters;
     }
+
+
+
+    @Override
+    public List<SpectrumMatch> findAllSpectrumMatchByUserIdAndQuerySpectrums(Long userId, List<Long> spectrumIds) {
+        return spectrumMatchRepository.findAllSpectrumMatchByUserIdAndQuerySpectrums( userId, spectrumIds);
+    }
+
+
 }

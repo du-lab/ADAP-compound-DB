@@ -33,4 +33,7 @@ public interface SpectrumMatchService {
     void loadTagsofCluster(SpectrumCluster cluster);
 
     List<SearchResultDTO> convertSpectrumMatchToClusterDTO(List<SpectrumMatch> matches);
+
+
+    List<SpectrumMatch> findAllSpectrumMatchByUserIdAndQuerySpectrums(Long userId, List<Long> spectrumIds);
 }
