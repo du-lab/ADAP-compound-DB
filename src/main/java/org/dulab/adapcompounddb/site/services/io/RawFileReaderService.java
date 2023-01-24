@@ -1,8 +1,8 @@
 package org.dulab.adapcompounddb.site.services.io;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dulab.adapbig.base.RawDataFile;
 import org.dulab.adapbig.base.Scan;
 import org.dulab.adapbig.input.InputModule;
@@ -20,7 +20,7 @@ import java.util.List;
 
 public class RawFileReaderService implements FileReaderService {
 
-    private static final Logger LOGGER = LogManager.getLogger(RawFileReaderService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RawFileReaderService.class);
 
     @Override
     public List<Spectrum> read(InputStream inputStream, @Nullable MetaDataMapping mapping, String filename,

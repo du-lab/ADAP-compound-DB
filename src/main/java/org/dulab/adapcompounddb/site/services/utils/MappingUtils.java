@@ -1,7 +1,7 @@
 package org.dulab.adapcompounddb.site.services.utils;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 public class MappingUtils {
 
-    private final static Logger LOGGER = LogManager.getLogger(MappingUtils.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(MappingUtils.class);
 
     public static <E> List<E> toList(Iterable<E> iterable) {
         List<E> list = new ArrayList<>();

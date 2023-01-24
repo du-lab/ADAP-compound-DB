@@ -1,7 +1,7 @@
 package org.dulab.adapcompounddb.site.services.search;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.site.repositories.MultiFetchRepository;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Service
 public class JavaSpectrumSimilarityService {
 
-    private static final Logger LOGGER = LogManager.getLogger(JavaSpectrumSimilarityService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JavaSpectrumSimilarityService.class);
 
     private static final double RET_INDEX_STRONG_PENALTY = 0.5;
     private static final double RET_INDEX_AVERAGE_PENALTY = 0.7;

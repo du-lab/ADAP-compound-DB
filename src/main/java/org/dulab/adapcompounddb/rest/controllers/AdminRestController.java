@@ -3,8 +3,8 @@ package org.dulab.adapcompounddb.rest.controllers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.site.repositories.DistributionRepository;
 import org.dulab.adapcompounddb.site.services.DistributionService;
@@ -26,7 +26,7 @@ import java.util.concurrent.Executors;
 @RequestMapping("/admin")
 public class AdminRestController {
 
-    private static final Logger LOGGER = LogManager.getLogger(AdminRestController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AdminRestController.class);
 
     private final SpectrumMatchCalculator spectrumMatchCalculator;
     private final SpectrumClusterer spectrumClusterer;

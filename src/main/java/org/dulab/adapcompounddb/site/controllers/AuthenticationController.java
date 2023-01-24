@@ -1,7 +1,7 @@
 package org.dulab.adapcompounddb.site.controllers;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
 import org.dulab.adapcompounddb.site.services.AuthenticationService;
@@ -31,7 +31,7 @@ import javax.validation.constraints.NotBlank;
 @Controller
 public class AuthenticationController extends BaseController {
 
-    private static final Logger LOG = LogManager.getLogger(AuthenticationController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AuthenticationController.class);
 
     private final AuthenticationService authenticationService;
     private final CaptchaService captchaService;

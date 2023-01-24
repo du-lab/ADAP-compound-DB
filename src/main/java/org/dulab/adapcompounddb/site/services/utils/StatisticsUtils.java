@@ -1,8 +1,8 @@
 package org.dulab.adapcompounddb.site.services.utils;
 
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.Combinatorics;
 import org.dulab.adapcompounddb.models.DbAndClusterValuePair;
 import org.dulab.adapcompounddb.models.MultinomialDistribution;

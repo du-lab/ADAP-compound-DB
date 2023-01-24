@@ -1,7 +1,7 @@
 package org.dulab.adapcompounddb.site.data;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -12,7 +12,7 @@ import java.io.Serializable;
 public abstract class GenericJpaRepository<I extends Serializable, E extends Serializable>
         extends GenericBaseRepository<I, E> {
 
-    private static final Logger LOG = LogManager.getLogger(GenericJpaRepository.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GenericJpaRepository.class);
 
     @PersistenceContext
     protected EntityManager entityManager;

@@ -1,5 +1,8 @@
 package org.dulab.adapcompounddb;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.dulab.adapcompounddb.site.controllers.AuthenticationController;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -22,12 +25,16 @@ import java.util.concurrent.Executor;
 @EnableJpaRepositories
 @EnableAsync
 public class Application extends SpringBootServletInitializer {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Application.class);
     public static void main(String[] args) {
+        LOG.info("Application started");
         SpringApplication.run(Application.class, args);
     }
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+
         return builder.sources(Application.class);
     }
     @Bean

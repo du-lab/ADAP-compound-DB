@@ -2,8 +2,8 @@ package org.dulab.adapcompounddb.rest.controllers;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.MetaDataMapping;
 import org.dulab.adapcompounddb.models.MetaDataMapping.Field;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
@@ -28,7 +28,7 @@ import java.util.Map;
 @RestController
 public class FileUploadRestController {
 
-    private static final Logger LOGGER = LogManager.getLogger(FileUploadRestController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileUploadRestController.class);
 
     private final AuthenticationService authenticationService;
     private final SubmissionService submissionService;

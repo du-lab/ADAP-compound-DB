@@ -1,7 +1,7 @@
 package org.dulab.adapcompounddb.site.repositories;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.hibernate.annotations.QueryHints;
 import org.springframework.stereotype.Repository;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Repository
 public class MultiFetchRepository {
 
-    private static final Logger LOGGER = LogManager.getLogger(MultiFetchRepository.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MultiFetchRepository.class);
 
     // Add Extended to speed up queries
     @PersistenceContext()  // type = PersistenceContextType.EXTENDED

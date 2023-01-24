@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.commons.beanutils.BeanComparator;
 import org.apache.commons.collections.comparators.NullComparator;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.SpectrumDTO;
 import org.dulab.adapcompounddb.models.entities.File;
@@ -38,7 +38,7 @@ import java.util.stream.IntStream;
 @RequestMapping("/spectrum")
 public class SpectrumRestController extends BaseController {
 
-    private static final Logger LOGGER = LogManager.getLogger(SpectrumRestController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SpectrumRestController.class);
 
     private enum ColumnInformation {
         ID(0, null), NAME(1, "name"), RETENTION_TIME(2, "retentionTime"),
