@@ -1,7 +1,7 @@
 package org.dulab.adapcompounddb.site.services.io;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 
@@ -15,7 +15,7 @@ import static org.dulab.adapcompounddb.site.services.io.ExportUtils.*;
 
 public interface ExportSearchResultsService {
 
-    Logger LOGGER = LogManager.getLogger(ExportSearchResultsService.class);
+    Logger LOGGER = LoggerFactory.getLogger(ExportSearchResultsService.class);
 
 
     void exportAll(OutputStream outputStream, List<SearchResultDTO> searchResults) throws IOException;

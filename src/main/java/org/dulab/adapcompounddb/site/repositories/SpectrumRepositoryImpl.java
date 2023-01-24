@@ -1,7 +1,7 @@
 package org.dulab.adapcompounddb.site.repositories;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.SearchType;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
@@ -23,9 +23,12 @@ import java.util.List;
 import java.util.Map;
 
 
+import org.springframework.stereotype.Repository;
+
+@Repository
 public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
-    private static final Logger LOGGER = LogManager.getLogger(SpectrumRepositoryImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SpectrumRepositoryImpl.class);
 
     private static final String PEAK_VALUE_SQL_STRING = "(%f,%f,%d)";
     private static final String PROPERTY_VALUE_SQL_STRING = "(%d, %s, %s)";
@@ -249,7 +252,7 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
      * @param searchClusterable if true then clusterable spectra are returned
      * @return collection of Spectrum IDs and the number of common m/z peaks
      */
-    @TransactionAttribute(TransactionAttributeType.NEVER)
+    //@TransactionAttribute(TransactionAttributeType.NEVER)
     @Override
     public Iterable<Object[]> preScreenSpectra(Spectrum querySpectrum, SearchParameters params, UserPrincipal user,
                                                boolean greedy, boolean searchConsensus, boolean searchReference,

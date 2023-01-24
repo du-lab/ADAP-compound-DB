@@ -1,7 +1,7 @@
 package org.dulab.adapcompounddb.site.controllers;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.entities.Peak;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
@@ -23,7 +23,7 @@ import java.util.List;
 @RestController
 public class SpectrumRestController1 {
 
-    private static final Logger LOGGER = LogManager.getLogger(SpectrumRestController1.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SpectrumRestController1.class);
 
     private final SpectrumService spectrumService;
 
@@ -34,8 +34,8 @@ public class SpectrumRestController1 {
     }
 
     @RequestMapping(value = {
-            "/spectrum/{spectrumId:\\d+}/search/{sign}/peaks",
-            "/submission/*/spectrum/{spectrumId:\\d+}/search/{sign}/peaks"},
+            "/spectrum/{spectrumId:\\d+}/search/{sign}/peaks.json",
+            "/submission/*/spectrum/{spectrumId:\\d+}/search/{sign}/peaks.json"},
             produces = "application/json")
     public String spectrumSearchPeaks(@PathVariable("spectrumId") long spectrumId,
                                       @PathVariable("sign") String sign) {
@@ -48,7 +48,7 @@ public class SpectrumRestController1 {
         return spectrumToJsonPeaks(spectrum, sign);
     }
 
-    @RequestMapping(value = "/file/{fileIndex:\\d+}/{spectrumIndex:\\d+}/search/{sign}/peaks", produces = "application/json")
+    @RequestMapping(value = "/file/{fileIndex:\\d+}/{spectrumIndex:\\d+}/search/{sign}/peaks.json", produces = "application/json")
     public String spectrumSearchPeaks(@PathVariable("fileIndex") int fileIndex,
                                       @PathVariable("spectrumIndex") int spectrumIndex,
                                       @PathVariable("sign") String sign, HttpSession session) {
@@ -89,8 +89,8 @@ public class SpectrumRestController1 {
     }
 
     @RequestMapping(value = {
-            "/spectrum/{spectrumId:\\d+}/search/info",
-            "/submission/*/spectrum/{spectrumId:\\d+}/search/info"},
+            "/spectrum/{spectrumId:\\d+}/search/info.json",
+            "/submission/*/spectrum/{spectrumId:\\d+}/search/info.json"},
             produces = "application/json")
     public String spectrumSearchInfo(@PathVariable("spectrumId") long spectrumId) {
         Spectrum spectrum = null;
@@ -103,8 +103,8 @@ public class SpectrumRestController1 {
     }
 
     @RequestMapping(value = {
-            "/spectrum/{spectrumId:\\d+}/search/structure",
-            "/submission/*/spectrum/{spectrumId:\\d+}/search/structure"},
+            "/spectrum/{spectrumId:\\d+}/search/structure.json",
+            "/submission/*/spectrum/{spectrumId:\\d+}/search/structure.json"},
             produces = "application/json")
     public String spectrumSearchStructure(@PathVariable("spectrumId") long spectrumId) {
         Spectrum spectrum = null;
@@ -124,7 +124,7 @@ public class SpectrumRestController1 {
         return null;
     }
 
-    @RequestMapping(value = "/file/{fileIndex:\\d+}/{spectrumIndex:\\d+}/search/info", produces = "application/json")
+    @RequestMapping(value = "/file/{fileIndex:\\d+}/{spectrumIndex:\\d+}/search/info.json", produces = "application/json")
     public String spectrumSearchInfo(@PathVariable("fileIndex") int fileIndex,
                                      @PathVariable("spectrumIndex") int spectrumIndex, HttpSession session) {
 
@@ -140,7 +140,7 @@ public class SpectrumRestController1 {
         return spectrumToJsonInfo(spectrum, fileIndex, spectrumIndex);
     }
 
-    @RequestMapping(value = "/file/{fileIndex:\\d+}/{spectrumIndex:\\d+}/search/structure",
+    @RequestMapping(value = "/file/{fileIndex:\\d+}/{spectrumIndex:\\d+}/search/structure.json",
             produces = "application/json")
     public String spectrumSearchStructure(@PathVariable("fileIndex") int fileIndex,
                                           @PathVariable("spectrumIndex") int spectrumIndex, HttpSession session) {

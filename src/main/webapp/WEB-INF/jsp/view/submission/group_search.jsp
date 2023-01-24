@@ -3,6 +3,11 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="dulab" uri="http://www.dulab.org/jsp/tld/dulab" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%--@elvariable id="submissionId" type="java.lang.Long"--%>
+<%--@elvariable id="submission" type="org.dulab.adapcompounddb.models.entities.Submission"--%>
+<%--@elvariable id="spectrumIds" type="java.util.List<java.lang.Long>"--%>
+
+
 
 <%--hide the query, plot and match when user hasn't clicked on table row--%>
 <style>
@@ -151,9 +156,11 @@
 <script>
 
     $(document).ready(function () {
+
         $('#query_plot_match_row').hide();
         let table = $('#match_table').DataTable({
             // dom: 'lfrtip',
+
             serverSide: true,
             order: [[0, 'desc']],
             processing: true,
@@ -161,17 +168,21 @@
             scrollX: true,
             select: {style: 'single'},
             // scroller: true,
-            rowId: 'position',
+            //rowId: 'position',
             ajax: {
                 url: "${pageContext.request.contextPath}/file/group_search/data.json",
                 data: function (data) {
 
-                    data.columnStr = [];
-                    for (let i = 0; i < data.order.length; i++) {
-                        data.columnStr += data.order[i].column + "-" + data.order[i].dir + ",";
-                    }
-                    data.search = data.search["value"];
-                },
+                        data.columnStr = [];
+                        for (let i = 0; i < data.order.length; i++) {
+                            data.columnStr += data.order[i].column + "-" + data.order[i].dir + ",";
+                        }
+                        console.log(data);
+                        data.search = data.search["value"];
+
+                        <%--console.log(${spectrumIds});--%>
+                        <%--data.spectrumIds = ${spectrumIds}--%>
+                    },
                 dataSrc: function (d) {
                     // Hide columns with no data
                     table.column(3).visible(d.data.map(row => row['mass']).join(''));
@@ -191,7 +202,8 @@
                 }
             },
             fnCreatedRow: function (row, data, dataIndex) {
-                $(row).attr('data-position', data.position);
+
+                $(row).attr('data-position', dataIndex);
                 $(row).attr('data-matchId', data.spectrumId);
                 $(row).attr('data-queryHRef', data.queryHRef);
                 $(row).attr('data-queryId', data.querySpectrumId);
@@ -199,7 +211,9 @@
                 $(row).attr('data-querySpectrumIndex', data.querySpectrumIndex);
             },
             columns: [
-                {data: 'position'},
+                {data: function(row, type,val, meta) {
+                    return meta.row + 1;
+                    }},
                 {
                     data: function (row) {
                         const href = (row.querySpectrumId !== 0)
@@ -244,7 +258,7 @@
                 }
             ]
         });
-
+        //console.log(table);
         let previousQueryUrl = null;
         let previousMatchUrl = null;
 

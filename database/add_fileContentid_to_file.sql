@@ -1,0 +1,1 @@
+alter table file add column fileContentId bigint unsigned;

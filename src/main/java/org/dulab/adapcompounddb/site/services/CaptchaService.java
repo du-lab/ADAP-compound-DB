@@ -1,7 +1,7 @@
 package org.dulab.adapcompounddb.site.services;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.GoogleResponse;
 import org.dulab.adapcompounddb.site.services.io.ExcelExportSearchResultsService;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 @Service
 public class CaptchaService {
 
-    private static final Logger LOGGER = LogManager.getLogger(CaptchaService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CaptchaService.class);
     private final RestOperations restTemplate = new RestTemplate();
     private static final Pattern RESPONSE_PATTERN = Pattern.compile("[A-Za-z0-9_-]+");
     public static String GOOGLE_CAPTCHA_RESPONSE = "g-recaptcha-response";

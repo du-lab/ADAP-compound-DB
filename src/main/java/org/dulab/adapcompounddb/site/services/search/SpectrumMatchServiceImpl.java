@@ -1,7 +1,7 @@
 package org.dulab.adapcompounddb.site.services.search;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
@@ -33,7 +33,7 @@ import java.util.stream.IntStream;
 @Service
 public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
-    private static final Logger LOGGER = LogManager.getLogger(SpectrumMatchServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SpectrumMatchServiceImpl.class);
 
     private final SpectrumRepository spectrumRepository;
     private final SpectrumMatchRepository spectrumMatchRepository;
@@ -445,4 +445,13 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         }
         return clusters;
     }
+
+
+
+    @Override
+    public List<SpectrumMatch> findAllSpectrumMatchByUserIdAndQuerySpectrums(Long userId, List<Long> spectrumIds) {
+        return spectrumMatchRepository.findAllSpectrumMatchByUserIdAndQuerySpectrums( userId, spectrumIds);
+    }
+
+
 }

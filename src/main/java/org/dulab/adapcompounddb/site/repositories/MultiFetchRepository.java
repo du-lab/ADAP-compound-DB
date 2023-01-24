@@ -1,7 +1,7 @@
 package org.dulab.adapcompounddb.site.repositories;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.hibernate.annotations.QueryHints;
 import org.springframework.stereotype.Repository;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Repository
 public class MultiFetchRepository {
 
-    private static final Logger LOGGER = LogManager.getLogger(MultiFetchRepository.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MultiFetchRepository.class);
 
     // Add Extended to speed up queries
     @PersistenceContext()  // type = PersistenceContextType.EXTENDED
@@ -68,8 +68,30 @@ public class MultiFetchRepository {
 
         return submission;
     }
+    public Submission getSubmissionWithFilesSpectra(long submissionId) {
+        Submission submission = entityManager
+                .createQuery("select s from Submission s where s.id = :submissionId", Submission.class)
+                .setParameter("submissionId", submissionId)
+                .getSingleResult();
 
-    @TransactionAttribute(TransactionAttributeType.NEVER)
+        List<File> files = entityManager
+                .createQuery("select f from File f where f.submission.id = :submissionId", File.class)
+                .setParameter("submissionId", submissionId)
+                .getResultList();
+
+        List<Spectrum> spectra = entityManager
+                .createQuery("select s from Spectrum s where s.file.id in (:fileIds)", Spectrum.class)
+                .setParameter("fileIds", files.stream().map(File::getId).collect(Collectors.toList()))
+                .getResultList();
+
+        assignChildrenToParents(spectra, Spectrum::getFile, files, File::setSpectra, File::getId);
+        assignChildrenToParents(files, File::getSubmission, Collections.singletonList(submission), Submission::setFiles,
+                Submission::getId);
+
+        return submission;
+    }
+
+    //@TransactionAttribute(TransactionAttributeType.NEVER)
     public List<Spectrum> getSpectraWithPeaksIsotopes(Set<Long> spectrumIds) {
 
         if (spectrumIds.stream().anyMatch(Objects::isNull))
@@ -122,4 +144,6 @@ public class MultiFetchRepository {
             childrenSetter.accept(parent, parentToChildrenMap.get(idGetter.apply(parent)));
         }
     }
+
+
 }

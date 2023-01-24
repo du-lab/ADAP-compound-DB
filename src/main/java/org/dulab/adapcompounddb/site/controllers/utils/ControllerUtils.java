@@ -3,8 +3,8 @@ package org.dulab.adapcompounddb.site.controllers.utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.gson.Gson;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.SearchForm;
 import org.dulab.adapcompounddb.models.dto.TagInfo;
 import org.dulab.adapcompounddb.models.entities.*;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 public class ControllerUtils {
 
-    private static final Logger LOGGER = LogManager.getLogger(ControllerUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ControllerUtils.class);
     public static final String GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME = "group_search_async";
     public static final String GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME = "group_search_results";
     public static String groupSearchResultsAttributeName() {

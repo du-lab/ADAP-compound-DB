@@ -1,8 +1,8 @@
 package org.dulab.adapcompounddb.site.services;
 
 import java.util.Optional;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.site.repositories.UserPrincipalRepository;
 import org.hibernate.Hibernate;
@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
 
-    private static final Logger LOG = LogManager.getLogger(AuthenticationServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
 
     private static final int HASHING_LOG_ROUNDS = 10;
 

@@ -1,9 +1,10 @@
 package org.dulab.adapcompounddb.site.controllers;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
+import org.springframework.stereotype.Component;
 import org.springframework.web.util.NestedServletException;
 
 import javax.servlet.*;
@@ -13,12 +14,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
 
+@Component
 @WebFilter(
         filterName = "errorHandling",
         urlPatterns = "/*")
 public class ErrorHandlingFilter implements Filter {
 
-    private static final Logger LOG = LogManager.getLogger(ErrorHandlingFilter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ErrorHandlingFilter.class);
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
