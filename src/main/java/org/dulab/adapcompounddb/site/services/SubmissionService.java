@@ -97,6 +97,10 @@ public class SubmissionService {
         return multiFetchRepository.getSubmissionWithFilesSpectraPeaksIsotopes(submissionId);
     }
 
+    public Submission fetchSubmissionPartial(long submissionId) {
+        return multiFetchRepository.getSubmissionWithFilesSpectra(submissionId);
+    }
+
     @Transactional
     public List<Submission> findSubmissionsByUserId(final long userId) {
         return MappingUtils.toList(submissionRepository.findByUserId(userId));

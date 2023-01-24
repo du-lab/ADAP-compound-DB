@@ -95,7 +95,7 @@ public class GroupSearchRestController extends BaseController {
 
         if (getCurrentUserPrincipal() != null) {
             int matchIndex = 0;
-            Submission submission = submissionService.fetchSubmission(submissionId);
+            Submission submission = submissionService.fetchSubmissionPartial(submissionId);
             List<File> files = submission.getFiles();
             List<Spectrum> spectrumList = new ArrayList<>();
             for (File file : files) {
@@ -104,9 +104,6 @@ public class GroupSearchRestController extends BaseController {
                 }
             }
             List<Long> spectrumIds = spectrumList.stream().map(Spectrum::getId).collect(Collectors.toList());
-            int progressStep = 0;
-
-            //spectrumMatchPage = spectrumMatchService.findAllSpectrumMatchById(PageRequest.of(start/length, length), spectrumIds);
 
             spectrumMatches = spectrumMatchService.findAllSpectrumMatchByUserIdAndQuerySpectrums
                     (getCurrentUserPrincipal().getId(), spectrumIds);
