@@ -68,8 +68,8 @@
 
 <div id="progress-dialog"></div>
 
-<script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
-<script src="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.js"/>"></script>
+<script src="<c:url value="/resources/jQuery-3.6.3/jquery-3.6.3.min.js"/>"></script>
+<script src="<c:url value="/resources/jquery-ui-1.13.2/jquery-ui.min.js"/>"></script>
 <script src="<c:url value="/resources/AdapCompoundDb/js/dialogs.js"/>"></script>
 <script src="<c:url value="/resources/tagify-master/jQuery.tagify.min.js"/>"></script>
 <script>
