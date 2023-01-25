@@ -112,6 +112,8 @@ public class GroupSearchRestController extends BaseController {
                 SearchResultDTO searchResult = MappingUtils.mapSpectrumMatchToSpectrumClusterView(
                         match, matchIndex++, null, null, null);
                 searchResult.setChromatographyTypeLabel(match.getMatchSpectrum() != null ? match.getMatchSpectrum().getChromatographyType().getLabel() : null);
+                searchResult.setOntologyLevel(match.getOntologyLevel());
+
                 matches.add(searchResult);
             }
             response = groupSearchSort(searchStr, start, length, matches, columnStr);
