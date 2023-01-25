@@ -9,7 +9,7 @@ def initial_test(homepage_url):
     # Open the Chrome browser
     driver = webdriver.Chrome('scripts/selenium/drivers/chromedriver.exe')
 
-     try:
+    try:
         # Open a web page
         driver.get(homepage_url)
 
@@ -23,9 +23,9 @@ def initial_test(homepage_url):
 
         print('Test is complete')
 
-     except Exception as e:
-             driver.quit()
-             raise e
+    except Exception as e:
+        driver.quit()
+        raise e
 
 
 
