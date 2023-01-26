@@ -4,21 +4,29 @@ import argparse
 
 
 def initial_test(homepage_url):
+
+
     # Open the Chrome browser
     driver = webdriver.Chrome('scripts/selenium/drivers/chromedriver.exe')
 
-    # Open a web page
-    driver.get(homepage_url)
+    try:
+        # Open a web page
+        driver.get(homepage_url)
 
-    # Print out a title of the web page
-    print(driver.title)
+        # Print out a title of the web page
+        print(driver.title)
 
-    assert driver.title == 'ADAP-KDB Compound Knowledgebase'
+        assert driver.title == 'ADAP-KDB Compound Knowledgebase'
 
-    # Close the browser
-    driver.quit()
+        # Close the browser
+        driver.quit()
 
-    print('Test is complete')
+        print('Test is complete')
+
+    except Exception as e:
+        driver.quit()
+        raise e
+
 
 
 def main():
