@@ -4,11 +4,12 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-import javax.annotation.Nullable;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.dulab.adapcompounddb.models.ontology.OntologyLevel;
+import org.springframework.lang.Nullable;
 
 @Entity
 public class SpectrumMatch implements Serializable {
@@ -31,6 +32,7 @@ public class SpectrumMatch implements Serializable {
     private Double retTimeError;
     private Double retIndexError;
 
+    private String ontologyLevel;
     private Long userPrincipalId;
 
     @Id
@@ -136,6 +138,22 @@ public class SpectrumMatch implements Serializable {
 
     public void setRetIndexError(Double retIndexError) {
         this.retIndexError = retIndexError;
+    }
+
+    public String getOntologyLevel() {
+        return this.ontologyLevel;
+    }
+    public void setOntologyLevel(String ontologyLevel){
+        this.ontologyLevel = ontologyLevel;
+    }
+    public void setOntologyLevelObj(@Nullable OntologyLevel ontologyLevel) {
+        if (ontologyLevel != null) {
+            this.setOntologyLevel(ontologyLevel.getLabel());
+
+        } else {
+            this.setOntologyLevel((String) null);
+
+        }
     }
 
     public Long getUserPrincipalId() {

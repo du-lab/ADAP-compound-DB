@@ -182,6 +182,40 @@ public class IndividualSearchService {
 
         List<SpectrumMatch> matches =
                 javaSpectrumSimilarityService.searchConsensusAndReference(spectrum, modifiedParameters, user);
+
+
+        List<SearchResultDTO> results = new ArrayList<>(matches.size());
+        for (int i = 0; i < matches.size(); ++i) {
+            results.add(MappingUtils.mapSpectrumMatchToSpectrumClusterView(matches.get(i), i,
+                    modifiedParameters.getSpecies(), modifiedParameters.getSource(), modifiedParameters.getDisease()));
+        }
+        int step = 0;
+        List<SearchResultDTO> resultsWithOntology = new ArrayList<>();
+        for (SearchResultDTO result : results) {
+
+            OntologyLevel ontologyLevel = OntologySupplier.select(spectrum.getChromatographyType(),
+                    result.getInHouse(), result.getScore(), result.getPrecursorErrorPPM(), result.getMassErrorPPM(),
+                    result.getRetTimeError(), result.getIsotopicSimilarity());
+
+            if (ontologyLevel != null) {
+                if (ontologyLevel.getScoreThreshold() == null)
+                    result.setScore(null);
+                if (ontologyLevel.getRetTimeTolerance() == null)
+                    result.setRetTimeError(null);
+                if (ontologyLevel.getMassTolerancePPM() == null)
+                    result.setMassErrorPPM(null);
+
+                result.setOntologyLevel(ontologyLevel);
+
+                //set ontology level to matches as well
+                matches.get(step).setOntologyLevelObj(ontologyLevel);
+            }
+
+            resultsWithOntology.add(result);
+
+
+            step++;
+        }
         if(user != null || !savedSubmission) {
             if(!matches.isEmpty()) {
                 matches.forEach(match -> match.setUserPrincipalId(user.getId()));
@@ -199,34 +233,6 @@ public class IndividualSearchService {
 
             }
         }
-
-        List<SearchResultDTO> results = new ArrayList<>(matches.size());
-        for (int i = 0; i < matches.size(); ++i) {
-            results.add(MappingUtils.mapSpectrumMatchToSpectrumClusterView(matches.get(i), i,
-                    modifiedParameters.getSpecies(), modifiedParameters.getSource(), modifiedParameters.getDisease()));
-        }
-
-        List<SearchResultDTO> resultsWithOntology = new ArrayList<>();
-        for (SearchResultDTO result : results) {
-
-            OntologyLevel ontologyLevel = OntologySupplier.select(spectrum.getChromatographyType(),
-                    result.getInHouse(), result.getScore(), result.getPrecursorErrorPPM(), result.getMassErrorPPM(),
-                    result.getRetTimeError(), result.getIsotopicSimilarity());
-
-            if (ontologyLevel != null) {
-                if (ontologyLevel.getScoreThreshold() == null)
-                    result.setScore(null);
-                if (ontologyLevel.getRetTimeTolerance() == null)
-                    result.setRetTimeError(null);
-                if (ontologyLevel.getMassTolerancePPM() == null)
-                    result.setMassErrorPPM(null);
-
-                result.setOntologyLevel(ontologyLevel);
-            }
-
-            resultsWithOntology.add(result);
-        }
-
         IntStream.range(0, resultsWithOntology.size())
                 .forEach(i -> resultsWithOntology.get(i).setMatchIndex(i));
 
