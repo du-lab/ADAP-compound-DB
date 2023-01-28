@@ -14,10 +14,12 @@ import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.dulab.adapcompounddb.site.services.search.GroupSearchService;
 import org.dulab.adapcompounddb.site.services.search.SpectrumMatchService;
+import org.dulab.adapcompounddb.site.services.utils.DataUtils;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -95,7 +97,12 @@ public class GroupSearchRestController extends BaseController {
 
         if (getCurrentUserPrincipal() != null) {
             int matchIndex = 0;
+
+            long t1 = System.currentTimeMillis();
             Submission submission = submissionService.fetchSubmissionPartial(submissionId);
+            long t2 = System.currentTimeMillis();
+            long total = (t2-t1)/1000;
+
             List<File> files = submission.getFiles();
             List<Spectrum> spectrumList = new ArrayList<>();
             for (File file : files) {
@@ -105,8 +112,8 @@ public class GroupSearchRestController extends BaseController {
             }
             List<Long> spectrumIds = spectrumList.stream().map(Spectrum::getId).collect(Collectors.toList());
 
-            spectrumMatches = spectrumMatchService.findAllSpectrumMatchByUserIdAndQuerySpectrums
-                    (getCurrentUserPrincipal().getId(), spectrumIds);
+            spectrumMatches = spectrumMatchService.findAllSpectrumMatchByUserIdAndQuerySpectrumsPageable
+                    (getCurrentUserPrincipal().getId(), spectrumIds, start, length, searchStr, columnStr);
 
             for (SpectrumMatch match : spectrumMatches) {
                 SearchResultDTO searchResult = MappingUtils.mapSpectrumMatchToSpectrumClusterView(

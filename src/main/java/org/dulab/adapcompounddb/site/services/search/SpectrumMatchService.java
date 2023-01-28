@@ -35,5 +35,5 @@ public interface SpectrumMatchService {
     List<SearchResultDTO> convertSpectrumMatchToClusterDTO(List<SpectrumMatch> matches);
 
 
-    List<SpectrumMatch> findAllSpectrumMatchByUserIdAndQuerySpectrums(Long userId, List<Long> spectrumIds);
+    List<SpectrumMatch> findAllSpectrumMatchByUserIdAndQuerySpectrumsPageable(Long userId, List<Long> spectrumIds,Integer start, Integer length, String searchStr, String columnStr);
 }
