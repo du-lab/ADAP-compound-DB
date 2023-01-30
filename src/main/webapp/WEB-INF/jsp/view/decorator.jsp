@@ -34,9 +34,9 @@
     <link rel="stylesheet" type="text/css" media="(min-width: 481px)"
           href="<c:url value="/resources/AdapCompoundDb/css/main.css"/>">
 
-    <link rel="stylesheet" href="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.min.css"/>">
-    <link rel="stylesheet" href="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.theme.min.css"/>">
-    <link rel="stylesheet" href="<c:url value="/resources/jquery-ui-1.12.1/jquery-ui.structure.min.css"/>">
+    <link rel="stylesheet" href="<c:url value="/resources/jquery-ui-1.13.2/jquery-ui.min.css"/>">
+    <link rel="stylesheet" href="<c:url value="/resources/jquery-ui-1.13.2/jquery-ui.theme.min.css"/>">
+    <link rel="stylesheet" href="<c:url value="/resources/jquery-ui-1.13.2/jquery-ui.structure.min.css"/>">
     <link rel="stylesheet" href="<c:url value="https://fonts.googleapis.com/icon?family=Material+Icons"/>">
     <link rel="stylesheet" href="<c:url value="/resources/AdapCompoundDb/css/tables.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/AdapCompoundDb/css/classes.css"/>">
@@ -63,7 +63,7 @@
     </div>
 </div>
 
-<script src="<c:url value="/resources/jQuery-3.2.1/jquery-3.2.1.min.js"/>"></script>
+<script src="<c:url value="/resources/jQuery-3.6.3/jquery-3.6.3.min.js"/>"></script>
 <script>
     if (localStorage.getItem("cookieSeen") !== "shown") {
         $(".cookie-banner").delay(2000).fadeIn();
