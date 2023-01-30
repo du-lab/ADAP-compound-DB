@@ -3,7 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://java.sun.com/jsp/jstl/fmt" %>
-
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <div class="container">
     <div class="row row-content">
         <div class="col">
@@ -55,6 +55,7 @@
                                     </div>
                                 </div>
                             </form:form>
+                            <sec:csrfInput />
                         </div>
                     </div>
                 </div>

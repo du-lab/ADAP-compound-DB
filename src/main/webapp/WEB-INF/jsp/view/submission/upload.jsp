@@ -197,7 +197,7 @@
         </div>
 
     </form:form>
-    <sec:csrfInput />
+
 </div>
 
 <script src="<c:url value="/resources/npm/node_modules/jquery/dist/jquery.min.js"/>"></script>
