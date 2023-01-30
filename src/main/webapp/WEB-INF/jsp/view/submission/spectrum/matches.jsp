@@ -283,7 +283,7 @@
                 return;
 
             $.ajax({
-                url: `${pageContext.request.contextPath}/ajax/spectrum/info?spectrumId=\${queryId}&fileIndex=\${queryFileIndex}&spectrumIndex=\${querySpectrumIndex}`,
+                url: `${pageContext.request.contextPath}/ajax/spectrum/info?spectrumId=\${queryId}`,
                 success: d => $('#queryInfo').html(d)
             })
 
