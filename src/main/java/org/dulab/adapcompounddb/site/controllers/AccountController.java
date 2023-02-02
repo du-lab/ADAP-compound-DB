@@ -55,6 +55,7 @@ public class AccountController extends BaseController {
         double maxDiskSpace = MEMORY_PER_PEAK * peakCapacity;
         double currentDiskSpace = submissionService.getPeakDiskSpaceByUser(user.getUsername());
         SearchParametersDTO searchParametersDTO = searchParametersService.getUserSearchParameters(user.getId());
+        searchParametersDTO.checkCustomParameters();
         model.addAttribute("searchParameters",searchParametersDTO);
 //        model.addAttribute("RETENTION_INDEX_TOLERANCE",searchParametersDTO.getRetentionIndexTolerance());
 //        model.addAttribute("RETENTION_INDEX_MATCH",searchParametersDTO.getRetentionIndexMatch());
@@ -78,9 +79,11 @@ public class AccountController extends BaseController {
                                  @RequestParam ("mzToleranceType") SearchParameters.MzToleranceType mzToleranceType,
                                  @RequestParam ("limit") Integer limit) {
         UserPrincipal user = getCurrentUserPrincipal();
+        SearchParametersDTO searchParameters = new SearchParametersDTO(scoreThreshold,retentionIndexTolerance,retentionIndexMatch,mzTolerance,limit,mzToleranceType,false);
 //        SearchParametersDTO searchParameters = SearchParametersDTO.builder().scoreThreshold(scoreThreshold).limit(limit)
 //                .mzTolerance(mzTolerance).retentionIndexTolerance(retentionIndexTolerance).retentionIndexMatch(retentionIndexMatch).mzToleranceType(mzToleranceType).build();
-        SearchParametersDTO searchParametersNew = searchParametersService.getUserSearchParameters(user.getId());
+        SearchParametersDTO searchParametersDTO = searchParametersService.updateUserSearchParameters(searchParameters, user.getId());
+//        SearchParametersDTO searchParametersNew = searchParametersService.getUserSearchParameters(user.getId());
         List<Submission> submissions = submissionService.findSubmissionsWithTagsByUserId(user.getId());
         Map<Long, List<ChromatographyType>> submissionIdToChromatographyListMap =
                 submissionService.findChromatographyTypes(submissions);
@@ -93,6 +96,8 @@ public class AccountController extends BaseController {
         int peakCapacity = user.getPeakCapacity();
         double maxDiskSpace = MEMORY_PER_PEAK * peakCapacity;
         double currentDiskSpace = submissionService.getPeakDiskSpaceByUser(user.getUsername());
+        searchParametersDTO.checkCustomParameters();
+        model.addAttribute("searchParameters",searchParametersDTO);
         model.addAttribute(("currentDiskSpace"), currentDiskSpace);
         model.addAttribute(("maxDiskSpace"), maxDiskSpace);
         model.addAttribute("user", user);

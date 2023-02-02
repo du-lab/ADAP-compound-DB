@@ -18,7 +18,8 @@
               cssClass="col-md-4 col-form-label">Score Threshold (1 - 1000):</form:label>
   <div class="col-md-8">
     <form:input path="scoreThreshold" type="number" step="1" cssClass="form-control"
-                value="${param.SCORE_THRESHOLD}"/>
+                value="${param.SCORE_THRESHOLD}"
+                id="scorethreshold"/>
   </div>
 </div>
 
@@ -26,7 +27,7 @@
   <form:label path="retentionIndexTolerance"
               cssClass="col-md-4 col-form-label">Retention Index Tolerance:</form:label>
   <div class="col-md-8">
-    <form:input path="retentionIndexTolerance" type="number" cssClass="form-control"
+    <form:input id = "retentionIndexTolerance" path="retentionIndexTolerance" type="number" cssClass="form-control"
                 value="${param.RETENTION_INDEX_TOLERANCE}"/>
   </div>
 </div>
@@ -63,9 +64,10 @@
   <div class="input-group col-md-8">
     <form:input path="mzTolerance" type="number" step="0.001"
                 cssClass="form-control"
+                id="mzTolerance"
                 value="${param.MZ_TOLERANCE}"/>
     <div class="input-group-append">
-      <form:select path="mzToleranceType" cssClass="input-group-text">
+      <form:select path="mzToleranceType" cssClass="input-group-text" id="mzToleranceType">
         <form:option value="DA"
                      selected="${param.MZ_TOLERANCE_TYPE == 'DA' ? 'selected' : ''}"
         >Da</form:option>

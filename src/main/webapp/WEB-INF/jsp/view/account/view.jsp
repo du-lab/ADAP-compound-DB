@@ -56,7 +56,11 @@
                         <li class="nav-item"><a id="studiesTab" class="nav-link active" data-toggle="tab" href="#studies">Studies</a>
                         </li>
                         <li class="nav-item"><a id="librariesTab" class="nav-link" data-toggle="tab" href="#libraries">Libraries</a></li>
-                        <li class="nav-item"><a id="parametersTab" class="nav-link" data-toggle="tab" href="#parameters">Parameters</a></li>
+                        <li class="nav-item"><a id="parametersTab" class="nav-link" data-toggle="tab" href="#parameters">Parameters
+                            <span id="custom" class="badge badge-info"
+                            ${searchParameters.customParameters ? '' : 'style="display: none;"'}
+                            >Custom Parameters</span>
+                        </a></li>
                     </ul>
                 </div>
 

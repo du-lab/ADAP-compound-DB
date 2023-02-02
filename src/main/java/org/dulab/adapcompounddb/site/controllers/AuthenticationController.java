@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.controllers;
 
+import org.dulab.adapcompounddb.site.services.SearchParametersService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
@@ -37,10 +38,13 @@ public class AuthenticationController extends BaseController {
     private final CaptchaService captchaService;
     private final boolean integTest = ControllerUtils.INTEG_TEST;
 
+    SearchParametersService searchParametersService;
+
     @Autowired
-    public AuthenticationController(final AuthenticationService authenticationService, CaptchaService captchaService) {
+    public AuthenticationController(final AuthenticationService authenticationService, CaptchaService captchaService, SearchParametersService searchParametersService) {
         this.authenticationService = authenticationService;
         this.captchaService = captchaService;
+        this.searchParametersService = searchParametersService;
     }
 
     /****************
@@ -159,6 +163,12 @@ public class AuthenticationController extends BaseController {
             form.setPassword(null);
             form.setConfirmedPassword(null);
             return new ModelAndView("signup");
+        }
+
+        try {
+            searchParametersService.createDefaultSearchParameters(principal.getId());
+        } catch (Exception e) {
+            LOG.warn("Error during creating default Search Parameters For User:" + principal.getId());
         }
 
         /*UserPrincipal.assign(session, principal);

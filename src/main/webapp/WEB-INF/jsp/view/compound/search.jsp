@@ -53,7 +53,9 @@
 
                             <li class="nav-item"><a id="parametersTab" class="nav-link" data-toggle="tab" href="#parameters">
                                Parameters
-                                <span id="custom" class="badge badge-info" style="display: none;">Custom Parameters</span>
+                                <span id="custom" class="badge badge-info"
+                                    ${searchParameters.customParameters ? '' : 'style="display: none;"'}
+                                >Custom Parameters</span>
                             </a></li>
 
                         </ul>
@@ -179,12 +181,12 @@
 
                         <div id="parameters" class="tab-pane fade" role="tabpanel">
                             <jsp:include page="./user_search_parameters.jsp">
-                                <jsp:param name="SCORE_THRESHOLD" value="0.5"/>
-                                <jsp:param name="RETENTION_INDEX_TOLERANCE" value="50"/>
-                                <jsp:param name="RETENTION_INDEX_MATCH" value="IGNORE_MATCH"/>
-                                <jsp:param name="MZ_TOLERANCE" value="0.01"/>
-                                <jsp:param name="MATCHES_PER_SPECTRUM" value="100"/>
-                                <jsp:param name="MZ_TOLERANCE_TYPE" value="DA"/>
+                                <jsp:param name="SCORE_THRESHOLD" value="${searchParameters.scoreThreshold}"/>
+                                <jsp:param name="RETENTION_INDEX_TOLERANCE" value="${searchParameters.retentionIndexTolerance}"/>
+                                <jsp:param name="RETENTION_INDEX_MATCH" value="${searchParameters.retentionIndexMatch}"/>
+                                <jsp:param name="MZ_TOLERANCE" value="${searchParameters.mzTolerance}"/>
+                                <jsp:param name="MATCHES_PER_SPECTRUM" value="${searchParameters.limit}"/>
+                                <jsp:param name="MZ_TOLERANCE_TYPE" value="${searchParameters.mzToleranceType}"/>
                             </jsp:include>
                         </div>
 
@@ -258,6 +260,33 @@
         }
     }
 
+    function checkForChange() {
+        console.log("Check for change")
+        let scoreThreshold = $('#scorethreshold')[0].value;
+        let retentionIndexTolerance = $('#retentionIndexTolerance')[0].value;
+        let mzTolerance = $('#mzTolerance')[0].value;
+        let limit = $('#limit')[0].value;
+        let retentionDefault = $('#retention').get(0).options[0].value;
+        let retentionValue = $('#retention').get(0).value;
+        let mzToleranceDefault = $('#mzToleranceType').get(0).options[0].value;
+        let mzToleranceValue = $('#mzToleranceType').get(0).value;
+        if (scoreThreshold != null && retentionIndexTolerance != null
+            && mzTolerance != null && limit != null
+            && retentionValue != null && retentionDefault != null
+            && mzToleranceDefault != null && mzToleranceValue != null) {
+            console.log("inside",retentionDefault,retentionValue)
+            if (scoreThreshold === '0.5' && retentionIndexTolerance === '50.0'
+                && mzTolerance === '0.01' && limit === '100'
+                && mzToleranceDefault === mzToleranceValue
+                && retentionDefault === retentionValue) {
+                $("#custom").hide();
+            } else {
+                $("#custom").show();
+            }
+        }
+
+    }
+
     $(document).ready(function() {
         $('#adductSelect').multiselect({includeSelectAllOption:true, nonSelectedText:'Please select adduct',
         buttonWidth:'100%',
@@ -266,19 +295,23 @@
         chromatographyChanged();
 
 
-        HasFormChanged();
-        $('#parameters input').change(function() {
-           HasFormChanged();
+        // HasFormChanged();
+        // $('#parameters input').change(function() {
+        //    HasFormChanged();
+        //
+        // });
+        // $('#retention').change(function() {
+        //     HasFormChanged();
+        //
+        // })
+        //
+        // $('#limit').change(function() {
+        //    HasFormChanged();
+        //
+        // })
 
-        });
-        $('#retention').change(function() {
-            HasFormChanged();
-
-        })
-
-        $('#limit').change(function() {
-           HasFormChanged();
-
+        $('#scorethreshold,#retention,#limit,#mzTolerance, #mzToleranceType,#retentionIndexTolerance').change(function() {
+            checkForChange();
         })
 
         $("input[type=radio][name='chromatographyType']").change(chromatographyChanged);
