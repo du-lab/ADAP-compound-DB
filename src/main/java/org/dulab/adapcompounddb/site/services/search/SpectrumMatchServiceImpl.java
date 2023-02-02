@@ -1,5 +1,7 @@
 package org.dulab.adapcompounddb.site.services.search;
 
+
+import org.dulab.adapcompounddb.rest.controllers.GroupSearchRestController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
@@ -449,8 +451,12 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
 
     @Override
-    public List<SpectrumMatch> findAllSpectrumMatchByUserIdAndQuerySpectrums(Long userId, List<Long> spectrumIds) {
-        return spectrumMatchRepository.findAllSpectrumMatchByUserIdAndQuerySpectrums( userId, spectrumIds);
+    public Page<SpectrumMatch> findAllSpectrumMatchByUserIdAndQuerySpectrumsPageable(Long userId, List<Long> spectrumIds,
+                                                                                Integer start, Integer length,  String sortColumn, String sortDirection) {
+
+        Pageable pageable = DataUtils.createPageable(start, length, sortColumn, sortDirection);
+        Page<SpectrumMatch> sm = spectrumMatchRepository.findAllSpectrumMatchByUserIdAndQuerySpectrums( userId, spectrumIds, pageable);
+        return sm;
     }
 
 

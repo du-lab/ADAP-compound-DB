@@ -14,10 +14,12 @@ import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.dulab.adapcompounddb.site.services.search.GroupSearchService;
 import org.dulab.adapcompounddb.site.services.search.SpectrumMatchService;
+import org.dulab.adapcompounddb.site.services.utils.DataUtils;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -72,7 +74,7 @@ public class GroupSearchRestController extends BaseController {
 
             //Avoid ConcurrentModificationException by make a copy for sorting
             matches = new ArrayList<>(sessionMatches);
-            response = groupSearchSort(searchStr, start, length, matches, columnStr);
+            response = groupSearchSort(true, searchStr, start, length, matches, columnStr);
 
 
         }
@@ -89,13 +91,15 @@ public class GroupSearchRestController extends BaseController {
             @RequestParam("columnStr") final String columnStr,
             final HttpSession session) throws JsonProcessingException {
 
-        List<SpectrumMatch> spectrumMatches;
+        Page<SpectrumMatch> spectrumMatches;
         List<SearchResultDTO> matches = new ArrayList<>();
         DataTableResponse response = new DataTableResponse();
 
         if (getCurrentUserPrincipal() != null) {
             int matchIndex = 0;
+
             Submission submission = submissionService.fetchSubmissionPartial(submissionId);
+
             List<File> files = submission.getFiles();
             List<Spectrum> spectrumList = new ArrayList<>();
             for (File file : files) {
@@ -105,10 +109,17 @@ public class GroupSearchRestController extends BaseController {
             }
             List<Long> spectrumIds = spectrumList.stream().map(Spectrum::getId).collect(Collectors.toList());
 
-            spectrumMatches = spectrumMatchService.findAllSpectrumMatchByUserIdAndQuerySpectrums
-                    (getCurrentUserPrincipal().getId(), spectrumIds);
+            String[] columns = columnStr.split("[-,]");
+            Integer column = Integer.parseInt(columns[0]);
+            String sortDirection = columns[1];
 
-            for (SpectrumMatch match : spectrumMatches) {
+            //get column name that is sorted
+            String sortColumn = GroupSearchColumnInformation.getColumnNameFromPosition(column);
+
+            spectrumMatches = spectrumMatchService.findAllSpectrumMatchByUserIdAndQuerySpectrumsPageable
+                    (getCurrentUserPrincipal().getId(), spectrumIds, start, length, sortColumn, sortDirection);
+
+            for (SpectrumMatch match : spectrumMatches.getContent()) {
                 SearchResultDTO searchResult = MappingUtils.mapSpectrumMatchToSpectrumClusterView(
                         match, matchIndex++, null, null, null);
                 searchResult.setChromatographyTypeLabel(match.getMatchSpectrum() != null ? match.getMatchSpectrum().getChromatographyType().getLabel() : null);
@@ -116,8 +127,9 @@ public class GroupSearchRestController extends BaseController {
 
                 matches.add(searchResult);
             }
-            response = groupSearchSort(searchStr, start, length, matches, columnStr);
-
+            response = groupSearchSort(false, searchStr, start, length, matches, columnStr);
+            response.setRecordsTotal(spectrumMatches.getTotalElements());
+            response.setRecordsFiltered(spectrumMatches.getTotalElements());
         }
 
         return mapper.writeValueAsString(response);
@@ -147,7 +159,7 @@ public class GroupSearchRestController extends BaseController {
     }
 
 
-    private DataTableResponse groupSearchSort(final String searchStr, final Integer start, final Integer length,
+    private DataTableResponse groupSearchSort(boolean groupSearchAsync, final String searchStr, final Integer start, final Integer length,
                                               List<SearchResultDTO> spectrumList, final String columnStr) {
 
         if (searchStr != null && searchStr.trim().length() > 0)
@@ -195,10 +207,13 @@ public class GroupSearchRestController extends BaseController {
 
         final List<SearchResultDTO> spectrumMatchList = new ArrayList<>();
         for (int i = 0; i < spectrumList.size(); i++) {
-
-            if (i < start || spectrumMatchList.size() >= length)
-                continue;
+            if(groupSearchAsync) {
+                if (i < start || spectrumMatchList.size() >= length)
+                    continue;
+            }
             spectrumMatchList.add(spectrumList.get(i));
+
+
 
         }
 
