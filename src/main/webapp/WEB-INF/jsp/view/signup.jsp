@@ -6,7 +6,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://java.sun.com/jsp/jstl/fmt" %>
-
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <script src="https://www.google.com/recaptcha/api.js"></script>
 <script>
@@ -98,6 +98,7 @@
                                 </div>
                             </div>
                         </form:form>
+                        <sec:csrfInput />
                     </div>
                 </div>
             </div>

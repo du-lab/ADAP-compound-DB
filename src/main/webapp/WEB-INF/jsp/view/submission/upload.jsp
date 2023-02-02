@@ -4,7 +4,7 @@
 <%--@elvariable id="integTest" type="java.lang.Boolean"--%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <style>
     .checkbox-grid{
 
@@ -195,7 +195,9 @@
                 </div>
             </div>
         </div>
+
     </form:form>
+
 </div>
 
 <script src="<c:url value="/resources/npm/node_modules/jquery/dist/jquery.min.js"/>"></script>
