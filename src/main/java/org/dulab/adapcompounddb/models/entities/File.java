@@ -35,7 +35,7 @@ public class File implements Comparable<File>, Serializable {
     @JoinColumn(name = "SubmissionId", referencedColumnName = "Id")
     private Submission submission;
 
-    @NotNull(message = "File: Spectrum list is required.")
+    //@NotNull(message = "File: Spectrum list is required.")
     @Valid
     @OneToMany(
             mappedBy = "file",
