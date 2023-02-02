@@ -98,10 +98,7 @@ public class GroupSearchRestController extends BaseController {
         if (getCurrentUserPrincipal() != null) {
             int matchIndex = 0;
 
-            long t1 = System.currentTimeMillis();
             Submission submission = submissionService.fetchSubmissionPartial(submissionId);
-            long t2 = System.currentTimeMillis();
-            long total = (t2-t1)/1000;
 
             List<File> files = submission.getFiles();
             List<Spectrum> spectrumList = new ArrayList<>();
