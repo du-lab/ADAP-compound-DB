@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.site.controllers;
 
 import java.util.stream.Collectors;
+import org.dulab.adapcompounddb.models.dto.SpectrumDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.entities.File;
@@ -96,6 +97,10 @@ public class GroupSearchController extends BaseController {
                                             HttpServletRequest request, HttpServletResponse response,
                                             @Valid FilterForm form, Errors errors,
                                             RedirectAttributes redirectAttributes) throws TimeoutException {
+        //list of all spectra
+        List<SpectrumDTO> allSpectrumDTOList = new ArrayList<>();
+        //list of distinct spectra
+        List<SpectrumDTO> distinctSpectrumDTOList = new ArrayList<>();
 
         Submission submission = submissionId
                 .map(submissionService::fetchSubmission)
@@ -103,19 +108,27 @@ public class GroupSearchController extends BaseController {
 
         List<File> files = submission.getFiles();
         for (int fileIndex = 0; fileIndex < files.size(); ++fileIndex) {
-
             File file = files.get(fileIndex);
             List<Spectrum> spectra = file.getSpectra();
-            Set<String> distinctSpectra = new HashSet<>(spectra.size());
-            spectra.stream().filter(spectrum->distinctSpectra.add(spectrum.getName())).collect(
+
+            for(Spectrum s : spectra){
+                allSpectrumDTOList.add(new SpectrumDTO(s.getName(), s.getId(), s.getPrecursor(), s.getPeaks().size()));
+            }
+
+            //get list of distinct spectra by name
+            Set<String> distinctSpectraNames = new HashSet<>(spectra.size());
+            List<Spectrum> distinctSpectra = spectra.stream().filter(spectrum->distinctSpectraNames.add(spectrum.getName())).collect(
                     Collectors.toList());
-            session.setAttribute("distinct_spectra", distinctSpectra);
+
+            for(Spectrum s : distinctSpectra){
+                distinctSpectrumDTOList.add(new SpectrumDTO(s.getName(), s.getId(), s.getPrecursor(), s.getPeaks().size()));
+            }
 
         }
+        session.setAttribute("distinct_spectra", distinctSpectrumDTOList);
+        session.setAttribute("all_spectra", allSpectrumDTOList);
         return "submission/group_search_new";
     }
-
-
 
 
     @RequestMapping(value = "/group_search/parameters2", method = RequestMethod.POST)

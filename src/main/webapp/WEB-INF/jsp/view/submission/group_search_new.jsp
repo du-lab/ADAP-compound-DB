@@ -19,7 +19,20 @@
     <thead>
     <tr>
       <th>Id</th>
-      <th>Query</th>
+      <th>Spectrum name</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+
+  <table id="query_table" class="display compact" style="width: 100%; clear:none;">
+    <thead>
+    <tr>
+      <th>Id</th>
+      <th>Spectrum name</th>
+      <th>Precursor</th>
+      <th>Number of Peaks</th>
     </tr>
     </thead>
     <tbody>
@@ -40,44 +53,56 @@
 <script>
 
   $(document).ready(function () {
+    $('#distinct_query_table tbody').on( 'click', 'tr', function () {
+        var data = table.row( this ).data();
+        console.log(data);
+        $.ajax({
+          type:"POST",
+          url: "${pageContext.request.contextPath}/getSpectrumsByName/data.json",
+          data:{
+            name: data.name
+          },
+          success: function(result) {
+            console.log(result);
+          },
+          error: function(xhr, status, error) {
+            console.error(xhr.responseText);
+          }
 
-    let table = $('#distinct_query_table').DataTable({
+        });
+      });
+
+      var table = $('#distinct_query_table').DataTable({
       // dom: 'lfrtip',
 
       serverSide: true,
-      order: [[0, 'desc']],
+      sortable: true,
       processing: true,
-      responsive: true,
-      scrollX: true,
-      select: {style: 'single'},
-      // scroller: true,
-      //rowId: 'position',
       ajax: {
+        type: "GET",
         url: "${pageContext.request.contextPath}/file/group_search2/data.json",
         data: function (d) {
           //column index
           d.column = d.order[0].column;
           d.sortDirection = d.order[0].dir;
-        },
-
-        error: function (xhr, error, code) {
-          logging.logToServer('<c:url value="/js-log"/>', `\${xhr.status} - \${error} - \${code}`);
         }
+
       },
 
-      "columnDefs": [
+       "columnDefs": [
         {
           "targets": 0,
           "data": 'id'
         },
         {
           "targets": 1,
-          "data": "queryname"
+          "data": "name"
 
         }
-
       ]
     });
+
+
 
 
 

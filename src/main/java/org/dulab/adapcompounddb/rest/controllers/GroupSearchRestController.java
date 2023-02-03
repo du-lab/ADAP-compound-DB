@@ -3,8 +3,11 @@ package org.dulab.adapcompounddb.rest.controllers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import java.io.Serializable;
+import javax.json.JsonObject;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
+import org.dulab.adapcompounddb.models.dto.SpectrumDTO;
 import org.dulab.adapcompounddb.models.entities.File;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
@@ -20,7 +23,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -81,36 +87,46 @@ public class GroupSearchRestController extends BaseController {
 
         return mapper.writeValueAsString(response);
     }
-    @RequestMapping(value = "/file/group_search2/data.json", produces = "application/json")
+    @PostMapping(value ="/getSpectrumsByName")
+    public String getSpectrumsByName(@RequestBody JsonObject json,final HttpSession session){
+        List<SpectrumDTO> spectraFromSession = (List<SpectrumDTO>) session.getAttribute("all_spectra");
+        DataTableResponse response = new DataTableResponse();
+
+        //List<SpectrumDTO> spectrumDTOList = spectraFromSession.stream().filter(s->s.getName().equals(json.get("name"))).collect(
+           // Collectors.toList());
+
+        return null;
+    }
+    @GetMapping(value = "/file/group_search2/data.json", produces = "application/json")
     public String fileGroupSearchResults2(
             @RequestParam("start") final Integer start,
             @RequestParam("length") final Integer length,
-            @RequestParam("search") final Integer column,
-            @RequestParam("columnStr") final String sortDirection,
+            @RequestParam("column")  Integer column,
+            @RequestParam("sortDirection") String sortDirection,
             final HttpSession session) throws JsonProcessingException {
 
 
         Object sessionObject = session.getAttribute("distinct_spectra");
         DataTableResponse response = new DataTableResponse();
 
-        List<String> queryNames = (List<String>) sessionObject;
-        response = groupSearchSort(queryNames, start, length, column, sortDirection);
+        List<SpectrumDTO> querySpectrums = (List<SpectrumDTO>) sessionObject;
+        response = spectrumSort(querySpectrums, start, length, column, sortDirection);
 
         return mapper.writeValueAsString(response);
     }
-    public DataTableResponse groupSearchSort(List<? extends String> queryNames, Integer start,
+    public DataTableResponse spectrumSort(List<SpectrumDTO> querySpectrums, Integer start,
                                              Integer length, Integer column, String sortDirection){
-        List<String> queryNamesPage = new ArrayList<>();
-        for (int i = 0; i < queryNames.size(); i++) {
-            if (i < start || queryNamesPage.size() >= length)
+        final List<SpectrumDTO> querySpectrumList = new ArrayList<>();
+        for (int i = 0; i < querySpectrums.size(); i++) {
+            if (i < start || querySpectrumList.size() >= length)
                 continue;
 
-            queryNamesPage.add(queryNames.get(i));
+            querySpectrumList.add(querySpectrums.get(i));
 
         }
-        DataTableResponse response = new DataTableResponse(queryNamesPage);
-        response.setRecordsFiltered((long) queryNames.size());
-        response.setRecordsTotal((long) queryNames.size());
+        DataTableResponse response = new DataTableResponse(querySpectrumList);
+        response.setRecordsFiltered((long) querySpectrums.size());
+        response.setRecordsTotal((long) querySpectrums.size());
 
         return response;
     }

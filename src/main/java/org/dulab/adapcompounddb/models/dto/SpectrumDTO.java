@@ -22,6 +22,8 @@ public class SpectrumDTO implements Serializable {
     private Double significance;
     private Double mass;
 
+    private Integer numOfPeaks;
+
     // ****************************
     // ***** Standard methods *****
     // ****************************
@@ -169,5 +171,23 @@ public class SpectrumDTO implements Serializable {
 
     public void setMass(Double mass) {
         this.mass = mass;
+    }
+
+    public Integer getNumOfPeaks() {
+        return numOfPeaks;
+    }
+
+    public void setNumOfPeaks(Integer numOfPeaks) {
+        this.numOfPeaks = numOfPeaks;
+    }
+
+    public SpectrumDTO() {
+    }
+
+    public SpectrumDTO(String name, long id, Double precursor, Integer numOfPeaks) {
+        this.name = name;
+        this.id = id;
+        this.precursor = precursor;
+        this.numOfPeaks = numOfPeaks;
     }
 }
