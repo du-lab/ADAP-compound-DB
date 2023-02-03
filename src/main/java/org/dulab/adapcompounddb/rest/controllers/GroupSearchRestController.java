@@ -81,7 +81,39 @@ public class GroupSearchRestController extends BaseController {
 
         return mapper.writeValueAsString(response);
     }
+    @RequestMapping(value = "/file/group_search2/data.json", produces = "application/json")
+    public String fileGroupSearchResults2(
+            @RequestParam("start") final Integer start,
+            @RequestParam("length") final Integer length,
+            @RequestParam("search") final Integer column,
+            @RequestParam("columnStr") final String sortDirection,
+            final HttpSession session) throws JsonProcessingException {
 
+
+        Object sessionObject = session.getAttribute("distinct_spectra");
+        DataTableResponse response = new DataTableResponse();
+
+        List<String> queryNames = (List<String>) sessionObject;
+        response = groupSearchSort(queryNames, start, length, column, sortDirection);
+
+        return mapper.writeValueAsString(response);
+    }
+    public DataTableResponse groupSearchSort(List<? extends String> queryNames, Integer start,
+                                             Integer length, Integer column, String sortDirection){
+        List<String> queryNamesPage = new ArrayList<>();
+        for (int i = 0; i < queryNames.size(); i++) {
+            if (i < start || queryNamesPage.size() >= length)
+                continue;
+
+            queryNamesPage.add(queryNames.get(i));
+
+        }
+        DataTableResponse response = new DataTableResponse(queryNamesPage);
+        response.setRecordsFiltered((long) queryNames.size());
+        response.setRecordsTotal((long) queryNames.size());
+
+        return response;
+    }
     @RequestMapping(value = "/file/group_search_matches/{submissionId:\\d+}/data.json", produces = "application/json")
     public String groupSearchMatchesResults(
             @PathVariable("submissionId") long submissionId,

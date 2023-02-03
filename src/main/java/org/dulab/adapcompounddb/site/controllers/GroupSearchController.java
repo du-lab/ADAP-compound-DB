@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.controllers;
 
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.entities.File;
@@ -90,12 +91,38 @@ public class GroupSearchController extends BaseController {
 
         return "submission/group_search_parameters";
     }
-
     @RequestMapping(value = "/group_search/parameters", method = RequestMethod.POST)
     public String groupSearchParametersPost(@RequestParam Optional<Long> submissionId, HttpSession session, Model model,
                                             HttpServletRequest request, HttpServletResponse response,
                                             @Valid FilterForm form, Errors errors,
                                             RedirectAttributes redirectAttributes) throws TimeoutException {
+
+        Submission submission = submissionId
+                .map(submissionService::fetchSubmission)
+                .orElseGet(() -> Submission.from(session));
+
+        List<File> files = submission.getFiles();
+        for (int fileIndex = 0; fileIndex < files.size(); ++fileIndex) {
+
+            File file = files.get(fileIndex);
+            List<Spectrum> spectra = file.getSpectra();
+            Set<String> distinctSpectra = new HashSet<>(spectra.size());
+            spectra.stream().filter(spectrum->distinctSpectra.add(spectrum.getName())).collect(
+                    Collectors.toList());
+            session.setAttribute("distinct_spectra", distinctSpectra);
+
+        }
+        return "submission/group_search_new";
+    }
+
+
+
+
+    @RequestMapping(value = "/group_search/parameters2", method = RequestMethod.POST)
+    public String groupSearchParametersPost2(@RequestParam Optional<Long> submissionId, HttpSession session, Model model,
+                                             HttpServletRequest request, HttpServletResponse response,
+                                             @Valid FilterForm form, Errors errors,
+                                             RedirectAttributes redirectAttributes) throws TimeoutException {
 
         Submission submission = submissionId
                 .map(submissionService::fetchSubmission)
