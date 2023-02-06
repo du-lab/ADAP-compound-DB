@@ -56,22 +56,71 @@
     $('#distinct_query_table tbody').on( 'click', 'tr', function () {
         var data = table.row( this ).data();
         console.log(data);
+      //reset table data each time new row is clicked
+      $('#query_table').DataTable().destroy();
         $.ajax({
           type:"POST",
-          url: "${pageContext.request.contextPath}/getSpectrumsByName/data.json",
-          data:{
-            name: data.name
-          },
+          url: "${pageContext.request.contextPath}/getSpectrumsByName",
+          contentType:'application/json',
+          dataType:"json",
+          data:  JSON.stringify(data),
           success: function(result) {
+            //create a new datatable
             console.log(result);
+
+            $('#query_table').DataTable({
+              serverSide: true,
+              sortable: true,
+              processing: true,
+              ajax: {
+                type: "GET",
+                url: "${pageContext.request.contextPath}/spectra/data.json",
+                data: function (d) {
+                  //column index
+                  d.column = d.order[0].column;
+                  d.sortDirection = d.order[0].dir;
+                }
+
+              },
+
+              "columnDefs": [
+                {
+                  "targets": 0,
+                  "data": 'id'
+                },
+                {
+                  "targets": 1,
+                  "data": "name"
+
+                },
+                {
+                  "targets": 2,
+                  "data": "precursor"
+
+                },
+                {
+                  "targets": 3,
+                  "data": "numOfPeaks"
+
+                }
+
+              ]
+            });
+
+
           },
-          error: function(xhr, status, error) {
-            console.error(xhr.responseText);
+          error: function(xhr, error) {
+            console.log(xhr);
+            console.log("Error: ", error);
           }
 
         });
       });
+      //put the onclick second table here
+        //...
 
+
+      //
       var table = $('#distinct_query_table').DataTable({
       // dom: 'lfrtip',
 
@@ -80,7 +129,7 @@
       processing: true,
       ajax: {
         type: "GET",
-        url: "${pageContext.request.contextPath}/file/group_search2/data.json",
+        url: "${pageContext.request.contextPath}/distinct_spectra/data.json",
         data: function (d) {
           //column index
           d.column = d.order[0].column;

@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.rest.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.Serializable;
@@ -88,17 +89,21 @@ public class GroupSearchRestController extends BaseController {
         return mapper.writeValueAsString(response);
     }
     @PostMapping(value ="/getSpectrumsByName")
-    public String getSpectrumsByName(@RequestBody JsonObject json,final HttpSession session){
+    public String getSpectrumsByName(@RequestBody JsonNode jsonObj, final HttpSession session) throws JsonProcessingException {
+
+        String spectrumName = jsonObj.get("name").asText();
         List<SpectrumDTO> spectraFromSession = (List<SpectrumDTO>) session.getAttribute("all_spectra");
         DataTableResponse response = new DataTableResponse();
 
-        //List<SpectrumDTO> spectrumDTOList = spectraFromSession.stream().filter(s->s.getName().equals(json.get("name"))).collect(
-           // Collectors.toList());
+        List<SpectrumDTO> spectrumDTOList = spectraFromSession.stream().filter(s->s.getName().equals(spectrumName)).collect(
+            Collectors.toList());
 
-        return null;
+        session.setAttribute("spectrum_list", spectrumDTOList);
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(spectrumDTOList);
     }
-    @GetMapping(value = "/file/group_search2/data.json", produces = "application/json")
-    public String fileGroupSearchResults2(
+    @GetMapping(value = "/distinct_spectra/data.json", produces = "application/json")
+    public String distinctSpectraResult(
             @RequestParam("start") final Integer start,
             @RequestParam("length") final Integer length,
             @RequestParam("column")  Integer column,
@@ -107,6 +112,23 @@ public class GroupSearchRestController extends BaseController {
 
 
         Object sessionObject = session.getAttribute("distinct_spectra");
+        DataTableResponse response = new DataTableResponse();
+
+        List<SpectrumDTO> querySpectrums = (List<SpectrumDTO>) sessionObject;
+        response = spectrumSort(querySpectrums, start, length, column, sortDirection);
+
+        return mapper.writeValueAsString(response);
+    }
+    @GetMapping(value = "/spectra/data.json", produces = "application/json")
+    public String SpectraResult(
+            @RequestParam("start") final Integer start,
+            @RequestParam("length") final Integer length,
+            @RequestParam("column")  Integer column,
+            @RequestParam("sortDirection") String sortDirection,
+            final HttpSession session) throws JsonProcessingException {
+
+
+        Object sessionObject = session.getAttribute("spectrum_list");
         DataTableResponse response = new DataTableResponse();
 
         List<SpectrumDTO> querySpectrums = (List<SpectrumDTO>) sessionObject;
