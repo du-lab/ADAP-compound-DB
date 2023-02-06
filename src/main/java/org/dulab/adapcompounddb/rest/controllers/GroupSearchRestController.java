@@ -61,32 +61,56 @@ public class GroupSearchRestController extends BaseController {
         this.submissionService = submissionService;
     }
 
-    @RequestMapping(value = "/file/group_search/data.json", produces = "application/json")
-    public String fileGroupSearchResults(
-            @RequestParam("start") final Integer start,
-            @RequestParam("length") final Integer length,
-            @RequestParam("search") final String searchStr,
-            @RequestParam("columnStr") final String columnStr,
-            final HttpSession session) throws JsonProcessingException {
+//    @RequestMapping(value = "/file/group_search/data.json", produces = "application/json")
+//    public String fileGroupSearchResults(
+//            @RequestParam("start") final Integer start,
+//            @RequestParam("length") final Integer length,
+//            @RequestParam("search") final String searchStr,
+//            @RequestParam("columnStr") final String columnStr,
+//            final HttpSession session) throws JsonProcessingException {
+//
+//        List<SearchResultDTO> matches;
+//
+//        Object sessionObject = session.getAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
+//        Page<SpectrumMatch> spectrumMatchPage;
+//        DataTableResponse response = new DataTableResponse();
+//        if (sessionObject != null) {
+//
+//            @SuppressWarnings("unchecked")
+//            List<SearchResultDTO> sessionMatches = (List<SearchResultDTO>) sessionObject;
+//
+//            //Avoid ConcurrentModificationException by make a copy for sorting
+//            matches = new ArrayList<>(sessionMatches);
+//            response = groupSearchSort(true, searchStr, start, length, matches, columnStr);
+//
+//
+//        }
+//
+//        return mapper.writeValueAsString(response);
+//    }
+    @PostMapping(value = "/findMatches")
+    public String fileGroupSearchResults(@RequestBody JsonNode jsonObj,
+        final HttpSession session) throws JsonProcessingException {
 
         List<SearchResultDTO> matches;
 
-        Object sessionObject = session.getAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
-        Page<SpectrumMatch> spectrumMatchPage;
-        DataTableResponse response = new DataTableResponse();
-        if (sessionObject != null) {
-
-            @SuppressWarnings("unchecked")
-            List<SearchResultDTO> sessionMatches = (List<SearchResultDTO>) sessionObject;
-
-            //Avoid ConcurrentModificationException by make a copy for sorting
-            matches = new ArrayList<>(sessionMatches);
-            response = groupSearchSort(true, searchStr, start, length, matches, columnStr);
-
-
-        }
-
-        return mapper.writeValueAsString(response);
+//        Object sessionObject = session.getAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
+//        Page<SpectrumMatch> spectrumMatchPage;
+//        DataTableResponse response = new DataTableResponse();
+//        if (sessionObject != null) {
+//
+//            @SuppressWarnings("unchecked")
+//            List<SearchResultDTO> sessionMatches = (List<SearchResultDTO>) sessionObject;
+//
+//            //Avoid ConcurrentModificationException by make a copy for sorting
+//            matches = new ArrayList<>(sessionMatches);
+//            response = groupSearchSort(true, searchStr, start, length, matches, columnStr);
+//
+//
+//        }
+//
+//        return mapper.writeValueAsString(response);
+        return null;
     }
     @PostMapping(value ="/getSpectrumsByName")
     public String getSpectrumsByName(@RequestBody JsonNode jsonObj, final HttpSession session) throws JsonProcessingException {

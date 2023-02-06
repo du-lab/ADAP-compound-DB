@@ -38,6 +38,31 @@
     <tbody>
     </tbody>
   </table>
+  <table id="match_table" class="display compact" style="width: 100%; clear:none;">
+    <thead>
+    <tr>
+      <th>Id</th>
+      <th>Query</th>
+      <th title="Match spectra">Match</th>
+      <th title="Molecular weight">Molecular weight</th>
+      <th title="Number of studies" class="Count">Sources</th>
+      <th title="Minimum matching score between all spectra in a cluster">Score</th>
+      <th title="Difference between query and library neutral masses">Mass Error (mDa)</th>
+      <th title="Difference between query and library neutral masses">Mass Error (PPM)</th>
+      <th title="Difference between query and library retention times">Ret Time Error</th>
+      <th title="Difference between query and library retention indices">Ret Index error</th>
+      <th title="Isotopic similarity">Iso Similarity</th>
+      <th title="Average P-value of ANOVA tests">Average P-value</th>
+      <th title="Minimum P-value of ANOVA tests">Minimum P-value</th>
+      <th title="Maximum P-value of ANOVA tests">Maximum P-value</th>
+      <th title="Ontology level">Ontology Level</th>
+      <th title="Chromatography type">Type</th>
+      <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
 </div>
 <script src="<c:url value="/resources/npm/node_modules/jquery/dist/jquery.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/popper.js/dist/umd/popper.min.js"/>"></script>
@@ -53,11 +78,13 @@
 <script>
 
   $(document).ready(function () {
+
     $('#distinct_query_table tbody').on( 'click', 'tr', function () {
-        var data = table.row( this ).data();
+        var data = distinct_query_table.row( this ).data();
         console.log(data);
       //reset table data each time new row is clicked
       $('#query_table').DataTable().destroy();
+      //TODO: simiplify this funtion
         $.ajax({
           type:"POST",
           url: "${pageContext.request.contextPath}/getSpectrumsByName",
@@ -68,7 +95,7 @@
             //create a new datatable
             console.log(result);
 
-            $('#query_table').DataTable({
+            var query_table = $('#query_table').DataTable({
               serverSide: true,
               sortable: true,
               processing: true,
@@ -117,11 +144,123 @@
         });
       });
       //put the onclick second table here
-        //...
 
+      $('#query_table tbody').on( 'click', 'tr', function () {
+        var spectrumData = $('#query_table').DataTable().row(this).data();
+        console.log(spectrumData);
+
+        $('#match_table').DataTable().destroy();
+        let table = $('#match_table').DataTable({
+          // dom: 'lfrtip',
+
+          serverSide: true,
+          order: [[0, 'desc']],
+          processing: true,
+          responsive: true,
+          scrollX: true,
+          select: {style: 'single'},
+          // scroller: true,
+          //rowId: 'position',
+
+          ajax: {
+            type: "POST",
+            contentType:'application/json',
+            dataType:"json",
+            url: "${pageContext.request.contextPath}/findMatches",
+            data: function (data) {
+
+              data.columnStr = [];
+              for (let i = 0; i < data.order.length; i++) {
+                data.columnStr += data.order[i].column + "-" + data.order[i].dir + ",";
+              }
+
+              data.search = data.search["value"];
+
+              <%--console.log(${spectrumIds});--%>
+              <%--data.spectrumIds = ${spectrumIds}--%>
+              data.spectrumData = spectrumData;
+              console.log(data);
+              return JSON.stringify(data);
+            },
+            dataSrc: function (d) {
+              // Hide columns with no data
+              table.column(3).visible(d.data.map(row => row['mass']).join(''));
+              table.column(4).visible(d.data.map(row => row['size']).join(''));
+              // table.column(5).visible(d.data.map(row => row['score']).join(''));
+              // table.column(6).visible(d.data.map(row => row['massError']).join(''));
+              // table.column(7).visible(d.data.map(row => row['massErrorPPM']).join(''));
+              // table.column(8).visible(d.data.map(row => row['retTimeError']).join(''));
+              // table.column(9).visible(d.data.map(row => row['retIndexError']).join(''));
+              table.column(11).visible(d.data.map(row => row['aveSignificance']).join(''));
+              table.column(12).visible(d.data.map(row => row['minSignificance']).join(''));
+              table.column(13).visible(d.data.map(row => row['maxSignificance']).join(''));
+              return d.data;
+            },
+            error: function (xhr, error, code) {
+              logging.logToServer('<c:url value="/js-log"/>', `\${xhr.status} - \${error} - \${code}`);
+            }
+          },
+          fnCreatedRow: function (row, data, dataIndex) {
+
+            $(row).attr('data-position', dataIndex);
+            $(row).attr('data-matchId', data.spectrumId);
+            $(row).attr('data-queryHRef', data.queryHRef);
+            $(row).attr('data-queryId', data.querySpectrumId);
+            $(row).attr('data-queryFileIndex', data.queryFileIndex);
+            $(row).attr('data-querySpectrumIndex', data.querySpectrumIndex);
+          },
+          columns: [
+            {data: function(row, type,val, meta) {
+                return meta.row + 1;
+              }},
+            {
+              data: function (row) {
+                const href = (row.querySpectrumId !== 0)
+                        ? `<c:url value="/spectrum/\${row.querySpectrumId}/"/>`
+                        : `<c:url value="/file/\${row.queryFileIndex}/\${row.querySpectrumIndex}/"/>`;
+                return `<a href="\${href}">\${row.querySpectrumName}</a>`;
+              }
+            },
+            {
+              data: row => {
+                let string = '';
+                if (row.name != null)
+                  string += `<a href="<c:url value="/\${row.href}" />">\${row.name}</a>`;
+                if (row.errorMessage != null)
+                  string += `<span class="badge badge-danger" title="\${row.errorMessage}">ERROR</span>`
+                return string;
+              }
+            },
+            {data: row => (row.mass != null) ? row.mass.toFixed(3) : ''},
+            {data: row => (row.size != null) ? row.size : ''},
+            {data: row => (row.score != null) ? row.score.toFixed(3) * 1000 : ''},
+            {data: row => (row.massError != null) ? (1000 * row.massError).toFixed(3) : ''},
+            {data: row => (row.massErrorPPM != null) ? row.massErrorPPM.toFixed(3) : ''},
+            {data: row => (row.retTimeError != null) ? row.retTimeError.toFixed(3) : ''},
+            {data: row => (row.retIndexError != null) ? row.retIndexError.toFixed(1) : ''},
+            {data: row => (row.isotopicSimilarity != null) ? row.isotopicSimilarity.toFixed(3) * 1000 : ''},
+            {data: row => (row.aveSignificance != null) ? row.aveSignificance.toFixed(3) : ''},
+            {data: row => (row.minSignificance != null) ? row.minSignificance.toFixed(3) : ''},
+            {data: row => (row.maxSignificance != null) ? row.maxSignificance.toFixed(3) : ''},
+            {data: 'ontologyLevel'},
+            {
+              data: row => (row.chromatographyTypeLabel != null)
+                      ? `<span class="badge badge-secondary">\${row.chromatographyTypeLabel}</span>` : ''
+            },
+            {
+              data: function (row) {
+                const href = (row.querySpectrumId !== 0)
+                        ? `<c:url value="/spectrum/\${row.querySpectrumId}/search/"/>`
+                        : `<c:url value="/file/\${row.queryFileIndex}/\${row.querySpectrumIndex}/search/"/>`;
+                return `<a href="\${href}"><i class="material-icons" title="Search spectrum">&#xE8B6;</i></a>`;
+              }
+            }
+          ]
+        });
+      })
 
       //
-      var table = $('#distinct_query_table').DataTable({
+      var distinct_query_table = $('#distinct_query_table').DataTable({
       // dom: 'lfrtip',
 
       serverSide: true,
