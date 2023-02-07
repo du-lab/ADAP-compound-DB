@@ -22,7 +22,11 @@ public class SpectrumDTO implements Serializable {
     private Double significance;
     private Double mass;
 
-    private Integer numOfPeaks;
+    private String externalId;
+
+    private Double retTime;
+
+    private double[] precursorMzs;
 
     // ****************************
     // ***** Standard methods *****
@@ -173,21 +177,45 @@ public class SpectrumDTO implements Serializable {
         this.mass = mass;
     }
 
-    public Integer getNumOfPeaks() {
-        return numOfPeaks;
+    public String getExternalId() {
+        return externalId;
     }
 
-    public void setNumOfPeaks(Integer numOfPeaks) {
-        this.numOfPeaks = numOfPeaks;
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
+    }
+
+    public Double getRetTime() {
+        return retTime;
+    }
+
+    public void setRetTime(Double retTime) {
+        this.retTime = retTime;
+    }
+
+    public double[] getPrecursorMzs() {
+        return precursorMzs;
+    }
+
+    public void setPrecursorMzs(double[] precursorMzs) {
+        this.precursorMzs = precursorMzs;
     }
 
     public SpectrumDTO() {
     }
 
-    public SpectrumDTO(String name, long id, Double precursor, Integer numOfPeaks) {
+    public SpectrumDTO(String name, long id, String externalId, Double retTime,
+        double[] precursorMzs) {
         this.name = name;
         this.id = id;
-        this.precursor = precursor;
-        this.numOfPeaks = numOfPeaks;
+        this.externalId = externalId;
+        this.retTime = retTime;
+        this.precursorMzs = precursorMzs;
+    }
+
+    public SpectrumDTO(String name, long id) {
+        this.name = name;
+        this.id = id;
+
     }
 }

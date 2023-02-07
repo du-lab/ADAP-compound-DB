@@ -92,46 +92,79 @@ public class GroupSearchController extends BaseController {
 
         return "submission/group_search_parameters";
     }
+//    @RequestMapping(value = "/group_search/parameters2", method = RequestMethod.POST)
+//    public String groupSearchParametersPost(@RequestParam Optional<Long> submissionId, HttpSession session, Model model,
+//                                            HttpServletRequest request, HttpServletResponse response,
+//                                            @Valid FilterForm form, Errors errors,
+//                                            RedirectAttributes redirectAttributes) throws TimeoutException {
+//        //list of all spectra
+//        List<Spectrum> allSpectrumList = new ArrayList<>();
+//        //list of all spectra dto
+//        List<SpectrumDTO> allSpectrumDTOList = new ArrayList<>();
+//        //list of distinct spectra
+//        List<SpectrumDTO> distinctSpectrumDTOList = new ArrayList<>();
+//
+//        Submission submission = submissionId
+//                .map(submissionService::fetchSubmission)
+//                .orElseGet(() -> Submission.from(session));
+//
+//        boolean savedSubmission =  (submission.getId() != 0)? true : false;
+//
+//        FilterOptions filterOptions = getFilterOptions(Collections.singletonList(submission.getChromatographyType()));
+//        model.addAttribute("filterOptions", filterOptions);
+//        session.removeAttribute(GROUP_SEARCH_ERROR_ATTRIBUTE_NAME);
+//        if (errors.hasErrors()) {
+//            return "submission/group_search_parameters";
+//        }
+//        String species = ALL.equalsIgnoreCase(form.getSpecies()) ? null : form.getSpecies();
+//        String source = ALL.equalsIgnoreCase(form.getSource()) ? null : form.getSource();
+//        String disease = ALL.equalsIgnoreCase(form.getDisease()) ? null : form.getDisease();
+//
+//        SearchParameters parameters = new SearchParameters();
+//        parameters.setScoreThreshold(form.getScoreThreshold() != null ? form.getScoreThreshold() / 1000.0 : null);
+//        parameters.setRetTimeTolerance(form.getRetentionTimeTolerance());
+//        parameters.setRetIndexTolerance(
+//            form.getRetentionIndexTolerance() != null ? (double) form.getRetentionIndexTolerance() : null);
+//        parameters.setRetIndexMatchType(form.getRetentionIndexMatch());
+//        parameters.setMzTolerance(form.getMzTolerance(), form.getMzToleranceType());
+//        parameters.setLimit(form.getLimit());
+//        parameters.setSpecies(species);
+//        parameters.setSource(source);
+//        parameters.setDisease(disease);
+//        parameters.setSubmissionIds(form.getSubmissionIds());
+//
+//        List<File> files = submission.getFiles();
+//        for (int fileIndex = 0; fileIndex < files.size(); ++fileIndex) {
+//            File file = files.get(fileIndex);
+//            List<Spectrum> spectra = file.getSpectra();
+//
+//            for(Spectrum s : spectra){
+//                allSpectrumDTOList.add(new SpectrumDTO(s.getName(), s.getId(), s.getPrecursor(), s.getPeaks() == null ? 0 : s.getPeaks().size()));
+//                allSpectrumList.add(s);
+//            }
+//
+//            //get list of distinct spectra by name
+//            Set<String> distinctSpectraNames = new HashSet<>(spectra.size());
+//            List<Spectrum> distinctSpectra = spectra.stream().filter(spectrum->distinctSpectraNames.add(spectrum.getName())).collect(
+//                    Collectors.toList());
+//
+//            for(Spectrum s : distinctSpectra){
+//                distinctSpectrumDTOList.add(new SpectrumDTO(s.getName(), s.getId(), s.getPrecursor(), s.getPeaks() == null ? 0 : s.getPeaks().size()));
+//            }
+//
+//        }
+//        session.setAttribute("distinct_spectra", distinctSpectrumDTOList);
+//        session.setAttribute("all_spectra", allSpectrumList);
+//        session.setAttribute("all_spectra_dto", allSpectrumDTOList);
+//        session.setAttribute("search_parameters", parameters);
+//        session.setAttribute("search_with_ontology", form.isWithOntologyLevels());
+//        session.setAttribute("send_result_to_email", form.isSendResultsToEmail());
+//        session.setAttribute("saved_submission", savedSubmission);
+//        return "submission/group_search_new";
+//    }
+
+
     @RequestMapping(value = "/group_search/parameters", method = RequestMethod.POST)
-    public String groupSearchParametersPost(@RequestParam Optional<Long> submissionId, HttpSession session, Model model,
-                                            HttpServletRequest request, HttpServletResponse response,
-                                            @Valid FilterForm form, Errors errors,
-                                            RedirectAttributes redirectAttributes) throws TimeoutException {
-        //list of all spectra
-        List<SpectrumDTO> allSpectrumDTOList = new ArrayList<>();
-        //list of distinct spectra
-        List<SpectrumDTO> distinctSpectrumDTOList = new ArrayList<>();
-
-        Submission submission = submissionId
-                .map(submissionService::fetchSubmission)
-                .orElseGet(() -> Submission.from(session));
-
-        List<File> files = submission.getFiles();
-        for (int fileIndex = 0; fileIndex < files.size(); ++fileIndex) {
-            File file = files.get(fileIndex);
-            List<Spectrum> spectra = file.getSpectra();
-
-            for(Spectrum s : spectra){
-                allSpectrumDTOList.add(new SpectrumDTO(s.getName(), s.getId(), s.getPrecursor(), s.getPeaks().size()));
-            }
-
-            //get list of distinct spectra by name
-            Set<String> distinctSpectraNames = new HashSet<>(spectra.size());
-            List<Spectrum> distinctSpectra = spectra.stream().filter(spectrum->distinctSpectraNames.add(spectrum.getName())).collect(
-                    Collectors.toList());
-
-            for(Spectrum s : distinctSpectra){
-                distinctSpectrumDTOList.add(new SpectrumDTO(s.getName(), s.getId(), s.getPrecursor(), s.getPeaks().size()));
-            }
-
-        }
-        session.setAttribute("distinct_spectra", distinctSpectrumDTOList);
-        session.setAttribute("all_spectra", allSpectrumDTOList);
-        return "submission/group_search_new";
-    }
-
-
-    @RequestMapping(value = "/group_search/parameters2", method = RequestMethod.POST)
     public String groupSearchParametersPost2(@RequestParam Optional<Long> submissionId, HttpSession session, Model model,
                                              HttpServletRequest request, HttpServletResponse response,
                                              @Valid FilterForm form, Errors errors,

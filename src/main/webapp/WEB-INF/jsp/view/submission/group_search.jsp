@@ -136,6 +136,30 @@
                         <tbody>
                         </tbody>
                     </table>
+                    <table id="distinct_query_table" class="display compact" style="width: 100%; clear:none;">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Spectrum name</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+
+                    <table id="query_table" class="display compact" style="width: 100%; clear:none;">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Spectrum name</th>
+                            <th>External Id</th>
+                            <th>Precrusor Mzs</th>
+                            <th>Retention Time</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -155,116 +179,241 @@
 <script src="<c:url value="/resources/AdapCompoundDb/js/spectrumStructure.js"/>"></script>
 <script>
 
-    $(document).ready(function () {
+  $(document).ready(function () {
+      $('#query_plot_match_row').hide();
+        $('#query_table').hide();
+        $('#match_table').hide();
+      var distinct_query_table = $('#distinct_query_table').DataTable({
+        // dom: 'lfrtip',
 
-        $('#query_plot_match_row').hide();
-        let table = $('#match_table').DataTable({
-            // dom: 'lfrtip',
+        serverSide: true,
+        sortable: true,
+        processing: true,
+        responsive: true,
+        ajax: {
+          url: "${pageContext.request.contextPath}/distinct_spectra/data.json",
+          data: function (d) {
+            //column index
+            d.column = d.order[0].column;
+            d.sortDirection = d.order[0].dir;
+          }
 
-            serverSide: true,
-            order: [[0, 'desc']],
-            processing: true,
-            responsive: true,
-            scrollX: true,
-            select: {style: 'single'},
-            // scroller: true,
-            //rowId: 'position',
-            ajax: {
-                url: "${pageContext.request.contextPath}/file/group_search/data.json",
-                data: function (data) {
+        },
 
-                        data.columnStr = [];
-                        for (let i = 0; i < data.order.length; i++) {
-                            data.columnStr += data.order[i].column + "-" + data.order[i].dir + ",";
-                        }
-                        console.log(data);
-                        data.search = data.search["value"];
+        "columnDefs": [
+          {
+            "targets": 0,
+            "data": 'id'
+          },
+          {
+            "targets": 1,
+            "data": "name"
 
-                        <%--console.log(${spectrumIds});--%>
-                        <%--data.spectrumIds = ${spectrumIds}--%>
+          }
+        ]
+      });
+      $('#distinct_query_table tbody').on( 'click', 'tr', function () {
+        var data = distinct_query_table.row( this ).data();
+        console.log(data);
+        //reset table data each time new row is clicked
+        $('#query_table').DataTable().destroy();
+        $('#query_table').show();
+
+        //TODO: simiplify this funtion
+        $.ajax({
+          type:"POST",
+          url: "${pageContext.request.contextPath}/getSpectrumsByName",
+          contentType:'application/json',
+          dataType:"json",
+          data:  JSON.stringify(data),
+          success: function(result) {
+            //create a new datatable
+            console.log(result);
+
+            var query_table = $('#query_table').DataTable({
+              serverSide: true,
+              sortable: true,
+              processing: true,
+              ajax: {
+                type: "GET",
+                url: "${pageContext.request.contextPath}/spectra/data.json",
+                data: function (d) {
+                  //column index
+                  d.column = d.order[0].column;
+                  d.sortDirection = d.order[0].dir;
+                }
+
+              },
+
+              "columnDefs": [
+                {
+                  "targets": 0,
+                  "data": 'id'
+                },
+                {
+                  "targets": 1,
+                  "data": "name"
+
+                },
+                {
+                  "targets": 2,
+                  "data": "externalId"
+
+                },
+                {
+                  "targets": 3,
+                  "data": "precursorMzs"
+
+                },
+                {
+                  "targets": 4,
+                  "data": "retentionTime"
+
+                }
+
+
+              ]
+            });
+
+
+          },
+          error: function(xhr, error) {
+            console.log(xhr);
+            console.log("Error: ", error);
+          }
+
+        });
+      });
+      $('#query_table tbody').on( 'click', 'tr', function () {
+        var data = $('#query_table').DataTable().row( this ).data();
+        console.log("QUERY TABLE DATA: " ,data);
+        //reset table data each time new row is clicked
+        $('#match_table').DataTable().destroy();
+        $('#match_table').show();
+        //TODO: simiplify this funtion
+        $.ajax({
+          type:"POST",
+          url: "${pageContext.request.contextPath}/getMatchesById",
+          contentType:'application/json',
+          dataType:"json",
+          data:  JSON.stringify(data),
+          success: function(result) {
+
+            console.log("**MATCHES: " ,result);
+
+            var match_table = $('#match_table').DataTable({
+
+                serverSide: true,
+                order: [[0, 'desc']],
+                processing: true,
+                responsive: true,
+                scrollX: true,
+                select: {style: 'single'},
+                // scroller: true,
+                //rowId: 'position',
+                ajax: {
+                    url: "${pageContext.request.contextPath}/file/group_search/data.json",
+                    data: function (data) {
+
+                            data.columnStr = [];
+                            for (let i = 0; i < data.order.length; i++) {
+                                data.columnStr += data.order[i].column + "-" + data.order[i].dir + ",";
+                            }
+                            console.log(data);
+                            data.search = data.search["value"];
+
+                            <%--console.log(${spectrumIds});--%>
+                            <%--data.spectrumIds = ${spectrumIds}--%>
+                        },
+                    dataSrc: function (d) {
+                        // Hide columns with no data
+                        match_table.column(3).visible(d.data.map(row => row['mass']).join(''));
+                        match_table.column(4).visible(d.data.map(row => row['size']).join(''));
+                        // table.column(5).visible(d.data.map(row => row['score']).join(''));
+                        // table.column(6).visible(d.data.map(row => row['massError']).join(''));
+                        // table.column(7).visible(d.data.map(row => row['massErrorPPM']).join(''));
+                        // table.column(8).visible(d.data.map(row => row['retTimeError']).join(''));
+                        // table.column(9).visible(d.data.map(row => row['retIndexError']).join(''));
+                        match_table.column(11).visible(d.data.map(row => row['aveSignificance']).join(''));
+                        match_table.column(12).visible(d.data.map(row => row['minSignificance']).join(''));
+                        match_table.column(13).visible(d.data.map(row => row['maxSignificance']).join(''));
+                        return d.data;
                     },
-                dataSrc: function (d) {
-                    // Hide columns with no data
-                    table.column(3).visible(d.data.map(row => row['mass']).join(''));
-                    table.column(4).visible(d.data.map(row => row['size']).join(''));
-                    // table.column(5).visible(d.data.map(row => row['score']).join(''));
-                    // table.column(6).visible(d.data.map(row => row['massError']).join(''));
-                    // table.column(7).visible(d.data.map(row => row['massErrorPPM']).join(''));
-                    // table.column(8).visible(d.data.map(row => row['retTimeError']).join(''));
-                    // table.column(9).visible(d.data.map(row => row['retIndexError']).join(''));
-                    table.column(11).visible(d.data.map(row => row['aveSignificance']).join(''));
-                    table.column(12).visible(d.data.map(row => row['minSignificance']).join(''));
-                    table.column(13).visible(d.data.map(row => row['maxSignificance']).join(''));
-                    return d.data;
+                    error: function (xhr, error, code) {
+                        logging.logToServer('<c:url value="/js-log"/>', `\${xhr.status} - \${error} - \${code}`);
+                    }
                 },
-                error: function (xhr, error, code) {
-                    logging.logToServer('<c:url value="/js-log"/>', `\${xhr.status} - \${error} - \${code}`);
-                }
-            },
-            fnCreatedRow: function (row, data, dataIndex) {
+                fnCreatedRow: function (row, data, dataIndex) {
 
-                $(row).attr('data-position', dataIndex);
-                $(row).attr('data-matchId', data.spectrumId);
-                $(row).attr('data-queryHRef', data.queryHRef);
-                $(row).attr('data-queryId', data.querySpectrumId);
-                $(row).attr('data-queryFileIndex', data.queryFileIndex);
-                $(row).attr('data-querySpectrumIndex', data.querySpectrumIndex);
-            },
-            columns: [
-                {data: function(row, type,val, meta) {
-                    return meta.row + 1;
-                    }},
-                {
-                    data: function (row) {
-                        const href = (row.querySpectrumId !== 0)
-                            ? `<c:url value="/spectrum/\${row.querySpectrumId}/"/>`
-                            : `<c:url value="/file/\${row.queryFileIndex}/\${row.querySpectrumIndex}/"/>`;
-                        return `<a href="\${href}">\${row.querySpectrumName}</a>`;
-                    }
+                    $(row).attr('data-position', dataIndex);
+                    $(row).attr('data-matchId', data.spectrumId);
+                    $(row).attr('data-queryHRef', data.queryHRef);
+                    $(row).attr('data-queryId', data.querySpectrumId);
+                    $(row).attr('data-queryFileIndex', data.queryFileIndex);
+                    $(row).attr('data-querySpectrumIndex', data.querySpectrumIndex);
                 },
-                {
-                    data: row => {
-                        let string = '';
-                        if (row.name != null)
-                            string += `<a href="<c:url value="/\${row.href}" />">\${row.name}</a>`;
-                        if (row.errorMessage != null)
-                            string += `<span class="badge badge-danger" title="\${row.errorMessage}">ERROR</span>`
-                        return string;
+                columns: [
+                    {data: function(row, type,val, meta) {
+                        return meta.row + 1;
+                        }},
+                    {
+                        data: function (row) {
+                            const href = (row.querySpectrumId !== 0)
+                                ? `<c:url value="/spectrum/\${row.querySpectrumId}/"/>`
+                                : `<c:url value="/file/\${row.queryFileIndex}/\${row.querySpectrumIndex}/"/>`;
+                            return `<a href="\${href}">\${row.querySpectrumName}</a>`;
+                        }
+                    },
+                    {
+                        data: row => {
+                            let string = '';
+                            if (row.name != null)
+                                string += `<a href="<c:url value="/\${row.href}" />">\${row.name}</a>`;
+                            if (row.errorMessage != null)
+                                string += `<span class="badge badge-danger" title="\${row.errorMessage}">ERROR</span>`
+                            return string;
+                        }
+                    },
+                    {data: row => (row.mass != null) ? row.mass.toFixed(3) : ''},
+                    {data: row => (row.size != null) ? row.size : ''},
+                    {data: row => (row.score != null) ? row.score.toFixed(3) * 1000 : ''},
+                    {data: row => (row.massError != null) ? (1000 * row.massError).toFixed(3) : ''},
+                    {data: row => (row.massErrorPPM != null) ? row.massErrorPPM.toFixed(3) : ''},
+                    {data: row => (row.retTimeError != null) ? row.retTimeError.toFixed(3) : ''},
+                    {data: row => (row.retIndexError != null) ? row.retIndexError.toFixed(1) : ''},
+                    {data: row => (row.isotopicSimilarity != null) ? row.isotopicSimilarity.toFixed(3) * 1000 : ''},
+                    {data: row => (row.aveSignificance != null) ? row.aveSignificance.toFixed(3) : ''},
+                    {data: row => (row.minSignificance != null) ? row.minSignificance.toFixed(3) : ''},
+                    {data: row => (row.maxSignificance != null) ? row.maxSignificance.toFixed(3) : ''},
+                    {data: 'ontologyLevel'},
+                    {
+                        data: row => (row.chromatographyTypeLabel != null)
+                            ? `<span class="badge badge-secondary">\${row.chromatographyTypeLabel}</span>` : ''
+                    },
+                    {
+                        data: function (row) {
+                            const href = (row.querySpectrumId !== 0)
+                                ? `<c:url value="/spectrum/\${row.querySpectrumId}/search/"/>`
+                                : `<c:url value="/file/\${row.queryFileIndex}/\${row.querySpectrumIndex}/search/"/>`;
+                            return `<a href="\${href}"><i class="material-icons" title="Search spectrum">&#xE8B6;</i></a>`;
+                        }
                     }
-                },
-                {data: row => (row.mass != null) ? row.mass.toFixed(3) : ''},
-                {data: row => (row.size != null) ? row.size : ''},
-                {data: row => (row.score != null) ? row.score.toFixed(3) * 1000 : ''},
-                {data: row => (row.massError != null) ? (1000 * row.massError).toFixed(3) : ''},
-                {data: row => (row.massErrorPPM != null) ? row.massErrorPPM.toFixed(3) : ''},
-                {data: row => (row.retTimeError != null) ? row.retTimeError.toFixed(3) : ''},
-                {data: row => (row.retIndexError != null) ? row.retIndexError.toFixed(1) : ''},
-                {data: row => (row.isotopicSimilarity != null) ? row.isotopicSimilarity.toFixed(3) * 1000 : ''},
-                {data: row => (row.aveSignificance != null) ? row.aveSignificance.toFixed(3) : ''},
-                {data: row => (row.minSignificance != null) ? row.minSignificance.toFixed(3) : ''},
-                {data: row => (row.maxSignificance != null) ? row.maxSignificance.toFixed(3) : ''},
-                {data: 'ontologyLevel'},
-                {
-                    data: row => (row.chromatographyTypeLabel != null)
-                        ? `<span class="badge badge-secondary">\${row.chromatographyTypeLabel}</span>` : ''
-                },
-                {
-                    data: function (row) {
-                        const href = (row.querySpectrumId !== 0)
-                            ? `<c:url value="/spectrum/\${row.querySpectrumId}/search/"/>`
-                            : `<c:url value="/file/\${row.queryFileIndex}/\${row.querySpectrumIndex}/search/"/>`;
-                        return `<a href="\${href}"><i class="material-icons" title="Search spectrum">&#xE8B6;</i></a>`;
-                    }
-                }
-            ]
+                ]
+                });
+              },
+              error: function(xhr, error) {
+                console.log(xhr);
+                console.log("Error: ", error);
+              }
+            });
         });
         //console.log(table);
         let previousQueryUrl = null;
         let previousMatchUrl = null;
 
-        table.on('select', function (e, dt, type, indexes) {
+        $('#match_table').DataTable().on('select', function (e, dt, type, indexes) {
 
-            let row = table.row(indexes).node();
+            let row = $('#match_table').DataTable().row(indexes).node();
             let position = $(row).attr('data-position');
             let queryHRef = $(row).attr('data-queryHRef');
             let queryId = $(row).attr('data-queryId');
@@ -317,17 +466,12 @@
 
            );
 
-
-
-
             $('#queryStructure').spectrumStructure(queryUrl + 'structure.json', function (x) {
                 $('#queryColumn').attr('hidden', !x);
             });
             $('#matchStructure').spectrumStructure(matchUrl + 'structure.json', function (x) {
                 $('#matchColumn').attr('hidden', !x);
             });
-
-
 
             previousQueryUrl = queryUrl;
             previousMatchUrl = matchUrl;
@@ -337,13 +481,7 @@
             $('#query_plot_match_row').show();
 
 
-
-
         });
-
-
-
-
 
         // refresh the datatable and progress bar every 1 second
         setInterval(function () {
@@ -351,8 +489,9 @@
                 url: `${pageContext.request.contextPath}/ajax/group_search/error`,
                 success: d => $('#errorDiv').html(d)
             });
+            if($('#progressBar').attr('aria-valuenow') < 100)
+                distinct_query_table.ajax.reload(null, false);
 
-            table.ajax.reload(null, false);
             $.getJSON(window.location.origin + window.location.pathname + 'progress', function (x) {
                 const width = x + '%';
                 const progressBar = $('#progressBar')

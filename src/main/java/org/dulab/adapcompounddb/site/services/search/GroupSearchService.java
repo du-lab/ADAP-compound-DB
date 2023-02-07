@@ -1,5 +1,7 @@
 package org.dulab.adapcompounddb.site.services.search;
 
+import java.util.stream.Collectors;
+import org.dulab.adapcompounddb.models.dto.SpectrumDTO;
 import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +60,37 @@ public class GroupSearchService {
         this.emailService = emailService;
     }
 
+    public List<SearchResultDTO> groupSearch(UserPrincipal userPrincipal,HttpSession session, SearchParameters userParameters,
+        Spectrum querySpectrum, boolean withOntologyLevels, boolean sendResultsToEmail, boolean savedSubmission){
+
+        List<SpectrumMatch> savedMatches = new ArrayList<>();
+        Set<Long> deleteMatches = new HashSet<>();
+        List<SearchResultDTO> individualSearchResults;
+
+        SearchParameters parameters =
+            SearchParameters.getDefaultParameters(querySpectrum.getChromatographyType());
+        parameters.merge(userParameters);
+        try{
+            individualSearchResults = (withOntologyLevels)
+                ? spectrumSearchService.searchWithOntologyLevels(userPrincipal, querySpectrum, parameters, savedSubmission, savedMatches, deleteMatches)
+                : spectrumSearchService.searchConsensusSpectra(userPrincipal, querySpectrum, parameters, savedSubmission, savedMatches, deleteMatches);
+
+        }catch (IllegalSpectrumSearchException e) {
+            LOGGER.error(String.format("Error when searching %s [%d]: %s",
+                querySpectrum.getName(), querySpectrum.getId(), e.getMessage()));
+            SearchResultDTO searchResultDTO = new SearchResultDTO(querySpectrum);
+            searchResultDTO.setErrorMessage(e.getMessage());
+            individualSearchResults = Collections.singletonList(searchResultDTO);
+        }
+        catch (Throwable t) {
+            LOGGER.error(String.format("Error during the group search: %s", t.getMessage()), t);
+            session.setAttribute("GROUP_SEARCH_ERROR", t.getMessage());
+            throw t;
+        }
+        spectrumMatchRepository.deleteByQuerySpectrumsAndUserId( userPrincipal.getId(),deleteMatches);
+        spectrumMatchRepository.saveAll(savedMatches);
+        return individualSearchResults;
+    }
     @Async
 //    @Transactional(propagation = Propagation.REQUIRED)
     public Future<Void> groupSearch(UserPrincipal userPrincipal, List<File> files, HttpSession session,
@@ -67,12 +100,16 @@ public class GroupSearchService {
 //        LOGGER.info("Group search has started");
         List<SpectrumMatch> savedMatches = new ArrayList<>();
         Set<Long> deleteMatches = new HashSet<>();
+        List<SpectrumDTO> allSpectrumDTOList = new ArrayList<>();
+        //list of distinct spectra
 
 
         try {
             final List<SearchResultDTO> groupSearchDTOList = new ArrayList<>();
+            List<SpectrumDTO> distinctSpectrumDTOList = new ArrayList<>();
             //spectrumMatchRepository.deleteAll();
             session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
+            session.setAttribute("distinct_spectra", distinctSpectrumDTOList);
 
             // Calculate total number of spectra
             long totalSteps = files.stream()
@@ -108,6 +145,8 @@ public class GroupSearchService {
                 File file = files.get(fileIndex);
                 List<Spectrum> spectra = file.getSpectra();
                 if (spectra == null) continue;
+
+
                 for (int spectrumIndex = 0; spectrumIndex < spectra.size(); ++spectrumIndex) {  // Spectrum querySpectrum : file.getSpectra()
                     if(System.currentTimeMillis() - startTime > 6 * 60 * 60 * 1000)
                     {
@@ -156,6 +195,14 @@ public class GroupSearchService {
                     try {
                         session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
                         session.setAttribute(ControllerUtils.GROUP_SEARCH_PROGRESS_ATTRIBUTE_NAME, progress);
+
+                        //recalculate list of distinct spectra
+                        Set<String> distinctSpectraNames = new HashSet<>();
+                        distinctSpectrumDTOList = groupSearchDTOList.stream().filter(groupSearchDTO->distinctSpectraNames.add(groupSearchDTO.getQuerySpectrumName()))
+                                                                    .map(groupSearchDTO ->  new SpectrumDTO(groupSearchDTO.getQuerySpectrumName(),groupSearchDTO.getQuerySpectrumId())).collect(Collectors.toList());
+
+                        session.setAttribute("distinct_spectra", distinctSpectrumDTOList);
+
                     } catch (IllegalStateException e) {
                         if (sendResultsToEmail) {
                             if (showSessionEndedMessage) {
@@ -182,6 +229,8 @@ public class GroupSearchService {
                     }
                 }
             }
+
+
             spectrumMatchRepository.deleteByQuerySpectrumsAndUserId( userPrincipal.getId(),deleteMatches);
             spectrumMatchRepository.saveAll(savedMatches);
 
@@ -226,6 +275,7 @@ public class GroupSearchService {
 
         if (Thread.currentThread().isInterrupted())
             LOGGER.info("Group search is cancelled");
+
 
         return new AsyncResult<>(null);
     }
