@@ -5,4 +5,4 @@ CREATE TABLE `adapcompounddb`.`searchparameters` (
     `UserPrimaryId` BIGINT UNSIGNED NULL,
     PRIMARY KEY (`id`),
     FOREIGN KEY (`UserPrimaryId`)
-        REFERENCES `adapcompounddb`.`userprincipal` (`Id`));
+    REFERENCES `adapcompounddb`.`userprincipal` (`Id`));
