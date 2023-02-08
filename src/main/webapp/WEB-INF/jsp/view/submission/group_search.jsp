@@ -14,6 +14,23 @@
     #query_plot_match row{
         display:none;
     }
+    .container {
+      display: flex;
+    }
+
+    .left {
+      width: 30%;
+      margin-right: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .table-left {
+      width: 100%;
+    }
+
+    .table-right {
+      width: 40%;}
 
 </style>
 <div class="container-fluid">
@@ -110,12 +127,38 @@
                 <div class="card-header card-header-single">
                     Group Search Results
                 </div>
-                <div class="card-body small">
-                    <table id="match_table" class="display compact" style="width: 100%; clear:none;">
+                <div class="card-body small container" >
+                    <div class="left">
+                        <table id="distinct_query_table" class="display compact table-left" style="width: 100%; clear:none;">
+                            <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Query</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+
+                        <table id="query_table" class="display compact table-left" style="width: 100%; clear:none;">
+                            <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Spectrum name</th>
+                                <th>External Id</th>
+                                <th>Precrusor Mzs</th>
+                                <th>Retention Time</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <table id="match_table" class="display compact table-right" style="width: 100%; clear:none;">
                         <thead>
                         <tr>
                             <th>Id</th>
-                            <th>Query</th>
+                            <%--                            <th>Query</th>--%>
                             <th title="Match spectra">Match</th>
                             <th title="Molecular weight">Molecular weight</th>
                             <th title="Number of studies" class="Count">Sources</th>
@@ -131,30 +174,6 @@
                             <th title="Ontology level">Ontology Level</th>
                             <th title="Chromatography type">Type</th>
                             <th></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                    <table id="distinct_query_table" class="display compact" style="width: 100%; clear:none;">
-                        <thead>
-                        <tr>
-                            <th>Id</th>
-                            <th>Spectrum name</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-
-                    <table id="query_table" class="display compact" style="width: 100%; clear:none;">
-                        <thead>
-                        <tr>
-                            <th>Id</th>
-                            <th>Spectrum name</th>
-                            <th>External Id</th>
-                            <th>Precrusor Mzs</th>
-                            <th>Retention Time</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -183,6 +202,7 @@
       $('#query_plot_match_row').hide();
         $('#query_table').hide();
         $('#match_table').hide();
+
       var distinct_query_table = $('#distinct_query_table').DataTable({
         // dom: 'lfrtip',
 
@@ -312,7 +332,7 @@
 
             console.log("**MATCHES: " ,result);
 
-            var match_table = $('#match_table').DataTable({
+            let match_table = $('#match_table').DataTable({
 
                 serverSide: true,
                 order: [[0, 'desc']],
@@ -367,14 +387,14 @@
                     {data: function(row, type,val, meta) {
                         return meta.row + 1;
                         }},
-                    {
-                        data: function (row) {
-                            const href = (row.querySpectrumId !== 0)
-                                ? `<c:url value="/spectrum/\${row.querySpectrumId}/"/>`
-                                : `<c:url value="/file/\${row.queryFileIndex}/\${row.querySpectrumIndex}/"/>`;
-                            return `<a href="\${href}">\${row.querySpectrumName}</a>`;
-                        }
-                    },
+                    <%--{--%>
+                    <%--    data: function (row) {--%>
+                    <%--        const href = (row.querySpectrumId !== 0)--%>
+                    <%--            ? `<c:url value="/spectrum/\${row.querySpectrumId}/"/>`--%>
+                    <%--            : `<c:url value="/file/\${row.queryFileIndex}/\${row.querySpectrumIndex}/"/>`;--%>
+                    <%--        return `<a href="\${href}">\${row.querySpectrumName}</a>`;--%>
+                    <%--    }--%>
+                    <%--},--%>
                     {
                         data: row => {
                             let string = '';

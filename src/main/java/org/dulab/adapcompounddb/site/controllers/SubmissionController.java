@@ -439,7 +439,7 @@ public class SubmissionController extends BaseController {
 //                spectrumList.addAll(file.getSpectra());
 //            }
 //        }
-//
+//          //put all the distinct spectra into session here
 //
 //        model.addAttribute("spectrumList", spectrumList);
         model.addAttribute("submissionId", submissionId);

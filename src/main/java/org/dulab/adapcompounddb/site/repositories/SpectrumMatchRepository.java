@@ -45,7 +45,7 @@ public interface SpectrumMatchRepository extends JpaRepository<SpectrumMatch, Lo
     void deleteByQuerySpectrums(@Param("ids") List<Long> ids);
 
 
-    @Query("SELECT sm FROM SpectrumMatch sm WHERE (sm.userPrincipalId=:userid and sm.querySpectrum.id in :ids)")
+    @Query("SELECT distinct sm.querySpectrum.name FROM SpectrumMatch sm WHERE (sm.userPrincipalId=:userid and sm.querySpectrum.id in :ids)")
     Page<SpectrumMatch> findAllSpectrumMatchByUserIdAndQuerySpectrums(@Param("userid") Long userId, @Param("ids")List<Long> spectrumIds, Pageable page);
 
     @Modifying

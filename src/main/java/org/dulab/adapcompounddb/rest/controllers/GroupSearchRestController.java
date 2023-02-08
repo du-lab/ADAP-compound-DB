@@ -217,6 +217,8 @@ public class GroupSearchRestController extends BaseController {
 
                 matches.add(searchResult);
             }
+
+            //TODO: store mamtches in session to get it for the tables
             response = groupSearchSort(false, searchStr, start, length, matches, columnStr);
             response.setRecordsTotal(spectrumMatches.getTotalElements());
             response.setRecordsFiltered(spectrumMatches.getTotalElements());
@@ -436,6 +438,40 @@ public class GroupSearchRestController extends BaseController {
             for (final GroupSearchColumnInformation groupSearchColumnInformation : GroupSearchColumnInformation.values()) {
                 if (position == groupSearchColumnInformation.getPosition()) {
                     columnName = groupSearchColumnInformation.getSortColumnName();
+                }
+            }
+            return columnName;
+        }
+    }
+    private enum GroupSearchQueryTableColumnInformation {
+        ID(0, "id"),
+        QUERY_SPECTRUM(1, "querySpectrumName"),
+        EXTERNAL_ID(2, "queryExternalId"),
+        PRECURSOR_MZS(3, "queryPrecursorMzs"),
+        RET_TIME(4, "queryRetTime");
+
+
+        private int position;
+        private String sortColumnName;
+
+        GroupSearchQueryTableColumnInformation(final int position, final String sortColumnName) {
+            this.position = position;
+            this.sortColumnName = sortColumnName;
+        }
+
+        public int getPosition() {
+            return position;
+        }
+
+        public String getSortColumnName() {
+            return sortColumnName;
+        }
+
+        public static String getColumnNameFromPosition(final int position) {
+            String columnName = null;
+            for (final GroupSearchQueryTableColumnInformation groupSearchQueryTableColumnInformation : GroupSearchQueryTableColumnInformation.values()) {
+                if (position == groupSearchQueryTableColumnInformation.getPosition()) {
+                    columnName = groupSearchQueryTableColumnInformation.getSortColumnName();
                 }
             }
             return columnName;
