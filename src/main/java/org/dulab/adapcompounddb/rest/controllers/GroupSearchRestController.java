@@ -89,16 +89,16 @@ public class GroupSearchRestController extends BaseController {
         return mapper.writeValueAsString(response);
     }
 
-    @PostMapping(value = "/getMatchesById")
+    @PostMapping(value = "/getMatches")
     public String getMatchesById(@RequestBody JsonNode jsonObj, final HttpSession session)
         throws JsonProcessingException {
 
-        Long spectrumId = jsonObj.get("id").asLong();
+        Integer position = jsonObj.get("position").asInt();
         List<SearchResultDTO> searchResultFromSession = new ArrayList<>((List<SearchResultDTO>) session.getAttribute(
             "group_search_results"));
 
         List<SearchResultDTO> matches = searchResultFromSession.stream()
-            .filter(s -> s.getQuerySpectrumId().equals(spectrumId)).collect(Collectors.toList());
+            .filter(s -> s.getPosition()==position).collect(Collectors.toList());
         session.setAttribute("matches", matches);
 
         return mapper.writeValueAsString(matches);
@@ -107,14 +107,12 @@ public class GroupSearchRestController extends BaseController {
     @PostMapping(value ="/getSpectrumsByName")
     public String getSpectrumsByName(@RequestBody JsonNode jsonObj, final HttpSession session) throws JsonProcessingException {
 
-        String spectrumName = jsonObj.get("name").asText();
+        String spectrumName = jsonObj.get("querySpectrumName").asText();
         List<SearchResultDTO> searchResultFromSession = new ArrayList<>((List<SearchResultDTO>) session.getAttribute(
             "group_search_results"));
 
-        List<SpectrumDTO> spectrumDTOList = searchResultFromSession.stream()
-            .filter(s -> s.getQuerySpectrumName().equals(spectrumName)).map(
-                s -> new SpectrumDTO(s.getQuerySpectrumName(), s.getQuerySpectrumId(),
-                    s.getExternalId(), s.getRetTime(), s.getQueryPrecursorMzs()))
+        List<SearchResultDTO> spectrumDTOList = searchResultFromSession.stream()
+            .filter(s -> s.getQuerySpectrumName().equals(spectrumName))
             .collect(Collectors.toList());
 
         session.setAttribute("spectrum_list", spectrumDTOList);
@@ -125,17 +123,17 @@ public class GroupSearchRestController extends BaseController {
     public String distinctSpectraResult(
             @RequestParam("start") final Integer start,
             @RequestParam("length") final Integer length,
-            @RequestParam("column")  Integer column,
-            @RequestParam("sortDirection") String sortDirection,
+            @RequestParam("search") final String searchStr,
+            @RequestParam("columnStr") final String columnStr,
             final HttpSession session) throws JsonProcessingException {
 
-        List<SpectrumDTO> spectrumDtoList;
+        List<SearchResultDTO> spectrumDtoList;
         Object sessionObject = session.getAttribute("distinct_spectra");
         DataTableResponse response = new DataTableResponse();
         if (sessionObject != null) {
-            List<SpectrumDTO> querySpectrumsSession = (List<SpectrumDTO>) sessionObject;
+            List<SearchResultDTO> querySpectrumsSession = (List<SearchResultDTO>) sessionObject;
             spectrumDtoList = new ArrayList<>(querySpectrumsSession);
-            response = dtoSort(spectrumDtoList, start, length, column, sortDirection);
+            response = groupSearchSort(true, searchStr,  start, length, spectrumDtoList, columnStr);
         }
         return mapper.writeValueAsString(response);
     }
@@ -143,68 +141,37 @@ public class GroupSearchRestController extends BaseController {
     public String SpectraResult(
             @RequestParam("start") final Integer start,
             @RequestParam("length") final Integer length,
-            @RequestParam("column")  Integer column,
-            @RequestParam("sortDirection") String sortDirection,
+            @RequestParam("search") final String searchStr,
+            @RequestParam("columnStr") final String columnStr,
             final HttpSession session) throws JsonProcessingException {
 
 
         Object sessionObject = session.getAttribute("spectrum_list");
         DataTableResponse response = new DataTableResponse();
 
-        List<SpectrumDTO> querySpectrums = (List<SpectrumDTO>) sessionObject;
-        response = dtoSort(querySpectrums, start, length, column, sortDirection);
+        List<SearchResultDTO> querySpectrums = (List<SearchResultDTO>) sessionObject;
+        response = groupSearchSort(true, searchStr,  start, length, querySpectrums, columnStr);
 
         return mapper.writeValueAsString(response);
     }
 
-    public <T extends Serializable> DataTableResponse dtoSort(List<T> dtoList, Integer start,
-        Integer length, Integer  column, String sortDirection){
-        final List<T> result = new ArrayList<>();
-        for (int i = 0; i < dtoList.size(); i++) {
-            if (i < start || result.size() >= length)
-                continue;
-
-            result.add(dtoList.get(i));
-
-        }
-        DataTableResponse response = new DataTableResponse(result);
-        response.setRecordsFiltered((long) dtoList.size());
-        response.setRecordsTotal((long) dtoList.size());
-
-        return response;
-    }
-//    public DataTableResponse spectrumSort(List<SpectrumDTO> querySpectrums, Integer start,
-//                                             Integer length, Integer column, String sortDirection){
-//        final List<SpectrumDTO> querySpectrumList = new ArrayList<>();
-//        for (int i = 0; i < querySpectrums.size(); i++) {
-//            if (i < start || querySpectrumList.size() >= length)
+//    public <T extends Serializable> DataTableResponse dtoSort(List<T> dtoList, Integer start,
+//        Integer length, Integer  column, String sortDirection){
+//        final List<T> result = new ArrayList<>();
+//        for (int i = 0; i < dtoList.size(); i++) {
+//            if (i < start || result.size() >= length)
 //                continue;
 //
-//            querySpectrumList.add(querySpectrums.get(i));
+//            result.add(dtoList.get(i));
 //
 //        }
-//        DataTableResponse response = new DataTableResponse(querySpectrumList);
-//        response.setRecordsFiltered((long) querySpectrums.size());
-//        response.setRecordsTotal((long) querySpectrums.size());
+//        DataTableResponse response = new DataTableResponse(result);
+//        response.setRecordsFiltered((long) dtoList.size());
+//        response.setRecordsTotal((long) dtoList.size());
 //
 //        return response;
 //    }
-//    public DataTableResponse matchesSort(List<SearchResultDTO> matches, Integer start,
-//        Integer length, Integer column, String sortDirection){
-//        final List<SearchResultDTO> matchesList = new ArrayList<>();
-//        for (int i = 0; i < matches.size(); i++) {
-//            if (i < start || matchesList.size() >= length)
-//                continue;
-//
-//            matchesList.add(matches.get(i));
-//
-//        }
-//        DataTableResponse response = new DataTableResponse(matchesList);
-//        response.setRecordsFiltered((long) matches.size());
-//        response.setRecordsTotal((long) matches.size());
-//
-//        return response;
-//    }
+
     @RequestMapping(value = "/file/group_search_matches/{submissionId:\\d+}/data.json", produces = "application/json")
     public String groupSearchMatchesResults(
             @PathVariable("submissionId") long submissionId,

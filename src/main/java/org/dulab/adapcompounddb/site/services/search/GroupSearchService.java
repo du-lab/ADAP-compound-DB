@@ -100,13 +100,12 @@ public class GroupSearchService {
 //        LOGGER.info("Group search has started");
         List<SpectrumMatch> savedMatches = new ArrayList<>();
         Set<Long> deleteMatches = new HashSet<>();
-        List<SpectrumDTO> allSpectrumDTOList = new ArrayList<>();
         //list of distinct spectra
 
 
         try {
             final List<SearchResultDTO> groupSearchDTOList = new ArrayList<>();
-            List<SpectrumDTO> distinctSpectrumDTOList = new ArrayList<>();
+            List<SearchResultDTO> distinctSpectrumDTOList = new ArrayList<>();
             //spectrumMatchRepository.deleteAll();
             session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
             session.setAttribute("distinct_spectra", distinctSpectrumDTOList);
@@ -187,19 +186,20 @@ public class GroupSearchService {
 
                     if (Thread.currentThread().isInterrupted()) break;
 
-
-
-
                     progress = (float) ++progressStep / totalSteps;
                     groupSearchDTOList.addAll(individualSearchResults);
                     try {
-                        session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
-                        session.setAttribute(ControllerUtils.GROUP_SEARCH_PROGRESS_ATTRIBUTE_NAME, progress);
+                        session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME,
+                            groupSearchDTOList);
+                        session.setAttribute(ControllerUtils.GROUP_SEARCH_PROGRESS_ATTRIBUTE_NAME,
+                            progress);
 
                         //recalculate list of distinct spectra
                         Set<String> distinctSpectraNames = new HashSet<>();
-                        distinctSpectrumDTOList = groupSearchDTOList.stream().filter(groupSearchDTO->distinctSpectraNames.add(groupSearchDTO.getQuerySpectrumName()))
-                                                                    .map(groupSearchDTO ->  new SpectrumDTO(groupSearchDTO.getQuerySpectrumName(),groupSearchDTO.getQuerySpectrumId())).collect(Collectors.toList());
+                        distinctSpectrumDTOList = groupSearchDTOList.stream().filter(
+                                groupSearchDTO -> distinctSpectraNames.add(
+                                    groupSearchDTO.getQuerySpectrumName()))
+                            .collect(Collectors.toList());
 
                         session.setAttribute("distinct_spectra", distinctSpectrumDTOList);
 
@@ -210,7 +210,8 @@ public class GroupSearchService {
                                 showSessionEndedMessage = false;
                             }
                         } else {
-                            LOGGER.warn("It looks like the session has been closed. Stopping the group search.");
+                            LOGGER.warn(
+                                "It looks like the session has been closed. Stopping the group search.");
                             //return new AsyncResult<>(null);
                         }
                     }

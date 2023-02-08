@@ -192,22 +192,27 @@
         responsive: true,
         ajax: {
           url: "${pageContext.request.contextPath}/distinct_spectra/data.json",
-          data: function (d) {
-            //column index
-            d.column = d.order[0].column;
-            d.sortDirection = d.order[0].dir;
+          data: function (data) {
+            data.columnStr = [];
+            for (let i = 0; i < data.order.length; i++) {
+              data.columnStr += data.order[i].column + "-" + data.order[i].dir + ",";
+            }
+            console.log(data);
+            data.search = data.search["value"];
           }
 
         },
 
         "columnDefs": [
           {
-            "targets": 0,
-            "data": 'id'
+            "targets":0,
+            data: function(row, type,val, meta) {
+              return meta.row + 1;
+            }
           },
           {
             "targets": 1,
-            "data": "name"
+            "data": "querySpectrumName"
 
           }
         ]
@@ -237,37 +242,43 @@
               ajax: {
                 type: "GET",
                 url: "${pageContext.request.contextPath}/spectra/data.json",
-                data: function (d) {
+                data: function (data) {
                   //column index
-                  d.column = d.order[0].column;
-                  d.sortDirection = d.order[0].dir;
+                  data.columnStr = [];
+                  for (let i = 0; i < data.order.length; i++) {
+                    data.columnStr += data.order[i].column + "-" + data.order[i].dir + ",";
+                  }
+                  console.log(data);
+                  data.search = data.search["value"];
                 }
 
               },
 
               "columnDefs": [
                 {
-                  "targets": 0,
-                  "data": 'id'
+                  "targets":0,
+                    data: function(row, type,val, meta) {
+                    return meta.row + 1;
+                  }
                 },
                 {
                   "targets": 1,
-                  "data": "name"
+                  "data": "querySpectrumName"
 
                 },
                 {
                   "targets": 2,
-                  "data": "externalId"
+                  "data": "queryExternalId"
 
                 },
                 {
                   "targets": 3,
-                  "data": "precursorMzs"
+                  "data": "queryPrecursorMzs"
 
                 },
                 {
                   "targets": 4,
-                  "data": "retentionTime"
+                  "data": "queryRetTime"
 
                 }
 
@@ -293,7 +304,7 @@
         //TODO: simiplify this funtion
         $.ajax({
           type:"POST",
-          url: "${pageContext.request.contextPath}/getMatchesById",
+          url: "${pageContext.request.contextPath}/getMatches",
           contentType:'application/json',
           dataType:"json",
           data:  JSON.stringify(data),

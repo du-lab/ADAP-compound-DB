@@ -52,7 +52,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         //http.csrf().disable();
 
         //disable csrf for these requests
-        http.csrf().ignoringAntMatchers("/file/upload/", "/getSpectrumsByName", "/getMatchesById");
+        http.csrf().ignoringAntMatchers("/file/upload/", "/getSpectrumsByName", "/getMatches");
 
         // The pages does not require login
         http.authorizeRequests().antMatchers("/", "/login", "/logout").permitAll();
