@@ -16,6 +16,7 @@ import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.site.controllers.BaseController;
 import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
+import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.dulab.adapcompounddb.site.services.search.GroupSearchService;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters;
@@ -51,6 +52,7 @@ public class GroupSearchRestController extends BaseController {
     private final GroupSearchService groupSearchService;
 
     private final SubmissionService submissionService;
+
 
     static {
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
@@ -205,6 +207,12 @@ public class GroupSearchRestController extends BaseController {
 
             //get column name that is sorted
             String sortColumn = GroupSearchColumnInformation.getColumnNameFromPosition(column);
+
+
+            Page<Iterable<Object>> distinctQuerySpectrum = spectrumMatchService.findAllDistinctSpectrumByUserIdAndQuerySpectrumsPageable
+                (getCurrentUserPrincipal().getId(), spectrumIds, start, length, null, null);
+
+
 
             spectrumMatches = spectrumMatchService.findAllSpectrumMatchByUserIdAndQuerySpectrumsPageable
                     (getCurrentUserPrincipal().getId(), spectrumIds, start, length, sortColumn, sortDirection);

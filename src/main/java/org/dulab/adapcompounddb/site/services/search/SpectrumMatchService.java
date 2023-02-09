@@ -38,4 +38,7 @@ public interface SpectrumMatchService {
 
     Page<SpectrumMatch> findAllSpectrumMatchByUserIdAndQuerySpectrumsPageable(Long userId, List<Long> spectrumIds, Integer start,
                                                                               Integer length, String sortColumn, String sortDirection);
+
+     Page<Iterable<Object>> findAllDistinctSpectrumByUserIdAndQuerySpectrumsPageable(Long userId, List<Long> spectrumIds,
+        Integer start, Integer length, String column, String direction) ;
 }

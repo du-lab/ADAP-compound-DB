@@ -15,22 +15,32 @@
         display:none;
     }
     .container {
-      display: flex;
-    }
-
-    .left {
-      width: 30%;
-      margin-right: 20px;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .table-left {
+      margin:unset;
+      max-width: unset;
       width: 100%;
     }
+    .left {
+      width: 30%;
+      padding:10px;
+      display: inline-block;
+    }
+    .right{
+      width: 70%;
+      float: right;
+      padding: 10px;
 
-    .table-right {
-      width: 40%;}
+
+    }
+    .distinct_query_container{
+      margin-bottom:50px;
+    }
+
+    /*.table-left {*/
+    /*  width: 100%;*/
+    /*}*/
+
+    /*.table-right {*/
+    /*  width: 40%;}*/
 
 </style>
 <div class="container-fluid">
@@ -127,20 +137,21 @@
                 <div class="card-header card-header-single">
                     Group Search Results
                 </div>
-                <div class="card-body small container" >
+                <div class="card-body small container " >
                     <div class="left">
-                        <table id="distinct_query_table" class="display compact table-left" style="width: 100%; clear:none;">
-                            <thead>
-                            <tr>
-                                <th>Id</th>
-                                <th>Query</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-
-                        <table id="query_table" class="display compact table-left" style="width: 100%; clear:none;">
+                        <div class="distinct_query_container">
+                            <table id="distinct_query_table" class="display compact " style="width: 100%; clear:none;">
+                                <thead>
+                                <tr>
+                                    <th>Id</th>
+                                    <th>Query</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                        <table id="query_table" class="display compact query_table" style="width: 100%; clear:none;">
                             <thead>
                             <tr>
                                 <th>Id</th>
@@ -154,31 +165,33 @@
                             </tbody>
                         </table>
                     </div>
-                    <table id="match_table" class="display compact table-right" style="width: 100%; clear:none;">
-                        <thead>
-                        <tr>
-                            <th>Id</th>
-                            <%--                            <th>Query</th>--%>
-                            <th title="Match spectra">Match</th>
-                            <th title="Molecular weight">Molecular weight</th>
-                            <th title="Number of studies" class="Count">Sources</th>
-                            <th title="Minimum matching score between all spectra in a cluster">Score</th>
-                            <th title="Difference between query and library neutral masses">Mass Error (mDa)</th>
-                            <th title="Difference between query and library neutral masses">Mass Error (PPM)</th>
-                            <th title="Difference between query and library retention times">Ret Time Error</th>
-                            <th title="Difference between query and library retention indices">Ret Index error</th>
-                            <th title="Isotopic similarity">Iso Similarity</th>
-                            <th title="Average P-value of ANOVA tests">Average P-value</th>
-                            <th title="Minimum P-value of ANOVA tests">Minimum P-value</th>
-                            <th title="Maximum P-value of ANOVA tests">Maximum P-value</th>
-                            <th title="Ontology level">Ontology Level</th>
-                            <th title="Chromatography type">Type</th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
+                    <div class = "right">
+                        <table id="match_table" class="display compact table-right" style="width: 100%; clear:none;">
+                            <thead>
+                            <tr>
+                                <th>Id</th>
+                                <%--                            <th>Query</th>--%>
+                                <th title="Match spectra">Match</th>
+                                <th title="Molecular weight">Molecular weight</th>
+                                <th title="Number of studies" class="Count">Sources</th>
+                                <th title="Minimum matching score between all spectra in a cluster">Score</th>
+                                <th title="Difference between query and library neutral masses">Mass Error (mDa)</th>
+                                <th title="Difference between query and library neutral masses">Mass Error (PPM)</th>
+                                <th title="Difference between query and library retention times">Ret Time Error</th>
+                                <th title="Difference between query and library retention indices">Ret Index error</th>
+                                <th title="Isotopic similarity">Iso Similarity</th>
+                                <th title="Average P-value of ANOVA tests">Average P-value</th>
+                                <th title="Minimum P-value of ANOVA tests">Minimum P-value</th>
+                                <th title="Maximum P-value of ANOVA tests">Maximum P-value</th>
+                                <th title="Ontology level">Ontology Level</th>
+                                <th title="Chromatography type">Type</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
