@@ -444,7 +444,7 @@ public class SubmissionController extends BaseController {
 //        model.addAttribute("spectrumList", spectrumList);
         model.addAttribute("submissionId", submissionId);
 
-        return "/submission/spectrum/matches";
+        return "/submission/group_search";
 
 
     }

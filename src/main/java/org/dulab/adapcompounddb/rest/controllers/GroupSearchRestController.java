@@ -183,8 +183,8 @@ public class GroupSearchRestController extends BaseController {
             @RequestParam("columnStr") final String columnStr,
             final HttpSession session) throws JsonProcessingException {
 
-        Page<SpectrumMatch> spectrumMatches;
-        List<SearchResultDTO> matches = new ArrayList<>();
+
+
         DataTableResponse response = new DataTableResponse();
 
         if (getCurrentUserPrincipal() != null) {
@@ -201,35 +201,21 @@ public class GroupSearchRestController extends BaseController {
             }
             List<Long> spectrumIds = spectrumList.stream().map(Spectrum::getId).collect(Collectors.toList());
 
-            String[] columns = columnStr.split("[-,]");
-            Integer column = Integer.parseInt(columns[0]);
-            String sortDirection = columns[1];
 
-            //get column name that is sorted
-            String sortColumn = GroupSearchColumnInformation.getColumnNameFromPosition(column);
-
-
-            Page<Iterable<Object>> distinctQuerySpectrum = spectrumMatchService.findAllDistinctSpectrumByUserIdAndQuerySpectrumsPageable
+            Page<String> distinctQuerySpectrum = spectrumMatchService.findAllDistinctSpectrumByUserIdAndQuerySpectrumsPageable
                 (getCurrentUserPrincipal().getId(), spectrumIds, start, length, null, null);
 
-
-
-            spectrumMatches = spectrumMatchService.findAllSpectrumMatchByUserIdAndQuerySpectrumsPageable
-                    (getCurrentUserPrincipal().getId(), spectrumIds, start, length, sortColumn, sortDirection);
-
-            for (SpectrumMatch match : spectrumMatches.getContent()) {
-                SearchResultDTO searchResult = MappingUtils.mapSpectrumMatchToSpectrumClusterView(
-                        match, matchIndex++, null, null, null);
-                searchResult.setChromatographyTypeLabel(match.getMatchSpectrum() != null ? match.getMatchSpectrum().getChromatographyType().getLabel() : null);
-                searchResult.setOntologyLevel(match.getOntologyLevel());
-
-                matches.add(searchResult);
+            List<SearchResultDTO> searchResultDTOList = new ArrayList<>();
+            for(String query : distinctQuerySpectrum.getContent())
+            {
+                SearchResultDTO searchResult = new SearchResultDTO();
+                searchResult.setQuerySpectrumName(query);
+                searchResultDTOList.add(searchResult);
             }
-
             //TODO: store mamtches in session to get it for the tables
-            response = groupSearchSort(false, searchStr, start, length, matches, columnStr);
-            response.setRecordsTotal(spectrumMatches.getTotalElements());
-            response.setRecordsFiltered(spectrumMatches.getTotalElements());
+            response = new DataTableResponse(searchResultDTOList);
+            response.setRecordsTotal(distinctQuerySpectrum.getTotalElements());
+            response.setRecordsFiltered(distinctQuerySpectrum.getTotalElements());
         }
 
         return mapper.writeValueAsString(response);

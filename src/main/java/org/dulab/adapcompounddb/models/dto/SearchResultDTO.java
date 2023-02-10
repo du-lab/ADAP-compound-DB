@@ -665,9 +665,9 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
     }
 
     public String getHRef() {
-        return String.format("%s/%d/",
+        return matchType!= null ? String.format("%s/%d/",
                 matchType.name().toLowerCase(),
-                (matchType == MatchType.CLUSTER) ? this.getClusterId() : this.getSpectrumId());
+                (matchType == MatchType.CLUSTER) ? this.getClusterId() : this.getSpectrumId()): null;
     }
 
     public String getQueryHRef() {

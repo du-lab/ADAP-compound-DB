@@ -460,11 +460,11 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     }
 
     @Override
-    public Page<Iterable<Object>> findAllDistinctSpectrumByUserIdAndQuerySpectrumsPageable(Long userId, List<Long> spectrumIds,
+    public Page<String> findAllDistinctSpectrumByUserIdAndQuerySpectrumsPageable(Long userId, List<Long> spectrumIds,
         Integer start, Integer length, String column, String direction) {
 
         Pageable pageable = DataUtils.createPageable(start, length, column, direction);
-        Page<Iterable<Object>> sm = spectrumMatchRepository.findAllDistinctQueryByUserIdAndQuerySpectrums( userId, spectrumIds, pageable);
+        Page<String> sm = spectrumMatchRepository.findAllDistinctQueryByUserIdAndQuerySpectrums( userId, spectrumIds, pageable);
         return sm;
     }
 

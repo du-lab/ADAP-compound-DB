@@ -210,11 +210,18 @@
 <script src="<c:url value="/resources/AdapCompoundDb/js/spectrumPlot.js"/>"></script>
 <script src="<c:url value="/resources/AdapCompoundDb/js/spectrumStructure.js"/>"></script>
 <script>
+    var  isViewSaveMatches = '<c:out value="${submissionId}" />';
 
   $(document).ready(function () {
       $('#query_plot_match_row').hide();
         $('#query_table').hide();
         $('#match_table').hide();
+
+      var url;
+      if (isViewSaveMatches)
+          url = "${pageContext.request.contextPath}/file/group_search_matches/${submissionId}/data.json";
+        else
+          url = "${pageContext.request.contextPath}/distinct_spectra/data.json";
 
       var distinct_query_table = $('#distinct_query_table').DataTable({
         // dom: 'lfrtip',
@@ -224,7 +231,7 @@
         processing: true,
         responsive: true,
         ajax: {
-          url: "${pageContext.request.contextPath}/distinct_spectra/data.json",
+          url:  url,
           data: function (data) {
             data.columnStr = [];
             for (let i = 0; i < data.order.length; i++) {
@@ -235,7 +242,10 @@
           }
 
         },
-
+      error: function(xhr, error) {
+          console.log(xhr);
+          console.log("Error: ", error);
+      },
         "columnDefs": [
           {
             "targets":0,
@@ -527,6 +537,7 @@
 
         });
 
+        if (!isViewSaveMatches){
         // refresh the datatable and progress bar every 1 second
         setInterval(function () {
             $.ajax({
@@ -549,7 +560,9 @@
                 }
             });
         }, 1000);
+        }
         <%--        <c:if test="${pageContext.request.method == 'GET'}">$('#filterForm').submit();--%>
         <%--        </c:if>--%>
     });
+
 </script>
