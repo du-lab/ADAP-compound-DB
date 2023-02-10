@@ -53,16 +53,18 @@ public class GroupSearchRestController extends BaseController {
 
     private final SubmissionService submissionService;
 
+    private final SpectrumRepository spectrumRepository;
 
     static {
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
     }
 
     @Autowired
-    public GroupSearchRestController(final SpectrumMatchService spectrumMatchService, final GroupSearchService groupSearchService, final SubmissionService submissionService) {
+    public GroupSearchRestController(final SpectrumMatchService spectrumMatchService, final GroupSearchService groupSearchService, final SubmissionService submissionService, final SpectrumRepository spectrumRepository) {
         this.spectrumMatchService = spectrumMatchService;
         this.groupSearchService = groupSearchService;
         this.submissionService = submissionService;
+        this.spectrumRepository = spectrumRepository;
     }
 
     @RequestMapping(value = "/file/group_search/data.json", produces = "application/json")
@@ -173,6 +175,48 @@ public class GroupSearchRestController extends BaseController {
 //
 //        return response;
 //    }
+    @PostMapping(value = "/getSpectraForSavedResultPage")
+    public String SpectraSavedResultPage(
+        @RequestBody JsonNode jsonObj, final HttpSession session) throws JsonProcessingException {
+
+        String spectrumName = jsonObj.get("queryData").get("querySpectrumName").asText();
+        Integer start = jsonObj.get("start").asInt();
+        Integer length = jsonObj.get("length").asInt();
+        String searchStr = jsonObj.get("search").asText();
+        String columnStr = jsonObj.get("columnStr").asText();
+        DataTableResponse response = new DataTableResponse();
+
+        List<Spectrum> spectrumList = spectrumRepository.getMatchesByUserAndSpectrumName(this.getCurrentUserPrincipal().getId(), spectrumName);
+        List<SearchResultDTO> searchResultDTOS = spectrumList.stream().map(spectrum->new SearchResultDTO(spectrum)).collect(
+            Collectors.toList());
+        response = groupSearchSort(false, searchStr,  start, length, searchResultDTOS, columnStr);
+
+        return mapper.writeValueAsString(response);
+    }
+
+    @RequestMapping(value = "/findMatchesSavedResultPage/data.json", produces = "application/json")
+    public String findMatchesSavedResultPage(@RequestParam("start") final Integer start,
+        @RequestParam("length") final Integer length,
+        @RequestParam("search") final String searchStr,
+        @RequestParam("columnStr") final String columnStr,
+        @RequestParam("spectrumId") Long spectrumId, final HttpSession session)
+        throws JsonProcessingException {
+
+        List<SearchResultDTO> matches = new ArrayList<>();
+        int matchIndex = 0;
+        DataTableResponse response = new DataTableResponse();
+
+        List<SpectrumMatch> spectrumMatches = spectrumMatchService.findMatchesByUserIdAndQueryId(this.getCurrentUserPrincipal().getId(), spectrumId);
+        for (SpectrumMatch match : spectrumMatches) {
+            SearchResultDTO searchResult = MappingUtils.mapSpectrumMatchToSpectrumClusterView(
+                match, matchIndex++, null, null, null);
+            searchResult.setChromatographyTypeLabel(match.getMatchSpectrum() != null ? match.getMatchSpectrum().getChromatographyType().getLabel() : null);
+            matches.add(searchResult);
+        }
+        response = groupSearchSort(true, searchStr, start, length, matches, columnStr);
+
+        return mapper.writeValueAsString(response);
+    }
 
     @RequestMapping(value = "/file/group_search_matches/{submissionId:\\d+}/data.json", produces = "application/json")
     public String groupSearchMatchesResults(

@@ -41,4 +41,7 @@ public interface SpectrumMatchService {
 
      Page<String> findAllDistinctSpectrumByUserIdAndQuerySpectrumsPageable(Long userId, List<Long> spectrumIds,
         Integer start, Integer length, String column, String direction) ;
+
+
+  List<SpectrumMatch> findMatchesByUserIdAndQueryId(long id, Long spectrumId);
 }

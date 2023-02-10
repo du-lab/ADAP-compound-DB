@@ -132,5 +132,6 @@ public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, Spec
     @Query("Select DISTINCT s.file from Spectrum s where s.id in :spectrumIds")
     List<File> getFilesFromSpectrum(@Param("spectrumIds") long[] spectrumIds);
 
-
+    @Query(value = "SELECT distinct s FROM Spectrum s join s.matches sm where (sm.userPrincipalId=:userid and s.name =:name) ")
+    List<Spectrum> getMatchesByUserAndSpectrumName(@Param("userid") Long userId, @Param("name")String spectrumName);
 }

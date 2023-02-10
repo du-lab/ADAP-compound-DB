@@ -468,5 +468,10 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         return sm;
     }
 
+    @Override
+    public List<SpectrumMatch> findMatchesByUserIdAndQueryId(long userId, Long spectrumId) {
+        return spectrumMatchRepository.findByuserPrincipalIdAndquerySpectrumId(userId, spectrumId);
+    }
+
 
 }
