@@ -228,8 +228,10 @@
 
         serverSide: true,
         sortable: true,
+        order: [[0, 'desc']],
         processing: true,
         responsive: true,
+        select: {style: 'single'},
         ajax: {
           url:  url,
           data: function (data) {
@@ -260,8 +262,8 @@
           }
         ]
       });
-      $('#distinct_query_table tbody').on( 'click', 'tr', function () {
-        var query = distinct_query_table.row( this ).data();
+    distinct_query_table.on('select', function (e, dt, type, indexes) {
+        var query = distinct_query_table.row( this).data();
         console.log(query);
         //reset table data each time new row is clicked
         $('#query_table').DataTable().destroy();
@@ -271,7 +273,10 @@
           var query_table = $('#query_table').DataTable({
             serverSide: true,
             sortable: true,
+            order: [[0, 'desc']],
+            responsive: true,
             processing: true,
+            select: {style: 'single'},
             ajax: {
               type: "POST",
               contentType:'application/json',
@@ -395,7 +400,7 @@
             });
         }
       });
-      $('#query_table tbody').on( 'click', 'tr', function () {
+      $('#query_table').DataTable().on('select', function (e, dt, type, indexes) {
         var spectrumData = $('#query_table').DataTable().row( this ).data();
         console.log("QUERY TABLE DATA: " ,spectrumData);
         //reset table data each time new row is clicked
