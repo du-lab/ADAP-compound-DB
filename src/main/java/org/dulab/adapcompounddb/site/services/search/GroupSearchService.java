@@ -106,6 +106,8 @@ public class GroupSearchService {
         try {
             final List<SearchResultDTO> groupSearchDTOList = new ArrayList<>();
             List<SearchResultDTO> distinctSpectrumDTOList = new ArrayList<>();
+            //to keep track of distinct searchResult
+            Map<String, SearchResultDTO> searchResultMap = new HashMap<>();
             //spectrumMatchRepository.deleteAll();
             session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
             session.setAttribute("distinct_spectra", distinctSpectrumDTOList);
@@ -182,6 +184,11 @@ public class GroupSearchService {
                         searchResult.setPosition(1 + position++);
                         searchResult.setQueryFileIndex(fileIndex);
                         searchResult.setQuerySpectrumIndex(spectrumIndex);
+
+                        if(!searchResultMap.containsKey(searchResult.getQuerySpectrumName())){
+                            distinctSpectrumDTOList.add(searchResult);
+                            searchResultMap.put(searchResult.getQuerySpectrumName(), searchResult);
+                        }
                     }
 
                     if (Thread.currentThread().isInterrupted()) break;
@@ -193,13 +200,6 @@ public class GroupSearchService {
                             groupSearchDTOList);
                         session.setAttribute(ControllerUtils.GROUP_SEARCH_PROGRESS_ATTRIBUTE_NAME,
                             progress);
-
-                        //recalculate list of distinct spectra
-                        Set<String> distinctSpectraNames = new HashSet<>();
-                        distinctSpectrumDTOList = groupSearchDTOList.stream().filter(
-                                groupSearchDTO -> distinctSpectraNames.add(
-                                    groupSearchDTO.getQuerySpectrumName()))
-                            .collect(Collectors.toList());
 
                         session.setAttribute("distinct_spectra", distinctSpectrumDTOList);
 
