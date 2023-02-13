@@ -40,33 +40,36 @@ public class MspFileReaderService implements FileReaderService {
         List<Spectrum> spectra = new ArrayList<>();
         Spectrum spectrum = new Spectrum();
         List<Peak> peaks = new ArrayList<>();
-        List<SpectrumProperty> properties = new ArrayList<>();
+        Map<String, SpectrumProperty> properties = new HashMap<>();
 
         String line;
         while ((line = reader.readLine()) != null) {
             if (line.trim().isEmpty()) {
                 if (!peaks.isEmpty() || !properties.isEmpty()) {
                     spectrum.setPeaks(peaks, true);
-                    spectrum.setProperties(properties, mapping);
+                    spectrum.setProperties(new ArrayList<>(properties.values()), mapping);
                     spectra.add(spectrum);
                 }
                 spectrum = new Spectrum();
                 peaks = new ArrayList<>();
-                properties = new ArrayList<>();
+                properties = new HashMap<>();
 
             } else if (!line.contains(":") || PEAK_PATTERN.matcher(line).matches()) {
                 addPeak(spectrum, peaks, line);
 
             } else if (line.contains(":")) {
                 // Add property
-                String[] nameValuePair = line.split(":", 2);
+                String[] nameValuePair = line.split(":");  // We can have more than two name-value pairs if there are multiple separators
                 if (nameValuePair.length >= 2) {
                     nameValuePair = validateNameValuePair(nameValuePair, mapping);
-                    SpectrumProperty property = new SpectrumProperty();
-                    property.setName(nameValuePair[0].trim());
-                    property.setValue(nameValuePair[1].trim());
-                    property.setSpectrum(spectrum);
-                    properties.add(property);
+                    if (nameValuePair != null) {
+                        SpectrumProperty property = new SpectrumProperty();
+                        property.setName(nameValuePair[0].trim());
+                        property.setValue(nameValuePair[1].trim());
+                        property.setSpectrum(spectrum);
+                        properties.putIfAbsent(property.getName(), property);
+//                        properties.add(property);
+                    }
                 }
             } else
                 addPeak(spectrum, peaks, line);
@@ -74,7 +77,7 @@ public class MspFileReaderService implements FileReaderService {
 
         if (!peaks.isEmpty()) {
             spectrum.setPeaks(peaks, true);
-            spectrum.setProperties(properties, mapping);
+            spectrum.setProperties(new ArrayList<>(properties.values()), mapping);
             spectra.add(spectrum);
         }
 
@@ -130,15 +133,17 @@ public class MspFileReaderService implements FileReaderService {
     }
 
     private static String[] validateNameValuePair(String[] nameValuePair, MetaDataMapping metaDataMapping) {
+        String fieldName = null;
+        String fieldValue = null;
         for (int i = 0; i < nameValuePair.length - 1; ++i) {
-            String fieldName = nameValuePair[i];
-            if (metaDataMapping.check(fieldName)) {
-                String fieldValue = Arrays.stream(nameValuePair, i + 1, nameValuePair.length)
-                        .collect(Collectors.joining(": "));
-                return new String[] {fieldName, fieldValue};
+            fieldName = nameValuePair[i].trim();
+            fieldValue = Arrays.stream(nameValuePair, i + 1, nameValuePair.length)
+                    .collect(Collectors.joining(": ")).trim();
+            if (metaDataMapping.check(fieldName) || !fieldName.equalsIgnoreCase("Synon")) {
+                break;
             }
         }
-        return nameValuePair;
+        return (fieldName != null) ? new String[]{fieldName, fieldValue} : null;
     }
 
     @Override
