@@ -231,7 +231,8 @@
         order: [[0, 'desc']],
         processing: true,
         responsive: true,
-        select: {style: 'single'},
+        select: true,
+        rowId: 'extn',
         ajax: {
           url:  url,
           data: function (data) {
@@ -262,21 +263,25 @@
           }
         ]
       });
-    distinct_query_table.on('select', function (e, dt, type, indexes) {
-        var query = distinct_query_table.row( this).data();
-        console.log(query);
+    $('#distinct_query_table').DataTable().on('select', function ( e, dt, type, indexes ) {
+        let query = $('#distinct_query_table').DataTable().rows().data()[indexes];
+
+        console.log("INDEX", indexes);
+        console.log("ROW:", query);
         //reset table data each time new row is clicked
         $('#query_table').DataTable().destroy();
         $('#query_table').show();
 
+        //show query table, match table with default matches.
         if(isViewSaveMatches){
           var query_table = $('#query_table').DataTable({
             serverSide: true,
             sortable: true,
+            processing: true,
             order: [[0, 'desc']],
             responsive: true,
-            processing: true,
             select: {style: 'single'},
+            rowId: 'extn',
             ajax: {
               type: "POST",
               contentType:'application/json',
@@ -343,6 +348,10 @@
                   serverSide: true,
                   sortable: true,
                   processing: true,
+                  order: [[0, 'desc']],
+                  responsive: true,
+                  select: {style: 'single'},
+                  rowId: 'extn',
                   ajax: {
                     type: "GET",
                     url: "${pageContext.request.contextPath}/spectra/data.json",
@@ -401,7 +410,7 @@
         }
       });
       $('#query_table').DataTable().on('select', function (e, dt, type, indexes) {
-        var spectrumData = $('#query_table').DataTable().row( this ).data();
+        var spectrumData = $('#query_table').DataTable().rows( ).data()[indexes];
         console.log("QUERY TABLE DATA: " ,spectrumData);
         //reset table data each time new row is clicked
         $('#match_table').DataTable().destroy();
@@ -416,8 +425,8 @@
             responsive: true,
             scrollX: true,
             select: {style: 'single'},
-            // scroller: true,
-            //rowId: 'position',
+            scroller: true,
+            rowId: 'position',
             ajax: {
               url: "${pageContext.request.contextPath}/findMatchesSavedResultPage/data.json",
               data: function (data) {
@@ -530,8 +539,8 @@
                     responsive: true,
                     scrollX: true,
                     select: {style: 'single'},
-                    // scroller: true,
-                    //rowId: 'position',
+                    scroller: true,
+                    rowId: 'position',
                     ajax: {
                         url: "${pageContext.request.contextPath}/file/group_search/data.json",
                         data: function (data) {
@@ -714,7 +723,7 @@
                 success: d => $('#errorDiv').html(d)
             });
             if($('#progressBar').attr('aria-valuenow') < 100)
-                distinct_query_table.ajax.reload(null, false);
+                distinct_query_table.ajax.reload();
 
             $.getJSON(window.location.origin + window.location.pathname + 'progress', function (x) {
                 const width = x + '%';
