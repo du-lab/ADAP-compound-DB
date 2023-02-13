@@ -325,9 +325,13 @@
                 "data": "queryRetTime"
 
               }
-
-
             ]
+            ,
+            "initComplete": function(){
+              //alert('Data loaded successfully');
+              //default choose the first row in query table
+              $('#query_table').DataTable().rows(0).select();
+            }
 
           });
         }
@@ -396,8 +400,15 @@
                     }
 
 
-                  ]
+                  ],
+
+                  "initComplete": function(){
+                    //alert('Data loaded successfully');
+                    //default choose the first row in query table
+                    $('#query_table').DataTable().rows(0).select();
+                  }
                 });
+
 
 
               },
@@ -408,6 +419,8 @@
 
             });
         }
+
+
       });
       $('#query_table').DataTable().on('select', function (e, dt, type, indexes) {
         var spectrumData = $('#query_table').DataTable().rows( ).data()[indexes];
@@ -517,6 +530,11 @@
                 }
               }
             ]
+            ,"initComplete": function() {
+              //alert('Data loaded successfully');
+              //default choose the first row in query table
+              $('#match_table').DataTable().rows(0).select();
+            }
           });
         }
         //TODO: simiplify this funtion
@@ -628,8 +646,14 @@
                                 return `<a href="\${href}"><i class="material-icons" title="Search spectrum">&#xE8B6;</i></a>`;
                             }
                         }
-                    ]
+                    ],
+                      "initComplete": function(){
+                        //alert('Data loaded successfully');
+                        //default choose the first row in query table
+                        $('#match_table').DataTable().rows(0).select();
+                  }
                     });
+
                   },
                   error: function(xhr, error) {
                     console.log(xhr);
@@ -661,7 +685,7 @@
                 return;
 
             $.ajax({
-              url: `${pageContext.request.contextPath}/ajax/spectrum/info?spectrumId=\${queryId}`,
+              url: `${pageContext.request.contextPath}/ajax/spectrum/info?spectrumId=\${queryId}&fileIndex=\${queryFileIndex}&spectrumIndex=\${querySpectrumIndex}`,
                 success: d => $('#queryInfo').html(d)
             })
 
