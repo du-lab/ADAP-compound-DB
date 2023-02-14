@@ -95,22 +95,18 @@ public class GroupSearchService {
 //    @Transactional(propagation = Propagation.REQUIRED)
     public Future<Void> groupSearch(UserPrincipal userPrincipal, List<File> files, HttpSession session,
                                     SearchParameters userParameters,
-                                    boolean withOntologyLevels, boolean sendResultsToEmail, boolean showMatchesOnly, boolean savedSubmission) throws TimeoutException {
+                                    boolean withOntologyLevels, boolean sendResultsToEmail, boolean savedSubmission) throws TimeoutException {
         long time1 = System.currentTimeMillis();
 //        LOGGER.info("Group search has started");
         List<SpectrumMatch> savedMatches = new ArrayList<>();
         Set<Long> deleteMatches = new HashSet<>();
-        //list of distinct spectra
 
 
         try {
             final List<SearchResultDTO> groupSearchDTOList = new ArrayList<>();
-            List<SearchResultDTO> distinctSpectrumDTOList = new ArrayList<>();
-            //to keep track of distinct searchResult
-            Map<String, SearchResultDTO> searchResultMap = new HashMap<>();
+
             //spectrumMatchRepository.deleteAll();
             session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
-            session.setAttribute("distinct_spectra", distinctSpectrumDTOList);
 
             // Calculate total number of spectra
             long totalSteps = files.stream()
@@ -177,21 +173,13 @@ public class GroupSearchService {
                         individualSearchResults = Collections.singletonList(searchResultDTO);
                     }
 
-                    if(showMatchesOnly)
-                        individualSearchResults = individualSearchResults.stream().filter(s->s.getSpectrumId() != 0).collect(Collectors.toList());
-
-                    if (individualSearchResults.isEmpty() && !showMatchesOnly)
+                    if (individualSearchResults.isEmpty())
                         individualSearchResults.add(new SearchResultDTO(querySpectrum));
 
                     for (SearchResultDTO searchResult : individualSearchResults) {
                         searchResult.setPosition(1 + position++);
                         searchResult.setQueryFileIndex(fileIndex);
                         searchResult.setQuerySpectrumIndex(spectrumIndex);
-
-                        if(!searchResultMap.containsKey(searchResult.getQuerySpectrumName())){
-                            distinctSpectrumDTOList.add(searchResult);
-                            searchResultMap.put(searchResult.getQuerySpectrumName(), searchResult);
-                        }
                     }
 
                     if (Thread.currentThread().isInterrupted()) break;
@@ -203,8 +191,6 @@ public class GroupSearchService {
                             groupSearchDTOList);
                         session.setAttribute(ControllerUtils.GROUP_SEARCH_PROGRESS_ATTRIBUTE_NAME,
                             progress);
-
-                        session.setAttribute("distinct_spectra", distinctSpectrumDTOList);
 
                     } catch (IllegalStateException e) {
                         if (sendResultsToEmail) {

@@ -11,10 +11,6 @@
                         <div class="btn-toolbar justify-content-end" role="toolbar">
                             <button id="searchButton" class="btn btn-primary" type="submit">Search</button>
                         </div>
-                        <div class="custom-control custom-switch" style="float:right;">
-                            <form:checkbox path="showMatchesOnly" class="custom-control-input" id="matchesOnly"/>
-                            <label class="custom-control-label" for="matchesOnly">Show only results with matches</label>
-                        </div>
                     </div>
                 </div>
             </div>

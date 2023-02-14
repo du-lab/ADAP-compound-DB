@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 import javax.json.JsonObject;
 import javax.xml.crypto.Data;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
@@ -129,14 +131,31 @@ public class GroupSearchRestController extends BaseController {
             @RequestParam("length") final Integer length,
             @RequestParam("search") final String searchStr,
             @RequestParam("columnStr") final String columnStr,
+            @RequestParam("matchFilter") final Integer showMatchesOnly,
+            @RequestParam("ontologyLevel") final String ontologyLevel,
             final HttpSession session) throws JsonProcessingException {
 
         List<SearchResultDTO> spectrumDtoList;
-        Object sessionObject = session.getAttribute("distinct_spectra");
+        Object sessionObject = session.getAttribute("group_search_results");
         DataTableResponse response = new DataTableResponse();
         if (sessionObject != null) {
-            List<SearchResultDTO> querySpectrumsSession = (List<SearchResultDTO>) sessionObject;
-            spectrumDtoList = new ArrayList<>(querySpectrumsSession);
+            List<SearchResultDTO> spectrumsFromSession = (List<SearchResultDTO>) sessionObject;
+            spectrumDtoList = new ArrayList<>(spectrumsFromSession);
+            //filter matches only
+            if(showMatchesOnly ==1) {
+                spectrumDtoList = spectrumDtoList.stream().filter(s->s.getSpectrumId() != 0).collect(Collectors.toList());
+            }
+            //filter by ontology level
+            if(!ontologyLevel.isEmpty())
+            spectrumDtoList = spectrumDtoList.stream().filter(s-> s.getOntologyLevel() != null).filter(s->s.getOntologyLevel().equals(ontologyLevel)).collect(
+                Collectors.toList());
+
+            //get teh distinct spectra
+            Set<String> distinctSpectraNames = new HashSet<>();
+            spectrumDtoList = spectrumDtoList.stream().filter(
+                s -> distinctSpectraNames.add(
+                    s.getQuerySpectrumName())).collect(Collectors.toList());
+
             response = groupSearchSort(true, searchStr,  start, length, spectrumDtoList, columnStr);
         }
         return mapper.writeValueAsString(response);

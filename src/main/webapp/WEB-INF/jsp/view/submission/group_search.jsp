@@ -157,7 +157,22 @@
                     Group Search Results
                 </div>
                 <div class="card-body small container " >
+                        <div class="custom-control custom-switch" >
+                            <input type ="checkbox" class="custom-control-input" id="matchesOnly"/>
+                            <label class="custom-control-label" for="matchesOnly">Show only results with matches</label>
+                        </div>
+                        <div class = "ontologylevel">
+                            <label for="ontologyLevel">Ontology level:</label>
 
+                            <select id="ontologyLevel">
+                                <option></option>
+                                <option value="PD_C">PD_C</option>
+                                <option value="PD_A">PD_A</option>
+<%--                                <option value="saab">Saab</option>--%>
+<%--                                <option value="opel">Opel</option>--%>
+<%--                                <option value="audi">Audi</option>--%>
+                            </select>
+                        </div>
                         <div class="distinct_query_container">
                             <table id="distinct_query_table" class="display compact " style="width: 100%; clear:none;">
                                 <caption>Table 1: <i>Query Signals</i></caption>
@@ -251,6 +266,7 @@
         // dom: 'lfrtip',
 
         serverSide: true,
+        deferRender: true,
         sortable: true,
         order: [[0, 'desc']],
         processing: true,
@@ -259,7 +275,7 @@
         select: {style: 'single', info: false},
         searching:false,
         scrollX: true,
-        rowId: 'extn',
+
         ajax: {
           url:  url,
           data: function (data) {
@@ -267,8 +283,11 @@
             for (let i = 0; i < data.order.length; i++) {
               data.columnStr += data.order[i].column + "-" + data.order[i].dir + ",";
             }
-            console.log(data);
             data.search = data.search["value"];
+            //filter values
+            data.matchFilter = $('#matchesOnly').is(":checked") ? 1 : 0;
+            data.ontologyLevel = $('#ontologyLevel').val();
+            console.log(data);
           }
 
         },
@@ -276,19 +295,21 @@
           console.log(xhr);
           console.log("Error: ", error);
       },
-        "columnDefs": [
+        columns: [
           {
-            "targets":0,
+
             data: function(row, type,val, meta) {
               return meta.row + 1;
             }
           },
           {
-            "targets": 1,
-            "data": "querySpectrumName"
+
+            data: "querySpectrumName"
 
           }
-        ]
+        ],
+        rowId: 'extn',
+        select: true
       });
     $('#distinct_query_table').DataTable().on('select', function ( e, dt, type, indexes ) {
         let query = $('#distinct_query_table').DataTable().rows().data()[indexes];
@@ -297,9 +318,9 @@
         console.log("ROW:", query);
         //reset table data each time new row is clicked
 
-        $('.query_container').show();
+
         $('#query_table').DataTable().destroy();
-        $('#query_table').show();
+        // $('#query_table').show();
 
         //show query table, match table with default matches.
         if(isViewSaveMatches){
@@ -362,6 +383,7 @@
             "initComplete": function(){
               //alert('Data loaded successfully');
               //default choose the first row in query table
+              $('.query_container').show();
               $('#query_table').DataTable().rows(0).select();
             }
 
@@ -440,6 +462,7 @@
                   "initComplete": function(){
                     //alert('Data loaded successfully');
                     //default choose the first row in query table
+                    $('.query_container').show();
                     $('#query_table').DataTable().rows(0).select();
                   }
                 });
@@ -461,9 +484,9 @@
         var spectrumData = $('#query_table').DataTable().rows( ).data()[indexes];
         console.log("QUERY TABLE DATA: " ,spectrumData);
         //reset table data each time new row is clicked
-        $('.match_container').show();
-        $('#match_table').DataTable().destroy();
-        $('#match_table').show();
+
+         $('#match_table').DataTable().destroy();
+        // $('#match_table').show();
 
         if(isViewSaveMatches){
           let match_table = $('#match_table').DataTable({
@@ -570,6 +593,7 @@
             ,"initComplete": function() {
               //alert('Data loaded successfully');
               //default choose the first row in query table
+              $('.match_container').show();
               $('#match_table').DataTable().rows(0).select();
             }
           });
@@ -688,6 +712,7 @@
                       "initComplete": function(){
                         //alert('Data loaded successfully');
                         //default choose the first row in query table
+                        $('.match_container').show();
                         $('#match_table').DataTable().rows(0).select();
                   }
                     });
