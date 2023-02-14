@@ -19,19 +19,33 @@
       max-width: unset;
       width: 100%;
     }
-    .left {
-      width: 30%;
-      padding:10px;
-      display: inline-block;
-    }
-    .right{
-      width: 70%;
-      float: right;
-      padding: 10px;
+    /*.left {*/
+    /*  width: 50%;*/
+    /*  padding:10px;*/
+    /*}*/
+    /*.right{*/
+    /*  width: 50%;*/
+    /*  float: right;*/
+    /*  padding: 10px;*/
 
 
-    }
+    /*}*/
     .distinct_query_container{
+      float: left;
+      width: 25%;
+      padding: 20px;
+      margin-bottom:50px;
+    }
+    .query_container{
+      float: left;
+      width: 25%;
+      padding: 20px;
+      margin-bottom:50px;
+    }
+    .match_container{
+      float:left;
+      width: 50%;
+      padding: 20px;
       margin-bottom:50px;
     }
 
@@ -41,6 +55,11 @@
 
     /*.table-right {*/
     /*  width: 40%;}*/
+
+    caption{
+      text-align: center;
+
+    }
 
 </style>
 <div class="container-fluid">
@@ -138,9 +157,10 @@
                     Group Search Results
                 </div>
                 <div class="card-body small container " >
-                    <div class="left">
+
                         <div class="distinct_query_container">
                             <table id="distinct_query_table" class="display compact " style="width: 100%; clear:none;">
+                                <caption>Table 1: <i>Query Signals</i></caption>
                                 <thead>
                                 <tr>
                                     <th>Id</th>
@@ -151,22 +171,26 @@
                                 </tbody>
                             </table>
                         </div>
-                        <table id="query_table" class="display compact query_table" style="width: 100%; clear:none;">
-                            <thead>
-                            <tr>
-                                <th>Id</th>
-                                <th>Spectrum name</th>
-                                <th>External Id</th>
-                                <th>Precrusor Mzs</th>
-                                <th>Retention Time</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class = "right">
+                        <div class ="query_container">
+                            <table id="query_table" class="display compact query_table" style="width: 100%; clear:none;">
+                                <caption>Table 2: <i>Query Spectra</i></caption>
+                                <thead>
+                                <tr>
+                                    <th>Id</th>
+                                    <th>Spectrum name</th>
+                                    <th>External Id</th>
+                                    <th>Precursor Mzs</th>
+                                    <th>Retention Time</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    <div class = "match_container">
                         <table id="match_table" class="display compact table-right" style="width: 100%; clear:none;">
+                            <caption>Table 3: <i>Matches</i></caption>
                             <thead>
                             <tr>
                                 <th>Id</th>
@@ -214,8 +238,8 @@
 
   $(document).ready(function () {
       $('#query_plot_match_row').hide();
-        $('#query_table').hide();
-        $('#match_table').hide();
+        $('.query_container').hide();
+        $('.match_container').hide();
 
       var url;
       if (isViewSaveMatches)
@@ -231,7 +255,10 @@
         order: [[0, 'desc']],
         processing: true,
         responsive: true,
-        select: true,
+        info: false,
+        select: {style: 'single', info: false},
+        searching:false,
+        scrollX: true,
         rowId: 'extn',
         ajax: {
           url:  url,
@@ -269,6 +296,8 @@
         console.log("INDEX", indexes);
         console.log("ROW:", query);
         //reset table data each time new row is clicked
+
+        $('.query_container').show();
         $('#query_table').DataTable().destroy();
         $('#query_table').show();
 
@@ -280,7 +309,10 @@
             processing: true,
             order: [[0, 'desc']],
             responsive: true,
-            select: {style: 'single'},
+            info: false,
+            select: {style: 'single', info: false},
+            searching:false,
+            scrollX: true,
             rowId: 'extn',
             ajax: {
               type: "POST",
@@ -354,7 +386,10 @@
                   processing: true,
                   order: [[0, 'desc']],
                   responsive: true,
-                  select: {style: 'single'},
+                  info: false,
+                  select: {style: 'single', info: false},
+                  searching:false,
+                  scrollX: true,
                   rowId: 'extn',
                   ajax: {
                     type: "GET",
@@ -426,6 +461,7 @@
         var spectrumData = $('#query_table').DataTable().rows( ).data()[indexes];
         console.log("QUERY TABLE DATA: " ,spectrumData);
         //reset table data each time new row is clicked
+        $('.match_container').show();
         $('#match_table').DataTable().destroy();
         $('#match_table').show();
 
@@ -436,8 +472,9 @@
             order: [[0, 'desc']],
             processing: true,
             responsive: true,
+            info: false,
             scrollX: true,
-            select: {style: 'single'},
+            select: {style: 'single', info: false},
             scroller: true,
             rowId: 'position',
             ajax: {
@@ -555,8 +592,9 @@
                     order: [[0, 'desc']],
                     processing: true,
                     responsive: true,
+                    info: false,
                     scrollX: true,
-                    select: {style: 'single'},
+                    select: {style: 'single', info: false},
                     scroller: true,
                     rowId: 'position',
                     ajax: {

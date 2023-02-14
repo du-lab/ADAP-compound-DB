@@ -95,7 +95,7 @@ public class GroupSearchService {
 //    @Transactional(propagation = Propagation.REQUIRED)
     public Future<Void> groupSearch(UserPrincipal userPrincipal, List<File> files, HttpSession session,
                                     SearchParameters userParameters,
-                                    boolean withOntologyLevels, boolean sendResultsToEmail, boolean savedSubmission) throws TimeoutException {
+                                    boolean withOntologyLevels, boolean sendResultsToEmail, boolean showMatchesOnly, boolean savedSubmission) throws TimeoutException {
         long time1 = System.currentTimeMillis();
 //        LOGGER.info("Group search has started");
         List<SpectrumMatch> savedMatches = new ArrayList<>();
@@ -177,7 +177,10 @@ public class GroupSearchService {
                         individualSearchResults = Collections.singletonList(searchResultDTO);
                     }
 
-                    if (individualSearchResults.isEmpty())
+                    if(showMatchesOnly)
+                        individualSearchResults = individualSearchResults.stream().filter(s->s.getSpectrumId() != 0).collect(Collectors.toList());
+
+                    if (individualSearchResults.isEmpty() && !showMatchesOnly)
                         individualSearchResults.add(new SearchResultDTO(querySpectrum));
 
                     for (SearchResultDTO searchResult : individualSearchResults) {
@@ -231,7 +234,7 @@ public class GroupSearchService {
                 }
             }
 
-
+            //TODO: do this only user is logged in
             spectrumMatchRepository.deleteByQuerySpectrumsAndUserId( userPrincipal.getId(),deleteMatches);
             spectrumMatchRepository.saveAll(savedMatches);
 

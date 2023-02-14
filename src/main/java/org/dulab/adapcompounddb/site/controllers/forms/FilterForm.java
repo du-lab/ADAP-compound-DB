@@ -22,6 +22,7 @@ public class FilterForm {
     private boolean withOntologyLevels;
     private boolean sendResultsToEmail;
 
+    private boolean showMatchesOnly;
 
     public Integer getScoreThreshold() {
         return scoreThreshold;
@@ -125,5 +126,13 @@ public class FilterForm {
 
     public void setSendResultsToEmail(boolean sendResultsToEmail) {
         this.sendResultsToEmail = sendResultsToEmail;
+    }
+
+    public boolean isShowMatchesOnly() {
+        return showMatchesOnly;
+    }
+
+    public void setShowMatchesOnly(boolean showMatchesOnly) {
+        this.showMatchesOnly = showMatchesOnly;
     }
 }
