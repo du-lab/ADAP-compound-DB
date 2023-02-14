@@ -7,7 +7,7 @@ import org.dulab.adapcompounddb.site.services.search.SearchParameters;
 @AllArgsConstructor
 public class SearchParametersDTO {
 
-    private Double scoreThreshold = 0.5;
+    private Integer scoreThreshold = 1;
 
     private Double retentionIndexTolerance = 50.0;
 
@@ -22,7 +22,7 @@ public class SearchParametersDTO {
     private boolean customParameters = false;
 
     public void checkCustomParameters() {
-        if (this.scoreThreshold != 0.5
+        if (this.scoreThreshold != 1
                 || this.retentionIndexTolerance != 50.0
                 || this.retentionIndexMatch != SearchParameters.RetIndexMatchType.IGNORE_MATCH
                 || this.mzTolerance != 0.01
@@ -36,11 +36,11 @@ public class SearchParametersDTO {
         return this.customParameters;
     }
 
-    public Double getScoreThreshold() {
+    public Integer getScoreThreshold() {
         return scoreThreshold;
     }
 
-    public void setScoreThreshold(Double scoreThreshold) {
+    public void setScoreThreshold(Integer scoreThreshold) {
         this.scoreThreshold = scoreThreshold;
     }
 

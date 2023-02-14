@@ -72,7 +72,7 @@ public class AccountController extends BaseController {
     }
     @RequestMapping(value = "/account/saveparameters", method = RequestMethod.POST)
     public String saveParameters(Model model,
-                                 @RequestParam ("scoreThreshold") Double scoreThreshold,
+                                 @RequestParam ("scoreThreshold") Integer scoreThreshold,
                                  @RequestParam ("retentionIndexTolerance") Double retentionIndexTolerance,
                                  @RequestParam ("retentionIndexMatch") SearchParameters.RetIndexMatchType retentionIndexMatch,
                                  @RequestParam ("mzTolerance") Double mzTolerance,

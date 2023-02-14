@@ -105,7 +105,7 @@ public class SearchParametersServiceImpl implements SearchParametersService {
     private SearchParametersDTO buildSearchParametersDTO(final Map<String, String> searchParametersMap) {
         SearchParametersDTO searchParametersDTO = new SearchParametersDTO();
         if (searchParametersMap.get(SearchParameterConstants.scoreThreshold) != null) {
-            searchParametersDTO.setScoreThreshold(Double.parseDouble(searchParametersMap.get(SearchParameterConstants.scoreThreshold)));
+            searchParametersDTO.setScoreThreshold(Integer.parseInt(searchParametersMap.get(SearchParameterConstants.scoreThreshold)));
         }
         if (searchParametersMap.get(SearchParameterConstants.mzToleranceType) != null) {
             searchParametersDTO.setMzToleranceType(MzToleranceType.valueOf(searchParametersMap.get(SearchParameterConstants.mzToleranceType)));

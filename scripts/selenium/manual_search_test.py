@@ -13,7 +13,6 @@ def manual_search_test(homepage_url, identifier = 'eicosatrienoic acid', spectru
 		driver.find_element(By.ID, 'manualSearchPage').click()
 		driver.find_element(By.ID, 'identifierInput').send_keys(identifier)
 		driver.find_element(By.ID, 'spectrumInput').send_keys(spectrum)
-		time.sleep(5)
 		driver.find_element(By.ID, 'parametersTab').click()
 		time.sleep(5)
 		driver.find_element(By.NAME, 'scoreThreshold').clear()
