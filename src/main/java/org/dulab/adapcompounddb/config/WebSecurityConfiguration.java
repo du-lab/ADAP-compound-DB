@@ -49,7 +49,10 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
 
-        http.csrf().disable();
+        //http.csrf().disable();
+
+        //disable csrf for these requests
+        http.csrf().ignoringAntMatchers("/file/upload/");
 
         // The pages does not require login
         http.authorizeRequests().antMatchers("/", "/login", "/logout").permitAll();

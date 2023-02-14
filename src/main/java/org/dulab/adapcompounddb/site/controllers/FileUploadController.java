@@ -42,6 +42,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.FILE_UPLOAD_FIELDS_COOKIE_NAME;
 import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.META_FIELDS_COOKIE_NAME;
@@ -52,7 +53,6 @@ public class FileUploadController extends BaseController {
 
     private static final String ACCESS_ID = System.getenv("ACCESS_ID");
     private static final String ACCESS_KEY = System.getenv("ACCESS_KEY");
-
 
 
     private static final String AWS_BUCKET = "adap-big-export";
@@ -77,7 +77,7 @@ public class FileUploadController extends BaseController {
                                  Model model, HttpSession session, HttpServletResponse httpServletResponse) {
 
         LOG.info(String.format("Uploading NMDR data from archive '%s' file '%s'", archive, file));
-        
+
         ChromatographyType chromatographyType = null;
         chromatography = chromatography.toLowerCase();
         for (ChromatographyType type : ChromatographyType.values()) {
@@ -138,15 +138,13 @@ public class FileUploadController extends BaseController {
         String responseString = request.getParameter(CaptchaService.GOOGLE_CAPTCHA_RESPONSE);
 
 
-
-        try{
-            if(getCurrentUserPrincipal() == null && !integTest ) {
+        try {
+            if (getCurrentUserPrincipal() == null && !integTest) {
                 captchaService.processResponse(responseString, request.getRemoteAddr());
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             model.addAttribute("message", "Verify that you are human");
-            return  "submission/upload";
+            return "submission/upload";
         }
 
         if (Submission.from(session) != null) {
@@ -174,18 +172,17 @@ public class FileUploadController extends BaseController {
         response.addCookie(metaFieldsCookie);
 
 
-        if(getRequiredFormFields(form).size() > 0) {
+        if (getRequiredFormFields(form).size() > 0) {
             redirectAttributes.addFlashAttribute("form", form);
             return "redirect:/submission/metadata";
         }
-
 
 
         return "redirect:/file/";
     }
 
     @GetMapping(value = "/file/upload/s3")
-    public String downloadFromS3 (@RequestParam(value="filename") String fileName, @RequestParam(value="chromatographyType") String chromatography, HttpSession session,  HttpServletResponse response) throws IOException {
+    public String downloadFromS3(@RequestParam(value = "filename") String fileName, @RequestParam(value = "chromatographyType") String chromatography, HttpSession session, HttpServletResponse response) throws IOException {
 
         AWSCredentials credentials = new BasicAWSCredentials(
                 ACCESS_ID,
@@ -201,7 +198,7 @@ public class FileUploadController extends BaseController {
         S3Object s3object = s3client.getObject(AWS_BUCKET, fileName);
         S3ObjectInputStream inputStream = s3object.getObjectContent();
 
-         MultipartFile multipartFile = new MockMultipartFile(fileName, fileName, "multipart/form-data", inputStream);
+        MultipartFile multipartFile = new MockMultipartFile(fileName, fileName, "multipart/form-data", inputStream);
 
         Submission submission = new Submission();
 
@@ -247,10 +244,11 @@ public class FileUploadController extends BaseController {
 
         return "redirect:/file/";
     }
+
     @RequestMapping(value = "/submission/metadata", method = RequestMethod.GET)
     public String submitMetadata(Model model, HttpSession session, HttpServletResponse response,
                                  @CookieValue(value = META_FIELDS_COOKIE_NAME, defaultValue = "") String metaFieldsInJson) {
-        List<List<SpectrumProperty>> propertyList = new ArrayList<>();
+
         List<FileType> fileTypes = new ArrayList<>();
         Submission submission = Submission.from(session);
         //MetadataForm form = (MetadataForm) model.getAttribute("form");
@@ -259,10 +257,16 @@ public class FileUploadController extends BaseController {
         ObjectMapper objectMapper = new ObjectMapper();
         Map cookieMap = objectMapper.convertValue(form, Map.class);
 
-        for(File file : submission.getFiles()) {
-            propertyList.add(file.getSpectra().get(0).getProperties());
+        List<List<String>> propertyList = new ArrayList<>();
+        for (File file : submission.getFiles()) {
+            propertyList.add(file.getSpectra().stream()
+                    .map(Spectrum::getProperties)
+                    .flatMap(Collection::stream)
+                    .map(SpectrumProperty::getName)
+                    .distinct()
+                    .sorted()
+                    .collect(Collectors.toList()));
             fileTypes.add(file.getFileType());
-
         }
         model.addAttribute("metadataForm", form);
         model.addAttribute("spectrumProperties", propertyList);
@@ -275,23 +279,22 @@ public class FileUploadController extends BaseController {
 
     @RequestMapping(value = "/submission/metadata", method = RequestMethod.POST)
     public String submitMetadata(Model model, HttpSession session, @Valid @ModelAttribute("metadataForm") MetadataForm form, Errors errors,
-                                 HttpServletResponse response, HttpServletRequest request){
+                                 HttpServletResponse response, HttpServletRequest request) {
         Submission submission = Submission.from(session);
 
 
-
-        for(File file : submission.getFiles()) {
+        for (File file : submission.getFiles()) {
             MetaDataMapping metaDataMapping = form.getMetaDataMappings() != null ? form.getMetaDataMappings().get(file.getFileType()) : null;
-            for(Spectrum spectrum: file.getSpectra()) {
-                spectrum.setProperties(spectrum.getProperties(),metaDataMapping);
+            for (Spectrum spectrum : file.getSpectra()) {
+                spectrum.setProperties(spectrum.getProperties(), metaDataMapping);
             }
 
         }
-        if(form.isMergeFiles()) {
+        if (form.isMergeFiles()) {
             submission.setFiles(MultipartFileUtils.mergeFiles(submission.getFiles()));
         }
         Submission.assign(session, submission);
-        
+
         String byteString = ConversionsUtils.formToByteString(form);
         Cookie metaFieldsCookie = new Cookie(META_FIELDS_COOKIE_NAME, byteString);
         response.addCookie(metaFieldsCookie);
@@ -301,35 +304,35 @@ public class FileUploadController extends BaseController {
 
     private List<FormField> getRequiredFormFields(FileUploadForm form) {
         List<FormField> formFields = new ArrayList<>();
-        if(form.isEditNameField())
+        if (form.isEditNameField())
             formFields.add(new FormField("NameField", "Name Field"));
-        if(form.isEditCanonicalSmilesField())
+        if (form.isEditCanonicalSmilesField())
             formFields.add(new FormField("CanonicalSmilesField", "Canonical Smiles Field"));
-        if(form.isEditFormulaField())
+        if (form.isEditFormulaField())
             formFields.add(new FormField("FormulaField", "Formula Field"));
-        if(form.isEditInChiField())
+        if (form.isEditInChiField())
             formFields.add(new FormField("InChiField", "InChI Field"));
         if (form.isEditInChiKeyField())
             formFields.add(new FormField("InChiKeyField", "InChIKey Field"));
-        if(form.isEditIsotopeField())
+        if (form.isEditIsotopeField())
             formFields.add(new FormField("IsotopeField", "Isotopic Distribution Field"));
-        if(form.isEditKeggField())
+        if (form.isEditKeggField())
             formFields.add(new FormField("KeggField", "KEGG ID Field"));
-        if(form.isEditCasNoField())
-            formFields.add(new FormField("CasNoField","Cas ID Field"));
-        if(form.isEditHmdbField())
+        if (form.isEditCasNoField())
+            formFields.add(new FormField("CasNoField", "Cas ID Field"));
+        if (form.isEditHmdbField())
             formFields.add(new FormField("HmdbField", "HMDB ID Field"));
-        if(form.isEditExternalIdField())
-            formFields.add(new FormField("ExternalIdField","External ID Field"));
-        if(form.isEditMassField())
+        if (form.isEditExternalIdField())
+            formFields.add(new FormField("ExternalIdField", "External ID Field"));
+        if (form.isEditMassField())
             formFields.add(new FormField("MassField", "Neutral Mass"));
-        if(form.isEditPrecursorMzField())
+        if (form.isEditPrecursorMzField())
             formFields.add(new FormField("PrecursorMzField", "Precursor m/z Field"));
-        if(form.isEditSynonymField())
-            formFields.add(new FormField("SynonymField","Synonym Field"));
-        if(form.isEditPubChemField())
+        if (form.isEditSynonymField())
+            formFields.add(new FormField("SynonymField", "Synonym Field"));
+        if (form.isEditPubChemField())
             formFields.add(new FormField("PubChemField", "PubChem ID Field"));
-        if(form.isEditRetentionTimeField())
+        if (form.isEditRetentionTimeField())
             formFields.add(new FormField("RetentionTimeField", "Retention Time Field"));
         if (form.isEditRetentionIndexField())
             formFields.add(new FormField("RetentionIndexField", "Retention Index Field"));

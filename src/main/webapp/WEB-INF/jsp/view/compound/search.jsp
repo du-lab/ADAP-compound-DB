@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%--@elvariable id="loggedInUser" type="org.dulab.adapcompounddb.models.entities.UserPrincipal"--%>
 <%--@elvariable id="disableBtn" type="java.lang.Boolean"--%>
-
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <script src="https://www.google.com/recaptcha/api.js"></script>
 <script>
     function recaptchaCallback() {
@@ -196,6 +196,7 @@
             </div>
         </div>
     </form:form>
+    <sec:csrfInput />
 </div>
 
 <style>
