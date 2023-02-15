@@ -31,22 +31,24 @@
 
     /*}*/
     .distinct_query_container{
-      float: left;
-      width: 25%;
       padding: 20px;
-      margin-bottom:50px;
     }
     .query_container{
-      float: left;
-      width: 25%;
       padding: 20px;
-      margin-bottom:50px;
+
     }
     .match_container{
-      float:left;
-      width: 50%;
       padding: 20px;
-      margin-bottom:50px;
+    }
+
+    .query_signals{
+      max-width: 25%;
+    }
+    .query_spectra{
+      max-width:25%;
+    }
+    .matches{
+      max-width:50%;
     }
 
     /*.table-left {*/
@@ -61,11 +63,48 @@
 
     }
 
-    #resetFilterBtn{
-      display: inherit;
+    #applyFilterBtn{
+      float: right;
+    }
+    #filterBtn{
+      display: inline-block;
     }
 
 </style>
+<div id="filterModal" class="modal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Filter</h4>
+                <button type="button" class="close" data-dismiss="modal">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="custom-control custom-switch" >
+                    <input type ="checkbox" class="custom-control-input" id="matchesOnly"/>
+                    <label class="custom-control-label" for="matchesOnly">Show only results with matches</label>
+                </div>
+                <div class = "ontologylevel">
+                    <label for="ontologyLevel">Ontology level:</label>
+
+                    <select id="ontologyLevel">
+                        <option></option>
+                        <option value="PD_C">PD_C</option>
+                        <option value="PD_A">PD_A</option>
+                        <%--                                <option value="saab">Saab</option>--%>
+                        <%--                                <option value="opel">Opel</option>--%>
+                        <%--                                <option value="audi">Audi</option>--%>
+                    </select>
+                </div>
+            </div>
+            <div class = "model-footer">
+                <button class ="btn btn-secondary " type ="button" id="resetFilterBtn">Reset Filter</button>
+                <button class ="btn btn-primary " class="close" data-dismiss="modal" type ="button" id="applyFilterBtn">Filter</button>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="container-fluid">
     <div class="row row-content">
         <div class="col">
@@ -99,6 +138,7 @@
                     <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow="0"
                          aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
+                <button class ="btn btn-primary mr-2" id="filterBtn" >Filter</button>
                 <a class="btn btn-primary mr-2" href="<c:url value="parameters"/>">Search Parameters</a>
             </div>
         </div>
@@ -155,32 +195,15 @@
     </div>
 
     <div class="row row-content">
-        <div class="col">
+        <div class="col query_signals">
             <div class="card">
                 <div class="card-header card-header-single">
-                    Group Search Results
+                    Query Signals
                 </div>
                 <div class="card-body small container " >
-                        <div class="custom-control custom-switch" >
-                            <input type ="checkbox" class="custom-control-input" id="matchesOnly"/>
-                            <label class="custom-control-label" for="matchesOnly">Show only results with matches</label>
-                        </div>
-                        <div class = "ontologylevel">
-                            <label for="ontologyLevel">Ontology level:</label>
 
-                            <select id="ontologyLevel">
-                                <option></option>
-                                <option value="PD_C">PD_C</option>
-                                <option value="PD_A">PD_A</option>
-<%--                                <option value="saab">Saab</option>--%>
-<%--                                <option value="opel">Opel</option>--%>
-<%--                                <option value="audi">Audi</option>--%>
-                            </select>
-                        </div>
-                        <button class ="btn btn-primary " type ="button" id="resetFilterBtn">Reset Filter</button>
                         <div class="distinct_query_container">
                             <table id="distinct_query_table" class="display compact " style="width: 100%; clear:none;">
-                                <caption>Table 1: <i>Query Signals</i></caption>
                                 <thead>
                                 <tr>
                                     <th>Id</th>
@@ -191,30 +214,50 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class ="query_container">
-                            <table id="query_table" class="display compact query_table" style="width: 100%; clear:none;">
-                                <caption>Table 2: <i>Query Spectra</i></caption>
-                                <thead>
-                                <tr>
-                                    <th>Id</th>
-                                    <th>Spectrum name</th>
-                                    <th>External Id</th>
-                                    <th>Precursor Mzs</th>
-                                    <th>Retention Time</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                            </table>
-                        </div>
 
-                    <div class = "match_container">
-                        <table id="match_table" class="display compact table-right" style="width: 100%; clear:none;">
-                            <caption>Table 3: <i>Matches</i></caption>
+                </div>
+            </div>
+        </div>
+        <div class="col query_spectra">
+            <div class="card">
+                <div class="card-header card-header-single">
+                    Query Spectra
+                </div>
+                <div class="card-body small container " >
+
+                    <div class ="query_container">
+                        <table id="query_table" class="display compact query_table" style="width: 100%; clear:none;">
                             <thead>
                             <tr>
                                 <th>Id</th>
-                                <%--                            <th>Query</th>--%>
+                                <th>Spectrum name</th>
+                                <th>External Id</th>
+                                <th>Precursor Mzs</th>
+                                <th>Retention Time</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+
+
+            </div>
+        </div>
+    </div>
+        <div class="col matches">
+            <div class="card">
+                <div class="card-header card-header-single">
+                   Matches
+                </div>
+                <div class="card-body small container " >
+
+                    <div class = "match_container">
+                        <table id="match_table" class="display compact table-right" style="width: 100%; clear:none;">
+                            <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Query</th>
                                 <th title="Match spectra">Match</th>
                                 <th title="Molecular weight">Molecular weight</th>
                                 <th title="Number of studies" class="Count">Sources</th>
@@ -236,10 +279,11 @@
                             </tbody>
                         </table>
                     </div>
+
+
                 </div>
             </div>
         </div>
-    </div>
 </div>
 
 <script src="<c:url value="/resources/npm/node_modules/jquery/dist/jquery.min.js"/>"></script>
@@ -257,11 +301,15 @@
   var  isViewSaveMatches = '<c:out value="${submissionId}" />';
 
   $(document).ready(function () {
-      $('#query_plot_match_row').hide();
+        var url;
+        var showMatchesOnly = 0;
+        var ontologyLevel = "";
+
+        $('#query_plot_match_row').hide();
         $('.query_container').hide();
         $('.match_container').hide();
 
-      var url;
+
       if (isViewSaveMatches)
           url = "${pageContext.request.contextPath}/file/group_search_matches/${submissionId}/data.json";
       else
@@ -290,8 +338,8 @@
             }
             data.search = data.search["value"];
             //filter values
-            data.matchFilter = $('#matchesOnly').is(":checked") ? 1 : 0;
-            data.ontologyLevel = $('#ontologyLevel').val();
+            data.matchFilter = showMatchesOnly;
+            data.ontologyLevel = ontologyLevel;
             console.log(data);
           }
 
@@ -313,6 +361,13 @@
 
           }
         ],
+        "drawCallback": function( settings ) {
+              var rows = this.fnGetData();
+              if (rows.length === 0) {
+                $('#query_table').DataTable().clear();
+                $('#match_table').DataTable().clear();
+              }
+        },
         rowId: 'extn',
         select: true
       });
@@ -325,6 +380,7 @@
 
 
         $('#query_table').DataTable().destroy();
+        //$('#query_table').find("tbody").empty();
         // $('#query_table').show();
 
         //show query table, match table with default matches.
@@ -356,34 +412,31 @@
                 return JSON.stringify(data);
               }
             },
-            "columnDefs": [
-              {
-                "targets":0,
-                data: function(row, type,val, meta) {
-                  return meta.row + 1;
-                }
-              },
-              {
-                "targets": 1,
-                "data": "querySpectrumName"
+                columns: [
+                  {
+                    data: function(row, type,val, meta) {
+                      return meta.row + 1;
+                    }
+                  },
+                  {
+                    data: "querySpectrumName"
+                  },
+                  {
+                    data: "queryExternalId"
+                  },
+                  {
+                    data: function(row, type,val, meta) {
+                      roundedArray = row.queryPrecursorMzs.map(function(e){
+                        return Number(e.toFixed(3));
+                      });
 
-              },
-              {
-                "targets": 2,
-                "data": "queryExternalId"
-
-              },
-              {
-                "targets": 3,
-                "data": "queryPrecursorMzs"
-
-              },
-              {
-                "targets": 4,
-                "data": "queryRetTime"
-
-              }
-            ]
+                      return roundedArray;
+                    }
+                  },
+                  {
+                    data: row => row.queryRetTime != null ? row.queryRetTime.toFixed(3) : ''
+                  }
+                ]
             ,
             "initComplete": function(){
               //alert('Data loaded successfully');
@@ -433,35 +486,32 @@
 
                   },
 
-                  "columnDefs": [
+                  columns: [
                     {
-                      "targets":0,
                         data: function(row, type,val, meta) {
                         return meta.row + 1;
                       }
                     },
                     {
-                      "targets": 1,
-                      "data": "querySpectrumName"
-
+                      data: "querySpectrumName"
                     },
                     {
-                      "targets": 2,
-                      "data": "queryExternalId"
-
+                      data: "queryExternalId"
                     },
                     {
-                      "targets": 3,
-                      "data": "queryPrecursorMzs"
+                      data: function(row, type,val, meta) {
+                        if(row.queryPrecursorMzs == null)
+                          return ''
+                        roundedMzs = row.queryPrecursorMzs.map(function(e){
+                          return Number(e.toFixed(3));
+                        });
 
+                        return roundedMzs;
+                      }
                     },
                     {
-                      "targets": 4,
-                      "data": "queryRetTime"
-
+                     data: row => row.queryRetTime != null ? row.queryRetTime.toFixed(3) : ''
                     }
-
-
                   ],
 
                   "initComplete": function(){
@@ -551,15 +601,16 @@
               {data: function(row, type,val, meta) {
                   return meta.row + 1;
                 }},
-              <%--{--%>
-              <%--    data: function (row) {--%>
-              <%--        const href = (row.querySpectrumId !== 0)--%>
-              <%--            ? `<c:url value="/spectrum/\${row.querySpectrumId}/"/>`--%>
-              <%--            : `<c:url value="/file/\${row.queryFileIndex}/\${row.querySpectrumIndex}/"/>`;--%>
-              <%--        return `<a href="\${href}">\${row.querySpectrumName}</a>`;--%>
-              <%--    }--%>
+              {
+                  data: function (row) {
+                      const href = (row.querySpectrumId !== 0)
+                          ? `<c:url value="/spectrum/\${row.querySpectrumId}/"/>`
+                          : `<c:url value="/file/\${row.queryFileIndex}/\${row.querySpectrumIndex}/"/>`;
+                      return `<a href="\${href}">\${row.querySpectrumName}</a>`;
+                  },
+                visible: false
 
-              <%--},--%>
+              },
               {
                 data: row => {
                   let string = '';
@@ -671,17 +722,23 @@
                         {data: function(row, type,val, meta) {
                             return meta.row + 1;
                             }},
-                        <%--{--%>
-                        <%--    data: function (row) {--%>
-                        <%--        const href = (row.querySpectrumId !== 0)--%>
-                        <%--            ? `<c:url value="/spectrum/\${row.querySpectrumId}/"/>`--%>
-                        <%--            : `<c:url value="/file/\${row.queryFileIndex}/\${row.querySpectrumIndex}/"/>`;--%>
-                        <%--        return `<a href="\${href}">\${row.querySpectrumName}</a>`;--%>
-                        <%--    }--%>
-                        <%--},--%>
+                        {
+                            data: function (row) {
+                                const href = (row.querySpectrumId !== 0)
+                                    ? `<c:url value="/spectrum/\${row.querySpectrumId}/"/>`
+                                    : `<c:url value="/file/\${row.queryFileIndex}/\${row.querySpectrumIndex}/"/>`;
+                                return `<a href="\${href}">\${row.querySpectrumName}</a>`;
+                            },
+                            visible: false
+                        },
                         {
                             data: row => {
                                 let string = '';
+                                if(row.name == null){
+                                  $('#match_table').DataTable().clear();
+                                  return string;
+                                }
+
                                 if (row.name != null)
                                     string += `<a href="<c:url value="/\${row.href}" />">\${row.name}</a>`;
                                 if (row.errorMessage != null)
@@ -815,7 +872,7 @@
                 success: d => $('#errorDiv').html(d)
             });
             // if($('#progressBar').attr('aria-valuenow') < 100)
-                distinct_query_table.ajax.reload();
+                distinct_query_table.ajax.reload(null,false);
 
             $.getJSON(window.location.origin + window.location.pathname + 'progress', function (x) {
                 const width = x + '%';
@@ -838,6 +895,15 @@
           $('#matchesOnly').prop('checked', false);
           $('#ontologyLevel').val(null);
         })
+        $('#applyFilterBtn').click(function(){
+          showMatchesOnly =$('#matchesOnly').is(":checked") ? 1 : 0;
+          ontologyLevel = $('#ontologyLevel').val();
+        })
+        $('#filterBtn').click(function(){
+          console.log("CLICKED");
+          $('#filterModal').modal('show');
+        })
+
     });
 
 </script>
