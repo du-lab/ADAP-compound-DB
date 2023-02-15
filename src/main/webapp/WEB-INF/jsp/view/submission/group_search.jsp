@@ -61,6 +61,10 @@
 
     }
 
+    #resetFilterBtn{
+      display: inherit;
+    }
+
 </style>
 <div class="container-fluid">
     <div class="row row-content">
@@ -173,6 +177,7 @@
 <%--                                <option value="audi">Audi</option>--%>
                             </select>
                         </div>
+                        <button class ="btn btn-primary " type ="button" id="resetFilterBtn">Reset Filter</button>
                         <div class="distinct_query_container">
                             <table id="distinct_query_table" class="display compact " style="width: 100%; clear:none;">
                                 <caption>Table 1: <i>Query Signals</i></caption>
@@ -249,7 +254,7 @@
 <script src="<c:url value="/resources/AdapCompoundDb/js/spectrumPlot.js"/>"></script>
 <script src="<c:url value="/resources/AdapCompoundDb/js/spectrumStructure.js"/>"></script>
 <script>
-    var  isViewSaveMatches = '<c:out value="${submissionId}" />';
+  var  isViewSaveMatches = '<c:out value="${submissionId}" />';
 
   $(document).ready(function () {
       $('#query_plot_match_row').hide();
@@ -809,7 +814,7 @@
                 url: `${pageContext.request.contextPath}/ajax/group_search/error`,
                 success: d => $('#errorDiv').html(d)
             });
-            if($('#progressBar').attr('aria-valuenow') < 100)
+            // if($('#progressBar').attr('aria-valuenow') < 100)
                 distinct_query_table.ajax.reload();
 
             $.getJSON(window.location.origin + window.location.pathname + 'progress', function (x) {
@@ -828,6 +833,11 @@
         }
         <%--        <c:if test="${pageContext.request.method == 'GET'}">$('#filterForm').submit();--%>
         <%--        </c:if>--%>
+
+        $('#resetFilterBtn').click(function(){
+          $('#matchesOnly').prop('checked', false);
+          $('#ontologyLevel').val(null);
+        })
     });
 
 </script>
