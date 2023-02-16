@@ -190,7 +190,8 @@ public class JavaSpectrumSimilarityService {
                     && (params.getMassTolerance() == null || massError < params.getMassTolerance())
                     && (params.getMassTolerancePPM() == null || massErrorPPM < params.getMassTolerancePPM())
                     && (params.getRetTimeTolerance() == null || retTimeError < params.getRetTimeTolerance())
-                    && (params.getIsotopicSimilarityThreshold() == null || isotopicSimilarity > params.getIsotopicSimilarityThreshold())) {
+                    && (params.getIsotopicSimilarityThreshold() == null || isotopicSimilarity > params.getIsotopicSimilarityThreshold())
+                    && (params.getRetIndexTolerance() == null || params.getRetIndexMatchType() != RetIndexMatchType.ALWAYS_MATCH || retIndexError < params.getRetIndexTolerance())) {
 
                 SpectrumMatch match = new SpectrumMatch();
                 match.setQuerySpectrum(querySpectrum);
