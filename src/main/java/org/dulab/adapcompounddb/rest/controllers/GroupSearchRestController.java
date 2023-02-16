@@ -133,6 +133,10 @@ public class GroupSearchRestController extends BaseController {
             @RequestParam("columnStr") final String columnStr,
             @RequestParam("matchFilter") final Integer showMatchesOnly,
             @RequestParam("ontologyLevel") final String ontologyLevel,
+            @RequestParam(value = "scoreThreshold", required = false) final Long scoreThreshold,
+            @RequestParam(value = "massError", required = false) final Long massError,
+            @RequestParam(value = "retTimeError", required = false) final Long retTimeError,
+            @RequestParam("matchName") final String matchName,
             final HttpSession session) throws JsonProcessingException {
 
         List<SearchResultDTO> spectrumDtoList;
@@ -142,15 +146,29 @@ public class GroupSearchRestController extends BaseController {
             List<SearchResultDTO> spectrumsFromSession = (List<SearchResultDTO>) sessionObject;
             spectrumDtoList = new ArrayList<>(spectrumsFromSession);
             //filter matches only
-            if(showMatchesOnly ==1) {
+            if(showMatchesOnly ==1)
                 spectrumDtoList = spectrumDtoList.stream().filter(s->s.getSpectrumId() != 0).collect(Collectors.toList());
-            }
             //filter by ontology level
             if(!ontologyLevel.isEmpty())
-            spectrumDtoList = spectrumDtoList.stream().filter(s-> s.getOntologyLevel() != null).filter(s->s.getOntologyLevel().equals(ontologyLevel)).collect(
+                spectrumDtoList = spectrumDtoList.stream().filter(s-> s.getOntologyLevel() != null).filter(s->s.getOntologyLevel().equals(ontologyLevel)).collect(
                 Collectors.toList());
-
-            //get teh distinct spectra
+            //filter by score Threshold
+            if(scoreThreshold != null)
+                spectrumDtoList = spectrumDtoList.stream().filter(s-> s.getScore() != null).filter(s-> s.getScore() > scoreThreshold).collect(
+                    Collectors.toList());
+            //filter by massError
+            if(massError != null)
+                spectrumDtoList = spectrumDtoList.stream().filter(s-> s.getMassError() != null).filter(s-> s.getMassError() < massError).collect(
+                    Collectors.toList());
+            //filter by retTimeError
+            if(retTimeError != null)
+                spectrumDtoList = spectrumDtoList.stream().filter(s-> s.getRetTimeError() != null).filter(s-> s.getRetTimeError() < retTimeError).collect(
+                    Collectors.toList());
+            //filter by match name
+            if(!matchName.isEmpty())
+                spectrumDtoList = spectrumDtoList.stream().filter(s -> s.getName() != null).filter(s-> s.getName().contains(matchName)).collect(
+                    Collectors.toList());
+            //get the distinct spectra
             Set<String> distinctSpectraNames = new HashSet<>();
             spectrumDtoList = spectrumDtoList.stream().filter(
                 s -> distinctSpectraNames.add(

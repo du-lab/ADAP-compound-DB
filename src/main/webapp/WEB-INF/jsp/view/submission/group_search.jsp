@@ -97,6 +97,19 @@
                         <%--                                <option value="audi">Audi</option>--%>
                     </select>
                 </div>
+
+                <label for="scoreThreshold" title="Results with score above the threshold will be shown" >Score Threshold</label>
+                <input type ="number" step="any" id="scoreThreshold" />
+
+                <label for="massError" title="Results with mass error below given value will be shown">Mass Error Tolerance</label>
+                <input type ="number" step="any" id="massError" />
+
+                <label for="retTimeError" title="Results with retention time error below given value will be shown">Retention Time Error Tolerance</label>
+                <input type ="number" step="any" id="retTimeError" />
+
+                <label for="matchName" title="All matches with name matching the value">Match Name</label>
+                <input type ="text" id="matchName" />
+
             </div>
             <div class = "model-footer">
                 <button class ="btn btn-secondary " type ="button" id="resetFilterBtn">Reset Filter</button>
@@ -304,7 +317,10 @@
         var url;
         var showMatchesOnly = 0;
         var ontologyLevel = "";
-
+        var scoreThreshold;
+        var massError;
+        var reTimeError;
+        var matchName ="";
         $('#query_plot_match_row').hide();
         $('.query_container').hide();
         $('.match_container').hide();
@@ -319,7 +335,6 @@
         // dom: 'lfrtip',
 
         serverSide: true,
-        deferRender: true,
         sortable: true,
         order: [[0, 'desc']],
         processing: true,
@@ -340,6 +355,10 @@
             //filter values
             data.matchFilter = showMatchesOnly;
             data.ontologyLevel = ontologyLevel;
+            data.scoreThreshold= scoreThreshold;
+            data.massError= massError;
+            data.retTimeError=reTimeError;
+            data.matchName=matchName;
             console.log(data);
           }
 
@@ -361,14 +380,14 @@
 
           }
         ],
-        "drawCallback": function( settings ) {
-              var rows = this.fnGetData();
-              if (rows.length === 0) {
-                $('#query_table').DataTable().clear();
-                $('#match_table').DataTable().clear();
-              }
-        },
-        rowId: 'extn',
+        // "drawCallback": function( settings ) {
+        //       var rows = this.fnGetData();
+        //       if (rows.length === 0) {
+        //         $('#query_table').DataTable().clear();
+        //         $('#match_table').DataTable().clear();
+        //       }
+        // },
+        rowId: 'querySpectrumId',
         select: true
       });
     $('#distinct_query_table').DataTable().on('select', function ( e, dt, type, indexes ) {
@@ -894,10 +913,18 @@
         $('#resetFilterBtn').click(function(){
           $('#matchesOnly').prop('checked', false);
           $('#ontologyLevel').val(null);
+          $('#scoreThreshold').val('');
+          $('#massError').val('');
+          $('#retTimeError').val('');
+          $('#matchName').val(null);
         })
         $('#applyFilterBtn').click(function(){
           showMatchesOnly =$('#matchesOnly').is(":checked") ? 1 : 0;
           ontologyLevel = $('#ontologyLevel').val();
+          scoreThreshold = $('#scoreThreshold').val();
+          massError = $('#massError').val();
+          reTimeError = $('#retTimeError').val();
+          matchName = $('#matchName').val();
         })
         $('#filterBtn').click(function(){
           console.log("CLICKED");
