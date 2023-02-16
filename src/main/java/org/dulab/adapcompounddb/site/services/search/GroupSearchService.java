@@ -182,8 +182,12 @@ public class GroupSearchService {
                     }
                 }
             }
-            spectrumMatchRepository.deleteByQuerySpectrumsAndUserId( userPrincipal.getId(),deleteMatches);
-            spectrumMatchRepository.saveAll(savedMatches);
+            if(userPrincipal != null) {
+                spectrumMatchRepository.deleteByQuerySpectrumsAndUserId(userPrincipal.getId(),
+                    deleteMatches);
+                spectrumMatchRepository.saveAll(savedMatches);
+            }
+
 
             long time2 = System.currentTimeMillis();
             double total = (time2 - time1) / 1000.0;
