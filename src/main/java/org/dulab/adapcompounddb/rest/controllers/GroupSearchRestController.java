@@ -115,7 +115,7 @@ public class GroupSearchRestController extends BaseController {
 
         String spectrumName = jsonObj.get("querySpectrumName").asText();
         List<SearchResultDTO> searchResultFromSession = new ArrayList<>((List<SearchResultDTO>) session.getAttribute(
-            "group_search_results"));
+            "group_search_results_filtered"));
 
         List<SearchResultDTO> spectrumDTOList = searchResultFromSession.stream()
             .filter(s -> s.getQuerySpectrumName().equals(spectrumName))
@@ -168,6 +168,8 @@ public class GroupSearchRestController extends BaseController {
             if(!matchName.isEmpty())
                 spectrumDtoList = spectrumDtoList.stream().filter(s -> s.getName() != null).filter(s-> s.getName().contains(matchName)).collect(
                     Collectors.toList());
+
+            session.setAttribute("group_search_results_filtered", spectrumDtoList);
             //get the distinct spectra
             Set<String> distinctSpectraNames = new HashSet<>();
             spectrumDtoList = spectrumDtoList.stream().filter(

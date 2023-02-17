@@ -88,7 +88,7 @@
                 <div class = "ontologylevel">
                     <label for="ontologyLevel">Ontology level:</label>
 
-                    <select id="ontologyLevel">
+                    <select id="ontologyLevel" class = "form-control">
                         <option></option>
                         <option value="PD_C">PD_C</option>
                         <option value="PD_A">PD_A</option>
@@ -99,16 +99,16 @@
                 </div>
 
                 <label for="scoreThreshold" title="Results with score above the threshold will be shown" >Score Threshold</label>
-                <input type ="number" step="any" id="scoreThreshold" />
+                <input type ="number" step="any" id="scoreThreshold" class = "form-control" />
 
                 <label for="massError" title="Results with mass error below given value will be shown">Mass Error Tolerance</label>
-                <input type ="number" step="any" id="massError" />
+                <input type ="number" step="any" id="massError" class = "form-control" />
 
                 <label for="retTimeError" title="Results with retention time error below given value will be shown">Retention Time Error Tolerance</label>
-                <input type ="number" step="any" id="retTimeError" />
+                <input type ="number" step="any" id="retTimeError" class = "form-control" />
 
                 <label for="matchName" title="All matches with name matching the value">Match Name</label>
-                <input type ="text" id="matchName" />
+                <input type ="text" id="matchName" class = "form-control" />
 
             </div>
             <div class = "model-footer">
@@ -314,6 +314,7 @@
   var  isViewSaveMatches = '<c:out value="${submissionId}" />';
 
   $(document).ready(function () {
+    //filter parameters
         var url;
         var showMatchesOnly = 0;
         var ontologyLevel = "";
@@ -383,21 +384,34 @@
         // "drawCallback": function( settings ) {
         //       var rows = this.fnGetData();
         //       if (rows.length === 0) {
-        //         $('#query_table').DataTable().clear();
-        //         $('#match_table').DataTable().clear();
+        //         $('#query_table').DataTable().clear().draw();
+        //         $('#match_table').DataTable().clear().draw();
         //       }
         // },
         rowId: 'querySpectrumId',
         select: true
       });
-    $('#distinct_query_table').DataTable().on('select', function ( e, dt, type, indexes ) {
-        let query = $('#distinct_query_table').DataTable().rows().data()[indexes];
 
-        console.log("INDEX", indexes);
+      //query and match table when query signal table is empty
+      distinct_query_table.on('draw.dt',function(){
+        if(distinct_query_table.data().count() ===0){
+          // $('#query_table').DataTable().clear().draw();
+          // $('#match_table').DataTable().clear().draw();
+          $('.query_container').hide()
+          $('.match_container').hide()
+        }
+
+      })
+    // $('#distinct_query_table').DataTable().on('select', function ( e, dt, type, indexes ) {
+    //     let query = $('#distinct_query_table').DataTable().rows().data()[indexes];
+    $('#distinct_query_table tbody').on( 'click', 'tr', function () {
+      $(this).addClass('selected');
+      var query = distinct_query_table.row( this ).data();
+        // console.log("INDEX", indexes);
         console.log("ROW:", query);
         //reset table data each time new row is clicked
 
-
+        $('.query_container').show();
         $('#query_table').DataTable().destroy();
         //$('#query_table').find("tbody").empty();
         // $('#query_table').show();
@@ -557,8 +571,8 @@
       $('#query_table').DataTable().on('select', function (e, dt, type, indexes) {
         var spectrumData = $('#query_table').DataTable().rows( ).data()[indexes];
         console.log("QUERY TABLE DATA: " ,spectrumData);
+        $('.match_container').show();
         //reset table data each time new row is clicked
-
          $('#match_table').DataTable().destroy();
         // $('#match_table').show();
 
@@ -571,6 +585,7 @@
             responsive: true,
             info: false,
             scrollX: true,
+            searching: false,
             select: {style: 'single', info: false},
             scroller: true,
             rowId: 'position',
@@ -633,6 +648,10 @@
               {
                 data: row => {
                   let string = '';
+                  if(row.name == null){
+                    $('#match_table').DataTable().clear();
+                    return string;
+                  }
                   if (row.name != null)
                     string += `<a href="<c:url value="/\${row.href}" />">\${row.name}</a>`;
                   if (row.errorMessage != null)
@@ -693,6 +712,7 @@
                     responsive: true,
                     info: false,
                     scrollX: true,
+                    searching: false,
                     select: {style: 'single', info: false},
                     scroller: true,
                     rowId: 'position',
@@ -925,6 +945,9 @@
           massError = $('#massError').val();
           reTimeError = $('#retTimeError').val();
           matchName = $('#matchName').val();
+          
+          $('.query_container').hide();
+          $('.match_container').hide();
         })
         $('#filterBtn').click(function(){
           console.log("CLICKED");
