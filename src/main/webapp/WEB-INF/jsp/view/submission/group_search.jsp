@@ -65,9 +65,15 @@
 
     #applyFilterBtn{
       float: right;
+      margin-right: 15px;
+      margin-bottom: 15px;
     }
     #filterBtn{
       display: inline-block;
+    }
+    #resetFilterBtn{
+      margin-left: 15px;
+      margin-bottom: 15px;
     }
 
 </style>
@@ -80,41 +86,43 @@
                     &times;
                 </button>
             </div>
-            <div class="modal-body">
-                <div class="custom-control custom-switch" >
-                    <input type ="checkbox" class="custom-control-input" id="matchesOnly"/>
-                    <label class="custom-control-label" for="matchesOnly">Show only results with matches</label>
+            <form id = "filterForm" action ="#">
+                <div class="modal-body">
+                    <div class="custom-control custom-switch" >
+                        <input type ="checkbox" class="custom-control-input" id="matchesOnly"/>
+                        <label class="custom-control-label" for="matchesOnly">Show only results with matches</label>
+                    </div>
+                    <div class = "ontologylevel">
+                        <label for="ontologyLevel">Ontology level:</label>
+
+                        <select id="ontologyLevel" class = "form-control">
+                            <option></option>
+                            <option value="PD_C">PD_C</option>
+                            <option value="PD_A">PD_A</option>
+                            <%--                                <option value="saab">Saab</option>--%>
+                            <%--                                <option value="opel">Opel</option>--%>
+                            <%--                                <option value="audi">Audi</option>--%>
+                        </select>
+                    </div>
+
+                    <label for="scoreThreshold" title="Results with score above the threshold will be shown" >Score Threshold</label>
+                    <input type ="number" step="any" id="scoreThreshold" class = "form-control" />
+
+                    <label for="massError" title="Results with mass error below given value will be shown">Mass Error Tolerance</label>
+                    <input type ="number" step="any" id="massError" class = "form-control" />
+
+                    <label for="retTimeError" title="Results with retention time error below given value will be shown">Retention Time Error Tolerance</label>
+                    <input type ="number" step="any" id="retTimeError" class = "form-control" />
+
+                    <label for="matchName" title="All matches with name matching the value">Match Name</label>
+                    <input type ="text" id="matchName" class = "form-control" />
+
                 </div>
-                <div class = "ontologylevel">
-                    <label for="ontologyLevel">Ontology level:</label>
-
-                    <select id="ontologyLevel" class = "form-control">
-                        <option></option>
-                        <option value="PD_C">PD_C</option>
-                        <option value="PD_A">PD_A</option>
-                        <%--                                <option value="saab">Saab</option>--%>
-                        <%--                                <option value="opel">Opel</option>--%>
-                        <%--                                <option value="audi">Audi</option>--%>
-                    </select>
+                <div class = "model-footer">
+                    <button class ="btn btn-secondary "  id="resetFilterBtn">Reset Filter</button>
+                    <button class ="btn btn-primary" class = "close" type ="submit" data-dismiss="modal" id="applyFilterBtn">Filter</button>
                 </div>
-
-                <label for="scoreThreshold" title="Results with score above the threshold will be shown" >Score Threshold</label>
-                <input type ="number" step="any" id="scoreThreshold" class = "form-control" />
-
-                <label for="massError" title="Results with mass error below given value will be shown">Mass Error Tolerance</label>
-                <input type ="number" step="any" id="massError" class = "form-control" />
-
-                <label for="retTimeError" title="Results with retention time error below given value will be shown">Retention Time Error Tolerance</label>
-                <input type ="number" step="any" id="retTimeError" class = "form-control" />
-
-                <label for="matchName" title="All matches with name matching the value">Match Name</label>
-                <input type ="text" id="matchName" class = "form-control" />
-
-            </div>
-            <div class = "model-footer">
-                <button class ="btn btn-secondary " type ="button" id="resetFilterBtn">Reset Filter</button>
-                <button class ="btn btn-primary " class="close" data-dismiss="modal" type ="button" id="applyFilterBtn">Filter</button>
-            </div>
+            </form>
         </div>
     </div>
 </div>
@@ -400,8 +408,16 @@
           $('.query_container').hide()
           $('.match_container').hide()
         }
+        else
+        {
+          if ( !distinct_query_table.rows( '.selected' ).any() ){
+            distinct_query_table.rows(0).select();
+          }
+        }
 
       })
+
+
     // $('#distinct_query_table').DataTable().on('select', function ( e, dt, type, indexes ) {
     //     let query = $('#distinct_query_table').DataTable().rows().data()[indexes];
     $('#distinct_query_table tbody').on( 'click', 'tr', function () {
@@ -428,7 +444,7 @@
             select: {style: 'single', info: false},
             searching:false,
             scrollX: true,
-            rowId: 'extn',
+            rowId: 'id',
             ajax: {
               type: "POST",
               contentType:'application/json',
@@ -445,6 +461,8 @@
                 return JSON.stringify(data);
               }
             },
+            destroy: true,
+
                 columns: [
                   {
                     data: function(row, type,val, meta) {
@@ -518,6 +536,7 @@
                     }
 
                   },
+                  destroy: true,
 
                   columns: [
                     {
@@ -565,13 +584,13 @@
 
             });
         }
-
+        //$('.query_container').show();
 
       });
       $('#query_table').DataTable().on('select', function (e, dt, type, indexes) {
         var spectrumData = $('#query_table').DataTable().rows( ).data()[indexes];
         console.log("QUERY TABLE DATA: " ,spectrumData);
-        $('.match_container').show();
+
         //reset table data each time new row is clicked
          $('#match_table').DataTable().destroy();
         // $('#match_table').show();
@@ -712,6 +731,7 @@
                     responsive: true,
                     info: false,
                     scrollX: true,
+                    destroy: true,
                     searching: false,
                     select: {style: 'single', info: false},
                     scroller: true,
@@ -825,6 +845,7 @@
                   }
                 });
             }
+            //$('.match_container').show();
         });
 
         //console.log(table);
@@ -938,14 +959,14 @@
           $('#retTimeError').val('');
           $('#matchName').val(null);
         })
-        $('#applyFilterBtn').click(function(){
+        $('#filterForm').submit(function(){
           showMatchesOnly =$('#matchesOnly').is(":checked") ? 1 : 0;
           ontologyLevel = $('#ontologyLevel').val();
-          scoreThreshold = $('#scoreThreshold').val();
-          massError = $('#massError').val();
-          reTimeError = $('#retTimeError').val();
+          scoreThreshold = parseFloat($('#scoreThreshold').val());
+          massError = parseFloat($('#massError').val());
+          reTimeError = parseFloat($('#retTimeError').val());
           matchName = $('#matchName').val();
-          
+
           $('.query_container').hide();
           $('.match_container').hide();
         })
