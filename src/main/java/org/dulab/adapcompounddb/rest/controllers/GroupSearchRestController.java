@@ -94,7 +94,14 @@ public class GroupSearchRestController extends BaseController {
 
         return mapper.writeValueAsString(response);
     }
+    @GetMapping(value ="/getOntologyLevels")
+    public List<String> getOntologyLevels(final HttpSession session){
+        List<SearchResultDTO> searchResultFromSession = new ArrayList<>((List<SearchResultDTO>) session.getAttribute(
+                "group_search_results"));
 
+        return searchResultFromSession.stream().map(s->s.getOntologyLevel())
+                .filter(o-> o != null).distinct().collect(Collectors.toList());
+    }
     @PostMapping(value = "/getMatches")
     public String getMatchesById(@RequestBody JsonNode jsonObj, final HttpSession session)
         throws JsonProcessingException {
@@ -133,9 +140,9 @@ public class GroupSearchRestController extends BaseController {
             @RequestParam("columnStr") final String columnStr,
             @RequestParam("matchFilter") final Integer showMatchesOnly,
             @RequestParam("ontologyLevel") final String ontologyLevel,
-            @RequestParam(value = "scoreThreshold", required = false) final Long scoreThreshold,
-            @RequestParam(value = "massError", required = false) final Long massError,
-            @RequestParam(value = "retTimeError", required = false) final Long retTimeError,
+            @RequestParam(value = "scoreThreshold", required = false) final Double scoreThreshold,
+            @RequestParam(value = "massError", required = false) final Double massError,
+            @RequestParam(value = "retTimeError", required = false) final Double retTimeError,
             @RequestParam("matchName") final String matchName,
             final HttpSession session) throws JsonProcessingException {
 

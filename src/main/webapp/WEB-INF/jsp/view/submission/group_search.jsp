@@ -86,22 +86,15 @@
                     &times;
                 </button>
             </div>
-            <form id = "filterForm" action ="#">
-                <div class="modal-body">
-                    <div class="custom-control custom-switch" >
-                        <input type ="checkbox" class="custom-control-input" id="matchesOnly"/>
-                        <label class="custom-control-label" for="matchesOnly">Show only results with matches</label>
-                    </div>
-                    <div class = "ontologylevel">
-                        <label for="ontologyLevel">Ontology level:</label>
+            <div class="modal-body">
+                <div class="custom-control custom-switch" >
+                    <input type ="checkbox" class="custom-control-input" id="matchesOnly"/>
+                    <label class="custom-control-label" for="matchesOnly">Show only results with matches</label>
+                </div>
+                <div class = "ontologylevel">
+                    <label for="ontologyLevel">Ontology level:</label>
 
                         <select id="ontologyLevel" class = "form-control">
-                            <option></option>
-                            <option value="PD_C">PD_C</option>
-                            <option value="PD_A">PD_A</option>
-                            <%--                                <option value="saab">Saab</option>--%>
-                            <%--                                <option value="opel">Opel</option>--%>
-                            <%--                                <option value="audi">Audi</option>--%>
                         </select>
                     </div>
 
@@ -117,12 +110,11 @@
                     <label for="matchName" title="All matches with name matching the value">Match Name</label>
                     <input type ="text" id="matchName" class = "form-control" />
 
-                </div>
-                <div class = "model-footer">
-                    <button class ="btn btn-secondary "  id="resetFilterBtn">Reset Filter</button>
-                    <button class ="btn btn-primary" class = "close" type ="submit" data-dismiss="modal" id="applyFilterBtn">Filter</button>
-                </div>
-            </form>
+            </div>
+            <div class = "model-footer">
+                <button class ="btn btn-secondary " type ="button" id="resetFilterBtn">Reset Filter</button>
+                <button class ="btn btn-primary " class="close" data-dismiss="modal" type ="button" id="applyFilterBtn">Filter</button>
+            </div>
         </div>
     </div>
 </div>
@@ -330,6 +322,7 @@
         var massError;
         var reTimeError;
         var matchName ="";
+        var selectedRowIndex = null; // save the index of the selected row
         $('#query_plot_match_row').hide();
         $('.query_container').hide();
         $('.match_container').hide();
@@ -340,91 +333,87 @@
       else
           url = "${pageContext.request.contextPath}/distinct_spectra/data.json";
 
-      var distinct_query_table = $('#distinct_query_table').DataTable({
-        // dom: 'lfrtip',
+      function initializeTable(){
+          var distinct_query_table = $('#distinct_query_table').DataTable({
+              // dom: 'lfrtip',
 
-        serverSide: true,
-        sortable: true,
-        order: [[0, 'desc']],
-        processing: true,
-        responsive: true,
-        info: false,
-        select: {style: 'single', info: false},
-        searching:false,
-        scrollX: true,
+              serverSide: true,
+              sortable: true,
+              order: [[0, 'desc']],
+              processing: true,
+              responsive: true,
+              info: false,
+              select: {style: 'single', info: false},
+              searching:false,
+              scrollX: true,
 
-        ajax: {
-          url:  url,
-          data: function (data) {
-            data.columnStr = [];
-            for (let i = 0; i < data.order.length; i++) {
-              data.columnStr += data.order[i].column + "-" + data.order[i].dir + ",";
-            }
-            data.search = data.search["value"];
-            //filter values
-            data.matchFilter = showMatchesOnly;
-            data.ontologyLevel = ontologyLevel;
-            data.scoreThreshold= scoreThreshold;
-            data.massError= massError;
-            data.retTimeError=reTimeError;
-            data.matchName=matchName;
-            console.log(data);
-          }
+              ajax: {
+                  url:  url,
+                  data: function (data) {
+                      data.columnStr = [];
+                      for (let i = 0; i < data.order.length; i++) {
+                          data.columnStr += data.order[i].column + "-" + data.order[i].dir + ",";
+                      }
+                      data.search = data.search["value"];
+                      //filter values
+                      data.matchFilter = showMatchesOnly;
+                      data.ontologyLevel = ontologyLevel;
+                      data.scoreThreshold= scoreThreshold;
+                      data.massError= massError;
+                      data.retTimeError=reTimeError;
+                      data.matchName=matchName;
+                      console.log(data);
+                  }
 
-        },
-      error: function(xhr, error) {
-          console.log(xhr);
-          console.log("Error: ", error);
-      },
-        columns: [
-          {
+              },
+              error: function(xhr, error) {
+                  console.log(xhr);
+                  console.log("Error: ", error);
+              },
+              columns: [
+                  {
 
-            data: function(row, type,val, meta) {
-              return meta.row + 1;
-            }
-          },
-          {
+                      data: function(row, type,val, meta) {
+                          return meta.row + 1;
+                      }
+                  },
+                  {
 
-            data: "querySpectrumName"
+                      data: "querySpectrumName"
 
-          }
-        ],
-        // "drawCallback": function( settings ) {
-        //       var rows = this.fnGetData();
-        //       if (rows.length === 0) {
-        //         $('#query_table').DataTable().clear().draw();
-        //         $('#match_table').DataTable().clear().draw();
-        //       }
-        // },
-        rowId: 'querySpectrumId',
-        select: true
-      });
+                  }
+              ],
+              "initComplete": function() {
+                  if(distinct_query_table.data().count() ===0){
+                      // $('#query_table').DataTable().clear().draw();
+                      // $('#match_table').DataTable().clear().draw();
+                      $('.query_container').hide()
+                      $('.match_container').hide()
+                  }
+                  else
+                  {
+                      //select first row by default
+                      distinct_query_table.row(':eq(0)').nodes().to$().trigger('click');
+                  }
+              },
+              rowId: 'querySpectrumId',
+          });
+      }
+      initializeTable();
 
-      //query and match table when query signal table is empty
-      distinct_query_table.on('draw.dt',function(){
-        if(distinct_query_table.data().count() ===0){
-          // $('#query_table').DataTable().clear().draw();
-          // $('#match_table').DataTable().clear().draw();
-          $('.query_container').hide()
-          $('.match_container').hide()
-        }
-        else
-        {
-          if ( !distinct_query_table.rows( '.selected' ).any() ){
-            distinct_query_table.rows(0).select();
-          }
-        }
-
-      })
-
-
-    // $('#distinct_query_table').DataTable().on('select', function ( e, dt, type, indexes ) {
-    //     let query = $('#distinct_query_table').DataTable().rows().data()[indexes];
+    // distinct_query_table.on('select', function ( e, dt, type, indexes ) {
+    //     let query = distinct_query_table.rows().data()[indexes];
     $('#distinct_query_table tbody').on( 'click', 'tr', function () {
-      $(this).addClass('selected');
-      var query = distinct_query_table.row( this ).data();
-        // console.log("INDEX", indexes);
-        console.log("ROW:", query);
+
+        $(this).addClass('selected');
+
+        // save the index of the selected row
+        selectedRowIndex = $('#distinct_query_table').DataTable().row(this).index();
+
+
+        var query = $('#distinct_query_table').DataTable().row( this ).data();
+
+        console.log("SELECTED ROW:", query);
         //reset table data each time new row is clicked
 
         $('.query_container').show();
@@ -928,11 +917,31 @@
         // refresh the datatable and progress bar every 1 second
         setInterval(function () {
             $.ajax({
+                url: "${pageContext.request.contextPath}/getOntologyLevels",
+                type: "GET",
+                success: function(response) {
+                    var ontologyLevelOptions = $("#ontologyLevel");
+                    ontologyLevelOptions.empty();
+                    $.each(response, function(index, item) {
+                        ontologyLevelOptions.append($('<option></option>').val(item).text(item));
+                    });
+                },
+                error: function(xhr) {
+                    console.log("Error:", xhr);
+                }
+            });
+
+            $.ajax({
                 url: `${pageContext.request.contextPath}/ajax/group_search/error`,
                 success: d => $('#errorDiv').html(d)
             });
             // if($('#progressBar').attr('aria-valuenow') < 100)
-                distinct_query_table.ajax.reload(null,false);
+                $('#distinct_query_table').DataTable().ajax.reload(function(){
+                    if (selectedRowIndex !== null) {
+                        var selectedRow = $('#distinct_query_table').DataTable().row(selectedRowIndex).node();
+                        $(selectedRow).addClass('selected');
+                    }
+                },false);
 
             $.getJSON(window.location.origin + window.location.pathname + 'progress', function (x) {
                 const width = x + '%';
@@ -959,21 +968,39 @@
           $('#retTimeError').val('');
           $('#matchName').val(null);
         })
-        $('#filterForm').submit(function(){
+        $('#applyFilterBtn').click(function(){
           showMatchesOnly =$('#matchesOnly').is(":checked") ? 1 : 0;
           ontologyLevel = $('#ontologyLevel').val();
-          scoreThreshold = parseFloat($('#scoreThreshold').val());
-          massError = parseFloat($('#massError').val());
-          reTimeError = parseFloat($('#retTimeError').val());
+
+          if(!$('#scoreThreshold')[0].checkValidity() || !$('#massError')[0].checkValidity()
+            ||!$('#retTimeError')[0].checkValidity()) {
+              alert("Please enter number only");
+              return;
+          }
+          else{
+              scoreThresholdInput = $('#scoreThreshold').val();
+              massErrorInput = $('#massError').val();
+              retTimeErrorInput = $('#retTimeError').val()
+
+              //check for empty input
+              scoreThreshold = scoreThresholdInput ==="" ? null : parseFloat(scoreThresholdInput);
+              massError = massErrorInput==="" ? null : parseFloat($('#massError').val());
+              reTimeError = retTimeErrorInput ==="" ? null : parseFloat($('#retTimeError').val());
+          }
+
           matchName = $('#matchName').val();
 
           $('.query_container').hide();
           $('.match_container').hide();
+          $('#distinct_query_table').DataTable().destroy();
+          initializeTable();
         })
+
         $('#filterBtn').click(function(){
           console.log("CLICKED");
           $('#filterModal').modal('show');
         })
+
 
     });
 
