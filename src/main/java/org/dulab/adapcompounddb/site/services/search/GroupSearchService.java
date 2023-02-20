@@ -104,7 +104,6 @@ public class GroupSearchService {
 
         try {
             final List<SearchResultDTO> groupSearchDTOList = new ArrayList<>();
-
             //spectrumMatchRepository.deleteAll();
             session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
 
@@ -142,8 +141,6 @@ public class GroupSearchService {
                 File file = files.get(fileIndex);
                 List<Spectrum> spectra = file.getSpectra();
                 if (spectra == null) continue;
-
-
                 for (int spectrumIndex = 0; spectrumIndex < spectra.size(); ++spectrumIndex) {  // Spectrum querySpectrum : file.getSpectra()
                     if(System.currentTimeMillis() - startTime > 6 * 60 * 60 * 1000)
                     {
@@ -184,6 +181,9 @@ public class GroupSearchService {
 
                     if (Thread.currentThread().isInterrupted()) break;
 
+
+
+
                     progress = (float) ++progressStep / totalSteps;
                     groupSearchDTOList.addAll(individualSearchResults);
                     try {
@@ -219,10 +219,12 @@ public class GroupSearchService {
                     }
                 }
             }
+            if(userPrincipal != null) {
+                spectrumMatchRepository.deleteByQuerySpectrumsAndUserId(userPrincipal.getId(),
+                    deleteMatches);
+                spectrumMatchRepository.saveAll(savedMatches);
+            }
 
-            //TODO: do this only user is logged in
-            spectrumMatchRepository.deleteByQuerySpectrumsAndUserId( userPrincipal.getId(),deleteMatches);
-            spectrumMatchRepository.saveAll(savedMatches);
 
             long time2 = System.currentTimeMillis();
             double total = (time2 - time1) / 1000.0;
@@ -265,7 +267,6 @@ public class GroupSearchService {
 
         if (Thread.currentThread().isInterrupted())
             LOGGER.info("Group search is cancelled");
-
 
         return new AsyncResult<>(null);
     }

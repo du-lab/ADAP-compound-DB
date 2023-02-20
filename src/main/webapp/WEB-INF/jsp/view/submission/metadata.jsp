@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%--@elvariable id="cookieForm" type="java.util.Map<java.lang.String, java.lang.Object>"--%>
 <%--@elvariable id="metadataForm" type="org.dulab.adapcompounddb.site.controllers.forms.MetadataForm"--%>
-<%--@elvariable id="spectrumProperties" type="java.util.List<java.util.List<org.dulab.adapcompounddb.models.dto.SpectrumProperty>>"--%>
+<%--@elvariable id="spectrumProperties" type="java.util.List<java.util.List<java.lang.String>>"--%>
 <%--@elvariable id="fileTypes" type="java.util.List<dulab.adapcompounddb.models.enums.FileType>"--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
@@ -85,8 +85,8 @@
                                             <c:forEach items="${spectrumProperties[loop.index]}" var="property">
                                                 <c:set var="fieldName" value="${fn:toLowerCase(fileType)}${field.id}"/>
                                                 <form:option
-                                                        value="${property.getName()}" label="${property.getName()}"
-                                                        selected="${property.getName() == cookieForm[fieldName] ? 'selected' : ''}"/>
+                                                        value="${property}" label="${property}"
+                                                        selected="${property == cookieForm[fieldName] ? 'selected' : ''}"/>
                                             </c:forEach>
                                         </form:select>
                                     </div>
