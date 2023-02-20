@@ -54,6 +54,9 @@
                                         <input class="btn btn-primary" name="submit" type="submit" value="Log in"/>
                                     </div>
                                 </div>
+                                <div>
+                                    <a href="${pageContext.request.contextPath}/forgot" >Forgot Password</a>
+                                </div>
                             </form:form>
                             <sec:csrfInput />
                         </div>
@@ -80,4 +83,21 @@
             </div>
         </div>
     </div>
+<%--    <div class="row row-content">--%>
+<%--        <div class="col">--%>
+<%--            <div class="card">--%>
+<%--                <div class="card-header card-header-single">Forgot Password</div>--%>
+<%--                <div class="card-body">--%>
+<%--                    <div class="row row-content justify-content-center">--%>
+<%--                        <div class="col-auto">If you are not registered yet, please do it now:</div>--%>
+<%--                    </div>--%>
+<%--                    <div class="row row-content justify-content-center">--%>
+<%--                        <div class="col-auto">--%>
+<%--                            <a id="registerButton" href="<c:url value="/signup"/>" class="btn btn-secondary">Register</a>--%>
+<%--                        </div>--%>
+<%--                    </div>--%>
+<%--                </div>--%>
+<%--            </div>--%>
+<%--        </div>--%>
+<%--    </div>--%>
 </div>

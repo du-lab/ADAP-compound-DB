@@ -48,6 +48,8 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
 
 //    private List<Submission> submissions;
     private int peakCapacity = 15000000;
+
+    private String token;
     private Set<UserRole> roles;
 
     @Id
