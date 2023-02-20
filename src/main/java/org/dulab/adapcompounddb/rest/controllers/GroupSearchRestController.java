@@ -296,14 +296,17 @@ public class GroupSearchRestController extends BaseController {
                 (getCurrentUserPrincipal().getId(), spectrumIds, start, length, null, null);
 
             List<SearchResultDTO> searchResultDTOList = new ArrayList<>();
+            int position = 0;
             for(String query : distinctQuerySpectrum.getContent())
             {
+
                 SearchResultDTO searchResult = new SearchResultDTO();
                 searchResult.setQuerySpectrumName(query);
+                searchResult.setPosition(position++);
                 searchResultDTOList.add(searchResult);
             }
             //TODO: store mamtches in session to get it for the tables
-            response = new DataTableResponse(searchResultDTOList);
+            response = groupSearchSort(false, searchStr, start, length, searchResultDTOList, columnStr);
             response.setRecordsTotal(distinctQuerySpectrum.getTotalElements());
             response.setRecordsFiltered(distinctQuerySpectrum.getTotalElements());
         }

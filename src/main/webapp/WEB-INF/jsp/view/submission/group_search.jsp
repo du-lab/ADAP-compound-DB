@@ -396,7 +396,7 @@
                       distinct_query_table.row(':eq(0)').nodes().to$().trigger('click');
                   }
               },
-              rowId: 'position',
+              rowId: 'position'
           });
       }
       initializeTable();
@@ -410,15 +410,12 @@
         // save the index of the selected row
         selectedRowIndex = $('#distinct_query_table').DataTable().row(this).index();
 
-
         var query = $('#distinct_query_table').DataTable().row( this ).data();
 
         console.log("SELECTED ROW:", query);
         //reset table data each time new row is clicked
 
         $('#query_table').DataTable().destroy();
-        //$('#query_table').find("tbody").empty();
-        // $('#query_table').show();
 
         //show query table, match table with default matches.
         if(isViewSaveMatches){
@@ -465,6 +462,8 @@
                   },
                   {
                     data: function(row, type,val, meta) {
+                      if (row.queryPrecursorMzs == null)
+                        return null;
                       roundedArray = row.queryPrecursorMzs.map(function(e){
                         return Number(e.toFixed(3));
                       });
@@ -509,7 +508,7 @@
                   select: {style: 'single', info: false},
                   searching:false,
                   scrollX: true,
-                  rowId: 'extn',
+                  rowId: 'querySpectrumId',
                   ajax: {
                     type: "GET",
                     url: "${pageContext.request.contextPath}/spectra/data.json",
