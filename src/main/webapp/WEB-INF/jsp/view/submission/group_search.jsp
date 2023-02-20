@@ -396,7 +396,7 @@
                       distinct_query_table.row(':eq(0)').nodes().to$().trigger('click');
                   }
               },
-              rowId: 'querySpectrumId',
+              rowId: 'position',
           });
       }
       initializeTable();
@@ -416,7 +416,6 @@
         console.log("SELECTED ROW:", query);
         //reset table data each time new row is clicked
 
-        $('.query_container').show();
         $('#query_table').DataTable().destroy();
         //$('#query_table').find("tbody").empty();
         // $('#query_table').show();
@@ -563,17 +562,14 @@
                   }
                 });
 
-
-
               },
               error: function(xhr, error) {
                 console.log(xhr);
                 console.log("Error: ", error);
               }
-
             });
         }
-        //$('.query_container').show();
+        $('.query_container').show();
 
       });
       $('#query_table').DataTable().on('select', function (e, dt, type, indexes) {
@@ -916,20 +912,7 @@
         if (!isViewSaveMatches){
         // refresh the datatable and progress bar every 1 second
         setInterval(function () {
-            $.ajax({
-                url: "${pageContext.request.contextPath}/getOntologyLevels",
-                type: "GET",
-                success: function(response) {
-                    var ontologyLevelOptions = $("#ontologyLevel");
-                    ontologyLevelOptions.empty();
-                    $.each(response, function(index, item) {
-                        ontologyLevelOptions.append($('<option></option>').val(item).text(item));
-                    });
-                },
-                error: function(xhr) {
-                    console.log("Error:", xhr);
-                }
-            });
+
 
             $.ajax({
                 url: `${pageContext.request.contextPath}/ajax/group_search/error`,
@@ -998,6 +981,22 @@
 
         $('#filterBtn').click(function(){
           console.log("CLICKED");
+          $.ajax({
+            url: "${pageContext.request.contextPath}/getOntologyLevels",
+            type: "GET",
+            success: function(response) {
+              var ontologyLevelOptions = $("#ontologyLevel");
+              // ontologyLevelOptions.find('option').not(':selected').remove();
+              ontologyLevelOptions.empty();
+              ontologyLevelOptions.append($('<option></option>'));
+              $.each(response, function(index, item) {
+                ontologyLevelOptions.append($('<option></option>').val(item).text(item));
+              });
+            },
+            error: function(xhr) {
+              console.log("Error:", xhr);
+            }
+          });
           $('#filterModal').modal('show');
         })
 
