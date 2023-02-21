@@ -327,7 +327,14 @@
         $('.query_container').hide();
         $('.match_container').hide();
 
+        function getColumnStr(data){
+          var result = [];
+          for (let i = 0; i < data.order.length; i++) {
+            result += data.order[i].column + "-" + data.order[i].dir + ",";
+          }
 
+          return result;
+        }
       if (isViewSaveMatches)
           url = "${pageContext.request.contextPath}/file/group_search_matches/${submissionId}/data.json";
       else
@@ -350,10 +357,7 @@
               ajax: {
                   url:  url,
                   data: function (data) {
-                      data.columnStr = [];
-                      for (let i = 0; i < data.order.length; i++) {
-                          data.columnStr += data.order[i].column + "-" + data.order[i].dir + ",";
-                      }
+                      data.columnStr = getColumnStr(data);
                       data.search = data.search["value"];
                       //filter values
                       data.matchFilter = showMatchesOnly;
@@ -429,17 +433,14 @@
             select: {style: 'single', info: false},
             searching:false,
             scrollX: true,
-            rowId: 'id',
+            rowId: 'position',
             ajax: {
               type: "POST",
               contentType:'application/json',
               dataType:"json",
               url: "${pageContext.request.contextPath}/getSpectraForSavedResultPage",
               data: function (data) {
-                data.columnStr = [];
-                for (let i = 0; i < data.order.length; i++) {
-                  data.columnStr += data.order[i].column + "-" + data.order[i].dir + ",";
-                }
+                data.columnStr = data.columnStr = getColumnStr(data);
                 console.log(data);
                 data.search = data.search["value"];
                 data.queryData = query;
@@ -508,16 +509,13 @@
                   select: {style: 'single', info: false},
                   searching:false,
                   scrollX: true,
-                  rowId: 'querySpectrumId',
+                  rowId: 'position',
                   ajax: {
                     type: "GET",
                     url: "${pageContext.request.contextPath}/spectra/data.json",
                     data: function (data) {
                       //column index
-                      data.columnStr = [];
-                      for (let i = 0; i < data.order.length; i++) {
-                        data.columnStr += data.order[i].column + "-" + data.order[i].dir + ",";
-                      }
+                      data.columnStr = data.columnStr = getColumnStr(data);
                       console.log(data);
                       data.search = data.search["value"];
                     }
@@ -572,6 +570,7 @@
 
       });
       $('#query_table').DataTable().on('select', function (e, dt, type, indexes) {
+        var  match = true;
         var spectrumData = $('#query_table').DataTable().rows( ).data()[indexes];
         console.log("QUERY TABLE DATA: " ,spectrumData);
 
@@ -596,10 +595,7 @@
               url: "${pageContext.request.contextPath}/findMatchesSavedResultPage/data.json",
               data: function (data) {
 
-                data.columnStr = [];
-                for (let i = 0; i < data.order.length; i++) {
-                  data.columnStr += data.order[i].column + "-" + data.order[i].dir + ",";
-                }
+                data.columnStr = data.columnStr = getColumnStr(data);
 
                 data.search = data.search["value"];
                 data.spectrumId = spectrumData.querySpectrumId;
@@ -724,10 +720,7 @@
                         url: "${pageContext.request.contextPath}/file/group_search/data.json",
                         data: function (data) {
 
-                                data.columnStr = [];
-                                for (let i = 0; i < data.order.length; i++) {
-                                    data.columnStr += data.order[i].column + "-" + data.order[i].dir + ",";
-                                }
+                            data.columnStr = data.columnStr = getColumnStr(data);
                                 console.log(data);
                                 data.search = data.search["value"];
 
@@ -778,7 +771,8 @@
                             data: row => {
                                 let string = '';
                                 if(row.name == null){
-                                  $('#match_table').DataTable().clear();
+                                  match=false;
+                                  $('.match_container').hide();
                                   return string;
                                 }
 
@@ -817,8 +811,10 @@
                       "initComplete": function(){
                         //alert('Data loaded successfully');
                         //default choose the first row in query table
-                        $('.match_container').show();
-                        $('#match_table').DataTable().rows(0).select();
+                        if(match) {
+                          $('.match_container').show();
+                          $('#match_table').DataTable().rows(0).select();
+                        }
                   }
                     });
 

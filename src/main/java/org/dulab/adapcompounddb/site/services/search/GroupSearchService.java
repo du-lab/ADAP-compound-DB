@@ -60,37 +60,6 @@ public class GroupSearchService {
         this.emailService = emailService;
     }
 
-    public List<SearchResultDTO> groupSearch(UserPrincipal userPrincipal,HttpSession session, SearchParameters userParameters,
-        Spectrum querySpectrum, boolean withOntologyLevels, boolean sendResultsToEmail, boolean savedSubmission){
-
-        List<SpectrumMatch> savedMatches = new ArrayList<>();
-        Set<Long> deleteMatches = new HashSet<>();
-        List<SearchResultDTO> individualSearchResults;
-
-        SearchParameters parameters =
-            SearchParameters.getDefaultParameters(querySpectrum.getChromatographyType());
-        parameters.merge(userParameters);
-        try{
-            individualSearchResults = (withOntologyLevels)
-                ? spectrumSearchService.searchWithOntologyLevels(userPrincipal, querySpectrum, parameters, savedSubmission, savedMatches, deleteMatches)
-                : spectrumSearchService.searchConsensusSpectra(userPrincipal, querySpectrum, parameters, savedSubmission, savedMatches, deleteMatches);
-
-        }catch (IllegalSpectrumSearchException e) {
-            LOGGER.error(String.format("Error when searching %s [%d]: %s",
-                querySpectrum.getName(), querySpectrum.getId(), e.getMessage()));
-            SearchResultDTO searchResultDTO = new SearchResultDTO(querySpectrum);
-            searchResultDTO.setErrorMessage(e.getMessage());
-            individualSearchResults = Collections.singletonList(searchResultDTO);
-        }
-        catch (Throwable t) {
-            LOGGER.error(String.format("Error during the group search: %s", t.getMessage()), t);
-            session.setAttribute("GROUP_SEARCH_ERROR", t.getMessage());
-            throw t;
-        }
-        spectrumMatchRepository.deleteByQuerySpectrumsAndUserId( userPrincipal.getId(),deleteMatches);
-        spectrumMatchRepository.saveAll(savedMatches);
-        return individualSearchResults;
-    }
     @Async
 //    @Transactional(propagation = Propagation.REQUIRED)
     public Future<Void> groupSearch(UserPrincipal userPrincipal, List<File> files, HttpSession session,

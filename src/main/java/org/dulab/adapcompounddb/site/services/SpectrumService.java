@@ -33,7 +33,8 @@ public class SpectrumService {
     private final SubmissionRepository submissionRepository;
 
 
-    private enum ColumnInformation {
+
+  private enum ColumnInformation {
         NAME(1, "name"), RETENTIONTIME(2, "retentionTime"),
         PRECURSOR(3, "precursor"), SIGNIFICANCE(4, "significance"),
         MASS(5, "mass"),
@@ -136,4 +137,8 @@ public class SpectrumService {
                 .findAllByConsensusTrueAndChromatographyTypeAndIntegerMz(chromatographyType, integerMz);
         return MappingUtils.toList(spectra);
     }
+    public List<Spectrum> getMatchesByUserAndSpectrumName(long id, String spectrumName) {
+      return spectrumRepository.getMatchesByUserAndSpectrumName(id, spectrumName);
+    }
+
 }

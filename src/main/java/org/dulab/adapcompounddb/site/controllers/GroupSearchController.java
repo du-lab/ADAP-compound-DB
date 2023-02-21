@@ -165,7 +165,7 @@ public class GroupSearchController extends BaseController {
 
 
     @RequestMapping(value = "/group_search/parameters", method = RequestMethod.POST)
-    public String groupSearchParametersPost2(@RequestParam Optional<Long> submissionId, HttpSession session, Model model,
+    public String groupSearchParametersPost(@RequestParam Optional<Long> submissionId, HttpSession session, Model model,
                                              HttpServletRequest request, HttpServletResponse response,
                                              @Valid FilterForm form, Errors errors,
                                              RedirectAttributes redirectAttributes) throws TimeoutException {
