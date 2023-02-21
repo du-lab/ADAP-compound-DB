@@ -7,6 +7,7 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <div class="container">
   <div class="row row-content">
@@ -14,7 +15,8 @@
       <div class="card">
         <div class="card-header card-header-single">Forgot password</div>
         <div class="card-body">
-          <form action="${pageContext.request.contextPath}/send_otp"  method="POST" style="max-width: 420px; margin: 0 auto;">
+          <form action="/forgotPassword"  method="POST" style="max-width: 420px; margin: 0 auto;">
+            <sec:csrfInput />
             <div class="border border-secondary rounded p-3">
               <div>
                 <p>We will be sending a reset password link to your email.</p>

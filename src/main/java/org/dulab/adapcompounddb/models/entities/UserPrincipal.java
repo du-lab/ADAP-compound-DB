@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.models.entities;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -49,7 +50,9 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
 //    private List<Submission> submissions;
     private int peakCapacity = 15000000;
 
-    private String token;
+    private String passwordResetToken;
+
+    private Date passwordExpirationDate;
     private Set<UserRole> roles;
 
     @Id

@@ -53,10 +53,9 @@
                                     <div class="col-md-2 offset-md-6">
                                         <input class="btn btn-primary" name="submit" type="submit" value="Log in"/>
                                     </div>
+                                    <a href="${pageContext.request.contextPath}/forgotForm" >Forgot Password</a>
                                 </div>
-                                <div>
-                                    <a href="${pageContext.request.contextPath}/forgot" >Forgot Password</a>
-                                </div>
+
                             </form:form>
                             <sec:csrfInput />
                         </div>
