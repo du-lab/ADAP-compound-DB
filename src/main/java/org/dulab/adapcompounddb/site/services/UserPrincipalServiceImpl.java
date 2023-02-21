@@ -123,4 +123,9 @@ public class UserPrincipalServiceImpl implements UserPrincipalService {
     public void delete(long id) {
         userPrincipalRepository.deleteById(id);
     }
+
+    @Override
+    public UserPrincipal findByUserEmail(String email) {
+        return userPrincipalRepository.findByemail(email);
+    }
 }

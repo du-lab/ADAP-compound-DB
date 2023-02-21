@@ -29,4 +29,6 @@ public interface UserPrincipalService {
     UserPrincipal findUserByUsername(String username);
 
     void delete(long id);
+
+  UserPrincipal findByUserEmail(String email);
 }

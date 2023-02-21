@@ -19,7 +19,7 @@
             <sec:csrfInput />
             <div class="border border-secondary rounded p-3">
               <div>
-                <p>We will be sending a reset password link to your email.</p>
+                <p>Please enter the email associated with your account. We will be sending a reset password link to your email.</p>
               </div>
               <div>
                 <p>
