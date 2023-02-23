@@ -1,4 +1,4 @@
-CREATE TABLE `adapcompounddb`.`searchparameters` (
+CREATE TABLE `adapcompounddb`.`SearchParameter` (
     `id` INT NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(45) NOT NULL,
     `value` TEXT NOT NULL,

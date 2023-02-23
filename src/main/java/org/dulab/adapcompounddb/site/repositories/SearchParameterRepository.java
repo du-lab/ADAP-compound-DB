@@ -12,7 +12,7 @@ import java.util.Map;
 
 public interface SearchParameterRepository extends CrudRepository<SearchParameters, Integer> {
 
-    @Query("SELECT sp FROM SearchParameters sp WHERE sp.userPrimaryId = :userId")
-    List<SearchParameters> findAllByUserId(@Param("userId") final long userId);
+    @Query("SELECT sp.value FROM SearchParameters sp WHERE sp.userPrimaryId = :userId")
+    String findAllByUserId(@Param("userId") final long userId);
 
 }

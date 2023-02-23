@@ -187,6 +187,7 @@
                                 <jsp:param name="MZ_TOLERANCE" value="${searchParameters.mzTolerance}"/>
                                 <jsp:param name="MATCHES_PER_SPECTRUM" value="${searchParameters.limit}"/>
                                 <jsp:param name="MZ_TOLERANCE_TYPE" value="${searchParameters.mzToleranceType}"/>
+                                <jsp:param name="SHOW_DIALOG" value="true"/>
                             </jsp:include>
                         </div>
 

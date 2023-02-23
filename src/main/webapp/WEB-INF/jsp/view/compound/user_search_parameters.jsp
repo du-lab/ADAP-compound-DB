@@ -10,7 +10,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <div class="row">
   <div class="col-md-8 offset-md-2">
-    <p>Leave parameters blanks to use the default values.</p>
+    <p ${param.SHOW_DIALOG ? '' : 'style="display: none;"'}>Leave parameters blanks to use the default values.</p>
   </div>
 </div>
 <div class="form-group row">
