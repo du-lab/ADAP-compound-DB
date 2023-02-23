@@ -61,11 +61,6 @@ public class AccountController extends BaseController {
             searchParametersDTO.checkCustomParameters();
             model.addAttribute("searchParameters",searchParametersDTO);
         }
-//        model.addAttribute("RETENTION_INDEX_TOLERANCE",searchParametersDTO.getRetentionIndexTolerance());
-//        model.addAttribute("RETENTION_INDEX_MATCH",searchParametersDTO.getRetentionIndexMatch());
-//        model.addAttribute("MZ_TOLERANCE",searchParametersDTO.getMzTolerance());
-//        model.addAttribute("MATCHES_PER_SPECTRUM",searchParametersDTO.getLimit());
-//        model.addAttribute("MZ_TOLERANCE_TYPE",searchParametersDTO.getMzToleranceType());
         model.addAttribute(("currentDiskSpace"), currentDiskSpace);
         model.addAttribute(("maxDiskSpace"), maxDiskSpace);
         model.addAttribute("user", user);

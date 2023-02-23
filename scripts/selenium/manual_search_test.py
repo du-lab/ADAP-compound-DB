@@ -19,7 +19,7 @@ def manual_search_test(homepage_url, identifier = 'eicosatrienoic acid', spectru
 		driver.find_element(By.NAME, 'retentionIndexTolerance').clear()
 		driver.find_element(By.NAME, 'mzTolerance').clear()
 		driver.find_element(By.NAME, 'limit').clear()
-		driver.find_element(By.NAME, 'scoreThreshold').send_keys('1.5')
+		driver.find_element(By.NAME, 'scoreThreshold').send_keys('1')
 		driver.find_element(By.ID, 'searchButton').click()
 		time.sleep(10)
 		assert (driver.find_element(By.ID, 'plot'))
