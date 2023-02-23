@@ -1,7 +1,6 @@
 package org.dulab.adapcompounddb.site.services.search;
 
 
-import org.dulab.adapcompounddb.rest.controllers.GroupSearchRestController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
@@ -462,17 +461,37 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     }
 
     @Override
-    public Page<String> findAllDistinctSpectrumByUserIdAndQuerySpectrumsPageable(Long userId, List<Long> spectrumIds,
-        Integer start, Integer length, String column, String direction) {
+    public Page<String> findAllDistinctSpectrumByUserIdAndQuerySpectrumsPageable(Long userId,
+        List<Long> spectrumIds, Integer start, Integer length, Integer showMatchesOnly,
+        String ontologyLevel, Double scoreThreshold, Double massError, Double retTimeError, String matchName) {
 
-        Pageable pageable = DataUtils.createPageable(start, length, column, direction);
-        Page<String> sm = spectrumMatchRepository.findAllDistinctQueryByUserIdAndQuerySpectrums( userId, spectrumIds, pageable);
-        return sm;
+        Page<String> result;
+        Pageable pageable = DataUtils.createPageable(start, length, null, null);
+        if(showMatchesOnly ==1)
+            result = spectrumMatchRepository.findAllDistinctQueryByUserIdAndQuerySpectrumsWithMatches( userId, spectrumIds, pageable,
+                ontologyLevel, scoreThreshold,  massError,  retTimeError, matchName);
+        else
+        {
+            result = spectrumMatchRepository.findAllDistinctQueryByUserIdAndQuerySpectrums( userId, spectrumIds, pageable,
+                ontologyLevel, scoreThreshold,  massError,  retTimeError, matchName);
+        }
+
+        return result;
     }
 
     @Override
-    public List<SpectrumMatch> findMatchesByUserIdAndQueryId(long userId, Long spectrumId) {
-        return spectrumMatchRepository.findByuserPrincipalIdAndquerySpectrumId(userId, spectrumId);
+    public List<SpectrumMatch> findMatchesByUserIdAndQueryIdAndMatchId(long userId, Long spectrumId, Long matchId) {
+        return spectrumMatchRepository.findByuserPrincipalIdAndquerySpectrumIdAndMatchId(userId, spectrumId, matchId);
+    }
+
+    @Override
+    public List<SpectrumMatch> getMatchesByUserAndSpectrumName(long id, String spectrumName,
+        Integer showMatchesOnly, String ontologyLevel, Double scoreThreshold, Double massError,
+        Double retTimeError, String matchName) {
+        if(showMatchesOnly ==1 )
+         return spectrumMatchRepository.getMatchesByUserAndSpectrumName(id, spectrumName, ontologyLevel,  scoreThreshold,  massError,  retTimeError, matchName);
+      else
+        return spectrumMatchRepository.getMatchesByUserAndSpectrumNameShowMatchesOnly(id, spectrumName, ontologyLevel,  scoreThreshold,  massError,  retTimeError, matchName);
     }
 
 

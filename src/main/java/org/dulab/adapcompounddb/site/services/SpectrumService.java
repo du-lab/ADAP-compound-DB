@@ -137,8 +137,12 @@ public class SpectrumService {
                 .findAllByConsensusTrueAndChromatographyTypeAndIntegerMz(chromatographyType, integerMz);
         return MappingUtils.toList(spectra);
     }
-    public List<Spectrum> getMatchesByUserAndSpectrumName(long id, String spectrumName) {
-      return spectrumRepository.getMatchesByUserAndSpectrumName(id, spectrumName);
-    }
+//    public List<Spectrum> getMatchesByUserAndSpectrumName(long id, String spectrumName, Integer showMatchesOnly, String ontologyLevel, Double scoreThreshold, Double massError, Double retTimeError,
+//        String matchName) {
+//      if(showMatchesOnly ==1 )
+//         return spectrumRepository.getMatchesByUserAndSpectrumName(id, spectrumName, ontologyLevel,  scoreThreshold,  massError,  retTimeError, matchName);
+//      else
+//        return spectrumRepository.getMatchesByUserAndSpectrumNameShowMatchesOnly(id, spectrumName, ontologyLevel,  scoreThreshold,  massError,  retTimeError, matchName);
+//    }
 
 }

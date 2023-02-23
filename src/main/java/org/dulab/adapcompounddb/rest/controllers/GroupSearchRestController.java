@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import javax.json.JsonObject;
+import javax.naming.directory.SearchResult;
 import javax.xml.crypto.Data;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
@@ -235,21 +236,42 @@ public class GroupSearchRestController extends BaseController {
         return mapper.writeValueAsString(response);
     }
     
-    @PostMapping(value = "/getSpectraForSavedResultPage")
+    @GetMapping(value = "/getSpectraForSavedResultPage")
     public String SpectraSavedResultPage(
-        @RequestBody JsonNode jsonObj, final HttpSession session) throws JsonProcessingException {
+        @RequestParam("start") final Integer start,
+        @RequestParam("length") final Integer length,
+        @RequestParam("search") final String searchStr,
+        @RequestParam("columnStr") final String columnStr,
+        @RequestParam("querySpectrumName") final String spectrumName,
+        @RequestParam("matchFilter") final Integer showMatchesOnly,
+        @RequestParam("ontologyLevel") final String ontologyLevel,
+        @RequestParam(value = "scoreThreshold", required = false) final Double scoreThreshold,
+        @RequestParam(value = "massError", required = false) final Double massError,
+        @RequestParam(value = "retTimeError", required = false) final Double retTimeError,
+        @RequestParam("matchName") final String matchName,
+        final HttpSession session) throws JsonProcessingException {
 
-        String spectrumName = jsonObj.get("queryData").get("querySpectrumName").asText();
-        Integer start = jsonObj.get("start").asInt();
-        Integer length = jsonObj.get("length").asInt();
-        String searchStr = jsonObj.get("search").asText();
-        String columnStr = jsonObj.get("columnStr").asText();
+
         DataTableResponse response = new DataTableResponse();
 
-        List<Spectrum> spectrumList = spectrumService.getMatchesByUserAndSpectrumName(this.getCurrentUserPrincipal().getId(), spectrumName);
-        List<SearchResultDTO> searchResultDTOS = spectrumList.stream().map(spectrum->new SearchResultDTO(spectrum)).collect(
-            Collectors.toList());
-        response = groupSearchSort(false, searchStr,  start, length, searchResultDTOS, columnStr);
+        List<SpectrumMatch> spectrumMatchList = spectrumMatchService.getMatchesByUserAndSpectrumName(this.getCurrentUserPrincipal().getId(), spectrumName, showMatchesOnly,
+            ontologyLevel, scoreThreshold, massError, retTimeError, matchName);
+        List<SearchResultDTO> searchResultDTOs = new ArrayList<>();
+        for(SpectrumMatch sm : spectrumMatchList){
+
+            //put in searchResult DTO...
+            SearchResultDTO result = new SearchResultDTO();
+            result.setQuerySpectrumName(sm.getQuerySpectrum().getName());
+            result.setQuerySpectrumId(sm.getQuerySpectrum().getId());
+            result.setSpectrumId(sm.getMatchSpectrum().getId());
+            result.setScore(sm.getScore());
+            result.setMassError(sm.getMassError());
+            result.setRetTimeError(sm.getRetTimeError());
+            result.setOntologyLevel(sm.getOntologyLevel());
+
+            searchResultDTOs.add(result);
+        }
+        response = groupSearchSort(false, searchStr,  start, length, searchResultDTOs, columnStr);
 
         return mapper.writeValueAsString(response);
     }
@@ -259,14 +281,15 @@ public class GroupSearchRestController extends BaseController {
         @RequestParam("length") final Integer length,
         @RequestParam("search") final String searchStr,
         @RequestParam("columnStr") final String columnStr,
-        @RequestParam("spectrumId") Long spectrumId, final HttpSession session)
+        @RequestParam("spectrumId") Long spectrumId,
+        @RequestParam("matchId") Long matchId, final HttpSession session)
         throws JsonProcessingException {
 
         List<SearchResultDTO> matches = new ArrayList<>();
         int matchIndex = 0;
         DataTableResponse response = new DataTableResponse();
 
-        List<SpectrumMatch> spectrumMatches = spectrumMatchService.findMatchesByUserIdAndQueryId(this.getCurrentUserPrincipal().getId(), spectrumId);
+        List<SpectrumMatch> spectrumMatches = spectrumMatchService.findMatchesByUserIdAndQueryIdAndMatchId(this.getCurrentUserPrincipal().getId(), spectrumId, matchId);
         for (SpectrumMatch match : spectrumMatches) {
             SearchResultDTO searchResult = MappingUtils.mapSpectrumMatchToSpectrumClusterView(
                 match, matchIndex++, null, null, null);
@@ -293,8 +316,6 @@ public class GroupSearchRestController extends BaseController {
             @RequestParam("matchName") final String matchName,
             final HttpSession session) throws JsonProcessingException {
 
-
-
         DataTableResponse response = new DataTableResponse();
 
         if (getCurrentUserPrincipal() != null) {
@@ -302,7 +323,8 @@ public class GroupSearchRestController extends BaseController {
             List<Long> spectrumIds = getSpectrumIdsFromSubmission(submissionId);
             //TODO: do the filtering here, pass in all the parameters
             Page<String> distinctQuerySpectrum = spectrumMatchService.findAllDistinctSpectrumByUserIdAndQuerySpectrumsPageable
-                (getCurrentUserPrincipal().getId(), spectrumIds, start, length, null, null);
+                (getCurrentUserPrincipal().getId(), spectrumIds, start, length, showMatchesOnly,
+                    ontologyLevel, scoreThreshold, massError, retTimeError, matchName);
 
             List<SearchResultDTO> searchResultDTOList = new ArrayList<>();
             int position = 0;
@@ -345,7 +367,7 @@ public class GroupSearchRestController extends BaseController {
         float progress = (Float) progressObject;
         return Math.round(100 * progress);
     }
-    //helper methods
+    //helper method to get spectrum ids from a submsission
     private List<Long>  getSpectrumIdsFromSubmission(Long submissionId){
         Submission submission = submissionService.fetchSubmissionPartial(submissionId);
 

@@ -39,9 +39,13 @@ public interface SpectrumMatchService {
     Page<SpectrumMatch> findAllSpectrumMatchByUserIdAndQuerySpectrumsPageable(Long userId, List<Long> spectrumIds, Integer start,
                                                                               Integer length, String sortColumn, String sortDirection);
 
-     Page<String> findAllDistinctSpectrumByUserIdAndQuerySpectrumsPageable(Long userId, List<Long> spectrumIds,
-        Integer start, Integer length, String column, String direction) ;
+    Page<String> findAllDistinctSpectrumByUserIdAndQuerySpectrumsPageable(Long userId,
+        List<Long> spectrumIds, Integer start, Integer length, Integer showMatchesOnly,
+        String ontologyLevel, Double scoreThreshold, Double massError, Double retTimeError,
+        String matchName);
 
+    List<SpectrumMatch> findMatchesByUserIdAndQueryIdAndMatchId(long id, Long spectrumId, Long matchId);
 
-  List<SpectrumMatch> findMatchesByUserIdAndQueryId(long id, Long spectrumId);
+    List<SpectrumMatch> getMatchesByUserAndSpectrumName(long id, String spectrumName, Integer showMatchesOnly, String ontologyLevel, Double scoreThreshold, Double massError,
+        Double retTimeError, String matchName);
 }

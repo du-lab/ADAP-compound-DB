@@ -312,9 +312,7 @@
 <script src="<c:url value="/resources/AdapCompoundDb/js/spectrumStructure.js"/>"></script>
 <script>
 
-    var submissionId = ${submissionId};
-  var  isViewSaveMatches = '<c:out value="${submissionId}" />';
-    var isSavedResultPage = isViewSaveMatches ? true : false;
+    var isSavedResultPage = '<c:out value="${submissionId}" />' ? true : false;
   $(document).ready(function () {
     //filter parameters
         var url;
@@ -337,7 +335,7 @@
 
           return result;
         }
-      if (isViewSaveMatches)
+      if (isSavedResultPage)
           url = "${pageContext.request.contextPath}/file/group_search_matches/${submissionId}/data.json";
       else
           url = "${pageContext.request.contextPath}/distinct_spectra/data.json";
@@ -424,7 +422,7 @@
         $('#query_table').DataTable().destroy();
 
         //show query table, match table with default matches.
-        if(isViewSaveMatches){
+        if(isSavedResultPage){
           var query_table = $('#query_table').DataTable({
             serverSide: true,
             sortable: true,
@@ -437,18 +435,24 @@
             scrollX: true,
             rowId: 'position',
             ajax: {
-              type: "POST",
-              contentType:'application/json',
-              dataType:"json",
               url: "${pageContext.request.contextPath}/getSpectraForSavedResultPage",
               data: function (data) {
                 data.columnStr = data.columnStr = getColumnStr(data);
                 console.log(data);
                 data.search = data.search["value"];
-                data.queryData = query;
-                return JSON.stringify(data);
+                data.querySpectrumName = query.querySpectrumName;
+                data.matchFilter = showMatchesOnly;
+                data.ontologyLevel = ontologyLevel;
+                data.scoreThreshold= scoreThreshold;
+                data.massError= massError;
+                data.retTimeError=reTimeError;
+                data.matchName=matchName;
               }
             },
+            success: function(response){
+              //console.log(response);
+            },
+
             destroy: true,
 
                 columns: [
@@ -580,7 +584,7 @@
          $('#match_table').DataTable().destroy();
         // $('#match_table').show();
 
-        if(isViewSaveMatches){
+        if(isSavedResultPage){
           let match_table = $('#match_table').DataTable({
 
             serverSide: true,
@@ -601,6 +605,7 @@
 
                 data.search = data.search["value"];
                 data.spectrumId = spectrumData.querySpectrumId;
+                data.matchId = spectrumData.spectrumId;
                 console.log(data);
                 <%--console.log(${spectrumIds});--%>
                 <%--data.spectrumIds = ${spectrumIds}--%>
@@ -906,7 +911,7 @@
 
         });
 
-        if (!isViewSaveMatches){
+        if (!isSavedResultPage){
         // refresh the datatable and progress bar every 1 second
         setInterval(function () {
 
@@ -985,7 +990,7 @@
             url: "${pageContext.request.contextPath}/getOntologyLevels",
             type: "GET",
               data: {
-                submissionId: submissionId,
+                submissionId: '${submissionId}',
                 isSavedResultPage: isSavedResultPage
               },
             success: function(response) {
