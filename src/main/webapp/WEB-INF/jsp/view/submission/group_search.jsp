@@ -311,8 +311,10 @@
 <script src="<c:url value="/resources/AdapCompoundDb/js/spectrumPlot.js"/>"></script>
 <script src="<c:url value="/resources/AdapCompoundDb/js/spectrumStructure.js"/>"></script>
 <script>
-  var  isViewSaveMatches = '<c:out value="${submissionId}" />';
 
+    var submissionId = ${submissionId};
+  var  isViewSaveMatches = '<c:out value="${submissionId}" />';
+    var isSavedResultPage = isViewSaveMatches ? true : false;
   $(document).ready(function () {
     //filter parameters
         var url;
@@ -968,6 +970,9 @@
 
           matchName = $('#matchName').val();
 
+          //if saved result page
+
+
           $('.query_container').hide();
           $('.match_container').hide();
           $('#distinct_query_table').DataTable().destroy();
@@ -979,6 +984,10 @@
           $.ajax({
             url: "${pageContext.request.contextPath}/getOntologyLevels",
             type: "GET",
+              data: {
+                submissionId: submissionId,
+                isSavedResultPage: isSavedResultPage
+              },
             success: function(response) {
               var ontologyLevelOptions = $("#ontologyLevel");
               // ontologyLevelOptions.find('option').not(':selected').remove();

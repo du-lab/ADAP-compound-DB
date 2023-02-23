@@ -13,10 +13,7 @@ import javax.xml.crypto.Data;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.dto.SpectrumDTO;
-import org.dulab.adapcompounddb.models.entities.File;
-import org.dulab.adapcompounddb.models.entities.Spectrum;
-import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
-import org.dulab.adapcompounddb.models.entities.Submission;
+import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.site.controllers.BaseController;
 import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
@@ -96,19 +93,36 @@ public class GroupSearchRestController extends BaseController {
 
         return mapper.writeValueAsString(response);
     }
+
     @GetMapping(value ="/getOntologyLevels")
-    public List<String> getOntologyLevels(final HttpSession session){
-
-        List<SearchResultDTO> searchResultFromSession;
-        Object sessionObject =session.getAttribute(
-            ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
-
-        if(sessionObject == null)
-            return null;
+    public List<String> getOntologyLevels(@RequestParam(value = "isSavedResultPage") Boolean isSavedResultPage,
+                                          @RequestParam(value = "submissionId", required = false) Long submissionId,
+                                          final HttpSession session){
+        UserPrincipal user = this.getCurrentUserPrincipal();
+        if(isSavedResultPage){
+            if(user!= null) {
+                List<Long> spectrumIds = getSpectrumIdsFromSubmission(submissionId);
+                //get ontologylevels from spectrum match
+                //TODO: try to query distinct ontology level from datatabse
+                List<SpectrumMatch> spectrumMatches = spectrumMatchService.findAllSpectrumMatchByUserIdAndQuerySpectrums(user.getId(), spectrumIds);
+                return spectrumMatches.stream().map(sm->sm.getOntologyLevel()).filter(Objects::nonNull)
+                        .distinct().collect(Collectors.toList());
+            }
+            else
+                return null;
+        }
         else {
-            searchResultFromSession = new ArrayList<>((List<SearchResultDTO>) sessionObject);
-            return searchResultFromSession.stream().map(s -> s.getOntologyLevel()).filter(Objects::nonNull)
-                .distinct().collect(Collectors.toList());
+            List<SearchResultDTO> searchResultFromSession;
+            Object sessionObject = session.getAttribute(
+                    ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
+
+            if (sessionObject == null)
+                return null;
+            else {
+                searchResultFromSession = new ArrayList<>((List<SearchResultDTO>) sessionObject);
+                return searchResultFromSession.stream().map(s -> s.getOntologyLevel()).filter(Objects::nonNull)
+                        .distinct().collect(Collectors.toList());
+            }
         }
     }
     @PostMapping(value = "/getMatches")
@@ -271,6 +285,12 @@ public class GroupSearchRestController extends BaseController {
             @RequestParam("length") final Integer length,
             @RequestParam("search") final String searchStr,
             @RequestParam("columnStr") final String columnStr,
+            @RequestParam("matchFilter") final Integer showMatchesOnly,
+            @RequestParam("ontologyLevel") final String ontologyLevel,
+            @RequestParam(value = "scoreThreshold", required = false) final Double scoreThreshold,
+            @RequestParam(value = "massError", required = false) final Double massError,
+            @RequestParam(value = "retTimeError", required = false) final Double retTimeError,
+            @RequestParam("matchName") final String matchName,
             final HttpSession session) throws JsonProcessingException {
 
 
@@ -278,20 +298,9 @@ public class GroupSearchRestController extends BaseController {
         DataTableResponse response = new DataTableResponse();
 
         if (getCurrentUserPrincipal() != null) {
-            int matchIndex = 0;
 
-            Submission submission = submissionService.fetchSubmissionPartial(submissionId);
-
-            List<File> files = submission.getFiles();
-            List<Spectrum> spectrumList = new ArrayList<>();
-            for (File file : files) {
-                if (file != null && file.getSpectra() != null) {
-                    spectrumList.addAll(file.getSpectra());
-                }
-            }
-            List<Long> spectrumIds = spectrumList.stream().map(Spectrum::getId).collect(Collectors.toList());
-
-
+            List<Long> spectrumIds = getSpectrumIdsFromSubmission(submissionId);
+            //TODO: do the filtering here, pass in all the parameters
             Page<String> distinctQuerySpectrum = spectrumMatchService.findAllDistinctSpectrumByUserIdAndQuerySpectrumsPageable
                 (getCurrentUserPrincipal().getId(), spectrumIds, start, length, null, null);
 
@@ -305,7 +314,7 @@ public class GroupSearchRestController extends BaseController {
                 searchResult.setPosition(position++);
                 searchResultDTOList.add(searchResult);
             }
-            //TODO: store mamtches in session to get it for the tables
+
             response = groupSearchSort(false, searchStr, start, length, searchResultDTOList, columnStr);
             response.setRecordsTotal(distinctQuerySpectrum.getTotalElements());
             response.setRecordsFiltered(distinctQuerySpectrum.getTotalElements());
@@ -336,7 +345,19 @@ public class GroupSearchRestController extends BaseController {
         float progress = (Float) progressObject;
         return Math.round(100 * progress);
     }
+    //helper methods
+    private List<Long>  getSpectrumIdsFromSubmission(Long submissionId){
+        Submission submission = submissionService.fetchSubmissionPartial(submissionId);
 
+        List<File> files = submission.getFiles();
+        List<Spectrum> spectrumList = new ArrayList<>();
+        for (File file : files) {
+            if (file != null && file.getSpectra() != null) {
+                spectrumList.addAll(file.getSpectra());
+            }
+        }
+        return spectrumList.stream().map(Spectrum::getId).collect(Collectors.toList());
+    }
 
     private DataTableResponse groupSearchSort(boolean groupSearchAsync, final String searchStr, final Integer start, final Integer length,
                                               List<SearchResultDTO> spectrumList, final String columnStr) {

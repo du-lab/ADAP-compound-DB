@@ -448,14 +448,16 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         return clusters;
     }
 
-
+    public List<SpectrumMatch> findAllSpectrumMatchByUserIdAndQuerySpectrums(Long userId, List<Long> spectrumIds) {
+        return spectrumMatchRepository.findAllSpectrumMatchByUserIdAndQuerySpectrums( userId, spectrumIds);
+    }
 
     @Override
     public Page<SpectrumMatch> findAllSpectrumMatchByUserIdAndQuerySpectrumsPageable(Long userId, List<Long> spectrumIds,
                                                                                 Integer start, Integer length,  String sortColumn, String sortDirection) {
 
         Pageable pageable = DataUtils.createPageable(start, length, sortColumn, sortDirection);
-        Page<SpectrumMatch> sm = spectrumMatchRepository.findAllSpectrumMatchByUserIdAndQuerySpectrums( userId, spectrumIds, pageable);
+        Page<SpectrumMatch> sm = spectrumMatchRepository.findAllSpectrumMatchByUserIdAndQuerySpectrumsPageable( userId, spectrumIds, pageable);
         return sm;
     }
 
