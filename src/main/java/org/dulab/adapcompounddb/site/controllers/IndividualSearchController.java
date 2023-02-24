@@ -214,11 +214,7 @@ public class IndividualSearchController extends BaseController {
             value = INDIVIDUAL_SEARCH_PARAMETERS_COOKIE_NAME,
             defaultValue = "") String searchParametersCookie) {
         UserPrincipal user = getCurrentUserPrincipal();
-        if (user != null) {
-            model.addAttribute("searchParameters",user.getSearchParametersDTO());
-        } else {
-            model.addAttribute("searchParameters",new SearchParametersDTO());
-        }
+        model.addAttribute("searchParameters", user != null ? user.getSearchParametersDTO() : new SearchParametersDTO());
 
         compoundSearchForm = ConversionsUtils.byteStringToForm(searchParametersCookie, CompoundSearchForm.class);
         //Spectrum spectrum = new Spectrum();

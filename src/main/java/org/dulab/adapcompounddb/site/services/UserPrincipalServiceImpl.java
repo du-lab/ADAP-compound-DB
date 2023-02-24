@@ -128,10 +128,9 @@ public class UserPrincipalServiceImpl implements UserPrincipalService {
 
     @Override
     public SearchParametersDTO updateSearchParameters(SearchParametersDTO searchParameters, UserPrincipal user) {
-        Gson gson = new Gson();
         SearchParametersDTO currentSearchParameters = user.getSearchParametersDTO();
         if (currentSearchParameters == null || !currentSearchParameters.equals(searchParameters)) {
-            user.setSearchParameters(gson.toJson(searchParameters));
+            user.setSearchParameters(searchParameters);
             saveUserPrincipal(user);
         }
         return searchParameters;
