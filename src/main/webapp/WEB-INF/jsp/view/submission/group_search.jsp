@@ -408,7 +408,7 @@
     // distinct_query_table.on('select', function ( e, dt, type, indexes ) {
     //     let query = distinct_query_table.rows().data()[indexes];
     $('#distinct_query_table tbody').on( 'click', 'tr', function () {
-
+        $('#distinct_query_table').DataTable().$('tr.selected').removeClass('selected');
         $(this).addClass('selected');
 
         // save the index of the selected row
@@ -423,6 +423,7 @@
 
         //show query table, match table with default matches.
         if(isSavedResultPage){
+
           var query_table = $('#query_table').DataTable({
             serverSide: true,
             sortable: true,
