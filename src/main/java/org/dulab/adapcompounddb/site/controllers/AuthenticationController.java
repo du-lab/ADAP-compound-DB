@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.site.controllers;
 
-import org.dulab.adapcompounddb.site.services.SearchParametersService;
+import com.google.gson.Gson;
+import org.dulab.adapcompounddb.models.dto.SearchParametersDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
@@ -38,13 +39,11 @@ public class AuthenticationController extends BaseController {
     private final CaptchaService captchaService;
     private final boolean integTest = ControllerUtils.INTEG_TEST;
 
-    SearchParametersService searchParametersService;
 
     @Autowired
-    public AuthenticationController(final AuthenticationService authenticationService, CaptchaService captchaService, SearchParametersService searchParametersService) {
+    public AuthenticationController(final AuthenticationService authenticationService, CaptchaService captchaService) {
         this.authenticationService = authenticationService;
         this.captchaService = captchaService;
-        this.searchParametersService = searchParametersService;
     }
 
     /****************
@@ -142,6 +141,7 @@ public class AuthenticationController extends BaseController {
         final UserPrincipal principal = new UserPrincipal();
         principal.setUsername(form.getUsername());
         principal.setEmail(form.getEmail());
+        principal.setSearchParameters(new Gson().toJson(new SearchParametersDTO()));
         try {
             authenticationService.saveUser(principal, form.getPassword());
         } catch (Throwable t) {
@@ -163,12 +163,6 @@ public class AuthenticationController extends BaseController {
             form.setPassword(null);
             form.setConfirmedPassword(null);
             return new ModelAndView("signup");
-        }
-
-        try {
-            searchParametersService.createDefaultSearchParameters(principal.getId());
-        } catch (Exception e) {
-            LOG.warn("Error during creating default Search Parameters For User:" + principal.getId());
         }
 
         /*UserPrincipal.assign(session, principal);

@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.controllers;
 
+import com.google.gson.Gson;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.dto.SearchParametersDTO;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
@@ -45,14 +46,12 @@ public class IndividualSearchController extends BaseController {
 
     private final AdductService adductService;
 
-    private final SearchParametersService searchParametersService;
-
     @Autowired
     public IndividualSearchController(SubmissionService submissionService,
                                       SubmissionTagService submissionTagService,
                                       SpectrumService spectrumService,
                                       CaptchaService captchaService,
-                                      IndividualSearchService individualSearchService, AdductService adductService, SearchParametersService searchParametersService) {  // @Qualifier("spectrumSearchServiceImpl")
+                                      IndividualSearchService individualSearchService, AdductService adductService) {  // @Qualifier("spectrumSearchServiceImpl")
 
         this.submissionService = submissionService;
         this.spectrumService = spectrumService;
@@ -60,7 +59,6 @@ public class IndividualSearchController extends BaseController {
         this.individualSearchService = individualSearchService;
         this.captchaService = captchaService;
         this.adductService = adductService;
-        this.searchParametersService = searchParametersService;
     }
 
     @ModelAttribute
@@ -217,9 +215,13 @@ public class IndividualSearchController extends BaseController {
             defaultValue = "") String searchParametersCookie) {
         UserPrincipal user = getCurrentUserPrincipal();
         if (user != null) {
-            SearchParametersDTO searchParametersDTO = searchParametersService.getUserSearchParameters(user.getId());
-            searchParametersDTO.checkCustomParameters();
-            model.addAttribute("searchParameters",searchParametersDTO);
+            SearchParametersDTO searchParametersDTO = new Gson().fromJson(user.getSearchParameters(),SearchParametersDTO.class);;
+            if (searchParametersDTO == null) {
+                model.addAttribute("searchParameters",new SearchParametersDTO());
+            } else {
+                searchParametersDTO.checkCustomParameters();
+                model.addAttribute("searchParameters",searchParametersDTO);
+            }
         } else {
             model.addAttribute("searchParameters",new SearchParametersDTO());
         }

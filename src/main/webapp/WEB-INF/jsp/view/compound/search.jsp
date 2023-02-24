@@ -277,7 +277,7 @@
             && retentionValue != null && retentionDefault != null
             && mzToleranceDefault != null && mzToleranceValue != null) {
             console.log("inside",retentionDefault,retentionValue)
-            if (scoreThreshold === '0.5' && retentionIndexTolerance === '50.0'
+            if (scoreThreshold === '500' && retentionIndexTolerance === '50.0'
                 && mzTolerance === '0.01' && limit === '100'
                 && mzToleranceDefault === mzToleranceValue
                 && retentionDefault === retentionValue) {

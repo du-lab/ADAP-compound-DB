@@ -48,6 +48,8 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
 
 //    private List<Submission> submissions;
     private int peakCapacity = 15000000;
+
+    private String searchParameters;
     private Set<UserRole> roles;
 
     @Id
@@ -155,6 +157,14 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
     @Override
     public String toString() {
         return username;
+    }
+
+    public String getSearchParameters() {
+        return searchParameters;
+    }
+
+    public void setSearchParameters(String searchParameters) {
+        this.searchParameters = searchParameters;
     }
 
 //    public static UserPrincipal from(HttpSession session) {

@@ -2,6 +2,8 @@ package org.dulab.adapcompounddb.site.services;
 
 import java.util.List;
 
+import com.google.gson.Gson;
+import org.dulab.adapcompounddb.models.dto.SearchParametersDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
@@ -122,5 +124,16 @@ public class UserPrincipalServiceImpl implements UserPrincipalService {
     @Override
     public void delete(long id) {
         userPrincipalRepository.deleteById(id);
+    }
+
+    @Override
+    public SearchParametersDTO updateSearchParameters(SearchParametersDTO searchParameters, UserPrincipal user) {
+        Gson gson = new Gson();
+        SearchParametersDTO currentSearchParameters = gson.fromJson(user.getSearchParameters(), SearchParametersDTO.class);
+        if (currentSearchParameters == null || !currentSearchParameters.equals(searchParameters)) {
+            user.setSearchParameters(gson.toJson(searchParameters));
+            saveUserPrincipal(user);
+        }
+        return searchParameters;
     }
 }

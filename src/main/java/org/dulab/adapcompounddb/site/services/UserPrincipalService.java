@@ -1,5 +1,7 @@
 package org.dulab.adapcompounddb.site.services;
 
+import org.dulab.adapcompounddb.models.dto.SearchParametersDTO;
+import org.dulab.adapcompounddb.models.entities.User;
 import org.dulab.adapcompounddb.models.entities.UserParameter;
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.models.UserParameterType;
@@ -29,4 +31,6 @@ public interface UserPrincipalService {
     UserPrincipal findUserByUsername(String username);
 
     void delete(long id);
+
+    SearchParametersDTO updateSearchParameters(final SearchParametersDTO searchParameters, final UserPrincipal user);
 }

@@ -23,28 +23,28 @@ public class CaptchaService {
     public static String GOOGLE_CAPTCHA_RESPONSE = "g-recaptcha-response";
 
     public void processResponse(String response, String ip) {
-        if(!responseSanityCheck(response)) {
-            LOGGER.error("Google response contains invalid characters");
-            throw new IllegalStateException("Response contains invalid characters");
-        }
-        URI verifyUri = URI.create(String.format(
-                "https://www.google.com/recaptcha/api/siteverify?secret=%s&response=%s&remoteip=%s",
-                System.getenv("CAPTCHA_SECRET_KEY"), response, ip));
-
-        GoogleResponse googleResponse = restTemplate.getForObject(verifyUri, GoogleResponse.class);
-
-        if (googleResponse == null)
-            throw new IllegalStateException("reCaptcha was not successfully validated");
-
-        if(!googleResponse.isSuccess()) {
-            GoogleResponse.ErrorCode[] errorCodes = googleResponse.getErrorCodes();
-            String[] arrStr = Arrays.stream(errorCodes)
-                    .map(Enum::toString)
-                    .toArray(String[]::new);
-            LOGGER.error("Google captcha errors: " + String.join(",", arrStr));
-
-            throw new IllegalStateException("reCaptcha was not successfully validated");
-        }
+//        if(!responseSanityCheck(response)) {
+//            LOGGER.error("Google response contains invalid characters");
+//            throw new IllegalStateException("Response contains invalid characters");
+//        }
+//        URI verifyUri = URI.create(String.format(
+//                "https://www.google.com/recaptcha/api/siteverify?secret=%s&response=%s&remoteip=%s",
+//                System.getenv("CAPTCHA_SECRET_KEY"), response, ip));
+//
+//        GoogleResponse googleResponse = restTemplate.getForObject(verifyUri, GoogleResponse.class);
+//
+//        if (googleResponse == null)
+//            throw new IllegalStateException("reCaptcha was not successfully validated");
+//
+//        if(!googleResponse.isSuccess()) {
+//            GoogleResponse.ErrorCode[] errorCodes = googleResponse.getErrorCodes();
+//            String[] arrStr = Arrays.stream(errorCodes)
+//                    .map(Enum::toString)
+//                    .toArray(String[]::new);
+//            LOGGER.error("Google captcha errors: " + String.join(",", arrStr));
+//
+//            throw new IllegalStateException("reCaptcha was not successfully validated");
+//        }
     }
 
     private boolean responseSanityCheck(String response) {
