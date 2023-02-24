@@ -408,6 +408,7 @@
     // distinct_query_table.on('select', function ( e, dt, type, indexes ) {
     //     let query = distinct_query_table.rows().data()[indexes];
     $('#distinct_query_table tbody').on( 'click', 'tr', function () {
+        //remove any previous selected row
         $('#distinct_query_table').DataTable().$('tr.selected').removeClass('selected');
         $(this).addClass('selected');
 
@@ -858,7 +859,8 @@
                 return;
 
             $.ajax({
-              url: `${pageContext.request.contextPath}/ajax/spectrum/info?spectrumId=\${queryId}&fileIndex=\${queryFileIndex}&spectrumIndex=\${querySpectrumIndex}`,
+              url: (isSavedResultPage) ? (`${pageContext.request.contextPath}/ajax/spectrum/info?spectrumId=\${queryId}`)
+                  : (`${pageContext.request.contextPath}/ajax/spectrum/info?spectrumId=\${queryId}&fileIndex=\${queryFileIndex}&spectrumIndex=\${querySpectrumIndex}`),
                 success: d => $('#queryInfo').html(d)
             })
 
