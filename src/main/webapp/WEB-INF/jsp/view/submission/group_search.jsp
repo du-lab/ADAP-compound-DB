@@ -388,6 +388,7 @@
                   }
               ],
               "initComplete": function() {
+                $.fn.dataTable.tables({visible: true, api: true}).columns.adjust();
                   if(distinct_query_table.data().count() ===0){
                       // $('#query_table').DataTable().clear().draw();
                       // $('#match_table').DataTable().clear().draw();
@@ -435,12 +436,12 @@
             select: {style: 'single', info: false},
             searching:false,
             scrollX: true,
-            rowId: 'position',
+            rowId: 'spectrumId',
             ajax: {
+              type:"GET",
               url: "${pageContext.request.contextPath}/getSpectraForSavedResultPage",
               data: function (data) {
                 data.columnStr = data.columnStr = getColumnStr(data);
-                console.log(data);
                 data.search = data.search["value"];
                 data.querySpectrumName = query.querySpectrumName;
                 data.matchFilter = showMatchesOnly;
@@ -449,6 +450,8 @@
                 data.massError= massError;
                 data.retTimeError=reTimeError;
                 data.matchName=matchName;
+
+                console.log("AJAX QUERY TABLE", data);
               }
             },
             success: function(response){
@@ -598,7 +601,7 @@
             searching: false,
             select: {style: 'single', info: false},
             scroller: true,
-            rowId: 'position',
+            rowId: 'spectrumId',
             ajax: {
               url: "${pageContext.request.contextPath}/findMatchesSavedResultPage/data.json",
               data: function (data) {
@@ -657,8 +660,10 @@
                 data: row => {
                   let string = '';
                   if(row.name == null){
-                    $('#match_table').DataTable().clear();
+                    match=false;
+                    $('.match_container').hide();
                     return string;
+
                   }
                   if (row.name != null)
                     string += `<a href="<c:url value="/\${row.href}" />">\${row.name}</a>`;
@@ -694,9 +699,14 @@
             ]
             ,"initComplete": function() {
               //alert('Data loaded successfully');
+
+              //adjust columns of all tables displayed on the page.
+              $.fn.dataTable.tables({visible: true, api: true}).columns.adjust();
               //default choose the first row in query table
-              $('.match_container').show();
-              $('#match_table').DataTable().rows(0).select();
+              if(match) {
+                $('.match_container').show();
+                $('#match_table').DataTable().rows(0).select();
+              }
             }
           });
         }
@@ -819,6 +829,8 @@
                     ],
                       "initComplete": function(){
                         //alert('Data loaded successfully');
+                        //adjust column
+                        $.fn.dataTable.tables({visible: true, api: true}).columns.adjust();
                         //default choose the first row in query table
                         if(match) {
                           $('.match_container').show();
@@ -1014,5 +1026,8 @@
 
 
     });
-
+    // Adjust column widths when a table becomes visible
+    // $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
+    //   $.fn.dataTable.tables({visible: true, api: true}).columns.adjust();
+    // });
 </script>

@@ -87,7 +87,7 @@ public class GroupSearchRestController extends BaseController {
 
             //Avoid ConcurrentModificationException by make a copy for sorting
             matches = new ArrayList<>(sessionMatches);
-            response = groupSearchSort(true, searchStr, start, length, matches, columnStr);
+            response = groupSearchSort( searchStr, start, length, matches, columnStr);
 
 
         }
@@ -214,7 +214,7 @@ public class GroupSearchRestController extends BaseController {
                 s -> distinctSpectraNames.add(
                     s.getQuerySpectrumName())).collect(Collectors.toList());
 
-            response = groupSearchSort(true, searchStr,  start, length, spectrumDtoList, columnStr);
+            response = groupSearchSort( searchStr,  start, length, spectrumDtoList, columnStr);
         }
         return mapper.writeValueAsString(response);
     }
@@ -231,7 +231,7 @@ public class GroupSearchRestController extends BaseController {
         DataTableResponse response = new DataTableResponse();
 
         List<SearchResultDTO> querySpectrums = (List<SearchResultDTO>) sessionObject;
-        response = groupSearchSort(true, searchStr,  start, length, querySpectrums, columnStr);
+        response = groupSearchSort( searchStr,  start, length, querySpectrums, columnStr);
 
         return mapper.writeValueAsString(response);
     }
@@ -251,27 +251,22 @@ public class GroupSearchRestController extends BaseController {
         @RequestParam("matchName") final String matchName,
         final HttpSession session) throws JsonProcessingException {
 
-
+        int matchIndex =0;
         DataTableResponse response = new DataTableResponse();
 
         List<SpectrumMatch> spectrumMatchList = spectrumMatchService.getMatchesByUserAndSpectrumName(this.getCurrentUserPrincipal().getId(), spectrumName, showMatchesOnly,
             ontologyLevel, scoreThreshold, massError, retTimeError, matchName);
         List<SearchResultDTO> searchResultDTOs = new ArrayList<>();
         for(SpectrumMatch sm : spectrumMatchList){
-
-            //put in searchResult DTO...
-            SearchResultDTO result = new SearchResultDTO();
-            result.setQuerySpectrumName(sm.getQuerySpectrum().getName());
-            result.setQuerySpectrumId(sm.getQuerySpectrum().getId());
-            result.setSpectrumId(sm.getMatchSpectrum().getId());
-            result.setScore(sm.getScore());
-            result.setMassError(sm.getMassError());
+            SearchResultDTO result = MappingUtils.mapSpectrumMatchToSpectrumClusterView(sm,
+                matchIndex++, null, null, null);
+            result.setChromatographyTypeLabel(
+                sm.getMatchSpectrum().getChromatographyType().getLabel());
             result.setRetTimeError(sm.getRetTimeError());
             result.setOntologyLevel(sm.getOntologyLevel());
-
             searchResultDTOs.add(result);
         }
-        response = groupSearchSort(false, searchStr,  start, length, searchResultDTOs, columnStr);
+        response = groupSearchSort( searchStr,  start, length, searchResultDTOs, columnStr);
 
         return mapper.writeValueAsString(response);
     }
@@ -294,9 +289,10 @@ public class GroupSearchRestController extends BaseController {
             SearchResultDTO searchResult = MappingUtils.mapSpectrumMatchToSpectrumClusterView(
                 match, matchIndex++, null, null, null);
             searchResult.setChromatographyTypeLabel(match.getMatchSpectrum() != null ? match.getMatchSpectrum().getChromatographyType().getLabel() : null);
+            searchResult.setOntologyLevel(match.getOntologyLevel());
             matches.add(searchResult);
         }
-        response = groupSearchSort(true, searchStr, start, length, matches, columnStr);
+        response = groupSearchSort( searchStr, start, length, matches, columnStr);
 
         return mapper.writeValueAsString(response);
     }
@@ -337,7 +333,7 @@ public class GroupSearchRestController extends BaseController {
                 searchResultDTOList.add(searchResult);
             }
 
-            response = groupSearchSort(false, searchStr, start, length, searchResultDTOList, columnStr);
+            response = groupSearchSort( searchStr, start, length, searchResultDTOList, columnStr);
             response.setRecordsTotal(distinctQuerySpectrum.getTotalElements());
             response.setRecordsFiltered(distinctQuerySpectrum.getTotalElements());
         }
@@ -381,7 +377,7 @@ public class GroupSearchRestController extends BaseController {
         return spectrumList.stream().map(Spectrum::getId).collect(Collectors.toList());
     }
 
-    private DataTableResponse groupSearchSort(boolean groupSearchAsync, final String searchStr, final Integer start, final Integer length,
+    private DataTableResponse groupSearchSort( final String searchStr, final Integer start, final Integer length,
                                               List<SearchResultDTO> spectrumList, final String columnStr) {
 
         if (searchStr != null && searchStr.trim().length() > 0)
@@ -429,13 +425,9 @@ public class GroupSearchRestController extends BaseController {
 
         final List<SearchResultDTO> spectrumMatchList = new ArrayList<>();
         for (int i = 0; i < spectrumList.size(); i++) {
-            if(groupSearchAsync) {
-                if (i < start || spectrumMatchList.size() >= length)
+            if (i < start || spectrumMatchList.size() >= length)
                     continue;
-            }
             spectrumMatchList.add(spectrumList.get(i));
-
-
 
         }
 
