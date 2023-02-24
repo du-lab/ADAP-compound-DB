@@ -141,7 +141,7 @@ public class AuthenticationController extends BaseController {
         final UserPrincipal principal = new UserPrincipal();
         principal.setUsername(form.getUsername());
         principal.setEmail(form.getEmail());
-        principal.setSearchParameters(new Gson().toJson(new SearchParametersDTO()));
+        principal.setSearchParameters(new SearchParametersDTO());
         try {
             authenticationService.saveUser(principal, form.getPassword());
         } catch (Throwable t) {

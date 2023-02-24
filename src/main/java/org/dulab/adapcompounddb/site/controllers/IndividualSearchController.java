@@ -214,17 +214,7 @@ public class IndividualSearchController extends BaseController {
             value = INDIVIDUAL_SEARCH_PARAMETERS_COOKIE_NAME,
             defaultValue = "") String searchParametersCookie) {
         UserPrincipal user = getCurrentUserPrincipal();
-        if (user != null) {
-            SearchParametersDTO searchParametersDTO = new Gson().fromJson(user.getSearchParameters(),SearchParametersDTO.class);;
-            if (searchParametersDTO == null) {
-                model.addAttribute("searchParameters",new SearchParametersDTO());
-            } else {
-                searchParametersDTO.checkCustomParameters();
-                model.addAttribute("searchParameters",searchParametersDTO);
-            }
-        } else {
-            model.addAttribute("searchParameters",new SearchParametersDTO());
-        }
+        model.addAttribute("searchParameters",user.getSearchParametersDTO());
         compoundSearchForm = ConversionsUtils.byteStringToForm(searchParametersCookie, CompoundSearchForm.class);
         //Spectrum spectrum = new Spectrum();
         FilterOptions filterOptions = getFilterOptions(ChromatographyType.values());

@@ -54,13 +54,7 @@ public class AccountController extends BaseController {
         int peakCapacity = user.getPeakCapacity();
         double maxDiskSpace = MEMORY_PER_PEAK * peakCapacity;
         double currentDiskSpace = submissionService.getPeakDiskSpaceByUser(user.getUsername());
-        SearchParametersDTO searchParametersDTO = new Gson().fromJson(user.getSearchParameters(),SearchParametersDTO.class);
-        if (searchParametersDTO == null) {
-            model.addAttribute("searchParameters",new SearchParametersDTO());
-        } else {
-            searchParametersDTO.checkCustomParameters();
-            model.addAttribute("searchParameters",searchParametersDTO);
-        }
+        model.addAttribute("searchParameters",user.getSearchParametersDTO());
         model.addAttribute(("currentDiskSpace"), currentDiskSpace);
         model.addAttribute(("maxDiskSpace"), maxDiskSpace);
         model.addAttribute("user", user);

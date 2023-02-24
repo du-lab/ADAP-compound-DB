@@ -21,6 +21,8 @@ import javax.persistence.UniqueConstraint;
 import javax.servlet.http.HttpSession;
 import javax.validation.constraints.NotBlank;
 
+import com.google.gson.Gson;
+import org.dulab.adapcompounddb.models.dto.SearchParametersDTO;
 import org.dulab.adapcompounddb.models.enums.UserRole;
 import org.dulab.adapcompounddb.validation.Email;
 
@@ -165,6 +167,20 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
 
     public void setSearchParameters(String searchParameters) {
         this.searchParameters = searchParameters;
+    }
+
+    @Transient
+    public SearchParametersDTO getSearchParametersDTO() {
+        SearchParametersDTO searchParametersDTO = new Gson().fromJson(getSearchParameters(),SearchParametersDTO.class);
+        if (searchParametersDTO == null) {
+            return new SearchParametersDTO();
+        }
+        searchParametersDTO.checkCustomParameters();
+        return searchParametersDTO;
+    }
+
+    public void setSearchParameters(SearchParametersDTO searchParametersDTO) {
+        setSearchParameters(new Gson().toJson(searchParametersDTO));
     }
 
 //    public static UserPrincipal from(HttpSession session) {
