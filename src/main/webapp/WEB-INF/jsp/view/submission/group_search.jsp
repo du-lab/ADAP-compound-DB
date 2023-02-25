@@ -662,6 +662,7 @@
                   if(row.name == null){
                     match=false;
                     $('.match_container').hide();
+                    $('#query_plot_match_row').hide();
                     return string;
 
                   }
@@ -789,9 +790,11 @@
                         {
                             data: row => {
                                 let string = '';
+                                //if there's no match
                                 if(row.name == null){
                                   match=false;
                                   $('.match_container').hide();
+                                  $('#query_plot_match_row').hide();
                                   return string;
                                 }
 
@@ -888,9 +891,6 @@
             $('#plot').spectrumPlot(position, queryUrl + 'positive/peaks.json', matchUrl + 'negative/peaks.json',
                 function(complete){
                 if(complete) {
-                    //reset to display plot
-                    $('#plot_content').show();
-
                     //reset styles
                     $('#query_content').css('padding-right', '')
                     $('#match_content').css('padding-left', '')
