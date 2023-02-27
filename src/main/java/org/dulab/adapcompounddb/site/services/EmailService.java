@@ -70,7 +70,7 @@ public class EmailService {
             mimeMessageHelper.setTo(sendTo);
 
             String email = System.getenv("ADAP_EMAIL_LOGIN");
-            message.setFrom("mr.toan49@gmail.com");
+            message.setFrom(email);
             mimeMessageHelper.setSubject(subject);
             mimeMessageHelper.setText(text);
             mailSender.send(message);

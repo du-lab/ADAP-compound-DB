@@ -52,8 +52,8 @@ public class Application extends SpringBootServletInitializer {
 
         String email = System.getenv("ADAP_EMAIL_LOGIN");
         String password = System.getenv("ADAP_EMAIL_PASSWORD");
-        mailSender.setUsername("mr.toan49@gmail.com");
-        mailSender.setPassword("zokjirzbhlwoliia");
+        mailSender.setUsername(email);
+        mailSender.setPassword(password);
 
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");
