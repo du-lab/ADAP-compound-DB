@@ -190,6 +190,8 @@ public class SubmissionService {
     private void calculateAndSavePeakNumber(final Submission submission, final String operation) {
         UserPrincipal user = submission.getUser();
         int fetchedPeakNumber = user.getPeakNumber();
+        if (fetchedPeakNumber == 0)
+            fetchedPeakNumber = submissionRepository.getPeaksByUserName(user.getUsername());
         int submissionPeakNumber = 0;
         try {
             for (File file : submission.getFiles()) {
@@ -221,6 +223,9 @@ public class SubmissionService {
         Optional<Submission> submission = submissionRepository.findById(submissionId);
         if (submission.isPresent()) {
             submissionRepository.delete(submission.get());
+            int fetchedPeakNumber = submission.get().getUser().getPeakNumber();
+            if (fetchedPeakNumber == 0)
+                fetchedPeakNumber = submissionRepository.getPeaksByUserName(submission.get().getUser().getName());
             calculateAndSavePeakNumber(submission.get(), Submission.DELETE_SUBMISSION);
         }
         else
@@ -391,11 +396,16 @@ public class SubmissionService {
 
     }
 
-    public double getPeakDiskSpaceByUser(String userName) {
-        int peakPerUser = submissionRepository.getPeaksByUserName(userName) ;
-        double totalMemory = peakPerUser * MEMORY_PER_PEAK;
-
-        return totalMemory;
+    public double getPeakDiskSpaceByUser(UserPrincipal user) {
+        int peakPerUser = user.getPeakNumber();
+        if (peakPerUser == 0) {
+            peakPerUser = submissionRepository.getPeaksByUserName(user.getUsername());
+            if (peakPerUser > 0) {
+                user.setPeakNumber(peakPerUser);
+                userPrincipalRepository.save(user);
+            }
+        }
+        return peakPerUser * MEMORY_PER_PEAK;
 
     }
 
