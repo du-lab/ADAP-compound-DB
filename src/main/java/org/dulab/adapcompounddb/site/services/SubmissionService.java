@@ -1,6 +1,5 @@
 package org.dulab.adapcompounddb.site.services;
 
-import com.esotericsoftware.minlog.Log;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -209,7 +208,7 @@ public class SubmissionService {
                 userPrincipalRepository.save(user);
             }
         } catch (Exception e){
-            Log.error("Error while calculating and saving peak number for submission : " + submission.getId() + "" +
+            LOG.error("Error while calculating and saving peak number for submission : " + submission.getId() + "" +
                     " for user : " + user.getId() + " : " + e);
         }
     }
