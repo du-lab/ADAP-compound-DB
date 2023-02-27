@@ -666,7 +666,7 @@
                     return string;
 
                   }
-                  if (row.name != null)
+                  else if (row.name != null)
                     string += `<a href="<c:url value="/\${row.href}" />">\${row.name}</a>`;
                   if (row.errorMessage != null)
                     string += `<span class="badge badge-danger" title="\${row.errorMessage}">ERROR</span>`
@@ -707,6 +707,7 @@
               if(match) {
                 $('.match_container').show();
                 $('#match_table').DataTable().rows(0).select();
+                $('#query_plot_match_row').show();
               }
             }
           });
@@ -797,12 +798,13 @@
                                   $('#query_plot_match_row').hide();
                                   return string;
                                 }
-
-                                if (row.name != null)
-                                    string += `<a href="<c:url value="/\${row.href}" />">\${row.name}</a>`;
+                                else if (row.name != null){
+                                  string += `<a href="<c:url value="/\${row.href}" />">\${row.name}</a>`;
+                                }
                                 if (row.errorMessage != null)
                                     string += `<span class="badge badge-danger" title="\${row.errorMessage}">ERROR</span>`
-                                return string;
+
+                              return string;
                             }
                         },
                         {data: row => (row.mass != null) ? row.mass.toFixed(3) : ''},
@@ -838,6 +840,7 @@
                         if(match) {
                           $('.match_container').show();
                           $('#match_table').DataTable().rows(0).select();
+                          $('#query_plot_match_row').show();
                         }
                   }
                     });

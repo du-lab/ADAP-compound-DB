@@ -87,7 +87,7 @@ public class GroupSearchRestController extends BaseController {
 
             //Avoid ConcurrentModificationException by make a copy for sorting
             matches = new ArrayList<>(sessionMatches);
-            response = groupSearchSort( searchStr, start, length, matches, columnStr);
+            response = groupSearchSort(false, searchStr, start, length, matches, columnStr);
 
 
         }
@@ -214,7 +214,7 @@ public class GroupSearchRestController extends BaseController {
                 s -> distinctSpectraNames.add(
                     s.getQuerySpectrumName())).collect(Collectors.toList());
 
-            response = groupSearchSort( searchStr,  start, length, spectrumDtoList, columnStr);
+            response = groupSearchSort(false, searchStr,  start, length, spectrumDtoList, columnStr);
         }
         return mapper.writeValueAsString(response);
     }
@@ -231,7 +231,7 @@ public class GroupSearchRestController extends BaseController {
         DataTableResponse response = new DataTableResponse();
 
         List<SearchResultDTO> querySpectrums = (List<SearchResultDTO>) sessionObject;
-        response = groupSearchSort( searchStr,  start, length, querySpectrums, columnStr);
+        response = groupSearchSort(false, searchStr,  start, length, querySpectrums, columnStr);
 
         return mapper.writeValueAsString(response);
     }
@@ -266,7 +266,7 @@ public class GroupSearchRestController extends BaseController {
             result.setOntologyLevel(sm.getOntologyLevel());
             searchResultDTOs.add(result);
         }
-        response = groupSearchSort( searchStr,  start, length, searchResultDTOs, columnStr);
+        response = groupSearchSort(false, searchStr,  start, length, searchResultDTOs, columnStr);
 
         return mapper.writeValueAsString(response);
     }
@@ -292,7 +292,7 @@ public class GroupSearchRestController extends BaseController {
             searchResult.setOntologyLevel(match.getOntologyLevel());
             matches.add(searchResult);
         }
-        response = groupSearchSort( searchStr, start, length, matches, columnStr);
+        response = groupSearchSort(false, searchStr, start, length, matches, columnStr);
 
         return mapper.writeValueAsString(response);
     }
@@ -333,7 +333,7 @@ public class GroupSearchRestController extends BaseController {
                 searchResultDTOList.add(searchResult);
             }
 
-            response = groupSearchSort( searchStr, start, length, searchResultDTOList, columnStr);
+            response = groupSearchSort(true, searchStr, start, length, searchResultDTOList, columnStr);
             response.setRecordsTotal(distinctQuerySpectrum.getTotalElements());
             response.setRecordsFiltered(distinctQuerySpectrum.getTotalElements());
         }
@@ -377,7 +377,7 @@ public class GroupSearchRestController extends BaseController {
         return spectrumList.stream().map(Spectrum::getId).collect(Collectors.toList());
     }
 
-    private DataTableResponse groupSearchSort( final String searchStr, final Integer start, final Integer length,
+    private DataTableResponse groupSearchSort(boolean isPageResult, final String searchStr, final Integer start, final Integer length,
                                               List<SearchResultDTO> spectrumList, final String columnStr) {
 
         if (searchStr != null && searchStr.trim().length() > 0)
@@ -424,16 +424,22 @@ public class GroupSearchRestController extends BaseController {
         }
 
         final List<SearchResultDTO> spectrumMatchList = new ArrayList<>();
-        for (int i = 0; i < spectrumList.size(); i++) {
-            if (i < start || spectrumMatchList.size() >= length)
+        DataTableResponse response = new DataTableResponse();
+        if(!isPageResult) {
+            for (int i = 0; i < spectrumList.size(); i++) {
+                if (i < start || spectrumMatchList.size() >= length)
                     continue;
-            spectrumMatchList.add(spectrumList.get(i));
+                spectrumMatchList.add(spectrumList.get(i));
 
+            }
+
+            response = new DataTableResponse(spectrumMatchList);
+            response.setRecordsTotal((long) spectrumList.size());
+            response.setRecordsFiltered((long) spectrumList.size());
         }
-
-        DataTableResponse response = new DataTableResponse(spectrumMatchList);
-        response.setRecordsTotal((long) spectrumList.size());
-        response.setRecordsFiltered((long) spectrumList.size());
+        else{
+            response = new DataTableResponse(spectrumList);
+        }
 
         return response;
     }
