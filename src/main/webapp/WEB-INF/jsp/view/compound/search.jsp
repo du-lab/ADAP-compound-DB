@@ -53,9 +53,9 @@
 
                             <li class="nav-item"><a id="parametersTab" class="nav-link" data-toggle="tab" href="#parameters">
                                Parameters
-                                <span id="custom" class="badge badge-info"
-                                    ${searchParameters.customParameters ? '' : 'style="display: none;"'}
-                                >Custom Parameters</span>
+                                <span id="custom" class="badge badge-info" style="display: none">
+                                    Custom Parameters
+                                </span>
                             </a></li>
 
                         </ul>
@@ -262,8 +262,9 @@
         }
     }
 
-    function checkForChange() {
-        console.log("Check for change")
+    function checkForChange(limitFetched, mzToleranceFetched, mzToleranceTypeFetched,
+                            retentionIndexMatchFetched, retentionIndexToleranceFetched,
+                            scoreThresholdFetched) {
         let scoreThreshold = $('#scorethreshold')[0].value;
         let retentionIndexTolerance = $('#retentionIndexTolerance')[0].value;
         let mzTolerance = $('#mzTolerance')[0].value;
@@ -276,11 +277,11 @@
             && mzTolerance != null && limit != null
             && retentionValue != null && retentionDefault != null
             && mzToleranceDefault != null && mzToleranceValue != null) {
-            console.log("inside",retentionDefault,retentionValue)
-            if (scoreThreshold === '500' && retentionIndexTolerance === '50.0'
-                && mzTolerance === '0.01' && limit === '100'
-                && mzToleranceDefault === mzToleranceValue
-                && retentionDefault === retentionValue) {
+            if (scoreThreshold == scoreThresholdFetched
+                && retentionIndexTolerance == retentionIndexToleranceFetched
+                && mzTolerance == mzToleranceFetched && limit == limitFetched
+                && mzToleranceTypeFetched == mzToleranceValue
+                && retentionIndexMatchFetched == retentionValue) {
                 $("#custom").hide();
             } else {
                 $("#custom").show();
@@ -313,7 +314,8 @@
         // })
 
         $('#scorethreshold,#retention,#limit,#mzTolerance, #mzToleranceType,#retentionIndexTolerance').change(function() {
-            checkForChange();
+            checkForChange(${searchParameters.limit},${searchParameters.mzTolerance},'${searchParameters.mzToleranceType}',
+                '${searchParameters.retentionIndexMatch}',${searchParameters.retentionIndexTolerance},${searchParameters.scoreThreshold});
         })
 
         $("input[type=radio][name='chromatographyType']").change(chromatographyChanged);
