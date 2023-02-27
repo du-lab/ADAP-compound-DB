@@ -157,7 +157,10 @@ public class SubmissionService {
         String userName = user.getUsername();
         int count = 0;
         if(!user.isAdmin()) {
-            count = submissionRepository.getPeaksByUserName(userName);
+            count = user.getPeakNumber();
+            if (count == 0) {
+                count = submissionRepository.getPeaksByUserName(user.getUsername());
+            }
 
             //default peak capacity
             int peakCapacity = user.getPeakCapacity();
@@ -183,15 +186,13 @@ public class SubmissionService {
         if (ids.contains(0L)) {
             spectrumRepository.saveSpectra(fileList, savedFileIds);
         }
-        calculateAndSavePeakNumber(submission, Submission.SAVE_SUBMISSION);
+        calculateAndSavePeakNumber(submission, count, Submission.SAVE_SUBMISSION);
         return submissionObj;
     }
 
-    private void calculateAndSavePeakNumber(final Submission submission, final String operation) {
+    private void calculateAndSavePeakNumber(final Submission submission, final int fetchedPeakNumber,
+                                            final String operation) {
         UserPrincipal user = submission.getUser();
-        int fetchedPeakNumber = user.getPeakNumber();
-        if (fetchedPeakNumber == 0)
-            fetchedPeakNumber = submissionRepository.getPeaksByUserName(user.getUsername());
         int submissionPeakNumber = 0;
         try {
             for (File file : submission.getFiles()) {
@@ -222,11 +223,11 @@ public class SubmissionService {
     public void delete(final long submissionId) {
         Optional<Submission> submission = submissionRepository.findById(submissionId);
         if (submission.isPresent()) {
+            UserPrincipal user = submission.get().getUser();
             submissionRepository.delete(submission.get());
-            int fetchedPeakNumber = submission.get().getUser().getPeakNumber();
-            if (fetchedPeakNumber == 0)
-                fetchedPeakNumber = submissionRepository.getPeaksByUserName(submission.get().getUser().getName());
-            calculateAndSavePeakNumber(submission.get(), Submission.DELETE_SUBMISSION);
+//            PeakNumber here cannot be zero (if user has files) account page calculate PeakNumber and to delete we need
+//            to go to account page, and account page calculates PeakNumber if user.peakNumber is zero
+            calculateAndSavePeakNumber(submission.get(), user.getPeakNumber(), Submission.DELETE_SUBMISSION);
         }
         else
             LOG.warn(String.format(
