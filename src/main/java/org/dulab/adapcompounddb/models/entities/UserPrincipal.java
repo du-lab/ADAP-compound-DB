@@ -48,6 +48,7 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
 
 //    private List<Submission> submissions;
     private int peakCapacity = 15000000;
+    private int peakNumber = 0;
     private Set<UserRole> roles;
 
     @Id
@@ -110,6 +111,15 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
     public void setPeakCapacity(int peakCapacity) {
         this.peakCapacity = peakCapacity;
     }
+
+    public int getPeakNumber() {
+        return peakNumber;
+    }
+
+    public void setPeakNumber(int peakNumber) {
+        this.peakNumber = peakNumber;
+    }
+
 
     @Transient
     public boolean isAdmin() {

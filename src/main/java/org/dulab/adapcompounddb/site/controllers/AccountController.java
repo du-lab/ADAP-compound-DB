@@ -45,7 +45,7 @@ public class AccountController extends BaseController {
 
         int peakCapacity = user.getPeakCapacity();
         double maxDiskSpace = MEMORY_PER_PEAK * peakCapacity;
-        double currentDiskSpace = submissionService.getPeakDiskSpaceByUser(user.getUsername());
+        double currentDiskSpace = user.getPeakNumber();
 
         model.addAttribute(("currentDiskSpace"), currentDiskSpace);
         model.addAttribute(("maxDiskSpace"), maxDiskSpace);

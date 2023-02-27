@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.services;
 
+import com.esotericsoftware.minlog.Log;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -154,8 +155,9 @@ public class SubmissionService {
         //only save submission if it doens't surpass peak capacity
         UserPrincipal user = submission.getUser();
         String userName = user.getUsername();
+        int count = 0;
         if(!user.isAdmin()) {
-            int count = submissionRepository.getPeaksByUserName(userName);
+            count = submissionRepository.getPeaksByUserName(userName);
 
             //default peak capacity
             int peakCapacity = user.getPeakCapacity();
@@ -181,8 +183,32 @@ public class SubmissionService {
         if (ids.contains(0L)) {
             spectrumRepository.saveSpectra(fileList, savedFileIds);
         }
-
+        calculateAndSavePeakNumber(submission, Submission.SAVE_SUBMISSION);
         return submissionObj;
+    }
+
+    private void calculateAndSavePeakNumber(final Submission submission, final String operation) {
+        UserPrincipal user = submission.getUser();
+        int fetchedPeakNumber = user.getPeakNumber();
+        int submissionPeakNumber = 0;
+        try {
+            for (File file : submission.getFiles()) {
+                for (Spectrum spectrum : file.getSpectra()) {
+                    submissionPeakNumber += spectrum.getPeaks().size();
+                }
+            }
+            if (submissionPeakNumber > 0) {
+                if (operation.equals(Submission.SAVE_SUBMISSION)) {
+                    user.setPeakNumber(fetchedPeakNumber + submissionPeakNumber);
+                } else if (operation.equals(Submission.DELETE_SUBMISSION)) {
+                    user.setPeakNumber(Math.max(fetchedPeakNumber - submissionPeakNumber, 0));
+                }
+                userPrincipalRepository.save(user);
+            }
+        } catch (Exception e){
+            Log.error("Error while calculating and saving peak number for submission : " + submission.getId() + "" +
+                    " for user : " + user.getId() + " : " + e);
+        }
     }
 
     @Transactional
@@ -193,8 +219,10 @@ public class SubmissionService {
     @Transactional
     public void delete(final long submissionId) {
         Optional<Submission> submission = submissionRepository.findById(submissionId);
-        if (submission.isPresent())
+        if (submission.isPresent()) {
             submissionRepository.delete(submission.get());
+            calculateAndSavePeakNumber(submission.get(), Submission.DELETE_SUBMISSION);
+        }
         else
             LOG.warn(String.format(
                     "Fail to delete submission %d because this submission is not in the database", submissionId));
