@@ -31,4 +31,6 @@ public interface UserPrincipalService {
     void delete(long id);
 
   UserPrincipal findByUserEmail(String email);
+
+    UserPrincipal findByToken(String token);
 }

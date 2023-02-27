@@ -17,7 +17,7 @@
         <div class="card-body">
           <form action="/forgotPassword"  method="POST" style="max-width: 420px; margin: 0 auto;">
             <sec:csrfInput />
-            <div class="border border-secondary rounded p-3">
+
               <div>
                 <p>Please enter the email associated with your account. We will be sending a reset password link to your email.</p>
               </div>
@@ -29,7 +29,7 @@
                   <input type="submit" value="Send" class="btn btn-primary" />
                 </p>
               </div>
-            </div>
+
           </form>
         </div>
       </div>

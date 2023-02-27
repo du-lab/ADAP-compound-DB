@@ -82,6 +82,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new IllegalStateException("The old password does not match your current password, Please try again!");
         }
     }
+    @Override
+    public void resetPassword(String username, String newpass) throws Exception {
+
+        UserPrincipal principal = userPrincipalRepository.findUserPrincipalByUsername(username).orElse(null);
+        if (principal == null) {
+            throw new Exception("Cannot find user");
+        }
+        String salt = BCrypt.gensalt(HASHING_LOG_ROUNDS);
+        principal.setHashedPassword(BCrypt.hashpw(newpass, salt));
+        userPrincipalRepository.save(principal);
+
+    }
 
     @Override
     @Transactional

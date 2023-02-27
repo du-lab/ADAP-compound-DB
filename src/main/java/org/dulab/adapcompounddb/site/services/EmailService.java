@@ -60,4 +60,24 @@ public class EmailService {
 
 
     }
+
+    public void sendEmail(String receiptant, String subject, String text){
+        MimeMessage message = mailSender.createMimeMessage();
+
+        try {
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper (message);
+            InternetAddress sendTo = new InternetAddress(receiptant);
+            mimeMessageHelper.setTo(sendTo);
+
+            String email = System.getenv("ADAP_EMAIL_LOGIN");
+            message.setFrom("mr.toan49@gmail.com");
+            mimeMessageHelper.setSubject(subject);
+            mimeMessageHelper.setText(text);
+            mailSender.send(message);
+        } catch (MessagingException e) {
+            LOGGER.warn( e.getMessage(), e);
+        } catch (Exception e) {
+            LOGGER.warn( e.getMessage(), e);
+        }
+    }
 }

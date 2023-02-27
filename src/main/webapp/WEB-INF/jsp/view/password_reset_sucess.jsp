@@ -10,11 +10,12 @@
   <div class="row row-content">
     <div class="col">
       <div class="card">
+        <div class="card-header card-header-single">Reset Password Confirmation</div>
         <div class="card-body">
-          <h1>Password reset successful</h1>
           <p>Your password has been successfully reset. You can now <a href="/login">Log in</a> using your new password.</p>
         </div>
       </div>
     </div>
   </div>
 </div>
+

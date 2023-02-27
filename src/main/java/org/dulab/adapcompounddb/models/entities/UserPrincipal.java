@@ -116,6 +116,22 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
         this.peakCapacity = peakCapacity;
     }
 
+    public String getPasswordResetToken() {
+        return passwordResetToken;
+    }
+
+    public void setPasswordResetToken(String passwordResetToken) {
+        this.passwordResetToken = passwordResetToken;
+    }
+
+    public Date getPasswordExpirationDate() {
+        return passwordExpirationDate;
+    }
+
+    public void setPasswordExpirationDate(Date passwordExpirationDate) {
+        this.passwordExpirationDate = passwordExpirationDate;
+    }
+
     @Transient
     public boolean isAdmin() {
         boolean isAdmin = false;

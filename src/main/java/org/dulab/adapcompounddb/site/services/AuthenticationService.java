@@ -15,6 +15,8 @@ public interface AuthenticationService {
             @NotBlank(message = "The username is required.") String username,
             @NotBlank(message = "The password is required.") String password);
 
+
+
     Optional<UserPrincipal> findUser(long id);
 
     void saveUser(
@@ -25,4 +27,7 @@ public interface AuthenticationService {
             String username,
             @Password(message = "Please match the requested format.") String oldpass,
             @Password(message = "Please match the requested format.") String newpass);
+
+    void resetPassword(String username, String newpass) throws Exception;
+
 }

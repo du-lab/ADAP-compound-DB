@@ -51,6 +51,10 @@
                 </div>
               </c:if>
               <div class="row form-group">
+                <form:label path="username" cssClass="col-md-3 offset-md-3 col-form-label">Username:</form:label>
+                <p class="col-md-3 form-control">${resetPassForm.username}</p>
+              </div>
+              <div class="row form-group">
                 <form:label path="newPass" cssClass="col-md-3 offset-md-3 col-form-label">New Password:</form:label>
                 <form:password path="newPass" cssClass="col-md-3 form-control"/>
               </div>
