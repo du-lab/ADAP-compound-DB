@@ -1,6 +1,5 @@
 package org.dulab.adapcompounddb.site.controllers;
 
-import com.google.gson.Gson;
 import org.dulab.adapcompounddb.models.dto.SearchParametersDTO;
 import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
 import org.dulab.adapcompounddb.models.entities.Submission;
@@ -53,7 +52,7 @@ public class AccountController extends BaseController {
 
         int peakCapacity = user.getPeakCapacity();
         double maxDiskSpace = MEMORY_PER_PEAK * peakCapacity;
-        double currentDiskSpace = submissionService.getPeakDiskSpaceByUser(user.getUsername());
+        double currentDiskSpace = submissionService.getPeakDiskSpaceByUser(user);
         model.addAttribute("searchParameters",user.getSearchParametersDTO());
         model.addAttribute(("currentDiskSpace"), currentDiskSpace);
         model.addAttribute(("maxDiskSpace"), maxDiskSpace);
@@ -86,7 +85,7 @@ public class AccountController extends BaseController {
                 .collect(Collectors.toList());
         int peakCapacity = user.getPeakCapacity();
         double maxDiskSpace = MEMORY_PER_PEAK * peakCapacity;
-        double currentDiskSpace = submissionService.getPeakDiskSpaceByUser(user.getUsername());
+        double currentDiskSpace = submissionService.getPeakDiskSpaceByUser(user);
         searchParametersDTO.checkCustomParameters();
         model.addAttribute("searchParameters",searchParametersDTO);
         model.addAttribute(("currentDiskSpace"), currentDiskSpace);

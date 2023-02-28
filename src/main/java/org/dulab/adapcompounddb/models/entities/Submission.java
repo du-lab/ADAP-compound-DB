@@ -25,6 +25,11 @@ public class Submission implements Serializable {
 
     private static final String SESSION_ATTRIBUTE_KEY = "submission";
 
+    @Transient
+    public static final String SAVE_SUBMISSION = "SAVE_SUBMISSION";
+    @Transient
+    public static final String DELETE_SUBMISSION = "DELETE_SUBMISSION";
+
     // *************************
     // ***** Entity Fields *****
     // *************************
