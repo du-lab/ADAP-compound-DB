@@ -19,9 +19,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
-import javax.servlet.http.HttpSession;
 import javax.validation.constraints.NotBlank;
 
+import com.google.gson.Gson;
+import org.dulab.adapcompounddb.models.dto.SearchParametersDTO;
 import org.dulab.adapcompounddb.models.enums.UserRole;
 import org.dulab.adapcompounddb.validation.Email;
 
@@ -49,6 +50,8 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
 
 //    private List<Submission> submissions;
     private int peakCapacity = 15000000;
+    private int peakNumber = 0;
+    private String searchParameters;
 
     private String passwordResetToken;
 
@@ -132,6 +135,15 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
         this.passwordExpirationDate = passwordExpirationDate;
     }
 
+    public int getPeakNumber() {
+        return peakNumber;
+    }
+
+    public void setPeakNumber(int peakNumber) {
+        this.peakNumber = peakNumber;
+    }
+
+
     @Transient
     public boolean isAdmin() {
         boolean isAdmin = false;
@@ -178,11 +190,25 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
         return username;
     }
 
-//    public static UserPrincipal from(HttpSession session) {
-//        return session == null ? null : (UserPrincipal) session.getAttribute(SESSION_ATTRIBUTE_KEY);
-//    }
-//
-//    public static void assign(HttpSession session, UserPrincipal principal) {
-//        session.setAttribute(SESSION_ATTRIBUTE_KEY, principal);
-//    }
+    public String getSearchParameters() {
+        return searchParameters;
+    }
+
+    public void setSearchParameters(String searchParameters) {
+        this.searchParameters = searchParameters;
+    }
+
+    @Transient
+    public SearchParametersDTO getSearchParametersDTO() {
+        SearchParametersDTO searchParametersDTO = new Gson().fromJson(getSearchParameters(),SearchParametersDTO.class);
+        if (searchParametersDTO == null) {
+            return new SearchParametersDTO();
+        }
+        searchParametersDTO.checkCustomParameters();
+        return searchParametersDTO;
+    }
+
+    public void setSearchParameters(SearchParametersDTO searchParametersDTO) {
+        setSearchParameters(new Gson().toJson(searchParametersDTO));
+    }
 }

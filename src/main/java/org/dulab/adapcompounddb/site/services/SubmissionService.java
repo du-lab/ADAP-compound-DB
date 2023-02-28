@@ -154,8 +154,12 @@ public class SubmissionService {
         //only save submission if it doens't surpass peak capacity
         UserPrincipal user = submission.getUser();
         String userName = user.getUsername();
+        int count = 0;
         if(!user.isAdmin()) {
-            int count = submissionRepository.getPeaksByUserName(userName);
+            count = user.getPeakNumber();
+            if (count == 0) {
+                count = submissionRepository.getPeaksByUserName(user.getUsername());
+            }
 
             //default peak capacity
             int peakCapacity = user.getPeakCapacity();
@@ -181,8 +185,32 @@ public class SubmissionService {
         if (ids.contains(0L)) {
             spectrumRepository.saveSpectra(fileList, savedFileIds);
         }
-
+        calculateAndSavePeakNumber(submission, count, Submission.SAVE_SUBMISSION);
         return submissionObj;
+    }
+
+    private void calculateAndSavePeakNumber(final Submission submission, final int fetchedPeakNumber,
+                                            final String operation) {
+        UserPrincipal user = submission.getUser();
+        int submissionPeakNumber = 0;
+        try {
+            for (File file : submission.getFiles()) {
+                for (Spectrum spectrum : file.getSpectra()) {
+                    submissionPeakNumber += spectrum.getPeaks().size();
+                }
+            }
+            if (submissionPeakNumber > 0) {
+                if (operation.equals(Submission.SAVE_SUBMISSION)) {
+                    user.setPeakNumber(fetchedPeakNumber + submissionPeakNumber);
+                } else if (operation.equals(Submission.DELETE_SUBMISSION)) {
+                    user.setPeakNumber(Math.max(fetchedPeakNumber - submissionPeakNumber, 0));
+                }
+                userPrincipalRepository.save(user);
+            }
+        } catch (Exception e){
+            LOG.error("Error while calculating and saving peak number for submission : " + submission.getId() + "" +
+                    " for user : " + user.getId() + " : " + e);
+        }
     }
 
     @Transactional
@@ -193,8 +221,13 @@ public class SubmissionService {
     @Transactional
     public void delete(final long submissionId) {
         Optional<Submission> submission = submissionRepository.findById(submissionId);
-        if (submission.isPresent())
+        if (submission.isPresent()) {
+            UserPrincipal user = submission.get().getUser();
             submissionRepository.delete(submission.get());
+//            PeakNumber here cannot be zero (if user has files) account page calculate PeakNumber and to delete we need
+//            to go to account page, and account page calculates PeakNumber if user.peakNumber is zero
+            calculateAndSavePeakNumber(submission.get(), user.getPeakNumber(), Submission.DELETE_SUBMISSION);
+        }
         else
             LOG.warn(String.format(
                     "Fail to delete submission %d because this submission is not in the database", submissionId));
@@ -363,11 +396,16 @@ public class SubmissionService {
 
     }
 
-    public double getPeakDiskSpaceByUser(String userName) {
-        int peakPerUser = submissionRepository.getPeaksByUserName(userName) ;
-        double totalMemory = peakPerUser * MEMORY_PER_PEAK;
-
-        return totalMemory;
+    public double getPeakDiskSpaceByUser(UserPrincipal user) {
+        int peakPerUser = user.getPeakNumber();
+        if (peakPerUser == 0) {
+            peakPerUser = submissionRepository.getPeaksByUserName(user.getUsername());
+            if (peakPerUser > 0) {
+                user.setPeakNumber(peakPerUser);
+                userPrincipalRepository.save(user);
+            }
+        }
+        return peakPerUser * MEMORY_PER_PEAK;
 
     }
 

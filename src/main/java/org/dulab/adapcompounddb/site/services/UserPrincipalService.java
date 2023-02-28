@@ -1,5 +1,7 @@
 package org.dulab.adapcompounddb.site.services;
 
+import org.dulab.adapcompounddb.models.dto.SearchParametersDTO;
+import org.dulab.adapcompounddb.models.entities.User;
 import org.dulab.adapcompounddb.models.entities.UserParameter;
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.models.UserParameterType;
@@ -33,4 +35,6 @@ public interface UserPrincipalService {
   UserPrincipal findByUserEmail(String email);
 
     UserPrincipal findByToken(String token);
+
+    SearchParametersDTO updateSearchParameters(final SearchParametersDTO searchParameters, final UserPrincipal user);
 }
