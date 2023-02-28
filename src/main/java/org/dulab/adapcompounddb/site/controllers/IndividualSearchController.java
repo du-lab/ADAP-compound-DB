@@ -1,7 +1,8 @@
 package org.dulab.adapcompounddb.site.controllers;
 
-import org.apache.commons.math3.analysis.function.Add;
+import com.google.gson.Gson;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
+import org.dulab.adapcompounddb.models.dto.SearchParametersDTO;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
@@ -10,15 +11,10 @@ import org.dulab.adapcompounddb.site.controllers.forms.FilterForm;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterOptions;
 import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
 import org.dulab.adapcompounddb.site.controllers.utils.ConversionsUtils;
-import org.dulab.adapcompounddb.site.services.CaptchaService;
-import org.dulab.adapcompounddb.site.services.AdductService;
-import org.dulab.adapcompounddb.site.services.SpectrumService;
-import org.dulab.adapcompounddb.site.services.SubmissionService;
-import org.dulab.adapcompounddb.site.services.SubmissionTagService;
+import org.dulab.adapcompounddb.site.services.*;
 import org.dulab.adapcompounddb.site.services.search.IndividualSearchService;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -217,6 +213,8 @@ public class IndividualSearchController extends BaseController {
     public ModelAndView searchCompound(CompoundSearchForm compoundSearchForm, Model model, HttpSession session, @CookieValue(
             value = INDIVIDUAL_SEARCH_PARAMETERS_COOKIE_NAME,
             defaultValue = "") String searchParametersCookie) {
+        UserPrincipal user = getCurrentUserPrincipal();
+        model.addAttribute("searchParameters", user != null ? user.getSearchParametersDTO() : new SearchParametersDTO());
 
         compoundSearchForm = ConversionsUtils.byteStringToForm(searchParametersCookie, CompoundSearchForm.class);
         //Spectrum spectrum = new Spectrum();
