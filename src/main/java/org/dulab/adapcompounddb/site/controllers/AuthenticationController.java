@@ -1,5 +1,7 @@
 package org.dulab.adapcompounddb.site.controllers;
 
+import com.google.gson.Gson;
+import org.dulab.adapcompounddb.models.dto.SearchParametersDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
@@ -36,6 +38,7 @@ public class AuthenticationController extends BaseController {
     private final AuthenticationService authenticationService;
     private final CaptchaService captchaService;
     private final boolean integTest = ControllerUtils.INTEG_TEST;
+
 
     @Autowired
     public AuthenticationController(final AuthenticationService authenticationService, CaptchaService captchaService) {
@@ -138,6 +141,7 @@ public class AuthenticationController extends BaseController {
         final UserPrincipal principal = new UserPrincipal();
         principal.setUsername(form.getUsername());
         principal.setEmail(form.getEmail());
+        principal.setSearchParameters(new SearchParametersDTO());
         try {
             authenticationService.saveUser(principal, form.getPassword());
         } catch (Throwable t) {

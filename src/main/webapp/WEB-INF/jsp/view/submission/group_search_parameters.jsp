@@ -29,6 +29,9 @@
                             </a></li>
                             <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#parameters">
                                 Parameters
+                                <span id="custom" class="badge badge-info" style="display: none">
+                                    Custom Parameters
+                                </span>
                             </a></li>
                             <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#email">
                                 Email
@@ -93,76 +96,16 @@
                                 </div>
                             </div>
                         </div>
-
                         <div id="parameters" class="tab-pane fade" role="tabpanel">
-                            <div class="row">
-                                <div class="col-md-8 offset-md-2">
-                                    <p>Leave parameters blanks to use the default values.</p>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <form:label path="scoreThreshold"
-                                            cssClass="col-md-4 col-form-label">Score Threshold:</form:label>
-                                <div class="col-md-8">
-                                    <form:input path="scoreThreshold" type="number" cssClass="form-control"/>
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-                                <form:label path="retentionTimeTolerance"
-                                            cssClass="col-md-4 col-form-label">Retention Time Tolerance:</form:label>
-                                <div class="col-md-8">
-                                    <form:input path="retentionTimeTolerance" type="number" step="any" cssClass="form-control"/>
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-                                <form:label path="retentionIndexTolerance"
-                                            cssClass="col-md-4 col-form-label">Retention Index Tolerance:</form:label>
-                                <div class="col-md-8">
-                                    <form:input path="retentionIndexTolerance" type="number" cssClass="form-control"/>
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-                                <form:label path="retentionIndexMatch"
-                                            cssClass="col-md-4 col-form-label">Retention Index Match:</form:label>
-                                <div class="col-md-8">
-                                    <form:select path="retentionIndexMatch" cssClass="form-control">
-                                        <form:option value="IGNORE_MATCH">Ignore Retention Index</form:option>
-                                        <form:option
-                                                value="PENALIZE_NO_MATCH_STRONG">Penalize matches without Retention Index (Strong)</form:option>
-                                        <form:option
-                                                value="PENALIZE_NO_MATCH_AVERAGE">Penalize matches without Retention Index (Average)</form:option>
-                                        <form:option
-                                                value="PENALIZE_NO_MATCH_WEAK">Penalize matches without Retention Index (Weak)</form:option>
-                                        <form:option value="ALWAYS_MATCH">Always match Retention Index</form:option>
-                                    </form:select>
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-                                <form:label path="mzTolerance"
-                                            cssClass="col-md-4 col-form-label">m/z tolerance</form:label>
-                                <div class="input-group col-md-8">
-                                    <form:input path="mzTolerance" type="number" step="0.001"
-                                                cssClass="form-control"/>
-                                    <div class="input-group-append">
-                                        <form:select path="mzToleranceType" cssClass="input-group-text">
-                                            <form:option value="DA">Da</form:option>
-                                            <form:option value="PPM">ppm</form:option>
-                                        </form:select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-                                <form:label path="limit"
-                                            cssClass="col-md-4 col-form-label">Matches per Spectrum</form:label>
-                                <div class="col-md-8">
-                                    <form:input path="limit" type="number" cssClass="form-control"/>
-                                </div>
-                            </div>
+                            <jsp:include page="../../view/compound/user_search_parameters.jsp">
+                                <jsp:param name="SCORE_THRESHOLD" value="${searchParameters.scoreThreshold}"/>
+                                <jsp:param name="RETENTION_INDEX_TOLERANCE" value="${searchParameters.retentionIndexTolerance}"/>
+                                <jsp:param name="RETENTION_INDEX_MATCH" value="${searchParameters.retentionIndexMatch}"/>
+                                <jsp:param name="MZ_TOLERANCE" value="${searchParameters.mzTolerance}"/>
+                                <jsp:param name="MATCHES_PER_SPECTRUM" value="${searchParameters.limit}"/>
+                                <jsp:param name="MZ_TOLERANCE_TYPE" value="${searchParameters.mzToleranceType}"/>
+                                <jsp:param name="SHOW_DIALOG" value="false"/>
+                            </jsp:include>
                         </div>
 
                         <div id="email" class="tab-pane fade" role="tabpanel">
@@ -195,6 +138,41 @@
         </div>
     </form:form>
 </div>
+<script>
+    function checkForChange(limitFetched, mzToleranceFetched, mzToleranceTypeFetched,
+                            retentionIndexMatchFetched, retentionIndexToleranceFetched,
+                            scoreThresholdFetched) {
+        let scoreThreshold = $('#scorethreshold')[0].value;
+        let retentionIndexTolerance = $('#retentionIndexTolerance')[0].value;
+        let mzTolerance = $('#mzTolerance')[0].value;
+        let limit = $('#limit')[0].value;
+        let retentionDefault = $('#retention').get(0).options[0].value;
+        let retentionValue = $('#retention').get(0).value;
+        let mzToleranceDefault = $('#mzToleranceType').get(0).options[0].value;
+        let mzToleranceValue = $('#mzToleranceType').get(0).value;
+        if (scoreThreshold != null && retentionIndexTolerance != null
+            && mzTolerance != null && limit != null
+            && retentionValue != null && retentionDefault != null
+            && mzToleranceDefault != null && mzToleranceValue != null) {
+            if (scoreThreshold == scoreThresholdFetched
+                && retentionIndexTolerance == retentionIndexToleranceFetched
+                && mzTolerance == mzToleranceFetched && limit == limitFetched
+                && mzToleranceTypeFetched == mzToleranceValue
+                && retentionIndexMatchFetched == retentionValue) {
+                $("#custom").hide();
+            } else {
+                $("#custom").show();
+            }
+        }
+
+    }
+
+    $(document).ready(function() {
+        $('#scorethreshold,#retention,#limit,#mzTolerance, #mzToleranceType,#retentionIndexTolerance').change(function () {
+            checkForChange(${ searchParameters.limit }, ${ searchParameters.mzTolerance }, '${searchParameters.mzToleranceType}',
+                '${searchParameters.retentionIndexMatch}', ${ searchParameters.retentionIndexTolerance }, ${ searchParameters.scoreThreshold });
+        }) });
+</script>
 
 <script src="<c:url value="/resources/npm/node_modules/jquery/dist/jquery.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/popper.js/dist/umd/popper.min.js"/>"></script>
