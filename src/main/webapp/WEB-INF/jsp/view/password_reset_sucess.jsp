@@ -12,7 +12,7 @@
       <div class="card">
         <div class="card-header card-header-single">Reset Password Confirmation</div>
         <div class="card-body">
-          <p>Your password has been successfully reset. You can now <a href="/login">Log in</a> using your new password.</p>
+          <p>Your password has been successfully reset. You can now <a href="/login">log in</a> using your new password.</p>
         </div>
       </div>
     </div>

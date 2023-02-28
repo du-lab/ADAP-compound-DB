@@ -31,7 +31,7 @@
                 </ul>
               </div>
             </div>
-            <form:form method="POST" modelAttribute="resetPassForm" action="/resetPassword">
+            <form:form method="POST" modelAttribute="resetPasswordForm" action="/resetPassword">
               <sec:csrfInput />
               <c:if test="${errorMsg != null}">
                 <div class="row">
@@ -51,8 +51,8 @@
                 </div>
               </c:if>
               <div class="row form-group">
-                <form:label path="username" cssClass="col-md-3 offset-md-3 col-form-label">Username:</form:label>
-                <p class="col-md-3 form-control">${resetPassForm.username}</p>
+                <form:label path="userName" cssClass="col-md-3 offset-md-3 col-form-label">Username:</form:label>
+                <form:input path="userName" cssClass="col-md-3 form-control" readonly="true"/>
               </div>
               <div class="row form-group">
                 <form:label path="newPass" cssClass="col-md-3 offset-md-3 col-form-label">New Password:</form:label>
