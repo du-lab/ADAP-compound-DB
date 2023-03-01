@@ -88,7 +88,7 @@
             </div>
             <div class="modal-body">
                 <div class="custom-control custom-switch" >
-                    <input type ="checkbox" class="custom-control-input" id="matchesOnly"/>
+                    <input type ="checkbox" class="custom-control-input" id="matchesOnly" checked/>
                     <label class="custom-control-label" for="matchesOnly">Show only results with matches</label>
                 </div>
                 <div class = "ontologylevel">
