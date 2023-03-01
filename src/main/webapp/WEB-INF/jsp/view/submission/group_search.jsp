@@ -62,14 +62,16 @@
       text-align: center;
 
     }
-
+    .myFilter div{
+      float:left;
+    }
+    .myFilter div label{
+      display:block;
+    }
     #applyFilterBtn{
       float: right;
       margin-right: 15px;
       margin-bottom: 15px;
-    }
-    #filterBtn{
-      display: inline-block;
     }
     #resetFilterBtn{
       margin-left: 15px;
@@ -77,47 +79,47 @@
     }
 
 </style>
-<div id="filterModal" class="modal" role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Filter</h4>
-                <button type="button" class="close" data-dismiss="modal">
-                    &times;
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="custom-control custom-switch" >
-                    <input type ="checkbox" class="custom-control-input" id="matchesOnly" checked/>
-                    <label class="custom-control-label" for="matchesOnly">Show only results with matches</label>
-                </div>
-                <div class = "ontologylevel">
-                    <label for="ontologyLevel">Ontology level:</label>
+<%--<div id="filterModal" class="modal" role="dialog">--%>
+<%--    <div class="modal-dialog">--%>
+<%--        <div class="modal-content">--%>
+<%--            <div class="modal-header">--%>
+<%--                <h4 class="modal-title">Filter</h4>--%>
+<%--                <button type="button" class="close" data-dismiss="modal">--%>
+<%--                    &times;--%>
+<%--                </button>--%>
+<%--            </div>--%>
+<%--            <div class="modal-body">--%>
+<%--                <div class="custom-control custom-switch" >--%>
+<%--                    <input type ="checkbox" class="custom-control-input" id="matchesOnly" checked/>--%>
+<%--                    <label class="custom-control-label" for="matchesOnly">Show only results with matches</label>--%>
+<%--                </div>--%>
+<%--                <div class = "ontologylevel">--%>
+<%--                    <label for="ontologyLevel">Ontology level:</label>--%>
 
-                        <select id="ontologyLevel" class = "form-control">
-                        </select>
-                    </div>
+<%--                        <select id="ontologyLevel" class = "form-control">--%>
+<%--                        </select>--%>
+<%--                    </div>--%>
 
-                    <label for="scoreThreshold" title="Results with score above the threshold will be shown" >Score Threshold</label>
-                    <input type ="number" step="any" id="scoreThreshold" class = "form-control" />
+<%--                    <label for="scoreThreshold" title="Results with score above the threshold will be shown" >Score Threshold</label>--%>
+<%--                    <input type ="number" step="any" id="scoreThreshold" class = "form-control" />--%>
 
-                    <label for="massError" title="Results with mass error below given value will be shown">Mass Error Tolerance</label>
-                    <input type ="number" step="any" id="massError" class = "form-control" />
+<%--                    <label for="massError" title="Results with mass error below given value will be shown">Mass Error Tolerance</label>--%>
+<%--                    <input type ="number" step="any" id="massError" class = "form-control" />--%>
 
-                    <label for="retTimeError" title="Results with retention time error below given value will be shown">Retention Time Error Tolerance</label>
-                    <input type ="number" step="any" id="retTimeError" class = "form-control" />
+<%--                    <label for="retTimeError" title="Results with retention time error below given value will be shown">Retention Time Error Tolerance</label>--%>
+<%--                    <input type ="number" step="any" id="retTimeError" class = "form-control" />--%>
 
-                    <label for="matchName" title="All matches with name matching the value">Match Name</label>
-                    <input type ="text" id="matchName" class = "form-control" />
+<%--                    <label for="matchName" title="All matches with name matching the value">Match Name</label>--%>
+<%--                    <input type ="text" id="matchName" class = "form-control" />--%>
 
-            </div>
-            <div class = "model-footer">
-                <button class ="btn btn-secondary " type ="button" id="resetFilterBtn">Reset Filter</button>
-                <button class ="btn btn-primary " class="close" data-dismiss="modal" type ="button" id="applyFilterBtn">Filter</button>
-            </div>
-        </div>
-    </div>
-</div>
+<%--            </div>--%>
+<%--            <div class = "model-footer">--%>
+<%--                <button class ="btn btn-secondary " type ="button" id="resetFilterBtn">Reset Filter</button>--%>
+<%--                <button class ="btn btn-primary " class="close" data-dismiss="modal" type ="button" id="applyFilterBtn">Filter</button>--%>
+<%--            </div>--%>
+<%--        </div>--%>
+<%--    </div>--%>
+<%--</div>--%>
 <div class="container-fluid">
     <div class="row row-content">
         <div class="col">
@@ -151,12 +153,48 @@
                     <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow="0"
                          aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
-                <button class ="btn btn-primary mr-2" id="filterBtn" >Filter</button>
                 <a class="btn btn-primary mr-2" href="<c:url value="parameters"/>">Search Parameters</a>
             </div>
         </div>
     </div>
+    <div class="row row-content">
+        <div class="col ">
+            <div class="card">
+                <div class="card-header card-header-single">
+                    Filters
+                </div>
+                <div class="card-body small container " >
+                    <div class="myFilter">
+                        <div class="custom-control custom-switch" >
+                            <input type ="checkbox" class="custom-control-input" id="matchesOnly" checked/>
+                            <label class="custom-control-label" for="matchesOnly">Show only results with matches</label>
+                        </div>
+                        <div class = "ontologylevel">
+                            <label for="ontologyLevel">Ontology level:</label>
 
+                            <select id="ontologyLevel" class = "form-control">
+                            </select>
+                        </div>
+
+                        <label for="scoreThreshold" title="Results with score above the threshold will be shown" >Score Threshold</label>
+                        <input type ="number" step="any" id="scoreThreshold" class = "form-control" />
+
+                        <label for="massError" title="Results with mass error below given value will be shown">Mass Error Tolerance</label>
+                        <input type ="number" step="any" id="massError" class = "form-control" />
+
+                        <label for="retTimeError" title="Results with retention time error below given value will be shown">Retention Time Error Tolerance</label>
+                        <input type ="number" step="any" id="retTimeError" class = "form-control" />
+
+                        <label for="matchName" title="All matches with name matching the value">Match Name</label>
+                        <input type ="text" id="matchName" class = "form-control" />
+                        <button class ="btn btn-secondary " type ="button" id="resetFilterBtn">Reset Filter</button>
+                        <button class ="btn btn-primary "  type ="button" id="applyFilterBtn">Filter</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
     <div class="row row-content" id="query_plot_match_row">
 
         <div class="col-4" id = "query_content">
@@ -932,7 +970,26 @@
         if (!isSavedResultPage){
         // refresh the datatable and progress bar every 1 second
         setInterval(function () {
-
+              $.ajax({
+                url: "${pageContext.request.contextPath}/getOntologyLevels",
+                type: "GET",
+                data: {
+                  submissionId: '${submissionId}',
+                  isSavedResultPage: isSavedResultPage
+                },
+                success: function(response) {
+                  var ontologyLevelOptions = $("#ontologyLevel");
+                  // ontologyLevelOptions.find('option').not(':selected').remove();
+                  ontologyLevelOptions.empty();
+                  ontologyLevelOptions.append($('<option></option>'));
+                  $.each(response, function(index, item) {
+                    ontologyLevelOptions.append($('<option></option>').val(item).text(item));
+                  });
+                },
+                error: function(xhr) {
+                  console.log("Error:", xhr);
+                }
+              });
 
             $.ajax({
                 url: `${pageContext.request.contextPath}/ajax/group_search/error`,
@@ -1002,30 +1059,6 @@
           initializeTable();
         })
 
-        $('#filterBtn').click(function(){
-          console.log("CLICKED");
-          $.ajax({
-            url: "${pageContext.request.contextPath}/getOntologyLevels",
-            type: "GET",
-              data: {
-                submissionId: '${submissionId}',
-                isSavedResultPage: isSavedResultPage
-              },
-            success: function(response) {
-              var ontologyLevelOptions = $("#ontologyLevel");
-              // ontologyLevelOptions.find('option').not(':selected').remove();
-              ontologyLevelOptions.empty();
-              ontologyLevelOptions.append($('<option></option>'));
-              $.each(response, function(index, item) {
-                ontologyLevelOptions.append($('<option></option>').val(item).text(item));
-              });
-            },
-            error: function(xhr) {
-              console.log("Error:", xhr);
-            }
-          });
-          $('#filterModal').modal('show');
-        })
 
 
     });
