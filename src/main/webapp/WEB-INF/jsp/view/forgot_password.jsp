@@ -19,11 +19,11 @@
             <sec:csrfInput />
 
               <div>
-                <p>Please enter your username. We will be sending a reset password link to the email associated with your account.</p>
+                <p>Please enter the email associated with your account. We will be sending a reset password link to your email.</p>
               </div>
               <div>
                 <p>
-                  <input type="text" name="username" class="form-control" placeholder="Enter your username" required autofocus/>
+                  <input type="email" name="email" class="form-control" placeholder="Enter your e-mail" required autofocus/>
                 </p>
                 <p class="text-center">
                   <input type="submit" value="Send" class="btn btn-primary" />

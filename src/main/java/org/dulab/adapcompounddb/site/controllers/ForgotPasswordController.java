@@ -37,12 +37,12 @@ public class ForgotPasswordController {
   }
 
   @PostMapping("/forgotPassword")
-  public String sendEmail(@RequestParam("username") String userName, HttpServletRequest request, Model model) throws Exception {
-    System.out.println("USERNAME: " + userName);
-    //find user by userName
-      UserPrincipal user = userPrincipalService.findUserByUsername(userName);
+  public String sendEmail(@RequestParam("email") String email, HttpServletRequest request, Model model) throws Exception {
+    System.out.println("EMAIL: " + email);
+    //find user by email
+      UserPrincipal user = userPrincipalService.findByUserEmail(email);
       if (user == null)
-        throw new Exception("The user name doesn't exist");
+        throw new Exception("This email is not correct");
       //generate token
       String resetToken = UUID.randomUUID().toString();
       Date expirationDate = new Date(System.currentTimeMillis() + 3600000);//1 hour expiration time
