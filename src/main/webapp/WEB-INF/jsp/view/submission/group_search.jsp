@@ -11,115 +11,82 @@
 
 <%--hide the query, plot and match when user hasn't clicked on table row--%>
 <style>
-    #query_plot_match row{
-        display:none;
-    }
-    .container {
-      margin:unset;
-      max-width: unset;
-      width: 100%;
-    }
-    /*.left {*/
-    /*  width: 50%;*/
-    /*  padding:10px;*/
-    /*}*/
-    /*.right{*/
-    /*  width: 50%;*/
-    /*  float: right;*/
-    /*  padding: 10px;*/
+  #query_plot_match row{
+    display:none;
+  }
+  .container {
+    margin:unset;
+    max-width: unset;
+    width: 100%;
+  }
 
+  .distinct_query_container{
+    padding: 20px;
+  }
+  .query_container{
+    padding: 20px;
 
-    /*}*/
-    .distinct_query_container{
-      padding: 20px;
-    }
-    .query_container{
-      padding: 20px;
+  }
+  .match_container{
+    padding: 20px;
+  }
 
-    }
-    .match_container{
-      padding: 20px;
-    }
+  .query_signals{
+    max-width: 25%;
+  }
+  .query_spectra{
+    max-width:25%;
+  }
+  .matches{
+    max-width:50%;
+  }
 
-    .query_signals{
-      max-width: 25%;
-    }
-    .query_spectra{
-      max-width:25%;
-    }
-    .matches{
-      max-width:50%;
-    }
+  /*.table-left {*/
+  /*  width: 100%;*/
+  /*}*/
 
-    /*.table-left {*/
-    /*  width: 100%;*/
-    /*}*/
+  /*.table-right {*/
+  /*  width: 40%;}*/
+  .item-textbox{
+    width: 100px;
+  }
+  .match-input{
+    width:200px;
+  }
+  .items{
+    display:flex;
+    align-items:center;
+    margin-right:10px;
+    margin-left:25px;
+  }
+  .btns{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    margin-top: 15px;
+  }
+  caption{
+    text-align: center;
 
-    /*.table-right {*/
-    /*  width: 40%;}*/
-
-    caption{
-      text-align: center;
-
-    }
-    .myFilter div{
-      float:left;
-    }
-    .myFilter div label{
-      display:block;
-    }
-    #applyFilterBtn{
-      float: right;
-      margin-right: 15px;
-      margin-bottom: 15px;
-    }
-    #resetFilterBtn{
-      margin-left: 15px;
-      margin-bottom: 15px;
-    }
+  }
+  .my-filter{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    width:100%;
+  }
+  #applyFilterBtn{
+    float: right;
+    margin-right: 15px;
+    margin-bottom: 15px;
+  }
+  #resetFilterBtn{
+    margin-left: 15px;
+    margin-bottom: 15px;
+  }
 
 </style>
-<%--<div id="filterModal" class="modal" role="dialog">--%>
-<%--    <div class="modal-dialog">--%>
-<%--        <div class="modal-content">--%>
-<%--            <div class="modal-header">--%>
-<%--                <h4 class="modal-title">Filter</h4>--%>
-<%--                <button type="button" class="close" data-dismiss="modal">--%>
-<%--                    &times;--%>
-<%--                </button>--%>
-<%--            </div>--%>
-<%--            <div class="modal-body">--%>
-<%--                <div class="custom-control custom-switch" >--%>
-<%--                    <input type ="checkbox" class="custom-control-input" id="matchesOnly" checked/>--%>
-<%--                    <label class="custom-control-label" for="matchesOnly">Show only results with matches</label>--%>
-<%--                </div>--%>
-<%--                <div class = "ontologylevel">--%>
-<%--                    <label for="ontologyLevel">Ontology level:</label>--%>
 
-<%--                        <select id="ontologyLevel" class = "form-control">--%>
-<%--                        </select>--%>
-<%--                    </div>--%>
-
-<%--                    <label for="scoreThreshold" title="Results with score above the threshold will be shown" >Score Threshold</label>--%>
-<%--                    <input type ="number" step="any" id="scoreThreshold" class = "form-control" />--%>
-
-<%--                    <label for="massError" title="Results with mass error below given value will be shown">Mass Error Tolerance</label>--%>
-<%--                    <input type ="number" step="any" id="massError" class = "form-control" />--%>
-
-<%--                    <label for="retTimeError" title="Results with retention time error below given value will be shown">Retention Time Error Tolerance</label>--%>
-<%--                    <input type ="number" step="any" id="retTimeError" class = "form-control" />--%>
-
-<%--                    <label for="matchName" title="All matches with name matching the value">Match Name</label>--%>
-<%--                    <input type ="text" id="matchName" class = "form-control" />--%>
-
-<%--            </div>--%>
-<%--            <div class = "model-footer">--%>
-<%--                <button class ="btn btn-secondary " type ="button" id="resetFilterBtn">Reset Filter</button>--%>
-<%--                <button class ="btn btn-primary " class="close" data-dismiss="modal" type ="button" id="applyFilterBtn">Filter</button>--%>
-<%--            </div>--%>
-<%--        </div>--%>
-<%--    </div>--%>
-<%--</div>--%>
 <div class="container-fluid">
     <div class="row row-content">
         <div class="col">
@@ -131,7 +98,6 @@
     <div class="row row-content">
         <div class="col">
             <div class="btn-toolbar justify-content-end" role="toolbar">
-
                 <div class="dropdown">
                     <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
                         Export
@@ -163,35 +129,39 @@
                 <div class="card-header card-header-single">
                     Filters
                 </div>
-                <div class="card-body small container " >
-                    <div class="myFilter">
-                        <div class="custom-control custom-switch" >
-                            <input type ="checkbox" class="custom-control-input" id="matchesOnly" checked/>
+                <div class="card-body small container" style="display:flex; flex-wrap:wrap;">
+                    <div class="my-filter" >
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input" id="matchesOnly" checked/>
                             <label class="custom-control-label" for="matchesOnly">Show only results with matches</label>
                         </div>
-                        <div class = "ontologylevel">
-                            <label for="ontologyLevel">Ontology level:</label>
-
-                            <select id="ontologyLevel" class = "form-control">
-                            </select>
+                        <div class= "items"  >
+                            <label for="ontologyLevel" style="width: 180px;">Ontology level:</label>
+                            <select id="ontologyLevel" class="form-control"></select>
+                        </div>
+                        <div class = "items">
+                            <label for="scoreThreshold" title="Results with score above the threshold will be shown" style="margin-right:10px;">Score Threshold</label>
+                            <input type="number" step="any" id="scoreThreshold" class="form-control item-textbox"/>
+                        </div>
+                        <div class = "items">
+                            <label for="massError" title="Results with mass error below given value will be shown" style="margin-right:10px;">Mass Error Tolerance</label>
+                            <input type="number" step="any" id="massError" class="form-control item-textbox"/>
+                        </div>
+                        <div class = "items">
+                            <label for="retTimeError" title="Results with retention time error below given value will be shown" style="margin-right:10px;">Retention Time Error Tolerance</label>
+                            <input type="number" step="any" id="retTimeError" class="form-control item-textbox"/>
                         </div>
 
-                        <label for="scoreThreshold" title="Results with score above the threshold will be shown" >Score Threshold</label>
-                        <input type ="number" step="any" id="scoreThreshold" class = "form-control" />
-
-                        <label for="massError" title="Results with mass error below given value will be shown">Mass Error Tolerance</label>
-                        <input type ="number" step="any" id="massError" class = "form-control" />
-
-                        <label for="retTimeError" title="Results with retention time error below given value will be shown">Retention Time Error Tolerance</label>
-                        <input type ="number" step="any" id="retTimeError" class = "form-control" />
-
-                        <label for="matchName" title="All matches with name matching the value">Match Name</label>
-                        <input type ="text" id="matchName" class = "form-control" />
-                        <button class ="btn btn-secondary " type ="button" id="resetFilterBtn">Reset Filter</button>
-                        <button class ="btn btn-primary "  type ="button" id="applyFilterBtn">Filter</button>
+                        <div class = "items">
+                            <label for="matchName" style="margin-right:10px;">Match Name </label>
+                            <input type="text" id="matchName" class="form-control match-input"/>
+                        </div>
+                        <div class ="btns">
+                            <button class="btn btn-secondary" type="button" id="resetFilterBtn">Reset Filter</button>
+                            <button class="btn btn-primary" type="button" id="applyFilterBtn">Filter</button>
+                        </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -200,11 +170,9 @@
         <div class="col-4" id = "query_content">
             <div class="card" style="height: auto">
                 <div class="card-header card-header-single">Query</div>
-
                     <div class="card-body card-body-compact small overflow-auto" style="height: auto">
                         <div id="queryInfo"></div>
                     </div>
-
                 <div  id="queryColumn">
                     <div >
 <%--                        <div class="card-header card-header-single">Query Structure</div>--%>
@@ -213,7 +181,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
         <div class="col-4" id = "plot_content">
@@ -234,12 +201,10 @@
                     <div id="matchInfo"></div>
                 </div>
                 <div  id="matchColumn">
-
-                        <div class="overflow-auto" style="height: auto">
-                            <div id="matchStructure" class="d-flex justify-content-center h-100"></div>
-                        </div>
+                    <div class="overflow-auto" style="height: auto">
+                        <div id="matchStructure" class="d-flex justify-content-center h-100"></div>
+                    </div>
                 </div>
-
             </div>
         </div>
 
@@ -252,20 +217,18 @@
                     Query Signals
                 </div>
                 <div class="card-body small container " >
-
-                        <div class="distinct_query_container">
-                            <table id="distinct_query_table" class="display compact " style="width: 100%; clear:none;">
-                                <thead>
-                                <tr>
-                                    <th>Id</th>
-                                    <th>Query</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                            </table>
-                        </div>
-
+                    <div class="distinct_query_container">
+                        <table id="distinct_query_table" class="display compact " style="width: 100%; clear:none;">
+                            <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Query</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -291,8 +254,6 @@
                             </tbody>
                         </table>
                     </div>
-
-
             </div>
         </div>
     </div>
@@ -330,8 +291,6 @@
                             </tbody>
                         </table>
                     </div>
-
-
                 </div>
             </div>
         </div>
@@ -354,7 +313,7 @@
   $(document).ready(function () {
     //filter parameters
         var url;
-        var showMatchesOnly = 0;
+        var showMatchesOnly = 1;
         var ontologyLevel = "";
         var scoreThreshold;
         var massError;
@@ -370,15 +329,36 @@
           for (let i = 0; i < data.order.length; i++) {
             result += data.order[i].column + "-" + data.order[i].dir + ",";
           }
-
           return result;
         }
-      if (isSavedResultPage)
+        //update the ontology level options
+        $.ajax({
+          url: "${pageContext.request.contextPath}/getOntologyLevels",
+          type: "GET",
+          data: {
+            submissionId: '${submissionId}',
+            isSavedResultPage: isSavedResultPage
+          },
+          success: function(response) {
+            var ontologyLevelOptions = $("#ontologyLevel");
+            // ontologyLevelOptions.find('option').not(':selected').remove();
+            ontologyLevelOptions.empty();
+            ontologyLevelOptions.append($('<option></option>'));
+            $.each(response, function(index, item) {
+              ontologyLevelOptions.append($('<option></option>').val(item).text(item));
+            });
+          },
+          error: function(xhr) {
+            console.log("Error:", xhr);
+          }
+        });
+
+        if (isSavedResultPage)
           url = "${pageContext.request.contextPath}/file/group_search_matches/${submissionId}/data.json";
-      else
+        else
           url = "${pageContext.request.contextPath}/distinct_spectra/data.json";
 
-      function initializeTable(){
+        function initializeTable(){
           var distinct_query_table = $('#distinct_query_table').DataTable({
               // dom: 'lfrtip',
 
@@ -414,15 +394,12 @@
               },
               columns: [
                   {
-
                       data: function(row, type,val, meta) {
                           return meta.row + 1;
                       }
                   },
                   {
-
                       data: "querySpectrumName"
-
                   }
               ],
               "initComplete": function() {
@@ -463,7 +440,6 @@
 
         //show query table, match table with default matches.
         if(isSavedResultPage){
-
           var query_table = $('#query_table').DataTable({
             serverSide: true,
             sortable: true,
@@ -880,7 +856,7 @@
                           $('#match_table').DataTable().rows(0).select();
                           $('#query_plot_match_row').show();
                         }
-                  }
+                    }
                     });
 
                   },
@@ -964,12 +940,14 @@
             // show the query, plot and match div
             $('#query_plot_match_row').show();
 
-
         });
 
         if (!isSavedResultPage){
         // refresh the datatable and progress bar every 1 second
+          var previousResponse;
         setInterval(function () {
+
+          //update the ontology level options
               $.ajax({
                 url: "${pageContext.request.contextPath}/getOntologyLevels",
                 type: "GET",
@@ -978,13 +956,19 @@
                   isSavedResultPage: isSavedResultPage
                 },
                 success: function(response) {
-                  var ontologyLevelOptions = $("#ontologyLevel");
-                  // ontologyLevelOptions.find('option').not(':selected').remove();
-                  ontologyLevelOptions.empty();
-                  ontologyLevelOptions.append($('<option></option>'));
-                  $.each(response, function(index, item) {
-                    ontologyLevelOptions.append($('<option></option>').val(item).text(item));
-                  });
+                  var responseString = JSON.stringify(response);
+                  //don't update the options if they're the same
+                  if(responseString !== previousResponse) {
+                    var ontologyLevelOptions = $("#ontologyLevel");
+                    var selectedOption = ontologyLevelOptions.find(':selected').val();
+                    ontologyLevelOptions.empty();
+                    ontologyLevelOptions.append($('<option></option>'));
+                    $.each(response, function (index, item) {
+                      ontologyLevelOptions.append($('<option></option>').val(item).text(item));
+                    });
+                    ontologyLevelOptions.val(selectedOption);
+                    previousResponse = responseString;
+                  }
                 },
                 error: function(xhr) {
                   console.log("Error:", xhr);
@@ -1050,9 +1034,6 @@
 
           matchName = $('#matchName').val();
 
-          //if saved result page
-
-
           $('.query_container').hide();
           $('.match_container').hide();
           $('#distinct_query_table').DataTable().destroy();
@@ -1062,8 +1043,4 @@
 
 
     });
-    // Adjust column widths when a table becomes visible
-    // $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
-    //   $.fn.dataTable.tables({visible: true, api: true}).columns.adjust();
-    // });
 </script>
