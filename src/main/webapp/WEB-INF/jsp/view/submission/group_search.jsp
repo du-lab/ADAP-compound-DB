@@ -123,48 +123,48 @@
             </div>
         </div>
     </div>
-    <div class="row row-content">
-        <div class="col ">
-            <div class="card">
-                <div class="card-header card-header-single">
-                    Filters
-                </div>
-                <div class="card-body small container" style="display:flex; flex-wrap:wrap;">
-                    <div class="my-filter" >
-                        <div class="custom-control custom-switch">
-                            <input type="checkbox" class="custom-control-input" id="matchesOnly" checked/>
-                            <label class="custom-control-label" for="matchesOnly">Show only results with matches</label>
-                        </div>
-                        <div class= "items"  >
-                            <label for="ontologyLevel" style="width: 180px;">Ontology level:</label>
-                            <select id="ontologyLevel" class="form-control"></select>
-                        </div>
-                        <div class = "items">
-                            <label for="scoreThreshold" title="Results with score above the threshold will be shown" style="margin-right:10px;">Score Threshold</label>
-                            <input type="number" step="any" id="scoreThreshold" class="form-control item-textbox"/>
-                        </div>
-                        <div class = "items">
-                            <label for="massError" title="Results with mass error below given value will be shown" style="margin-right:10px;">Mass Error Tolerance</label>
-                            <input type="number" step="any" id="massError" class="form-control item-textbox"/>
-                        </div>
-                        <div class = "items">
-                            <label for="retTimeError" title="Results with retention time error below given value will be shown" style="margin-right:10px;">Retention Time Error Tolerance</label>
-                            <input type="number" step="any" id="retTimeError" class="form-control item-textbox"/>
-                        </div>
 
-                        <div class = "items">
-                            <label for="matchName" style="margin-right:10px;">Match Name </label>
-                            <input type="text" id="matchName" class="form-control match-input"/>
-                        </div>
-                        <div class ="btns">
-                            <button class="btn btn-secondary" type="button" id="resetFilterBtn">Reset Filter</button>
-                            <button class="btn btn-primary" type="button" id="applyFilterBtn">Filter</button>
-                        </div>
-                    </div>
-                </div>
+    <div  style="display:flex; flex-wrap:wrap;">
+        <div class="my-filter" >
+            <div class= "items">
+                <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-filter" viewBox="0 0 16 16" style="margin-bottom: 6px;margin-right: 3px;" fill="#844d36" width="25px" height="25px">
+                    <path d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z" style="height: 50px;"></path>
+                </svg>
+                <h5>Filters: </h5>
+            </div>
+            <div class="custom-control custom-switch" style=" margin-left:20px; margin-bottom:8px;">
+                <input type="checkbox" class="custom-control-input" id="matchesOnly" checked/>
+                <label class="custom-control-label" for="matchesOnly">Show only results with matches</label>
+            </div>
+            <div class= "items"  >
+                <label for="ontologyLevel" style=" margin-right:10px;">Ontology level</label>
+                <select id="ontologyLevel" class="form-control" style="width:100px;"></select>
+            </div>
+            <div class = "items">
+                <label for="scoreThreshold" title="Results with score above the threshold will be shown" style="margin-right:10px;">Score Threshold</label>
+                <input type="number" step="any" id="scoreThreshold" class="form-control item-textbox"/>
+            </div>
+            <div class = "items">
+                <label for="massError" title="Results with mass error below given value will be shown" style="margin-right:10px;">Mass Error Tolerance</label>
+                <input type="number" step="any" id="massError" class="form-control item-textbox"/>
+            </div>
+            <div class = "items">
+                <label for="retTimeError" title="Results with retention time error below given value will be shown" style="margin-right:10px;">Retention Time Error Tolerance</label>
+                <input type="number" step="any" id="retTimeError" class="form-control item-textbox"/>
+            </div>
+
+            <div class = "items">
+                <label for="matchName" style="margin-right:10px;">Match Name </label>
+                <input type="text" id="matchName" class="form-control match-input item-textbox"/>
+            </div>
+            <div class ="btns">
+                <button class="btn btn-secondary" type="button" id="resetFilterBtn">Reset Filter</button>
+<%--                <button class="btn btn-primary" type="button" id="applyFilterBtn">Filter</button>--%>
             </div>
         </div>
     </div>
+
+
     <div class="row row-content" id="query_plot_match_row">
 
         <div class="col-4" id = "query_content">
@@ -904,7 +904,6 @@
             // $('#queryInfo').spectrumInfo(queryUrl + 'info.json');
             // $('#matchInfo').spectrumInfo(matchUrl + 'info.json');
 
-
             $('#plot').spectrumPlot(position, queryUrl + 'positive/peaks.json', matchUrl + 'negative/peaks.json',
                 function(complete){
                 if(complete) {
@@ -923,19 +922,15 @@
                     $('#match_content').css('padding-left', '0px')
                 }
             }
-
            );
-
             $('#queryStructure').spectrumStructure(queryUrl + 'structure.json', function (x) {
                 $('#queryColumn').attr('hidden', !x);
             });
             $('#matchStructure').spectrumStructure(matchUrl + 'structure.json', function (x) {
                 $('#matchColumn').attr('hidden', !x);
             });
-
             previousQueryUrl = queryUrl;
             previousMatchUrl = matchUrl;
-
 
             // show the query, plot and match div
             $('#query_plot_match_row').show();
@@ -944,8 +939,8 @@
 
         if (!isSavedResultPage){
         // refresh the datatable and progress bar every 1 second
-          var previousResponse;
-        setInterval(function () {
+            var previousResponse;
+            setInterval(function () {
 
           //update the ontology level options
               $.ajax({
@@ -1011,25 +1006,72 @@
           $('#massError').val('');
           $('#retTimeError').val('');
           $('#matchName').val(null);
+
+          showMatchesOnly =$('#matchesOnly').is(":checked") ? 1 : 0;
+          ontologyLevel = $('#ontologyLevel').val();
+          scoreThreshold = $('#scoreThreshold').val();
+          massError = $('#massError').val();
+          reTimeError = $('#retTimeError').val()
+          matchName = $('#matchName').val();
+
+          $('.query_container').hide();
+          $('.match_container').hide();
+          $('#distinct_query_table').DataTable().destroy();
+          initializeTable();
         })
-        $('#applyFilterBtn').click(function(){
+        // $('#applyFilterBtn').click(function(){
+        //   showMatchesOnly =$('#matchesOnly').is(":checked") ? 1 : 0;
+        //   ontologyLevel = $('#ontologyLevel').val();
+        //
+        //   if(!$('#scoreThreshold')[0].checkValidity() || !$('#massError')[0].checkValidity()
+        //     ||!$('#retTimeError')[0].checkValidity()) {
+        //       alert("Please enter number only");
+        //       return;
+        //   }
+        //   else{
+        //       scoreThresholdInput = $('#scoreThreshold').val();
+        //       massErrorInput = $('#massError').val();
+        //       retTimeErrorInput = $('#retTimeError').val()
+        //
+        //       //check for empty input
+        //       scoreThreshold = scoreThresholdInput ==="" ? null : parseFloat(scoreThresholdInput);
+        //       massError = massErrorInput==="" ? null : parseFloat($('#massError').val());
+        //       reTimeError = retTimeErrorInput ==="" ? null : parseFloat($('#retTimeError').val());
+        //   }
+        //
+        //   matchName = $('#matchName').val();
+        //
+        //   $('.query_container').hide();
+        //   $('.match_container').hide();
+        //   $('#distinct_query_table').DataTable().destroy();
+        //   initializeTable();
+        // })
+
+        //update filter parameters when user change the filter
+        $(' #matchesOnly, #ontologyLevel').change(function(){
+          updateFilterParams();
+        })
+        $('.item-textbox, #matchName').on('input', function(){
+          updateFilterParams();
+        })
+        function updateFilterParams(){
           showMatchesOnly =$('#matchesOnly').is(":checked") ? 1 : 0;
           ontologyLevel = $('#ontologyLevel').val();
 
           if(!$('#scoreThreshold')[0].checkValidity() || !$('#massError')[0].checkValidity()
-            ||!$('#retTimeError')[0].checkValidity()) {
-              alert("Please enter number only");
-              return;
+              ||!$('#retTimeError')[0].checkValidity()) {
+            alert("Please enter number only");
+            return;
           }
           else{
-              scoreThresholdInput = $('#scoreThreshold').val();
-              massErrorInput = $('#massError').val();
-              retTimeErrorInput = $('#retTimeError').val()
+            scoreThresholdInput = $('#scoreThreshold').val();
+            massErrorInput = $('#massError').val();
+            retTimeErrorInput = $('#retTimeError').val()
 
-              //check for empty input
-              scoreThreshold = scoreThresholdInput ==="" ? null : parseFloat(scoreThresholdInput);
-              massError = massErrorInput==="" ? null : parseFloat($('#massError').val());
-              reTimeError = retTimeErrorInput ==="" ? null : parseFloat($('#retTimeError').val());
+            //check for empty input
+            scoreThreshold = scoreThresholdInput ==="" ? null : parseFloat(scoreThresholdInput);
+            massError = massErrorInput==="" ? null : parseFloat($('#massError').val());
+            reTimeError = retTimeErrorInput ==="" ? null : parseFloat($('#retTimeError').val());
           }
 
           matchName = $('#matchName').val();
@@ -1038,8 +1080,7 @@
           $('.match_container').hide();
           $('#distinct_query_table').DataTable().destroy();
           initializeTable();
-        })
-
+        }
 
 
     });
