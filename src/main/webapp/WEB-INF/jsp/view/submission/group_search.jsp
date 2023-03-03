@@ -311,6 +311,7 @@
 
     var isSavedResultPage = '<c:out value="${submissionId}" />' ? true : false;
   $(document).ready(function () {
+        var drawFirstTime = true;
     //filter parameters
         var url;
         var showMatchesOnly = 1;
@@ -402,7 +403,7 @@
                       data: "querySpectrumName"
                   }
               ],
-              "initComplete": function() {
+              "drawCallback": function() {
                 $.fn.dataTable.tables({visible: true, api: true}).columns.adjust();
                   if(distinct_query_table.data().count() ===0){
                       // $('#query_table').DataTable().clear().draw();
@@ -412,8 +413,11 @@
                   }
                   else
                   {
+                    if(drawFirstTime) {
                       //select first row by default
                       distinct_query_table.row(':eq(0)').nodes().to$().trigger('click');
+                      drawFirstTime=false;
+                    }
                   }
               },
               rowId: 'position'
@@ -1017,41 +1021,17 @@
           $('.query_container').hide();
           $('.match_container').hide();
           $('#distinct_query_table').DataTable().destroy();
+          drawFirstTime=true;
           initializeTable();
         })
-        // $('#applyFilterBtn').click(function(){
-        //   showMatchesOnly =$('#matchesOnly').is(":checked") ? 1 : 0;
-        //   ontologyLevel = $('#ontologyLevel').val();
-        //
-        //   if(!$('#scoreThreshold')[0].checkValidity() || !$('#massError')[0].checkValidity()
-        //     ||!$('#retTimeError')[0].checkValidity()) {
-        //       alert("Please enter number only");
-        //       return;
-        //   }
-        //   else{
-        //       scoreThresholdInput = $('#scoreThreshold').val();
-        //       massErrorInput = $('#massError').val();
-        //       retTimeErrorInput = $('#retTimeError').val()
-        //
-        //       //check for empty input
-        //       scoreThreshold = scoreThresholdInput ==="" ? null : parseFloat(scoreThresholdInput);
-        //       massError = massErrorInput==="" ? null : parseFloat($('#massError').val());
-        //       reTimeError = retTimeErrorInput ==="" ? null : parseFloat($('#retTimeError').val());
-        //   }
-        //
-        //   matchName = $('#matchName').val();
-        //
-        //   $('.query_container').hide();
-        //   $('.match_container').hide();
-        //   $('#distinct_query_table').DataTable().destroy();
-        //   initializeTable();
-        // })
 
         //update filter parameters when user change the filter
         $(' #matchesOnly, #ontologyLevel').change(function(){
+          drawFirstTime = true;
           updateFilterParams();
         })
         $('.item-textbox, #matchName').on('input', function(){
+          drawFirstTime = true;
           updateFilterParams();
         })
         function updateFilterParams(){
