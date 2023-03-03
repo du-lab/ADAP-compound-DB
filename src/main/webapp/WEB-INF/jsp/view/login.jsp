@@ -5,7 +5,7 @@
 <%@ taglib prefix="spring" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <style>
-  #forgot_password_link {
+  .forgot_link {
     font-size: smaller;
     margin-top: -15px;
     margin-bottom: 20px;
@@ -58,8 +58,11 @@
                                     <form:errors path="password" cssClass="text-danger"/>
                                 </div>
                                 <div class="row">
-                                    <div id = "forgot_password_link" class="col-md-2 offset-md-6">
-                                        <a href="${pageContext.request.contextPath}/forgotForm" >Forgot Password</a>
+                                    <div class = "forgot_link col-md-2 offset-md-6">
+                                        <a href="${pageContext.request.contextPath}/forgotPassForm" >Forgot Password</a>
+                                    </div>
+                                    <div class = "forgot_link col-md-2 offset-md-6">
+                                        <a href="${pageContext.request.contextPath}/forgotUsernameForm" >Forgot Username</a>
                                     </div>
                                     <div class="col-md-2 offset-md-6">
                                         <input class="btn btn-primary" name="submit" type="submit" value="Log in"/>

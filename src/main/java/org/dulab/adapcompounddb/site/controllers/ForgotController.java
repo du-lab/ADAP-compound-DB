@@ -3,14 +3,11 @@ package org.dulab.adapcompounddb.site.controllers;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.site.controllers.forms.ResetPasswordForm;
 import org.dulab.adapcompounddb.site.services.AuthenticationService;
 import org.dulab.adapcompounddb.site.services.EmailService;
 import org.dulab.adapcompounddb.site.services.UserPrincipalService;
-import org.dulab.adapcompounddb.validation.FieldMatch;
-import org.dulab.adapcompounddb.validation.Password;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,7 +20,7 @@ import java.util.Date;
 import java.util.UUID;
 
 @Controller
-public class ForgotPasswordController {
+public class ForgotController {
   @Autowired
   UserPrincipalService userPrincipalService;
   @Autowired
@@ -31,9 +28,14 @@ public class ForgotPasswordController {
 
   @Autowired
   AuthenticationService authenticationService;
-  @GetMapping("/forgotForm")
+  @GetMapping("/forgotPassForm")
   public String forgotPasswordForm() {
     return "forgot_password";
+  }
+
+  @GetMapping("/forgotUsernameForm")
+  public String forgotUsernameForm() {
+    return "forgot_username";
   }
 
   @PostMapping("/forgotPassword")
@@ -53,12 +55,25 @@ public class ForgotPasswordController {
       String domain = request.getContextPath();
       String resetUrl =  "http://localhost:8080/resetPassword?token=" +resetToken;  //TODO: change to https://adap.cloud
       String subject = "Reset Password";
-      String text = "Please use this link to reset your password: " + resetUrl;
+      String text = "Please use this link to reset your password: " + resetUrl +
+          "\nIf you didn't make this request, please contact our support team.";
       emailService.sendEmail(user.getEmail(), subject, text);
 
       return "reset_password_link_sent";
   }
 
+  @PostMapping("/forgotUsername")
+  public String forgotUsername(@RequestParam("email") String email, HttpServletRequest request, Model model) throws Exception{
+    UserPrincipal user = userPrincipalService.findByUserEmail(email);
+    if (user == null)
+      throw new Exception("This email is not correct");
+    String subject = "Retrieve username";
+    String text = "This email address is associated with the following username: " + user.getUsername() +
+        "\nIf you didn't make this request, please contact our support team.";
+    emailService.sendEmail(user.getEmail(), subject, text);
+
+    return "retrieve_username_link_sent";
+  }
   //after using click on reset link in their email
   @GetMapping("/resetPassword")
   public String resetPassword(Model model, @RequestParam("token") String token) throws Exception {
