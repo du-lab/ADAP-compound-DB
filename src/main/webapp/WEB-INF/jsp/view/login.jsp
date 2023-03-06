@@ -7,8 +7,6 @@
 <style>
   .forgot_link {
     font-size: smaller;
-    margin-top: -15px;
-    margin-bottom: 20px;
   }
 
 </style>
@@ -45,30 +43,28 @@
                         <div class="container">
                             <form:form method="POST" action="${pageContext.request.contextPath}/j_spring_security_check"
                                        modelAttribute="logInForm">
-                                <div class="row form-group">
-                                    <form:label path="username"
-                                                cssClass="col-md-3 offset-md-3 col-form-label">Username:</form:label>
-                                    <form:input path="username" autofocus="autofocus" cssClass="col-md-3 form-control"/>
-                                    <form:errors path="username" cssClass="text-danger"/>
+                                <div class="row form-group align-items-center" style="margin-left: 130px;">
+                                    <form:label path="username" cssClass="col-md-3  col-form-label text-right">Username:</form:label>
+                                    <div class="col-md-3 d-flex align-items-center">
+                                        <form:input path="username" autofocus="autofocus" cssClass="form-control"/>
+                                        <form:errors path="username" cssClass="text-danger"/>
+                                    </div>
+                                    <div class="forgot_link col-md-6">
+                                        <a href="${pageContext.request.contextPath}/forgotUsernameForm" >Forgot Username?</a>
+                                    </div>
                                 </div>
-                                <div class="row form-group">
-                                    <form:label path="password"
-                                                cssClass="col-md-3 offset-md-3 col-form-label">Password:</form:label>
-                                    <form:password path="password" cssClass="col-md-3 form-control"/>
-                                    <form:errors path="password" cssClass="text-danger"/>
+                                <div class="row form-group align-items-center" style="margin-left: 130px;">
+                                    <form:label path="password" cssClass="col-md-3  col-form-label text-right">Password:</form:label>
+                                    <div class="col-md-3 d-flex align-items-center">
+                                        <form:password path="password" cssClass=" form-control"/>
+                                        <form:errors path="password" cssClass="text-danger"/>
+                                    </div>
+                                    <div class="forgot_link col-md-6">
+                                        <a href="${pageContext.request.contextPath}/forgotPassForm" >Forgot Password?</a>
+                                    </div>
                                 </div>
-                                <div class="row">
-                                    <div class = "forgot_link col-md-2 offset-md-6">
-                                        <a href="${pageContext.request.contextPath}/forgotPassForm" >Forgot Password</a>
-                                    </div>
-                                    <div class = "forgot_link col-md-2 offset-md-6">
-                                        <a href="${pageContext.request.contextPath}/forgotUsernameForm" >Forgot Username</a>
-                                    </div>
-                                    <div class="col-md-2 offset-md-6">
-                                        <input class="btn btn-primary" name="submit" type="submit" value="Log in"/>
-                                    </div>
-
-
+                                <div class="row" style="display: flex;justify-content: center;">
+                                    <input class="btn btn-primary" name="submit" type="submit" value="Log in"/>
                                 </div>
 
                             </form:form>

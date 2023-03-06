@@ -67,9 +67,10 @@ public class ForgotController {
     UserPrincipal user = userPrincipalService.findByUserEmail(email);
     if (user == null)
       throw new Exception("This email is not correct");
-    String subject = "Retrieve username";
+    String subject = "ADAP-KDB username request";
     String text = "This email address is associated with the following username: " + user.getUsername() +
-        "\nIf you didn't make this request, please contact our support team.";
+        "\nIf you didn't make this request, please contact our support team at "
+        + "<a href=\"mailto:adap.helpdesk@gmail.com\"></a>";
     emailService.sendEmail(user.getEmail(), subject, text);
 
     return "retrieve_username_link_sent";
