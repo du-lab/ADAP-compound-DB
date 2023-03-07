@@ -27,6 +27,8 @@ public class ControllerUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(ControllerUtils.class);
     public static final String GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME = "group_search_async";
     public static final String GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME = "group_search_results";
+    public static final String GROUP_SEARCH_RESULTS_FILTERED = "group_search_results_filtered";
+    public static final String GROUP_SEARCH_MATCHES ="matches";
     public static String groupSearchResultsAttributeName() {
         return GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME;
     }
@@ -38,6 +40,7 @@ public class ControllerUtils {
     public static final String FILE_UPLOAD_FIELDS_COOKIE_NAME= "fileUploadFields";
     public static final String SEARCH_PARAMETERS_COOKIE_NAME = "search_parameters_form";
     public static final String INDIVIDUAL_SEARCH_PARAMETERS_COOKIE_NAME = "individual_parameters_form";
+    public static final String SPECTRUM_LIST = "spectrum_list";
     public static boolean INTEG_TEST = System.getenv("DISABLE_CAPTCHA") != null && !System.getenv("DISABLE_CAPTCHA").isEmpty();
 
     static {

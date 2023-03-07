@@ -1,5 +1,7 @@
 package org.dulab.adapcompounddb.site.services.search;
 
+import java.util.stream.Collectors;
+import org.dulab.adapcompounddb.models.dto.SpectrumDTO;
 import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -154,8 +156,11 @@ public class GroupSearchService {
                     progress = (float) ++progressStep / totalSteps;
                     groupSearchDTOList.addAll(individualSearchResults);
                     try {
-                        session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
-                        session.setAttribute(ControllerUtils.GROUP_SEARCH_PROGRESS_ATTRIBUTE_NAME, progress);
+                        session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME,
+                            groupSearchDTOList);
+                        session.setAttribute(ControllerUtils.GROUP_SEARCH_PROGRESS_ATTRIBUTE_NAME,
+                            progress);
+
                     } catch (IllegalStateException e) {
                         if (sendResultsToEmail) {
                             if (showSessionEndedMessage) {
@@ -163,7 +168,8 @@ public class GroupSearchService {
                                 showSessionEndedMessage = false;
                             }
                         } else {
-                            LOGGER.warn("It looks like the session has been closed. Stopping the group search.");
+                            LOGGER.warn(
+                                "It looks like the session has been closed. Stopping the group search.");
                             //return new AsyncResult<>(null);
                         }
                     }

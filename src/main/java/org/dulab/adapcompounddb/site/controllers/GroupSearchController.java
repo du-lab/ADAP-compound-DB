@@ -1,5 +1,7 @@
 package org.dulab.adapcompounddb.site.controllers;
 
+import java.util.stream.Collectors;
+import org.dulab.adapcompounddb.models.dto.SpectrumDTO;
 import org.dulab.adapcompounddb.models.dto.SearchParametersDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,11 +95,12 @@ public class GroupSearchController extends BaseController {
         return "submission/group_search_parameters";
     }
 
+
     @RequestMapping(value = "/group_search/parameters", method = RequestMethod.POST)
     public String groupSearchParametersPost(@RequestParam Optional<Long> submissionId, HttpSession session, Model model,
-                                            HttpServletRequest request, HttpServletResponse response,
-                                            @Valid FilterForm form, Errors errors,
-                                            RedirectAttributes redirectAttributes) throws TimeoutException {
+                                             HttpServletRequest request, HttpServletResponse response,
+                                             @Valid FilterForm form, Errors errors,
+                                             RedirectAttributes redirectAttributes) throws TimeoutException {
 
         Submission submission = submissionId
                 .map(submissionService::fetchSubmission)
@@ -139,7 +142,7 @@ public class GroupSearchController extends BaseController {
         parameters.setSubmissionIds(form.getSubmissionIds());
 
         asyncResult = groupSearchService.groupSearch(this.getCurrentUserPrincipal(), submission.getFiles(), session,
-                parameters, form.isWithOntologyLevels(), form.isSendResultsToEmail(), savedSubmission);
+                parameters, form.isWithOntologyLevels(), form.isSendResultsToEmail(),  savedSubmission);
         session.setAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME, asyncResult);
 
         LOGGER.info(String.format("Group search is started by user %s with IP = %s [%s]",
