@@ -18,4 +18,5 @@ public interface UserPrincipalRepository extends CrudRepository<UserPrincipal, L
 
     UserPrincipal findByemail(String email);
     UserPrincipal findBypasswordResetToken(String token);
+    UserPrincipal findByEmailOrUsername(String email, String username);
 }

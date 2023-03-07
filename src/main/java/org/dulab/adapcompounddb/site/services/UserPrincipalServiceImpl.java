@@ -132,6 +132,11 @@ public class UserPrincipalServiceImpl implements UserPrincipalService {
     }
 
     @Override
+    public UserPrincipal findByUserEmailOrUsername(String input) {
+        return userPrincipalRepository.findByEmailOrUsername(input, input);
+    }
+
+    @Override
     public UserPrincipal findByToken(String token) {
         return userPrincipalRepository.findBypasswordResetToken(token);
     }

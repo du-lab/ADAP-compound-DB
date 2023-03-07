@@ -39,12 +39,12 @@ public class ForgotController {
   }
 
   @PostMapping("/forgotPassword")
-  public String sendEmail(@RequestParam("email") String email, HttpServletRequest request, Model model) throws Exception {
-    System.out.println("EMAIL: " + email);
-    //find user by email
-      UserPrincipal user = userPrincipalService.findByUserEmail(email);
+  public String sendEmail(@RequestParam("email_username_input") String input, HttpServletRequest request, Model model) throws Exception {
+
+    //find user by email or username
+      UserPrincipal user = userPrincipalService.findByUserEmailOrUsername(input);
       if (user == null)
-        throw new Exception("This email is not correct");
+        throw new Exception("This email or username does not exist");
       //generate token
       String resetToken = UUID.randomUUID().toString();
       Date expirationDate = new Date(System.currentTimeMillis() + 3600000);//1 hour expiration time
@@ -54,7 +54,7 @@ public class ForgotController {
       //send email
       String domain = request.getContextPath();
       String resetUrl =  "http://localhost:8080/resetPassword?token=" +resetToken;  //TODO: change to https://adap.cloud
-      String subject = "Reset Password";
+      String subject = "ADAP-KDB password reset";
       String text = "Please use this link to reset your password: " + resetUrl +
           "\nIf you didn't make this request, please contact our support team at "
           + "adap.helpdesk@gmail.com";
