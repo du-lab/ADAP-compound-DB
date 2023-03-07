@@ -56,7 +56,8 @@ public class ForgotController {
       String resetUrl =  "http://localhost:8080/resetPassword?token=" +resetToken;  //TODO: change to https://adap.cloud
       String subject = "Reset Password";
       String text = "Please use this link to reset your password: " + resetUrl +
-          "\nIf you didn't make this request, please contact our support team.";
+          "\nIf you didn't make this request, please contact our support team at "
+          + "adap.helpdesk@gmail.com";
       emailService.sendEmail(user.getEmail(), subject, text);
 
       return "reset_password_link_sent";
@@ -70,7 +71,7 @@ public class ForgotController {
     String subject = "ADAP-KDB username request";
     String text = "This email address is associated with the following username: " + user.getUsername() +
         "\nIf you didn't make this request, please contact our support team at "
-        + "<a href=\"mailto:adap.helpdesk@gmail.com\"></a>";
+        + "adap.helpdesk@gmail.com";
     emailService.sendEmail(user.getEmail(), subject, text);
 
     return "retrieve_username_link_sent";
