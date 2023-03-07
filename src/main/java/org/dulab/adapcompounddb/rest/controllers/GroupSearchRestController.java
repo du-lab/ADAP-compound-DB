@@ -104,7 +104,6 @@ public class GroupSearchRestController extends BaseController {
             if(user!= null) {
                 List<Long> spectrumIds = getSpectrumIdsFromSubmission(submissionId);
                 //get ontologylevels from spectrum match
-                //TODO: try to query distinct ontology level from datatabse
                 List<SpectrumMatch> spectrumMatches = spectrumMatchService.findAllSpectrumMatchByUserIdAndQuerySpectrums(user.getId(), spectrumIds);
                 return spectrumMatches.stream().map(sm->sm.getOntologyLevel()).filter(Objects::nonNull)
                         .distinct().collect(Collectors.toList());
@@ -317,7 +316,6 @@ public class GroupSearchRestController extends BaseController {
         if (getCurrentUserPrincipal() != null) {
 
             List<Long> spectrumIds = getSpectrumIdsFromSubmission(submissionId);
-            //TODO: do the filtering here, pass in all the parameters
             Page<String> distinctQuerySpectrum = spectrumMatchService.findAllDistinctSpectrumByUserIdAndQuerySpectrumsPageable
                 (getCurrentUserPrincipal().getId(), spectrumIds, start, length, showMatchesOnly,
                     ontologyLevel, scoreThreshold, massError, retTimeError, matchName);

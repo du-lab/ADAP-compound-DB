@@ -142,14 +142,14 @@
             </div>
             <div class = "items">
                 <label for="scoreThreshold" title="Results with score above the threshold will be shown" style="margin-right:10px;">Score Threshold</label>
-                <input type="number" step="any" id="scoreThreshold" class="form-control item-textbox"/>
+                <input type="number" step="any" id="scoreThreshold" placeholder="0-1000" class="form-control item-textbox"/>
             </div>
             <div class = "items">
-                <label for="massError" title="Results with mass error below given value will be shown" style="margin-right:10px;">Mass Error Tolerance</label>
+                <label for="massError" title="Results with mass error below given value will be shown" style="margin-right:10px;">Mass Error Tolerance (Da)</label>
                 <input type="number" step="any" id="massError" class="form-control item-textbox"/>
             </div>
             <div class = "items">
-                <label for="retTimeError" title="Results with retention time error below given value will be shown" style="margin-right:10px;">Retention Time Error Tolerance</label>
+                <label for="retTimeError" title="Results with retention time error below given value will be shown" style="margin-right:10px;">Retention Time Error Tolerance (min)</label>
                 <input type="number" step="any" id="retTimeError" class="form-control item-textbox"/>
             </div>
 
@@ -1049,7 +1049,7 @@
             retTimeErrorInput = $('#retTimeError').val()
 
             //check for empty input
-            scoreThreshold = scoreThresholdInput ==="" ? null : parseFloat(scoreThresholdInput);
+            scoreThreshold = scoreThresholdInput ==="" ? null : parseFloat(scoreThresholdInput)/1000;
             massError = massErrorInput==="" ? null : parseFloat($('#massError').val());
             reTimeError = retTimeErrorInput ==="" ? null : parseFloat($('#retTimeError').val());
           }
