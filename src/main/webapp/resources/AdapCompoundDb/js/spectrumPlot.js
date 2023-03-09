@@ -5,8 +5,8 @@
 jQuery.fn.spectrumPlot = function (id, restURL1, restURL2, onComplete) {
     let div = $(this);
 
-    let oldId = div.attr('data-id')
-    if (id === oldId) return;
+    // let oldId = div.attr('data-id')
+    // if (id === oldId) return;
 
     // Remove all child elements
     div.text(null);
@@ -21,6 +21,7 @@ jQuery.fn.spectrumPlot = function (id, restURL1, restURL2, onComplete) {
 
             //render graph if there's both peaks
             if(resp1[0].peaks.length != 0 && resp2[0].peaks.length !=0) {
+                $('#plot_content').show();
                 chart = st.chart.ms()
                     .legend(true)
                     .labels(true)
