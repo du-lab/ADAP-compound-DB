@@ -8,7 +8,12 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
-
+<script src="https://www.google.com/recaptcha/api.js"></script>
+<script>
+  function recaptchaCallback() {
+    $('#submitBtn').removeAttr('disabled');
+  }
+</script>
 <div class="container">
   <div class="row row-content">
     <div class="col">
@@ -25,8 +30,10 @@
                 <p>
                   <input type="text" name="email_username_input" class="form-control" placeholder="Enter your username or e-mail" required autofocus/>
                 </p>
+                  <div id="submit" class="g-recaptcha col-md-8 offset-md-1" data-callback="recaptchaCallback"
+                       data-sitekey="6LdY3V8hAAAAACkWkUd5G9xYtgnM9vwPvIPsQrWy"></div>
                 <p class="text-center">
-                  <input type="submit" value="Send" class="btn btn-primary" />
+                  <input type="submit" id="submitBtn" value="Send" class="btn btn-primary" disabled="disabled"/>
                 </p>
               </div>
 

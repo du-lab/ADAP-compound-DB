@@ -61,7 +61,8 @@ public class EmailService {
 
     }
 
-    public void sendEmail(String receiptant, String subject, String text){
+    public void sendEmail(String receiptant, String subject, String text)
+        throws Exception {
         MimeMessage message = mailSender.createMimeMessage();
 
         try {
@@ -76,8 +77,10 @@ public class EmailService {
             mailSender.send(message);
         } catch (MessagingException e) {
             LOGGER.warn( e.getMessage(), e);
+            throw e;
         } catch (Exception e) {
             LOGGER.warn( e.getMessage(), e);
+            throw e;
         }
     }
 }

@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.controllers;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -8,6 +9,8 @@ import org.dulab.adapcompounddb.site.controllers.forms.ResetPasswordForm;
 import org.dulab.adapcompounddb.site.services.AuthenticationService;
 import org.dulab.adapcompounddb.site.services.EmailService;
 import org.dulab.adapcompounddb.site.services.UserPrincipalService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,6 +26,8 @@ import java.util.UUID;
 @Controller
 //@RequestMapping("/passwordRecovery")
 public class ForgotPasswordController {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(ForgotPasswordController.class);
   @Autowired
   UserPrincipalService userPrincipalService;
   @Autowired
@@ -60,8 +65,19 @@ public class ForgotPasswordController {
       String text = "Please use this link to reset your password: " + resetUrl +
           "\nIf you didn't make this request, please contact our support team at "
           + "adap.helpdesk@gmail.com";
-      emailService.sendEmail(user.getEmail(), subject, text);
+      try {
+        emailService.sendEmail(user.getEmail(), subject, text);
+      }
+      catch (MessagingException e) {
+        LOGGER.warn( e.getMessage(), e);
+        throw new Exception("Couldn't send reset link");
+      }
+      catch (Exception e) {
+        LOGGER.warn(e.getMessage(), e);
+        throw new Exception("Couldn't send reset link");
+      }
 
+      LOGGER.info("A recovery email was sent to " + user.getEmail());
       return "passwordrecovery/reset_password_link_sent";
   }
 
@@ -74,8 +90,18 @@ public class ForgotPasswordController {
     String text = "This email address is associated with the following username: " + user.getUsername() +
         "\nIf you didn't make this request, please contact our support team at "
         + "adap.helpdesk@gmail.com";
-    emailService.sendEmail(user.getEmail(), subject, text);
-
+    try {
+      emailService.sendEmail(user.getEmail(), subject, text);
+    }
+    catch (MessagingException e) {
+      LOGGER.warn( e.getMessage(), e);
+      throw new Exception("Couldn't send username");
+    }
+    catch (Exception e) {
+      LOGGER.warn(e.getMessage(), e);
+      throw new Exception("Couldn't send username");
+    }
+    LOGGER.info("A username was sent to " + user.getEmail());
     return "passwordrecovery/retrieve_username_link_sent";
   }
   //after using click on reset link in their email
@@ -86,12 +112,13 @@ public class ForgotPasswordController {
       if(user == null)
           throw new Exception("Invalid token");
       if(user.getPasswordExpirationDate().before(new Date()))
-          throw new Exception("Token has expired");
+          throw new Exception("Reset link has expired");
 
-      //if validate success return reset password page
+      //if validate success return reset password page, and invalidate reset link.
       ResetPasswordForm resetPassForm = new ResetPasswordForm();
       resetPassForm.setUserName(user.getUsername());
       model.addAttribute("resetPasswordForm", resetPassForm);
+
       return "passwordrecovery/reset_password";
   }
   @PostMapping("/passwordRecovery/resetPassword")
@@ -103,8 +130,9 @@ public class ForgotPasswordController {
           return "passwordrecovery/reset_password";
       }
 
+      String username = form.getUserName();
       try {
-          authenticationService.resetPassword(form.getUserName(), form.getConfirmedNewPass());
+          authenticationService.resetPassword(username, form.getConfirmedNewPass());
       } catch (Exception e) {
           form.setNewPass(null);
           form.setConfirmedNewPass(null);
@@ -113,7 +141,12 @@ public class ForgotPasswordController {
           return "passwordrecovery/reset_password";
 
       }
+      //after password is changed, invalidate the reset link
+      UserPrincipal user = userPrincipalService.findUserByUsername(username);
+      user.setPasswordExpirationDate(new Date());
+      userPrincipalService.saveUserPrincipal(user);
 
+      LOGGER.info("A password was changed for user " + form.getUserName());
       return "passwordrecovery/password_reset_sucess";
   }
 
