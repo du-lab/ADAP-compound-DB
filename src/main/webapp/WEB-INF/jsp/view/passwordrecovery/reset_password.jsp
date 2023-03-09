@@ -31,7 +31,7 @@
                 </ul>
               </div>
             </div>
-            <form:form method="POST" modelAttribute="resetPasswordForm" action="/resetPassword">
+            <form:form method="POST" modelAttribute="resetPasswordForm" action="/passwordRecovery/resetPassword">
               <sec:csrfInput />
               <c:if test="${errorMsg != null}">
                 <div class="row">

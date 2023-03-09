@@ -15,7 +15,7 @@
       <div class="card">
         <div class="card-header card-header-single">Forgot username</div>
         <div class="card-body">
-          <form action="/forgotUsername"  method="POST" style="max-width: 420px; margin: 0 auto;">
+          <form action="/passwordRecovery/forgotUsername"  method="POST" style="max-width: 420px; margin: 0 auto;">
             <sec:csrfInput />
 
             <div>

@@ -15,7 +15,7 @@
       <div class="card">
         <div class="card-header card-header-single">Forgot password</div>
         <div class="card-body">
-          <form action="/forgotPassword"  method="POST" style="max-width: 420px; margin: 0 auto;">
+          <form action="/passwordRecovery/forgotPassword"  method="POST" style="max-width: 420px; margin: 0 auto;">
             <sec:csrfInput />
 
               <div>

@@ -50,7 +50,7 @@
                                         <form:errors path="username" cssClass="text-danger"/>
                                     </div>
                                     <div class="forgot_link col-md-6">
-                                        <a href="${pageContext.request.contextPath}/forgotUsernameForm" >Forgot Username?</a>
+                                        <a href="${pageContext.request.contextPath}/passwordRecovery/forgotUsernameForm" >Forgot Username?</a>
                                     </div>
                                 </div>
                                 <div class="row form-group align-items-center" style="margin-left: 130px;">
@@ -60,7 +60,7 @@
                                         <form:errors path="password" cssClass="text-danger"/>
                                     </div>
                                     <div class="forgot_link col-md-6">
-                                        <a href="${pageContext.request.contextPath}/forgotPassForm" >Forgot Password?</a>
+                                        <a href="${pageContext.request.contextPath}/passwordRecovery/forgotPassForm" >Forgot Password?</a>
                                     </div>
                                 </div>
                                 <div class="row" style="display: flex;justify-content: center;">

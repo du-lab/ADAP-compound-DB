@@ -14,13 +14,15 @@ import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Date;
 import java.util.UUID;
 
 @Controller
-public class ForgotController {
+//@RequestMapping("/passwordRecovery")
+public class ForgotPasswordController {
   @Autowired
   UserPrincipalService userPrincipalService;
   @Autowired
@@ -28,17 +30,17 @@ public class ForgotController {
 
   @Autowired
   AuthenticationService authenticationService;
-  @GetMapping("/forgotPassForm")
+  @GetMapping("/passwordRecovery/forgotPassForm")
   public String forgotPasswordForm() {
-    return "forgot_password";
+    return "passwordrecovery/forgot_password";
   }
 
-  @GetMapping("/forgotUsernameForm")
+  @GetMapping("/passwordRecovery/forgotUsernameForm")
   public String forgotUsernameForm() {
-    return "forgot_username";
+    return "passwordrecovery/forgot_username";
   }
 
-  @PostMapping("/forgotPassword")
+  @PostMapping("/passwordRecovery/forgotPassword")
   public String sendEmail(@RequestParam("email_username_input") String input, HttpServletRequest request, Model model) throws Exception {
 
     //find user by email or username
@@ -53,17 +55,17 @@ public class ForgotController {
       userPrincipalService.saveUserPrincipal(user);
       //send email
       String domain = request.getContextPath();
-      String resetUrl =  "http://localhost:8080/resetPassword?token=" +resetToken;  //TODO: change to https://adap.cloud
+      String resetUrl =  "http://localhost:8080/passwordRecovery/resetPassword?token=" +resetToken;  //TODO: change to https://adap.cloud
       String subject = "ADAP-KDB password reset";
       String text = "Please use this link to reset your password: " + resetUrl +
           "\nIf you didn't make this request, please contact our support team at "
           + "adap.helpdesk@gmail.com";
       emailService.sendEmail(user.getEmail(), subject, text);
 
-      return "reset_password_link_sent";
+      return "passwordrecovery/reset_password_link_sent";
   }
 
-  @PostMapping("/forgotUsername")
+  @PostMapping("/passwordRecovery/forgotUsername")
   public String forgotUsername(@RequestParam("email") String email, HttpServletRequest request, Model model) throws Exception{
     UserPrincipal user = userPrincipalService.findByUserEmail(email);
     if (user == null)
@@ -74,10 +76,10 @@ public class ForgotController {
         + "adap.helpdesk@gmail.com";
     emailService.sendEmail(user.getEmail(), subject, text);
 
-    return "retrieve_username_link_sent";
+    return "passwordrecovery/retrieve_username_link_sent";
   }
   //after using click on reset link in their email
-  @GetMapping("/resetPassword")
+  @GetMapping("/passwordRecovery/resetPassword")
   public String resetPassword(Model model, @RequestParam("token") String token) throws Exception {
       //validate token
       UserPrincipal user = userPrincipalService.findByToken(token);
@@ -90,15 +92,15 @@ public class ForgotController {
       ResetPasswordForm resetPassForm = new ResetPasswordForm();
       resetPassForm.setUserName(user.getUsername());
       model.addAttribute("resetPasswordForm", resetPassForm);
-      return "reset_password";
+      return "passwordrecovery/reset_password";
   }
-  @PostMapping("/resetPassword")
+  @PostMapping("/passwordRecovery/resetPassword")
   public String changePassword(final Model model, final HttpSession session,
       @Valid final ResetPasswordForm form, final Errors errors) {
       if (errors.hasErrors()) {
           form.setNewPass(null);
           form.setConfirmedNewPass(null);
-          return "reset_password";
+          return "passwordrecovery/reset_password";
       }
 
       try {
@@ -108,11 +110,11 @@ public class ForgotController {
           form.setConfirmedNewPass(null);
           model.addAttribute("errorMsg", e.getMessage());
           model.addAttribute("resetPassForm", form);
-          return "reset_password";
+          return "passwordrecovery/reset_password";
 
       }
 
-      return "password_reset_sucess";
+      return "passwordrecovery/password_reset_sucess";
   }
 
 }
