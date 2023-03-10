@@ -60,7 +60,7 @@ public class ForgotPasswordController {
       userPrincipalService.saveUserPrincipal(user);
       //send email
       String domain = request.getContextPath();
-      String resetUrl =  "http://localhost:8080/passwordRecovery/resetPassword?token=" +resetToken;  //TODO: change to https://adap.cloud
+      String resetUrl =  "https://adap.cloud/passwordRecovery/resetPassword?token=" +resetToken;  
       String subject = "ADAP-KDB password reset";
       String text = "Please use this link to reset your password: " + resetUrl +
           "\nIf you didn't make this request, please contact our support team at "
