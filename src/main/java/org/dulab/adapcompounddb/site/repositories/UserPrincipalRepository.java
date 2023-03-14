@@ -15,4 +15,8 @@ public interface UserPrincipalRepository extends CrudRepository<UserPrincipal, L
 
     @Query("select u from UserPrincipal u join fetch u.roles where u.username = ?1")
     Optional<UserPrincipal> findUserPrincipalWithRolesByUsername(String username);
+
+    UserPrincipal findByemail(String email);
+    UserPrincipal findBypasswordResetToken(String token);
+    UserPrincipal findByEmailOrUsername(String email, String username);
 }

@@ -32,5 +32,10 @@ public interface UserPrincipalService {
 
     void delete(long id);
 
+    UserPrincipal findByUserEmail(String email);
+    UserPrincipal findByUserEmailOrUsername(String input);
+
+    UserPrincipal findByToken(String token);
+
     SearchParametersDTO updateSearchParameters(final SearchParametersDTO searchParameters, final UserPrincipal user);
 }

@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.models.entities;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -51,6 +52,10 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
     private int peakCapacity = 15000000;
     private int peakNumber = 0;
     private String searchParameters;
+
+    private String passwordResetToken;
+
+    private Date passwordExpirationDate;
     private Set<UserRole> roles;
 
     @Id
@@ -112,6 +117,22 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
 
     public void setPeakCapacity(int peakCapacity) {
         this.peakCapacity = peakCapacity;
+    }
+
+    public String getPasswordResetToken() {
+        return passwordResetToken;
+    }
+
+    public void setPasswordResetToken(String passwordResetToken) {
+        this.passwordResetToken = passwordResetToken;
+    }
+
+    public Date getPasswordExpirationDate() {
+        return passwordExpirationDate;
+    }
+
+    public void setPasswordExpirationDate(Date passwordExpirationDate) {
+        this.passwordExpirationDate = passwordExpirationDate;
     }
 
     public int getPeakNumber() {

@@ -127,6 +127,21 @@ public class UserPrincipalServiceImpl implements UserPrincipalService {
     }
 
     @Override
+    public UserPrincipal findByUserEmail(String email) {
+        return userPrincipalRepository.findByemail(email);
+    }
+
+    @Override
+    public UserPrincipal findByUserEmailOrUsername(String input) {
+        return userPrincipalRepository.findByEmailOrUsername(input, input);
+    }
+
+    @Override
+    public UserPrincipal findByToken(String token) {
+        return userPrincipalRepository.findBypasswordResetToken(token);
+    }
+
+    @Override
     public SearchParametersDTO updateSearchParameters(SearchParametersDTO searchParameters, UserPrincipal user) {
         SearchParametersDTO currentSearchParameters = user.getSearchParametersDTO();
         if (currentSearchParameters == null || !currentSearchParameters.equals(searchParameters)) {
