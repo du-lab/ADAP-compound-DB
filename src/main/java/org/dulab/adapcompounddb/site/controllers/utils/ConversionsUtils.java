@@ -158,14 +158,24 @@ public class ConversionsUtils {
         //get os name
         //System.out.println("***************" + System.getProperty("java.version"));
         String osname = System.getProperty("os.name");
+        String architecture = System.getProperty("os.arch");
         osname = osname.toLowerCase();
         URL url = null;
         if(osname == null)
             throw new RuntimeException("Couuld not determine os properly");
         else if(osname.contains("linux"))
             url = ConversionsUtils.class.getResource("linux-aarch64/libGraphMolWrap.so");
-        else if(osname.contains("mac"))
-            url = ConversionsUtils.class.getResource("mac-amd64/libGraphMolWrap.jnilib");
+        else if(osname.contains("mac") )
+        {
+            if(architecture == null || architecture.isEmpty())
+                throw new RuntimeException("Could not determine architecture properly");
+            else if(architecture.contains("x86_64"))
+                url = ConversionsUtils.class.getResource("mac-amd64/libGraphMolWrap.jnilib");
+            else if(architecture.contains("aarch64"))
+                url = ConversionsUtils.class.getResource("mac-arm/libGraphMolWrap.jnilib");
+            else
+                throw new RuntimeException("Could not determine architecture properly");
+        }
         else if(osname.contains("windows"))
             url = ConversionsUtils.class.getResource("windows-amd64/GraphMolWrap.dll");
 
