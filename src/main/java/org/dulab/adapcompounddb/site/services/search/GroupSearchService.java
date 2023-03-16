@@ -192,6 +192,9 @@ public class GroupSearchService {
                 spectrumMatchRepository.deleteByQuerySpectrumsAndUserId(userPrincipal.getId(),
                     deleteMatches);
                 spectrumMatchRepository.saveAll(savedMatches);
+
+                //group search is done.
+
             }
 
 
