@@ -223,7 +223,7 @@ public class SubmissionService {
         Optional<Submission> submission = submissionRepository.findById(submissionId);
         if (submission.isPresent()) {
             UserPrincipal user = submission.get().getUser();
-            submissionRepository.delete(submission.get());
+            submissionRepository.deleteById(submissionId);
 //            PeakNumber here cannot be zero (if user has files) account page calculate PeakNumber and to delete we need
 //            to go to account page, and account page calculates PeakNumber if user.peakNumber is zero
             calculateAndSavePeakNumber(submission.get(), user.getPeakNumber(), Submission.DELETE_SUBMISSION);

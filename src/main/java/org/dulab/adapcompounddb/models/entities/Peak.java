@@ -7,6 +7,7 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.Serializable;
+import org.hibernate.annotations.BatchSize;
 
 @Entity
 public class Peak implements Serializable {
@@ -35,6 +36,7 @@ public class Peak implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "SpectrumId", referencedColumnName = "Id")
     @JsonIgnore
+    @BatchSize(size = 100)
     public Spectrum getSpectrum() {
         return spectrum;
     }
