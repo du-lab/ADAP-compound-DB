@@ -22,6 +22,12 @@ public class SpectrumDTO implements Serializable {
     private Double significance;
     private Double mass;
 
+    private String externalId;
+
+
+
+//    private Integer position;
+
     // ****************************
     // ***** Standard methods *****
     // ****************************
@@ -170,4 +176,13 @@ public class SpectrumDTO implements Serializable {
     public void setMass(Double mass) {
         this.mass = mass;
     }
+
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
+    }
+
 }
