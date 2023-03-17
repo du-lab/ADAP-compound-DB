@@ -133,9 +133,8 @@ public class GroupSearchRestController extends BaseController {
         if(sessionObject == null)
             return null;
         else{
-            Integer spectrumIndex = jsonObj.get("spectrumIndex").asInt();
-            String spectrumName = jsonObj.get("spectrumName").asText();
-            //TODO: change group search jsp to send spectrumindex and spectrum name
+            Integer spectrumIndex = jsonObj.get("querySpectrumIndex").asInt();
+            String spectrumName = jsonObj.get("querySpectrumName").asText();
             List<SearchResultDTO> searchResultFromSession = new ArrayList<>((List<SearchResultDTO>) sessionObject);
             List<SearchResultDTO> matches = searchResultFromSession.stream()
                 .filter(s -> s.getQuerySpectrumIndex()==spectrumIndex && s.getQuerySpectrumName()
