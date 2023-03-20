@@ -57,6 +57,7 @@
                         </li>
                         <li class="nav-item"><a id="librariesTab" class="nav-link" data-toggle="tab" href="#libraries">Libraries</a></li>
                         <li class="nav-item"><a id="parametersTab" class="nav-link" data-toggle="tab" href="#parameters">Parameters</a></li>
+                        <li class="nav-item"><a id="searchTaskTab" class="nav-link" data-toggle="tab" href="#searchTask">Group Search History</a></li>
                     </ul>
                 </div>
 
@@ -235,6 +236,32 @@
                             </div>
                         </form:form>
                     </div>
+
+                    <div id="searchTask" class="tab-pane" role="tabpanel">
+                        <table id="search_task_table" class="display" style="width: 100%;">
+                            <thead>
+                            <tr>
+                                <th>Submission</th>
+                                <th>Status</th>
+                                <th>Libraries Searched Against</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <c:forEach items="${searchTaskList}" var="searchTask" varStatus="loop">
+                                <tr>
+                                    <td><a href="${pageContext.request.contextPath}/submission/${searchTask.submission.id}/">${searchTask.submission.name}</a><br/></td>
+                                    <td>${searchTask.status}</td>
+                                    <td>
+                                        <c:forEach items = "${searchTask.libraryIds}" var = "id" varStatus="loop">
+                                            <a href="${pageContext.request.contextPath}/submission/${id}/">${id}</a>
+                                        </c:forEach>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                            </tbody>
+                        </table>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -299,7 +326,12 @@
                     "className": "dt-center", "targets": "_all"
                 }*/],
         });
+      var t3 = $('#search_task_table').DataTable({
+        responsive: true,
+        scrollX: true,
+        scroller: true,
 
+      });
         t1.on('order.dt search.dt', function () {
             t1.column(0, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {
                 cell.innerHTML = i + 1;
@@ -311,6 +343,7 @@
                 cell.innerHTML = i + 1;
             });
         }).draw();
+
 
         const valuenow = parseFloat($("#progressBar").attr("aria-valuenow"));
         const valuemax = parseFloat($("#progressBar").attr("aria-valuemax"));

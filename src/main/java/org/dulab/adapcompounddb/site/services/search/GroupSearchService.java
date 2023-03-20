@@ -1,7 +1,9 @@
 package org.dulab.adapcompounddb.site.services.search;
 
+import java.math.BigInteger;
 import java.util.stream.Collectors;
-import org.dulab.adapcompounddb.models.dto.SpectrumDTO;
+import org.dulab.adapcompounddb.models.enums.SearchTaskStatus;
+import org.dulab.adapcompounddb.site.repositories.SearchTaskRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +32,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class GroupSearchService {
@@ -44,13 +47,16 @@ public class GroupSearchService {
     private final EmailService emailService;
     private final SpectrumMatchRepository spectrumMatchRepository;
 
+    private final SearchTaskRepository searchTaskRepository;
+
     @Autowired
     public GroupSearchService(IndividualSearchService spectrumSearchService,
                               @Qualifier("excelExportSearchResultsService") ExportSearchResultsService exportSearchResultsService,
                               SpectrumRepository spectrumRepository,
                               MultiFetchRepository multiFetchRepository,
                               EmailService emailService,
-                              SpectrumMatchRepository spectrumMatchRepository) {
+                              SpectrumMatchRepository spectrumMatchRepository,
+                                SearchTaskRepository searchTaskRepository) {
 
         this.spectrumSearchService = spectrumSearchService;
         this.exportSearchResultsService = exportSearchResultsService;
@@ -58,18 +64,19 @@ public class GroupSearchService {
         this.spectrumMatchRepository = spectrumMatchRepository;
         this.multiFetchRepository = multiFetchRepository;
         this.emailService = emailService;
+        this.searchTaskRepository = searchTaskRepository;
     }
 
     @Async
 //    @Transactional(propagation = Propagation.REQUIRED)
-    public Future<Void> groupSearch(UserPrincipal userPrincipal, List<File> files, HttpSession session,
-                                    SearchParameters userParameters,
+    public Future<Void> groupSearch(UserPrincipal userPrincipal, Submission submission, List<File> files, HttpSession session,
+                                    SearchParameters userParameters, SortedMap<BigInteger, String> submissions,
                                     boolean withOntologyLevels, boolean sendResultsToEmail, boolean savedSubmission) throws TimeoutException {
         long time1 = System.currentTimeMillis();
 //        LOGGER.info("Group search has started");
         List<SpectrumMatch> savedMatches = new ArrayList<>();
         Set<Long> deleteMatches = new HashSet<>();
-
+        long userId = userPrincipal.getId();
 
         try {
             final List<SearchResultDTO> groupSearchDTOList = new ArrayList<>();
@@ -102,8 +109,6 @@ public class GroupSearchService {
             float progress = 0F;
             int position = 0;
 
-            //delete old spectrum match by user id before every group search
-            //spectrumMatchRepository.deleteByuserPrincipalId(userPrincipal.getId());
 
             for (int fileIndex = 0; fileIndex < files.size(); ++fileIndex) {
 
@@ -188,15 +193,16 @@ public class GroupSearchService {
                     }
                 }
             }
+
+            /**** Group search is done ****/
+
             if(userPrincipal != null) {
-                spectrumMatchRepository.deleteByQuerySpectrumsAndUserId(userPrincipal.getId(),
-                    deleteMatches);
+                //save spectrum match
+                spectrumMatchRepository.deleteByQuerySpectrumsAndUserId(userId, deleteMatches);
                 spectrumMatchRepository.saveAll(savedMatches);
-
-                //group search is done.
-
+                //update search task status to FINISHED
+                updateSearchTask(userId, submission, submissions);
             }
-
 
             long time2 = System.currentTimeMillis();
             double total = (time2 - time1) / 1000.0;
@@ -241,6 +247,21 @@ public class GroupSearchService {
             LOGGER.info("Group search is cancelled");
 
         return new AsyncResult<>(null);
+    }
+
+    @Transactional
+    void updateSearchTask(long userId, Submission submission, SortedMap<BigInteger, String> submissions ){
+        SearchTask searchTask = searchTaskRepository.findByUserIdAndSubmissionId(userId, submission.getId());
+        if(searchTask != null){
+            searchTask.setStatus( SearchTaskStatus.FINISHED);
+            searchTask.setSubmission(submission);
+            searchTask.setLibraryIds(submissions.keySet().stream().map(key -> key.longValue()).collect(
+                Collectors.toList()));
+            searchTaskRepository.save(searchTask);
+        }
+        else
+            LOGGER.warn("Could not update search task with user id: " + userId +
+                "and submission id: " + submission.getId());
     }
 
 }

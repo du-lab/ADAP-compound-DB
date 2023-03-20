@@ -197,10 +197,6 @@ public class SubmissionService {
         searchTask.setUser(user);
         searchTask.setStatus(SearchTaskStatus.NOT_STARTED);
 
-        List<Long> libraryIds = new ArrayList<>();
-        libraryIds.add(100L);
-        libraryIds.add(101L);
-        searchTask.setLibraryIds(libraryIds);
         searchTaskRepository.save(searchTask);
         return submissionObj;
     }

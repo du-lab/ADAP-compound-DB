@@ -3,6 +3,10 @@ package org.dulab.adapcompounddb.site.controllers;
 import java.util.stream.Collectors;
 import org.dulab.adapcompounddb.models.dto.SpectrumDTO;
 import org.dulab.adapcompounddb.models.dto.SearchParametersDTO;
+import org.dulab.adapcompounddb.models.entities.SearchTask;
+import org.dulab.adapcompounddb.models.entities.UserPrincipal;
+import org.dulab.adapcompounddb.models.enums.SearchTaskStatus;
+import org.dulab.adapcompounddb.site.services.SearchTaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.entities.File;
@@ -50,16 +54,19 @@ public class GroupSearchController extends BaseController {
     private final GroupSearchService groupSearchService;
     private final SubmissionService submissionService;
     private final SubmissionTagService submissionTagService;
+    private final SearchTaskService searchTaskService;
     private FilterOptions filterOptions;
 
     @Autowired
     public GroupSearchController(GroupSearchService groupSearchService,
                                  SubmissionService submissionService,
-                                 SubmissionTagService submissionTagService) {
+                                 SubmissionTagService submissionTagService,
+                                 SearchTaskService searchTaskService) {
 
         this.groupSearchService = groupSearchService;
         this.submissionService = submissionService;
         this.submissionTagService = submissionTagService;
+        this.searchTaskService = searchTaskService;
     }
 
     @RequestMapping(value = "/group_search/parameters", method = RequestMethod.GET)
@@ -141,8 +148,25 @@ public class GroupSearchController extends BaseController {
         parameters.setDisease(disease);
         parameters.setSubmissionIds(form.getSubmissionIds());
 
-        asyncResult = groupSearchService.groupSearch(this.getCurrentUserPrincipal(), submission.getFiles(), session,
-                parameters, form.isWithOntologyLevels(), form.isSendResultsToEmail(),  savedSubmission);
+        //update search task status to PENDING
+        UserPrincipal user = this.getCurrentUserPrincipal();
+        if(user != null) {
+            SearchTask searchTask = searchTaskService.findByUserIdAndSubmissionId(user.getId(), submission.getId());
+            if (searchTask != null) {
+                searchTask.setStatus(SearchTaskStatus.PENDING);
+                searchTask.setSubmission(submission);
+                searchTask.setLibraryIds(
+                    filterOptions.getSubmissions().keySet().stream().map(key -> key.longValue()).collect(Collectors.toList()));
+                SearchTask savedSearchTask = searchTaskService.save(searchTask);
+                if (savedSearchTask == null) {
+                    LOGGER.warn("Could not update search task with user id: " + this.getCurrentUserPrincipal().getId() + "and submission id: "
+                        + submissionId);
+                }
+            }
+        }
+
+        asyncResult = groupSearchService.groupSearch(this.getCurrentUserPrincipal(), submission, submission.getFiles(), session,
+                parameters, filterOptions.getSubmissions(), form.isWithOntologyLevels(), form.isSendResultsToEmail(), savedSubmission);
         session.setAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME, asyncResult);
 
         LOGGER.info(String.format("Group search is started by user %s with IP = %s [%s]",
