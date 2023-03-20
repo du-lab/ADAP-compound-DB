@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.site.services;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.dulab.adapcompounddb.models.enums.SearchTaskStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.SubmissionCategoryType;
@@ -70,6 +71,7 @@ public class SubmissionService {
     private final SubmissionCategoryRepository submissionCategoryRepository;
     private final SpectrumRepository spectrumRepository;
     private final MultiFetchRepository multiFetchRepository;
+    private final SearchTaskRepository searchTaskRepository;
 
 
     @Autowired
@@ -78,7 +80,8 @@ public class SubmissionService {
                              final SubmissionTagRepository submissionTagRepository,
                              final SubmissionCategoryRepository submissionCategoryRepository,
                              final SpectrumRepository spectrumRepository,
-                             final MultiFetchRepository multiFetchRepository) {
+                             final MultiFetchRepository multiFetchRepository,
+                             final SearchTaskRepository searchTaskRepository) {
 
         this.submissionRepository = submissionRepository;
         this.userPrincipalRepository = userPrincipalRepository;
@@ -86,6 +89,7 @@ public class SubmissionService {
         this.submissionCategoryRepository = submissionCategoryRepository;
         this.spectrumRepository = spectrumRepository;
         this.multiFetchRepository = multiFetchRepository;
+        this.searchTaskRepository = searchTaskRepository;
     }
 
     @Transactional
@@ -186,6 +190,18 @@ public class SubmissionService {
             spectrumRepository.saveSpectra(fileList, savedFileIds);
         }
         calculateAndSavePeakNumber(submission, count, Submission.SAVE_SUBMISSION);
+
+        //save search task here using submissionobj id and user id and library ids?
+        SearchTask searchTask = new SearchTask();
+        searchTask.setSubmission(submissionObj);
+        searchTask.setUser(user);
+        searchTask.setStatus(SearchTaskStatus.NOT_STARTED);
+
+        List<Long> libraryIds = new ArrayList<>();
+        libraryIds.add(100L);
+        libraryIds.add(101L);
+        searchTask.setLibraryIds(libraryIds);
+        searchTaskRepository.save(searchTask);
         return submissionObj;
     }
 
