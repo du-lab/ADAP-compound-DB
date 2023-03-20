@@ -11,19 +11,18 @@ public class SearchTask {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+//    @EmbeddedId
+//    SearchTaskId id;
 
     @ManyToOne
-    @JoinColumn(name = "submissionId")
+    @JoinColumn(name="submissionId")
     private Submission submission;
-
-    @ElementCollection
-    @Column(name="library_id")
-    private List<Long> libraryIds;
-
     @ManyToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name="userId")
     private UserPrincipal user;
-
+    @ElementCollection
+    @Column(name="libraryId")
+    private List<Long> libraryIds;
 
     @Enumerated(EnumType.STRING)
     private SearchTaskStatus status = SearchTaskStatus.NOT_STARTED;
@@ -35,6 +34,15 @@ public class SearchTask {
     public void setId(Long id) {
         this.id = id;
     }
+
+
+//    public SearchTaskId getId() {
+//        return id;
+//    }
+//
+//    public void setId(SearchTaskId id) {
+//        this.id = id;
+//    }
 
     public Submission getSubmission() {
         return submission;

@@ -1,11 +1,14 @@
 package org.dulab.adapcompounddb.models.entities;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.io.Serializable;
 
 @Embeddable
-public class SearchTaskId implements Serializable {
+    public class SearchTaskId implements Serializable {
+
     private Long userId;
+
     private Long submissionId;
 
     public Long getUserId() {
@@ -27,5 +30,8 @@ public class SearchTaskId implements Serializable {
     public SearchTaskId(Long userId, Long submissionId) {
         this.userId = userId;
         this.submissionId = submissionId;
+    }
+
+    public SearchTaskId() {
     }
 }
