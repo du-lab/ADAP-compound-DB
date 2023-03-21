@@ -150,7 +150,7 @@ public class GroupSearchRestController extends BaseController {
     public String getSpectrumsByName(@RequestBody JsonNode jsonObj, final HttpSession session) throws JsonProcessingException {
 
 //        Object sessionObject =session.getAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_FILTERED);
-        Object sessionObject =session.getAttribute("spectrumDTOList");
+        Object sessionObject =session.getAttribute(ControllerUtils.SPECTRUM_DTO_LIST);
         if(sessionObject == null)
             return null;
         else {

@@ -171,7 +171,7 @@ public class GroupSearchService {
                             groupSearchDTOList);
                         session.setAttribute(ControllerUtils.GROUP_SEARCH_PROGRESS_ATTRIBUTE_NAME,
                             progress);
-                        session.setAttribute("spectrumDTOList", spectrumDTOList);
+                        session.setAttribute(ControllerUtils.SPECTRUM_DTO_LIST, spectrumDTOList);
 
                     } catch (IllegalStateException e) {
                         if (sendResultsToEmail) {
