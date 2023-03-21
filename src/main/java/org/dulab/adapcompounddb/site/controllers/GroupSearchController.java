@@ -148,27 +148,36 @@ public class GroupSearchController extends BaseController {
         parameters.setDisease(disease);
         parameters.setSubmissionIds(form.getSubmissionIds());
 
-        //update search task status to PENDING
-        UserPrincipal user = this.getCurrentUserPrincipal();
-        if(user != null) {
-            SearchTask searchTask = searchTaskService.findByUserIdAndSubmissionId(user.getId(), submission.getId());
-            if (searchTask != null) {
-                searchTask.setStatus(SearchTaskStatus.PENDING);
-                searchTask.setSubmission(submission);
-                searchTask.setLibraryIds(
-                    filterOptions.getSubmissions().keySet().stream().map(key -> key.longValue()).collect(Collectors.toList()));
-                SearchTask savedSearchTask = searchTaskService.save(searchTask);
-                if (savedSearchTask == null) {
-                    LOGGER.warn("Could not update search task with user id: " + this.getCurrentUserPrincipal().getId() + "and submission id: "
-                        + submissionId);
-                }
+        Map<BigInteger, String> filteredLibraries = new TreeMap<>();
+        for(Map.Entry<BigInteger, String> entry : filterOptions.getSubmissions().entrySet()){
+            if(form.getSubmissionIds().contains(entry.getKey())){
+                filteredLibraries.put(entry.getKey(), entry.getValue());
             }
         }
 
+
         asyncResult = groupSearchService.groupSearch(this.getCurrentUserPrincipal(), submission, submission.getFiles(), session,
-                parameters, filterOptions.getSubmissions(), form.isWithOntologyLevels(), form.isSendResultsToEmail(), savedSubmission);
+                parameters, filteredLibraries, form.isWithOntologyLevels(), form.isSendResultsToEmail(), savedSubmission);
         session.setAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME, asyncResult);
 
+        if(!asyncResult.isDone()){
+            //update search task status to PENDING
+            UserPrincipal user = this.getCurrentUserPrincipal();
+            if(user != null) {
+                SearchTask searchTask = searchTaskService.findByUserIdAndSubmissionId(user.getId(), submission.getId());
+                if (searchTask != null) {
+
+                    searchTask.setLibraries(filteredLibraries);
+                    searchTask.setDateTime(new Date());
+                    searchTask.setStatus(SearchTaskStatus.PENDING);
+                    SearchTask savedSearchTask = searchTaskService.save(searchTask);
+                    if (savedSearchTask == null) {
+                        LOGGER.warn("Could not update search task with user id: " + user.getId() + "and submission id: "
+                            + submissionId);
+                    }
+                }
+            }
+        }
         LOGGER.info(String.format("Group search is started by user %s with IP = %s [%s]",
                 this.getCurrentUserPrincipal(), request.getRemoteAddr(), request.getHeader("X-Forwarded-For")));
 

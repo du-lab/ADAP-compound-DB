@@ -242,6 +242,7 @@
                             <thead>
                             <tr>
                                 <th>Submission</th>
+                                <th>Date</th>
                                 <th>Status</th>
                                 <th>Libraries Searched Against</th>
                             </tr>
@@ -250,10 +251,18 @@
                             <c:forEach items="${searchTaskList}" var="searchTask" varStatus="loop">
                                 <tr>
                                     <td><a href="${pageContext.request.contextPath}/submission/${searchTask.submission.id}/">${searchTask.submission.name}</a><br/></td>
+                                    <td><fmt:formatDate value="${searchTask.dateTime}" type="DATE" pattern="yyyy-MM-dd"/><br/></td>
                                     <td>${searchTask.status}</td>
                                     <td>
-                                        <c:forEach items = "${searchTask.libraryIds}" var = "id" varStatus="loop">
-                                            <a href="${pageContext.request.contextPath}/submission/${id}/">${id}</a>
+                                        <c:forEach items = "${searchTask.libraries}" var = "library" varStatus="loop">
+                                            <c:choose>
+                                                <c:when test = "${library.key >0}">
+                                                    <a href="${pageContext.request.contextPath}/submission/${library.key}/">${library.value}</a><br/>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    ${library.value}<br/>
+                                                </c:otherwise>
+                                            </c:choose>
                                         </c:forEach>
                                     </td>
                                 </tr>
@@ -327,6 +336,7 @@
                 }*/],
         });
       var t3 = $('#search_task_table').DataTable({
+        order: [[1, 'DESC']],
         responsive: true,
         scrollX: true,
         scroller: true,
@@ -345,7 +355,7 @@
         }).draw();
 
 
-        const valuenow = parseFloat($("#progressBar").attr("aria-valuenow"));
+      const valuenow = parseFloat($("#progressBar").attr("aria-valuenow"));
         const valuemax = parseFloat($("#progressBar").attr("aria-valuemax"));
 
         const widthpercent = (valuenow/valuemax)*100 ;

@@ -1,5 +1,10 @@
 package org.dulab.adapcompounddb.models.entities;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Map;
+import javax.validation.constraints.NotNull;
 import org.dulab.adapcompounddb.models.enums.SearchTaskStatus;
 
 import javax.persistence.*;
@@ -14,15 +19,22 @@ public class SearchTask {
 //    @EmbeddedId
 //    SearchTaskId id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="submissionId")
     private Submission submission;
     @ManyToOne
     @JoinColumn(name="userId")
     private UserPrincipal user;
-    @ElementCollection
-    @Column(name="libraryId")
-    private List<Long> libraryIds;
+
+    @NotNull(message = "Date/Time of submission is required.")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateTime;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "searchTask_library",
+        joinColumns = @JoinColumn(name = "searchTaskId"))
+    @MapKeyColumn(name="libraryId")
+    @Column(name="libraryName")
+    private Map<BigInteger, String> libraries;
 
     @Enumerated(EnumType.STRING)
     private SearchTaskStatus status = SearchTaskStatus.NOT_STARTED;
@@ -44,6 +56,15 @@ public class SearchTask {
 //        this.id = id;
 //    }
 
+
+    public Date getDateTime() {
+        return dateTime;
+    }
+
+    public void setDateTime(Date dateTime) {
+        this.dateTime = dateTime;
+    }
+
     public Submission getSubmission() {
         return submission;
     }
@@ -52,12 +73,13 @@ public class SearchTask {
         this.submission = submission;
     }
 
-    public List<Long> getLibraryIds() {
-        return libraryIds;
+    public Map<BigInteger, String> getLibraries() {
+        return libraries;
     }
 
-    public void setLibraryIds(List<Long> libraryIds) {
-        this.libraryIds = libraryIds;
+    public void setLibraries(Map<BigInteger, String> libraries) {
+        this.libraries.clear();
+        this.libraries.putAll(libraries);
     }
 
     public SearchTaskStatus getStatus() {

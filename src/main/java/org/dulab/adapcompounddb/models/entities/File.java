@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.models.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.*;
@@ -97,7 +98,12 @@ public class File implements Comparable<File>, Serializable {
     }
 
     public void setSpectra(final List<Spectrum> spectra) {
-        this.spectra = spectra;
+        if(this.spectra == null)
+            this.spectra = new ArrayList<>();
+        else
+            this.spectra.clear();
+
+        this.spectra.addAll(spectra);
         this.size = (spectra != null) ? spectra.size() : 0;
     }
 

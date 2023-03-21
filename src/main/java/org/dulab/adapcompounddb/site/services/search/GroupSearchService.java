@@ -70,7 +70,7 @@ public class GroupSearchService {
     @Async
 //    @Transactional(propagation = Propagation.REQUIRED)
     public Future<Void> groupSearch(UserPrincipal userPrincipal, Submission submission, List<File> files, HttpSession session,
-                                    SearchParameters userParameters, SortedMap<BigInteger, String> submissions,
+                                    SearchParameters userParameters, Map<BigInteger, String> libraries,
                                     boolean withOntologyLevels, boolean sendResultsToEmail, boolean savedSubmission) throws TimeoutException {
         long time1 = System.currentTimeMillis();
 //        LOGGER.info("Group search has started");
@@ -201,7 +201,7 @@ public class GroupSearchService {
                 spectrumMatchRepository.deleteByQuerySpectrumsAndUserId(userId, deleteMatches);
                 spectrumMatchRepository.saveAll(savedMatches);
                 //update search task status to FINISHED
-                updateSearchTask(userId, submission, submissions);
+                updateSearchTask(userId, submission, libraries);
             }
 
             long time2 = System.currentTimeMillis();
@@ -250,13 +250,12 @@ public class GroupSearchService {
     }
 
     @Transactional
-    void updateSearchTask(long userId, Submission submission, SortedMap<BigInteger, String> submissions ){
+    void updateSearchTask(long userId, Submission submission, Map<BigInteger, String> submissions ){
         SearchTask searchTask = searchTaskRepository.findByUserIdAndSubmissionId(userId, submission.getId());
         if(searchTask != null){
             searchTask.setStatus( SearchTaskStatus.FINISHED);
-            searchTask.setSubmission(submission);
-            searchTask.setLibraryIds(submissions.keySet().stream().map(key -> key.longValue()).collect(
-                Collectors.toList()));
+//            searchTask.setLibraries(submissions);
+            searchTask.setDateTime(new Date());
             searchTaskRepository.save(searchTask);
         }
         else

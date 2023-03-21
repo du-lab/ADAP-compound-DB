@@ -191,13 +191,12 @@ public class SubmissionService {
         }
         calculateAndSavePeakNumber(submission, count, Submission.SAVE_SUBMISSION);
 
-        //save search task here using submissionobj id and user id and library ids?
         SearchTask searchTask = new SearchTask();
         searchTask.setSubmission(submissionObj);
         searchTask.setUser(user);
         searchTask.setStatus(SearchTaskStatus.NOT_STARTED);
-
-        searchTaskRepository.save(searchTask);
+        searchTask.setDateTime(new Date());
+        SearchTask s = searchTaskRepository.save(searchTask);
         return submissionObj;
     }
 
