@@ -1,0 +1,7 @@
+'CREATE TABLE `searchtask_library` (
+  `SearchTaskId` bigint unsigned NOT NULL,
+  `libraryId` bigint unsigned DEFAULT NULL,
+  `libraryName` varchar(100) DEFAULT NULL,
+  KEY `searchTask_id_fk_idx` (`SearchTaskId`),
+  CONSTRAINT `searchTask_fk` FOREIGN KEY (`SearchTaskId`) REFERENCES `SearchTask` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3'
