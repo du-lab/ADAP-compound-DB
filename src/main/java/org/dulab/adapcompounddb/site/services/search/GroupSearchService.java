@@ -251,16 +251,18 @@ public class GroupSearchService {
 
     @Transactional
     void updateSearchTask(long userId, Submission submission, Map<BigInteger, String> submissions ){
-        SearchTask searchTask = searchTaskRepository.findByUserIdAndSubmissionId(userId, submission.getId());
-        if(searchTask != null){
+        Optional<SearchTask> retreivedSearchTask = searchTaskRepository.findByUserIdAndSubmissionId(userId, submission.getId());
+        if(retreivedSearchTask.isPresent()){
+            SearchTask searchTask = retreivedSearchTask.get();
             searchTask.setStatus( SearchTaskStatus.FINISHED);
 //            searchTask.setLibraries(submissions);
             searchTask.setDateTime(new Date());
             searchTaskRepository.save(searchTask);
         }
-        else
-            LOGGER.warn("Could not update search task with user id: " + userId +
+        else{
+            LOGGER.warn("Could not update search task (status = FINISHED) with user id: " + userId +
                 "and submission id: " + submission.getId());
+        }
     }
 
 }

@@ -160,21 +160,29 @@ public class GroupSearchController extends BaseController {
                 parameters, filteredLibraries, form.isWithOntologyLevels(), form.isSendResultsToEmail(), savedSubmission);
         session.setAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME, asyncResult);
 
+
         if(!asyncResult.isDone()){
             //update search task status to PENDING
             UserPrincipal user = this.getCurrentUserPrincipal();
             if(user != null) {
-                SearchTask searchTask = searchTaskService.findByUserIdAndSubmissionId(user.getId(), submission.getId());
-                if (searchTask != null) {
+                //TODO: put this in a function?
+                SearchTask searchTask;
+                Optional<SearchTask> retreivedSearchTask = searchTaskService.findByUserIdAndSubmissionId(user.getId(), submissionId.get());
+                if(retreivedSearchTask.isPresent())
+                    searchTask = retreivedSearchTask.get();
+                else{
+                    searchTask = new SearchTask();
+                    searchTask.setSubmission(submission);
+                    searchTask.setUser(user);
+                }
 
-                    searchTask.setLibraries(filteredLibraries);
-                    searchTask.setDateTime(new Date());
-                    searchTask.setStatus(SearchTaskStatus.PENDING);
-                    SearchTask savedSearchTask = searchTaskService.save(searchTask);
-                    if (savedSearchTask == null) {
-                        LOGGER.warn("Could not update search task with user id: " + user.getId() + "and submission id: "
-                            + submissionId);
-                    }
+                searchTask.setLibraries(filteredLibraries);
+                searchTask.setDateTime(new Date());
+                searchTask.setStatus(SearchTaskStatus.PENDING);
+                SearchTask savedSearchTask = searchTaskService.save(searchTask);
+                if (savedSearchTask == null) {
+                    LOGGER.warn("Could not update search task with user id: " + user.getId() + "and submission id: "
+                        + submissionId);
                 }
             }
         }

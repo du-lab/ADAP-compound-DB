@@ -23,7 +23,7 @@ public class SearchTaskServiceImpl implements SearchTaskService{
 
   @Transactional
   @Override
-  public SearchTask findByUserIdAndSubmissionId(long userId, long submissionId) {
+  public Optional<SearchTask> findByUserIdAndSubmissionId(long userId, long submissionId) {
     return searchTaskRepository.findByUserIdAndSubmissionId(userId, submissionId);
   }
 

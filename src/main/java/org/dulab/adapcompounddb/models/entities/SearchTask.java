@@ -3,6 +3,7 @@ package org.dulab.adapcompounddb.models.entities;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import javax.validation.constraints.NotNull;
 import org.dulab.adapcompounddb.models.enums.SearchTaskStatus;
@@ -30,11 +31,10 @@ public class SearchTask {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateTime;
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "searchTask_library",
-        joinColumns = @JoinColumn(name = "searchTaskId"))
+    @CollectionTable(name = "searchTask_library", joinColumns = @JoinColumn(name = "searchTaskId"))
     @MapKeyColumn(name="libraryId")
     @Column(name="libraryName")
-    private Map<BigInteger, String> libraries;
+    private Map<BigInteger, String> libraries = new HashMap<>();
 
     @Enumerated(EnumType.STRING)
     private SearchTaskStatus status = SearchTaskStatus.NOT_STARTED;

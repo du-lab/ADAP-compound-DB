@@ -9,7 +9,7 @@ import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 public interface SearchTaskService {
     List<SearchTask> findSearchTaskByUser(UserPrincipal user);
 
-    SearchTask findByUserIdAndSubmissionId(long id, long submissionId);
+    Optional<SearchTask> findByUserIdAndSubmissionId(long id, long submissionId);
 
     SearchTask save(SearchTask searchTask);
 
