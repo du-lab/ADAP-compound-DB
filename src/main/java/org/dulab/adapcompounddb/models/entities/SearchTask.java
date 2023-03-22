@@ -1,10 +1,12 @@
 package org.dulab.adapcompounddb.models.entities;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import javax.validation.constraints.NotNull;
 import org.dulab.adapcompounddb.models.enums.SearchTaskStatus;
 
@@ -12,7 +14,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-public class SearchTask {
+public class SearchTask implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,7 +33,7 @@ public class SearchTask {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateTime;
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "searchTask_library", joinColumns = @JoinColumn(name = "searchTaskId"))
+    @CollectionTable(name = "SearchTask2Library", joinColumns = @JoinColumn(name = "searchTaskId"))
     @MapKeyColumn(name="libraryId")
     @Column(name="libraryName")
     private Map<BigInteger, String> libraries = new HashMap<>();
@@ -96,6 +98,22 @@ public class SearchTask {
 
     public void setUser(UserPrincipal user) {
         this.user = user;
+    }
+
+    @Override
+    public boolean equals(final Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof SearchTask)) {
+            return false;
+        }
+        return id == ((SearchTask) other).id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(id);
     }
 }
 

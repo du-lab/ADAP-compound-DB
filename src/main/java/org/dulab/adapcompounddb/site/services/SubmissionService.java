@@ -97,6 +97,7 @@ public class SubmissionService {
         return submissionRepository.findById(submissionId).orElseThrow(EmptyStackException::new);
     }
 
+
     public Submission fetchSubmission(long submissionId) {
         return multiFetchRepository.getSubmissionWithFilesSpectraPeaksIsotopes(submissionId);
     }

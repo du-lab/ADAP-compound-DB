@@ -57,7 +57,7 @@
                         </li>
                         <li class="nav-item"><a id="librariesTab" class="nav-link" data-toggle="tab" href="#libraries">Libraries</a></li>
                         <li class="nav-item"><a id="parametersTab" class="nav-link" data-toggle="tab" href="#parameters">Parameters</a></li>
-                        <li class="nav-item"><a id="searchTaskTab" class="nav-link" data-toggle="tab" href="#searchTask">Group Search History</a></li>
+                        <li class="nav-item"><a id="searchTaskTab" class="nav-link" data-toggle="tab" href="#searchTask">Search History</a></li>
                     </ul>
                 </div>
 
@@ -242,17 +242,18 @@
                             <thead>
                             <tr>
                                 <th>Submission</th>
-                                <th>Date</th>
                                 <th>Status</th>
+                                <th>Time</th>
                                 <th>Libraries Searched Against</th>
+                                <th></th>
                             </tr>
                             </thead>
                             <tbody>
                             <c:forEach items="${searchTaskList}" var="searchTask" varStatus="loop">
                                 <tr>
                                     <td><a href="${pageContext.request.contextPath}/submission/${searchTask.submission.id}/">${searchTask.submission.name}</a><br/></td>
-                                    <td><fmt:formatDate value="${searchTask.dateTime}" type="DATE" pattern="yyyy-MM-dd"/><br/></td>
                                     <td>${searchTask.status}</td>
+                                    <td><fmt:formatDate value="${searchTask.dateTime}" type="both" timeStyle= "short" pattern="yyyy-MM-dd HH:mm:ss"/><br/></td>
                                     <td>
                                         <c:forEach items = "${searchTask.libraries}" var = "library" varStatus="loop">
                                             <c:choose>
@@ -264,6 +265,19 @@
                                                 </c:otherwise>
                                             </c:choose>
                                         </c:forEach>
+                                    </td>
+                                    <td>
+                                        <c:choose>
+                                            <c:when test = "${searchTask.status == 'RUNNING'}">
+                                                <a href="${pageContext.request.contextPath}/group_search/"type="button" class="btn-sm btn-primary">View Matches</a>
+                                            </c:when>
+                                            <c:when test = "${searchTask.status == 'FINISHED'}">
+                                                <a href="${pageContext.request.contextPath}/submission/group_search/${searchTask.submission.id}"type="button" class="btn-sm btn-primary">View Matches</a>
+                                            </c:when>
+                                            <c:otherwise>
+                                            </c:otherwise>
+                                        </c:choose>
+
                                     </td>
                                 </tr>
                             </c:forEach>
@@ -336,7 +350,7 @@
                 }*/],
         });
       var t3 = $('#search_task_table').DataTable({
-        order: [[1, 'DESC']],
+        order: [[2, 'DESC']],
         responsive: true,
         scrollX: true,
         scroller: true,

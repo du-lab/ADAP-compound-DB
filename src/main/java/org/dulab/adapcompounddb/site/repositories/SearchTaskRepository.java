@@ -14,8 +14,7 @@ public interface SearchTaskRepository extends JpaRepository<SearchTask, Long> {
 
   List<SearchTask> findByUserId(long id);
 
-  @Query("Select st from SearchTask st  where st.submission.id =:submissionId and st.user.id =:userId")
-  Optional<SearchTask> findByUserIdAndSubmissionId(@Param("userId") long id, @Param("submissionId") long submissionId);
+//  @Query(value = "select * from SearchTask where submissionId = :submissionId and userId = :userId", nativeQuery = true)
+  Optional<SearchTask> findByUserIdAndSubmissionId(@Param("userId") long userId, @Param("submissionId") long submissionId);
 
-  SearchTask findByUserIdAndSubmission(long id, Submission submission);
 }

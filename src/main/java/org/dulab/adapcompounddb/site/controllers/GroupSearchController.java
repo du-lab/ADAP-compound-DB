@@ -22,6 +22,7 @@ import org.dulab.adapcompounddb.site.services.search.GroupSearchService;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -102,7 +103,6 @@ public class GroupSearchController extends BaseController {
         return "submission/group_search_parameters";
     }
 
-
     @RequestMapping(value = "/group_search/parameters", method = RequestMethod.POST)
     public String groupSearchParametersPost(@RequestParam Optional<Long> submissionId, HttpSession session, Model model,
                                              HttpServletRequest request, HttpServletResponse response,
@@ -113,6 +113,7 @@ public class GroupSearchController extends BaseController {
                 .map(submissionService::fetchSubmission)
                 .orElseGet(() -> Submission.from(session));
 
+        Long id = submission.getId();
         boolean savedSubmission =  (submission.getId() != 0)? true : false;
 
 
@@ -156,36 +157,36 @@ public class GroupSearchController extends BaseController {
         }
 
 
+        //update search task status to PENDING
+        UserPrincipal user = this.getCurrentUserPrincipal();
+        if(user != null) {
+            //TODO: put this in a function?
+            SearchTask searchTask;
+            Optional<SearchTask> retreivedSearchTask = searchTaskService.findByUserIdAndSubmissionId(user.getId(), id);
+            if(retreivedSearchTask.isPresent())
+                searchTask = retreivedSearchTask.get();
+            else{
+                searchTask = new SearchTask();
+                searchTask.setSubmission(submission);
+                searchTask.setUser(user);
+            }
+
+            searchTask.setLibraries(filteredLibraries);
+            searchTask.setDateTime(new Date());
+            searchTask.setStatus(SearchTaskStatus.PENDING);
+            SearchTask savedSearchTask = searchTaskService.save(searchTask);
+            if (savedSearchTask == null) {
+                LOGGER.warn("Could not update search task with user id: " + user.getId() + "and submission id: "
+                    + submissionId);
+            }
+        }
+
         asyncResult = groupSearchService.groupSearch(this.getCurrentUserPrincipal(), submission, submission.getFiles(), session,
                 parameters, filteredLibraries, form.isWithOntologyLevels(), form.isSendResultsToEmail(), savedSubmission);
         session.setAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME, asyncResult);
 
 
-        if(!asyncResult.isDone()){
-            //update search task status to PENDING
-            UserPrincipal user = this.getCurrentUserPrincipal();
-            if(user != null) {
-                //TODO: put this in a function?
-                SearchTask searchTask;
-                Optional<SearchTask> retreivedSearchTask = searchTaskService.findByUserIdAndSubmissionId(user.getId(), submissionId.get());
-                if(retreivedSearchTask.isPresent())
-                    searchTask = retreivedSearchTask.get();
-                else{
-                    searchTask = new SearchTask();
-                    searchTask.setSubmission(submission);
-                    searchTask.setUser(user);
-                }
 
-                searchTask.setLibraries(filteredLibraries);
-                searchTask.setDateTime(new Date());
-                searchTask.setStatus(SearchTaskStatus.PENDING);
-                SearchTask savedSearchTask = searchTaskService.save(searchTask);
-                if (savedSearchTask == null) {
-                    LOGGER.warn("Could not update search task with user id: " + user.getId() + "and submission id: "
-                        + submissionId);
-                }
-            }
-        }
         LOGGER.info(String.format("Group search is started by user %s with IP = %s [%s]",
                 this.getCurrentUserPrincipal(), request.getRemoteAddr(), request.getHeader("X-Forwarded-For")));
 

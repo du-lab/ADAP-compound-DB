@@ -13,5 +13,5 @@ public interface SearchTaskService {
 
     SearchTask save(SearchTask searchTask);
 
-    SearchTask findByUserIdAndSubmission(long id, Submission submission);
+
 }

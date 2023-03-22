@@ -173,12 +173,19 @@ public class Submission implements Serializable {
     }
 
     public void setFiles(final List<File> files) {
+        //this.files = files;
+        if(files == null) {
+            this.files = null;
+            this.size = 0;
+            return;
+        }
         if(this.files == null)
             this.files = new ArrayList<>();
-        else
-            this.files.clear();
+
+        this.files.clear();
         this.files.addAll(files);
-        this.size = (files != null) ? files.stream().mapToInt(File::getSize).sum() : 0;
+        this.size =  files.stream().mapToInt(File::getSize).sum() ;
+
     }
 
     public UserPrincipal getUser() {

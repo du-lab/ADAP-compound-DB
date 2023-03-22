@@ -33,9 +33,5 @@ public class SearchTaskServiceImpl implements SearchTaskService{
     return searchTaskRepository.save(searchTask);
   }
 
-  @Transactional
-  @Override
-  public SearchTask findByUserIdAndSubmission(long id, Submission submission) {
-    return searchTaskRepository.findByUserIdAndSubmission(id, submission);
-  }
+
 }

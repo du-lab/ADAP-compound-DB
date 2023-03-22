@@ -76,7 +76,10 @@ public class GroupSearchService {
 //        LOGGER.info("Group search has started");
         List<SpectrumMatch> savedMatches = new ArrayList<>();
         Set<Long> deleteMatches = new HashSet<>();
-        long userId = userPrincipal.getId();
+
+        /**** Group search started ****/
+        if(userPrincipal != null)
+            updateSearchTask(userPrincipal.getId(), submission, libraries, SearchTaskStatus.RUNNING);
 
         try {
             final List<SearchResultDTO> groupSearchDTOList = new ArrayList<>();
@@ -195,13 +198,12 @@ public class GroupSearchService {
             }
 
             /**** Group search is done ****/
-
             if(userPrincipal != null) {
                 //save spectrum match
-                spectrumMatchRepository.deleteByQuerySpectrumsAndUserId(userId, deleteMatches);
+                spectrumMatchRepository.deleteByQuerySpectrumsAndUserId(userPrincipal.getId(), deleteMatches);
                 spectrumMatchRepository.saveAll(savedMatches);
                 //update search task status to FINISHED
-                updateSearchTask(userId, submission, libraries);
+                updateSearchTask(userPrincipal.getId(), submission, libraries, SearchTaskStatus.FINISHED);
             }
 
             long time2 = System.currentTimeMillis();
@@ -243,24 +245,28 @@ public class GroupSearchService {
             throw t;
         }
 
-        if (Thread.currentThread().isInterrupted())
+        /**** Group search interrupted ****/
+        if (Thread.currentThread().isInterrupted()) {
+            if(userPrincipal != null)
+                updateSearchTask(userPrincipal.getId(), submission, libraries, SearchTaskStatus.CANCELLED);
             LOGGER.info("Group search is cancelled");
+        }
 
         return new AsyncResult<>(null);
     }
 
     @Transactional
-    void updateSearchTask(long userId, Submission submission, Map<BigInteger, String> submissions ){
+    void updateSearchTask(long userId, Submission submission, Map<BigInteger, String> submissions, SearchTaskStatus status ){
         Optional<SearchTask> retreivedSearchTask = searchTaskRepository.findByUserIdAndSubmissionId(userId, submission.getId());
         if(retreivedSearchTask.isPresent()){
             SearchTask searchTask = retreivedSearchTask.get();
-            searchTask.setStatus( SearchTaskStatus.FINISHED);
+            searchTask.setStatus(status);
 //            searchTask.setLibraries(submissions);
             searchTask.setDateTime(new Date());
             searchTaskRepository.save(searchTask);
         }
         else{
-            LOGGER.warn("Could not update search task (status = FINISHED) with user id: " + userId +
+            LOGGER.warn("Could not update search task status"+ status + "with user id: " + userId +
                 "and submission id: " + submission.getId());
         }
     }
