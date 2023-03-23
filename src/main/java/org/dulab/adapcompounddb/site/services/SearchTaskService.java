@@ -5,13 +5,30 @@ import java.util.Optional;
 import org.dulab.adapcompounddb.models.entities.SearchTask;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
+import org.dulab.adapcompounddb.site.repositories.SearchTaskRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-public interface SearchTaskService {
-    List<SearchTask> findSearchTaskByUser(UserPrincipal user);
+@Service
+public class SearchTaskService{
 
-    Optional<SearchTask> findByUserIdAndSubmissionId(long id, long submissionId);
+    @Autowired
+    SearchTaskRepository searchTaskRepository;
+    @Transactional
+    public List<SearchTask> findSearchTaskByUser(UserPrincipal user) {
+        return searchTaskRepository.findByUserId(user.getId());
+    }
 
-    SearchTask save(SearchTask searchTask);
+    @Transactional
+    public Optional<SearchTask> findByUserIdAndSubmissionId(long userId, long submissionId) {
+        return searchTaskRepository.findByUserIdAndSubmissionId(userId, submissionId);
+    }
+
+    @Transactional
+    public SearchTask save(SearchTask searchTask) {
+        return searchTaskRepository.save(searchTask);
+    }
 
 
 }
