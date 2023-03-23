@@ -14,21 +14,30 @@
   #query_plot_match row{
     display:none;
   }
+  .col{
+    padding-left:5px;
+    padding-right:5px;
+  }
+  .col-4{
+    padding-left:5px;
+    padding-right:5px;
+  }
   .container {
     margin:unset;
     max-width: unset;
     width: 100%;
+    padding: 5px;
   }
 
   .distinct_query_container{
-    padding: 20px;
+    padding: 15px;
   }
   .query_container{
-    padding: 20px;
+    padding: 15px;
 
   }
   .match_container{
-    padding: 20px;
+    padding: 15px;
   }
 
   .query_signals{
@@ -132,30 +141,41 @@
                 </svg>
                 <h5>Filters: </h5>
             </div>
-            <div class="custom-control custom-switch" style=" margin-left:20px; margin-bottom:8px;">
-                <input type="checkbox" class="custom-control-input" id="matchesOnly" checked/>
-                <label class="custom-control-label" for="matchesOnly">Show only results with matches</label>
+            <div class="custom-control custom-switch" class = "form-floating">
+                    <input type="checkbox" class="custom-control-input" id="matchesOnly" checked/>
+                    <label class="custom-control-label" for="matchesOnly">Show only results with matches</label>
+
             </div>
-            <div class= "items"  >
-                <label for="ontologyLevel" style=" margin-right:10px;">Ontology level</label>
-                <select id="ontologyLevel" class="form-control" style="width:100px;"></select>
+            <div class= "items" >
+                <form class = "form-floating">
+                    <label for="ontologyLevel" style=" margin-right:10px;">Ontology level</label>
+                    <select id="ontologyLevel" class="form-control" style="width:100px;"></select>
+                </form>
             </div>
             <div class = "items">
+                <form class = "form-floating">
                 <label for="scoreThreshold" title="Results with score above the threshold will be shown" style="margin-right:10px;">Score Threshold</label>
                 <input type="number" step="any" id="scoreThreshold" placeholder="0-1000" class="form-control item-textbox"/>
+                </form>
             </div>
             <div class = "items">
+                <form class = "form-floating">
                 <label for="massError" title="Results with mass error below given value will be shown" style="margin-right:10px;">Mass Error Tolerance (Da)</label>
-                <input type="number" step="any" id="massError" class="form-control item-textbox"/>
+                <input type="number" step="any" id="massError" class="form-control item-textbox"/> class = "form-floating">
+                </form>
             </div>
             <div class = "items">
+                <form class = "form-floating">
                 <label for="retTimeError" title="Results with retention time error below given value will be shown" style="margin-right:10px;">Retention Time Error Tolerance (min)</label>
                 <input type="number" step="any" id="retTimeError" class="form-control item-textbox"/>
+                </form>
             </div>
 
             <div class = "items">
+                <form class = "form-floating">
                 <label for="matchName" style="margin-right:10px;">Match Name </label>
                 <input type="text" id="matchName" class="form-control match-input item-textbox"/>
+                </form>
             </div>
             <div class ="btns">
                 <button class="btn btn-secondary" type="button" id="resetFilterBtn">Reset Filter</button>
