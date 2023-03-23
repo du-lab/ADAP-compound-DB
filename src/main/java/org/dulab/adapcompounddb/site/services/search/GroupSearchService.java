@@ -66,7 +66,7 @@ public class GroupSearchService {
                                     SearchParameters userParameters,
                                     boolean withOntologyLevels, boolean sendResultsToEmail, boolean savedSubmission) throws TimeoutException {
         long time1 = System.currentTimeMillis();
-//        LOGGER.info("Group search has started");
+        LOGGER.info("Group search has started");
         List<SpectrumMatch> savedMatches = new ArrayList<>();
         Set<Long> deleteMatches = new HashSet<>();
 
