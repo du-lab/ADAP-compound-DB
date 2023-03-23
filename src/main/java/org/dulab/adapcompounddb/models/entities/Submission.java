@@ -1,7 +1,6 @@
 package org.dulab.adapcompounddb.models.entities;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -73,7 +72,7 @@ public class Submission implements Serializable {
     @OneToMany(
             mappedBy = "submission",
             fetch = FetchType.LAZY,
-            cascade = {CascadeType.ALL},
+            cascade = {CascadeType.PERSIST, CascadeType.ALL},
             orphanRemoval = true
     )
     private List<File> files;
@@ -173,19 +172,8 @@ public class Submission implements Serializable {
     }
 
     public void setFiles(final List<File> files) {
-        //this.files = files;
-        if(files == null) {
-            this.files = null;
-            this.size = 0;
-            return;
-        }
-        if(this.files == null)
-            this.files = new ArrayList<>();
-
-        this.files.clear();
-        this.files.addAll(files);
-        this.size =  files.stream().mapToInt(File::getSize).sum() ;
-
+        this.files = files;
+        this.size = (files != null) ? files.stream().mapToInt(File::getSize).sum() : 0;
     }
 
     public UserPrincipal getUser() {

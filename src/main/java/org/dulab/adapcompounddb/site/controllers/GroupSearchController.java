@@ -156,35 +156,9 @@ public class GroupSearchController extends BaseController {
             }
         }
 
-
-        //update search task status to PENDING
-        UserPrincipal user = this.getCurrentUserPrincipal();
-        if(user != null) {
-            //TODO: put this in a function?
-            SearchTask searchTask;
-            Optional<SearchTask> retreivedSearchTask = searchTaskService.findByUserIdAndSubmissionId(user.getId(), id);
-            if(retreivedSearchTask.isPresent())
-                searchTask = retreivedSearchTask.get();
-            else{
-                searchTask = new SearchTask();
-                searchTask.setSubmission(submission);
-                searchTask.setUser(user);
-            }
-
-            searchTask.setLibraries(filteredLibraries);
-            searchTask.setDateTime(new Date());
-            searchTask.setStatus(SearchTaskStatus.PENDING);
-            SearchTask savedSearchTask = searchTaskService.save(searchTask);
-            if (savedSearchTask == null) {
-                LOGGER.warn("Could not update search task with user id: " + user.getId() + "and submission id: "
-                    + submissionId);
-            }
-        }
-
         asyncResult = groupSearchService.groupSearch(this.getCurrentUserPrincipal(), submission, submission.getFiles(), session,
                 parameters, filteredLibraries, form.isWithOntologyLevels(), form.isSendResultsToEmail(), savedSubmission);
         session.setAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME, asyncResult);
-
 
 
         LOGGER.info(String.format("Group search is started by user %s with IP = %s [%s]",
