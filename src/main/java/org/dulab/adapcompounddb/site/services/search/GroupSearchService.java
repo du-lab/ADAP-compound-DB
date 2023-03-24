@@ -73,8 +73,9 @@ public class GroupSearchService {
 
         try {
             final List<SearchResultDTO> groupSearchDTOList = new ArrayList<>();
-            //spectrumMatchRepository.deleteAll();
+            final List<SpectrumDTO> spectrumDTOList  = new ArrayList<>();
             session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
+            session.setAttribute("spectrumDTOList", spectrumDTOList);
 
             // Calculate total number of spectra
             long totalSteps = files.stream()
@@ -109,6 +110,7 @@ public class GroupSearchService {
 
                 File file = files.get(fileIndex);
                 List<Spectrum> spectra = file.getSpectra();
+                int sameNameIndex = 0;
                 if (spectra == null) continue;
                 for (int spectrumIndex = 0; spectrumIndex < spectra.size(); ++spectrumIndex) {  // Spectrum querySpectrum : file.getSpectra()
                     if(System.currentTimeMillis() - startTime > 6 * 60 * 60 * 1000)
@@ -142,24 +144,34 @@ public class GroupSearchService {
                     if (individualSearchResults.isEmpty())
                         individualSearchResults.add(new SearchResultDTO(querySpectrum));
 
+                    //search result dto
                     for (SearchResultDTO searchResult : individualSearchResults) {
                         searchResult.setPosition(1 + position++);
                         searchResult.setQueryFileIndex(fileIndex);
                         searchResult.setQuerySpectrumIndex(spectrumIndex);
                     }
 
+                    //for every sepctra in file we save copy in spectrum DTO
+                    SpectrumDTO spectrumDTO = new SpectrumDTO();
+                    spectrumDTO.setName(querySpectrum.getName());
+                    spectrumDTO.setSpectrumIndex(spectrumIndex);
+                    spectrumDTO.setExternalId(querySpectrum.getExternalId());
+                    spectrumDTO.setPrecursor(querySpectrum.getPrecursor());
+                    spectrumDTO.setRetentionTime(querySpectrum.getRetentionTime());
+
+                    spectrumDTOList.add(spectrumDTO);
+
                     if (Thread.currentThread().isInterrupted()) break;
-
-
-
-
                     progress = (float) ++progressStep / totalSteps;
+                    //search result dto
                     groupSearchDTOList.addAll(individualSearchResults);
+                    //spectrum dto
                     try {
                         session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME,
                             groupSearchDTOList);
                         session.setAttribute(ControllerUtils.GROUP_SEARCH_PROGRESS_ATTRIBUTE_NAME,
                             progress);
+                        session.setAttribute(ControllerUtils.SPECTRUM_DTO_LIST, spectrumDTOList);
 
                     } catch (IllegalStateException e) {
                         if (sendResultsToEmail) {
