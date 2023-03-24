@@ -1,0 +1,12 @@
+CREATE TABLE `SearchTask` (
+  `Id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `DateTime` timestamp NULL DEFAULT NULL,
+  `SubmissionId` bigint unsigned NOT NULL,
+  `UserId` bigint unsigned NOT NULL,
+  `Status` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`Id`),
+  KEY `submission_fk_idx` (`SubmissionId`),
+  KEY `userId_idx` (`UserId`),
+  CONSTRAINT `submission_fk` FOREIGN KEY (`SubmissionId`) REFERENCES `submission` (`Id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `userId` FOREIGN KEY (`UserId`) REFERENCES `userprincipal` (`Id`) ON DELETE CASCADE ON UPDATE CASCADE
+)

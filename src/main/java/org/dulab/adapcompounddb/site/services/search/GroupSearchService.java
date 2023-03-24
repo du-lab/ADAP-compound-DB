@@ -1,7 +1,9 @@
 package org.dulab.adapcompounddb.site.services.search;
 
+import java.math.BigInteger;
 import java.util.stream.Collectors;
-import org.dulab.adapcompounddb.models.dto.SpectrumDTO;
+import org.dulab.adapcompounddb.models.enums.SearchTaskStatus;
+import org.dulab.adapcompounddb.site.repositories.SearchTaskRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +32,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class GroupSearchService {
@@ -44,13 +47,16 @@ public class GroupSearchService {
     private final EmailService emailService;
     private final SpectrumMatchRepository spectrumMatchRepository;
 
+    private final SearchTaskRepository searchTaskRepository;
+
     @Autowired
     public GroupSearchService(IndividualSearchService spectrumSearchService,
                               @Qualifier("excelExportSearchResultsService") ExportSearchResultsService exportSearchResultsService,
                               SpectrumRepository spectrumRepository,
                               MultiFetchRepository multiFetchRepository,
                               EmailService emailService,
-                              SpectrumMatchRepository spectrumMatchRepository) {
+                              SpectrumMatchRepository spectrumMatchRepository,
+                                SearchTaskRepository searchTaskRepository) {
 
         this.spectrumSearchService = spectrumSearchService;
         this.exportSearchResultsService = exportSearchResultsService;
@@ -58,18 +64,22 @@ public class GroupSearchService {
         this.spectrumMatchRepository = spectrumMatchRepository;
         this.multiFetchRepository = multiFetchRepository;
         this.emailService = emailService;
+        this.searchTaskRepository = searchTaskRepository;
     }
 
     @Async
 //    @Transactional(propagation = Propagation.REQUIRED)
-    public Future<Void> groupSearch(UserPrincipal userPrincipal, List<File> files, HttpSession session,
-                                    SearchParameters userParameters,
+    public Future<Void> groupSearch(UserPrincipal userPrincipal, Submission submission, List<File> files, HttpSession session,
+                                    SearchParameters userParameters, Map<BigInteger, String> libraries,
                                     boolean withOntologyLevels, boolean sendResultsToEmail, boolean savedSubmission) throws TimeoutException {
         long time1 = System.currentTimeMillis();
         LOGGER.info("Group search has started");
         List<SpectrumMatch> savedMatches = new ArrayList<>();
         Set<Long> deleteMatches = new HashSet<>();
 
+        /**** Group search started ****/
+        if(userPrincipal != null && savedSubmission)
+            updateSearchTask(userPrincipal, submission, libraries, SearchTaskStatus.RUNNING);
 
         try {
             final List<SearchResultDTO> groupSearchDTOList = new ArrayList<>();
@@ -103,8 +113,6 @@ public class GroupSearchService {
             float progress = 0F;
             int position = 0;
 
-            //delete old spectrum match by user id before every group search
-            //spectrumMatchRepository.deleteByuserPrincipalId(userPrincipal.getId());
 
             for (int fileIndex = 0; fileIndex < files.size(); ++fileIndex) {
 
@@ -200,12 +208,15 @@ public class GroupSearchService {
                     }
                 }
             }
-            if(userPrincipal != null) {
-                spectrumMatchRepository.deleteByQuerySpectrumsAndUserId(userPrincipal.getId(),
-                    deleteMatches);
-                spectrumMatchRepository.saveAll(savedMatches);
-            }
 
+            /**** Group search is done ****/
+            if(userPrincipal != null && savedSubmission) {
+                //save spectrum match
+                spectrumMatchRepository.deleteByQuerySpectrumsAndUserId(userPrincipal.getId(), deleteMatches);
+                spectrumMatchRepository.saveAll(savedMatches);
+                //update search task status to FINISHED
+                updateSearchTask(userPrincipal, submission, libraries, SearchTaskStatus.FINISHED);
+            }
 
             long time2 = System.currentTimeMillis();
             double total = (time2 - time1) / 1000.0;
@@ -246,10 +257,39 @@ public class GroupSearchService {
             throw t;
         }
 
-        if (Thread.currentThread().isInterrupted())
+        /**** Group search interrupted ****/
+        if (Thread.currentThread().isInterrupted()) {
+            if(userPrincipal != null && savedSubmission)
+                updateSearchTask(userPrincipal, submission, libraries, SearchTaskStatus.CANCELLED);
             LOGGER.info("Group search is cancelled");
+        }
 
         return new AsyncResult<>(null);
+    }
+
+    @Transactional
+    void updateSearchTask(UserPrincipal user, Submission submission, Map<BigInteger, String> filteredLibraries, SearchTaskStatus status ){
+        Optional<SearchTask> retreivedSearchTask = searchTaskRepository.findByUserIdAndSubmissionId(user.getId(), submission.getId());
+        SearchTask searchTask;
+        //if there's already a task, update it
+        if(retreivedSearchTask.isPresent()){
+            searchTask = retreivedSearchTask.get();
+        }
+        //save new searchtask
+        else{
+            searchTask = new SearchTask();
+            searchTask.setSubmission(submission);
+            searchTask.setUser(user);
+        }
+        searchTask.setLibraries(filteredLibraries);
+        searchTask.setDateTime(new Date());
+        searchTask.setStatus(status);
+        SearchTask savedSearchTask = searchTaskRepository.save(searchTask);
+        if (savedSearchTask == null) {
+            LOGGER.warn("Could not update search task with user id: " + user.getId() + "and submission id: "
+                + submission.getId());
+        }
+
     }
 
 }
