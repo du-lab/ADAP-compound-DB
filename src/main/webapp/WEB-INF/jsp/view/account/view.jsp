@@ -268,7 +268,7 @@
                                     </td>
                                     <td>
                                         <c:choose>
-                                            <c:when test = "${searchTask.status == 'RUNNING'}">
+                                            <c:when test = "${searchTask.status == 'RUNNING' && sessionScope[dulab:groupSearchResultsAttributeName()] != null}">
                                                 <a href="${pageContext.request.contextPath}/group_search/"type="button" class="btn-sm btn-primary">View Matches</a>
                                             </c:when>
                                             <c:when test = "${searchTask.status == 'FINISHED'}">
