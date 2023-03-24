@@ -78,7 +78,7 @@ public class GroupSearchService {
         Set<Long> deleteMatches = new HashSet<>();
 
         /**** Group search started ****/
-        if(userPrincipal != null)
+        if(userPrincipal != null && savedSubmission)
             updateSearchTask(userPrincipal, submission, libraries, SearchTaskStatus.RUNNING);
 
         try {
@@ -198,7 +198,7 @@ public class GroupSearchService {
             }
 
             /**** Group search is done ****/
-            if(userPrincipal != null) {
+            if(userPrincipal != null && savedSubmission) {
                 //save spectrum match
                 spectrumMatchRepository.deleteByQuerySpectrumsAndUserId(userPrincipal.getId(), deleteMatches);
                 spectrumMatchRepository.saveAll(savedMatches);
@@ -247,7 +247,7 @@ public class GroupSearchService {
 
         /**** Group search interrupted ****/
         if (Thread.currentThread().isInterrupted()) {
-            if(userPrincipal != null)
+            if(userPrincipal != null && savedSubmission)
                 updateSearchTask(userPrincipal, submission, libraries, SearchTaskStatus.CANCELLED);
             LOGGER.info("Group search is cancelled");
         }
