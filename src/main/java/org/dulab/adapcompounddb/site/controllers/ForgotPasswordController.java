@@ -108,7 +108,7 @@ public class ForgotPasswordController {
   @GetMapping("/passwordRecovery/resetPassword")
   public String resetPassword(Model model, @RequestParam("token") String token) throws Exception {
       //validate token
-      UserPrincipal user = userPrincipalService.findByToken(token);
+      UserPrincipal user = userPrincipalService.findByPasswordToken(token);
       if(user == null)
           throw new Exception("Invalid token");
       if(user.getPasswordExpirationDate().before(new Date()))

@@ -194,14 +194,22 @@ public class PreScreenQueryBuilder {
         if (whereBlock.isEmpty())
             throw new IllegalSpectrumSearchException();
 
-        queryBlock += String.format("%s AND (Spectrum.FileId IS NULL OR Submission.IsPrivate IS FALSE%s)",
-                whereBlock,
-                user != null ? " OR UserPrincipal.Id = " + user.getId() : "");
+        queryBlock += getPrivacyConditions(user, whereBlock);
+
         if (submissionIds != null)
             queryBlock += String.format(" AND (%s)", buildConditionStringWithSubmissionIds());
 
         queryBlock += "\n";
         return queryBlock;
+    }
+
+    private String getPrivacyConditions(final UserPrincipal user,final String whereBlock) {
+        return String.format("%s AND (Spectrum.FileId IS NULL OR Submission.IsPrivate IS FALSE%s)",
+                whereBlock,
+                user != null ? user.getOrganizationId() != null ?
+                        " OR UserPrincipal.Id = " + user.getId()
+                                + " OR UserPrincipal.Id = " + user.getOrganizationUser().getId()
+                        : " OR UserPrincipal.Id = " + user.getId() : "");
     }
 
     public String build() {

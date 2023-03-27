@@ -141,6 +141,7 @@ public class AuthenticationController extends BaseController {
         final UserPrincipal principal = new UserPrincipal();
         principal.setUsername(form.getUsername());
         principal.setEmail(form.getEmail());
+        principal.setOrganization(form.isOrganization());
         principal.setSearchParameters(new SearchParametersDTO());
         try {
             authenticationService.saveUser(principal, form.getPassword());
@@ -339,6 +340,8 @@ public class AuthenticationController extends BaseController {
 
         private String confirmedPassword;
 
+        private boolean organization;
+
         public String getUsername() {
             return username;
         }
@@ -378,6 +381,15 @@ public class AuthenticationController extends BaseController {
         public void setConfirmedPassword(final String confirmedPassword) {
             this.confirmedPassword = confirmedPassword;
         }
+
+        public boolean isOrganization() {
+            return organization;
+        }
+
+        public void setOrganization(final boolean organization) {
+            this.organization = organization;
+        }
+
     }
 
 }

@@ -50,8 +50,8 @@ public class Application extends SpringBootServletInitializer {
         mailSender.setHost("smtp.gmail.com");
         mailSender.setPort(587);
 
-        String email = System.getenv("ADAP_EMAIL_LOGIN");
-        String password = System.getenv("ADAP_EMAIL_PASSWORD");
+        String email = "gorleshanmukh@gmail.com";
+        String password = "uvrnjevsgzbgyyle";
         mailSender.setUsername(email);
         mailSender.setPassword(password);
 
