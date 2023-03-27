@@ -3,6 +3,10 @@ package org.dulab.adapcompounddb.site.controllers;
 import java.util.stream.Collectors;
 import org.dulab.adapcompounddb.models.dto.SpectrumDTO;
 import org.dulab.adapcompounddb.models.dto.SearchParametersDTO;
+import org.dulab.adapcompounddb.models.entities.SearchTask;
+import org.dulab.adapcompounddb.models.entities.UserPrincipal;
+import org.dulab.adapcompounddb.models.enums.SearchTaskStatus;
+import org.dulab.adapcompounddb.site.services.SearchTaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.entities.File;
@@ -18,6 +22,7 @@ import org.dulab.adapcompounddb.site.services.search.GroupSearchService;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -50,16 +55,19 @@ public class GroupSearchController extends BaseController {
     private final GroupSearchService groupSearchService;
     private final SubmissionService submissionService;
     private final SubmissionTagService submissionTagService;
+    private final SearchTaskService searchTaskService;
     private FilterOptions filterOptions;
 
     @Autowired
     public GroupSearchController(GroupSearchService groupSearchService,
                                  SubmissionService submissionService,
-                                 SubmissionTagService submissionTagService) {
+                                 SubmissionTagService submissionTagService,
+                                 SearchTaskService searchTaskService) {
 
         this.groupSearchService = groupSearchService;
         this.submissionService = submissionService;
         this.submissionTagService = submissionTagService;
+        this.searchTaskService = searchTaskService;
     }
 
     @RequestMapping(value = "/group_search/parameters", method = RequestMethod.GET)
@@ -95,7 +103,6 @@ public class GroupSearchController extends BaseController {
         return "submission/group_search_parameters";
     }
 
-
     @RequestMapping(value = "/group_search/parameters", method = RequestMethod.POST)
     public String groupSearchParametersPost(@RequestParam Optional<Long> submissionId, HttpSession session, Model model,
                                              HttpServletRequest request, HttpServletResponse response,
@@ -106,6 +113,7 @@ public class GroupSearchController extends BaseController {
                 .map(submissionService::fetchSubmission)
                 .orElseGet(() -> Submission.from(session));
 
+        Long id = submission.getId();
         boolean savedSubmission =  (submission.getId() != 0)? true : false;
 
 
@@ -141,9 +149,17 @@ public class GroupSearchController extends BaseController {
         parameters.setDisease(disease);
         parameters.setSubmissionIds(form.getSubmissionIds());
 
-        asyncResult = groupSearchService.groupSearch(this.getCurrentUserPrincipal(), submission.getFiles(), session,
-                parameters, form.isWithOntologyLevels(), form.isSendResultsToEmail(),  savedSubmission);
+        Map<BigInteger, String> filteredLibraries = new TreeMap<>();
+        for(Map.Entry<BigInteger, String> entry : filterOptions.getSubmissions().entrySet()){
+            if(form.getSubmissionIds().contains(entry.getKey())){
+                filteredLibraries.put(entry.getKey(), entry.getValue());
+            }
+        }
+
+        asyncResult = groupSearchService.groupSearch(this.getCurrentUserPrincipal(), submission, submission.getFiles(), session,
+                parameters, filteredLibraries, form.isWithOntologyLevels(), form.isSendResultsToEmail(), savedSubmission);
         session.setAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME, asyncResult);
+
 
         LOGGER.info(String.format("Group search is started by user %s with IP = %s [%s]",
                 this.getCurrentUserPrincipal(), request.getRemoteAddr(), request.getHeader("X-Forwarded-For")));

@@ -2,10 +2,12 @@ package org.dulab.adapcompounddb.site.controllers;
 
 import org.dulab.adapcompounddb.models.dto.SearchParametersDTO;
 import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
+import org.dulab.adapcompounddb.models.entities.SearchTask;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterForm;
+import org.dulab.adapcompounddb.site.services.SearchTaskService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.dulab.adapcompounddb.site.services.UserPrincipalService;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters;
@@ -25,12 +27,13 @@ public class AccountController extends BaseController {
     private static final double MEMORY_PER_PEAK = 1.3e-7; //in GB
     private final SubmissionService submissionService;
     private final UserPrincipalService userPrincipalService;
-
+    private final SearchTaskService searchTaskService;
 
     @Autowired
-    public AccountController(SubmissionService submissionService, UserPrincipalService userPrincipalService) {
+    public AccountController(SubmissionService submissionService, UserPrincipalService userPrincipalService, SearchTaskService searchTaskService) {
         this.submissionService = submissionService;
         this.userPrincipalService = userPrincipalService;
+        this.searchTaskService = searchTaskService;
     }
 
     @RequestMapping(value = "account/", method = RequestMethod.GET)
@@ -53,11 +56,13 @@ public class AccountController extends BaseController {
         int peakCapacity = user.getPeakCapacity();
         double maxDiskSpace = MEMORY_PER_PEAK * peakCapacity;
         double currentDiskSpace = submissionService.getPeakDiskSpaceByUser(user);
+        List<SearchTask> searchTaskList = searchTaskService.findSearchTaskByUser(user);
         model.addAttribute("searchParameters",user.getSearchParametersDTO());
         model.addAttribute(("currentDiskSpace"), currentDiskSpace);
         model.addAttribute(("maxDiskSpace"), maxDiskSpace);
         model.addAttribute("user", user);
         model.addAttribute("submissionList", submissionDTOs);
+        model.addAttribute("searchTaskList", searchTaskList);
         model.addAttribute("submissionIdToChromatographyListMap", submissionIdToChromatographyListMap);
         model.addAttribute("filterForm",new FilterForm());
         return "account/view";
