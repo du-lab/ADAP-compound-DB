@@ -2,6 +2,7 @@ package org.dulab.adapcompounddb.site.services.search;
 
 import java.math.BigInteger;
 import java.util.stream.Collectors;
+import org.dulab.adapcompounddb.models.dto.SpectrumDTO;
 import org.dulab.adapcompounddb.models.enums.SearchTaskStatus;
 import org.dulab.adapcompounddb.site.repositories.SearchTaskRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
