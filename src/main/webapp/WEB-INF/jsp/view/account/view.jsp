@@ -52,7 +52,7 @@
         <div class="col">
             <div class="card">
                 <div class="card-header card-header-tabs">
-                    <ul class="nav nav-tabs nav-fill nav-justified" role="tablist">
+                    <ul id = "tabHistory" class="nav nav-tabs nav-fill nav-justified" role="tablist">
                         <li class="nav-item"><a id="studiesTab" class="nav-link active" data-toggle="tab" href="#studies">Studies</a>
                         </li>
                         <li class="nav-item"><a id="librariesTab" class="nav-link" data-toggle="tab" href="#libraries">Libraries</a></li>
@@ -308,6 +308,19 @@
 
 <script>
     var confirmDeleteDialog = $('#dialog-confirm').confirmDeleteDialog();
+
+
+    $('#tabHistory  a').click(function(e) {
+      e.preventDefault();
+      $(this).tab('show');
+    });
+    $("ul.nav-tabs#tabHistory > li > a").on("shown.bs.tab", function(e) {
+      var id = $(e.target).attr("href");
+      localStorage.setItem('selectedTab', id)
+    });
+    var selectedTab = localStorage.getItem('selectedTab');
+    /* Keep current tab when page is refreshed */
+    $('#tabHistory a[href="' + selectedTab + '"]').tab('show');
 
     $(document).ready(function () {
         var t1 = $('#study_table').DataTable({

@@ -70,7 +70,7 @@
         <div class="col">
             <div class="card">
                 <div class="card-header card-header-tabs">
-                    <ul class="nav nav-tabs nav-fill nav-justified" role="tablist">
+                    <ul class="nav nav-tabs nav-fill nav-justified" role="tablist" id="tabHistory">
                         <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#tools">Tools</a></li>
                         <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#users">Users</a></li>
                         <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#submissions">Studies</a>
@@ -231,6 +231,17 @@
 <%--<script src="<c:url value="/resources/AdapCompoundDb/js/dialogs.js"/>"></script>--%>
 <%--<script src="<c:url value="/resources/AdapCompoundDb/js/progressBar.js"/>"></script>--%>
 <script>
+    /* Keep current tab when page is refreshed */
+    $('#tabHistory  a').click(function(e) {
+        e.preventDefault();
+        $(this).tab('show');
+    });
+    $("ul.nav-tabs#tabHistory > li > a").on("shown.bs.tab", function(e) {
+        var id = $(e.target).attr("href");
+        localStorage.setItem('selectedTab', id)
+    });
+    var selectedTab = localStorage.getItem('selectedTab');
+    $('#tabHistory a[href="' + selectedTab + '"]').tab('show');
 
     $(document).ready(function () {
         // $('#cluster_table').DataTable();
