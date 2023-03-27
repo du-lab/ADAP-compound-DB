@@ -221,7 +221,7 @@ public class UserPrincipalServiceImpl implements UserPrincipalService {
                 user.setOrganizationRequestToken(resetToken);
                 user.setOrganizationRequestExpirationDate(expirationDate);
                 saveUserPrincipal(user);
-                String url =  "http://localhost:8080/organization/addUser?token=" +resetToken
+                String url =  "https://adap.cloud/organization/addUser?token=" +resetToken
                         +"&orgEmail="+orgUser.getEmail();
                 emailService.sendOrganizationInviteEmail(user, orgUser, url);
                 LOGGER.info("A username was sent to " + user.getEmail());
