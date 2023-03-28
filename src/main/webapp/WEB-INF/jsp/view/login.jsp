@@ -46,7 +46,7 @@
                                 <div class="row form-group align-items-center" style="margin-left: 130px;">
                                     <form:label path="username" cssClass="col-md-3  col-form-label text-right">Username:</form:label>
                                     <div class="col-md-3 d-flex align-items-center">
-                                        <form:input path="username" autofocus="autofocus" cssClass="form-control"/>
+                                        <form:input path="username" autofocus="autofocus" cssClass="form-control" tabindex="1"/>
                                         <form:errors path="username" cssClass="text-danger"/>
                                     </div>
                                     <div class="forgot_link col-md-6">
@@ -56,7 +56,7 @@
                                 <div class="row form-group align-items-center" style="margin-left: 130px;">
                                     <form:label path="password" cssClass="col-md-3  col-form-label text-right">Password:</form:label>
                                     <div class="col-md-3 d-flex align-items-center">
-                                        <form:password path="password" cssClass=" form-control"/>
+                                        <form:password path="password" cssClass=" form-control" tabindex="2"/>
                                         <form:errors path="password" cssClass="text-danger"/>
                                     </div>
                                     <div class="forgot_link col-md-6">
@@ -64,7 +64,7 @@
                                     </div>
                                 </div>
                                 <div class="row" style="display: flex;justify-content: center;">
-                                    <input class="btn btn-primary" name="submit" type="submit" value="Log in"/>
+                                    <input class="btn btn-primary" name="submit" type="submit" value="Log in" tabindex="3"/>
                                 </div>
 
                             </form:form>
