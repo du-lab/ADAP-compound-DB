@@ -97,7 +97,7 @@
             </button>
             Match Details
         </div>
-        <div class ="card-body collapse show" id = "queryPlotMatchPanel">
+        <div class ="card-body collapse" id = "queryPlotMatchPanel">
             <div class="row row-content " id="query_plot_match_row" style="height: auto">
                 <div class="col-4" id = "query_content">
                     <div class="card" style="height: auto">
