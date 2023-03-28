@@ -7,105 +7,9 @@
 <%--@elvariable id="submission" type="org.dulab.adapcompounddb.models.entities.Submission"--%>
 <%--@elvariable id="spectrumIds" type="java.util.List<java.lang.Long>"--%>
 
-
-
-<%--hide the query, plot and match when user hasn't clicked on table row--%>
-<style>
-
-  #query_plot_match row{
-    display:none;
-  }
-  .col{
-    padding-left:5px;
-    padding-right:5px;
-  }
-  .col-4{
-    padding-left:5px;
-    padding-right:5px;
-  }
-  .container {
-    margin:unset;
-    max-width: unset;
-    width: 100%;
-  }
-  .card-body{
-    padding: 5px;
-  }
-  .distinct_query_container{
-    padding: 10px;
-  }
-  .query_container{
-    padding: 10px;
-
-  }
-  .match_container{
-    padding: 10px;
-  }
-
-  .query_signals{
-    max-width: 25%;
-  }
-  .query_spectra{
-    max-width:25%;
-  }
-  .matches{
-    max-width:50%;
-  }
-  .match-input{
-    width:auto;
-  }
-  .custom-control-label {
-    margin-bottom: auto;
-  }
-  .items {
-    display: flex;
-    align-items: center;
-    margin-right: 10px;
-    margin-left: 10px;
-  }
-  .item-textbox{
-    width: 100px;
-    height:35px
-  }
-
-  caption{
-    text-align: center;
-
-  }
-  * {
-    box-sizing: border-box;
-  }
-
-  label {
-    margin-right: 5px;
-    font-weight: bold;
-    resize:none;
-    white-space:nowrap;
-    /*display: -webkit-box;*/
-    /*-webkit-box-orient: vertical;*/
-    /*-webkit-line-clamp: 2;*/
-  }
-  .my-filter {
-    display: flex;
-    font-size:70%;
-    align-items: center;
-    width: 100%;
-    overflow-x:scroll;
-  }
-
-  #resetFilterBtn{
-    margin-left: 15px;
-    white-space:nowrap;
-  }
-  /*!*For small screen size *!*/
-  /*@media only screen and (max-width: 1000px) {*/
-  /*  body {*/
-  /*    font-size: 0.8rem;*/
-  /*  }*/
-  /*}*/
-
-</style>
-
+<head>
+    <link rel="stylesheet" href="<c:url value="/resources/AdapCompoundDb/css/group_search.css"/>">
+</head>
 <div class="container-fluid">
     <div class="row row-content">
         <div class="col">
@@ -153,7 +57,7 @@
             </div>
             <div class="custom-control custom-switch items" >
                 <input type="checkbox" class="custom-control-input" id="matchesOnly" checked/>
-                <label class="custom-control-label" for="matchesOnly">Show only results with matches</label>
+                <label class="custom-control-label" for="matchesOnly" style="margin-bottom: 0;">Show only results with matches</label>
             </div>
             <div class= "items"  >
                 <label for="ontologyLevel" >Ontology level</label>
@@ -176,87 +80,78 @@
                 <label for="matchName" style="margin-right:10px;">Match Name </label>
                 <input type="text" id="matchName" class="form-control match-input item-textbox"/>
             </div>
-            <div class ="btns">
+
                 <button class="btn btn-secondary" type="button" id="resetFilterBtn">Clear All Filters</button>
                 <%--                <button class="btn btn-primary" type="button" id="applyFilterBtn">Filter</button>--%>
-            </div>
+
         </div>
     </div>
 
 
-    <div class="row row-content" id="query_plot_match_row">
-
-        <div class="col-4" id = "query_content">
-            <div class="card" style="height: auto">
-                <div class="card-header card-header-single">
-                    Query
-                    <button class="btn btn-sm btn-link float-right" type="button" data-toggle="collapse" data-target="#queryPanel" aria-expanded="false" aria-controls="queryPanel">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
-                            <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
-                        </svg>
-                    </button>
-                </div>
-
-                <div id = "queryPanel" class ="collapse" >
-                    <div class="card-body card-body-compact small overflow-auto" style="height: auto">
-                        <div id="queryInfo"></div>
-                    </div>
-                    <div  id="queryColumn">
-                        <div >
-                            <%--                        <div class="card-header card-header-single">Query Structure</div>--%>
-                            <div class="overflow-auto" style="height: auto">
-                                <div id="queryStructure" class="d-flex justify-content-center h-100"></div>
+    <div class = "card" style="margin-left: 5px;margin-right: 5px;">
+        <div class="card-header card-header-single">
+            <button class="btn btn-sm btn-link" type="button" data-toggle="collapse" data-target="#queryPlotMatchPanel" aria-expanded="false" aria-controls="queryPlotMatchPanel">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
+                    <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+                </svg>
+            </button>
+            Match Details
+        </div>
+        <div class ="card-body collapse show" id = "queryPlotMatchPanel">
+            <div class="row row-content " id="query_plot_match_row" style="height: auto">
+                <div class="col-4" id = "query_content">
+                    <div class="card" style="height: auto">
+                        <div id = "queryPanel" >
+                            <div class = "card header card-header-single query-plot-match-title">
+                                Query
+                            </div>
+                            <div class="card-body card-body-compact small overflow-auto" style="height: auto">
+                                <div id="queryInfo"></div>
+                            </div>
+                            <div  id="queryColumn">
+                                <div >
+                                    <%--                        <div class="card-header card-header-single">Query Structure</div>--%>
+                                    <div class="overflow-auto" style="height: auto">
+                                        <div id="queryStructure" class="d-flex justify-content-center h-100"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="col-4" id = "plot_content">
-            <div class="card" style="height: auto">
-                <div class="card-header card-header-single">
-                    Plot
-                    <button class="btn btn-sm btn-link float-right" type="button" data-toggle="collapse" data-target="#plotPanel" aria-expanded="false" aria-controls="plotPanel">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
-                            <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
-                        </svg>
-                    </button>
-
-                </div>
-
-                <div id="plotPanel" class = "collapse">
-                    <%--                <div class="card-body small overflow-auto" style="height: 300px">--%>
-                    <div id = "bar_under_plot" class="card-body card-body-compact small overflow-auto" style="height: auto">
-                        <div id="plot"style="height: 400px"></div>
+                <div class="col-4" id = "plot_content">
+                    <div class="card" style="height: auto">
+                        <div id="plotPanel">
+                            <div class = "card header card-header-single query-plot-match-title">
+                                Plot
+                            </div>
+                            <%--                <div class="card-body small overflow-auto" style="height: 300px">--%>
+                            <div id = "bar_under_plot" class="card-body card-body-compact small overflow-auto" style="height: auto">
+                                <div id="plot" style="height: 400px"></div>
+                            </div>
+                        </div>
+                        <%--                </div>--%>
                     </div>
                 </div>
-                <%--                </div>--%>
-            </div>
-        </div>
-        <div class="col-4" id = "match_content">
-            <div class="card" style="height: auto">
-                <div class="card-header card-header-single">
-                    Match
-                    <button class="btn btn-sm btn-link float-right" type="button" data-toggle="collapse" data-target="#matchPanel" aria-expanded="false" aria-controls="matchPanel">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
-                            <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
-                        </svg>
-                    </button>
-                </div>
-
-                <div id = "matchPanel" class = "collapse">
-                    <div class="card-body card-body-compact small overflow-auto" style="height: auto">
-                        <div id="matchInfo"></div>
-                    </div>
-                    <div  id="matchColumn">
-                        <div class="overflow-auto" style="height: auto">
-                            <div id="matchStructure" class="d-flex justify-content-center h-100"></div>
+                <div class="col-4" id = "match_content">
+                    <div class="card" style="height: auto">
+                        <div id = "matchPanel">
+                            <div class = "card header card-header-single query-plot-match-title">
+                                Match
+                            </div>
+                            <div class="card-body card-body-compact small overflow-auto" style="height: auto">
+                                <div id="matchInfo"></div>
+                            </div>
+                            <div  id="matchColumn">
+                                <div class="overflow-auto" style="height: auto">
+                                    <div id="matchStructure" class="d-flex justify-content-center h-100"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
+                 </div>
             </div>
         </div>
-
     </div>
 
     <div class="row row-content">
@@ -346,6 +241,11 @@
             </div>
         </div>
     </div>
+</div>
+</div>
+
+
+
 
     <script src="<c:url value="/resources/npm/node_modules/jquery/dist/jquery.min.js"/>"></script>
     <script src="<c:url value="/resources/npm/node_modules/popper.js/dist/umd/popper.min.js"/>"></script>
@@ -958,7 +858,7 @@
 
           // $('#queryInfo').spectrumInfo(queryUrl + 'info.json');
           // $('#matchInfo').spectrumInfo(matchUrl + 'info.json');
-
+          $('#queryPlotMatchPanel').collapse('show');
           $('#plot').spectrumPlot(position, queryUrl + 'positive/peaks.json', matchUrl + 'negative/peaks.json',
               function(complete){
                 if(complete) {
