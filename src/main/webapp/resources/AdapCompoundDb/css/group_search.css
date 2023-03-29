@@ -1,0 +1,106 @@
+
+#query_plot_match row{
+  display:none;
+}
+.col{
+  padding-left:5px;
+  padding-right:5px;
+}
+.col-4{
+  padding-left:5px;
+  padding-right:5px;
+}
+.container {
+  margin:unset;
+  max-width: unset;
+  width: 100%;
+}
+.card-body{
+  padding: 5px;
+}
+.distinct_query_container{
+  padding: 10px;
+}
+.query_container{
+  padding: 10px;
+
+}
+.match_container{
+  padding: 10px;
+}
+
+.query_signals{
+  max-width: 25%;
+}
+.query_spectra{
+  max-width:25%;
+}
+.matches{
+  max-width:50%;
+}
+.match-input{
+  width:auto;
+}
+.custom-control-label {
+  margin-bottom: auto;
+}
+.items {
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+.item-textbox{
+  width: 80px;
+  height:25px;
+  font-size:smaller;
+}
+
+caption{
+  text-align: center;
+
+}
+* {
+  box-sizing: border-box;
+}
+
+label {
+  margin-right: 5px;
+  font-weight: bold;
+  resize:none;
+  white-space:nowrap;
+  /*display: -webkit-box;*/
+  /*-webkit-box-orient: vertical;*/
+  /*-webkit-line-clamp: 2;*/
+  margin-bottom:0;
+}
+#ontologyLevel{
+  width:auto;
+  height:25px;
+}
+.my-filter {
+  display: flex;
+  font-size:70%;
+  align-items: center;
+  width: 100%;
+  overflow-x:scroll;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+#resetFilterBtn{
+  margin-left: 5px;
+  white-space:nowrap;
+  font-size:85%;
+  font-weight:bold;
+  padding-top:5px;
+  padding-bottom:5px;
+
+}
+
+.query-plot-match-title{
+  color: black;
+  text-shadow: 0 0 0 aliceblue;
+  border: hidden;
+}
+
