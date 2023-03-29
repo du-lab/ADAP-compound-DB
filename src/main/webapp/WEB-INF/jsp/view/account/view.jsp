@@ -303,24 +303,12 @@
 <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
 <script src="<c:url value="/resources/jquery-ui-1.13.2/jquery-ui.min.js"/>"></script>
 <script src="<c:url value="/resources/AdapCompoundDb/js/dialogs.js"/>"></script>
+<script src="<c:url value="/resources/AdapCompoundDb/js/saveTabSelection.js"/>"></script>
 <script src="<c:url value="/resources/DataTables/Select-1.3.1/js/dataTables.select.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/bootstrap/dist/js/bootstrap.min.js"/>"></script>
 
 <script>
     var confirmDeleteDialog = $('#dialog-confirm').confirmDeleteDialog();
-
-
-    $('#tabHistory  a').click(function(e) {
-      e.preventDefault();
-      $(this).tab('show');
-    });
-    $("ul.nav-tabs#tabHistory > li > a").on("shown.bs.tab", function(e) {
-      var id = $(e.target).attr("href");
-      localStorage.setItem('selectedTab', id)
-    });
-    var selectedTab = localStorage.getItem('selectedTab');
-    /* Keep current tab when page is refreshed */
-    $('#tabHistory a[href="' + selectedTab + '"]').tab('show');
 
     $(document).ready(function () {
         var t1 = $('#study_table').DataTable({
