@@ -107,5 +107,6 @@ label {
   color: black;
   text-shadow: 0 0 0 aliceblue;
   border: hidden;
+  font-weight:500;
 }
 
