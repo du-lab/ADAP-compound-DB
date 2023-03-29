@@ -90,14 +90,14 @@
 
     <div class = "card" style="margin-left: 5px;margin-right: 5px;">
         <div class="card-header card-header-single">
-            <button class="btn btn-sm btn-link" type="button" data-toggle="collapse" data-target="#queryPlotMatchPanel" aria-expanded="false" aria-controls="queryPlotMatchPanel">
+            <button class="btn btn-sm btn-link" type="button" data-toggle="collapse" data-target="#query-plot-match-panel" aria-expanded="false" aria-controls="query-plot-match-panel">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
                     <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
                 </svg>
             </button>
             Match Details
         </div>
-        <div class ="card-body collapse" id = "queryPlotMatchPanel">
+        <div class ="card-body collapse" id = "query-plot-match-panel">
             <div class="row row-content " id="query_plot_match_row" style="height: auto">
                 <div class="col-4" id = "query_content">
                     <div class="card" style="height: auto">
@@ -858,7 +858,7 @@
 
           // $('#queryInfo').spectrumInfo(queryUrl + 'info.json');
           // $('#matchInfo').spectrumInfo(matchUrl + 'info.json');
-          $('#queryPlotMatchPanel').collapse('show');
+          $('#query-plot-match-panel').collapse('show');
           $('#plot').spectrumPlot(position, queryUrl + 'positive/peaks.json', matchUrl + 'negative/peaks.json',
               function(complete){
                 if(complete) {

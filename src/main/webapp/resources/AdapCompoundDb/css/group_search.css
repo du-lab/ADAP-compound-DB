@@ -2,6 +2,10 @@
 #query_plot_match row{
   display:none;
 }
+
+#query-plot-match-panel{
+  font-size: 80%;
+}
 .col{
   padding-left:5px;
   padding-right:5px;
@@ -77,6 +81,7 @@ label {
 #ontologyLevel{
   width:auto;
   height:25px;
+  font-size:smaller;
 }
 .my-filter {
   display: flex;
