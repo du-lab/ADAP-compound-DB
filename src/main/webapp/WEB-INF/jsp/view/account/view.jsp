@@ -52,7 +52,7 @@
         <div class="col">
             <div class="card">
                 <div class="card-header card-header-tabs">
-                    <ul id = class="nav nav-tabs nav-fill nav-justified" role="tablist">
+                    <ul class="nav nav-tabs nav-fill nav-justified" role="tablist">
                         <li class="nav-item"><a id="studiesTab" class="nav-link active" data-toggle="tab" href="#studies">Studies</a>
                         </li>
                         <li class="nav-item"><a id="librariesTab" class="nav-link" data-toggle="tab" href="#libraries">Libraries</a></li>
