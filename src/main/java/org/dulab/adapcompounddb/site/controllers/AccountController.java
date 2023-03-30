@@ -12,14 +12,17 @@ import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.dulab.adapcompounddb.site.services.UserPrincipalService;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 @Controller
@@ -28,6 +31,10 @@ public class AccountController extends BaseController {
     private final SubmissionService submissionService;
     private final UserPrincipalService userPrincipalService;
     private final SearchTaskService searchTaskService;
+
+    @Autowired
+    private Executor threadPoolTaskExecutor;
+
 
     @Autowired
     public AccountController(SubmissionService submissionService, UserPrincipalService userPrincipalService, SearchTaskService searchTaskService) {
@@ -100,5 +107,18 @@ public class AccountController extends BaseController {
         model.addAttribute("submissionIdToChromatographyListMap", submissionIdToChromatographyListMap);
         model.addAttribute("filterForm",new FilterForm());
         return "account/view";
+    }
+
+    @RequestMapping(value = "/account/getSearchTaskStatus", method = RequestMethod.GET)
+    @ResponseBody
+    public String getSearchTaskStatus() {
+        if (threadPoolTaskExecutor instanceof ThreadPoolTaskExecutor) {
+            ThreadPoolTaskExecutor executor = (ThreadPoolTaskExecutor) threadPoolTaskExecutor;
+            final int activeCount = executor.getActiveCount();
+            final int poolSize = executor.getThreadPoolExecutor().getCorePoolSize();
+            final int queuedTaskSize = executor.getThreadPoolExecutor().getQueue().size();
+            return poolSize+"/"+activeCount+"/"+queuedTaskSize;
+        }
+        return "0/0/0";
     }
 }
