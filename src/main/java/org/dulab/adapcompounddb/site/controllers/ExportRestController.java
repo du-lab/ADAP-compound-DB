@@ -8,7 +8,9 @@ import org.dulab.adapcompounddb.site.services.io.ExcelExportSubmissionService;
 import org.dulab.adapcompounddb.site.services.io.ExportSearchResultsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -52,15 +54,27 @@ public class ExportRestController {
     }
 
     @RequestMapping(value = "/export/session/{attribute}/simple_csv", produces = MediaType.TEXT_PLAIN_VALUE)
-    public void simpleExport(@PathVariable("attribute") String attributeName,
+    public ResponseEntity<?> simpleExport(@PathVariable("attribute") String attributeName,
                              HttpSession session, HttpServletResponse response) {
-        export(attributeName, session, response, false);
+        try {
+            export(attributeName, session, response, false);
+        }
+        catch(Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>( HttpStatus.ACCEPTED);
     }
 
     @RequestMapping(value = "/export/session/{attribute}/advanced_csv", produces = MediaType.TEXT_PLAIN_VALUE)
-    public void advancedExport(@PathVariable("attribute") String attributeName,
+    public ResponseEntity<?> advancedExport(@PathVariable("attribute") String attributeName,
                                HttpSession session, HttpServletResponse response) {
-        export(attributeName, session, response, true);
+        try {
+            export(attributeName, session, response, true);
+        }
+        catch(Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>( HttpStatus.ACCEPTED);
     }
 
     /**

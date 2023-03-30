@@ -87,6 +87,21 @@
 
 </style>
 
+<div id="progressModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Export File</h4>
+                <button type="button" class="close" data-dismiss="modal">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Exporting file. Please wait.</p>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="container-fluid">
     <div class="row row-content">
         <div class="col">
@@ -103,12 +118,12 @@
                         Export
                     </button>
                     <div class="dropdown-menu">
-                        <a class="dropdown-item"
+                        <a class="dropdown-item exportLink"
                            href="${pageContext.request.contextPath}/export/session/${dulab:groupSearchResultsAttributeName()}/simple_csv"
                            title="Exports the top match for each query feature">
                             Simple export...
                         </a>
-                        <a class="dropdown-item"
+                        <a class="dropdown-item exportLink"
                            href="${pageContext.request.contextPath}/export/session/${dulab:groupSearchResultsAttributeName()}/advanced_csv"
                            title="Exports all matches for each query feature">
                             Advanced export...
@@ -1062,6 +1077,18 @@
           initializeTable();
         }
 
-
+        $('.exportLink').click(function (e) {
+          e.preventDefault();
+          $('#progressModal').modal('show');
+          $.ajax({
+            url: $(this).attr('href'),
+            success: function() {
+              $('#progressModal').modal('hide');
+            },
+            error: function(e) {
+              console.log("Error:", e);
+            }
+          })
+        });
     });
 </script>
