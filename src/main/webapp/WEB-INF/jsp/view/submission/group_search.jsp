@@ -1082,7 +1082,8 @@
           $('#progressModal').modal('show');
           $.ajax({
             url: $(this).attr('href'),
-            success: function() {
+            success: function(response) {
+              console.log("EXPORT RESPONSE", response);
               $('#progressModal').modal('hide');
             },
             error: function(e) {

@@ -325,7 +325,8 @@
     var confirmDeleteDialog = $('#dialog-confirm').confirmDeleteDialog();
 
     $(document).ready(function () {
-      $('#progressModal').modal('show');
+      // $('#progressModal').modal('show');
+
         var t1 = $('#study_table').DataTable({
             order: [[1, 'DESC']],
             responsive: true,
