@@ -42,6 +42,7 @@ jQuery.fn.spectrumPlot = function (id, restURL1, restURL2, onComplete) {
                 match['name'] = 'Match';
                 handle.add([query, match]);
 
+                $(".st-xaxis, .st-yaxis").css("font-size","80%");
                 onComplete(true);
             }
             else

@@ -3,9 +3,6 @@
   display:none;
 }
 
-#query-plot-match-panel{
-  font-size: 80%;
-}
 .col{
   padding-left:5px;
   padding-right:5px;
@@ -14,6 +11,9 @@
   padding-left:5px;
   padding-right:5px;
 }
+.row-content{
+  font-size:80%;
+}
 .container {
   margin:unset;
   max-width: unset;
@@ -21,6 +21,7 @@
 }
 .card-body{
   padding: 5px;
+  font-size:90%;
 }
 .distinct_query_container{
   padding: 10px;
@@ -96,7 +97,7 @@ label {
 #resetFilterBtn{
   margin-left: 5px;
   white-space:nowrap;
-  font-size:85%;
+  font-size:90%;
   font-weight:bold;
   padding-top:5px;
   padding-bottom:5px;
