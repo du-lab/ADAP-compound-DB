@@ -75,7 +75,7 @@
             $.ajax({
                 url: "/account/getSearchTaskStatus",
                 success: function(data) {
-                    var parts = data.split("/");
+                    let parts = data.split("/");
                     searchTaskStatus.maximum = parseInt(parts[0]);
                     searchTaskStatus.running = parseInt(parts[1]);
                     searchTaskStatus.queued = parseInt(parts[2]);
@@ -84,7 +84,7 @@
                     $("#search-task-status-queued").text(searchTaskStatus.queued);
                 }
             });
-        }, 1000); // 5 seconds
+        }, 1000); // 1 seconds
     });
     if (localStorage.getItem("cookieSeen") !== "shown") {
         $(".cookie-banner").delay(2000).fadeIn();

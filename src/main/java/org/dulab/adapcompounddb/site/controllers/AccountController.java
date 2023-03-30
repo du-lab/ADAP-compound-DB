@@ -32,15 +32,16 @@ public class AccountController extends BaseController {
     private final UserPrincipalService userPrincipalService;
     private final SearchTaskService searchTaskService;
 
-    @Autowired
     private Executor threadPoolTaskExecutor;
 
 
     @Autowired
-    public AccountController(SubmissionService submissionService, UserPrincipalService userPrincipalService, SearchTaskService searchTaskService) {
+    public AccountController(SubmissionService submissionService, UserPrincipalService userPrincipalService,
+                             SearchTaskService searchTaskService, Executor threadPoolTaskExecutor) {
         this.submissionService = submissionService;
         this.userPrincipalService = userPrincipalService;
         this.searchTaskService = searchTaskService;
+        this.threadPoolTaskExecutor = threadPoolTaskExecutor;
     }
 
     @RequestMapping(value = "account/", method = RequestMethod.GET)
