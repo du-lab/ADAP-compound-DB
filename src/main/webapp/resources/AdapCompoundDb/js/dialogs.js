@@ -3,6 +3,7 @@
 
         var div = $(this);
 
+        //creating the pop up dialog
         div.attr('title', 'Confirm');
         div.append('<p></p>');
 
