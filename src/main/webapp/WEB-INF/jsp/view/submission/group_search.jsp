@@ -126,8 +126,8 @@
                                 Plot
                             </div>
                             <%--                <div class="card-body small overflow-auto" style="height: 300px">--%>
-                            <div id = "bar_under_plot" class="card-body card-body-compact small overflow-auto" style="height: auto">
-                                <div id="plot" style="height: 400px"></div>
+                            <div id = "bar_under_plot" class="card-body card-body-compact small overflow-auto" style="height: 280px">
+                                <div id="plot"  style="min-height: 280px"></div>
                             </div>
                         </div>
                         <%--                </div>--%>
