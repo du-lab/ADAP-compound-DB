@@ -50,9 +50,7 @@
     <div  style="display:flex; flex-wrap:wrap;">
         <div class="my-filter">
             <div class= "items">
-                <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-filter" viewBox="0 0 16 16" style="margin-bottom: 6px;margin-right: 3px;" fill="#844d36" width="25px" height="25px">
-                    <path d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z" style="height: 50px;"></path>
-                </svg>
+                <span class="material-icons" style="margin-bottom: 6px;margin-right: 3px; color:#844d36; width:25px; height:25px">filter_list</span>
                 <h5>Filters: </h5>
             </div>
             <div class="custom-control custom-switch items" >
@@ -91,9 +89,7 @@
     <div class = "card" style="margin-left: 5px;margin-right: 5px;">
         <div class="card-header card-header-single">
             <button class="btn btn-sm btn-link" type="button" data-toggle="collapse" data-target="#query-plot-match-panel" aria-expanded="false" aria-controls="query-plot-match-panel">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
-                    <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
-                </svg>
+                <span class="material-icons" style="color: white;width: 16px;height: 16px;">arrow_drop_down</span>
             </button>
             Match Details
         </div>
