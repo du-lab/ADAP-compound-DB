@@ -65,6 +65,27 @@
 
 <script src="<c:url value="/resources/jQuery-3.6.3/jquery-3.6.3.min.js"/>"></script>
 <script>
+    $(document).ready(function() {
+        let searchTaskStatus = {
+            maximum: 0,
+            running: 0,
+            queued: 0
+        };
+        setInterval(function() {
+            $.ajax({
+                url: "/account/getSearchTaskStatus",
+                success: function(data) {
+                    let parts = data.split("/");
+                    searchTaskStatus.maximum = parseInt(parts[0]);
+                    searchTaskStatus.running = parseInt(parts[1]);
+                    searchTaskStatus.queued = parseInt(parts[2]);
+                    $("#search-task-status-maximum").text(searchTaskStatus.maximum);
+                    $("#search-task-status-running").text(searchTaskStatus.running);
+                    $("#search-task-status-queued").text(searchTaskStatus.queued);
+                }
+            });
+        }, 1000); // 1 seconds
+    });
     if (localStorage.getItem("cookieSeen") !== "shown") {
         $(".cookie-banner").delay(2000).fadeIn();
         localStorage.setItem("cookieSeen", "shown")
@@ -204,6 +225,33 @@
                     </a>
                 </div>
             </div>
+            <div class="row mt-5">
+                <div class="col-12">
+                    <div class="card task-status">
+                        <div class="card-header card-header-single task-status-header">
+                            Search tasks status
+                            <%--                            <a href=""><span style="color:white">&#x21bb;</span></a>--%>
+                        </div>
+
+                        <div class="card-body task-status-body">
+                            <table>
+                                <tr>
+                                    <td>Maximum Tasks :</td>
+                                    <td><div id="search-task-status-maximum">8</div></td>
+                                </tr>
+                                <tr>
+                                    <td>Tasks Running :</td>
+                                    <td><div id="search-task-status-running">0</div></td>
+                                </tr>
+                                <tr>
+                                    <td>Tasks Queued :</td>
+                                    <td><div id="search-task-status-queued">0</div></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </nav>
 
@@ -211,7 +259,6 @@
         <sitemesh:write property='body' />
     </article>
 </div>
-
 </body>
 
 </html>
