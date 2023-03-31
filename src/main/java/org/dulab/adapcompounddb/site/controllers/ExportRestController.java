@@ -8,6 +8,7 @@ import org.dulab.adapcompounddb.site.services.io.ExcelExportSubmissionService;
 import org.dulab.adapcompounddb.site.services.io.ExportSearchResultsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -58,11 +59,12 @@ public class ExportRestController {
                              HttpSession session, HttpServletResponse response) {
         try {
             export(attributeName, session, response, false);
+            return ResponseEntity.ok("File exported");
         }
         catch(Exception e) {
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("File export failed");
         }
-        return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+
     }
 
     @RequestMapping(value = "/export/session/{attribute}/advanced_csv", produces = MediaType.TEXT_PLAIN_VALUE)
@@ -72,9 +74,9 @@ public class ExportRestController {
             export(attributeName, session, response, true);
         }
         catch(Exception e) {
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>( HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
     /**

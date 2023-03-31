@@ -15,6 +15,10 @@
             modal: true,
             buttons: {
                 'Delete': function () {
+                    div.find('p').html('Study deletion is in progress, please wait.');
+                    $('.ui-dialog-title').html('Delete Study')
+                    $('.ui-dialog-buttonset').children().first().hide()
+
                     window.location.replace($(this).attr('href'));
                 },
                 'Cancel': function () {
