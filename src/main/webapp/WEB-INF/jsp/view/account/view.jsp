@@ -24,6 +24,8 @@
                             <p><strong>E-mail:&nbsp;</strong><a href="mailto:${user.email}">${user.email}</a></p>
                             <p><strong>Role(s):&nbsp;</strong><c:forEach items="${user.roles}"
                                                                          var="role">${role.label}&nbsp;</c:forEach></p>
+                            <p style="${not empty user.organizationId
+                                        ? '' : 'display: none;'}" ><strong>Organization:&nbsp;</strong>${user.organizationUser.username}</p>
                         </div>
                     </div>
                     <div align="center">
