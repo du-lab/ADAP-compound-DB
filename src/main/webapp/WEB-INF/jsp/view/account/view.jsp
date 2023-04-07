@@ -57,6 +57,7 @@
                         </li>
                         <li class="nav-item"><a id="librariesTab" class="nav-link" data-toggle="tab" href="#libraries">Libraries</a></li>
                         <li class="nav-item"><a id="parametersTab" class="nav-link" data-toggle="tab" href="#parameters">Parameters</a></li>
+                        <li class="nav-item"><a id="searchTaskTab" class="nav-link" data-toggle="tab" href="#searchTask">Search History</a></li>
                     </ul>
                 </div>
 
@@ -235,6 +236,55 @@
                             </div>
                         </form:form>
                     </div>
+
+                    <div id="searchTask" class="tab-pane" role="tabpanel">
+                        <table id="search_task_table" class="display" style="width: 100%;">
+                            <thead>
+                            <tr>
+                                <th>Submission</th>
+                                <th>Status</th>
+                                <th>Time</th>
+                                <th>Libraries Searched Against</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <c:forEach items="${searchTaskList}" var="searchTask" varStatus="loop">
+                                <tr>
+                                    <td><a href="${pageContext.request.contextPath}/submission/${searchTask.submission.id}/">${searchTask.submission.name}</a><br/></td>
+                                    <td>${searchTask.status}</td>
+                                    <td><fmt:formatDate value="${searchTask.dateTime}" type="both" timeStyle= "short" pattern="yyyy-MM-dd HH:mm:ss"/><br/></td>
+                                    <td>
+                                        <c:forEach items = "${searchTask.libraries}" var = "library" varStatus="loop">
+                                            <c:choose>
+                                                <c:when test = "${library.key >0}">
+                                                    <a href="${pageContext.request.contextPath}/submission/${library.key}/">${library.value}</a><br/>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    ${library.value}<br/>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </c:forEach>
+                                    </td>
+                                    <td>
+                                        <c:choose>
+                                            <c:when test = "${searchTask.status == 'RUNNING' && sessionScope[dulab:groupSearchResultsAttributeName()] != null}">
+                                                <a href="${pageContext.request.contextPath}/group_search/"type="button" class="btn-sm btn-primary">View Matches</a>
+                                            </c:when>
+                                            <c:when test = "${searchTask.status == 'FINISHED'}">
+                                                <a href="${pageContext.request.contextPath}/submission/group_search/${searchTask.submission.id}"type="button" class="btn-sm btn-primary">View Matches</a>
+                                            </c:when>
+                                            <c:otherwise>
+                                            </c:otherwise>
+                                        </c:choose>
+
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                            </tbody>
+                        </table>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -253,6 +303,7 @@
 <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
 <script src="<c:url value="/resources/jquery-ui-1.13.2/jquery-ui.min.js"/>"></script>
 <script src="<c:url value="/resources/AdapCompoundDb/js/dialogs.js"/>"></script>
+<script src="<c:url value="/resources/AdapCompoundDb/js/saveTabSelection.js"/>"></script>
 <script src="<c:url value="/resources/DataTables/Select-1.3.1/js/dataTables.select.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/bootstrap/dist/js/bootstrap.min.js"/>"></script>
 
@@ -299,7 +350,13 @@
                     "className": "dt-center", "targets": "_all"
                 }*/],
         });
+      var t3 = $('#search_task_table').DataTable({
+        order: [[2, 'DESC']],
+        responsive: true,
+        scrollX: true,
+        scroller: true,
 
+      });
         t1.on('order.dt search.dt', function () {
             t1.column(0, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {
                 cell.innerHTML = i + 1;
@@ -312,7 +369,8 @@
             });
         }).draw();
 
-        const valuenow = parseFloat($("#progressBar").attr("aria-valuenow"));
+
+      const valuenow = parseFloat($("#progressBar").attr("aria-valuenow"));
         const valuemax = parseFloat($("#progressBar").attr("aria-valuemax"));
 
         const widthpercent = (valuenow/valuemax)*100 ;

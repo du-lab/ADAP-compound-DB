@@ -71,7 +71,7 @@ public class ConversionsUtils {
         else return null;
 
         mol.compute2DCoords();
-        MolDraw2DSVG drawer = new MolDraw2DSVG(400,300);
+        MolDraw2DSVG drawer = new MolDraw2DSVG(300,200);
 
         drawer.drawMolecule(mol);
         drawer.finishDrawing();
