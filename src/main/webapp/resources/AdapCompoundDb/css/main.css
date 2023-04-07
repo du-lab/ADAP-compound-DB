@@ -310,7 +310,21 @@ section a > i.material-icons:hover {
     color: #7c4dff;
     text-shadow: 0 0 5px #bfbfbf;
 }
-
+.task-status {
+    width: 250px;
+}
+.task-status-body {
+    font-size: 14px;
+    color: #542410;
+    padding:5px;
+}
+.task-status-header {
+    padding-left: 10px;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    padding-right: 10px;
+}
 /*section a.button {*/
 /*display: inline-block;*/
 /*border: none;*/

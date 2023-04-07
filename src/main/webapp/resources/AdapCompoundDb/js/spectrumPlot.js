@@ -25,9 +25,13 @@ jQuery.fn.spectrumPlot = function (id, restURL1, restURL2, onComplete) {
                 chart = st.chart.ms()
                     .legend(true)
                     .labels(true)
+
                     // .xlabel('m/z')
                     // .ylabel('Intensity')
                     .margins([10, 60, 40, 100]);
+
+                // div.css('width', '70%');
+                // div.css('height', '70%');
                 chart.render(div[0]);
 
                 let handle = st.data.set()
@@ -42,6 +46,7 @@ jQuery.fn.spectrumPlot = function (id, restURL1, restURL2, onComplete) {
                 match['name'] = 'Match';
                 handle.add([query, match]);
 
+                $(".st-xaxis, .st-yaxis, .st-options, .st-legend").css("font-size","80%");
                 onComplete(true);
             }
             else
