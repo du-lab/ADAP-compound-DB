@@ -190,6 +190,19 @@ public class UserPrincipalServiceImpl implements UserPrincipalService {
     }
 
     @Override
+    public void removeSelfFromOrganization(UserPrincipal user) {
+        try{
+            user.setOrganizationId(null);
+            userPrincipalRepository.save(user);
+            LOGGER.info("Sucessfully removed user from organization");
+        }
+        catch(Exception e){
+            LOGGER.error("Cannot remove user " + user.getUsername() +" from organization");
+        }
+
+    }
+
+    @Override
     public List<UserPrincipal> fetchUsernamesForOrganization(String input, UserPrincipal user) {
         UserPrincipal fetchedUser = userPrincipalRepository.findByEmailOrUsername(input, input);
         List<UserPrincipal> userPrincipalList = new ArrayList<>();

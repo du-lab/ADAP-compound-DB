@@ -49,11 +49,17 @@
                         <a class="btn btn-secondary" onclick="confirmDeleteDialog.show(
                                 'All submissions belonging to the user &quot;${user.name}&quot; and all their spectra will be deleted. Are you sure?',
                                 '${pageContext.request.contextPath}/submission/${user.id}/deleteByUserId/');">Clear Account</a>
+                        <a href="${pageContext.request.contextPath}/account/organization/leaveOrganization/"
+                            class="btn btn-secondary" style ="${user.organizationId != null
+                            ? '' : 'display: none;'}">
+                            Leave Organization
+                        </a>
                     </div>
                     <div align="center" style="margin-top: 10px;${user.organization || not empty user.organizationId
                     ? 'display: none;' : ''}" >
+
                         <a href="${pageContext.request.contextPath}/account/convertToOrganization"
-                            class="btn btn-secondary">
+                           class="btn btn-secondary">
                             Convert to Organization
                         </a>
                     </div>

@@ -201,6 +201,24 @@ public class AccountController extends BaseController {
         return "account/view";
     }
 
+    @RequestMapping(value = "account/organization/leaveOrganization/", method = RequestMethod.GET)
+    public String leaveOrganization(Model model) {
+        UserPrincipal user = getCurrentUserPrincipal();
+
+        if (user.isOrganization()) {
+            try {
+                userPrincipalService.removeSelfFromOrganization( user);
+            } catch (Exception e) {
+                model.addAttribute("errorMessage", e.getMessage());
+            }
+        } else {
+            model.addAttribute("errorMessage", "You are not allowed to perform this action.");
+        }
+        populateViewModel(model, user);
+        model.addAttribute("selectedTab","organization");
+        return "account/view";
+    }
+
     @RequestMapping(value = "/account/getSearchTaskStatus", method = RequestMethod.GET)
     @ResponseBody
     public String getSearchTaskStatus() {
