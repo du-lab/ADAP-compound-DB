@@ -409,6 +409,11 @@ public class SubmissionController extends BaseController {
         return "redirect:/account/";
     }
 
+    @RequestMapping(value = "/submission/{userId:\\d+}/deleteByUserId")
+    public String deleteByUserId(@PathVariable("userId") final long id){
+        submissionService.deleteByUserId(id);
+    }
+
     private String redirectFileUpload() {
         return "redirect:/file/upload/";
     }

@@ -29,7 +29,10 @@
                     <div align="center">
                         <a href="${pageContext.request.contextPath}/account/changePassword" class="btn btn-secondary">Change
                             Password</a>
+                        <a href="${pageContext.request.contextPath}/account/deleteAccount" class="btn btn-secondary">Delete
+                            Account</a>
                     </div>
+
                     <hr>
                     <div class="row row-content" align = "center">
                         <div class="col">
