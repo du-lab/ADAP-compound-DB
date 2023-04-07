@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.controllers;
 
+import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
@@ -8,9 +9,13 @@ import org.dulab.adapcompounddb.site.services.io.ExcelExportSubmissionService;
 import org.dulab.adapcompounddb.site.services.io.ExportSearchResultsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,7 +27,11 @@ import java.util.stream.Collectors;
 
 @RestController
 public class ExportRestController {
-
+    private enum ExportStatus {
+        PENDING,
+        DONE,
+        ERROR
+    }
     private static final Logger LOGGER = LoggerFactory.getLogger(ExportRestController.class);
 
     private final ExportSearchResultsService exportSearchResultsService;
@@ -37,6 +46,14 @@ public class ExportRestController {
         this.exportSubmissionService = exportSubmissionService;
     }
 
+    @RequestMapping(value="/export/check_status", method= RequestMethod.GET)
+    public ResponseEntity<String> checkStatus(HttpSession session){
+        ExportStatus exportStatus = (ExportStatus) session.getAttribute(ControllerUtils.EXPORT_PROGRESS_ATTRIBUTE_NAME);
+        if(exportStatus == null || exportStatus == ExportStatus.ERROR)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        else
+            return new ResponseEntity<>(exportStatus.toString(), HttpStatus.ACCEPTED);
+    }
     @RequestMapping(value = "/export/submission/{id:\\d+}/", produces = MediaType.TEXT_PLAIN_VALUE)
     public void exportSubmission(@PathVariable("id") long submissionId, @RequestParam Optional<String> name,
                                  HttpServletResponse response) {
@@ -79,10 +96,12 @@ public class ExportRestController {
         Object attribute = session.getAttribute(attributeName);
         if (!(attribute instanceof List)) {
             LOGGER.warn(String.format("Attribute %s is not of type List", attributeName));
+            session.setAttribute(ControllerUtils.EXPORT_PROGRESS_ATTRIBUTE_NAME, ExportStatus.ERROR);
             return;
         }
 
         try {
+            session.setAttribute(ControllerUtils.EXPORT_PROGRESS_ATTRIBUTE_NAME, ExportStatus.PENDING);
             List<SearchResultDTO> searchResults = ((List<?>) attribute).stream()
                     .filter(object -> object instanceof SearchResultDTO)
                     .map(object -> (SearchResultDTO) object)
@@ -92,6 +111,8 @@ public class ExportRestController {
                 exportSearchResultsService.exportAll(response.getOutputStream(), searchResults);
             else
                 exportSearchResultsService.export(response.getOutputStream(), searchResults);
+
+            session.setAttribute(ControllerUtils.EXPORT_PROGRESS_ATTRIBUTE_NAME, ExportStatus.DONE);
         } catch (IOException | ConcurrentModificationException e) {
             LOGGER.warn("Error when writing to a file: " + e.getMessage(), e);
         }
