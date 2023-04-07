@@ -129,14 +129,16 @@ public class GroupSearchRestController extends BaseController {
     public String getMatchesById(@RequestBody JsonNode jsonObj, final HttpSession session)
         throws JsonProcessingException {
 
-        Object sessionObject =session.getAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
+        Object sessionObject =session.getAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_FILTERED);
         if(sessionObject == null)
             return null;
         else{
-            Integer position = jsonObj.get("position").asInt();
+            Integer spectrumIndex = jsonObj.get("querySpectrumIndex").asInt();
+            String spectrumName = jsonObj.get("querySpectrumName").asText();
             List<SearchResultDTO> searchResultFromSession = new ArrayList<>((List<SearchResultDTO>) sessionObject);
             List<SearchResultDTO> matches = searchResultFromSession.stream()
-                .filter(s -> s.getPosition()==position).collect(Collectors.toList());
+                .filter(s -> s.getQuerySpectrumIndex()==spectrumIndex && s.getQuerySpectrumName()
+                        .equals(spectrumName)).collect(Collectors.toList());
             session.setAttribute(ControllerUtils.GROUP_SEARCH_MATCHES, matches);
 
             return mapper.writeValueAsString(matches);
@@ -147,16 +149,18 @@ public class GroupSearchRestController extends BaseController {
     @PostMapping(value ="/getSpectrumsByName")
     public String getSpectrumsByName(@RequestBody JsonNode jsonObj, final HttpSession session) throws JsonProcessingException {
 
-        Object sessionObject =session.getAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_FILTERED);
+//        Object sessionObject =session.getAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_FILTERED);
+        Object sessionObject =session.getAttribute(ControllerUtils.SPECTRUM_DTO_LIST);
         if(sessionObject == null)
             return null;
         else {
             String spectrumName = jsonObj.get("querySpectrumName").asText();
-            List<SearchResultDTO> searchResultFromSession = new ArrayList<>((List<SearchResultDTO>) sessionObject);
+            List<SpectrumDTO> spectrumDTOListFromSession = new ArrayList<>((List<SpectrumDTO>) sessionObject);
 
-            List<SearchResultDTO> spectrumDTOList = searchResultFromSession.stream()
-                .filter(s -> s.getQuerySpectrumName().equals(spectrumName)).collect(Collectors.toList());
+            List<SpectrumDTO> spectrumDTOList = spectrumDTOListFromSession.stream()
+                .filter(s -> s.getName().equals(spectrumName)).collect(Collectors.toList());
 
+            //spectrum List which is shown on 2nd table
             session.setAttribute(ControllerUtils.SPECTRUM_LIST, spectrumDTOList);
 
             return mapper.writeValueAsString(spectrumDTOList);
@@ -229,7 +233,16 @@ public class GroupSearchRestController extends BaseController {
         Object sessionObject = session.getAttribute(ControllerUtils.SPECTRUM_LIST);
         DataTableResponse response = new DataTableResponse();
 
-        List<SearchResultDTO> querySpectrums = (List<SearchResultDTO>) sessionObject;
+        List<SpectrumDTO> querySpectrumsFromSession = (List<SpectrumDTO>) sessionObject;
+        List<SearchResultDTO> querySpectrums = querySpectrumsFromSession.stream().map(spectrum ->{
+            SearchResultDTO searchResultDTO = new SearchResultDTO();
+            searchResultDTO.setQuerySpectrumName(spectrum.getName());
+            searchResultDTO.setQuerySpectrumIndex(spectrum.getSpectrumIndex());
+            searchResultDTO.setRetTime(spectrum.getRetentionTime());
+            searchResultDTO.setExternalId(spectrum.getExternalId());
+            return searchResultDTO;
+        }).collect(Collectors.toList());
+
         response = groupSearchSort(false, searchStr,  start, length, querySpectrums, columnStr);
 
         return mapper.writeValueAsString(response);

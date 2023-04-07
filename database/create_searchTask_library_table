@@ -1,0 +1,7 @@
+CREATE TABLE `SearchTask2Library` (
+  `SearchTaskId` bigint unsigned NOT NULL,
+  `LibraryId` bigint unsigned DEFAULT NULL,
+  `LibraryName` text DEFAULT NULL,
+  KEY `searchTask_id_fk_idx` (`SearchTaskId`),
+  CONSTRAINT `searchTask_fk` FOREIGN KEY (`SearchTaskId`) REFERENCES `SearchTask` (`Id`) ON DELETE CASCADE ON UPDATE CASCADE
+)

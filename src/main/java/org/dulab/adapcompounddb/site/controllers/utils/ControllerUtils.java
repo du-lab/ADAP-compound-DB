@@ -29,6 +29,7 @@ public class ControllerUtils {
     public static final String GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME = "group_search_results";
     public static final String GROUP_SEARCH_RESULTS_FILTERED = "group_search_results_filtered";
     public static final String GROUP_SEARCH_MATCHES ="matches";
+    public static final String SPECTRUM_DTO_LIST = "spectrumDTOList";
     public static String groupSearchResultsAttributeName() {
         return GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME;
     }
