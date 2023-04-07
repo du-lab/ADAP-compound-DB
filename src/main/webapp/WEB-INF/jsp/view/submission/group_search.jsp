@@ -10,6 +10,22 @@
 <head>
     <link rel="stylesheet" href="<c:url value="/resources/AdapCompoundDb/css/group_search.css"/>">
 </head>
+
+<div id="progressModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Export File</h4>
+                <button type="button" class="close" data-dismiss="modal">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Exporting file. Please wait. This may take a while</p>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="container-fluid">
     <div class="row row-content">
         <div class="col">
@@ -26,12 +42,12 @@
                         Export
                     </button>
                     <div class="dropdown-menu">
-                        <a class="dropdown-item"
+                        <a class="dropdown-item exportLink"
                            href="${pageContext.request.contextPath}/export/session/${dulab:groupSearchResultsAttributeName()}/simple_csv"
                            title="Exports the top match for each query feature">
                             Simple export...
                         </a>
-                        <a class="dropdown-item"
+                        <a class="dropdown-item exportLink"
                            href="${pageContext.request.contextPath}/export/session/${dulab:groupSearchResultsAttributeName()}/advanced_csv"
                            title="Exports all matches for each query feature">
                             Advanced export...
@@ -256,9 +272,10 @@
     <script src="<c:url value="/resources/AdapCompoundDb/js/spectrumStructure.js"/>"></script>
     <script>
 
-      var isSavedResultPage = '<c:out value="${submissionId}" />' ? true : false;
-      $(document).ready(function () {
+  var isSavedResultPage = '<c:out value="${submissionId}" />' ? true : false;
+  $(document).ready(function () {
         var drawFirstTime = true;
+        var isExportDone = true;
         //filter parameters
         var url;
         var showMatchesOnly = 1;
@@ -268,6 +285,8 @@
         var reTimeError;
         var matchName ="";
         var selectedRowIndex = null; // save the index of the selected row
+
+        // //hide the match details by default
         // $('#query_plot_match_row').hide();
         // $('.query_container').hide();
         // $('.match_container').hide();
@@ -888,38 +907,40 @@
 
         });
 
-        if (!isSavedResultPage){
-          // refresh the datatable and progress bar every 1 second
-          var previousResponse;
-          setInterval(function () {
 
-            //update the ontology level options
-            $.ajax({
-              url: "${pageContext.request.contextPath}/getOntologyLevels",
-              type: "GET",
-              data: {
-                submissionId: '${submissionId}',
-                isSavedResultPage: isSavedResultPage
-              },
-              success: function(response) {
-                var responseString = JSON.stringify(response);
-                //don't update the options if they're the same
-                if(responseString !== previousResponse) {
-                  var ontologyLevelOptions = $("#ontologyLevel");
-                  var selectedOption = ontologyLevelOptions.find(':selected').val();
-                  ontologyLevelOptions.empty();
-                  ontologyLevelOptions.append($('<option></option>'));
-                  $.each(response, function (index, item) {
-                    ontologyLevelOptions.append($('<option></option>').val(item).text(item));
-                  });
-                  ontologyLevelOptions.val(selectedOption);
-                  previousResponse = responseString;
-                }
-              },
-              error: function(xhr) {
-                console.log("Error:", xhr);
+        // refresh the datatable and progress bar every 1 second
+        var previousResponse;
+
+        setInterval(function () {
+          checkExportStatus();
+          if (!isSavedResultPage){
+          //update the ontology level options
+          $.ajax({
+            url: "${pageContext.request.contextPath}/getOntologyLevels",
+            type: "GET",
+            data: {
+              submissionId: '${submissionId}',
+              isSavedResultPage: isSavedResultPage
+            },
+            success: function(response) {
+              var responseString = JSON.stringify(response);
+              //don't update the options if they're the same
+              if(responseString !== previousResponse) {
+                var ontologyLevelOptions = $("#ontologyLevel");
+                var selectedOption = ontologyLevelOptions.find(':selected').val();
+                ontologyLevelOptions.empty();
+                ontologyLevelOptions.append($('<option></option>'));
+                $.each(response, function (index, item) {
+                  ontologyLevelOptions.append($('<option></option>').val(item).text(item));
+                });
+                ontologyLevelOptions.val(selectedOption);
+                previousResponse = responseString;
               }
-            });
+            },
+            error: function(xhr) {
+              console.log("Error:", xhr);
+            }
+          });
 
             $.ajax({
               url: `${pageContext.request.contextPath}/ajax/group_search/error`,
@@ -927,10 +948,10 @@
             });
             // if($('#progressBar').attr('aria-valuenow') < 100)
             $('#distinct_query_table').DataTable().ajax.reload(function(){
-              if (selectedRowIndex !== null) {
-                var selectedRow = $('#distinct_query_table').DataTable().row(selectedRowIndex).node();
-                $(selectedRow).addClass('selected');
-              }
+                if (selectedRowIndex !== null) {
+                    var selectedRow = $('#distinct_query_table').DataTable().row(selectedRowIndex).node();
+                    $(selectedRow).addClass('selected');
+                }
             },false);
 
             $.getJSON(window.location.origin + window.location.pathname + 'progress', function (x) {
@@ -945,8 +966,8 @@
                 progressBar.removeClass('progress-bar-striped progress-bar-animated');
               }
             });
-          }, 1000);
-        }
+          }
+    }, 1000);
         <%--        <c:if test="${pageContext.request.method == 'GET'}">$('#filterForm').submit();--%>
         <%--        </c:if>--%>
 
@@ -981,6 +1002,10 @@
           drawFirstTime = true;
           updateFilterParams();
         })
+        $('.exportLink').click(function() {
+          isExportDone = false;
+          $('#progressModal').modal('show');
+        });
         function updateFilterParams(){
           showMatchesOnly =$('#matchesOnly').is(":checked") ? 1 : 0;
           ontologyLevel = $('#ontologyLevel').val();
@@ -1008,6 +1033,27 @@
           $('#distinct_query_table').DataTable().destroy();
           initializeTable();
         }
+        function checkExportStatus(){
+          if(!isExportDone){
+            //update export status
+            $.ajax({
+              url: `${pageContext.request.contextPath}/export/check_status`,
+              success: function(response){
+                console.log("EXPORT STATUS: ", response);
+                if(response === "DONE") {
+                  $('#progressModal').modal('hide');
+                  isExportDone = true;
+                }
+              },
+              error: function(error){
+                console.log("ERROR: ", error);
+                $('#progressModal').find('.modal-body > p').text('There was an error while exporting.');
+
+              }
+            });
+          }
+        }
+
 
 
       });
