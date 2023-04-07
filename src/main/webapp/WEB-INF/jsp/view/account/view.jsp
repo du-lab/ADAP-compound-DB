@@ -29,8 +29,9 @@
                     <div align="center">
                         <a href="${pageContext.request.contextPath}/account/changePassword" class="btn btn-secondary">Change
                             Password</a>
-                        <a href="${pageContext.request.contextPath}/account/deleteAccount" class="btn btn-secondary">Delete
-                            Account</a>
+                        <a class="btn btn-secondary" onclick="confirmDeleteDialog.show(
+                                'All submissions belonging to the user &quot;${user.name}&quot; and all their spectra will be deleted. Are you sure?',
+                                '${pageContext.request.contextPath}/submission/${user.id}/deleteByUserId/');">Clear Account</a>
                     </div>
 
                     <hr>
