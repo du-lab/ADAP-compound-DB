@@ -39,6 +39,8 @@
                             <p><strong>E-mail:&nbsp;</strong><a href="mailto:${user.email}">${user.email}</a></p>
                             <p><strong>Role(s):&nbsp;</strong><c:forEach items="${user.roles}"
                                                                          var="role">${role.label}&nbsp;</c:forEach></p>
+                            <p style="${not empty user.organizationId
+                                        ? '' : 'display: none;'}" ><strong>Organization:&nbsp;</strong>${user.organizationUser.username}</p>
                         </div>
                     </div>
                     <div align="center">
@@ -47,6 +49,13 @@
                         <a class="btn btn-secondary" onclick="confirmDeleteDialog.show(
                                 'All submissions belonging to the user &quot;${user.name}&quot; and all their spectra will be deleted. Are you sure?',
                                 '${pageContext.request.contextPath}/submission/${user.id}/deleteByUserId/');">Clear Account</a>
+                    </div>
+                    <div align="center" style="margin-top: 10px;${user.organization || not empty user.organizationId
+                    ? 'display: none;' : ''}" >
+                        <a href="${pageContext.request.contextPath}/account/convertToOrganization"
+                            class="btn btn-secondary">
+                            Convert to Organization
+                        </a>
                     </div>
 
                     <hr>
@@ -72,17 +81,30 @@
             <div class="card">
                 <div class="card-header card-header-tabs">
                     <ul class="nav nav-tabs nav-fill nav-justified" role="tablist">
-                        <li class="nav-item"><a id="studiesTab" class="nav-link active" data-toggle="tab" href="#studies">Studies</a>
+                        <li class="nav-item"><a id="studiesTab"
+                                                class="nav-link ${selectedTab == 'studies' ? 'active' : ''}"
+                                                data-toggle="tab" href="#studies">Studies</a>
                         </li>
-                        <li class="nav-item"><a id="librariesTab" class="nav-link" data-toggle="tab" href="#libraries">Libraries</a></li>
-                        <li class="nav-item"><a id="parametersTab" class="nav-link" data-toggle="tab" href="#parameters">Parameters</a></li>
-                        <li class="nav-item"><a id="searchTaskTab" class="nav-link" data-toggle="tab" href="#searchTask">Search History</a></li>
+                        <li class="nav-item"><a id="librariesTab"
+                                                class="nav-link ${selectedTab == 'libraries' ? 'active' : ''}"
+                                                data-toggle="tab" href="#libraries">Libraries</a></li>
+                        <li class="nav-item"><a id="parametersTab"
+                                                class="nav-link ${selectedTab == 'parameters' ? 'active' : ''}"
+                                                data-toggle="tab" href="#parameters">Parameters</a></li>
+                        <li class="nav-item"  ${user.organization ? '' : 'style="display: none;"'}>
+                            <a id="organizationTab"
+                               class="nav-link ${selectedTab == 'organization' ? 'active' : ''}"
+                               data-toggle="tab"
+                               href="#organization">
+                                Manage Organization
+                            </a>
+                        </li>
                     </ul>
                 </div>
 
                 <%--@elvariable id="submission" type="org.dulab.adapcompounddb.models.entities.Submission"--%>
                 <div class="card-body tab-content small">
-                    <div id="studies" class="tab-pane active" role="tabpanel">
+                    <div id="studies" class="tab-pane ${selectedTab == 'studies' ? 'active' : ''}" role="tabpanel">
                         <table id="study_table" class="display" style="width: 100%;">
                             <thead>
                             <tr>
@@ -255,6 +277,15 @@
                             </div>
                         </form:form>
                     </div>
+                    <c:set var="members" value="${user.members}" scope="request"/>
+                    <c:if test="${searchMembersList ne null and not empty searchMembersList}">
+                        <c:set var="searchMembersList" value="${searchMembersList}" scope="request"/>
+                    </c:if>
+                    <div id="organization" class="tab-pane ${selectedTab == 'organization' ? 'active' : ''}" role="tabpanel">
+                        <jsp:include page="./organization.jsp">
+                            <jsp:param name="SHOW_ORGANIZATION" value="${user.organization}"/>
+                        </jsp:include>
+                    </div>
 
                     <div id="searchTask" class="tab-pane" role="tabpanel">
                         <table id="search_task_table" class="display" style="width: 100%;">
@@ -330,8 +361,6 @@
     var confirmDeleteDialog = $('#dialog-confirm').confirmDeleteDialog();
 
     $(document).ready(function () {
-      // $('#progressModal').modal('show');
-
         var t1 = $('#study_table').DataTable({
             order: [[1, 'DESC']],
             responsive: true,
@@ -407,8 +436,31 @@
         // }
 
     });
+    var t3 = $('#organization_table').DataTable({
+        order: [[1, 'DESC']],
+        responsive: true,
+        scrollX: true,
+        scroller: true,
+        columnDefs: [
+            {
+                targets: 0,
+                sortable: false
+            },
+            {
+                targets: 4,
+                sortable: false
 
+            }/*,
+                {
+                    "className": "dt-center", "targets": "_all"
+                }*/],
+    });
 
+    t3.on('order.dt search.dt', function () {
+        t3.column(0, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {
+            cell.innerHTML = i + 1;
+        });
+    }).draw();
     // Adjust column widths when a table becomes visible
     $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
         $.fn.dataTable.tables({visible: true, api: true}).columns.adjust();

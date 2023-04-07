@@ -8,6 +8,10 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%--@elvariable id="errorMessage" type="java.lang.String"--%>
+<%--@elvariable id="successMessage" type="java.lang.String"--%>
+<div class="alert-danger" style="margin-bottom: 5px;">${errorMessage}</div>
+<div class="alert-success" style="margin-bottom: 5px;">${successMessage}</div>
 <div class="row">
   <div class="col-md-8 offset-md-2">
     <p ${param.SHOW_DIALOG ? '' : 'style="display: none;"'}>Leave parameters blanks to use the default values.</p>
