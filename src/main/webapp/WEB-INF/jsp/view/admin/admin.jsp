@@ -230,6 +230,7 @@
 <script src="<c:url value="/resources/DataTables/DataTables-1.10.23/js/jquery.dataTables.min.js"/>"></script>
 <%--<script src="<c:url value="/resources/AdapCompoundDb/js/dialogs.js"/>"></script>--%>
 <%--<script src="<c:url value="/resources/AdapCompoundDb/js/progressBar.js"/>"></script>--%>
+<script src="<c:url value="/resources/AdapCompoundDb/js/saveTabSelection.js"/>"></script>
 <script>
 
     $(document).ready(function () {
