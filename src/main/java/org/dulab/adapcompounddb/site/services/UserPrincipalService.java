@@ -44,7 +44,6 @@ public interface UserPrincipalService {
 
     UserPrincipal deleteUserFromOrganization(String username, UserPrincipal user);
 
-    void removeSelfFromOrganization(UserPrincipal user);
 
     List<UserPrincipal> fetchUsernamesForOrganization(String username, UserPrincipal user);
 

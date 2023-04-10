@@ -184,7 +184,7 @@ public class AccountController extends BaseController {
                                              @PathVariable("username") String username) {
         UserPrincipal user = getCurrentUserPrincipal();
         String errorMessage = "";
-        if (user.isOrganization()) {
+        if (user.isOrganization() || user.getUsername().equals(username)) { //current user is organization account OR current user is removing him/her self
             try {
                 user = userPrincipalService.deleteUserFromOrganization(username, user);
             } catch (Exception e) {
@@ -201,23 +201,6 @@ public class AccountController extends BaseController {
         return "account/view";
     }
 
-    @RequestMapping(value = "account/organization/leaveOrganization/", method = RequestMethod.GET)
-    public String leaveOrganization(Model model) {
-        UserPrincipal user = getCurrentUserPrincipal();
-
-        if (user.isOrganization()) {
-            try {
-                userPrincipalService.removeSelfFromOrganization( user);
-            } catch (Exception e) {
-                model.addAttribute("errorMessage", e.getMessage());
-            }
-        } else {
-            model.addAttribute("errorMessage", "You are not allowed to perform this action.");
-        }
-        populateViewModel(model, user);
-        model.addAttribute("selectedTab","organization");
-        return "account/view";
-    }
 
     @RequestMapping(value = "/account/getSearchTaskStatus", method = RequestMethod.GET)
     @ResponseBody
