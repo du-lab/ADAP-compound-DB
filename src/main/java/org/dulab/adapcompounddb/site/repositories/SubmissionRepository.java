@@ -70,7 +70,7 @@ public interface SubmissionRepository extends CrudRepository<Submission,Long> {
             @Param("user") UserPrincipal user, @Param("type") ChromatographyType type);
 
     @Query("select distinct s from Submission s " +
-            "where s.user = :user or s.user = :organization and s.isPrivate = true and s.chromatographyType = :type and s.isReference = true")
+            "where (s.user = :user or s.user = :organization) and s.isPrivate = true and s.chromatographyType = :type and s.isReference = true")
     Iterable<Submission> findByPrivateTrueAndReferenceTrueAndUserOrOrgAndChromatographyType(
             @Param("user") UserPrincipal user, @Param("organization") UserPrincipal userOrganization, @Param("type") ChromatographyType type);
 
