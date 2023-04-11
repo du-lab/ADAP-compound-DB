@@ -24,21 +24,23 @@
                             <p><strong>E-mail:&nbsp;</strong><a href="mailto:${user.email}">${user.email}</a></p>
                             <p><strong>Role(s):&nbsp;</strong><c:forEach items="${user.roles}"
                                                                          var="role">${role.label}&nbsp;</c:forEach></p>
-                            <p style="${not empty user.organizationId
-                                        ? '' : 'display: none;'}" ><strong>Organization:&nbsp;</strong>${user.organizationUser.username}</p>
+                            <c:if test="${not empty user.organizationId}">
+                                <p><strong>Organization:&nbsp;</strong>${user.organizationUser.username}</p>
+                            </c:if>
                         </div>
                     </div>
                     <div align="center">
                         <a href="${pageContext.request.contextPath}/account/changePassword" class="btn btn-secondary">Change
                             Password</a>
                     </div>
-                    <div align="center" style="margin-top: 10px;${user.organization || not empty user.organizationId
-                    ? 'display: none;' : ''}" >
-                        <a href="${pageContext.request.contextPath}/account/convertToOrganization"
-                            class="btn btn-secondary">
-                            Convert to Organization
-                        </a>
-                    </div>
+                    <c:if test="${not user.organization and empty user.organizationId}">
+                        <div align="center" style="margin-top: 10px;" >
+                            <a href="${pageContext.request.contextPath}/account/convertToOrganization"
+                               class="btn btn-secondary">
+                                Convert to Organization
+                            </a>
+                        </div>
+                    </c:if>
                     <hr>
                     <div class="row row-content" align = "center">
                         <div class="col">
@@ -63,32 +65,28 @@
                 <div class="card-header card-header-tabs">
                     <ul class="nav nav-tabs nav-fill nav-justified" role="tablist">
                         <li class="nav-item"><a id="studiesTab"
-                                                class="nav-link ${selectedTab == 'studies' ? 'active' : ''}"
+                                                class="nav-link"
                                                 data-toggle="tab" href="#studies">Studies</a>
-                        </li>
-                        <li class="nav-item"><a id="librariesTab"
-                                                class="nav-link ${selectedTab == 'libraries' ? 'active' : ''}"
-                                                data-toggle="tab" href="#libraries">Libraries</a></li>
-                        <li class="nav-item"><a id="parametersTab"
-                                                class="nav-link ${selectedTab == 'parameters' ? 'active' : ''}"
-                                                data-toggle="tab" href="#parameters">Parameters</a></li>
-                        <li class="nav-item"  ${user.organization ? '' : 'style="display: none;"'}>
-                            <a id="organizationTab"
-                               class="nav-link ${selectedTab == 'organization' ? 'active' : ''}"
-                               data-toggle="tab"
-                               href="#organization">
-                                Manage Organization
-                            </a>
                         </li>
                         <li class="nav-item"><a id="librariesTab" class="nav-link" data-toggle="tab" href="#libraries">Libraries</a></li>
                         <li class="nav-item"><a id="parametersTab" class="nav-link" data-toggle="tab" href="#parameters">Parameters</a></li>
                         <li class="nav-item"><a id="searchTaskTab" class="nav-link" data-toggle="tab" href="#searchTask">Search History</a></li>
+                        <c:if test="${user.organization}">
+                            <li class="nav-item"  ${user.organization ? '' : 'style="display: none;"'}>
+                                <a id="organizationTab"
+                                   class="nav-link"
+                                   data-toggle="tab"
+                                   href="#organization">
+                                    Manage Organization
+                                </a>
+                            </li>
+                        </c:if>
                     </ul>
                 </div>
 
                 <%--@elvariable id="submission" type="org.dulab.adapcompounddb.models.entities.Submission"--%>
                 <div class="card-body tab-content small">
-                    <div id="studies" class="tab-pane ${selectedTab == 'studies' ? 'active' : ''}" role="tabpanel">
+                    <div id="studies" class="tab-pane" role="tabpanel">
                         <table id="study_table" class="display" style="width: 100%;">
                             <thead>
                             <tr>
@@ -229,7 +227,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <div id="parameters" class="tab-pane ${selectedTab == 'parameters' ? 'active' : ''}" role="tabpanel">
+                    <div id="parameters" class="tab-pane" role="tabpanel">
                         <%--@elvariable id="filterForm" type="org.dulab.adapcompounddb.site.controllers.forms.FilterForm"--%>
                             <%--@elvariable id="disableBtn" type="java.lang.Boolean"--%>
                         <form:form modelAttribute="filterForm" action="${pageContext.request.contextPath}/account/saveparameters" method="POST">
@@ -265,12 +263,13 @@
                     <c:if test="${searchMembersList ne null and not empty searchMembersList}">
                         <c:set var="searchMembersList" value="${searchMembersList}" scope="request"/>
                     </c:if>
-                    <div id="organization" class="tab-pane ${selectedTab == 'organization' ? 'active' : ''}" role="tabpanel">
-                        <jsp:include page="./organization.jsp">
-                            <jsp:param name="SHOW_ORGANIZATION" value="${user.organization}"/>
-                        </jsp:include>
-                    </div>
-
+                    <c:if test="${user.organization}">
+                        <div id="organization" class="tab-pane" role="tabpanel">
+                            <jsp:include page="./organization.jsp">
+                                <jsp:param name="SHOW_ORGANIZATION" value="${user.organization}"/>
+                            </jsp:include>
+                        </div>
+                    </c:if>
                     <div id="searchTask" class="tab-pane" role="tabpanel">
                         <table id="search_task_table" class="display" style="width: 100%;">
                             <thead>

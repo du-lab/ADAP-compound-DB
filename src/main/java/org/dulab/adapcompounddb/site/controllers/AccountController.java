@@ -76,7 +76,6 @@ public class AccountController extends BaseController {
         model.addAttribute("searchTaskList", searchTaskList);
         model.addAttribute("submissionIdToChromatographyListMap", submissionIdToChromatographyListMap);
         model.addAttribute("filterForm",new FilterForm());
-        model.addAttribute("selectedTab","studies");
         model.addAttribute("organizationForm",new OrganizationForm());
         return "account/view";
     }
@@ -112,7 +111,6 @@ public class AccountController extends BaseController {
         model.addAttribute("submissionList", submissionDTOs);
         model.addAttribute("submissionIdToChromatographyListMap", submissionIdToChromatographyListMap);
         model.addAttribute("filterForm",new FilterForm());
-        model.addAttribute("selectedTab","parameters");
         model.addAttribute("organizationForm",new OrganizationForm());
         return "account/view";
     }
@@ -135,7 +133,6 @@ public class AccountController extends BaseController {
         populateViewModel(model, user);
         if (errorMessage.length() == 0)
             model.addAttribute("successMessage", "Invitation sent to user.");
-        model.addAttribute("selectedTab","organization");
         return "account/view";
     }
 
@@ -151,7 +148,6 @@ public class AccountController extends BaseController {
             errorMessage = "You are not allowed to perform this action.";
             model.addAttribute("errorMessage", errorMessage);
         }
-        model.addAttribute("selectedTab","organization");
         if (errorMessage.length() == 0)
             model.addAttribute("successMessage", "Account converted to organization.");
         return "account/view";
@@ -175,7 +171,6 @@ public class AccountController extends BaseController {
             model.addAttribute("errorMessage", "You are not allowed to perform this action.");
         }
         populateViewModel(model, user);
-        model.addAttribute("selectedTab","organization");
         return "account/view";
     }
 
@@ -195,7 +190,6 @@ public class AccountController extends BaseController {
             model.addAttribute("errorMessage", "You are not allowed to perform this action.");
         }
         populateViewModel(model, user);
-        model.addAttribute("selectedTab","organization");
         if (errorMessage.length() == 0)
             model.addAttribute("successMessage", "User deleted from organization.");
         return "account/view";
