@@ -99,6 +99,7 @@
                         <li class="nav-item"><a id="parametersTab"
                                                 class="nav-link ${selectedTab == 'parameters' ? 'active' : ''}"
                                                 data-toggle="tab" href="#parameters">Parameters</a></li>
+                        <li class="nav-item"><a id="searchTaskTab" class="nav-link" data-toggle="tab" href="#searchTask">Search History</a></li>
                         <li class="nav-item"  ${user.organization ? '' : 'style="display: none;"'}>
                             <a id="organizationTab"
                                class="nav-link ${selectedTab == 'organization' ? 'active' : ''}"
