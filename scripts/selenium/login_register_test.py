@@ -60,7 +60,7 @@ def login_register_test(homepage_url):
         # commit new registration
         submit_button = driver.find_element_by_id('submit')
         submit_button.click()
-        time.sleep(10)
+        time.sleep(11)
         # log in with new created user information
         username_login = driver.find_element_by_id('username')
         username_login.send_keys(username_value)
@@ -69,7 +69,7 @@ def login_register_test(homepage_url):
         password_login.send_keys(password_value)
 
         driver.find_element_by_name("submit").click()
-        time.sleep(10)
+        time.sleep(11)
 
         # go to account page
         account_page_button = driver.find_element_by_id("accountPage")
