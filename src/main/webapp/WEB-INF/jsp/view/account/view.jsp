@@ -6,6 +6,21 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <script src="<c:url value="/resources/AdapCompoundDb/js/tagsColor.js"/>"></script>
+<div id="progressModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Delete Study</h4>
+                <button type="button" class="close" data-dismiss="modal">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Deleting large study may take a while. Please wait.</p>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="container">
     <div class="row row-content">
         <div class="col-12">
@@ -344,6 +359,8 @@
     var confirmDeleteDialog = $('#dialog-confirm').confirmDeleteDialog();
 
     $(document).ready(function () {
+      // $('#progressModal').modal('show');
+
         var t1 = $('#study_table').DataTable({
             order: [[1, 'DESC']],
             responsive: true,

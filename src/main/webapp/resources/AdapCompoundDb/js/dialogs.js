@@ -3,6 +3,7 @@
 
         var div = $(this);
 
+        //creating the pop up dialog
         div.attr('title', 'Confirm');
         div.append('<p></p>');
 
@@ -14,6 +15,10 @@
             modal: true,
             buttons: {
                 'Delete': function () {
+                    div.find('p').html('Study deletion is in progress, please wait.');
+                    $('.ui-dialog-title').html('Delete Study')
+                    $('.ui-dialog-buttonset').children().hide()
+
                     window.location.replace($(this).attr('href'));
                 },
                 'Cancel': function () {

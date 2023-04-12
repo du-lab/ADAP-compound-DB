@@ -13,6 +13,7 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import org.hibernate.annotations.BatchSize;
 
 @Entity
 @SqlResultSetMapping(name = "SpectrumScoreMapping", columns = {@ColumnResult(name = "SpectrumId", type = Long.class),
@@ -53,6 +54,7 @@ public class Spectrum implements Serializable {
     @NotNull(message = "Spectrum: peak list is required.")
     @Valid
     @OneToMany(targetEntity = Peak.class, mappedBy = "spectrum", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
+    @BatchSize(size = 100)
     private List<Peak> peaks;
 
     @OneToMany(targetEntity = Isotope.class, mappedBy = "spectrum", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
@@ -65,9 +67,11 @@ public class Spectrum implements Serializable {
     private List<Synonym> synonyms;
 
     @OneToMany(targetEntity = SpectrumMatch.class, mappedBy = "querySpectrum", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @BatchSize(size = 100)
     private List<SpectrumMatch> matches;
 
     @OneToMany(targetEntity = SpectrumMatch.class, mappedBy = "matchSpectrum", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @BatchSize(size = 100)
     private List<SpectrumMatch> matches2;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = {})

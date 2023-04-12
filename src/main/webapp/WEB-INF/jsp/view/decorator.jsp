@@ -117,7 +117,7 @@
             <div class="col-12 col-lg-4">
                 <%--@elvariable id="currentUser" type="org.springframework.security.core.userdetails.User"--%>
                 <c:if test="${currentUser != null}">
-                    <div class="user">User: ${currentUser.username} (<a href="<c:url value="/logout"/>">Log out</a>)
+                    <div class="user">User: ${currentUser.username} (<a href="<c:url value="/logout"/>" onClick ="localStorage.clear()">Log out</a>)
                     </div>
                 </c:if>
             </div>
@@ -209,7 +209,8 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a id="logoutPage" class="nav-link" href="<c:url value="/logout/"/>">
+                                <a id="logoutPage" class="nav-link" href="<c:url value="/logout/"/>"
+                                    onClick ="localStorage.clear()">
                                     <i class="material-icons align-middle">transit_enterexit</i>
                                     <span class="align-middle">Log out</span>
                                 </a>
