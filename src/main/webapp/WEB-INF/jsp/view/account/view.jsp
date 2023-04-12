@@ -80,7 +80,7 @@
                 <div class="card-header card-header-tabs">
                     <ul class="nav nav-tabs nav-fill nav-justified" role="tablist">
                         <li class="nav-item"><a id="studiesTab"
-                                                class="nav-link"
+                                                class="nav-link active"
                                                 data-toggle="tab" href="#studies">Studies</a>
                         </li>
                         <li class="nav-item"><a id="librariesTab" class="nav-link" data-toggle="tab" href="#libraries">Libraries</a></li>
@@ -101,7 +101,7 @@
 
                 <%--@elvariable id="submission" type="org.dulab.adapcompounddb.models.entities.Submission"--%>
                 <div class="card-body tab-content small">
-                    <div id="studies" class="tab-pane" role="tabpanel">
+                    <div id="studies" class="tab-pane active" role="tabpanel">
                         <table id="study_table" class="display" style="width: 100%;">
                             <thead>
                             <tr>
