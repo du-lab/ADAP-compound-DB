@@ -260,6 +260,7 @@
                                 <th>Status</th>
                                 <th>Time</th>
                                 <th>Libraries Searched Against</th>
+                                <th>Software Version</th>
                                 <th></th>
                             </tr>
                             </thead>
@@ -280,6 +281,9 @@
                                                 </c:otherwise>
                                             </c:choose>
                                         </c:forEach>
+                                    </td>
+                                    <td>
+                                        1.0.1-beta
                                     </td>
                                     <td>
                                         <c:choose>

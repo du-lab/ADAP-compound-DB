@@ -141,6 +141,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="<c:url value="/about/"/>">
+                                <i class="material-icons align-middle">more_horiz</i>
+                                <span class="align-middle">About</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a id="manualSearchPage" class="nav-link" href="<c:url value="/compound/search/"/>">
                                 <i class="material-icons align-middle">search</i>
                                 <span class="align-middle">Manual Search</span>
@@ -260,6 +266,13 @@
         <sitemesh:write property='body' />
     </article>
 </div>
+
+<footer>
+    <div style="margin-left:30px">
+        <hr/>
+        <p class = "text-muted">Version: 1.0.1-beta</p>
+    </div>
+</footer>
 </body>
 
 </html>
