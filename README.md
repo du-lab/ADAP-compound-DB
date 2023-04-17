@@ -21,9 +21,20 @@ If above command throws error, consider turning off foriegn key checks using in 
 ```
 SET FOREIGN_KEY_CHECKS=0;
 ```
-4. Navigate to application-local.properties and edit database spring.datasource.username and spring.datasource.password with MySql username and password
-5. Open the code using IntelliJ and add a new configuration - type springboot to run the application. In the configuration select the main class as `org.dulab.adapcompounddb.Application` and active profiles as `local`. Alternatively you can find the Application.java class and run the class to create the configuration automatically, and edit the configuration to add active profiles as `local`.
-6. Edit run configuration and add DISABLE_CAPTCHA=1 to disable google captcha checks
+4. Create a file named application-local.properties under src -> main -> resources with the contents below and edit database spring.datasource.username and spring.datasource.password with MySql username and password
+```
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
+spring.jpa.hibernate.ddl-auto = none
+spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.datasource.url=jdbc:mysql://localhost:3306/adapcompounddb?autoReconnect=true&allowPublicKeyRetrieval=true&useSSL=false&useUnicode=yes&characterEncoding=UTF-8&allowMultiQueries=true&blobSendChunkSize=805306368
+spring.datasource.username=*username_here*
+spring.datasource.password=*password_here*
+```
+5. Donot push the application-local.properties to git.
+6. Open the code using IntelliJ and add a new configuration - type springboot to run the application. In the configuration select the main class as `org.dulab.adapcompounddb.Application` and active profiles as `local`. Alternatively you can find the Application.java class and run the class to create the configuration automatically, and edit the configuration to add active profiles as `local`.
+7. Edit run configuration and add DISABLE_CAPTCHA=1 to disable google captcha checks
 
 Note: Do not edit the application.properties file and for local development
 
