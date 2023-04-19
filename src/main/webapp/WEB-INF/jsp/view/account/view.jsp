@@ -39,8 +39,9 @@
                             <p><strong>E-mail:&nbsp;</strong><a href="mailto:${user.email}">${user.email}</a></p>
                             <p><strong>Role(s):&nbsp;</strong><c:forEach items="${user.roles}"
                                                                          var="role">${role.label}&nbsp;</c:forEach></p>
-                            <p style="${not empty user.organizationId
-                                        ? '' : 'display: none;'}" ><strong>Organization:&nbsp;</strong>${user.organizationUser.username}</p>
+                            <c:if test="${not empty user.organizationId}">
+                                <p><strong>Organization:&nbsp;</strong>${user.organizationUser.username}</p>
+                            </c:if>
                         </div>
                     </div>
                     <div align="center">
@@ -52,28 +53,29 @@
                             Clear Account
                         </a>
                         <a href="${pageContext.request.contextPath}/account/organization/${user.username}/delete/"
-                            class="btn btn-secondary" style ="${user.organizationId != null
+                           class="btn btn-secondary" style="${user.organizationId != null
                             ? '' : 'display: none;'}">
                             Leave Organization
                         </a>
                     </div>
-                    <div align="center" style="margin-top: 10px;${user.organization || not empty user.organizationId
-                    ? 'display: none;' : ''}" >
+                    <c:if test="${not user.organization and empty user.organizationId}">
+                        <div align="center" style="margin-top: 10px;">
 
-                        <a href="${pageContext.request.contextPath}/account/convertToOrganization"
-                           class="btn btn-secondary">
-                            Convert to Organization
-                        </a>
-                    </div>
-
+                            <a href="${pageContext.request.contextPath}/account/convertToOrganization"
+                               class="btn btn-secondary">
+                                Convert to Organization
+                            </a>
+                        </div>
+                    </c:if>
                     <hr>
-                    <div class="row row-content" align = "center">
+                    <div class="row row-content" align="center">
                         <div class="col">
                             <div class="btn-toolbar justify-content-end" role="toolbar">
                                 Current Disk Space (in GB)
                                 <div class="progress flex-grow-1 align-self-center mx-2">
-                                    <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow=${currentDiskSpace}
-                                            aria-valuemin="0" aria-valuemax=${maxDiskSpace}></div>
+                                    <div id="progressBar" class="progress-bar" role="progressbar"
+                                         aria-valuenow=${currentDiskSpace}
+                                                 aria-valuemin="0" aria-valuemax=${maxDiskSpace}></div>
                                 </div>
                                 Maximum
                             </div>
@@ -90,30 +92,28 @@
                 <div class="card-header card-header-tabs">
                     <ul class="nav nav-tabs nav-fill nav-justified" role="tablist">
                         <li class="nav-item"><a id="studiesTab"
-                                                class="nav-link ${selectedTab == 'studies' ? 'active' : ''}"
+                                                class="nav-link active"
                                                 data-toggle="tab" href="#studies">Studies</a>
                         </li>
-                        <li class="nav-item"><a id="librariesTab"
-                                                class="nav-link ${selectedTab == 'libraries' ? 'active' : ''}"
-                                                data-toggle="tab" href="#libraries">Libraries</a></li>
-                        <li class="nav-item"><a id="parametersTab"
-                                                class="nav-link ${selectedTab == 'parameters' ? 'active' : ''}"
-                                                data-toggle="tab" href="#parameters">Parameters</a></li>
+                        <li class="nav-item"><a id="librariesTab" class="nav-link" data-toggle="tab" href="#libraries">Libraries</a></li>
+                        <li class="nav-item"><a id="parametersTab" class="nav-link" data-toggle="tab" href="#parameters">Parameters</a></li>
                         <li class="nav-item"><a id="searchTaskTab" class="nav-link" data-toggle="tab" href="#searchTask">Search History</a></li>
-                        <li class="nav-item"  ${user.organization ? '' : 'style="display: none;"'}>
-                            <a id="organizationTab"
-                               class="nav-link ${selectedTab == 'organization' ? 'active' : ''}"
-                               data-toggle="tab"
-                               href="#organization">
-                                Manage Organization
-                            </a>
-                        </li>
+                        <c:if test="${user.organization}">
+                            <li class="nav-item"  ${user.organization ? '' : 'style="display: none;"'}>
+                                <a id="organizationTab"
+                                   class="nav-link"
+                                   data-toggle="tab"
+                                   href="#organization">
+                                    Manage Organization
+                                </a>
+                            </li>
+                        </c:if>
                     </ul>
                 </div>
 
                 <%--@elvariable id="submission" type="org.dulab.adapcompounddb.models.entities.Submission"--%>
                 <div class="card-body tab-content small">
-                    <div id="studies" class="tab-pane ${selectedTab == 'studies' ? 'active' : ''}" role="tabpanel">
+                    <div id="studies" class="tab-pane active" role="tabpanel">
                         <table id="study_table" class="display" style="width: 100%;">
                             <thead>
                             <tr>
@@ -150,10 +150,10 @@
                                                 <%--                            ${study.tagsAsString}--%>
                                             <c:forEach items="${study.tags}" var="tag" varStatus="status">
                                                 <span class="color-${status.index mod 5}">${tag}&nbsp;</span>
-<%--                                                <script>--%>
-<%--                                                    let spanId = '${fn:length(study.tags)}';--%>
-<%--                                                    spanColor(${study.id}, spanId);--%>
-<%--                                                </script>--%>
+                                                <%--                                                <script>--%>
+                                                <%--                                                    let spanId = '${fn:length(study.tags)}';--%>
+                                                <%--                                                    spanColor(${study.id}, spanId);--%>
+                                                <%--                                                </script>--%>
                                             </c:forEach>
 
                                         </td>
@@ -256,12 +256,15 @@
                     </div>
                     <div id="parameters" class="tab-pane" role="tabpanel">
                         <%--@elvariable id="filterForm" type="org.dulab.adapcompounddb.site.controllers.forms.FilterForm"--%>
-                            <%--@elvariable id="disableBtn" type="java.lang.Boolean"--%>
-                        <form:form modelAttribute="filterForm" action="${pageContext.request.contextPath}/account/saveparameters" method="POST">
+                        <%--@elvariable id="disableBtn" type="java.lang.Boolean"--%>
+                        <form:form modelAttribute="filterForm"
+                                   action="${pageContext.request.contextPath}/account/saveparameters" method="POST">
                             <jsp:include page="../compound/user_search_parameters.jsp">
                                 <jsp:param name="SCORE_THRESHOLD" value="${searchParameters.scoreThreshold}"/>
-                                <jsp:param name="RETENTION_INDEX_TOLERANCE" value="${searchParameters.retentionIndexTolerance}"/>
-                                <jsp:param name="RETENTION_INDEX_MATCH" value="${searchParameters.retentionIndexMatch}"/>
+                                <jsp:param name="RETENTION_INDEX_TOLERANCE"
+                                           value="${searchParameters.retentionIndexTolerance}"/>
+                                <jsp:param name="RETENTION_INDEX_MATCH"
+                                           value="${searchParameters.retentionIndexMatch}"/>
                                 <jsp:param name="MZ_TOLERANCE" value="${searchParameters.mzTolerance}"/>
                                 <jsp:param name="MATCHES_PER_SPECTRUM" value="${searchParameters.limit}"/>
                                 <jsp:param name="MZ_TOLERANCE_TYPE" value="${searchParameters.mzToleranceType}"/>
@@ -272,7 +275,8 @@
                                     <div class="form-row">
                                         <div class="col">
                                             <div class="btn-toolbar justify-content-end" role="toolbar">
-                                                <button id="searchButton" class="btn btn-primary align-self-end" type="submit"
+                                                <button id="searchButton" class="btn btn-primary align-self-end"
+                                                        type="submit"
                                                         style="height: 100%;"
                                                         <c:if test="${disableBtn}">
                                                             <c:out value="disabled='disabled'"/>
@@ -290,12 +294,13 @@
                     <c:if test="${searchMembersList ne null and not empty searchMembersList}">
                         <c:set var="searchMembersList" value="${searchMembersList}" scope="request"/>
                     </c:if>
-                    <div id="organization" class="tab-pane ${selectedTab == 'organization' ? 'active' : ''}" role="tabpanel">
-                        <jsp:include page="./organization.jsp">
-                            <jsp:param name="SHOW_ORGANIZATION" value="${user.organization}"/>
-                        </jsp:include>
-                    </div>
-
+                    <c:if test="${user.organization}">
+                        <div id="organization" class="tab-pane" role="tabpanel">
+                            <jsp:include page="./organization.jsp">
+                                <jsp:param name="SHOW_ORGANIZATION" value="${user.organization}"/>
+                            </jsp:include>
+                        </div>
+                    </c:if>
                     <div id="searchTask" class="tab-pane" role="tabpanel">
                         <table id="search_task_table" class="display" style="width: 100%;">
                             <thead>
@@ -310,13 +315,16 @@
                             <tbody>
                             <c:forEach items="${searchTaskList}" var="searchTask" varStatus="loop">
                                 <tr>
-                                    <td><a href="${pageContext.request.contextPath}/submission/${searchTask.submission.id}/">${searchTask.submission.name}</a><br/></td>
-                                    <td>${searchTask.status}</td>
-                                    <td><fmt:formatDate value="${searchTask.dateTime}" type="both" timeStyle= "short" pattern="yyyy-MM-dd HH:mm:ss"/><br/></td>
                                     <td>
-                                        <c:forEach items = "${searchTask.libraries}" var = "library" varStatus="loop">
+                                        <a href="${pageContext.request.contextPath}/submission/${searchTask.submission.id}/">${searchTask.submission.name}</a><br/>
+                                    </td>
+                                    <td>${searchTask.status}</td>
+                                    <td><fmt:formatDate value="${searchTask.dateTime}" type="both" timeStyle="short"
+                                                        pattern="yyyy-MM-dd HH:mm:ss"/><br/></td>
+                                    <td>
+                                        <c:forEach items="${searchTask.libraries}" var="library" varStatus="loop">
                                             <c:choose>
-                                                <c:when test = "${library.key >0}">
+                                                <c:when test="${library.key >0}">
                                                     <a href="${pageContext.request.contextPath}/submission/${library.key}/">${library.value}</a><br/>
                                                 </c:when>
                                                 <c:otherwise>
@@ -327,11 +335,13 @@
                                     </td>
                                     <td>
                                         <c:choose>
-                                            <c:when test = "${searchTask.status == 'RUNNING' && sessionScope[dulab:groupSearchResultsAttributeName()] != null}">
-                                                <a href="${pageContext.request.contextPath}/group_search/"type="button" class="btn-sm btn-primary">View Matches</a>
+                                            <c:when test="${searchTask.status == 'RUNNING' && sessionScope[dulab:groupSearchResultsAttributeName()] != null}">
+                                                <a href="${pageContext.request.contextPath}/group_search/" type="button"
+                                                   class="btn-sm btn-primary">View Matches</a>
                                             </c:when>
-                                            <c:when test = "${searchTask.status == 'FINISHED'}">
-                                                <a href="${pageContext.request.contextPath}/submission/group_search/${searchTask.submission.id}"type="button" class="btn-sm btn-primary">View Matches</a>
+                                            <c:when test="${searchTask.status == 'FINISHED'}">
+                                                <a href="${pageContext.request.contextPath}/submission/group_search/${searchTask.submission.id}"
+                                                   type="button" class="btn-sm btn-primary">View Matches</a>
                                             </c:when>
                                             <c:otherwise>
                                             </c:otherwise>
@@ -409,13 +419,13 @@
                     "className": "dt-center", "targets": "_all"
                 }*/],
         });
-      var t3 = $('#search_task_table').DataTable({
-        order: [[2, 'DESC']],
-        responsive: true,
-        scrollX: true,
-        scroller: true,
+        var t3 = $('#search_task_table').DataTable({
+            order: [[2, 'DESC']],
+            responsive: true,
+            scrollX: true,
+            scroller: true,
 
-      });
+        });
         t1.on('order.dt search.dt', function () {
             t1.column(0, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {
                 cell.innerHTML = i + 1;
@@ -429,11 +439,11 @@
         }).draw();
 
 
-      const valuenow = parseFloat($("#progressBar").attr("aria-valuenow"));
+        const valuenow = parseFloat($("#progressBar").attr("aria-valuenow"));
         const valuemax = parseFloat($("#progressBar").attr("aria-valuemax"));
 
-        const widthpercent = (valuenow/valuemax)*100 ;
-        const width = widthpercent +  '%'
+        const widthpercent = (valuenow / valuemax) * 100;
+        const width = widthpercent + '%'
         const progressBar = $('#progressBar')
             .css('width', width)
             .attr('aria-valuenow', widthpercent)

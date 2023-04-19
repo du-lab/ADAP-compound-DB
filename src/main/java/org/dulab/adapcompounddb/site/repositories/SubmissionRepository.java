@@ -5,6 +5,7 @@ import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -20,7 +21,7 @@ import java.util.Set;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface SubmissionRepository extends CrudRepository<Submission,Long> {
+public interface SubmissionRepository extends JpaRepository<Submission,Long> {
 
     Iterable<Submission> findByUserId(long userPrincipalId);
 
@@ -30,7 +31,10 @@ public interface SubmissionRepository extends CrudRepository<Submission,Long> {
     @Query("SELECT DISTINCT s FROM Submission s LEFT JOIN FETCH s.tags WHERE s.user.id = ?1")
     Iterable<Submission> findWithTagsByUserId(long userPrincipalId);
 
-    void deleteById(long id);
+    //native query faster
+    @Modifying
+    @Query(value = "delete from Submission where id =:id", nativeQuery = true)
+    void deleteById(@Param("id") long id);
 
 
     @Query(value = "select Id from (" +
@@ -71,7 +75,7 @@ public interface SubmissionRepository extends CrudRepository<Submission,Long> {
             @Param("user") UserPrincipal user, @Param("type") ChromatographyType type);
 
     @Query("select distinct s from Submission s " +
-            "where s.user = :user or s.user = :organization and s.isPrivate = true and s.chromatographyType = :type and s.isReference = true")
+            "where (s.user = :user or s.user = :organization) and s.isPrivate = true and s.chromatographyType = :type and s.isReference = true")
     Iterable<Submission> findByPrivateTrueAndReferenceTrueAndUserOrOrgAndChromatographyType(
             @Param("user") UserPrincipal user, @Param("organization") UserPrincipal userOrganization, @Param("type") ChromatographyType type);
 
