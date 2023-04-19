@@ -17,7 +17,7 @@ build:
   script:
     - mvn -version
     - mvn tomcat7:undeploy -Denvironment=test
-    - mvn clean install tomcat7:redeploy -Denvironment=test
+    - mvn clean install tomcat7:redeploy -Denvironment=test -Dspring.profiles.active=test
     - python scripts\selenium\initial_test.py --homepage-url $HOMEPAGE_URL
 
 test:
