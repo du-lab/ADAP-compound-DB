@@ -11,6 +11,7 @@
             <id>jenkins</id>
             <properties>
                 <apache.tomcat.port>8080</apache.tomcat.port>
+                <spring.profiles.active>test</spring.profiles.active>
             </properties>
             <activation>
                 <property>
