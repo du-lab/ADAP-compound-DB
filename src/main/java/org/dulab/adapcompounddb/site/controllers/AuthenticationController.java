@@ -12,6 +12,7 @@ import org.dulab.adapcompounddb.validation.Email;
 import org.dulab.adapcompounddb.validation.FieldMatch;
 import org.dulab.adapcompounddb.validation.Password;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
@@ -37,7 +38,9 @@ public class AuthenticationController extends BaseController {
 
     private final AuthenticationService authenticationService;
     private final CaptchaService captchaService;
-    private final boolean integTest = ControllerUtils.INTEG_TEST;
+
+    @Value("${INTEGRATION_TEST}")
+    private boolean INTEGRATION_TEST;
 
 
     @Autowired
@@ -59,7 +62,6 @@ public class AuthenticationController extends BaseController {
 
         model.addAttribute("loginFailed", loginFailed);
         model.addAttribute("logInForm", new LogInForm());
-
         return new ModelAndView("login");
     }
 
@@ -109,7 +111,7 @@ public class AuthenticationController extends BaseController {
 
         model.addAttribute("signupFailed", false);
         model.addAttribute("signUpForm", new SignUpForm());
-        model.addAttribute("integTest", true);
+        model.addAttribute("integTest", INTEGRATION_TEST);
 
         return new ModelAndView("signup");
     }
@@ -117,6 +119,7 @@ public class AuthenticationController extends BaseController {
     @RequestMapping(value = "/signup", method = RequestMethod.POST)
     public ModelAndView signup(final Model model, final HttpSession session, final HttpServletRequest request,
                                @Valid final SignUpForm form, final Errors errors) {
+        model.addAttribute("integTest", INTEGRATION_TEST);
         if (this.getCurrentUserPrincipal() != null) {
             return getHomeRedirect();
         }

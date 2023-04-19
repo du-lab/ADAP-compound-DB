@@ -85,9 +85,12 @@
                                     <form:errors path="*" element="div" cssClass="text-danger"/>
                                 </div>
                             </div>
-                            <div class="g-recaptcha col-md-2 offset-md-6"
-                                 data-sitekey="6LdY3V8hAAAAACkWkUd5G9xYtgnM9vwPvIPsQrWy" data-callback="recaptchaCallback"></div>
-                            <br/>
+                            <c:if test="${!integTest}">
+                                sdaf
+                                <div class="g-recaptcha col-md-2 offset-md-6"
+                                     data-sitekey="6LdY3V8hAAAAACkWkUd5G9xYtgnM9vwPvIPsQrWy" data-callback="recaptchaCallback"></div>
+                                <br/>
+                            </c:if>
                             <div class="row form-group">
                                 <div class="col-md-2 offset-md-6">
                                     <input id="submit" name="submit" type="submit" class="btn btn-primary" value="Sign up"
