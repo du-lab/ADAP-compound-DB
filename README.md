@@ -23,10 +23,6 @@ SET FOREIGN_KEY_CHECKS=0;
 ```
 4. Create a file named application-local.properties under src -> main -> resources with the contents below and edit database spring.datasource.username and spring.datasource.password with MySql username and password
 ```
-spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
-spring.jpa.hibernate.ddl-auto = none
-spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 spring.datasource.url=jdbc:mysql://localhost:3306/adapcompounddb?autoReconnect=true&allowPublicKeyRetrieval=true&useSSL=false&useUnicode=yes&characterEncoding=UTF-8&allowMultiQueries=true&blobSendChunkSize=805306368
 spring.datasource.username=*username_here*

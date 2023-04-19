@@ -20,6 +20,19 @@
                 </property>
             </activation>
         </profile>
+        <profile>
+            <id>jenkins</id>
+            <properties>
+                <apache.tomcat.port>8080</apache.tomcat.port>
+                <spring.profiles.active>production</spring.profiles.active>
+            </properties>
+            <activation>
+                <property>
+                    <name>environment</name>
+                    <value>production</value>
+                </property>
+            </activation>
+        </profile>
     </profiles>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -58,10 +71,6 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
