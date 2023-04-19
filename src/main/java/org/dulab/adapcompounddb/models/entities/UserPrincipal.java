@@ -3,22 +3,10 @@ package org.dulab.adapcompounddb.models.entities;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
 import com.google.gson.Gson;
@@ -57,6 +45,70 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
 
     private Date passwordExpirationDate;
     private Set<UserRole> roles;
+
+    private boolean isOrganization;
+
+    private Long organizationId;
+
+    private UserPrincipal organizationUser;
+
+    private List<UserPrincipal> members;
+
+    private String organizationRequestToken;
+
+    private Date organizationRequestExpirationDate;
+
+    public String getOrganizationRequestToken() {
+        return organizationRequestToken;
+    }
+
+    public void setOrganizationRequestToken(String organizationRequestToken) {
+        this.organizationRequestToken = organizationRequestToken;
+    }
+
+    public Date getOrganizationRequestExpirationDate() {
+        return organizationRequestExpirationDate;
+    }
+
+    public void setOrganizationRequestExpirationDate(Date organizationRequestExpirationDate) {
+        this.organizationRequestExpirationDate = organizationRequestExpirationDate;
+    }
+
+    @ManyToOne
+    @JoinColumn(name="organizationId",referencedColumnName="id", insertable=false, updatable=false)
+    public UserPrincipal getOrganizationUser() {
+        return organizationUser;
+    }
+
+    public void setOrganizationUser(UserPrincipal organizationUser) {
+        this.organizationUser = organizationUser;
+    }
+
+    @OneToMany(targetEntity=UserPrincipal.class, mappedBy="organizationId", fetch=FetchType.EAGER)
+    public List<UserPrincipal> getMembers() {
+        return members;
+    }
+
+    public void setMembers(List<UserPrincipal> members) {
+        this.members = members;
+    }
+
+    @Column(name = "is_organization", columnDefinition = "BIT")
+    public boolean isOrganization() {
+        return isOrganization;
+    }
+
+    public void setOrganization(boolean organization) {
+        isOrganization = organization;
+    }
+
+    public Long getOrganizationId() {
+        return organizationId;
+    }
+
+    public void setOrganizationId(Long organizationId) {
+        this.organizationId = organizationId;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

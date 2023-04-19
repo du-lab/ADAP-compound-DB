@@ -6,6 +6,7 @@ import random
 import string
 from selenium import webdriver
 from urllib.parse import urljoin
+import time
 
 #  generate random string as username
 def random_string(stringLength):
@@ -36,7 +37,7 @@ def login_register_test(homepage_url):
 #         register_button = driver.find_element_by_class_name('button')
         register_button = driver.find_element_by_id('registerButton')
         register_button.click()
-
+        time.sleep(5)
         # input username, email, password for new register user
         username_input = driver.find_element_by_id('username')
         username_value = random_string(8)
@@ -55,20 +56,20 @@ def login_register_test(homepage_url):
 
         confirmed_password_input = driver.find_element_by_id('confirmedPassword')
         confirmed_password_input.send_keys(password_value)
-
+        time.sleep(10)
         # commit new registration
         submit_button = driver.find_element_by_id('submit')
         submit_button.click()
-
+        time.sleep(11)
         # log in with new created user information
         username_login = driver.find_element_by_id('username')
         username_login.send_keys(username_value)
 
         password_login = driver.find_element_by_id('password')
         password_login.send_keys(password_value)
-
+        time.sleep(5)
         driver.find_element_by_name("submit").click()
-
+        time.sleep(5)
         # go to account page
         account_page_button = driver.find_element_by_id("accountPage")
         account_page_button.click()

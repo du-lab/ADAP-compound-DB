@@ -35,7 +35,16 @@ public interface UserPrincipalService {
     UserPrincipal findByUserEmail(String email);
     UserPrincipal findByUserEmailOrUsername(String input);
 
-    UserPrincipal findByToken(String token);
+    UserPrincipal findByPasswordToken(String token);
+    UserPrincipal findByOrganizationToken(String token);
 
     SearchParametersDTO updateSearchParameters(final SearchParametersDTO searchParameters, final UserPrincipal user);
+
+    UserPrincipal addUserToOrganization(final UserPrincipal currentUser, final List<Long> userId);
+
+    UserPrincipal deleteUserFromOrganization(String username, UserPrincipal user);
+
+    List<UserPrincipal> fetchUsernamesForOrganization(String username, UserPrincipal user);
+
+    void sendInviteToUser(UserPrincipal user, List<Long> selectedUsers) throws Exception;
 }

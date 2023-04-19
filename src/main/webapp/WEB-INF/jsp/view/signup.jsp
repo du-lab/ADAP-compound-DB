@@ -79,7 +79,11 @@
                                             cssClass="col-md-3 offset-md-3 col-form-label">Confirm password:</form:label>
                                 <form:password path="confirmedPassword" cssClass="col-md-3 form-control"/>
                             </div>
-
+                            <div class="row form-group">
+                                <form:label path="organization"
+                                            cssClass="col-md-3 offset-md-3 col-form-label">Organization Account:</form:label>
+                                <form:checkbox path="organization" cssClass="col-1 form-control"/>
+                            </div>
                             <div class="row form-group">
                                 <div class="col-md-6 offset-md-3">
                                     <form:errors path="*" element="div" cssClass="text-danger"/>

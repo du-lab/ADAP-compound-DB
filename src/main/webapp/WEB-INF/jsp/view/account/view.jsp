@@ -39,12 +39,23 @@
                             <p><strong>E-mail:&nbsp;</strong><a href="mailto:${user.email}">${user.email}</a></p>
                             <p><strong>Role(s):&nbsp;</strong><c:forEach items="${user.roles}"
                                                                          var="role">${role.label}&nbsp;</c:forEach></p>
+                            <c:if test="${not empty user.organizationId}">
+                                <p><strong>Organization:&nbsp;</strong>${user.organizationUser.username}</p>
+                            </c:if>
                         </div>
                     </div>
                     <div align="center">
                         <a href="${pageContext.request.contextPath}/account/changePassword" class="btn btn-secondary">Change
                             Password</a>
                     </div>
+                    <c:if test="${not user.organization and empty user.organizationId}">
+                        <div align="center" style="margin-top: 10px;" >
+                            <a href="${pageContext.request.contextPath}/account/convertToOrganization"
+                               class="btn btn-secondary">
+                                Convert to Organization
+                            </a>
+                        </div>
+                    </c:if>
                     <hr>
                     <div class="row row-content" align = "center">
                         <div class="col">
@@ -68,11 +79,23 @@
             <div class="card">
                 <div class="card-header card-header-tabs">
                     <ul class="nav nav-tabs nav-fill nav-justified" role="tablist">
-                        <li class="nav-item"><a id="studiesTab" class="nav-link active" data-toggle="tab" href="#studies">Studies</a>
+                        <li class="nav-item"><a id="studiesTab"
+                                                class="nav-link active"
+                                                data-toggle="tab" href="#studies">Studies</a>
                         </li>
                         <li class="nav-item"><a id="librariesTab" class="nav-link" data-toggle="tab" href="#libraries">Libraries</a></li>
                         <li class="nav-item"><a id="parametersTab" class="nav-link" data-toggle="tab" href="#parameters">Parameters</a></li>
                         <li class="nav-item"><a id="searchTaskTab" class="nav-link" data-toggle="tab" href="#searchTask">Search History</a></li>
+                        <c:if test="${user.organization}">
+                            <li class="nav-item"  ${user.organization ? '' : 'style="display: none;"'}>
+                                <a id="organizationTab"
+                                   class="nav-link"
+                                   data-toggle="tab"
+                                   href="#organization">
+                                    Manage Organization
+                                </a>
+                            </li>
+                        </c:if>
                     </ul>
                 </div>
 
@@ -251,7 +274,17 @@
                             </div>
                         </form:form>
                     </div>
-
+                    <c:set var="members" value="${user.members}" scope="request"/>
+                    <c:if test="${searchMembersList ne null and not empty searchMembersList}">
+                        <c:set var="searchMembersList" value="${searchMembersList}" scope="request"/>
+                    </c:if>
+                    <c:if test="${user.organization}">
+                        <div id="organization" class="tab-pane" role="tabpanel">
+                            <jsp:include page="./organization.jsp">
+                                <jsp:param name="SHOW_ORGANIZATION" value="${user.organization}"/>
+                            </jsp:include>
+                        </div>
+                    </c:if>
                     <div id="searchTask" class="tab-pane" role="tabpanel">
                         <table id="search_task_table" class="display" style="width: 100%;">
                             <thead>
@@ -403,8 +436,31 @@
         // }
 
     });
+    var t3 = $('#organization_table').DataTable({
+        order: [[1, 'DESC']],
+        responsive: true,
+        scrollX: true,
+        scroller: true,
+        columnDefs: [
+            {
+                targets: 0,
+                sortable: false
+            },
+            {
+                targets: 4,
+                sortable: false
 
+            }/*,
+                {
+                    "className": "dt-center", "targets": "_all"
+                }*/],
+    });
 
+    t3.on('order.dt search.dt', function () {
+        t3.column(0, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {
+            cell.innerHTML = i + 1;
+        });
+    }).draw();
     // Adjust column widths when a table becomes visible
     $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
         $.fn.dataTable.tables({visible: true, api: true}).columns.adjust();

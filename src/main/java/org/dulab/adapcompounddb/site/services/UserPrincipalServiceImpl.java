@@ -1,9 +1,11 @@
 package org.dulab.adapcompounddb.site.services;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 import org.dulab.adapcompounddb.models.dto.SearchParametersDTO;
+import org.dulab.adapcompounddb.models.entities.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
@@ -17,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.mail.MessagingException;
+
 @Service
 public class UserPrincipalServiceImpl implements UserPrincipalService {
 
@@ -25,11 +29,15 @@ public class UserPrincipalServiceImpl implements UserPrincipalService {
     private final UserPrincipalRepository userPrincipalRepository;
     private final UserParameterRepository userParameterRepository;
 
+    private final EmailService emailService;
+
     @Autowired
     public UserPrincipalServiceImpl(UserPrincipalRepository userPrincipalRepository,
-                                    UserParameterRepository userParameterRepository) {
+                                    UserParameterRepository userParameterRepository,
+                                    EmailService emailService) {
         this.userPrincipalRepository = userPrincipalRepository;
         this.userParameterRepository = userParameterRepository;
+        this.emailService = emailService;
     }
 
     @Override
@@ -137,7 +145,12 @@ public class UserPrincipalServiceImpl implements UserPrincipalService {
     }
 
     @Override
-    public UserPrincipal findByToken(String token) {
+    public UserPrincipal findByOrganizationToken(String token) {
+        return userPrincipalRepository.findByOrganizationRequestToken(token);
+    }
+
+    @Override
+    public UserPrincipal findByPasswordToken(String token) {
         return userPrincipalRepository.findBypasswordResetToken(token);
     }
 
@@ -149,5 +162,73 @@ public class UserPrincipalServiceImpl implements UserPrincipalService {
             saveUserPrincipal(user);
         }
         return searchParameters;
+    }
+
+    @Override
+    public UserPrincipal addUserToOrganization(final UserPrincipal currentUser, final List<Long> userId) {
+        userPrincipalRepository.addUsersToOrganization(currentUser.getId(), userId);
+        return findUserByUsername(currentUser.getUsername());
+    }
+
+    @Override
+    public UserPrincipal deleteUserFromOrganization(String username, UserPrincipal currentUser) {
+        UserPrincipal newMember = findUserByUsername(username);
+        if (newMember != null) {
+            if (newMember.isOrganization()) {
+                throw new IllegalStateException("Cannot add an organization account. Please try some other user.");
+            }
+            newMember.setOrganizationId(null);
+            userPrincipalRepository.save(newMember);
+        } else {
+            throw new EmptySearchResultException("User not found. Please check username and try again.");
+        }
+        List<UserPrincipal> members = currentUser.getMembers().stream()
+                .filter(c -> !c.getUsername().equals(username))
+                .collect(Collectors.toList());
+        currentUser.setMembers(members);
+        return currentUser;
+    }
+
+    @Override
+    public List<UserPrincipal> fetchUsernamesForOrganization(String input, UserPrincipal user) {
+        UserPrincipal fetchedUser = userPrincipalRepository.findByEmailOrUsername(input, input);
+        List<UserPrincipal> userPrincipalList = new ArrayList<>();
+        // keeping this to search by username in the future
+        if (fetchedUser != null) {
+            userPrincipalList.add(fetchedUser);
+            userPrincipalList = userPrincipalList.stream()
+                    .filter(c -> !c.isOrganization() && c.getOrganizationId() == null)
+                    .collect(Collectors.toList());
+            userPrincipalList.sort((o1, o2) -> {
+                if (o1.getOrganizationId() == null && o2.getOrganizationId() == null)
+                    return 0;
+                if (o1.getOrganizationId() == null)
+                    return -1;
+                return 1;
+            });
+        }
+        return userPrincipalList;
+    }
+
+    @Override
+    public void sendInviteToUser(UserPrincipal orgUser, List<Long> selectedUsers) throws Exception {
+        Iterator<UserPrincipal> userPrincipleList = userPrincipalRepository.findAllById(selectedUsers).iterator();
+        while (userPrincipleList.hasNext()) {
+            try {
+                UserPrincipal user = userPrincipleList.next();
+                String resetToken = UUID.randomUUID().toString();
+                Date expirationDate = new Date(System.currentTimeMillis() + 3600000);//1 hour expiration time
+                user.setOrganizationRequestToken(resetToken);
+                user.setOrganizationRequestExpirationDate(expirationDate);
+                saveUserPrincipal(user);
+                String url =  "https://adap.cloud/organization/addUser?token=" +resetToken
+                        +"&orgEmail="+orgUser.getEmail();
+                emailService.sendOrganizationInviteEmail(user, orgUser, url);
+                LOGGER.info("A username was sent to " + user.getEmail());
+            } catch (Exception e) {
+                LOGGER.warn( e.getMessage(), e);
+                throw new Exception("Couldn't send username");
+            }
+        }
     }
 }
