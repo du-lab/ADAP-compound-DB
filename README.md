@@ -62,7 +62,11 @@ mysql -u root -p < dump.mysql
 
 5. Install Maven and compile and deploy the project by running
 ```
-mvn tomcat7:deploy
+# On a local machine or testing server
+mvn clean install tomcat7:deploy -Denvironment=test
+
+# On the production server
+mvn clean install tomcat7:deploy -Denvironment=production
 ```
 Alternatively, you can open the repository in IntelliJ IDEA and set it up to deploy the project.
 

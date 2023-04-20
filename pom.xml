@@ -8,7 +8,7 @@
     <packaging>war</packaging>
     <profiles>
         <profile>
-            <id>jenkins</id>
+            <id>jenkins-test</id>
             <properties>
                 <apache.tomcat.port>8080</apache.tomcat.port>
                 <spring.profiles.active>test</spring.profiles.active>
@@ -21,7 +21,7 @@
             </activation>
         </profile>
         <profile>
-            <id>jenkins</id>
+            <id>jenkins-production</id>
             <properties>
                 <apache.tomcat.port>8080</apache.tomcat.port>
                 <spring.profiles.active>production</spring.profiles.active>
