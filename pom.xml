@@ -8,14 +8,28 @@
     <packaging>war</packaging>
     <profiles>
         <profile>
-            <id>jenkins</id>
+            <id>jenkins-test</id>
             <properties>
                 <apache.tomcat.port>8080</apache.tomcat.port>
+                <spring.profiles.active>test</spring.profiles.active>
             </properties>
             <activation>
                 <property>
                     <name>environment</name>
                     <value>test</value>
+                </property>
+            </activation>
+        </profile>
+        <profile>
+            <id>jenkins-production</id>
+            <properties>
+                <apache.tomcat.port>80</apache.tomcat.port>
+                <spring.profiles.active>production</spring.profiles.active>
+            </properties>
+            <activation>
+                <property>
+                    <name>environment</name>
+                    <value>production</value>
                 </property>
             </activation>
         </profile>
@@ -45,6 +59,11 @@
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
         <dependency>
         			<groupId>org.springframework.security</groupId>
         			<artifactId>spring-security-taglibs</artifactId>

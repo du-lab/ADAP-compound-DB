@@ -208,7 +208,7 @@ $ git clone https://github.com/du-lab/ADAP-compound-DB.git
 Then, deploy ADAP Spectral Library by running the command
 ```shell
 $ cd ~/ADAP-compound-DB
-$ mvn tomcat7:deploy
+$ mvn clean install tomcat7:deploy -Denvironemnt=production
 ```
 
 ## References

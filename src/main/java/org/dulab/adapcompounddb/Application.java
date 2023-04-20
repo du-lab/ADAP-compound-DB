@@ -6,6 +6,7 @@ import org.dulab.adapcompounddb.site.controllers.AuthenticationController;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.AdviceMode;
 import org.springframework.context.annotation.Bean;
@@ -24,6 +25,7 @@ import java.util.concurrent.Executor;
 @EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = false)
 @EnableJpaRepositories
 @EnableAsync
+@ConfigurationProperties
 public class Application extends SpringBootServletInitializer {
 
     private static final Logger LOG = LoggerFactory.getLogger(Application.class);
