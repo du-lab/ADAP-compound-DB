@@ -80,9 +80,15 @@
                                 <form:password path="confirmedPassword" cssClass="col-md-3 form-control"/>
                             </div>
                             <div class="row form-group">
-                                <form:label path="organization"
-                                            cssClass="col-md-3 offset-md-3 col-form-label">Organization Account:</form:label>
-                                <form:checkbox path="organization" cssClass="col-1 form-control"/>
+                                <div class="col-md-8 offset-md-4">
+                                    <div class="custom-control custom-switch">
+                                        <form:checkbox path="organization" class="custom-control-input"
+                                               name="orgAcc" id="orgAcc"/>
+                                        <label class="custom-control-label" for="orgAcc">
+                                            Organization Account
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
                             <div class="row form-group">
                                 <div class="col-md-6 offset-md-3">

@@ -23,6 +23,7 @@ import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
 import org.dulab.adapcompounddb.site.controllers.utils.ConversionsUtils;
 import org.dulab.adapcompounddb.site.controllers.utils.MultipartFileUtils;
 import org.dulab.adapcompounddb.site.services.CaptchaService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -58,8 +59,6 @@ public class FileUploadController extends BaseController {
     private static final String AWS_BUCKET = "adap-big-export";
     private static final Logger LOG = LoggerFactory.getLogger(FileUploadController.class);
     private final CaptchaService captchaService;
-
-    private final Boolean integTest = ControllerUtils.INTEG_TEST;
 
     public FileUploadController(CaptchaService captchaService) {
         this.captchaService = captchaService;
@@ -127,7 +126,6 @@ public class FileUploadController extends BaseController {
 
         model.addAttribute("fileUploadForm", form);
         model.addAttribute("loggedInUser", getCurrentUserPrincipal());
-        model.addAttribute("integTest", integTest);
         return "submission/upload";
     }
 
@@ -137,9 +135,8 @@ public class FileUploadController extends BaseController {
 
         String responseString = request.getParameter(CaptchaService.GOOGLE_CAPTCHA_RESPONSE);
 
-
         try {
-            if (getCurrentUserPrincipal() == null && !integTest) {
+            if (getCurrentUserPrincipal() == null) {
                 captchaService.processResponse(responseString, request.getRemoteAddr());
             }
         } catch (Exception e) {
