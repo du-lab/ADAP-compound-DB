@@ -412,8 +412,8 @@ public class SubmissionController extends BaseController {
     @RequestMapping(value = "/submission/{userId:\\d+}/deleteByUserId")
     public String deleteByUserId(@PathVariable("userId") final long id){
         submissionService.deleteByUserId(id);
-
-        return "redirect:/account/";
+        userPrincipalService.delete(id);
+        return "redirect:/login/";
     }
 
     private String redirectFileUpload() {

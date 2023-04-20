@@ -47,11 +47,7 @@
                     <div align="center">
                         <a href="${pageContext.request.contextPath}/account/changePassword" class="btn btn-secondary">Change
                             Password</a>
-                        <a class="btn btn-secondary" onclick="confirmDeleteDialog.show(
-                                'All submissions belonging to the user &quot;${user.name}&quot; and all their spectra will be deleted. Are you sure?',
-                                '${pageContext.request.contextPath}/submission/${user.id}/deleteByUserId/');">
-                            Clear Account
-                        </a>
+
                         <a href="${pageContext.request.contextPath}/account/organization/${user.username}/delete/"
                            class="btn btn-secondary" style="${user.organizationId != null
                             ? '' : 'display: none;'}">
@@ -363,6 +359,11 @@
 <section class="no-background">
     <div align="center">
         <a href="${pageContext.request.contextPath}/file/upload/" class="btn btn-primary">New Study</a>
+        <a class="btn btn-danger" onclick="confirmDeleteDialog.show(
+                'Your current account &quot;${user.name}&quot; will be deleted. Are you sure?',
+                '${pageContext.request.contextPath}/submission/${user.id}/deleteByUserId/');">
+            Delete Account
+        </a>
     </div>
 </section>
 
