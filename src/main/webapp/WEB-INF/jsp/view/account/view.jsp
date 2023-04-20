@@ -354,18 +354,25 @@
             </div>
         </div>
     </div>
+    <div class = "row row-content no-background">
+        <div class = "col">
+            <div class = "card" style = "background-color:transparent; border:none;">
+                <div class = "card-body " style = "display: flex; justify-content: space-between; padding:0px;">
+                        <a href="${pageContext.request.contextPath}/file/upload/" class="btn btn-primary">New Study</a>
+                        <a class="btn btn-danger" onclick="confirmDeleteDialog.show(
+                                'Your current account &quot;${user.name}&quot; will be deleted. Are you sure?',
+                                '${pageContext.request.contextPath}/submission/${user.id}/deleteByUserId/');">
+                            Delete Account
+                        </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<section class="no-background">
-    <div align="center">
-        <a href="${pageContext.request.contextPath}/file/upload/" class="btn btn-primary">New Study</a>
-        <a class="btn btn-danger" onclick="confirmDeleteDialog.show(
-                'Your current account &quot;${user.name}&quot; will be deleted. Are you sure?',
-                '${pageContext.request.contextPath}/submission/${user.id}/deleteByUserId/');">
-            Delete Account
-        </a>
-    </div>
-</section>
+
+
+
 
 <div id="dialog-confirm"></div>
 
