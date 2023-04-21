@@ -48,9 +48,10 @@ build-image:
   script:
     - mvn -T 8 clean install
     - docker build -t adap-kdb-img .
+    - docker save adap-kdb-img > adap-kdb-img.tar
   artifacts:
     paths:
-      - "adap-kdb-img.zip"
+      - "adap-kdb-img.tar"
     expire_in: 1 day
   only:
     - master
