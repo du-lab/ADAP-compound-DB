@@ -44,6 +44,7 @@ public interface UserPrincipalService {
 
     UserPrincipal deleteUserFromOrganization(String username, UserPrincipal user);
 
+
     List<UserPrincipal> fetchUsernamesForOrganization(String username, UserPrincipal user);
 
     void sendInviteToUser(UserPrincipal user, List<Long> selectedUsers) throws Exception;

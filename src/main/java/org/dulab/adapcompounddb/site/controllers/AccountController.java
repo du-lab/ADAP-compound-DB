@@ -179,7 +179,7 @@ public class AccountController extends BaseController {
                                              @PathVariable("username") String username) {
         UserPrincipal user = getCurrentUserPrincipal();
         String errorMessage = "";
-        if (user.isOrganization()) {
+        if (user.isOrganization() || user.getUsername().equals(username)) { //current user is organization account OR current user is removing him/her self
             try {
                 user = userPrincipalService.deleteUserFromOrganization(username, user);
             } catch (Exception e) {
@@ -194,6 +194,7 @@ public class AccountController extends BaseController {
             model.addAttribute("successMessage", "User deleted from organization.");
         return "account/view";
     }
+
 
     @RequestMapping(value = "/account/getSearchTaskStatus", method = RequestMethod.GET)
     @ResponseBody

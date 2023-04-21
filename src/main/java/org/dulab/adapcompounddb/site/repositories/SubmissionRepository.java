@@ -36,6 +36,7 @@ public interface SubmissionRepository extends JpaRepository<Submission,Long> {
     @Query(value = "delete from Submission where id =:id", nativeQuery = true)
     void deleteById(@Param("id") long id);
 
+
     @Query(value = "select Id from (" +
             "select Submission.Id, SpeciesTag.TagValue as Species, SourceTag.TagValue as Source, DiseaseTag.TagValue as Disease from Submission " +
             "left join (select SubmissionId, TagValue from SubmissionTag where TagKey='species (common)') as SpeciesTag on SpeciesTag.SubmissionId=Submission.Id " +
@@ -132,4 +133,8 @@ public interface SubmissionRepository extends JpaRepository<Submission,Long> {
 
     @Query("select distinct s.id, s.clusterable from Submission s where s.id in :ids")
     Iterable<Object[]> getAllClusterableBySubmissionIds(@Param("ids") long[] submissionIds);
+
+    @Modifying
+    @Query(value ="delete from Submission where userPrincipalId =:userId", nativeQuery = true)
+    void deleteByUserId(@Param("userId") Long userId);
 }

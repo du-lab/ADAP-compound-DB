@@ -245,6 +245,11 @@ public class SubmissionService {
                     "Fail to delete submission %d because this submission is not in the database", submissionId));
     }
 
+    @Transactional
+    public void deleteByUserId(Long userId) {
+        submissionRepository.deleteByUserId(userId);
+    }
+
     public List<String> findUniqueTagStrings() {
         List<String> uniqueTags = MappingUtils.toList(submissionTagRepository.findUniqueTagStrings());
         uniqueTags.sort(String.CASE_INSENSITIVE_ORDER);
