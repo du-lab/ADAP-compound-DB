@@ -2,6 +2,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%--@elvariable id="loggedInUser" type="org.dulab.adapcompounddb.models.entities.UserPrincipal"--%>
 <%--@elvariable id="disableBtn" type="java.lang.Boolean"--%>
+<%--@elvariable id="integTest" type="java.lang.Boolean"--%>
+
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <script src="https://www.google.com/recaptcha/api.js"></script>
 <script>
@@ -147,7 +149,7 @@
                                     <form:textarea id="spectrumInput" placeholder="Input m/z-intensity pairs"  path="spectrum"  cssClass="form-control"/>
                                 </div>
                             </div>
-                            <c:if test="${loggedInUser == null}">
+                            <c:if test="${loggedInUser == null && !integTest}">
                                 <div class="g-recaptcha col-md-8 offset-md-4" data-callback="recaptchaCallback"
                                      data-sitekey="6LdY3V8hAAAAACkWkUd5G9xYtgnM9vwPvIPsQrWy" style="margin-right: 10px;"></div>
                             </c:if>

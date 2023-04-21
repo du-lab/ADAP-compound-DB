@@ -245,6 +245,11 @@ public class SubmissionService {
                     "Fail to delete submission %d because this submission is not in the database", submissionId));
     }
 
+    @Transactional
+    public void deleteByUserId(Long userId) {
+        submissionRepository.deleteByUserId(userId);
+    }
+
     public List<String> findUniqueTagStrings() {
         List<String> uniqueTags = MappingUtils.toList(submissionTagRepository.findUniqueTagStrings());
         uniqueTags.sort(String.CASE_INSENSITIVE_ORDER);
@@ -331,12 +336,23 @@ public class SubmissionService {
     }
 
     public SortedMap<BigInteger, String> findUserPrivateSubmissions(UserPrincipal user, ChromatographyType type) {
-        Iterable<Submission> submissions =
-                submissionRepository.findByPrivateTrueAndReferenceTrueAndUserAndChromatographyType(user, type);
+        Iterable<Submission> submissions;
+        if (user != null && user.getOrganizationId() !=  null) {
+            submissions = submissionRepository
+                    .findByPrivateTrueAndReferenceTrueAndUserOrOrgAndChromatographyType(user, user.getOrganizationUser(), type);
+        } else {
+            submissions = submissionRepository.findByPrivateTrueAndReferenceTrueAndUserAndChromatographyType(user, type);
+        }
+
 
         SortedMap<BigInteger, String> submissionIdToNameMap = new TreeMap<>();
         for (Submission submission : submissions) {
-            String html = String.format("%s <span class='badge badge-info'>private</span>%s",
+            String badgeType = "info", submissionType = "private";
+            if (submission.getUser().getId() != user.getId()) {
+                badgeType = "warning";
+                submissionType = "organization";
+            }
+            String html = String.format("%s <span class='badge badge-"+badgeType+"'>"+submissionType+"</span>%s",
                     submission.getName(),
                     submission.isInHouseReference() ? " <span class='badge badge-success'>in-house</span>" : "");
             submissionIdToNameMap.put(BigInteger.valueOf(submission.getId()), html);

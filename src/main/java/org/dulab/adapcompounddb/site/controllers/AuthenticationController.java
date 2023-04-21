@@ -12,6 +12,7 @@ import org.dulab.adapcompounddb.validation.Email;
 import org.dulab.adapcompounddb.validation.FieldMatch;
 import org.dulab.adapcompounddb.validation.Password;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
@@ -37,7 +38,6 @@ public class AuthenticationController extends BaseController {
 
     private final AuthenticationService authenticationService;
     private final CaptchaService captchaService;
-    private final boolean integTest = ControllerUtils.INTEG_TEST;
 
 
     @Autowired
@@ -59,7 +59,6 @@ public class AuthenticationController extends BaseController {
 
         model.addAttribute("loginFailed", loginFailed);
         model.addAttribute("logInForm", new LogInForm());
-
         return new ModelAndView("login");
     }
 
@@ -109,8 +108,6 @@ public class AuthenticationController extends BaseController {
 
         model.addAttribute("signupFailed", false);
         model.addAttribute("signUpForm", new SignUpForm());
-        model.addAttribute("integTest", true);
-
         return new ModelAndView("signup");
     }
 
@@ -141,6 +138,7 @@ public class AuthenticationController extends BaseController {
         final UserPrincipal principal = new UserPrincipal();
         principal.setUsername(form.getUsername());
         principal.setEmail(form.getEmail());
+        principal.setOrganization(form.isOrganization());
         principal.setSearchParameters(new SearchParametersDTO());
         try {
             authenticationService.saveUser(principal, form.getPassword());
@@ -339,6 +337,8 @@ public class AuthenticationController extends BaseController {
 
         private String confirmedPassword;
 
+        private boolean organization;
+
         public String getUsername() {
             return username;
         }
@@ -378,6 +378,15 @@ public class AuthenticationController extends BaseController {
         public void setConfirmedPassword(final String confirmedPassword) {
             this.confirmedPassword = confirmedPassword;
         }
+
+        public boolean isOrganization() {
+            return organization;
+        }
+
+        public void setOrganization(final boolean organization) {
+            this.organization = organization;
+        }
+
     }
 
 }

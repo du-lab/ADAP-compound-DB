@@ -15,8 +15,8 @@
             modal: true,
             buttons: {
                 'Delete': function () {
-                    div.find('p').html('Study deletion is in progress, please wait.');
-                    $('.ui-dialog-title').html('Delete Study')
+                    div.find('p').html('');
+                    $('.ui-dialog-title').html('In Progress...')
                     $('.ui-dialog-buttonset').children().hide()
 
                     window.location.replace($(this).attr('href'));
