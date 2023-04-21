@@ -56,4 +56,4 @@ build-image:
     - master
     - merge_requests
   tags:
-    - mac
+    - mac2
