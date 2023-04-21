@@ -263,4 +263,10 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
     public void setSearchParameters(SearchParametersDTO searchParametersDTO) {
         setSearchParameters(new Gson().toJson(searchParametersDTO));
     }
+
+    @Transient
+    public String getFullUserName() {
+        return this.isOrganization() ? this.username + " (Organization Account)" :
+                this.username;
+    }
 }

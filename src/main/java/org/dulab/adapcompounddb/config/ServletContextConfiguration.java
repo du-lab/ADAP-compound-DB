@@ -1,16 +1,15 @@
 package org.dulab.adapcompounddb.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
@@ -20,6 +19,9 @@ import org.springframework.web.servlet.view.JstlView;
 @EnableWebMvc
 @ComponentScan
 public class ServletContextConfiguration implements WebMvcConfigurer {
+
+    @Value("${INTEGRATION_TEST}")
+    private boolean INTEGRATION_TEST;
 
     @Bean
     public static PropertySourcesPlaceholderConfigurer getPropertySourcesPlaceholderConfigurer() {
@@ -47,5 +49,10 @@ public class ServletContextConfiguration implements WebMvcConfigurer {
                 .addResourceLocations("/resources/static/robots.txt");
         registry.addResourceHandler("/resources/**")
                 .addResourceLocations("/resources/");
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new ModelViewInterceptor(INTEGRATION_TEST));
     }
 }

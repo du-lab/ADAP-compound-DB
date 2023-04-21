@@ -39,9 +39,6 @@ public class AuthenticationController extends BaseController {
     private final AuthenticationService authenticationService;
     private final CaptchaService captchaService;
 
-    @Value("${INTEGRATION_TEST}")
-    private boolean INTEGRATION_TEST;
-
 
     @Autowired
     public AuthenticationController(final AuthenticationService authenticationService, CaptchaService captchaService) {
@@ -111,15 +108,12 @@ public class AuthenticationController extends BaseController {
 
         model.addAttribute("signupFailed", false);
         model.addAttribute("signUpForm", new SignUpForm());
-        model.addAttribute("integTest", INTEGRATION_TEST);
-
         return new ModelAndView("signup");
     }
 
     @RequestMapping(value = "/signup", method = RequestMethod.POST)
     public ModelAndView signup(final Model model, final HttpSession session, final HttpServletRequest request,
                                @Valid final SignUpForm form, final Errors errors) {
-        model.addAttribute("integTest", INTEGRATION_TEST);
         if (this.getCurrentUserPrincipal() != null) {
             return getHomeRedirect();
         }
