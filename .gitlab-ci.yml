@@ -46,6 +46,7 @@ build-image:
 #  before_script:
 #    - docker info
   script:
+    - mvn -T 8 clean install
     - docker build -t adap-kdb-img .
   artifacts:
     paths:
