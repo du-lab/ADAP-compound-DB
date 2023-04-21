@@ -54,3 +54,5 @@ build-image:
   only:
     - master
     - merge_requests
+  tags:
+    - mac
