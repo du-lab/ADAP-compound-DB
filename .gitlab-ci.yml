@@ -43,13 +43,14 @@ build-image:
 #  before_script:
 #    - docker info
   script:
-    - mvn -T 8 clean install
     - docker build -t adap-kdb-img .
     - docker save adap-kdb-img | gzip > adap-kdb-img.tgz
   artifacts:
     paths:
       - "adap-kdb-img.tgz"
     expire_in: 1 day
+    format: "tgz"
+
   only:
     - master
     - merge_requests
