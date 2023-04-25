@@ -470,25 +470,10 @@
                     <warSourceDirectory>src/main/webapp</warSourceDirectory>
                 </configuration>
             </plugin>
-<!--            <plugin>-->
-<!--                  &lt;!&ndash; Build an executable JAR &ndash;&gt;-->
-<!--                  <groupId>org.apache.maven.plugins</groupId>-->
-<!--                  <artifactId>maven-jar-plugin</artifactId>-->
-<!--                  <version>3.1.0</version>-->
-<!--                  <configuration>-->
-<!--                    <archive>-->
-<!--                      <manifest>-->
-<!--                        <addClasspath>true</addClasspath>-->
-<!--                        <classpathPrefix>lib/</classpathPrefix>-->
-<!--                        <mainClass>src/main/java/Application</mainClass>-->
-<!--                      </manifest>-->
-<!--                    </archive>-->
-<!--                  </configuration>-->
-<!--                </plugin>-->
               <plugin>
-                          <groupId>org.springframework.boot</groupId>
-                          <artifactId>spring-boot-maven-plugin</artifactId>
-                     </plugin>
+                      <groupId>org.springframework.boot</groupId>
+                      <artifactId>spring-boot-maven-plugin</artifactId>
+                   </plugin>
             <plugin>
                 <groupId>org.apache.tomcat.maven</groupId>
                 <artifactId>tomcat7-maven-plugin</artifactId>
