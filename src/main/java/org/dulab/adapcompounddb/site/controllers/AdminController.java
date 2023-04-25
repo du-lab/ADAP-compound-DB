@@ -1,7 +1,10 @@
 package org.dulab.adapcompounddb.site.controllers;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Properties;
 import java.util.TreeMap;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -85,4 +88,16 @@ public class AdminController {
 //            this.value = value;
 //        }
 //    }
+
+    public static void main (String[] args) throws IOException {
+        String version = AdminController.class.getPackage().getImplementationVersion();
+        if (version == null) {
+            Properties props = new Properties();
+            InputStream in = AdminController.class.getResourceAsStream("/META-INF/maven/org.dulab/adap-compound-db/pom.properties");
+            props.load(in);
+            in.close();
+            version = props.getProperty("version", "unknown");
+        }
+        System.out.println("Version: " + version);
+    }
 }

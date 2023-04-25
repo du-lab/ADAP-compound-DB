@@ -43,7 +43,7 @@ build-image:
   variables:
     MAVEN_OPTS: "-Dmaven.repo.local=/Users/tnguy271/builds/uYn8eavC/0/du-lab/adap-kdb/.m2/repository"
   script:
-    - mvn -T 8 clean install
+    - mvn clean install
     - docker build -t adap-kdb-img .
     - docker save adap-kdb-img | gzip > adap-kdb-img.tar.gz
 

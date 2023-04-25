@@ -331,7 +331,7 @@
                                         </c:forEach>
                                     </td>
                                     <td>
-                                        1.0.1-beta
+                                        ${appVersion}
                                     </td>
                                     <td>
                                         <c:choose>

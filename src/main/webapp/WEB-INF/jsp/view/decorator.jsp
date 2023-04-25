@@ -85,6 +85,14 @@
                 }
             });
         }, 1000); // 1 seconds
+
+        //get application version
+        $.ajax({
+            url: "/version",
+            success: function(data) {
+              $("#version").text(data);
+            }
+        });
     });
     if (localStorage.getItem("cookieSeen") !== "shown") {
         $(".cookie-banner").delay(2000).fadeIn();
@@ -270,7 +278,7 @@
 <footer>
     <div style="margin-left:30px">
         <hr/>
-        <p class = "text-muted">Version: 1.0.1-beta</p>
+        <p id="version" class = "text-muted"></p>
     </div>
 </footer>
 </body>

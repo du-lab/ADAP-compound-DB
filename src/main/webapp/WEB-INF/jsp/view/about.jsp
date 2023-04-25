@@ -47,18 +47,10 @@
                 </div>
 
                 <div class="card-body">
-                    1.0.1-beta
+                    ${appVersion}: Added versioning
                 </div>
             </div>
-            <div class="card">
-                <div class="card-header card-header-single">
-                    Release notes
-                </div>
 
-                <div class="card-body">
-                    1.0.1: Bug fix
-                </div>
-            </div>
         </div>
     </div>
 </div>
