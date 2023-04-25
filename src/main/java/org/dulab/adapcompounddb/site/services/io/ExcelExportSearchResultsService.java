@@ -7,6 +7,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -22,6 +23,8 @@ public class ExcelExportSearchResultsService implements ExportSearchResultsServi
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExcelExportSearchResultsService.class);
 
+    @Value("${info.version}")
+    private String applicationVersion;
 
     @Override
     public void exportAll(OutputStream outputStream, List<SearchResultDTO> searchResults) throws IOException {
@@ -34,6 +37,17 @@ public class ExcelExportSearchResultsService implements ExportSearchResultsServi
         Workbook workbook = new SXSSFWorkbook(templateWorkbook, 1000);
 
         ExcelCellStyleSupplier styleSupplier = new ExcelCellStyleSupplier(workbook);
+        for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+            String s = workbook.getSheetName(i);
+            System.out.println("Sheet index: " + i + ", sheet name: " + workbook.getSheetName(i));
+        }
+//        Sheet indexSheet = workbook.getSheet(workbook.getSheetName(0));
+//        indexSheet.g
+//        //Add version to first cell
+//        Row firstRow = indexSheet.getRow(0);
+//        Cell cell = firstRow.getCell(0);
+        //cell.setCellValue(cell.getStringCellValue() + " " + applicationVersion);
+
 
         Sheet dataSheet = workbook.getSheet("Data");
 
@@ -50,7 +64,14 @@ public class ExcelExportSearchResultsService implements ExportSearchResultsServi
     }
 
     private int createHeader(int rowCount, Sheet sheet, ExcelCellStyleSupplier styleSupplier) {
+        //TODO: Insert some details about library search against, etc
+        //The first line: "Library matching results produced by ADAP-KDB v0.0.1"
+        Row firstRow = sheet.getRow(++rowCount);
+        Cell firstCell = firstRow.getCell(0);
+        firstCell.setCellValue("Library matching results produced by ADAP-KDB version " + applicationVersion);
+        //The second line: "Libraries used for matching: LibraryName1, LibraryName2"
 
+        rowCount++;
         // First row. Contains categories of export fields
         rowCount = createFirstHeaderRow(rowCount, sheet, styleSupplier);
 

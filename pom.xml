@@ -4,7 +4,7 @@
 
     <groupId>org.dulab</groupId>
     <artifactId>adap-compound-db</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>war</packaging>
     <profiles>
         <profile>
