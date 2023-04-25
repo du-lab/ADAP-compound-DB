@@ -44,12 +44,11 @@ build-image:
 #    - docker info
   script:
     - docker build -t adap-kdb-img .
-    - docker save adap-kdb-img | gzip > adap-kdb-img.tgz
+    - docker save adap-kdb-img | gzip > adap-kdb-img.tar.gz
   artifacts:
     paths:
-      - "adap-kdb-img.tgz"
+      - "adap-kdb-img.tar.gz"
     expire_in: 1 day
-    format: "tgz"
 
   only:
     - master
