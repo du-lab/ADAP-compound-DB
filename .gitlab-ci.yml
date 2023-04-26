@@ -50,6 +50,7 @@ build-image:
   artifacts:
     paths:
       - "adap-kdb-img.tar"
+    name: "adap-kdb-test-img"
     expire_in: 1 day
 
   only:
