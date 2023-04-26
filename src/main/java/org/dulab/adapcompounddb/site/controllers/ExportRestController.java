@@ -1,5 +1,7 @@
 package org.dulab.adapcompounddb.site.controllers;
 
+import java.math.BigInteger;
+import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,6 +102,12 @@ public class ExportRestController {
             return;
         }
 
+        Object sessionLibraries = session.getAttribute(ControllerUtils.GROUP_SEARCH_LIBRARIES_USED_FOR_MATCHING);
+        Map<BigInteger, String> librariesUsedForMatching = new HashMap<>();
+        if (sessionLibraries != null) {
+             librariesUsedForMatching = (Map<BigInteger, String>) sessionLibraries;
+        }
+
         try {
             session.setAttribute(ControllerUtils.EXPORT_PROGRESS_ATTRIBUTE_NAME, ExportStatus.PENDING);
             List<SearchResultDTO> searchResults = ((List<?>) attribute).stream()
@@ -108,9 +116,9 @@ public class ExportRestController {
                     .collect(Collectors.toList());
 
             if (advanced)
-                exportSearchResultsService.exportAll(response.getOutputStream(), searchResults);
+                exportSearchResultsService.exportAll(response.getOutputStream(), searchResults, librariesUsedForMatching.values());
             else
-                exportSearchResultsService.export(response.getOutputStream(), searchResults);
+                exportSearchResultsService.export(response.getOutputStream(), searchResults, librariesUsedForMatching.values());
 
             session.setAttribute(ControllerUtils.EXPORT_PROGRESS_ATTRIBUTE_NAME, ExportStatus.DONE);
         } catch (IOException | ConcurrentModificationException e) {

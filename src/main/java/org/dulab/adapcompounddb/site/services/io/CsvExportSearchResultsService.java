@@ -24,7 +24,8 @@ public class CsvExportSearchResultsService implements ExportSearchResultsService
     }
 
     @Override
-    public void exportAll(OutputStream outputStream, List<SearchResultDTO> searchResults) throws IOException {
+    public void exportAll(OutputStream outputStream, List<SearchResultDTO> searchResults,
+        Collection<String> values) throws IOException {
 
         long[] matchIds = searchResults.stream()
                 .mapToLong(SearchResultDTO::getSpectrumId)

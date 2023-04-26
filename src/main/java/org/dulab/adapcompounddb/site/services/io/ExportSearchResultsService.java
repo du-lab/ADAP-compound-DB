@@ -18,10 +18,12 @@ public interface ExportSearchResultsService {
     Logger LOGGER = LoggerFactory.getLogger(ExportSearchResultsService.class);
 
 
-    void exportAll(OutputStream outputStream, List<SearchResultDTO> searchResults) throws IOException;
+    void exportAll(OutputStream outputStream, List<SearchResultDTO> searchResults,
+        Collection<String> librariesUsedForMatching) throws IOException;
 
-    default void export(OutputStream outputStream, List<SearchResultDTO> searchResults) throws IOException {
-        exportAll(outputStream, selectTopResults(searchResults));
+    default void export(OutputStream outputStream, List<SearchResultDTO> searchResults,
+        Collection<String> librariesUsedForMatching) throws IOException {
+        exportAll(outputStream, selectTopResults(searchResults), librariesUsedForMatching);
 //        exportAll(outputStream, searchResults);
     }
 

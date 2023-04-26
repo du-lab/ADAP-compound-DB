@@ -27,7 +27,8 @@ public class ExcelExportSearchResultsService implements ExportSearchResultsServi
     private String applicationVersion;
 
     @Override
-    public void exportAll(OutputStream outputStream, List<SearchResultDTO> searchResults) throws IOException {
+    public void exportAll(OutputStream outputStream, List<SearchResultDTO> searchResults,
+        Collection<String> libraries) throws IOException {
 
         LOGGER.info("Exporting search results to Excel...");
 
@@ -41,17 +42,17 @@ public class ExcelExportSearchResultsService implements ExportSearchResultsServi
             String s = workbook.getSheetName(i);
             System.out.println("Sheet index: " + i + ", sheet name: " + workbook.getSheetName(i));
         }
-//        Sheet indexSheet = workbook.getSheet(workbook.getSheetName(0));
-//        indexSheet.g
-//        //Add version to first cell
-//        Row firstRow = indexSheet.getRow(0);
-//        Cell cell = firstRow.getCell(0);
-        //cell.setCellValue(cell.getStringCellValue() + " " + applicationVersion);
+
+        Sheet indexSheet =templateWorkbook.getSheet("Index");
+        //Add version to first cell
+        Row firstRow = indexSheet.getRow(0);
+        Cell cell = firstRow.getCell(0);
+        cell.setCellValue(cell.getStringCellValue() + " " + applicationVersion);
 
 
         Sheet dataSheet = workbook.getSheet("Data");
 
-        int rowCount = createHeader(0, dataSheet, styleSupplier);
+        int rowCount = createHeader(0, dataSheet, styleSupplier, libraries);
 
         for (SearchResultDTO searchResult : searchResults) {
             Row row = dataSheet.createRow(rowCount++);
@@ -63,19 +64,13 @@ public class ExcelExportSearchResultsService implements ExportSearchResultsServi
         LOGGER.info("Completed exporting search results to Excel");
     }
 
-    private int createHeader(int rowCount, Sheet sheet, ExcelCellStyleSupplier styleSupplier) {
-        //TODO: Insert some details about library search against, etc
-        //The first line: "Library matching results produced by ADAP-KDB v0.0.1"
-        Row firstRow = sheet.getRow(++rowCount);
-        Cell firstCell = firstRow.getCell(0);
-        firstCell.setCellValue("Library matching results produced by ADAP-KDB version " + applicationVersion);
-        //The second line: "Libraries used for matching: LibraryName1, LibraryName2"
+    private int createHeader(int rowCount, Sheet sheet, ExcelCellStyleSupplier styleSupplier,
+        Collection<String> libraries) {
 
-        rowCount++;
-        // First row. Contains categories of export fields
-        rowCount = createFirstHeaderRow(rowCount, sheet, styleSupplier);
+        // First sets of row. Contains application version, matching libraries and categories of export fields
+        rowCount = createFirstHeaderRow(rowCount, sheet, styleSupplier, libraries);
 
-        // Second row. Contains names of export fields
+        // Second part. Contains names of export fields
         Row row = sheet.createRow(rowCount++);
         int columnCount = 0;
         for (ExportCategory exportCategory : ExportCategory.valuesWithNull()) {
@@ -84,7 +79,7 @@ public class ExcelExportSearchResultsService implements ExportSearchResultsServi
                 cell.setCellValue(field.name);
                 if (field.exportCategory != null) {
                     CellStyle style = styleSupplier.getCellStyle(
-                            exportCategory.color, BorderStyle.HAIR, IndexedColors.BLACK);
+                        exportCategory.color, BorderStyle.HAIR, IndexedColors.BLACK);
                     cell.setCellStyle(style);
                 }
             }
@@ -93,15 +88,35 @@ public class ExcelExportSearchResultsService implements ExportSearchResultsServi
         return rowCount;
     }
 
-    private int createFirstHeaderRow(int rowCount, Sheet sheet, ExcelCellStyleSupplier styleSupplier) {
+    private int createFirstHeaderRow(int rowCount, Sheet sheet, ExcelCellStyleSupplier styleSupplier,
+        Collection<String> libraries) {
 
 //        // Create array of categories with the first null value
 //        int numCategories = ExportCategory.values().length;
 //        ExportCategory[] exportCategories = new ExportCategory[1 + numCategories];
 //        System.arraycopy(ExportCategory.values(), 0, exportCategories, 1, numCategories);
 
+        //The first line: "Library matching results produced by ADAP-KDB v0.0.1"
+        Row firstRow = sheet.createRow(rowCount);
+        Cell firstCell = firstRow.createCell(0);
+        firstCell.setCellValue("Library matching results produced by ADAP-KDB version " + applicationVersion);
+
+        //The second line: "Libraries used for matching: LibraryName1, LibraryName2"
+        Row secondRow = sheet.createRow(++rowCount);
+        Cell libraryCell = secondRow.createCell(0);
+        if(libraries != null && !libraries.isEmpty()) {
+            StringBuilder libraryNames = new StringBuilder();
+            for(String library : libraries){
+                libraryNames.append(library).append(", ");
+            }
+            //remove trailing comma
+            libraryNames.setLength(libraryNames.length()-2);
+
+            libraryCell.setCellValue("Libraries used for matching: " + libraryNames.toString());
+
+        }
         // Create row
-        Row row = sheet.createRow(rowCount);
+        Row row = sheet.createRow(++rowCount);
         int columnCount = 0;
         for (ExportCategory exportCategory : ExportCategory.valuesWithNull()) {
             int numFields = ExportField.values(exportCategory).length;
@@ -112,7 +127,7 @@ public class ExcelExportSearchResultsService implements ExportSearchResultsServi
                 Cell cell = row.createCell(columnCount);
                 cell.setCellValue(exportCategory.label);
                 cell.setCellStyle(styleSupplier.getCellStyle(
-                        exportCategory.color, BorderStyle.HAIR, IndexedColors.BLACK));
+                    exportCategory.color, BorderStyle.HAIR, IndexedColors.BLACK));
             }
 
             columnCount += numFields;
@@ -134,9 +149,9 @@ public class ExcelExportSearchResultsService implements ExportSearchResultsServi
                     cell.setCellValue(value);
 
                 CellStyle style = styleSupplier.getCellStyle(
-                        field.exportCategory != null ? field.exportCategory.color : IndexedColors.WHITE,
-                        BorderStyle.HAIR,
-                        highlight ? IndexedColors.RED : IndexedColors.BLACK);
+                    field.exportCategory != null ? field.exportCategory.color : IndexedColors.WHITE,
+                    BorderStyle.HAIR,
+                    highlight ? IndexedColors.RED : IndexedColors.BLACK);
                 cell.setCellStyle(style);
             }
         }
