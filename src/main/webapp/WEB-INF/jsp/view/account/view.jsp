@@ -337,11 +337,11 @@
                                         <c:choose>
                                             <c:when test="${searchTask.status == 'RUNNING' && sessionScope[dulab:groupSearchResultsAttributeName()] != null}">
                                                 <a href="${pageContext.request.contextPath}/group_search/" type="button"
-                                                   class="btn-sm btn-primary">View Matches</a>
+                                                   >View Matches</a>
                                             </c:when>
                                             <c:when test="${searchTask.status == 'FINISHED'}">
                                                 <a href="${pageContext.request.contextPath}/submission/group_search/${searchTask.submission.id}"
-                                                   type="button" class="btn-sm btn-primary">View Matches</a>
+                                                   >View Matches</a>
                                             </c:when>
                                             <c:otherwise>
                                             </c:otherwise>
