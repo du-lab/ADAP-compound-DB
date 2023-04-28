@@ -1,7 +1,6 @@
 package org.dulab.adapcompounddb.site.controllers;
 
 import com.google.gson.Gson;
-import org.dulab.adapcompounddb.Application;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.dto.SearchParametersDTO;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
@@ -15,8 +14,6 @@ import org.dulab.adapcompounddb.site.controllers.utils.ConversionsUtils;
 import org.dulab.adapcompounddb.site.services.*;
 import org.dulab.adapcompounddb.site.services.search.IndividualSearchService;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -41,7 +38,6 @@ import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.IN
 @Controller
 public class IndividualSearchController extends BaseController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Application.class);
     private final SubmissionService submissionService;
     private final SpectrumService spectrumService;
     private final SubmissionTagService submissionTagService;
@@ -222,11 +218,8 @@ public class IndividualSearchController extends BaseController {
             defaultValue = "") String searchParametersCookie) {
         UserPrincipal user = getCurrentUserPrincipal();
         model.addAttribute("searchParameters", user != null ? user.getSearchParametersDTO() : new SearchParametersDTO());
-        try{
-        compoundSearchForm = ConversionsUtils.byteStringToForm(searchParametersCookie, CompoundSearchForm.class);}
-        catch(Exception e){
-            LOG.error("****ERROR " + e.getMessage());
-        }
+
+        compoundSearchForm = ConversionsUtils.byteStringToForm(searchParametersCookie, CompoundSearchForm.class);
         //Spectrum spectrum = new Spectrum();
         FilterOptions filterOptions = getFilterOptions(ChromatographyType.values());
         model.addAttribute("filterOptions", filterOptions);
