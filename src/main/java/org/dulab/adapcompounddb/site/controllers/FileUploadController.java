@@ -121,9 +121,13 @@ public class FileUploadController extends BaseController {
         if (Submission.from(session) != null) {
             return "redirect:/file/";
         }
-
-        FileUploadForm form = ConversionsUtils.byteStringToForm(metaFieldsInJson, FileUploadForm.class);
-
+        FileUploadForm form = null;
+        try {
+            form = ConversionsUtils.byteStringToForm(metaFieldsInJson, FileUploadForm.class);
+        }
+        catch(Exception e){
+            LOG.error("****ERROR " + e.getMessage());
+        }
         model.addAttribute("fileUploadForm", form);
         model.addAttribute("loggedInUser", getCurrentUserPrincipal());
         return "submission/upload";
