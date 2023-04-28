@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:17-jre-jammy
 ADD target/adap-compound-db.war adap-compound-db.war
 ENTRYPOINT ["java","-jar","/adap-compound-db.war"]
 #--spring.profiles.active=docker
