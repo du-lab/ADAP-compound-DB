@@ -399,7 +399,16 @@ public class SubmissionController extends BaseController {
     @RequestMapping(value = "/submission/{submissionId:\\d+}/delete")
     public String delete(@PathVariable("submissionId") final long id, @RequestHeader(value = "referer",
             required = false) final String referer) {
-        submissionService.delete(id);
+
+        Submission submission = submissionService.findSubmission(id);
+        UserPrincipal currentUser = getCurrentUserPrincipal();
+
+        if(currentUser == null)
+            throw new RuntimeException("You must be logged in to perform this operation");
+        else if(!currentUser.isAdmin() && !currentUser.getUsername().equals(submission.getUser().getUsername()))
+            throw new RuntimeException("You are not authorized to perform this operation");
+        else
+            submissionService.delete(id);
 //        String newReferer;
 //        if (referer.contains("?")) {
 //            newReferer = referer.split("\\?")[0];
@@ -407,6 +416,22 @@ public class SubmissionController extends BaseController {
 //            newReferer = referer;
 //        }
         return "redirect:/account/";
+    }
+
+    @RequestMapping(value = "/submission/{userId:\\d+}/deleteByUserId")
+    public String deleteByUserId(@PathVariable("userId") final long id){
+
+        UserPrincipal currentUser = getCurrentUserPrincipal();
+
+        if(currentUser == null)
+            throw new RuntimeException("You must be logged in to perform this operation");
+        else if(!currentUser.isAdmin() && currentUser.getId()!=id)
+            throw new RuntimeException("You are not authorized to perform this operation");
+        else {
+            submissionService.deleteByUserId(id);
+            userPrincipalService.delete(id);
+        }
+        return "redirect:/login/";
     }
 
     private String redirectFileUpload() {

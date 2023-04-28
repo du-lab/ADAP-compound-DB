@@ -15,6 +15,7 @@ import org.dulab.adapcompounddb.site.services.*;
 import org.dulab.adapcompounddb.site.services.search.IndividualSearchService;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -42,9 +43,11 @@ public class IndividualSearchController extends BaseController {
     private final SubmissionTagService submissionTagService;
     private final IndividualSearchService individualSearchService;
     private final CaptchaService captchaService;
-    private boolean integTest = ControllerUtils.INTEG_TEST;
 
     private final AdductService adductService;
+
+    @Value("${INTEGRATION_TEST}")
+    private boolean INTEGRATION_TEST;
 
     @Autowired
     public IndividualSearchController(SubmissionService submissionService,
@@ -230,7 +233,7 @@ public class IndividualSearchController extends BaseController {
                 ChromatographyType.LC_MSMS_POS, ChromatographyType.LC_MSMS_NEG});
         model.addAttribute("adductvals", adductService.getAllAdducts());
         boolean disableBtn = true;
-        if(getCurrentUserPrincipal() == null && integTest)
+        if(getCurrentUserPrincipal() == null && INTEGRATION_TEST)
         {
             disableBtn = false;
         }

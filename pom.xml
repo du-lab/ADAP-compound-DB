@@ -23,7 +23,7 @@
         <profile>
             <id>jenkins-production</id>
             <properties>
-                <apache.tomcat.port>8080</apache.tomcat.port>
+                <apache.tomcat.port>80</apache.tomcat.port>
                 <spring.profiles.active>production</spring.profiles.active>
             </properties>
             <activation>

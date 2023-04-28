@@ -38,7 +38,7 @@
           <td>${member.email}</td>
           <td>
             <a onclick="confirmDeleteDialog.show(
-                    'Are you sure you want to delete user \'${member.username}\'?',
+                    'Are you sure you want to remove user \'${member.username}\' from the organization?',
                     '${pageContext.request.contextPath}/account/organization/${member.username}/delete/');">
               <i class="material-icons" title="Delete">&#xE872;</i>
             </a>

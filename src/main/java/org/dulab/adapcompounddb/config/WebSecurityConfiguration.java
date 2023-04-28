@@ -63,6 +63,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers("/findAllSubmissions/").access("hasRole('ROLE_ADMIN')");
         http.authorizeRequests().antMatchers("/account/").access("isAuthenticated()");
         http.authorizeRequests().antMatchers("/submission/*/delete").access("isAuthenticated()");
+        http.authorizeRequests().antMatchers("/submission/*/deleteByUserId").access("isAuthenticated()");
         http.authorizeRequests().antMatchers(HttpMethod.POST, "/file/submit").access("isAuthenticated()");
 
         // When the user has logged in as XX.
