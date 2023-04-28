@@ -44,7 +44,7 @@ build-image:
     MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
   script:
     - mvn clean install
-    - docker build -t adap-kdb-img .
+    - docker build -f docker/adap-kdb-docker -t adap-kdb-img .
     - docker save adap-kdb-img > adap-kdb-img.tar
 
   artifacts:
