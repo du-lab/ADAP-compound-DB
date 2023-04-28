@@ -5,6 +5,15 @@
         <div class="col">
             <div class="card">
                 <div class="card-header card-header-single">
+                    Version
+                </div>
+
+                <div class="card-body">
+                    ${appVersion}: Added versioning
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header card-header-single">
                     ADAP-KDB Documentation
                 </div>
 
@@ -40,17 +49,6 @@
                     </ul>
                 </div>
             </div>
-
-            <div class="card">
-                <div class="card-header card-header-single">
-                    Version
-                </div>
-
-                <div class="card-body">
-                    ${appVersion}: Added versioning
-                </div>
-            </div>
-
         </div>
     </div>
 </div>

@@ -90,7 +90,8 @@
         $.ajax({
             url: "/version",
             success: function(data) {
-              $("#version").text(data);
+              $("#version").text("Version: " + data);
+              $("#versionBadge").text(data);
             }
         });
     });
@@ -119,7 +120,7 @@
                 <h1 class="text-nowrap">
                     <i class="material-icons mobile" title="Menu" id="menu">view_headline</i>
                     ADAP-KDB Spectral Knowledgebase
-                    <sup><small class="badge badge-pill badge-light">Beta</small></sup>
+                    <sup><small id ="versionBadge" class="badge badge-pill badge-light"></small></sup>
                 </h1>
             </div>
             <div class="col-12 col-lg-4">
@@ -146,12 +147,6 @@
                             <a class="nav-link" href="<c:url value="/"/>">
                                 <i class="material-icons align-middle">home</i>
                                 <span class="align-middle">Home</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="<c:url value="/about/"/>">
-                                <i class="material-icons align-middle">more_horiz</i>
-                                <span class="align-middle">About</span>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -195,7 +190,7 @@
                         <li class="nav-item">
                             <a class="nav-link" href="<c:url value="/about/"/>">
                                 <i class="material-icons align-middle">help</i>
-                                <span class="align-middle">Documentation</span>
+                                <span class="align-middle">About</span>
                             </a>
                         </li>
 
