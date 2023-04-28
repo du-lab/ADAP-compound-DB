@@ -164,7 +164,17 @@ public class ConversionsUtils {
         if(osname == null)
             throw new RuntimeException("Couuld not determine os properly");
         else if(osname.contains("linux")){
-            in = ConversionsUtils.class.getResourceAsStream("linux-aarch64/libGraphMolWrap.so");
+            if(architecture == null || architecture.isEmpty())
+                throw new RuntimeException("Could not determine architecture properly");
+            else if(architecture.contains("aarch64")){
+                in = ConversionsUtils.class.getResourceAsStream("linux-aarch64/libGraphMolWrap.so");
+            }
+            else if (architecture.contains("x86_64")){
+                in = ConversionsUtils.class.getResourceAsStream("linux-amd64/libGraphMolWrap.so");
+            }
+            else
+                throw new RuntimeException("Could not determine architecture properly");
+
             libName = "libGraphMolWrap.so";
         }
 
