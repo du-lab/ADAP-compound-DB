@@ -18,7 +18,6 @@ public class ErrorHandlingController implements ErrorController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ErrorHandlingController.class);
 
-    private static String pageNotFoundMsg = "The page you requested was not found.";
     @RequestMapping(value = "/error")
     public String error(@RequestParam(name = "errorMsg", required = false) String message,
                         Model model, HttpServletRequest request, HttpServletResponse response) {
@@ -27,8 +26,6 @@ public class ErrorHandlingController implements ErrorController {
         if (status != null) {
             Integer statusCode = Integer.valueOf(status.toString());
             if (statusCode == HttpStatus.NOT_FOUND.value() ) {
-                response.setStatus(HttpStatus.OK.value());
-                model.addAttribute("errorMsg", pageNotFoundMsg );
                 return "redirect:404";
             }
         }
