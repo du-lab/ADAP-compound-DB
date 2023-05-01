@@ -45,11 +45,11 @@ build-image:
   script:
     - mvn clean install
     - docker build -f docker/adap-kdb-docker/Dockerfile -t adap-kdb-img .
-    - docker save adap-kdb-img | gzip > adap-kdb-img.tar.gz
+    - docker save adap-kdb-img  > adap-kdb-img.tar
 
   artifacts:
     paths:
-      - "adap-kdb-img.tar.gz"
+      - "adap-kdb-img.tar"
       - "scripts/test_script.sh"
     name: "adap-kdb-img"
     expire_in: 1 day
