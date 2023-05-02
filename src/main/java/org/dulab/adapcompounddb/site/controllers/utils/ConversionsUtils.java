@@ -172,8 +172,10 @@ public class ConversionsUtils {
             else if (architecture.contains("x86_64")){
                 in = ConversionsUtils.class.getResourceAsStream("linux-amd64/libGraphMolWrap.so");
             }
-            else
-                throw new RuntimeException("Could not determine architecture properly");
+            else{
+                throw new RuntimeException("Could not determine architecture properly: "  + osname + ", " + architecture);
+            }
+
 
             libName = "libGraphMolWrap.so";
         }
