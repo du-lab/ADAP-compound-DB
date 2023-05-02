@@ -50,7 +50,7 @@ build-image:
   artifacts:
     paths:
       - "adap-kdb-img.tar"
-      - "/scripts/script.sh"
+      - "scripts/script.sh"
     name: "adap-kdb-img"
     expire_in: 1 day
 
