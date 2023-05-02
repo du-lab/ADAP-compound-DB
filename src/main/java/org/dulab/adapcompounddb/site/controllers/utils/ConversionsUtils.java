@@ -169,7 +169,7 @@ public class ConversionsUtils {
             else if(architecture.contains("aarch64")){
                 in = ConversionsUtils.class.getResourceAsStream("linux-aarch64/libGraphMolWrap.so");
             }
-            else if (architecture.contains("x86_64")){
+            else if (architecture.contains("amd64")){
                 in = ConversionsUtils.class.getResourceAsStream("linux-amd64/libGraphMolWrap.so");
             }
             else{
@@ -191,7 +191,7 @@ public class ConversionsUtils {
                 in = ConversionsUtils.class.getResourceAsStream("mac-arm/libGraphMolWrap.jnilib");
             }
             else
-                throw new RuntimeException("Could not determine architecture properly");
+                throw new RuntimeException("Could not determine architecture properly: "  + osname + ", " + architecture);
 
             libName = "libGraphMolWrap.jnilib";
         }
