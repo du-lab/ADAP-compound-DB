@@ -200,18 +200,24 @@ public class ConversionsUtils {
             libName = "libGraphMolWrap.dll";
         }
 
-        //get path to native library, create duplicate and load it then delete
-        File tmpDir = Files.createTempDirectory("my-native-lib").toFile();
-        tmpDir.deleteOnExit();
-        File nativeLibTmpFile = new File(tmpDir, libName);
-        nativeLibTmpFile.deleteOnExit();
+        File tmpDir = null;
+        File nativeLibTmpFile = null;
+        try {
+            //get path to native library, create duplicate and load it then delete
+            tmpDir = Files.createTempDirectory("my-native-lib").toFile();
+            tmpDir.deleteOnExit();
+            nativeLibTmpFile = new File(tmpDir, libName);
+            nativeLibTmpFile.deleteOnExit();
 
-        Files.copy(in, nativeLibTmpFile.toPath());
-
-        System.load(nativeLibTmpFile.getAbsolutePath());
+            Files.copy(in, nativeLibTmpFile.toPath());
+            System.load(nativeLibTmpFile.getAbsolutePath());
+        }
+        catch(Exception e){
+            throw new RuntimeException("Failed to load native library: " + e.getMessage());
+        }
 
 
     }
-    
+
 
 }
