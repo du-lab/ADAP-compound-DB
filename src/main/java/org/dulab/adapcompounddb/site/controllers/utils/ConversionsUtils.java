@@ -161,6 +161,8 @@ public class ConversionsUtils {
         String libName = null;
         osname = osname.toLowerCase();
         InputStream in = null;
+
+        LOGGER.info("***ARCHITECTURE: " + osname + ", " + architecture);
         if(osname == null)
             throw new RuntimeException("Couuld not determine os properly");
         else if(osname.contains("linux")){
