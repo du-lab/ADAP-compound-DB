@@ -153,7 +153,7 @@ public class ConversionsUtils {
             return "";
         }
     }
-    private static void loadLibrary() throws URISyntaxException, IOException {
+    private static void loadLibrary() throws  Exception {
         //get os name
         //System.out.println("***************" + System.getProperty("java.version"));
         String osname = System.getProperty("os.name");
@@ -212,10 +212,6 @@ public class ConversionsUtils {
 
 
     }
-
-
-
-
-
+    
 
 }
