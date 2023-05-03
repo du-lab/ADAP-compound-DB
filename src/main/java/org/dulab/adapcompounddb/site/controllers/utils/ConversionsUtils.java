@@ -213,10 +213,13 @@ public class ConversionsUtils {
 
             Files.copy(in, nativeLibTmpFile.toPath());
             System.load(nativeLibTmpFile.getAbsolutePath());
+
+            LOGGER.info("***NATIVE LIBRARY LOADED SUCCESSFULLY!");
         }
         catch(Exception e){
             throw new RuntimeException("Failed to load native library: " + e.getMessage());
         }
+
 
 
     }
