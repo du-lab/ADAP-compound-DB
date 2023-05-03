@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.controllers;
 
+import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.servlet.error.ErrorController;
@@ -8,23 +9,34 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 @Controller
 public class ErrorHandlingController implements ErrorController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ErrorHandlingController.class);
 
-
     @RequestMapping(value = "/error")
     public String error(@RequestParam(name = "errorMsg", required = false) String message,
-                        Model model) {
+                        Model model, HttpServletRequest request, HttpServletResponse response) {
 
+        Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
+        if (status != null) {
+            Integer statusCode = Integer.valueOf(status.toString());
+            if (statusCode == HttpStatus.NOT_FOUND.value() ) {
+                return "redirect:404";
+            }
+        }
         if (message != null) {
             model.addAttribute("errorMsg", message);
         }
-
         return "error";
+    }
+    @RequestMapping(value="/404")
+    public String pageNotFoundHandler(){
+        return "404";
     }
 
     @RequestMapping(value = "/js-log", method = RequestMethod.POST)
