@@ -419,7 +419,7 @@ public class SubmissionController extends BaseController {
     }
 
     @RequestMapping(value = "/submission/{userId:\\d+}/deleteByUserId")
-    public String deleteByUserId(@PathVariable("userId") final long id){
+    public String deleteByUserId(@PathVariable("userId") final long id, HttpSession session){
 
         UserPrincipal currentUser = getCurrentUserPrincipal();
 
@@ -431,6 +431,7 @@ public class SubmissionController extends BaseController {
             submissionService.deleteByUserId(id);
             userPrincipalService.delete(id);
         }
+        session.setAttribute("currentUser", null);
         return "redirect:/login/";
     }
 
