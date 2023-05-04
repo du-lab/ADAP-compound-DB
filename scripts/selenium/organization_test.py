@@ -30,15 +30,15 @@ def create_account(homepage_url, username, password, organization):
     if organization :
         checkbox = driver.find_element('id', "orgAcc")
         driver.execute_script("arguments[0].click();", checkbox)
-    time.sleep(1)
+    time.sleep(15)
     #submit new registration
     driver.find_element("id", 'submit').click()
-    time.sleep(1)
+    time.sleep(15)
     # login with new organization details
     driver.find_element("id", 'username').send_keys(username)
     driver.find_element("id", 'password').send_keys(password)
     driver.find_element("name", "submit").click()
-    time.sleep(1)
+    time.sleep(15)
     # go to account page
     account_page_button = driver.find_element("id", "accountPage")
     account_page_button.click()
@@ -54,7 +54,7 @@ def create_account(homepage_url, username, password, organization):
 def logout():
     time.sleep(2)
     driver.find_element('id','logoutPage').click();
-    time.sleep(1)
+    time.sleep(15)
 
 
 def invite_user_to_organization(acc_username):
@@ -63,9 +63,9 @@ def invite_user_to_organization(acc_username):
     driver.find_element('id','organizationSubmitButton').click()
     checkbox = driver.find_element('name', "selectedUsers")
     driver.execute_script("arguments[0].click();", checkbox)
-    time.sleep(1)
+    time.sleep(15)
     driver.find_element('id', 'organizationAdd').click();
-    time.sleep(1)
+    time.sleep(15)
     success_text= driver.find_element('id', 'organization-success').text
     assert "Invitation sent to user." in success_text
 
@@ -77,43 +77,44 @@ def login(homepage_url, acc_username, acc_password):
     driver.find_element("id", 'username').send_keys(acc_username)
     driver.find_element("id", 'password').send_keys(acc_password)
     driver.find_element("name", "submit").click()
-    time.sleep(1)
+    time.sleep(15)
     account_page_button = driver.find_element("id", "accountPage")
     account_page_button.click()
     time.sleep(2)
 
 
 def add_user_to_organization(homepage_url, organization_username, token):
+    time.sleep(15)
     driver.get(homepage_url+
                "/organization/addUser?"
                "token="+token+"&orgEmail="
                +organization_username)
-    time.sleep(3)
+    time.sleep(15)
 
 
 def check_if_user_is_in_organization(acc_username):
     driver.find_element('id','organizationTab').click()
-    time.sleep(1)
+    time.sleep(15)
     driver.find_element(By.XPATH, "//td[contains(text(), "+acc_username+")]")
 
 
 def remove_user_from_organization():
-    time.sleep(1)
+    time.sleep(15)
     driver.find_element("id", "organization_dialog").click()
-    time.sleep(1)
+    time.sleep(15)
     driver.find_element(By.XPATH,"//button[text()='Delete']").click()
-    time.sleep(1)
+    time.sleep(15)
     success_text= driver.find_element('id', 'organization-success').text
     assert "User deleted from organization." in success_text
 
 
 def leave_organization_and_convert_to_organization():
     driver.find_element(By.XPATH, "//a[contains(text(), 'Leave Organization')]").click()
-    time.sleep(1)
+    time.sleep(15)
     driver.find_element(By.XPATH, "//a[contains(text(), 'Convert to Organization')]").click()
-    time.sleep(1)
+    time.sleep(15)
     driver.find_element('id','organizationTab').click()
-    time.sleep(1)
+    time.sleep(15)
 
 
 def delete_account(homepage_url, acc_username, password):
@@ -124,7 +125,7 @@ def delete_account(homepage_url, acc_username, password):
     driver.find_element("id", 'username').send_keys(acc_username)
     driver.find_element("id", 'password').send_keys(password)
     driver.find_element("name", "submit").click()
-    time.sleep(1)
+    time.sleep(15)
     account_page_button = driver.find_element("id", "accountPage")
     account_page_button.click()
     time.sleep(2)
@@ -142,7 +143,7 @@ def check_if_account_deleted(homepage_url, acc_username, password):
     driver.find_element("id", 'username').send_keys(acc_username)
     driver.find_element("id", 'password').send_keys(password)
     driver.find_element("name", "submit").click()
-    time.sleep(1)
+    time.sleep(15)
     expected_text = "Please try again"
     error_msg = "Error message is not displayed"
     error_div = driver.find_element(By.XPATH, '//div[contains(text(), "'+expected_text+'")]')
