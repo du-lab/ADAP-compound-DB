@@ -8,8 +8,17 @@ RUN apk update &&\
     apk add libc6-compat &&\
     ln -s /lib/libc.musl-x86_64.so.1 /lib/ld-linux-x86-64.so.2
 
-ENV CAPTCHA_SECRET_KEY ="6LdY3V8hAAAAABWB0g3AcKLTJAVz-i_8FJQ4EUhZ"
+#For s3
+ENV ACCESS_ID="AKIA57CZCFX53PQDCA6K"
+ENV ACCESS_KEY="Z8YWRt6b4iGe73Lx90NgMvHaDhfZm+ABpNICNazK"
+#For captcha
+ENV CAPTCHA_SECRET_KEY="6LdY3V8hAAAAABWB0g3AcKLTJAVz-i_8FJQ4EUhZ"
+#For rdkit
 ENV LD_LIBRARY_PATH=/usr/lib/gcc/x86_64-alpine-linux-musl/6.4.0/
+#For email
+ENV ADAP_EMAIL_LOGIN="adap.helpdesk@gmail.com"
+ENV ADAP_EMAIL_PASSWORD="djlqocwutonnykwi"
+
 ADD ../../target/adap-compound-db.war adap-compound-db.war
 ENTRYPOINT ["java","-jar","/adap-compound-db.war", "--spring.profiles.active=docker"]
 EXPOSE 8080
