@@ -58,6 +58,7 @@ def create_account(homepage_url, username, password, organization):
 
 def logout():
     try:
+        time.sleep(2)
         driver.find_element('id','logoutPage').click();
         time.sleep(1)
     except Exception as e:
