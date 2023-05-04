@@ -52,7 +52,7 @@ def create_account(homepage_url, username, password, organization):
             assert "Organization Account" in driver.find_element('id', 'full_username').text
 
     except Exception as e:
-        # driver.quit()
+        driver.quit()
         raise e
 
 
@@ -61,7 +61,7 @@ def logout():
         driver.find_element('id','logoutPage').click();
         time.sleep(1)
     except Exception as e:
-        # driver.quit()
+        driver.quit()
         raise e
 
 
@@ -79,21 +79,25 @@ def invite_user_to_organization(acc_username):
         assert "Invitation sent to user." in success_text
 
     except Exception as e:
-        # driver.quit()
+        driver.quit()
         raise e
 
 def login(homepage_url, acc_username, acc_password):
-    driver.get(homepage_url)
-    # go to login page
-    driver.find_element("id", 'loginPage').click()
-    # login with details
-    driver.find_element("id", 'username').send_keys(acc_username)
-    driver.find_element("id", 'password').send_keys(acc_password)
-    driver.find_element("name", "submit").click()
-    time.sleep(1)
-    account_page_button = driver.find_element("id", "accountPage")
-    account_page_button.click()
-    time.sleep(2)
+    try:
+        driver.get(homepage_url)
+        # go to login page
+        driver.find_element("id", 'loginPage').click()
+        # login with details
+        driver.find_element("id", 'username').send_keys(acc_username)
+        driver.find_element("id", 'password').send_keys(acc_password)
+        driver.find_element("name", "submit").click()
+        time.sleep(1)
+        account_page_button = driver.find_element("id", "accountPage")
+        account_page_button.click()
+        time.sleep(2)
+    except Exception as e:
+        driver.quit()
+        raise e
 
 
 def add_user_to_organization(homepage_url, organization_username, token):
@@ -105,7 +109,7 @@ def add_user_to_organization(homepage_url, organization_username, token):
                    +organization_username)
         time.sleep(1)
     except Exception as e:
-        # driver.quit()
+        driver.quit()
         raise e
 
 
@@ -116,7 +120,7 @@ def check_if_user_is_in_organization(acc_username):
         time.sleep(1)
         driver.find_element(By.XPATH, "//td[contains(text(), "+acc_username+")]")
     except Exception as e:
-        # driver.quit()
+        driver.quit()
         raise e
 
 
@@ -130,7 +134,7 @@ def remove_user_from_organization():
         success_text= driver.find_element('id', 'organization-success').text
         assert "User deleted from organization." in success_text
     except Exception as e:
-        # driver.quit()
+        driver.quit()
         raise e
 
 
@@ -144,7 +148,7 @@ def leave_organization_and_convert_to_organization():
         time.sleep(1)
 
     except Exception as e:
-        # driver.quit()
+        driver.quit()
         raise e
 
 
@@ -167,7 +171,7 @@ def delete_account(homepage_url, acc_username, password):
         time.sleep(3)
 
     except Exception as e:
-        # driver.quit()
+        driver.quit()
         raise e
 
 
@@ -187,7 +191,7 @@ def check_if_account_deleted(homepage_url, acc_username, password):
         assert error_div.is_displayed(), error_msg
 
     except Exception as e:
-        # driver.quit()
+        driver.quit()
         raise e
 
 
