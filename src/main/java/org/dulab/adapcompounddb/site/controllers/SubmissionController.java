@@ -418,23 +418,6 @@ public class SubmissionController extends BaseController {
         return "redirect:/account/";
     }
 
-    @RequestMapping(value = "/submission/{userId:\\d+}/deleteByUserId")
-    public String deleteByUserId(@PathVariable("userId") final long id, HttpSession session){
-
-        UserPrincipal currentUser = getCurrentUserPrincipal();
-
-        if(currentUser == null)
-            throw new RuntimeException("You must be logged in to perform this operation");
-        else if(!currentUser.isAdmin() && currentUser.getId()!=id)
-            throw new RuntimeException("You are not authorized to perform this operation");
-        else {
-            submissionService.deleteByUserId(id);
-            userPrincipalService.delete(id);
-        }
-        session.setAttribute("currentUser", null);
-        return "redirect:/login/";
-    }
-
     private String redirectFileUpload() {
         return "redirect:/file/upload/";
     }

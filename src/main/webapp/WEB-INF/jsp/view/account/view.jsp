@@ -361,7 +361,7 @@
                         <a href="${pageContext.request.contextPath}/file/upload/" class="btn btn-primary">New Study</a>
                         <a class="btn btn-danger" onclick="confirmDeleteDialog.show(
                                 'Your current account &quot;${user.name}&quot; will be deleted. Are you sure?',
-                                '${pageContext.request.contextPath}/submission/${user.id}/deleteByUserId/');">
+                                '${pageContext.request.contextPath}/user/${user.id}/delete/');">
                             Delete Account
                         </a>
                 </div>
