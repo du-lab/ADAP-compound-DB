@@ -88,7 +88,7 @@ def add_user_to_organization(homepage_url, organization_username, token):
                "/organization/addUser?"
                "token="+token+"&orgEmail="
                +organization_username)
-    time.sleep(1)
+    time.sleep(3)
 
 
 def check_if_user_is_in_organization(acc_username):
@@ -171,12 +171,13 @@ def main():
         # we are setting the token to be the username of the account
         # only when integration test flag is turned on
         invite_user_to_organization(acc_username)
+        logout()
 
         # add user to organization
         # this test is just about simulating using the token link
         # since the logic uses token and organization user's email to add to organization
         add_user_to_organization(homepage_url, organization_username+"@gmail.com", acc_username);
-        logout()
+
 
         login(homepage_url, organization_username, password)
 
@@ -188,12 +189,13 @@ def main():
         # we are setting the token to be the username of the account
         # only when integration test flag is turned on
         invite_user_to_organization(acc_username)
+        logout()
 
         # add user to organization
         # this test is just about simulating using the token link
         # since the logic uses token and organization user's email to add to organization
         add_user_to_organization(homepage_url, organization_username+"@gmail.com", acc_username);
-        logout()
+
 
         # login to user account
         login(homepage_url, acc_username, password)
