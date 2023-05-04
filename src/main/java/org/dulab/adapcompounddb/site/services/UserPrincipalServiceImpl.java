@@ -16,6 +16,7 @@ import org.dulab.adapcompounddb.models.UserParameterType;
 import org.dulab.adapcompounddb.site.repositories.UserPrincipalRepository;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +31,9 @@ public class UserPrincipalServiceImpl implements UserPrincipalService {
     private final UserParameterRepository userParameterRepository;
 
     private final EmailService emailService;
+
+    @Value("${INTEGRATION_TEST}")
+    private boolean INTEGRATION_TEST;
 
     @Autowired
     public UserPrincipalServiceImpl(UserPrincipalRepository userPrincipalRepository,
@@ -216,14 +220,15 @@ public class UserPrincipalServiceImpl implements UserPrincipalService {
         while (userPrincipleList.hasNext()) {
             try {
                 UserPrincipal user = userPrincipleList.next();
-                String resetToken = UUID.randomUUID().toString();
+                String resetToken = INTEGRATION_TEST ? user.getUsername() : UUID.randomUUID().toString();
                 Date expirationDate = new Date(System.currentTimeMillis() + 3600000);//1 hour expiration time
                 user.setOrganizationRequestToken(resetToken);
                 user.setOrganizationRequestExpirationDate(expirationDate);
                 saveUserPrincipal(user);
-                String url =  "https://adap.cloud/organization/addUser?token=" +resetToken
+                String url =  "https://adap.cloud/organization/addUser?token=" + resetToken
                         +"&orgEmail="+orgUser.getEmail();
-                emailService.sendOrganizationInviteEmail(user, orgUser, url);
+                if (!INTEGRATION_TEST)
+                    emailService.sendOrganizationInviteEmail(user, orgUser, url);
                 LOGGER.info("A username was sent to " + user.getEmail());
             } catch (Exception e) {
                 LOGGER.warn( e.getMessage(), e);
