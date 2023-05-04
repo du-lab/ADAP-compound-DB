@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
+import org.apache.http.client.utils.URIBuilder;
 import org.dulab.adapcompounddb.models.dto.SearchParametersDTO;
 import org.dulab.adapcompounddb.models.entities.User;
 import org.slf4j.Logger;
@@ -226,8 +227,15 @@ public class UserPrincipalServiceImpl implements UserPrincipalService {
                 user.setOrganizationRequestToken(inviteToken);
                 user.setOrganizationRequestExpirationDate(expirationDate);
                 saveUserPrincipal(user);
-                String url =  "https://adap.cloud/organization/addUser?token=" + inviteToken
-                        +"&orgEmail="+orgUser.getEmail();
+
+                URIBuilder uriBuilder = new URIBuilder()
+                        .setScheme("https")
+                        .setHost("adap.cloud")
+                        .setPath("/organization/addUser")
+                        .addParameter("token", inviteToken)
+                        .addParameter("orgEmail", orgUser.getEmail());
+                String url = uriBuilder.build().toString();
+
                 // Disabling email service in test server for automation testing
                 if (!INTEGRATION_TEST)
                     emailService.sendOrganizationInviteEmail(user, orgUser, url);
