@@ -107,7 +107,7 @@ public class ExportRestController {
         if (sessionLibraries != null) {
              librariesUsedForMatching = (Map<BigInteger, String>) sessionLibraries;
                 for (Map.Entry<BigInteger, String> library : librariesUsedForMatching.entrySet()) {
-                    String formatedName = library.getValue().replaceAll("<span(.*?)</span>", "");
+                    String formatedName = library.getValue().replaceAll("<span(.*)</span>", "");
                     librariesUsedForMatching.put(library.getKey(), formatedName);
                 }
         }
