@@ -171,6 +171,26 @@ def delete_account(homepage_url, acc_username, password):
         raise e
 
 
+def check_if_account_deleted(homepage_url, acc_username, password):
+    try:
+        driver.get(homepage_url)
+        # go to login page
+        driver.find_element("id", 'loginPage').click()
+        # login with details
+        driver.find_element("id", 'username').send_keys(acc_username)
+        driver.find_element("id", 'password').send_keys(password)
+        driver.find_element("name", "submit").click()
+        time.sleep(1)
+        expected_text = "Please try again"
+        error_msg = "Error message is not displayed"
+        error_div = driver.find_element(By.XPATH, '//div[contains(text(), "'+expected_text+'")]')
+        assert error_div.is_displayed(), error_msg
+
+    except Exception as e:
+        # driver.quit()
+        raise e
+
+
 def main():
     """Main function that is called from a command line"""
     acc_username = random_string(8)
@@ -222,12 +242,14 @@ def main():
     logout()
 
     # delete user account
-    # delete_account(homepage_url, acc_username, password)
+    delete_account(homepage_url, acc_username, password)
 
     # delete organization account
     delete_account(homepage_url, organization_username, password)
-    driver.get(homepage_url)
-    time.sleep(30)
+
+    # check if both accounts are deleted
+    check_if_account_deleted(homepage_url, acc_username, password)
+    check_if_account_deleted(homepage_url, organization_username, password)
 
 
 if __name__ == '__main__':
