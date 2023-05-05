@@ -1,7 +1,6 @@
 package org.dulab.adapcompounddb.site.services.search;
 
 import java.math.BigInteger;
-import java.util.stream.Collectors;
 import org.dulab.adapcompounddb.models.dto.SpectrumDTO;
 import org.dulab.adapcompounddb.models.enums.SearchTaskStatus;
 import org.dulab.adapcompounddb.site.repositories.SearchTaskRepository;
@@ -229,7 +228,8 @@ public class GroupSearchService {
 
                 try (FileOutputStream fileOutputStream = new FileOutputStream(filePath)) {
                     //export file locally
-                    exportSearchResultsService.export(fileOutputStream, groupSearchDTOList);
+                    exportSearchResultsService.export(fileOutputStream, groupSearchDTOList,
+                        libraries.values());
                     //send email with that file
                     emailService.sendEmailWithAttachment(filePath, userPrincipal.getEmail());
                     //delete the local file

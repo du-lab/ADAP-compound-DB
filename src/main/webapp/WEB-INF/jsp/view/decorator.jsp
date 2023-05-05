@@ -85,6 +85,15 @@
                 }
             });
         }, 1000); // 1 seconds
+
+        //get application version
+        $.ajax({
+            url: "/version",
+            success: function(data) {
+              $("#version").text("Version: " + data);
+              $("#versionBadge").text(data);
+            }
+        });
     });
     if (localStorage.getItem("cookieSeen") !== "shown") {
         $(".cookie-banner").delay(2000).fadeIn();
@@ -111,7 +120,7 @@
                 <h1 class="text-nowrap">
                     <i class="material-icons mobile" title="Menu" id="menu">view_headline</i>
                     ADAP-KDB Spectral Knowledgebase
-                    <sup><small class="badge badge-pill badge-light">Beta</small></sup>
+                    <sup><small id ="versionBadge" class="badge badge-pill badge-light"></small></sup>
                 </h1>
             </div>
             <div class="col-12 col-lg-4">
@@ -181,7 +190,7 @@
                         <li class="nav-item">
                             <a class="nav-link" href="<c:url value="/about/"/>">
                                 <i class="material-icons align-middle">help</i>
-                                <span class="align-middle">Documentation</span>
+                                <span class="align-middle">About</span>
                             </a>
                         </li>
 
@@ -260,6 +269,13 @@
         <sitemesh:write property='body' />
     </article>
 </div>
+
+<footer>
+    <div style="margin-left:30px">
+        <hr/>
+        <p id="version" class = "text-muted"></p>
+    </div>
+</footer>
 </body>
 
 </html>
