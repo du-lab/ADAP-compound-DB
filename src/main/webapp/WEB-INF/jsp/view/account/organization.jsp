@@ -37,12 +37,10 @@
           <td>${member.username}</td>
           <td>${member.email}</td>
           <td>
-            <a id="organization_dialog" onclick="confirmDeleteDialog.show(
-                    'Are you sure you want to remove user \'${member.username}\' from the organization?',
-                    '${pageContext.request.contextPath}/account/organization/${member.username}/delete/');">
-              Remove User
+            <a id="organization_dialog" href="${pageContext.request.contextPath}/account/organization/${member.username}/delete/">
               <i class="material-icons" title="Delete">
-                &#xE872;</i>
+                &#xE872;
+              </i>
             </a>
           </td>
         </tr>
