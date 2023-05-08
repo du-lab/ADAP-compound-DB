@@ -9,6 +9,7 @@ variables:
 #  paths:
 #    - .m2/repository
 
+
 build:
   stage: build
   only:
