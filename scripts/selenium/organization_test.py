@@ -85,10 +85,11 @@ def login(homepage_url, acc_username, acc_password):
 
 def add_user_to_organization(homepage_url, organization_username, token):
     time.sleep(5)
-    driver.get(homepage_url+
+    x = driver.get(homepage_url+
                "/organization/addUser?"
                "token="+token+"&orgEmail="
                +organization_username)
+    print(x)
     time.sleep(5)
     driver.find_element(By.XPATH, "//p[contains(text(), 'Thank you for accepting the invite.')]")
     time.sleep(1)
@@ -176,7 +177,7 @@ def main():
         # we are setting the token to be the username of the account
         # only when integration test flag is turned on
         invite_user_to_organization(acc_username)
-        logout()
+        # logout()
 
         # add user to organization
         # this test is just about simulating using the token link
