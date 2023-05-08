@@ -89,14 +89,15 @@ def add_user_to_organization(homepage_url, organization_username, token):
                "/organization/addUser?"
                "token="+token+"&orgEmail="
                +organization_username)
+    time.sleep(5)
+    driver.find_element(By.XPATH, "//p[contains(text(), 'Thank you for accepting the invite.')]")
     time.sleep(1)
-    assert "Thank you for accepting the invite." in driver.find_element(By.XPATH, "//p[contains(text(), 'Thank you for accepting the invite.')]").text
-    time.sleep(1)
+
 
 def check_if_user_is_in_organization(acc_username):
     driver.find_element('id','organizationTab').click()
     time.sleep(1)
-    assert acc_username in driver.find_element(By.XPATH, "//td[contains(text(), "+acc_username+")]").text
+    assert acc_username in driver.find_element(By.XPATH, "//td[contains(text(), '"+acc_username+"')]").text
 
 
 def remove_user_from_organization():
