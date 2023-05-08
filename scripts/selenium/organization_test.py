@@ -99,7 +99,7 @@ def check_if_user_is_in_organization(acc_username):
 
 
 def remove_user_from_organization():
-    time.sleep(1)
+    time.sleep(3)
     driver.find_element("id", "organization_dialog").click()
     # driver.find_element(By.XPATH, "//a[contains(text(), 'Remove User')]").click()
     time.sleep(1)
