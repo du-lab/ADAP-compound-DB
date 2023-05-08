@@ -89,10 +89,6 @@ def add_user_to_organization(homepage_url, organization_username, token):
                "organization/addUser?"
                "token="+token+"&orgEmail="
                +organization_username)
-    print(homepage_url+
-          "/organization/addUser?"
-          "token="+token+"&orgEmail="
-          +organization_username)
     time.sleep(5)
     driver.find_element(By.XPATH, "//p[contains(text(), 'Thank you for accepting the invite')]")
     time.sleep(1)
@@ -167,8 +163,6 @@ def main():
         parser.add_argument('--homepage-url', help='url for adap-kdb homepage', required=True)
         args = parser.parse_args()
         homepage_url = args.homepage_url
-        print(acc_username)
-        print(organization_username)
         # create user account
         create_account(homepage_url, acc_username, password, False)
         logout()
