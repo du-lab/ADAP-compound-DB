@@ -185,7 +185,7 @@ def main():
         add_user_to_organization(homepage_url, organization_username+"@gmail.com", acc_username);
 
 
-        login(homepage_url, organization_username, password)
+        # login(homepage_url, organization_username, password)
 
         check_if_user_is_in_organization(acc_username)
         remove_user_from_organization()
