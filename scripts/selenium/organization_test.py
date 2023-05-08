@@ -99,11 +99,11 @@ def check_if_user_is_in_organization(acc_username):
 
 
 def remove_user_from_organization():
-    time.sleep(15)
+    time.sleep(1)
     driver.find_element("id", "organization_dialog").click()
-    time.sleep(15)
+    time.sleep(1)
     driver.find_element(By.XPATH,"//button[text()='Delete']").click()
-    time.sleep(15)
+    time.sleep(1)
     success_text= driver.find_element('id', 'organization-success').text
     assert "User deleted from organization." in success_text
 
