@@ -86,7 +86,7 @@ def login(homepage_url, acc_username, acc_password):
 def add_user_to_organization(homepage_url, organization_username, token):
     time.sleep(5)
     x = driver.get(homepage_url+
-               "/organization/addUser?"
+               "organization/addUser?"
                "token="+token+"&orgEmail="
                +organization_username)
     print(homepage_url+
