@@ -96,6 +96,7 @@ def check_if_user_is_in_organization(acc_username):
     driver.find_element('id','organizationTab').click()
     time.sleep(1)
     driver.find_element(By.XPATH, "//td[contains(text(), "+acc_username+")]")
+    assert acc_username in driver.find_element(By.XPATH, "//td[contains(text(), "+acc_username+")]").text
 
 
 def remove_user_from_organization():
