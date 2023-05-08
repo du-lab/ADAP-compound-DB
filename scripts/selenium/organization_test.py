@@ -163,7 +163,8 @@ def main():
         parser.add_argument('--homepage-url', help='url for adap-kdb homepage', required=True)
         args = parser.parse_args()
         homepage_url = args.homepage_url
-
+        print(acc_username)
+        print(organization_username)
         # create user account
         create_account(homepage_url, acc_username, password, False)
         logout()
