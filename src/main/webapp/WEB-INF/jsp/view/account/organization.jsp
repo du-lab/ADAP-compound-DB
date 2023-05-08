@@ -27,7 +27,7 @@
         <th>S.No</th>
         <th>Name</th>
         <th>Email</th>
-        <th>Remove User</th>
+        <th></th>
       </tr>
       </thead>
       <tbody>
@@ -40,7 +40,9 @@
             <a id="organization_dialog" onclick="confirmDeleteDialog.show(
                     'Are you sure you want to remove user \'${member.username}\' from the organization?',
                     '${pageContext.request.contextPath}/account/organization/${member.username}/delete/');">
-              <i class="material-icons" title="Delete">&#xE872;</i>
+              Remove User
+              <i class="material-icons" title="Delete">
+                &#xE872;</i>
             </a>
           </td>
         </tr>
