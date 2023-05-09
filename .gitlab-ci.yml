@@ -1,5 +1,5 @@
 variables:
-  MAVEN_EXEC: C:\Maven\apache-maven-3.6.3\bin\mvn
+#  MAVEN_EXEC: C:\Maven\apache-maven-3.6.3\bin\mvn
   MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
   HOMEPAGE_URL: http://localhost:8080/
 
@@ -8,23 +8,29 @@ variables:
 #cache:
 #  paths:
 #    - .m2/repository
+tags:
+    - test mac
+image: docker:latest
+services:
+    - docker:dind
+before_script:
+    -docker info
 
 build:
   stage: build
   only:
-    - master
-    - merge_requests
+      - master
+      - merge_requests
   script:
-    - mvn -version
-    - mvn tomcat7:undeploy -Denvironment=test
-    - mvn clean install tomcat7:redeploy -Denvironment=test
-    - python scripts\selenium\initial_test.py --homepage-url $HOMEPAGE_URL
+    - mvn clean install
+    - docker build -f docker/adap-kdb-docker/integration_test -t adap-kdb-img .
 
 test:
   stage: test
   only:
     - master
     - merge_requests
+
   script:
     - pwd
     - python --version
@@ -38,13 +44,11 @@ test:
     - python scripts\selenium\cluster_page_test.py --homepage-url $HOMEPAGE_URL
     - python scripts\selenium\upload_and_save_study_after_login.py --homepage-url $HOMEPAGE_URL --msp-path $CI_PROJECT_DIR\scripts\selenium\combined.msp  --user-name $ADAP_KDB_TEST_USERNAME --user-password $ADAP_KDB_TEST_PASSWORD
 
-build-image:
+export-image:
   stage: deploy
-  variables:
-    MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
   script:
-    - mvn clean install
-    - docker build -f docker/adap-kdb-docker/Dockerfile -t adap-kdb-img .
+#    - mvn clean install
+    - docker build -f docker/adap-kdb-docker/manual_test -t adap-kdb-img .
     - docker save adap-kdb-img  > adap-kdb-img.tar
 
   artifacts:
@@ -57,5 +61,4 @@ build-image:
   only:
     - master
     - merge_requests
-  tags:
-    - mac2
+
