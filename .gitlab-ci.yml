@@ -9,12 +9,14 @@ variables:
 #  paths:
 #    - .m2/repository
 tags:
-    - test mac
+    - test_mac
 image: docker:latest
 services:
     - docker:dind
 before_script:
     -docker info
+
+
 
 build:
   stage: build
