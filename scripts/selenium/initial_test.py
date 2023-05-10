@@ -1,7 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import argparse
-
+import time
 
 def initial_test(homepage_url):
 
@@ -10,8 +10,14 @@ def initial_test(homepage_url):
     driver = webdriver.Chrome('scripts/selenium/drivers/chromedriver.exe')
 
     try:
+        # Add some delay
+        time.sleep(10)
+
         # Open a web page
         driver.get(homepage_url)
+
+        #Add some delay
+        time.sleep(10)
 
         # Print out a title of the web page
         print(driver.title)
