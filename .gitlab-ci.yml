@@ -20,6 +20,7 @@ build:
     - docker run -p 8080:8080 adap-kdb-img
     - python --version
     - python scripts\selenium\initial_test.py --homepage-url $HOMEPAGE_URL
+  timeout: 15m
   tags:
     - test_mac
 
@@ -39,6 +40,7 @@ test:
     - python scripts\selenium\group_search_test_without_login.py --homepage-url $HOMEPAGE_URL --msp-path $CI_PROJECT_DIR\scripts\selenium\combined.msp
     - python scripts\selenium\cluster_page_test.py --homepage-url $HOMEPAGE_URL
     - python scripts\selenium\upload_and_save_study_after_login.py --homepage-url $HOMEPAGE_URL --msp-path $CI_PROJECT_DIR\scripts\selenium\combined.msp  --user-name $ADAP_KDB_TEST_USERNAME --user-password $ADAP_KDB_TEST_PASSWORD
+  timeout: 30m
   tags:
       - test_mac
 
@@ -57,6 +59,7 @@ package:
   only:
     - master
     - merge_requests
+  timeout: 15m
   tags:
       - test_mac
 
