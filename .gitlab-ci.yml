@@ -4,10 +4,9 @@ variables:
   HOMEPAGE_URL: http://localhost:8080/
 
 # In addition, variables ADAP_KDB_TEST_USERNAME and ADAP_KDB_TEST_PASSWORD must be defined in GitLab CI settings.
-#cache:
-#  paths:
-#    - .m2/repository
-
+cache:
+  paths:
+    - .m2/repository
 
 build:
   stage: build
