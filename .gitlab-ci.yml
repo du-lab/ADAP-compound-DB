@@ -18,6 +18,8 @@ build:
     - mvn clean install
     - docker build -f docker/adap-kdb-docker/integration_test -t adap-kdb-img .
     - docker run -p 8080:8080 adap-kdb-img
+    - python --version
+    - python scripts\selenium\initial_test.py --homepage-url $HOMEPAGE_URL
   tags:
     - test_mac
 
@@ -28,8 +30,6 @@ test:
     - merge_requests
   script:
     - pwd
-    - python --version
-    - python scripts\selenium\initial_test.py --homepage-url $HOMEPAGE_URL
     - python scripts\selenium\ontology_level_test.py --homepage-url $HOMEPAGE_URL --username $ADAP_KDB_TEST_USERNAME --password $ADAP_KDB_TEST_PASSWORD
     - python scripts\selenium\manual_search_test.py --homepage-url $HOMEPAGE_URL --identifier "eicosatrienoic acid" --spectrum "79 100; 67 90.3325; 80 75.8722; 81 59.0838; 93 54.0933"
     - python scripts\selenium\msp_upload_process_test.py --homepage-url $HOMEPAGE_URL --msp-path $CI_PROJECT_DIR\scripts\selenium\combined.msp
