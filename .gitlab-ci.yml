@@ -17,7 +17,7 @@ build:
     - mvn -version
     - mvn clean install
     - docker build -f docker/adap-kdb-docker/integration_test -t adap-kdb-img .
-    - docker run -p 8080:8080 adap-kdb-img
+    - docker run -d -p 8080:8080 adap-kdb-img
     - python --version
     - python scripts\selenium\initial_test.py --homepage-url $HOMEPAGE_URL
   timeout: 15m
