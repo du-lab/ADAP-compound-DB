@@ -11,13 +11,13 @@ def initial_test(homepage_url):
 
     try:
         # Add some delay
-        time.sleep(10)
+        time.sleep(30)
 
         # Open a web page
         driver.get(homepage_url)
 
         #Add some delay
-        time.sleep(10)
+        time.sleep(15)
 
         # Print out a title of the web page
         print(driver.title)
