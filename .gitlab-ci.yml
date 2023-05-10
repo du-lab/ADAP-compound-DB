@@ -1,5 +1,5 @@
 variables:
-  MAVEN_EXEC: C:\Maven\apache-maven-3.6.3\bin\mvn
+#  MAVEN_EXEC: C:\Maven\apache-maven-3.6.3\bin\mvn
   MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
   HOMEPAGE_URL: http://localhost:8080/
 
@@ -8,27 +8,25 @@ variables:
 #  paths:
 #    - .m2/repository
 
-tags:
-    - test_mac
-
 
 build:
   stage: build
   only:
-      - master
-      - merge_requests
+    - master
+    - merge_requests
   script:
     - mvn -version
     - mvn clean install
     - docker build -f docker/adap-kdb-docker/integration_test -t adap-kdb-img .
     - docker run -p 8080:8080 adap-kdb-img
+  tags:
+    - test_mac
 
 test:
   stage: test
   only:
     - master
     - merge_requests
-
   script:
     - pwd
     - python --version
@@ -42,6 +40,8 @@ test:
     - python scripts\selenium\group_search_test_without_login.py --homepage-url $HOMEPAGE_URL --msp-path $CI_PROJECT_DIR\scripts\selenium\combined.msp
     - python scripts\selenium\cluster_page_test.py --homepage-url $HOMEPAGE_URL
     - python scripts\selenium\upload_and_save_study_after_login.py --homepage-url $HOMEPAGE_URL --msp-path $CI_PROJECT_DIR\scripts\selenium\combined.msp  --user-name $ADAP_KDB_TEST_USERNAME --user-password $ADAP_KDB_TEST_PASSWORD
+  tags:
+      - test_mac
 
 package:
   stage: deploy
@@ -49,15 +49,15 @@ package:
 #    - mvn clean install
     - docker build -f docker/adap-kdb-docker/manual_test -t adap-kdb-img .
     - docker save adap-kdb-img  > adap-kdb-img.tar
-
   artifacts:
     paths:
       - "adap-kdb-img.tar"
       - "scripts/script.sh"
     name: "adap-kdb-img"
     expire_in: 1 day
-
   only:
     - master
     - merge_requests
+  tags:
+      - test_mac
 
