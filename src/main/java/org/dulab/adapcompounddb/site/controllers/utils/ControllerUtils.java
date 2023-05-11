@@ -26,6 +26,7 @@ public class ControllerUtils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ControllerUtils.class);
     public static final String  EXPORT_PROGRESS_ATTRIBUTE_NAME = "export_progress";
+    public static final String GROUP_SEARCH_LIBRARIES_USED_FOR_MATCHING = "group_search_libraries_used_for_matching";
     public static final String GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME = "group_search_async";
     public static final String GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME = "group_search_results";
     public static final String GROUP_SEARCH_RESULTS_FILTERED = "group_search_results_filtered";

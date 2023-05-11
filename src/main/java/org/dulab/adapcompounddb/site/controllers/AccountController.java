@@ -14,6 +14,7 @@ import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.dulab.adapcompounddb.site.services.UserPrincipalService;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,8 +37,9 @@ public class AccountController extends BaseController {
     private final SearchTaskService searchTaskService;
 
     private Executor threadPoolTaskExecutor;
+    @Value("${info.version}")
 
-
+    private String applicationVersion;
     @Autowired
     public AccountController(SubmissionService submissionService, UserPrincipalService userPrincipalService,
                              SearchTaskService searchTaskService, Executor threadPoolTaskExecutor) {
@@ -77,6 +79,7 @@ public class AccountController extends BaseController {
         model.addAttribute("submissionIdToChromatographyListMap", submissionIdToChromatographyListMap);
         model.addAttribute("filterForm",new FilterForm());
         model.addAttribute("organizationForm",new OrganizationForm());
+        model.addAttribute("appVersion", applicationVersion);
         return "account/view";
     }
     @RequestMapping(value = "/account/saveparameters", method = RequestMethod.POST)

@@ -305,6 +305,7 @@
                                 <th>Status</th>
                                 <th>Time</th>
                                 <th>Libraries Searched Against</th>
+                                <th>Software Version</th>
                                 <th></th>
                             </tr>
                             </thead>
@@ -330,14 +331,17 @@
                                         </c:forEach>
                                     </td>
                                     <td>
+                                        ${appVersion}
+                                    </td>
+                                    <td>
                                         <c:choose>
                                             <c:when test="${searchTask.status == 'RUNNING' && sessionScope[dulab:groupSearchResultsAttributeName()] != null}">
                                                 <a href="${pageContext.request.contextPath}/group_search/" type="button"
-                                                   class="btn-sm btn-primary">View Matches</a>
+                                                   >View Matches</a>
                                             </c:when>
                                             <c:when test="${searchTask.status == 'FINISHED'}">
                                                 <a href="${pageContext.request.contextPath}/submission/group_search/${searchTask.submission.id}"
-                                                   type="button" class="btn-sm btn-primary">View Matches</a>
+                                                   >View Matches</a>
                                             </c:when>
                                             <c:otherwise>
                                             </c:otherwise>

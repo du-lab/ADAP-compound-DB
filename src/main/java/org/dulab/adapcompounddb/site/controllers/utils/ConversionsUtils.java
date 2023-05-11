@@ -25,9 +25,8 @@ public class ConversionsUtils {
     static{
         try {
             loadLibrary();
-        } catch (URISyntaxException | IOException e) {
-            LOGGER.error(e.getMessage(), e) ;
-            throw new RuntimeException(e.getMessage());
+        } catch (Exception e) {
+            LOGGER.error("****RDKIT ERROR: " + e.getMessage(), e) ;
         }
     }
 
@@ -154,48 +153,76 @@ public class ConversionsUtils {
             return "";
         }
     }
-    private static void loadLibrary() throws URISyntaxException, IOException {
+    private static void loadLibrary() throws  Exception {
         //get os name
         //System.out.println("***************" + System.getProperty("java.version"));
         String osname = System.getProperty("os.name");
         String architecture = System.getProperty("os.arch");
+        String libName = null;
         osname = osname.toLowerCase();
-        URL url = null;
+        InputStream in = null;
+
+        LOGGER.info("***ARCHITECTURE: " + osname + ", " + architecture);
         if(osname == null)
             throw new RuntimeException("Couuld not determine os properly");
-        else if(osname.contains("linux"))
-            url = ConversionsUtils.class.getResource("linux-aarch64/libGraphMolWrap.so");
+        else if(osname.contains("linux")){
+            if(architecture == null || architecture.isEmpty())
+                throw new RuntimeException("Could not determine architecture properly");
+            else if(architecture.contains("aarch64")){
+                in = ConversionsUtils.class.getResourceAsStream("linux-aarch64/libGraphMolWrap.so");
+            }
+            else if (architecture.contains("amd64")){
+                in = ConversionsUtils.class.getResourceAsStream("linux-amd64/libGraphMolWrap.so");
+            }
+            else{
+                throw new RuntimeException("Could not determine architecture properly: "  + osname + ", " + architecture);
+            }
+
+
+            libName = "libGraphMolWrap.so";
+        }
+
         else if(osname.contains("mac") )
         {
             if(architecture == null || architecture.isEmpty())
                 throw new RuntimeException("Could not determine architecture properly");
-            else if(architecture.contains("x86_64"))
-                url = ConversionsUtils.class.getResource("mac-amd64/libGraphMolWrap.jnilib");
-            else if(architecture.contains("aarch64"))
-                url = ConversionsUtils.class.getResource("mac-arm/libGraphMolWrap.jnilib");
+            else if(architecture.contains("x86_64")) {
+                in = ConversionsUtils.class.getResourceAsStream("mac-amd64/libGraphMolWrap.jnilib");
+            }
+            else if(architecture.contains("aarch64")) {
+                in = ConversionsUtils.class.getResourceAsStream("mac-arm/libGraphMolWrap.jnilib");
+            }
             else
-                throw new RuntimeException("Could not determine architecture properly");
-        }
-        else if(osname.contains("windows"))
-            url = ConversionsUtils.class.getResource("windows-amd64/GraphMolWrap.dll");
+                throw new RuntimeException("Could not determine architecture properly: "  + osname + ", " + architecture);
 
-        //get path to native library, create duplicate and load it then delete
-        File file = new File(url.toURI());
-        File tmpDir = Files.createTempDirectory("my-native-lib").toFile();
-        tmpDir.deleteOnExit();
-        File nativeLibTmpFile = new File(tmpDir, file.getName());
-        nativeLibTmpFile.deleteOnExit();
-        try (InputStream in = url.openStream()) {
-            Files.copy(in, nativeLibTmpFile.toPath());
+            libName = "libGraphMolWrap.jnilib";
         }
-        System.load(nativeLibTmpFile.getAbsolutePath());
+        else if(osname.contains("windows")) {
+            in = ConversionsUtils.class.getResourceAsStream("windows-amd64/GraphMolWrap.dll");
+            libName = "libGraphMolWrap.dll";
+        }
+
+        File tmpDir = null;
+        File nativeLibTmpFile = null;
+        try {
+            //get path to native library, create duplicate and load it then delete
+            tmpDir = Files.createTempDirectory("my-native-lib").toFile();
+            tmpDir.deleteOnExit();
+            nativeLibTmpFile = new File(tmpDir, libName);
+            nativeLibTmpFile.deleteOnExit();
+
+            Files.copy(in, nativeLibTmpFile.toPath());
+            System.load(nativeLibTmpFile.getAbsolutePath());
+
+            LOGGER.info("***NATIVE LIBRARY LOADED SUCCESSFULLY!");
+        }
+        catch(Exception e){
+            throw new RuntimeException("Failed to load native library: " + e.getMessage());
+        }
+
 
 
     }
-
-
-
-
 
 
 }

@@ -9,7 +9,6 @@ variables:
 #  paths:
 #    - .m2/repository
 
-
 build:
   stage: build
   only:
@@ -39,3 +38,25 @@ test:
     - python scripts\selenium\cluster_page_test.py --homepage-url $HOMEPAGE_URL
     - python scripts\selenium\upload_and_save_study_after_login.py --homepage-url $HOMEPAGE_URL --msp-path $CI_PROJECT_DIR\scripts\selenium\combined.msp  --user-name $ADAP_KDB_TEST_USERNAME --user-password $ADAP_KDB_TEST_PASSWORD
     - python scripts\selenium\organization_test.py --homepage-url $HOMEPAGE_URL
+
+build-image:
+  stage: deploy
+  variables:
+    MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+  script:
+    - mvn clean install
+    - docker build -f docker/adap-kdb-docker/Dockerfile -t adap-kdb-img .
+    - docker save adap-kdb-img  > adap-kdb-img.tar
+
+  artifacts:
+    paths:
+      - "adap-kdb-img.tar"
+      - "scripts/script.sh"
+    name: "adap-kdb-img"
+    expire_in: 1 day
+
+  only:
+    - master
+    - merge_requests
+  tags:
+    - mac2

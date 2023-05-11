@@ -149,15 +149,16 @@ public class GroupSearchController extends BaseController {
         parameters.setDisease(disease);
         parameters.setSubmissionIds(form.getSubmissionIds());
 
-        Map<BigInteger, String> filteredLibraries = new TreeMap<>();
+        Map<BigInteger, String> chosenLibraries = new TreeMap<>();
         for(Map.Entry<BigInteger, String> entry : filterOptions.getSubmissions().entrySet()){
             if(form.getSubmissionIds().contains(entry.getKey())){
-                filteredLibraries.put(entry.getKey(), entry.getValue());
+                chosenLibraries.put(entry.getKey(), entry.getValue());
             }
         }
 
+        session.setAttribute(GROUP_SEARCH_LIBRARIES_USED_FOR_MATCHING, chosenLibraries);
         asyncResult = groupSearchService.groupSearch(this.getCurrentUserPrincipal(), submission, submission.getFiles(), session,
-                parameters, filteredLibraries, form.isWithOntologyLevels(), form.isSendResultsToEmail(), savedSubmission);
+                parameters, chosenLibraries, form.isWithOntologyLevels(), form.isSendResultsToEmail(), savedSubmission);
         session.setAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME, asyncResult);
 
 

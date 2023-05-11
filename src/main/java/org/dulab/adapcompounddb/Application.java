@@ -42,7 +42,7 @@ public class Application extends SpringBootServletInitializer {
     @Bean
     public Executor threadPoolTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(8);
+        executor.setCorePoolSize(4);
         return executor;
     }
     @Bean
