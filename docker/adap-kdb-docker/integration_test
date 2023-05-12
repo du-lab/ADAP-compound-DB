@@ -1,13 +1,13 @@
 #FROM openjdk:21-slim-buster
 #RUN apt-get update && apt-get install -y libfreetype6
-FROM eclipse-temurin:17-jre-alpine
+#FROM eclipse-temurin:19-jre-alpine
 #required by rdkit
-RUN apk update &&\
-    apk add --no-cache libstdc++6 &&\
-    apk add --no-cache freetype &&\
-    apk add libc6-compat &&\
-    ln -s /lib/libc.musl-x86_64.so.1 /lib/ld-linux-x86-64.so.2
-
+#RUN apk update &&\
+    #apk add --no-cache libstdc++6 &&\
+    #apk add --no-cache freetype &&\
+   # apk add libc6-compat &&\
+   # ln -s /lib/libc.musl-x86_64.so.1 /lib/ld-linux-x86-64.so.2
+From openjdk:19
 #For s3
 ENV ACCESS_ID="AKIA57CZCFX53PQDCA6K"
 ENV ACCESS_KEY="Z8YWRt6b4iGe73Lx90NgMvHaDhfZm+ABpNICNazK"
