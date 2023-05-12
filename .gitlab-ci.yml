@@ -47,7 +47,7 @@ test:
 package:
   stage: deploy
   script:
-#    - mvn clean install
+    - mvn clean install
     - docker build -f docker/adap-kdb-docker/manual_test -t adap-kdb-img .
     - docker save adap-kdb-img  > adap-kdb-img.tar
   artifacts:
