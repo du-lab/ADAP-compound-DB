@@ -31,7 +31,7 @@ def ontology_level_test(homepage_url, username, password):
         assert '/submission/' in driver.current_url.__str__()
         driver.find_element_by_id('searchMenu').click()
         driver.find_element_by_id('searchWithOntologyLevels').click()
-
+        time.sleep(10)
         # Search parameters page
         assert '/group_search/parameters' in driver.current_url.__str__()
         driver.find_element_by_id('searchButton').click()
