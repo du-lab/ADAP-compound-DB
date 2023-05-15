@@ -23,8 +23,8 @@ public class CaptchaService {
     private static final Pattern RESPONSE_PATTERN = Pattern.compile("[A-Za-z0-9_-]+");
     public static String GOOGLE_CAPTCHA_RESPONSE = "g-recaptcha-response";
 
-    @Value("${INTEGRATION_TEST}")
-    private boolean INTEGRATION_TEST;
+    private boolean INTEGRATION_TEST = System.getenv("INTEGRATION_TEST") == null ? false
+        : Boolean.parseBoolean(System.getenv("INTEGRATION_TEST"));
 
     public void processResponse(String response, String ip) {
         final boolean disableCaptcha = INTEGRATION_TEST;

@@ -16,8 +16,8 @@ build:
   script:
     - mvn -version
     - mvn clean install
-    - docker build -f docker/adap-kdb-docker/integration_test -t adap-kdb-img .
-    - docker run -e DATABASE=host.docker.internal -d -p8080:8080 adap-kdb-img
+    - docker build -f docker/adap-kdb-docker/Dockerfile -t adap-kdb-img .
+    - docker run -e DATABASE=cci-cardia.uncc.edu -e INTEGRATION_TEST=true -d -p8080:8080 adap-kdb-img
     - python3 --version
     - python3 scripts/selenium/initial_test.py --homepage-url $HOMEPAGE_URL
   timeout: 15m
@@ -47,8 +47,6 @@ test:
 package:
   stage: deploy
   script:
-    - mvn clean install
-    - docker build -f docker/adap-kdb-docker/manual_test -t adap-kdb-img .
     - docker save adap-kdb-img  > adap-kdb-img.tar
     - mkdir artifact
     - cp adap-kdb-img.tar artifact/
