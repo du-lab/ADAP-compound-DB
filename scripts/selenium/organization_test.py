@@ -213,6 +213,8 @@ def main():
         # check if both accounts are deleted
         check_if_account_deleted(homepage_url, acc_username, password)
         check_if_account_deleted(homepage_url, organization_username, password)
+        time.sleep(5)
+        driver.quit()
 
     except Exception as e:
         driver.quit()
