@@ -51,8 +51,8 @@ package:
     - docker build -f docker/adap-kdb-docker/manual_test -t adap-kdb-img .
     - docker save adap-kdb-img  > adap-kdb-img.tar
     - mkdir artifact
-    - cp adap-kdb-img.tar /artifact/adap-kdb-img.tar
-    - cp scripts/script.sh /artifact/script.sh
+    - cp adap-kdb-img.tar artifact/
+    - cp scripts/script.sh artifact/
   artifacts:
     paths:
       - "artifact/*"
