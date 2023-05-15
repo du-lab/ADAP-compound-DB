@@ -14,8 +14,8 @@
   <%--@elvariable id="errorMessage" type="java.lang.String"--%>
   <%--@elvariable id="successMessage" type="java.lang.String"--%>
   <div>
-    <div class="alert-danger" style="margin-bottom: 5px;">${errorMessage}</div>
-    <div class="alert-success" style="margin-bottom: 5px;">${successMessage}</div>
+    <div id="organization-failed" class="alert-danger" style="margin-bottom: 5px;">${errorMessage}</div>
+    <div id="organization-success" class="alert-success" style="margin-bottom: 5px;">${successMessage}</div>
     <c:if test="${empty requestScope.members}">
       <p style="font-size:14px;">No users added.</p>
     </c:if>
@@ -27,7 +27,7 @@
         <th>S.No</th>
         <th>Name</th>
         <th>Email</th>
-        <th>Remove User</th>
+        <th></th>
       </tr>
       </thead>
       <tbody>
@@ -37,10 +37,10 @@
           <td>${member.username}</td>
           <td>${member.email}</td>
           <td>
-            <a onclick="confirmDeleteDialog.show(
-                    'Are you sure you want to remove user \'${member.username}\' from the organization?',
-                    '${pageContext.request.contextPath}/account/organization/${member.username}/delete/');">
-              <i class="material-icons" title="Delete">&#xE872;</i>
+            <a id="organization_dialog" href="${pageContext.request.contextPath}/account/organization/${member.username}/delete/">
+              <i class="material-icons" title="Delete">
+                &#xE872;
+              </i>
             </a>
           </td>
         </tr>
