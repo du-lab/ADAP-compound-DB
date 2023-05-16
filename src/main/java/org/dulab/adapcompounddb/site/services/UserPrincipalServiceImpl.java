@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
+import org.apache.http.client.utils.URIBuilder;
 import org.dulab.adapcompounddb.models.dto.SearchParametersDTO;
 import org.dulab.adapcompounddb.models.entities.User;
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import org.dulab.adapcompounddb.models.UserParameterType;
 import org.dulab.adapcompounddb.site.repositories.UserPrincipalRepository;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +32,9 @@ public class UserPrincipalServiceImpl implements UserPrincipalService {
     private final UserParameterRepository userParameterRepository;
 
     private final EmailService emailService;
+
+    @Value("${INTEGRATION_TEST}")
+    private boolean INTEGRATION_TEST;
 
     @Autowired
     public UserPrincipalServiceImpl(UserPrincipalRepository userPrincipalRepository,
@@ -216,18 +221,28 @@ public class UserPrincipalServiceImpl implements UserPrincipalService {
         while (userPrincipleList.hasNext()) {
             try {
                 UserPrincipal user = userPrincipleList.next();
-                String resetToken = UUID.randomUUID().toString();
+                // For test environment for automation testing, INTEGRATION_TEST is true, and we store username as token
+                String inviteToken = INTEGRATION_TEST ? user.getUsername() : UUID.randomUUID().toString();
                 Date expirationDate = new Date(System.currentTimeMillis() + 3600000);//1 hour expiration time
-                user.setOrganizationRequestToken(resetToken);
+                user.setOrganizationRequestToken(inviteToken);
                 user.setOrganizationRequestExpirationDate(expirationDate);
                 saveUserPrincipal(user);
-                String url =  "https://adap.cloud/organization/addUser?token=" +resetToken
-                        +"&orgEmail="+orgUser.getEmail();
-                emailService.sendOrganizationInviteEmail(user, orgUser, url);
-                LOGGER.info("A username was sent to " + user.getEmail());
+
+                URIBuilder uriBuilder = new URIBuilder()
+                        .setScheme("https")
+                        .setHost("adap.cloud")
+                        .setPath("/organization/addUser")
+                        .addParameter("token", inviteToken)
+                        .addParameter("orgEmail", orgUser.getEmail());
+                String url = uriBuilder.build().toString();
+
+                // Disabling email service in test server for automation testing
+                if (!INTEGRATION_TEST)
+                    emailService.sendOrganizationInviteEmail(user, orgUser, url);
+                LOGGER.info("An invite was sent to " + user.getEmail());
             } catch (Exception e) {
                 LOGGER.warn( e.getMessage(), e);
-                throw new Exception("Couldn't send username");
+                throw new Exception("Couldn't send invite");
             }
         }
     }
