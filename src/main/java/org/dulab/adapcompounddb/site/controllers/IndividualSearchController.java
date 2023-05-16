@@ -46,8 +46,8 @@ public class IndividualSearchController extends BaseController {
 
     private final AdductService adductService;
 
-    @Value("${INTEGRATION_TEST}")
-    private boolean INTEGRATION_TEST;
+    private boolean INTEGRATION_TEST = System.getenv("INTEGRATION_TEST") == null ? false
+        : Boolean.parseBoolean(System.getenv("INTEGRATION_TEST"));
 
     @Autowired
     public IndividualSearchController(SubmissionService submissionService,

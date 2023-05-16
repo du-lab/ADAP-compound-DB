@@ -20,8 +20,8 @@ import org.springframework.web.servlet.view.JstlView;
 @ComponentScan
 public class ServletContextConfiguration implements WebMvcConfigurer {
 
-    @Value("${INTEGRATION_TEST}")
-    private boolean INTEGRATION_TEST;
+    private boolean INTEGRATION_TEST = System.getenv("INTEGRATION_TEST") == null ? false
+        : Boolean.parseBoolean(System.getenv("INTEGRATION_TEST"));
 
     @Bean
     public static PropertySourcesPlaceholderConfigurer getPropertySourcesPlaceholderConfigurer() {

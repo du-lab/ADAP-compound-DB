@@ -20,18 +20,18 @@ def ontology_level_test(homepage_url, username, password):
         driver.find_element_by_id('username').send_keys(username)
         driver.find_element_by_id('password').send_keys(password)
         driver.find_element_by_name('submit').click()
-
+        time.sleep(5)
         # Account page
         driver.find_element_by_id('accountPage').click()
         assert driver.current_url.__str__().endswith('account/')
         driver.find_element_by_id('librariesTab').click()
         driver.find_element_by_xpath('//div[@id="libraries"]//a[contains(@href, "/submission/")]').click()
-
+        time.sleep(5)
         # Submission page
         assert '/submission/' in driver.current_url.__str__()
         driver.find_element_by_id('searchMenu').click()
         driver.find_element_by_id('searchWithOntologyLevels').click()
-
+        time.sleep(10)
         # Search parameters page
         assert '/group_search/parameters' in driver.current_url.__str__()
         driver.find_element_by_id('searchButton').click()
