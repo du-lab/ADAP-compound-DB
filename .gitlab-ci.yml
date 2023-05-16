@@ -32,7 +32,6 @@ test:
     - merge_requests
   script:
     - pwd
-    - python3 --version
     - python3 scripts/selenium/ontology_level_test.py --homepage-url $HOMEPAGE_URL --username $ADAP_KDB_TEST_USERNAME --password $ADAP_KDB_TEST_PASSWORD
     - python3 scripts/selenium/manual_search_test.py --homepage-url $HOMEPAGE_URL --identifier "eicosatrienoic acid" --spectrum "79 100; 67 90.3325; 80 75.8722; 81 59.0838; 93 54.0933"
     - python3 scripts/selenium/msp_upload_process_test.py --homepage-url $HOMEPAGE_URL --msp-path $CI_PROJECT_DIR\scripts\selenium\combined.msp
@@ -45,6 +44,9 @@ test:
     - python3 scripts/selenium/organization_test.py --homepage-url $HOMEPAGE_URL
   after_script:
     - docker rm --force $CONTAINER_NAME
+  timeout: 30m
+  tags:
+    - test_mac
 
 package:
   stage: deploy
