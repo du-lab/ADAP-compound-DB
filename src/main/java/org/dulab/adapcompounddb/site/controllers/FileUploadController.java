@@ -126,7 +126,36 @@ public class FileUploadController extends BaseController {
 
         model.addAttribute("fileUploadForm", form);
         model.addAttribute("loggedInUser", getCurrentUserPrincipal());
+        List<String> leftFields = new ArrayList<>();
+        leftFields.add("Name");
+        leftFields.add("Charge");
+        leftFields.add("PrecursorMZ");
+        leftFields.add("Comment");
+        // Set the leftFields as a request attribute
+        model.addAttribute("leftFields", leftFields);
+        model.addAttribute("rightFields", getRightFeilds());
         return "submission/upload";
+    }
+
+    private List<String> getRightFeilds() {
+        List<String> rightFields = new ArrayList<>();
+        rightFields.add("Read Name");
+        rightFields.add("Read Synonym");
+        rightFields.add("Read ID");
+        rightFields.add("Read Cas ID");
+        rightFields.add("Read HMDB ID");
+        rightFields.add("Read KEGG ID");
+        rightFields.add("Read Pub Chem ID");
+        rightFields.add("Read Precursor Mz");
+        rightFields.add("Read Retention time");
+        rightFields.add("Read Retention index");
+        rightFields.add("Read Mass");
+        rightFields.add("Read Formula");
+        rightFields.add("Read Canonical Smiles");
+        rightFields.add("Read InChI");
+        rightFields.add("Read InChIKey");
+        rightFields.add("Read Isotopic Distribution");
+        return rightFields;
     }
 
     @RequestMapping(value = "/file/upload/", method = RequestMethod.POST, consumes = "multipart/form-data")
