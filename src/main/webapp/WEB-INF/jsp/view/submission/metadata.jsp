@@ -8,31 +8,114 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <body>
-<script>
-
-</script>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.Arrays" %>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".draggable").on("dragstart", function (event) {
+            console.log("dragstart")
+            let id = event.target.id;
+            event.originalEvent.dataTransfer.setData("fileId", id.split("_")[1]);
+            event.originalEvent.dataTransfer.setData("typeId", id.split("_")[2]);
+            event.originalEvent.dataTransfer.setData("draggableId", id.split("_")[3]);
+            event.originalEvent.dataTransfer.setData("text/plain", id);
+        });
+        $(".left, .right").on("dragover", function (event) {
+            console.log("dragover")
+            event.preventDefault();
+        });
+        $(".left .droppable").on("drop", function (event) {
+            event.preventDefault();
+            let data = event.originalEvent.dataTransfer.getData("text/plain");
+            let fileId = event.originalEvent.dataTransfer.getData("fileId");
+            let droppingIntoId = $(this)[0].id.split("_")[1];
+            let element = document.getElementById(data);
+            let existingElement = $(this).children().first();
+            if (fileId == droppingIntoId) {
+                if (existingElement.length) {
+                    if (existingElement[0].innerText == "Don't Read") {
+                        existingElement.remove();
+                    } else {
+                        console.log("existingElement appending right")
+                        $(".right_"+existingElement[0].id.split("_")[1])
+                            .find(".field_type_"+existingElement[0].id.split("_")[2]).append(existingElement);
+                    }
+                }
+                if (element.innerText != "Don't Read") {
+                    $(this).append(element);
+                    addDoubleClickEventListener(element);
+                } else {
+                    let clonedElement = $(element).clone();
+                    clonedElement.on("dragstart", function (event) {
+                        let id = event.target.id;
+                        event.originalEvent.dataTransfer.setData("fileId", id.split("_")[1]);
+                        event.originalEvent.dataTransfer.setData("typeId", id.split("_")[2]);
+                        event.originalEvent.dataTransfer.setData("draggableId", id.split("_")[3]);
+                        event.originalEvent.dataTransfer.setData("text/plain", id);
+                    });
+                    clonedElement.innerText = "Don't Read";
+                    $(this).append(clonedElement);
+                    addDoubleClickEventListener(clonedElement);
+                }
+            }
+
+            function addDoubleClickEventListener(element) {
+                $(element).on("dblclick", function() {
+                    if (element.innerText == "Don't Read") {
+                        $(this).remove();
+                    } else {
+                        let parentContainer = $(this).closest(".field-container_"+element.id.split("_")[1]);
+                        $(this).detach();
+                        $(this).unbind("dblclick")
+                        parentContainer.find(".right_"+element.id.split("_")[1])
+                            .find(".field_type_"+element.id.split("_")[2]).append($(this));
+                    }
+                });
+            }
+        });
+        $(".right").on("drop", function(event) {
+            event.preventDefault();
+            let droppingIntoId = $(this)[0].id.split("_")[1];
+            let data = event.originalEvent.dataTransfer.getData("text/plain");
+            let element = document.getElementById(data);
+            let fileId = element.id.split("_")[1];
+            let typeId = element.id.split("_")[2];
+            if (fileId == droppingIntoId) {
+                if (element.innerText == "Don't Read") {
+                    element.remove();
+                } else {
+                    $(".right_"+fileId).find(".field_type_"+typeId).append(element);
+                }
+            }
+        });
+
+    });
+
+
+</script>
 <style>
     .field-container {
         display: flex;
         justify-content: space-between;
         margin: 20px;
         user-select: none;
-        font-size:12px;
+        font-size: 12px;
     }
+
     .left-container {
         width: 50%;
         padding: 10px 30px 10px 10px;
         border-right: 1px solid #54241040;
     }
+
     .right-container {
-        width:50%;
+        width: 50%;
         padding: 10px;
     }
+
     .draggable {
         height: 25px;
         cursor: pointer;
@@ -42,6 +125,7 @@
         width: fit-content;
         box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
     }
+
     .drop-container {
         border: 1px solid #dadada;
         display: flex;
@@ -50,6 +134,7 @@
         align-items: center;
         padding: 5px;
     }
+
     .droppable {
         height: 30px;
         text-decoration: none;
@@ -58,7 +143,17 @@
         display: flex;
         padding-left: 15px;
 
-        /*justify-content: center;*/
+    }
+
+    .field-type-container {
+        display: flex;
+        flex-wrap: wrap;
+        padding: 10px 5px;
+    }
+    .separator {
+        border-bottom: 1px solid #54241040;
+        width: 94%;
+        margin: auto;
     }
 </style>
 <div class="container">
@@ -119,88 +214,19 @@
                         </div>
                         <div style="color:#844d36;">Field Mapping</div>
                         <c:forEach items="${spectrumProperties}" var="propertyList" varStatus="loop">
-                            <script>
-                                $(document).ready(function() {
-                                    $(".draggable_${loop.index}").on("dragstart", function(event) {
-                                        event.originalEvent.dataTransfer.setData("text/plain", event.target.id);
-                                        event.originalEvent.dataTransfer.setData("origin", event.target.id);
-                                    });
-
-                                    $(".left_${loop.index}, .right_${loop.index}").on("dragover", function(event) {
-                                        event.preventDefault();
-                                    });
-
-                                    $(".left_${loop.index} .droppable_${loop.index}").on("drop", function(event) {
-                                        event.preventDefault();
-                                        let data = event.originalEvent.dataTransfer.getData("text/plain");
-                                        let element = document.getElementById(data);
-                                        let existingElement = $(this).children().first();
-                                        let dropId = $(this)[0].id.split("_")[1];
-                                        let dragId = element.id.split("_")[1];
-                                        console.log(dropId, dragId);
-                                        if (dropId == dragId ) {
-                                            if (existingElement.length) {
-                                                if (existingElement.innerText == "Don't Read") {
-                                                    existingElement.remove();
-                                                } else {
-                                                    $(".right_${loop.index}").append(existingElement);
-                                                }
-                                            }
-                                            if (element.innerText != "Don't Read") {
-                                                $(this).append(element);
-                                                addDoubleClickEventListener(element);
-                                            } else {
-                                                let clonedElement = $(element).clone();
-                                                clonedElement.on("dragstart", function(event) {
-                                                    event.originalEvent.dataTransfer.setData("text/plain", event.target.id);
-                                                });
-                                                $(this).append(clonedElement);
-                                                addDoubleClickEventListener(clonedElement);
-                                            }
-                                        }
-                                    });
-
-                                    $(".right_${loop.index}").on("drop", function(event) {
-                                        event.preventDefault();
-                                        let data = event.originalEvent.dataTransfer.getData("text/plain");
-                                        let element = document.getElementById(data);
-                                        console.log(event.originalEvent.dataTransfer.getData("origin"));
-                                        let dropId = $(this)[0].id.split("_")[1];
-                                        let dragId = element.id.split("_")[1];
-                                        console.log(dropId, dragId);
-                                        if (dropId == dragId) {
-                                            if (element.innerText == "Don't Read") {
-                                                element.remove();
-                                            } else {
-                                                $(".right_${loop.index}").append(element);
-                                            }
-                                        }
-                                    });
-
-                                    function addDoubleClickEventListener(element) {
-                                        $(element).on("dblclick", function() {
-                                            console.log(element.innerText)
-                                            if (element.innerText == "Don't Read") {
-                                                $(this).remove();
-                                            } else {
-                                                let parentContainer = $(this).closest(".field-container_${loop.index}");
-                                                $(this).detach();
-                                                $(this).unbind("dblclick")
-                                                parentContainer.find(".right_${loop.index}").append($(this));
-                                            }
-                                        });
-                                    }
-                                });
-                            </script>
                             <div class="field-container field-container_${loop.index}">
                                 <div class="left-container">
                                     <div style="display: flex;flex-direction: column;">
-                                        <div style="color:#844d36;margin-bottom: 5px">Detected Fields in the ${fileTypes[loop.index]} Files</div>
+                                        <div style="color:#844d36;margin-bottom: 5px">Detected Fields in
+                                            the ${fileTypes[loop.index]} Files
+                                        </div>
                                         <div class="left left_${loop.index}">
                                             <c:forEach items="${propertyList}" varStatus="loop1" var="field">
                                                 <div id="droppable${loop1.index}" class="drop-container">
                                                     <div style="min-width: 30%;">${field}:</div>
-                                                    <div id="droppable_${loop.index}" class="droppable droppable_${loop.index}" style="width:70%;max-width: 70%;">
+                                                    <div id="droppable_${loop.index}"
+                                                         class="droppable droppable_${loop.index}"
+                                                         style="width:70%;max-width: 70%;">
                                                     </div>
                                                 </div>
                                             </c:forEach>
@@ -210,14 +236,25 @@
                                 <div class="right-container">
                                     <div style="display: flex;flex-direction: column;">
                                         <div style="color:#844d36;margin-bottom: 5px">Read As</div>
-                                        <div class="right right_${loop.index}" id="right_${loop.index}" style="display: flex;flex-wrap: wrap;height: fit-content;">
-                                            <c:forEach items="${csvMappingFields}" varStatus="loop2" var="field">
-                                                <div id="draggable_${loop.index}_${loop2.index}" class="draggable draggable_${loop.index}" draggable="true">
-                                                        ${field}
+                                        <div class="right right_${loop.index}" id="right_${loop.index}"
+                                             style="display: flex;flex-wrap: wrap;height: fit-content;">
+                                            <c:forEach items="${csvMappingFields}" varStatus="loop3" var="fields">
+                                                <div class="field-type-container field_type_${loop3.index}">
+                                                    <c:forEach items="${fields}" varStatus="loop4" var="field">
+                                                        <div id="draggable_${loop.index}_${loop3.index}_${loop4.index}"
+                                                             class="draggable" draggable="true">
+                                                                ${field}
+                                                        </div>
+                                                    </c:forEach>
                                                 </div>
+                                                <div class="separator"></div>
                                             </c:forEach>
-                                            <div id="draggable_${loop.index}_-1" class="draggable draggable_${loop.index}" draggable="true">
-                                                Don't Read
+                                            <div class="field-type-container field-type-dontRead"
+                                                 style="border-bottom: unset;">
+                                                <div id="draggable_${loop.index}_-1_-1" class="draggable"
+                                                     draggable="true">
+                                                    Don't Read
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

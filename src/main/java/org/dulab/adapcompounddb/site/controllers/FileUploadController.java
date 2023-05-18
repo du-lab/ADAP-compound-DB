@@ -137,24 +137,30 @@ public class FileUploadController extends BaseController {
         return "submission/upload";
     }
 
-    private List<String> getRightFields() {
-        List<String> rightFields = new ArrayList<>();
-        rightFields.add("typea_Name");
-        rightFields.add("typea_Synonym");
-        rightFields.add("typea_ID");
-        rightFields.add("typea_Cas ID");
-        rightFields.add("typea_HMDB ID");
-        rightFields.add("typea_KEGG ID");
-        rightFields.add("typea_Pub Chem ID");
-        rightFields.add("typeb_Precursor Mz");
-        rightFields.add("typeb_Retention time");
-        rightFields.add("typeb_Retention index");
-        rightFields.add("typeb_Mass");
-        rightFields.add("typec_Formula");
-        rightFields.add("typec_Canonical Smiles");
-        rightFields.add("typec_InChI");
-        rightFields.add("typec_InChIKey");
-        rightFields.add("typec_Isotopic Distribution");
+    private List<List<String>> getRightFields() {
+        List<List<String>> rightFields = new ArrayList<>();
+        List<String> rightFields1 = new ArrayList<>();
+        rightFields1.add("Name");
+        rightFields1.add("Synonym");
+        rightFields1.add("ID");
+        rightFields1.add("Cas ID");
+        rightFields1.add("HMDB ID");
+        rightFields1.add("KEGG ID");
+        rightFields1.add("Pub Chem ID");
+        List<String> rightFields2 = new ArrayList<>();
+        rightFields2.add("Precursor Mz");
+        rightFields2.add("Retention time");
+        rightFields2.add("Retention index");
+        rightFields2.add("Mass");
+        List<String> rightFields3 = new ArrayList<>();
+        rightFields3.add("Formula");
+        rightFields3.add("Canonical Smiles");
+        rightFields3.add("InChI");
+        rightFields3.add("InChIKey");
+        rightFields3.add("Isotopic Distribution");
+        rightFields.add(rightFields1);
+        rightFields.add(rightFields2);
+        rightFields.add(rightFields3);
         return rightFields;
     }
 
