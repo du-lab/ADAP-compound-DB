@@ -96,11 +96,11 @@
         user-select: none;
         font-size:12px;
     }
-    .left {
+    .left-container {
         width: 50%;
         padding: 10px;
     }
-    .right {
+    .right-container {
         width:50%;
         padding: 10px;
     }
@@ -190,31 +190,27 @@
                         </div>
                         <div style="color:#844d36;">Field Mapping</div>
                         <c:forEach items="${spectrumProperties}" var="propertyList" varStatus="loop">
-                            <jsp:include page="../../shared/csv_field_mapper.jsp"/>
                             <div class="field-container">
-                                <div class="left">
+                                <div class="left-container">
                                     <div style="display: flex;flex-direction: column;">
                                         <div style="color:#844d36;margin-bottom: 5px">Detected Fields in the ${fileTypes[loop.index]} Files</div>
-                                        <div>
-                                            <c:forEach items="${propertyList}" varStatus="loop" var="field">
-                                                <div id="droppable${loop.index}" class="drop-container">
+                                        <div class="left">
+                                            <c:forEach items="${propertyList}" varStatus="loop1" var="field">
+                                                <div id="droppable${loop1.index}" class="drop-container">
                                                     <div style="min-width: 30%;">${field}:</div>
                                                     <div class="droppable" style="width:70%;max-width: 70%;">
-<%--                                                        <div id="draggableDontRead${loop.index}" class="draggable" draggable="true">--%>
-<%--                                                            Don't Read--%>
-<%--                                                        </div>--%>
                                                     </div>
                                                 </div>
                                             </c:forEach>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="right">
+                                <div class="right-container">
                                     <div style="display: flex;flex-direction: column;">
                                         <div style="color:#844d36;margin-bottom: 5px">Read As</div>
-                                        <div style="display: flex;flex-wrap: wrap;height: fit-content;">
-                                            <c:forEach items="${csvMappingFields}" varStatus="loop" var="field">
-                                                <div id="draggable${loop.index}" class="draggable" draggable="true">
+                                        <div class="right" style="display: flex;flex-wrap: wrap;height: fit-content;">
+                                            <c:forEach items="${csvMappingFields}" varStatus="loop2" var="field">
+                                                <div id="draggable${loop2.index}" class="draggable" draggable="true">
                                                         ${field}
                                                 </div>
                                             </c:forEach>
