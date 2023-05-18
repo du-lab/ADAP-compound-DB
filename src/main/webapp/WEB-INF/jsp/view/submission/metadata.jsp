@@ -8,7 +8,130 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <body>
+<script>
+    $(document).ready(function() {
+        $(".draggable").on("dragstart", function(event) {
+            console.log("dragstart")
+            event.originalEvent.dataTransfer.setData("text/plain", event.target.id);
+        });
 
+        $(".left, .right").on("dragover", function(event) {
+            console.log("dragover")
+            event.preventDefault();
+        });
+
+        $(".left .droppable").on("drop", function(event) {
+            event.preventDefault();
+            console.log("dropped left")
+            let data = event.originalEvent.dataTransfer.getData("text/plain");
+            let element = document.getElementById(data);
+            let existingElement = $(this).children().first();
+            console.log(element.id)
+            if (existingElement.length) {
+                if (existingElement.innerText == "Don't Read") {
+                    existingElement.remove();
+                } else {
+                    $(".right").append(existingElement);
+                }
+            }
+            if (element.id != "draggableDontRead") {
+                $(this).append(element);
+                addDoubleClickEventListener(element);
+            } else {
+                console.log(element)
+                let clonedElement = $(element).clone();
+                clonedElement.id="draggableDontRead";
+                clonedElement.innerText = "Don't Read";
+                clonedElement.addClass("draggable");
+                clonedElement.on("dragstart", function(event) {
+                    console.log("dragstart")
+                    event.originalEvent.dataTransfer.setData("text/plain", event.target.id);
+                });
+                $(this).append(clonedElement);
+                addDoubleClickEventListener(clonedElement);
+            }
+        });
+
+        $(".right").on("drop", function(event) {
+            event.preventDefault();
+            console.log("drop right left")
+            let data = event.originalEvent.dataTransfer.getData("text/plain");
+            let element = document.getElementById(data);
+            console.log(element)
+            if (element.innerText == "Don't Read") {
+                console.log("if")
+                element.remove();
+            } else {
+                console.log("else")
+                $(".right").append(element);
+            }
+
+        });
+
+        function addDoubleClickEventListener(element) {
+            $(element).on("dblclick", function() {
+                console.log(element.innerText)
+                if (element.id == "draggableDontRead") {
+                    $(this).remove();
+                } else {
+                    let parentContainer = $(this).closest(".field-container");
+                    $(this).detach();
+                    $(this).unbind("dblclick")
+                    parentContainer.find(".right").append($(this));
+                }
+            });
+        }
+    });
+</script>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.Arrays" %>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<style>
+    .field-container {
+        display: flex;
+        justify-content: space-between;
+        margin: 20px;
+        user-select: none;
+        font-size:12px;
+    }
+    .left {
+        width: 50%;
+        padding: 10px;
+    }
+    .right {
+        width:50%;
+        padding: 10px;
+    }
+    .draggable {
+        height: 25px;
+        cursor: pointer;
+        margin: 5px;
+        padding: 2px 10px;
+        border-radius: 5px;
+        width: fit-content;
+        box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+    }
+    .drop-container {
+        border: 1px solid #dadada;
+        display: flex;
+        margin-bottom: 10px;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px;
+    }
+    .droppable {
+        height: 30px;
+        text-decoration: none;
+        align-items: center;
+        background: none;
+        display: flex;
+        padding-left: 15px;
+
+        /*justify-content: center;*/
+    }
+</style>
 <div class="container">
     <%--    <div class="row row-content align-center">--%>
     <%--        <h2>Edit Metadata</h2>--%>
@@ -65,35 +188,43 @@
                                 </div>
                             </div>
                         </div>
-
-                        <div class="row form-group">
-                            <c:forEach items="${fileTypes}" var="fileType" varStatus="loop">
-                                <div class="${loop.index == 0 ? 'col-md-3 offset-3' : 'col-md-3'}">
-                                        ${fileType.name} Files
-                                </div>
-                            </c:forEach>
-                        </div>
-                        <c:forEach items="${fieldList}" var="field">
-                            <div class="row form-group">
-                                <form:label path="msp${field.id}"
-                                            cssClass="col-md-3 col-form-label">${field.labelText}</form:label>
-                                <c:forEach items="${fileTypes}" var="fileType" varStatus="loop">
-                                    <div class="col-md-3">
-                                        <form:select path="${fn:toLowerCase(fileType)}${field.id}"
-                                                     cssClass="form-control">
-                                            <form:option value="" label=""></form:option>
-                                            <c:forEach items="${spectrumProperties[loop.index]}" var="property">
-                                                <c:set var="fieldName" value="${fn:toLowerCase(fileType)}${field.id}"/>
-                                                <form:option
-                                                        value="${property}" label="${property}"
-                                                        selected="${property == cookieForm[fieldName] ? 'selected' : ''}"/>
+                        <div style="color:#844d36;">Field Mapping</div>
+                        <c:forEach items="${spectrumProperties}" var="propertyList" varStatus="loop">
+                            <jsp:include page="../../shared/csv_field_mapper.jsp"/>
+                            <div class="field-container">
+                                <div class="left">
+                                    <div style="display: flex;flex-direction: column;">
+                                        <div style="color:#844d36;margin-bottom: 5px">Detected Fields in the ${fileTypes[loop.index]} Files</div>
+                                        <div>
+                                            <c:forEach items="${propertyList}" varStatus="loop" var="field">
+                                                <div id="droppable${loop.index}" class="drop-container">
+                                                    <div style="min-width: 30%;">${field}:</div>
+                                                    <div class="droppable" style="width:70%;max-width: 70%;">
+<%--                                                        <div id="draggableDontRead${loop.index}" class="draggable" draggable="true">--%>
+<%--                                                            Don't Read--%>
+<%--                                                        </div>--%>
+                                                    </div>
+                                                </div>
                                             </c:forEach>
-                                        </form:select>
+                                        </div>
                                     </div>
-                                </c:forEach>
-
+                                </div>
+                                <div class="right">
+                                    <div style="display: flex;flex-direction: column;">
+                                        <div style="color:#844d36;margin-bottom: 5px">Read As</div>
+                                        <div style="display: flex;flex-wrap: wrap;height: fit-content;">
+                                            <c:forEach items="${csvMappingFields}" varStatus="loop" var="field">
+                                                <div id="draggable${loop.index}" class="draggable" draggable="true">
+                                                        ${field}
+                                                </div>
+                                            </c:forEach>
+                                            <div id="draggableDontRead" class="draggable" draggable="true">
+                                                Don't Read
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-
                         </c:forEach>
                     </div>
                 </div>
@@ -104,3 +235,5 @@
 
 </body>
 </html>
+
+

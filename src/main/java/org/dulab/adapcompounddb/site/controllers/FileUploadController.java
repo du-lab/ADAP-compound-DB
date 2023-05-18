@@ -133,28 +133,28 @@ public class FileUploadController extends BaseController {
         leftFields.add("Comment");
         // Set the leftFields as a request attribute
         model.addAttribute("leftFields", leftFields);
-        model.addAttribute("rightFields", getRightFeilds());
+        model.addAttribute("rightFields", getRightFields());
         return "submission/upload";
     }
 
-    private List<String> getRightFeilds() {
+    private List<String> getRightFields() {
         List<String> rightFields = new ArrayList<>();
-        rightFields.add("Read Name");
-        rightFields.add("Read Synonym");
-        rightFields.add("Read ID");
-        rightFields.add("Read Cas ID");
-        rightFields.add("Read HMDB ID");
-        rightFields.add("Read KEGG ID");
-        rightFields.add("Read Pub Chem ID");
-        rightFields.add("Read Precursor Mz");
-        rightFields.add("Read Retention time");
-        rightFields.add("Read Retention index");
-        rightFields.add("Read Mass");
-        rightFields.add("Read Formula");
-        rightFields.add("Read Canonical Smiles");
-        rightFields.add("Read InChI");
-        rightFields.add("Read InChIKey");
-        rightFields.add("Read Isotopic Distribution");
+        rightFields.add("Name");
+        rightFields.add("Synonym");
+        rightFields.add("ID");
+        rightFields.add("Cas ID");
+        rightFields.add("HMDB ID");
+        rightFields.add("KEGG ID");
+        rightFields.add("Pub Chem ID");
+        rightFields.add("Precursor Mz");
+        rightFields.add("Retention time");
+        rightFields.add("Retention index");
+        rightFields.add("Mass");
+        rightFields.add("Formula");
+        rightFields.add("Canonical Smiles");
+        rightFields.add("InChI");
+        rightFields.add("InChIKey");
+        rightFields.add("Isotopic Distribution");
         return rightFields;
     }
 
@@ -198,7 +198,7 @@ public class FileUploadController extends BaseController {
         response.addCookie(metaFieldsCookie);
 
 
-        if (getRequiredFormFields(form).size() > 0) {
+        if (true) {
             redirectAttributes.addFlashAttribute("form", form);
             return "redirect:/submission/metadata";
         }
@@ -300,6 +300,7 @@ public class FileUploadController extends BaseController {
         List<FormField> fields = getRequiredFormFields((FileUploadForm) session.getAttribute("FileUploadForm"));
         model.addAttribute("fieldList", fields);
         model.addAttribute("fileTypes", fileTypes);
+        model.addAttribute("csvMappingFields", getRightFields());
         return "submission/metadata";
     }
 

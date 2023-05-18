@@ -152,12 +152,6 @@
 
                             </div>
                         </div>
-                        <c:if test="${leftFields != null && leftFields.size() > 0}">
-                            <jsp:include page="../../shared/csv_field_mapper.jsp">
-                                <jsp:param name="leftFields" value="${leftFields}" />
-                                <jsp:param name="rightFields" value="${rightFields}" />
-                            </jsp:include>
-                        </c:if>
                     </div>
                 </div>
             </div>
