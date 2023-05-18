@@ -139,22 +139,22 @@ public class FileUploadController extends BaseController {
 
     private List<String> getRightFields() {
         List<String> rightFields = new ArrayList<>();
-        rightFields.add("Name");
-        rightFields.add("Synonym");
-        rightFields.add("ID");
-        rightFields.add("Cas ID");
-        rightFields.add("HMDB ID");
-        rightFields.add("KEGG ID");
-        rightFields.add("Pub Chem ID");
-        rightFields.add("Precursor Mz");
-        rightFields.add("Retention time");
-        rightFields.add("Retention index");
-        rightFields.add("Mass");
-        rightFields.add("Formula");
-        rightFields.add("Canonical Smiles");
-        rightFields.add("InChI");
-        rightFields.add("InChIKey");
-        rightFields.add("Isotopic Distribution");
+        rightFields.add("typea_Name");
+        rightFields.add("typea_Synonym");
+        rightFields.add("typea_ID");
+        rightFields.add("typea_Cas ID");
+        rightFields.add("typea_HMDB ID");
+        rightFields.add("typea_KEGG ID");
+        rightFields.add("typea_Pub Chem ID");
+        rightFields.add("typeb_Precursor Mz");
+        rightFields.add("typeb_Retention time");
+        rightFields.add("typeb_Retention index");
+        rightFields.add("typeb_Mass");
+        rightFields.add("typec_Formula");
+        rightFields.add("typec_Canonical Smiles");
+        rightFields.add("typec_InChI");
+        rightFields.add("typec_InChIKey");
+        rightFields.add("typec_Isotopic Distribution");
         return rightFields;
     }
 

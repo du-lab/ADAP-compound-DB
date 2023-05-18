@@ -26,7 +26,8 @@
     }
     .left-container {
         width: 50%;
-        padding: 10px;
+        padding: 10px 30px 10px 10px;
+        border-right: 1px solid #54241040;
     }
     .right-container {
         width:50%;
@@ -122,6 +123,7 @@
                                 $(document).ready(function() {
                                     $(".draggable_${loop.index}").on("dragstart", function(event) {
                                         event.originalEvent.dataTransfer.setData("text/plain", event.target.id);
+                                        event.originalEvent.dataTransfer.setData("origin", event.target.id);
                                     });
 
                                     $(".left_${loop.index}, .right_${loop.index}").on("dragover", function(event) {
@@ -136,7 +138,7 @@
                                         let dropId = $(this)[0].id.split("_")[1];
                                         let dragId = element.id.split("_")[1];
                                         console.log(dropId, dragId);
-                                        if (dropId == dragId) {
+                                        if (dropId == dragId ) {
                                             if (existingElement.length) {
                                                 if (existingElement.innerText == "Don't Read") {
                                                     existingElement.remove();
@@ -144,14 +146,11 @@
                                                     $(".right_${loop.index}").append(existingElement);
                                                 }
                                             }
-                                            if (element.id != "draggableDontRead") {
+                                            if (element.innerText != "Don't Read") {
                                                 $(this).append(element);
                                                 addDoubleClickEventListener(element);
                                             } else {
                                                 let clonedElement = $(element).clone();
-                                                clonedElement.id="draggableDontRead";
-                                                clonedElement.innerText = "Don't Read";
-                                                clonedElement.addClass("draggable_${loop.index}");
                                                 clonedElement.on("dragstart", function(event) {
                                                     event.originalEvent.dataTransfer.setData("text/plain", event.target.id);
                                                 });
@@ -165,7 +164,7 @@
                                         event.preventDefault();
                                         let data = event.originalEvent.dataTransfer.getData("text/plain");
                                         let element = document.getElementById(data);
-                                        console.log($(this));
+                                        console.log(event.originalEvent.dataTransfer.getData("origin"));
                                         let dropId = $(this)[0].id.split("_")[1];
                                         let dragId = element.id.split("_")[1];
                                         console.log(dropId, dragId);
@@ -181,7 +180,7 @@
                                     function addDoubleClickEventListener(element) {
                                         $(element).on("dblclick", function() {
                                             console.log(element.innerText)
-                                            if (element.id == "draggableDontRead") {
+                                            if (element.innerText == "Don't Read") {
                                                 $(this).remove();
                                             } else {
                                                 let parentContainer = $(this).closest(".field-container_${loop.index}");
@@ -217,7 +216,7 @@
                                                         ${field}
                                                 </div>
                                             </c:forEach>
-                                            <div id="draggableDontRead" class="draggable draggable_${loop.index}" draggable="true">
+                                            <div id="draggable_${loop.index}_-1" class="draggable draggable_${loop.index}" draggable="true">
                                                 Don't Read
                                             </div>
                                         </div>
