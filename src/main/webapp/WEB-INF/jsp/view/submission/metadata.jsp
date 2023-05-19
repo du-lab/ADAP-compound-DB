@@ -21,6 +21,7 @@
         margin: 20px;
         user-select: none;
         font-size: 12px;
+        min-height: 350px;
     }
 
     .left-container {
@@ -40,27 +41,31 @@
         margin: 5px;
         padding: 2px 10px;
         border-radius: 5px;
-        width: fit-content;
+        /*width: fit-content;*/
         box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
     }
 
     .drop-container {
-        border: 1px solid #dadada;
+        /*border: 1px solid #dadada;*/
         display: flex;
-        margin-bottom: 10px;
+        /*margin-bottom: 10px;*/
         justify-content: space-between;
         align-items: center;
-        padding: 5px;
+        padding: 2px;
     }
 
     .droppable {
-        height: 30px;
+        height: 40px;
         text-decoration: none;
-        align-items: center;
+        /*align-items: center;*/
+        /*justify-content: center;*/
+        /*display: flex;*/
+        text-align: center;
         background: none;
-        display: flex;
+        width: 100% !important;
         padding-left: 15px;
-
+        /* border: 1px solid #54241040; */
+        border-bottom: 1px solid #54241040;
     }
 
     .field-type-container {
@@ -79,7 +84,6 @@
 <script>
     $(document).ready(function () {
         $(".draggable").on("dragstart", function (event) {
-            console.log("dragstart")
             let id = event.target.id;
             event.originalEvent.dataTransfer.setData("fileId", id.split("_")[1]);
             event.originalEvent.dataTransfer.setData("typeId", id.split("_")[2]);
@@ -87,7 +91,6 @@
             event.originalEvent.dataTransfer.setData("text/plain", id);
         });
         $(".left, .right").on("dragover", function (event) {
-            console.log("dragover")
             event.preventDefault();
         });
         $(".left .droppable").on("drop", function (event) {
@@ -96,24 +99,25 @@
             let fileId = event.originalEvent.dataTransfer.getData("fileId");
             let droppingIntoId = $(this)[0].id.split("_")[1];
             let element = document.getElementById(data);
+            let dataForInput = $(this)[0].getAttribute("data-custom");
+            let elementInnerText = element.innerText;
             let existingElement = $(this).children().first();
             if (fileId == droppingIntoId) {
                 if (existingElement.length) {
                     if (existingElement[0].innerText == "Don't Read") {
                         existingElement.remove();
                     } else {
-                        console.log("existingElement appending right")
                         $(".right_"+existingElement[0].id.split("_")[1])
                             .find(".field_type_"+existingElement[0].id.split("_")[2]).append(existingElement);
                     }
+                    $('#'+dataForInput).val("");
                 }
                 if (element.innerText != "Don't Read") {
                     $(this).append(element);
-                    $('#'+element.innerText).val(element.innerText);
+                    $('#'+dataForInput).val(elementInnerText);
                     addDoubleClickEventListener(element);
                 } else {
                     let clonedElement = $(element).clone();
-                    console.log(clonedElement)
                     clonedElement[0].id = "draggable_"+fileId+"_-1_-2";
                     clonedElement.on("dragstart", function (event) {
                         let id = event.target.id;
@@ -124,6 +128,7 @@
                     });
                     clonedElement.innerText = "Don't Read";
                     $(this).append(clonedElement);
+                    $('#'+dataForInput).val("Don't Read");
                     addDoubleClickEventListener(clonedElement);
                 }
             }
@@ -229,18 +234,18 @@
                                         </div>
                                         <div class="left left_${loop.index}">
                                             <c:forEach items="${propertyList}" varStatus="loop1" var="field">
-                                                <div id="droppable${loop1.index}" class="drop-container">
-                                                    <div style="min-width: 30%;">${field}:</div>
+                                                <div id="droppable${loop1.index}" class="drop-container" data-custom="${loop.index}_${loop1.index}">
+                                                    <div style="min-width: 30%;max-width:120px;" data-custom="${loop.index}_${loop1.index}">${field}:</div>
                                                     <div id="droppable_${loop.index}"
                                                          class="droppable droppable_${loop.index}"
-                                                         style="width:70%;max-width: 70%;" data-custom="${field}">
+                                                         style="width:70%;max-width: 70%;" data-custom="${loop.index}_${loop1.index}">
                                                         <div id="draggable_${loop.index}_-1_-2" class="draggable bg-secondary"
                                                              draggable="true">
                                                             Don't Read
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <input type="hidden" id="${field}" name="${field}" value="">
+                                                <input type="hidden" id="${loop.index}_${loop1.index}" name="${field}" value="">
                                             </c:forEach>
                                         </div>
                                     </div>
