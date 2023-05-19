@@ -13,89 +13,7 @@
 <%@ page import="java.util.Arrays" %>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function () {
-        $(".draggable").on("dragstart", function (event) {
-            console.log("dragstart")
-            let id = event.target.id;
-            event.originalEvent.dataTransfer.setData("fileId", id.split("_")[1]);
-            event.originalEvent.dataTransfer.setData("typeId", id.split("_")[2]);
-            event.originalEvent.dataTransfer.setData("draggableId", id.split("_")[3]);
-            event.originalEvent.dataTransfer.setData("text/plain", id);
-        });
-        $(".left, .right").on("dragover", function (event) {
-            console.log("dragover")
-            event.preventDefault();
-        });
-        $(".left .droppable").on("drop", function (event) {
-            event.preventDefault();
-            let data = event.originalEvent.dataTransfer.getData("text/plain");
-            let fileId = event.originalEvent.dataTransfer.getData("fileId");
-            let droppingIntoId = $(this)[0].id.split("_")[1];
-            let element = document.getElementById(data);
-            let existingElement = $(this).children().first();
-            if (fileId == droppingIntoId) {
-                if (existingElement.length) {
-                    if (existingElement[0].innerText == "Don't Read") {
-                        existingElement.remove();
-                    } else {
-                        console.log("existingElement appending right")
-                        $(".right_"+existingElement[0].id.split("_")[1])
-                            .find(".field_type_"+existingElement[0].id.split("_")[2]).append(existingElement);
-                    }
-                }
-                if (element.innerText != "Don't Read") {
-                    $(this).append(element);
-                    addDoubleClickEventListener(element);
-                } else {
-                    let clonedElement = $(element).clone();
-                    clonedElement.on("dragstart", function (event) {
-                        let id = event.target.id;
-                        event.originalEvent.dataTransfer.setData("fileId", id.split("_")[1]);
-                        event.originalEvent.dataTransfer.setData("typeId", id.split("_")[2]);
-                        event.originalEvent.dataTransfer.setData("draggableId", id.split("_")[3]);
-                        event.originalEvent.dataTransfer.setData("text/plain", id);
-                    });
-                    clonedElement.innerText = "Don't Read";
-                    $(this).append(clonedElement);
-                    addDoubleClickEventListener(clonedElement);
-                }
-            }
-
-            function addDoubleClickEventListener(element) {
-                $(element).on("dblclick", function() {
-                    if (element.innerText == "Don't Read") {
-                        $(this).remove();
-                    } else {
-                        let parentContainer = $(this).closest(".field-container_"+element.id.split("_")[1]);
-                        $(this).detach();
-                        $(this).unbind("dblclick")
-                        parentContainer.find(".right_"+element.id.split("_")[1])
-                            .find(".field_type_"+element.id.split("_")[2]).append($(this));
-                    }
-                });
-            }
-        });
-        $(".right").on("drop", function(event) {
-            event.preventDefault();
-            let droppingIntoId = $(this)[0].id.split("_")[1];
-            let data = event.originalEvent.dataTransfer.getData("text/plain");
-            let element = document.getElementById(data);
-            let fileId = element.id.split("_")[1];
-            let typeId = element.id.split("_")[2];
-            if (fileId == droppingIntoId) {
-                if (element.innerText == "Don't Read") {
-                    element.remove();
-                } else {
-                    $(".right_"+fileId).find(".field_type_"+typeId).append(element);
-                }
-            }
-        });
-
-    });
-
-
-</script>
+<c:set var="bgColors" value="${['bg-info', 'bg-success', 'bg-warning']}" />
 <style>
     .field-container {
         display: flex;
@@ -149,6 +67,8 @@
         display: flex;
         flex-wrap: wrap;
         padding: 10px 5px;
+        min-height: 55px;
+        width: 100%;
     }
     .separator {
         border-bottom: 1px solid #54241040;
@@ -156,6 +76,93 @@
         margin: auto;
     }
 </style>
+<script>
+    $(document).ready(function () {
+        $(".draggable").on("dragstart", function (event) {
+            console.log("dragstart")
+            let id = event.target.id;
+            event.originalEvent.dataTransfer.setData("fileId", id.split("_")[1]);
+            event.originalEvent.dataTransfer.setData("typeId", id.split("_")[2]);
+            event.originalEvent.dataTransfer.setData("draggableId", id.split("_")[3]);
+            event.originalEvent.dataTransfer.setData("text/plain", id);
+        });
+        $(".left, .right").on("dragover", function (event) {
+            console.log("dragover")
+            event.preventDefault();
+        });
+        $(".left .droppable").on("drop", function (event) {
+            event.preventDefault();
+            let data = event.originalEvent.dataTransfer.getData("text/plain");
+            let fileId = event.originalEvent.dataTransfer.getData("fileId");
+            let droppingIntoId = $(this)[0].id.split("_")[1];
+            let element = document.getElementById(data);
+            let existingElement = $(this).children().first();
+            if (fileId == droppingIntoId) {
+                if (existingElement.length) {
+                    if (existingElement[0].innerText == "Don't Read") {
+                        existingElement.remove();
+                    } else {
+                        console.log("existingElement appending right")
+                        $(".right_"+existingElement[0].id.split("_")[1])
+                            .find(".field_type_"+existingElement[0].id.split("_")[2]).append(existingElement);
+                    }
+                }
+                if (element.innerText != "Don't Read") {
+                    $(this).append(element);
+                    $('#'+element.innerText).val(element.innerText);
+                    addDoubleClickEventListener(element);
+                } else {
+                    let clonedElement = $(element).clone();
+                    console.log(clonedElement)
+                    clonedElement[0].id = "draggable_"+fileId+"_-1_-2";
+                    clonedElement.on("dragstart", function (event) {
+                        let id = event.target.id;
+                        event.originalEvent.dataTransfer.setData("fileId", id.split("_")[1]);
+                        event.originalEvent.dataTransfer.setData("typeId", id.split("_")[2]);
+                        event.originalEvent.dataTransfer.setData("draggableId", id.split("_")[3]);
+                        event.originalEvent.dataTransfer.setData("text/plain", id);
+                    });
+                    clonedElement.innerText = "Don't Read";
+                    $(this).append(clonedElement);
+                    addDoubleClickEventListener(clonedElement);
+                }
+            }
+            function addDoubleClickEventListener(element) {
+                $(element).on("dblclick", function() {
+                    if (element.innerText == "Don't Read") {
+                        $(this).remove();
+                    } else {
+                        let parentContainer = $(this).closest(".field-container_"+element.id.split("_")[1]);
+                        $(this).detach();
+                        $(this).unbind("dblclick")
+                        parentContainer.find(".right_"+element.id.split("_")[1])
+                            .find(".field_type_"+element.id.split("_")[2]).append($(this));
+                    }
+                });
+            }
+        });
+        $(".right").on("drop", function(event) {
+            event.preventDefault();
+            let droppingIntoId = $(this)[0].id.split("_")[1];
+            let data = event.originalEvent.dataTransfer.getData("text/plain");
+            let element = document.getElementById(data);
+            let fileId = element.id.split("_")[1];
+            let typeId = element.id.split("_")[2];
+            let draggableId = element.id.split("_")[3];
+            if (fileId == droppingIntoId) {
+                if (element.innerText == "Don't Read" && draggableId != -1) {
+                    element.remove();
+                } else {
+                    $(".right_"+fileId).find(".field_type_"+typeId).append(element);
+                }
+            }
+        });
+
+    });
+
+
+</script>
+
 <div class="container">
     <%--    <div class="row row-content align-center">--%>
     <%--        <h2>Edit Metadata</h2>--%>
@@ -226,9 +233,14 @@
                                                     <div style="min-width: 30%;">${field}:</div>
                                                     <div id="droppable_${loop.index}"
                                                          class="droppable droppable_${loop.index}"
-                                                         style="width:70%;max-width: 70%;">
+                                                         style="width:70%;max-width: 70%;" data-custom="${field}">
+                                                        <div id="draggable_${loop.index}_-1_-2" class="draggable bg-secondary"
+                                                             draggable="true">
+                                                            Don't Read
+                                                        </div>
                                                     </div>
                                                 </div>
+                                                <input type="hidden" id="${field}" name="${field}" value="">
                                             </c:forEach>
                                         </div>
                                     </div>
@@ -242,7 +254,7 @@
                                                 <div class="field-type-container field_type_${loop3.index}">
                                                     <c:forEach items="${fields}" varStatus="loop4" var="field">
                                                         <div id="draggable_${loop.index}_${loop3.index}_${loop4.index}"
-                                                             class="draggable" draggable="true">
+                                                             class="draggable ${bgColors[loop3.index]}" draggable="true">
                                                                 ${field}
                                                         </div>
                                                     </c:forEach>
@@ -251,7 +263,7 @@
                                             </c:forEach>
                                             <div class="field-type-container field-type-dontRead"
                                                  style="border-bottom: unset;">
-                                                <div id="draggable_${loop.index}_-1_-1" class="draggable"
+                                                <div id="draggable_${loop.index}_-1_-1" class="draggable bg-secondary"
                                                      draggable="true">
                                                     Don't Read
                                                 </div>
