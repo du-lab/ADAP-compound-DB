@@ -133,35 +133,7 @@ public class FileUploadController extends BaseController {
         leftFields.add("Comment");
         // Set the leftFields as a request attribute
         model.addAttribute("leftFields", leftFields);
-        model.addAttribute("rightFields", getRightFields());
         return "submission/upload";
-    }
-
-    private List<List<String>> getRightFields() {
-        List<List<String>> rightFields = new ArrayList<>();
-        List<String> rightFields1 = new ArrayList<>();
-        rightFields1.add("Name");
-        rightFields1.add("Synonym");
-        rightFields1.add("ID");
-        rightFields1.add("Cas ID");
-        rightFields1.add("HMDB ID");
-        rightFields1.add("KEGG ID");
-        rightFields1.add("Pub Chem ID");
-        List<String> rightFields2 = new ArrayList<>();
-        rightFields2.add("Precursor Mz");
-        rightFields2.add("Retention time");
-        rightFields2.add("Retention index");
-        rightFields2.add("Mass");
-        List<String> rightFields3 = new ArrayList<>();
-        rightFields3.add("Formula");
-        rightFields3.add("Canonical Smiles");
-        rightFields3.add("InChI");
-        rightFields3.add("InChIKey");
-        rightFields3.add("Isotopic Distribution");
-        rightFields.add(rightFields1);
-        rightFields.add(rightFields2);
-        rightFields.add(rightFields3);
-        return rightFields;
     }
 
     @RequestMapping(value = "/file/upload/", method = RequestMethod.POST, consumes = "multipart/form-data")
@@ -288,7 +260,7 @@ public class FileUploadController extends BaseController {
 
         ObjectMapper objectMapper = new ObjectMapper();
         Map cookieMap = objectMapper.convertValue(form, Map.class);
-
+        // TODO try to keep order x
         List<List<String>> propertyList = new ArrayList<>();
         for (File file : submission.getFiles()) {
             propertyList.add(file.getSpectra().stream()
@@ -296,7 +268,6 @@ public class FileUploadController extends BaseController {
                     .flatMap(Collection::stream)
                     .map(SpectrumProperty::getName)
                     .distinct()
-                    .sorted()
                     .collect(Collectors.toList()));
             fileTypes.add(file.getFileType());
         }
@@ -333,6 +304,33 @@ public class FileUploadController extends BaseController {
         response.addCookie(metaFieldsCookie);
 
         return "redirect:/file/";
+    }
+
+    private List<List<FormField>> getRightFields() {
+        List<List<FormField>> formFields = new ArrayList<>();
+        List<FormField> formFieldType1 = new ArrayList<>();
+        formFieldType1.add(new FormField("NameField", "Name"));
+        formFieldType1.add(new FormField("SynonymField", "Synonym"));
+        formFieldType1.add(new FormField("ExternalIdField", "External ID"));
+        formFieldType1.add(new FormField("CasNoField", "Cas ID"));
+        formFieldType1.add(new FormField("KeggField", "KEGG ID"));
+        formFieldType1.add(new FormField("HmdbField", "HMDB ID"));
+        formFieldType1.add(new FormField("PubChemField", "Pub Chem ID"));
+        List<FormField> formFieldType2 = new ArrayList<>();
+        formFieldType2.add(new FormField("PrecursorMzField", "Precursor Mz"));
+        formFieldType2.add(new FormField("RetentionTimeField", "Retention Time"));
+        formFieldType2.add(new FormField("RetentionIndexField", "Retention Index"));
+        formFieldType2.add(new FormField("MassField", "Mass"));
+        List<FormField> formFieldType3 = new ArrayList<>();
+        formFieldType3.add(new FormField("FormulaField", "Formula"));
+        formFieldType3.add(new FormField("CanonicalSmilesField", "Canonical Smiles"));
+        formFieldType3.add(new FormField("InChiField", "InChI"));
+        formFieldType3.add(new FormField("InChiKeyField", "InChIKey"));
+        formFieldType3.add(new FormField("IsotopeField", "Isotopic Distribution"));
+        formFields.add(formFieldType1);
+        formFields.add(formFieldType2);
+        formFields.add(formFieldType3);
+        return formFields;
     }
 
     private List<FormField> getRequiredFormFields(FileUploadForm form) {

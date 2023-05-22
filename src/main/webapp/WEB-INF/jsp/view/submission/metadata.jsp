@@ -100,22 +100,24 @@
             let droppingIntoId = $(this)[0].id.split("_")[1];
             let element = document.getElementById(data);
             let dataForInput = $(this)[0].getAttribute("data-custom");
-            let elementInnerText = element.innerText;
+            console.log(element.getAttribute("data-inputid"), dataForInput)
             let existingElement = $(this).children().first();
             if (fileId == droppingIntoId) {
                 if (existingElement.length) {
                     if (existingElement[0].innerText == "Don't Read") {
                         existingElement.remove();
                     } else {
+                        $("#"+existingElement[0].getAttribute("data-inputid")).val("");
                         $(".right_"+existingElement[0].id.split("_")[1])
                             .find(".field_type_"+existingElement[0].id.split("_")[2]).append(existingElement);
                     }
-                    $('#'+dataForInput).val("");
+                } else {
+                    $(this).append(createDontReadDiv());
                 }
                 if (element.innerText != "Don't Read") {
                     $(this).append(element);
-                    $('#'+dataForInput).val(elementInnerText);
                     addDoubleClickEventListener(element);
+                    $('#'+element.getAttribute("data-inputid")).val(dataForInput);
                 } else {
                     let clonedElement = $(element).clone();
                     clonedElement[0].id = "draggable_"+fileId+"_-1_-2";
@@ -128,9 +130,9 @@
                     });
                     clonedElement.innerText = "Don't Read";
                     $(this).append(clonedElement);
-                    $('#'+dataForInput).val("Don't Read");
                     addDoubleClickEventListener(clonedElement);
                 }
+                resetDroppable(fileId);
             }
             function addDoubleClickEventListener(element) {
                 $(element).on("dblclick", function() {
@@ -140,12 +142,23 @@
                         let parentContainer = $(this).closest(".field-container_"+element.id.split("_")[1]);
                         $(this).detach();
                         $(this).unbind("dblclick")
+                        $(this).find("input").val("")
+                        resetDroppable(element.id.split("_")[1]);
                         parentContainer.find(".right_"+element.id.split("_")[1])
                             .find(".field_type_"+element.id.split("_")[2]).append($(this));
                     }
                 });
             }
         });
+
+        function resetDroppable(id) {
+            $(".droppable_"+id).each(function () {
+                if ($(this).children().length == 0) {
+                    $(this).append(createDontReadDiv(id));
+                }
+            });
+        }
+
         $(".right").on("drop", function(event) {
             event.preventDefault();
             let droppingIntoId = $(this)[0].id.split("_")[1];
@@ -159,9 +172,21 @@
                     element.remove();
                 } else {
                     $(".right_"+fileId).find(".field_type_"+typeId).append(element);
+                    $("#"+element.getAttribute("data-inputid")).val("");
                 }
             }
+            resetDroppable(fileId);
         });
+
+        function createDontReadDiv(id) {
+            let div = document.createElement("div");
+            div.id = "draggable_"+id+"_-1_-2";
+            div.className = "draggable bg-secondary";
+            div.draggable = false;
+            div.setAttribute("data-inputid", "Don't Read");
+            div.textContent = "Don't Read";
+            return div;
+        }
 
     });
 
@@ -234,18 +259,17 @@
                                         </div>
                                         <div class="left left_${loop.index}">
                                             <c:forEach items="${propertyList}" varStatus="loop1" var="field">
-                                                <div id="droppable${loop1.index}" class="drop-container" data-custom="${loop.index}_${loop1.index}">
-                                                    <div style="min-width: 30%;max-width:120px;" data-custom="${loop.index}_${loop1.index}">${field}:</div>
+                                                <div id="droppable${loop1.index}" class="drop-container" data-custom="${field}">
+                                                    <div style="min-width: 30%;max-width:120px;" data-custom="${field}">${field}:</div>
                                                     <div id="droppable_${loop.index}"
                                                          class="droppable droppable_${loop.index}"
-                                                         style="width:70%;max-width: 70%;" data-custom="${loop.index}_${loop1.index}">
+                                                         style="width:70%;max-width: 70%;" data-custom="${field}">
                                                         <div id="draggable_${loop.index}_-1_-2" class="draggable bg-secondary"
-                                                             draggable="true">
+                                                             draggable="false" data-inputid="Don't Read">
                                                             Don't Read
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <input type="hidden" id="${loop.index}_${loop1.index}" name="${field}" value="">
                                             </c:forEach>
                                         </div>
                                     </div>
@@ -255,24 +279,27 @@
                                         <div style="color:#844d36;margin-bottom: 5px">Read As</div>
                                         <div class="right right_${loop.index}" id="right_${loop.index}"
                                              style="display: flex;flex-wrap: wrap;height: fit-content;">
+                                            <div class="separator"></div>
                                             <c:forEach items="${csvMappingFields}" varStatus="loop3" var="fields">
                                                 <div class="field-type-container field_type_${loop3.index}">
                                                     <c:forEach items="${fields}" varStatus="loop4" var="field">
                                                         <div id="draggable_${loop.index}_${loop3.index}_${loop4.index}"
-                                                             class="draggable ${bgColors[loop3.index]}" draggable="true">
-                                                                ${field}
+                                                             class="draggable ${bgColors[loop3.index]}" draggable="true" data-inputid = "${fn:toLowerCase(fileTypes[loop.index])}${field.id}">
+                                                                ${field.labelText}
+                                                                <input type="hidden" id="${fn:toLowerCase(fileTypes[loop.index])}${field.id}"
+                                                                       name="${fn:toLowerCase(fileTypes[loop.index])}${field.id}" value="">
                                                         </div>
                                                     </c:forEach>
                                                 </div>
                                                 <div class="separator"></div>
                                             </c:forEach>
-                                            <div class="field-type-container field-type-dontRead"
-                                                 style="border-bottom: unset;">
-                                                <div id="draggable_${loop.index}_-1_-1" class="draggable bg-secondary"
-                                                     draggable="true">
-                                                    Don't Read
-                                                </div>
-                                            </div>
+<%--                                            <div class="field-type-container field-type-dontRead"--%>
+<%--                                                 style="border-bottom: unset;">--%>
+<%--                                                <div id="draggable_${loop.index}_-1_-1" class="draggable bg-secondary"--%>
+<%--                                                     draggable="false" data-inputid="Don't Read">--%>
+<%--                                                    Don't Read--%>
+<%--                                                </div>--%>
+<%--                                            </div>--%>
                                         </div>
                                     </div>
                                 </div>
