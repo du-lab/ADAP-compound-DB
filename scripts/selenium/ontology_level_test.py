@@ -46,7 +46,7 @@ def ontology_level_test(homepage_url, username, password):
         assert len(driver.find_elements_by_id('accountPage')) < 1
 
     except Exception as e:
-        driver.quit()
+        # driver.quit()
         raise e
 
 
@@ -59,4 +59,4 @@ if __name__ == '__main__':
     parser.add_argument('--password', help='ADAP-KDB User password', required=True)
     args = parser.parse_args()
 
-    # ontology_level_test(args.homepage_url, args.username, args.password)
+    ontology_level_test(args.homepage_url, args.username, args.password)
