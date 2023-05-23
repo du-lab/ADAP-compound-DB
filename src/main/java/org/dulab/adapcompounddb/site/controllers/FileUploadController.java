@@ -126,13 +126,6 @@ public class FileUploadController extends BaseController {
 
         model.addAttribute("fileUploadForm", form);
         model.addAttribute("loggedInUser", getCurrentUserPrincipal());
-        List<String> leftFields = new ArrayList<>();
-        leftFields.add("Name");
-        leftFields.add("Charge");
-        leftFields.add("PrecursorMZ");
-        leftFields.add("Comment");
-        // Set the leftFields as a request attribute
-        model.addAttribute("leftFields", leftFields);
         return "submission/upload";
     }
 
@@ -175,14 +168,8 @@ public class FileUploadController extends BaseController {
         Cookie metaFieldsCookie = new Cookie(FILE_UPLOAD_FIELDS_COOKIE_NAME, byteString);
         response.addCookie(metaFieldsCookie);
 
-
-        if (true) {
-            redirectAttributes.addFlashAttribute("form", form);
-            return "redirect:/submission/metadata";
-        }
-
-
-        return "redirect:/file/";
+        redirectAttributes.addFlashAttribute("form", form);
+        return "redirect:/submission/metadata";
     }
 
     @GetMapping(value = "/file/upload/s3")
@@ -268,6 +255,7 @@ public class FileUploadController extends BaseController {
                     .flatMap(Collection::stream)
                     .map(SpectrumProperty::getName)
                     .distinct()
+                    .sorted()
                     .collect(Collectors.toList()));
             fileTypes.add(file.getFileType());
         }
@@ -277,7 +265,7 @@ public class FileUploadController extends BaseController {
         List<FormField> fields = getRequiredFormFields((FileUploadForm) session.getAttribute("FileUploadForm"));
         model.addAttribute("fieldList", fields);
         model.addAttribute("fileTypes", fileTypes);
-        model.addAttribute("csvMappingFields", getRightFields());
+        model.addAttribute("csvMappingFields", getFieldsForMapping());
         return "submission/metadata";
     }
 
@@ -306,7 +294,7 @@ public class FileUploadController extends BaseController {
         return "redirect:/file/";
     }
 
-    private List<List<FormField>> getRightFields() {
+    private List<List<FormField>> getFieldsForMapping() {
         List<List<FormField>> formFields = new ArrayList<>();
         List<FormField> formFieldType1 = new ArrayList<>();
         formFieldType1.add(new FormField("NameField", "Name"));

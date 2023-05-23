@@ -104,7 +104,7 @@
             let existingElement = $(this).children().first();
             if (fileId == droppingIntoId) {
                 if (existingElement.length) {
-                    if (existingElement[0].innerText == "Don't Read") {
+                    if (existingElement[0].getAttribute("data-inputid") == "Don't Read") {
                         existingElement.remove();
                     } else {
                         $("#"+existingElement[0].getAttribute("data-inputid")).val("");
