@@ -265,7 +265,7 @@ public class FileUploadController extends BaseController {
         List<FormField> fields = getRequiredFormFields((FileUploadForm) session.getAttribute("FileUploadForm"));
         model.addAttribute("fieldList", fields);
         model.addAttribute("fileTypes", fileTypes);
-        model.addAttribute("csvMappingFields", getFieldsForMapping());
+        model.addAttribute("mappingFields", getFieldsForMapping());
         return "submission/metadata";
     }
 
