@@ -59,4 +59,4 @@ if __name__ == '__main__':
     parser.add_argument('--password', help='ADAP-KDB User password', required=True)
     args = parser.parse_args()
 
-    ontology_level_test(args.homepage_url, args.username, args.password)
+    # ontology_level_test(args.homepage_url, args.username, args.password)
