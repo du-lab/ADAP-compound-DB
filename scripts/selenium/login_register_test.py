@@ -7,6 +7,9 @@ import string
 from selenium import webdriver
 from urllib.parse import urljoin
 import time
+from selenium.webdriver.common.by import By
+
+driver = webdriver.Chrome('scripts/selenium/drivers/chromedriver')
 
 #  generate random string as username
 def random_string(stringLength):
@@ -22,10 +25,7 @@ def random_password(stringLength):
     return ''.join(random.choice(password_characters) for i in range(stringLength-4)) + password_required_characters
 
 
-def login_register_test(homepage_url):
-
-    driver = webdriver.Chrome('scripts/selenium/drivers/chromedriver')
-
+def login_register_test(homepage_url, username_value, password_value):
     try:
         driver.get(homepage_url)
 
@@ -40,7 +40,7 @@ def login_register_test(homepage_url):
         time.sleep(5)
         # input username, email, password for new register user
         username_input = driver.find_element_by_id('username')
-        username_value = random_string(8)
+
         username_input.send_keys(username_value)
 
         email_input = driver.find_element_by_id('email')
@@ -51,7 +51,7 @@ def login_register_test(homepage_url):
         confirm_email_input.send_keys(email)
 
         password_input = driver.find_element_by_id('password')
-        password_value = random_password(9)
+
         password_input.send_keys(password_value)
 
         confirmed_password_input = driver.find_element_by_id('confirmedPassword')
@@ -81,6 +81,28 @@ def login_register_test(homepage_url):
         driver.quit()
         raise e
 
+def delete_account(homepage_url, username, password):
+    try:
+        driver.get(homepage_url)
+        # go to login page
+        driver.find_element("id", 'loginPage').click()
+        # login with details
+        driver.find_element("id", 'username').send_keys(username)
+        driver.find_element("id", 'password').send_keys(password)
+        driver.find_element("name", "submit").click()
+        time.sleep(1)
+        account_page_button = driver.find_element("id", "accountPage")
+        account_page_button.click()
+        time.sleep(1)
+        driver.find_element(By.XPATH, "//a[contains(text(), 'Delete Account')]").click()
+        time.sleep(1)
+        driver.find_element(By.XPATH, "//button[text()='Delete']").click()
+        time.sleep(1)
+
+    except Exception as e:
+        driver.quit()
+        raise e
+
 
 def main():
     """Main function that is called from a command line"""
@@ -90,8 +112,11 @@ def main():
     args = parser.parse_args()
 
     homepage_url = args.homepage_url
-
-    login_register_test(homepage_url)
+    username_value = random_string(8)
+    password_value = random_password(9)
+    login_register_test(homepage_url, username_value, password_value)
+    time.sleep(2)
+    delete_account(homepage_url, username_value, password_value)
 
 
 if __name__ == '__main__':
