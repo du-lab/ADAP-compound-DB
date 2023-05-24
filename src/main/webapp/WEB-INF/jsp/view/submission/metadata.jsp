@@ -1,6 +1,7 @@
 <head>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="/resources/AdapCompoundDb/js/fieldMapping.js"></script>
+    <link rel="stylesheet" href="/resources/AdapCompoundDb/css/fieldMapping.css">
 </head>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
