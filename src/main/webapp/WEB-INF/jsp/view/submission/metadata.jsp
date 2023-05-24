@@ -1,3 +1,7 @@
+<head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/resources/AdapCompoundDb/js/fieldMapping.js"></script>
+</head>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -6,82 +10,10 @@
 <%--@elvariable id="spectrumProperties" type="java.util.List<java.util.List<java.lang.String>>"--%>
 <%--@elvariable id="fileTypes" type="java.util.List<dulab.adapcompounddb.models.enums.FileType>"--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
-<body>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.Arrays" %>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <c:set var="bgColors" value="${['bg-info', 'bg-success', 'bg-warning']}"/>
-<style>
-    .field-container {
-        display: flex;
-        justify-content: space-between;
-        margin: 20px;
-        user-select: none;
-        font-size: 12px;
-        min-height: 350px;
-    }
-
-    .left-container {
-        width: 50%;
-        padding: 10px 30px 10px 10px;
-        border-right: 1px solid #54241040;
-    }
-
-    .right-container {
-        width: 50%;
-        padding: 10px;
-    }
-
-    .draggable {
-        height: 25px;
-        cursor: pointer;
-        margin: 5px;
-        padding: 2px 10px;
-        border-radius: 5px;
-        /*width: fit-content;*/
-        box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
-    }
-
-    .drop-container {
-        /*border: 1px solid #dadada;*/
-        display: flex;
-        /*margin-bottom: 10px;*/
-        justify-content: space-between;
-        align-items: center;
-        padding: 2px;
-    }
-
-    .droppable {
-        height: 40px;
-        text-decoration: none;
-        /*align-items: center;*/
-        /*justify-content: center;*/
-        /*display: flex;*/
-        text-align: center;
-        background: none;
-        width: 100% !important;
-        padding-left: 15px;
-        /* border: 1px solid #54241040; */
-        border-bottom: 1px solid #54241040;
-    }
-
-    .field-type-container {
-        display: flex;
-        flex-wrap: wrap;
-        padding: 10px 5px;
-        min-height: 90px;
-        width: 100%;
-    }
-
-    .separator {
-        border-bottom: 1px solid #54241040;
-        width: 94%;
-        margin: auto;
-    }
-</style>
-<jsp:include page="../../shared/fieldMapping.jsp"/>
 <div class="container">
     <%--    <div class="row row-content align-center">--%>
     <%--        <h2>Edit Metadata</h2>--%>
@@ -196,8 +128,6 @@
         </div>
     </div>
     </form:form>
-
-</body>
-</html>
+</div>
 
 
