@@ -47,7 +47,7 @@
                                         <%--                        <small>${dulab:abbreviate(study.description, 80)}</small>--%>
                                 </td>
                                 <td>${dulab:abbreviate(study.description, 80)}</td>
-                                <td>${study.chromatographyType}</td>
+                                <td><span class="badge badge-primary">${study.chromatographyType}</span></td>
                                 <td>${study.size}</td>
                             </tr>
                         </c:forEach>
