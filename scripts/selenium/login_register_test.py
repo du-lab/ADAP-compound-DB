@@ -30,48 +30,45 @@ def login_register_test(homepage_url, username_value, password_value):
         driver.get(homepage_url)
 
         # go to login page
-        upload_page_button = driver.find_element_by_id('loginPage')
+        upload_page_button = driver.find_element("id", 'loginPage')
         upload_page_button.click()
 
         # go to registration
-#         register_button = driver.find_element_by_class_name('button')
-        register_button = driver.find_element_by_id('registerButton')
+        register_button = driver.find_element("id", 'registerButton')
         register_button.click()
-        time.sleep(5)
+        time.sleep(1)
         # input username, email, password for new register user
-        username_input = driver.find_element_by_id('username')
-
+        username_input = driver.find_element("id", 'username')
         username_input.send_keys(username_value)
 
-        email_input = driver.find_element_by_id('email')
+        email_input = driver.find_element("id", 'email')
         email = random_string(8) + '@gmail.com'
         email_input.send_keys(email)
 
-        confirm_email_input = driver.find_element_by_id('confirmedEmail')
+        confirm_email_input = driver.find_element("id", 'confirmedEmail')
         confirm_email_input.send_keys(email)
 
-        password_input = driver.find_element_by_id('password')
-
+        password_input = driver.find_element("id", 'password')
         password_input.send_keys(password_value)
 
-        confirmed_password_input = driver.find_element_by_id('confirmedPassword')
+        confirmed_password_input = driver.find_element("id", 'confirmedPassword')
         confirmed_password_input.send_keys(password_value)
-        time.sleep(10)
+        time.sleep(1)
         # commit new registration
-        submit_button = driver.find_element_by_id('submit')
+        submit_button = driver.find_element("id", 'submit')
         submit_button.click()
-        time.sleep(11)
+        time.sleep(1)
         # log in with new created user information
-        username_login = driver.find_element_by_id('username')
+        username_login = driver.find_element("id", 'username')
         username_login.send_keys(username_value)
 
-        password_login = driver.find_element_by_id('password')
+        password_login = driver.find_element("id", 'password')
         password_login.send_keys(password_value)
-        time.sleep(5)
-        driver.find_element_by_name("submit").click()
-        time.sleep(5)
+        time.sleep(1)
+        driver.find_element("name", "submit").click()
+        time.sleep(1)
         # go to account page
-        account_page_button = driver.find_element_by_id("accountPage")
+        account_page_button = driver.find_element("id", "accountPage")
         account_page_button.click()
 
         # validate if current url is account page
@@ -80,6 +77,7 @@ def login_register_test(homepage_url, username_value, password_value):
     except Exception as e:
         driver.quit()
         raise e
+
 
 def delete_account(homepage_url, username, password):
     try:
@@ -102,6 +100,10 @@ def delete_account(homepage_url, username, password):
         driver.quit()
         raise e
 
+def logout():
+    time.sleep(1)
+    driver.find_element('id','logoutPage').click();
+    time.sleep(1)
 
 def main():
     """Main function that is called from a command line"""
@@ -114,7 +116,7 @@ def main():
     username_value = random_string(8)
     password_value = random_password(9)
     login_register_test(homepage_url, username_value, password_value)
-    time.sleep(2)
+    logout()
     delete_account(homepage_url, username_value, password_value)
 
 
