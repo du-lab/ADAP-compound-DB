@@ -73,7 +73,6 @@ def login_register_test(homepage_url, username_value, password_value):
 
         # validate if current url is account page
         assert (driver.current_url.__str__().startswith(urljoin(homepage_url, 'account/')))
-
     except Exception as e:
         driver.quit()
         raise e
