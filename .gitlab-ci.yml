@@ -15,6 +15,7 @@ build:
     - master
     - merge_requests
   script:
+    - docker rm --force $CONTAINER_NAME
     - mvn -version
 #    - mkdir -p src/main/resources/META-INF/resources
 #    #we need to copy the webapp folder to newly created /META-INF/resources for Spring to be able to render JSP view
