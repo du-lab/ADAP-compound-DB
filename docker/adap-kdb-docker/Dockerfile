@@ -12,7 +12,7 @@ ENV ADAP_EMAIL_LOGIN="adap.helpdesk@gmail.com"
 ENV ADAP_EMAIL_PASSWORD="djlqocwutonnykwi"
 
 ADD ../../target/adap-compound-db.war /usr/local/tomcat/webapps/
-COPY server/context.xml /usr/local/tomcat/conf/
+ADD server/context.xml /usr/local/tomcat/conf/context.xml
 
 #ENTRYPOINT ["java","-jar","/adap-compound-db.jar", "--spring.profiles.active=docker"]
 CMD ["catalina.sh", "run"]
