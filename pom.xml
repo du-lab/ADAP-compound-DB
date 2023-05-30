@@ -5,7 +5,7 @@
     <groupId>org.dulab</groupId>
     <artifactId>adap-compound-db</artifactId>
     <version>0.1.0</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <profiles>
         <profile>
             <id>jenkins-test</id>
@@ -474,14 +474,6 @@
         <testSourceDirectory>src/main/test</testSourceDirectory>
 
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>3.2.2</version>
-                <configuration>
-                    <warSourceDirectory>src/main/webapp</warSourceDirectory>
-                </configuration>
-            </plugin>
             <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
