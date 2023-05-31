@@ -1,7 +1,7 @@
 variables:
 #  MAVEN_EXEC: C:/Maven/apache-maven-3.6.3/bin/mvn
   MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
-  HOMEPAGE_URL: http://localhost:8080/adap-compound-db/
+  HOMEPAGE_URL: http://localhost:8080/
   CONTAINER_NAME: adap-kdb-container
 
 # In addition, variables ADAP_KDB_TEST_USERNAME and ADAP_KDB_TEST_PASSWORD must be defined in GitLab CI settings.
