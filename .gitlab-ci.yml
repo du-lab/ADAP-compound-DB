@@ -16,10 +16,8 @@ build:
     - merge_requests
   script:
     - docker rm --force $CONTAINER_NAME
+    - docker system prune #to clean up dangling images
     - mvn -version
-    - mkdir -p src/main/resources/META-INF/resources
-#    #we need to copy the WEB-INF folder to newly created /META-INF/resources for the JSP files to be included when package as jar
-    - cp -R src/main/webapp/WEB-INF src/main/resources/META-INF/resources/
     - mvn clean install
     - docker build -f docker/adap-kdb-docker/Dockerfile -t adap-kdb-img .
     - docker run --name $CONTAINER_NAME -e DATABASE=cci-cardia.uncc.edu -e INTEGRATION_TEST=true -d -p8080:8080 adap-kdb-img
