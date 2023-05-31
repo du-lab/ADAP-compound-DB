@@ -10,11 +10,11 @@ ENV CAPTCHA_SECRET_KEY="6LdY3V8hAAAAABWB0g3AcKLTJAVz-i_8FJQ4EUhZ"
 ENV ADAP_EMAIL_LOGIN="adap.helpdesk@gmail.com"
 ENV ADAP_EMAIL_PASSWORD="djlqocwutonnykwi"
 
-RUN mkdir -p app/src/main
+RUN mkdir -p app/
 COPY ../../target app/
-COPY ../../src/main/webapp app/src/main/
-WORKDIR /app/target
-ENTRYPOINT ["java","-jar","/adap-compound-db.jar", "--spring.profiles.active=docker"]
+COPY ../../src/main/webapp app/
+WORKDIR /app/
+ENTRYPOINT ["java","-jar","/target/adap-compound-db.jar", "--spring.profiles.active=docker"]
 EXPOSE 8080
 
 
