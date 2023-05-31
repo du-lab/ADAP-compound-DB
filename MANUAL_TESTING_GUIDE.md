@@ -5,4 +5,4 @@ Prerequisites: have docker installed and running
 2. Extract the file. 
 3. In the extracted folder, run "chmod u+x script.sh" to give permission to the file
 4. Run ./script.sh
-5. Open http://localhost:8080/adap-compound-db in the browser. 
+5. Open http://localhost:8080/ in the browser. 
