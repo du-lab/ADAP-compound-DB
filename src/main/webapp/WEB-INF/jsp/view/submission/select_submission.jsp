@@ -17,7 +17,7 @@
                                 <th>Sample source</th>
                                 <th>Disease</th>
                                 <th>MS Instrument</th>
-                                <th>Chromatography</th>
+                                <th>Spectrum type</th>
                                 <th></th>
                             </tr>
                             </thead>

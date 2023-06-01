@@ -103,7 +103,7 @@
                                         <div class="row form-group">
                                             <div class="col-md-4">
                                                 <form:label path="chromatographyType"
-                                                            cssClass="col-form-label">Chromatography type</form:label>&nbsp;
+                                                            cssClass="col-form-label">Spectrum type</form:label>&nbsp;
                                             </div>
                                             <div class="col-md-8">
                                                 <form:select path="chromatographyType" cssClass="form-control">
