@@ -168,14 +168,8 @@ public class FileUploadController extends BaseController {
         Cookie metaFieldsCookie = new Cookie(FILE_UPLOAD_FIELDS_COOKIE_NAME, byteString);
         response.addCookie(metaFieldsCookie);
 
-
-        if (getRequiredFormFields(form).size() > 0) {
-            redirectAttributes.addFlashAttribute("form", form);
-            return "redirect:/submission/metadata";
-        }
-
-
-        return "redirect:/file/";
+        redirectAttributes.addFlashAttribute("form", form);
+        return "redirect:/submission/metadata";
     }
 
     @GetMapping(value = "/file/upload/s3")
@@ -253,7 +247,7 @@ public class FileUploadController extends BaseController {
 
         ObjectMapper objectMapper = new ObjectMapper();
         Map cookieMap = objectMapper.convertValue(form, Map.class);
-
+        // TODO try to keep order x
         List<List<String>> propertyList = new ArrayList<>();
         for (File file : submission.getFiles()) {
             propertyList.add(file.getSpectra().stream()
@@ -271,6 +265,7 @@ public class FileUploadController extends BaseController {
         List<FormField> fields = getRequiredFormFields((FileUploadForm) session.getAttribute("FileUploadForm"));
         model.addAttribute("fieldList", fields);
         model.addAttribute("fileTypes", fileTypes);
+        model.addAttribute("mappingFields", getFieldsForMapping());
         return "submission/metadata";
     }
 
@@ -297,6 +292,33 @@ public class FileUploadController extends BaseController {
         response.addCookie(metaFieldsCookie);
 
         return "redirect:/file/";
+    }
+
+    private List<List<FormField>> getFieldsForMapping() {
+        List<List<FormField>> formFields = new ArrayList<>();
+        List<FormField> formFieldType1 = new ArrayList<>();
+        formFieldType1.add(new FormField("NameField", "Name"));
+        formFieldType1.add(new FormField("SynonymField", "Synonym"));
+        formFieldType1.add(new FormField("ExternalIdField", "External ID"));
+        formFieldType1.add(new FormField("CasNoField", "Cas ID"));
+        formFieldType1.add(new FormField("KeggField", "KEGG ID"));
+        formFieldType1.add(new FormField("HmdbField", "HMDB ID"));
+        formFieldType1.add(new FormField("PubChemField", "Pub Chem ID"));
+        List<FormField> formFieldType2 = new ArrayList<>();
+        formFieldType2.add(new FormField("PrecursorMzField", "Precursor Mz"));
+        formFieldType2.add(new FormField("RetentionTimeField", "Retention Time"));
+        formFieldType2.add(new FormField("RetentionIndexField", "Retention Index"));
+        formFieldType2.add(new FormField("MassField", "Mass"));
+        List<FormField> formFieldType3 = new ArrayList<>();
+        formFieldType3.add(new FormField("FormulaField", "Formula"));
+        formFieldType3.add(new FormField("CanonicalSmilesField", "Canonical Smiles"));
+        formFieldType3.add(new FormField("InChiField", "InChI"));
+        formFieldType3.add(new FormField("InChiKeyField", "InChIKey"));
+        formFieldType3.add(new FormField("IsotopeField", "Isotopic Distribution"));
+        formFields.add(formFieldType1);
+        formFields.add(formFieldType2);
+        formFields.add(formFieldType3);
+        return formFields;
     }
 
     private List<FormField> getRequiredFormFields(FileUploadForm form) {
