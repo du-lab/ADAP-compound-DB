@@ -114,8 +114,10 @@ header h2 {
 }
 
 header div.user {
-    display: inline-block;
-    margin: 0 40px;
+    /*display: inline-block;*/
+    /*margin: 0 40px;*/
+    display: flex;
+    align-items: center;
     /*float: right;*/
 }
 
