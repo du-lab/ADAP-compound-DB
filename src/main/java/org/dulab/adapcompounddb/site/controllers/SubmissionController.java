@@ -259,7 +259,7 @@ public class SubmissionController extends BaseController {
 
     private void rawDownload(final HttpServletResponse response, final File file) throws IOException {
         response.setContentType("text/plain");
-        response.setHeader("Content-Disposition", "attachment;");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
         response.getOutputStream().write(unzipBytes(file.getFileContent().getContent()));
     }
 
