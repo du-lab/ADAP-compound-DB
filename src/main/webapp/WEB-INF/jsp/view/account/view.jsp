@@ -6,6 +6,21 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <script src="<c:url value="/resources/AdapCompoundDb/js/tagsColor.js"/>"></script>
+<script>
+    $( function() {
+        $( "#accordion" ).accordion({
+            heightStyle: "content"
+        });
+    } );
+</script>
+<style>
+    .ui-accordion-header {
+        background: #b77a60;
+    }
+    .ui-accordion-header-active {
+        background: #854e36;
+    }
+</style>
 <div id="progressModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -250,22 +265,59 @@
                             </tbody>
                         </table>
                     </div>
+
                     <div id="parameters" class="tab-pane" role="tabpanel">
-                        <%--@elvariable id="filterForm" type="org.dulab.adapcompounddb.site.controllers.forms.FilterForm"--%>
+                        <%--@elvariable id="searchParametersForm" type="org.dulab.adapcompounddb.site.controllers.forms.SearchParametersForm"--%>
                         <%--@elvariable id="disableBtn" type="java.lang.Boolean"--%>
-                        <form:form modelAttribute="filterForm"
+                        <form:form modelAttribute="searchParametersForm"
                                    action="${pageContext.request.contextPath}/account/saveparameters" method="POST">
-                            <jsp:include page="../compound/user_search_parameters.jsp">
-                                <jsp:param name="SCORE_THRESHOLD" value="${searchParameters.scoreThreshold}"/>
-                                <jsp:param name="RETENTION_INDEX_TOLERANCE"
-                                           value="${searchParameters.retentionIndexTolerance}"/>
-                                <jsp:param name="RETENTION_INDEX_MATCH"
-                                           value="${searchParameters.retentionIndexMatch}"/>
-                                <jsp:param name="MZ_TOLERANCE" value="${searchParameters.mzTolerance}"/>
-                                <jsp:param name="MATCHES_PER_SPECTRUM" value="${searchParameters.limit}"/>
-                                <jsp:param name="MZ_TOLERANCE_TYPE" value="${searchParameters.mzToleranceType}"/>
-                                <jsp:param name="SHOW_DIALOG" value="false"/>
-                            </jsp:include>
+                            <div id="accordion">
+                                <h3>GC-MS</h3>
+                                <div>
+                                    <jsp:include page="../compound/user_search_parameters.jsp">
+                                        <jsp:param name="PARAM_FOR" value="gas"/>
+                                        <jsp:param name="SCORE_THRESHOLD" value="${searchParameters.gas.scoreThreshold}"/>
+                                        <jsp:param name="RETENTION_INDEX_TOLERANCE"
+                                                   value="${searchParameters.gas.retentionIndexTolerance}"/>
+                                        <jsp:param name="RETENTION_INDEX_MATCH"
+                                                   value="${searchParameters.gas.retentionIndexMatch}"/>
+                                        <jsp:param name="MZ_TOLERANCE" value="${searchParameters.gas.mzTolerance}"/>
+                                        <jsp:param name="MATCHES_PER_SPECTRUM" value="${searchParameters.gas.limit}"/>
+                                        <jsp:param name="MZ_TOLERANCE_TYPE" value="${searchParameters.gas.mzToleranceType}"/>
+                                        <jsp:param name="SHOW_DIALOG" value="false"/>
+                                    </jsp:include>
+                                </div>
+                                <h3>LC-MS</h3>
+                                <div>
+                                    <jsp:include page="../compound/user_search_parameters.jsp">
+                                        <jsp:param name="PARAM_FOR" value="liquid"/>
+                                        <jsp:param name="SCORE_THRESHOLD" value="${searchParameters.liquid.scoreThreshold}"/>
+                                        <jsp:param name="RETENTION_INDEX_TOLERANCE"
+                                                   value="${searchParameters.gas.retentionIndexTolerance}"/>
+                                        <jsp:param name="RETENTION_INDEX_MATCH"
+                                                   value="${searchParameters.liquid.retentionIndexMatch}"/>
+                                        <jsp:param name="MZ_TOLERANCE" value="${searchParameters.liquid.mzTolerance}"/>
+                                        <jsp:param name="MATCHES_PER_SPECTRUM" value="${searchParameters.liquid.limit}"/>
+                                        <jsp:param name="MZ_TOLERANCE_TYPE" value="${searchParameters.liquid.mzToleranceType}"/>
+                                        <jsp:param name="SHOW_DIALOG" value="false"/>
+                                    </jsp:include>
+                                </div>
+                                <h3>OTHER</h3>
+                                <div>
+                                    <jsp:include page="../compound/user_search_parameters.jsp">
+                                        <jsp:param name="PARAM_FOR" value="other"/>
+                                        <jsp:param name="SCORE_THRESHOLD" value="${searchParameters.other.scoreThreshold}"/>
+                                        <jsp:param name="RETENTION_INDEX_TOLERANCE"
+                                                   value="${searchParameters.other.retentionIndexTolerance}"/>
+                                        <jsp:param name="RETENTION_INDEX_MATCH"
+                                                   value="${searchParameters.other.retentionIndexMatch}"/>
+                                        <jsp:param name="MZ_TOLERANCE" value="${searchParameters.other.mzTolerance}"/>
+                                        <jsp:param name="MATCHES_PER_SPECTRUM" value="${searchParameters.other.limit}"/>
+                                        <jsp:param name="MZ_TOLERANCE_TYPE" value="${searchParameters.other.mzToleranceType}"/>
+                                        <jsp:param name="SHOW_DIALOG" value="false"/>
+                                    </jsp:include>
+                                </div>
+                            </div>
                             <div class="row row-content">
                                 <div class="col">
                                     <div class="form-row">

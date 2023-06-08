@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.site.controllers;
 
 import com.google.gson.Gson;
+import org.dulab.adapcompounddb.models.dto.ChromatographySearchParametersDTO;
 import org.dulab.adapcompounddb.models.dto.SearchParametersDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -139,7 +140,7 @@ public class AuthenticationController extends BaseController {
         principal.setUsername(form.getUsername());
         principal.setEmail(form.getEmail());
         principal.setOrganization(form.isOrganization());
-        principal.setSearchParameters(new SearchParametersDTO());
+        principal.setSearchParameters(new ChromatographySearchParametersDTO());
         try {
             authenticationService.saveUser(principal, form.getPassword());
         } catch (Throwable t) {

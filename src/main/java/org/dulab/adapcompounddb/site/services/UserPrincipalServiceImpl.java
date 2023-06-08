@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 import org.apache.http.client.utils.URIBuilder;
+import org.dulab.adapcompounddb.models.dto.ChromatographySearchParametersDTO;
 import org.dulab.adapcompounddb.models.dto.SearchParametersDTO;
 import org.dulab.adapcompounddb.models.entities.User;
 import org.slf4j.Logger;
@@ -160,13 +161,14 @@ public class UserPrincipalServiceImpl implements UserPrincipalService {
     }
 
     @Override
-    public SearchParametersDTO updateSearchParameters(SearchParametersDTO searchParameters, UserPrincipal user) {
-        SearchParametersDTO currentSearchParameters = user.getSearchParametersDTO();
-        if (currentSearchParameters == null || !currentSearchParameters.equals(searchParameters)) {
-            user.setSearchParameters(searchParameters);
+    public ChromatographySearchParametersDTO updateSearchParameters(ChromatographySearchParametersDTO chromatographySearchParameters, UserPrincipal user) {
+        ChromatographySearchParametersDTO currentChromatographySearchParameters = user.getSearchParametersDTO();
+        if (currentChromatographySearchParameters == null
+                || !currentChromatographySearchParameters.equals(chromatographySearchParameters)) {
+            user.setSearchParameters(chromatographySearchParameters);
             saveUserPrincipal(user);
         }
-        return searchParameters;
+        return chromatographySearchParameters;
     }
 
     @Override

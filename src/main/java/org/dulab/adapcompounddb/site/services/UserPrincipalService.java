@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.services;
 
+import org.dulab.adapcompounddb.models.dto.ChromatographySearchParametersDTO;
 import org.dulab.adapcompounddb.models.dto.SearchParametersDTO;
 import org.dulab.adapcompounddb.models.entities.User;
 import org.dulab.adapcompounddb.models.entities.UserParameter;
@@ -38,7 +39,8 @@ public interface UserPrincipalService {
     UserPrincipal findByPasswordToken(String token);
     UserPrincipal findByOrganizationToken(String token);
 
-    SearchParametersDTO updateSearchParameters(final SearchParametersDTO searchParameters, final UserPrincipal user);
+    ChromatographySearchParametersDTO updateSearchParameters(final ChromatographySearchParametersDTO searchParameters
+            , final UserPrincipal user);
 
     UserPrincipal addUserToOrganization(final UserPrincipal currentUser, final List<Long> userId);
 
