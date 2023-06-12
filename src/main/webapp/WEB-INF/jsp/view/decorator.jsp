@@ -123,16 +123,15 @@
                     <sup><small id ="versionBadge" class="badge badge-pill badge-light"></small></sup>
                 </h1>
             </div>
-            <div class="col-12 col-lg-4" style="display:flex;">
+            <div class="col-12 col-lg-4" style="display:flex;justify-content: flex-end;">
                 <%--@elvariable id="currentUser" type="org.springframework.security.core.userdetails.User"--%>
                 <c:if test="${currentUser != null}">
                     <div class="user">User: ${currentUser.username} (<a href="<c:url value="/logout"/>" onClick ="localStorage.clear()">Log out</a>)
                     </div>
                 </c:if>
-                    <a id="searchPage" class="nav-link"
+                    <a id="searchPage" class="nav-link btn group-search-results-button"
                        <c:if test="${sessionScope[dulab:groupSearchResultsAttributeName()] == null}">hidden</c:if>
                        href="<c:url value="/group_search/"/>">
-                        <i class="material-icons align-middle">search</i>
                         <span class="align-middle">Group Search Results</span>
                     </a>
             </div>

@@ -743,3 +743,11 @@ progress:after {
 .card-body-compact {
     padding: 0.5em;
 }
+
+.group-search-results-button {
+    margin-left: 20px;
+    background-color: white;
+    color:#542410;
+    border: 2px solid #542410;
+    /*width: fit-content;*/
+}
