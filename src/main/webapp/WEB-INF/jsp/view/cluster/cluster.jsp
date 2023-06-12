@@ -61,7 +61,7 @@
                                 <td>${cluster.size}</td>
                             </tr>
                             <tr>
-                                <td><strong>Chromatography Type</strong></td>
+                                <td><strong>Spectrum Type</strong></td>
                                 <td>
                                     <img src="${pageContext.request.contextPath}/${cluster.consensusSpectrum.chromatographyType.iconPath}"
                                          class="icon"/>&nbsp;${cluster.consensusSpectrum.chromatographyType.label}

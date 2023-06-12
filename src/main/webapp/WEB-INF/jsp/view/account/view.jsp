@@ -118,7 +118,7 @@
                                 <th>Name</th>
                                 <th>External ID</th>
                                 <th>Properties</th>
-                                <th>Chromatography Type</th>
+                                <th>Spectrum Type</th>
                                 <th></th>
                             </tr>
                             </thead>
@@ -188,7 +188,7 @@
                                 <th>Name</th>
                                 <th>External ID</th>
                                 <th>Properties</th>
-                                <th>Chromatography Type</th>
+                                <th>Spectrum Type</th>
                                 <th></th>
                             </tr>
                             </thead>

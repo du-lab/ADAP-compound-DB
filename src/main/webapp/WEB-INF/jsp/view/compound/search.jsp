@@ -70,7 +70,7 @@
 
                             <div class="form-group row">
                                 <form:label path="chromatographyType"
-                                            cssClass="col-md-4 col-form-label">Chromatography type</form:label>
+                                            cssClass="col-md-4 col-form-label">Spectrum type</form:label>
 <%--                                <div class="col-md-8">--%>
 <%--                                    <form:select id="chromatographySelect" path="chromatographyType" cssClass="form-control">--%>
 <%--                                        <form:option id="typeValue" value="" label="Please select..."/>--%>
