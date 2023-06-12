@@ -11,6 +11,7 @@ import java.util.Objects;
 @Getter
 @Setter
 public class ChromatographySearchParametersDTO {
+    //TODO switch names
     @JsonProperty("GAS")
     public SearchParametersDTO gas;
 
@@ -19,6 +20,7 @@ public class ChromatographySearchParametersDTO {
 
     @JsonProperty("OTHER")
     public SearchParametersDTO other;
+
     public ChromatographySearchParametersDTO() {
         this.gas = new SearchParametersDTO();
         this.liquid = new SearchParametersDTO();
