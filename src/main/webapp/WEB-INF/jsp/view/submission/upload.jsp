@@ -5,6 +5,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<head>
+    <script src="/resources/AdapCompoundDb/js/fileUpload.js"></script>
+</head>
 <style>
     .checkbox-grid{
 
@@ -103,7 +106,7 @@
                                         <div class="row form-group">
                                             <div class="col-md-4">
                                                 <form:label path="chromatographyType"
-                                                            cssClass="col-form-label">Chromatography type</form:label>&nbsp;
+                                                            cssClass="col-form-label">Spectrum type</form:label>&nbsp;
                                             </div>
                                             <div class="col-md-8">
                                                 <form:select path="chromatographyType" cssClass="form-control">
@@ -123,7 +126,8 @@
                                             <div class="col-md-8">
                                                 <input type="file" name="files"
                                                        accept=".msp,.msl,.csv,.cdf,.mzml,.mzxml,.mgf"
-                                                       class="form-control-file" multiple/>
+                                                       class="form-control-file" multiple onchange="handleFileSelection(this)"/>
+                                                <small class="text-danger form-control-sm" id="fileErrorMessage"></small>
                                                 <form:errors path="files" cssClass="text-danger form-control-sm"/>
                                             </div>
                                         </div>
@@ -151,45 +155,6 @@
                                 </div>
 
                             </div>
-
-                            <div id = "metaFields" class="row row-content">
-                                <div class="col">
-                                    <div class="row row-content">Read metadata</div>
-                                    <div  class="row row-content">
-
-                                        <ul class="card card-body small checkbox-grid">
-                                            <li><form:checkbox  name="nameField" path="editNameField"/><label for="nameField">Name</label></li>
-                                            <li><form:checkbox  name="synonymField" path="editSynonymField"/><label for="synonymField">Synonym</label></li>
-                                            <li><form:checkbox  name="idField" path="editExternalIdField"/><label for="idField">ID</label></li>
-                                            <li><form:checkbox  name="casIdField" path="editCasNoField"/><label for="casIdField">Cas ID</label></li>
-                                            <li><form:checkbox  name="hmdbIdField" path="editHmdbField"/><label for="hmdbIdField">HMDB ID</label></li>
-                                            <li><form:checkbox  name="keggIdField" path="editKeggField"/><label for="keggIdField">KEGG ID</label></li>
-                                            <li><form:checkbox  name="pubChemIdField" path="editPubChemField"/><label for="pubChemIdField">Pub Chem ID</label></li>
-                                        </ul>
-                                        <ul class="card card-body small col-md-4 checkbox-grid">
-                                            <li><form:checkbox  name="precursorMzField" path="editPrecursorMzField"/><label for="precursorMzField">Precursor Mz</label></li>
-                                            <li><form:checkbox  name="editRetentionTimeField" path="editRetentionTimeField"/><label for="editRetentionTimeField">Retention Time</label></li>
-                                            <li><form:checkbox  name="editRetentionIndexField" path="editRetentionIndexField"/><label for="editRetentionIndexField">Retention Index</label></li>
-                                            <li><form:checkbox  name="editMassField" path="editMassField"/><label for="editMassField">Mass</label></li>
-                                        </ul>
-                                        <ul class="card card-body small col-md-4 checkbox-grid">
-                                            <li><form:checkbox  name="editFormulaField" path="editFormulaField"/><label for="editFormulaField">Formula</label></li>
-                                            <li><form:checkbox  name="editCanonicalSmilesField" path="editCanonicalSmilesField"/><label for="editCanonicalSmilesField">Canonical Smiles</label></li>
-                                            <li><form:checkbox  name="editInChiField" path="editInChiField"/><label for="editInChiField">InChi</label></li>
-                                            <li><form:checkbox  name="editInChiKeyField" path="editInChiKeyField"/><label for="editInChiKeyField">InChIKey</label></li>
-                                            <li><form:checkbox  name="editIsotopeField" path="editIsotopeField"/><label for="editIsotopeField">Isotopic Distribution</label></li>
-
-
-                                        </ul>
-
-                                    </div>
-                                </div>
-                            </div>
-
-
-
-
-
                         </div>
                     </div>
                 </div>

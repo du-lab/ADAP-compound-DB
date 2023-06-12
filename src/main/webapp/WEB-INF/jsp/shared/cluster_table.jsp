@@ -12,7 +12,7 @@
         <th title="Average P-value of ANOVA tests">Average P-value</th>
         <th title="Minimum P-value of ANOVA tests">Minimum P-value</th>
         <th title="Maximum P-value of ANOVA tests">Maximum P-value</th>
-        <th title="Chromatography type">Type</th>
+        <th title="Spectrum type">Type</th>
         <th></th>
     </tr>
     </thead>

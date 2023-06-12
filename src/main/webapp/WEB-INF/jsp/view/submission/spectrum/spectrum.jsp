@@ -36,8 +36,7 @@
                                             <strong>Full Name:</strong>&nbsp;${spectrum.name}
                                         </li>
                                         <li class="list-group-item py-1">
-                                            <strong>Chromatography
-                                                Type:</strong>&nbsp;${spectrum.chromatographyType.label}
+                                            <strong>Spectrum Type:</strong>&nbsp;${spectrum.chromatographyType.label}
                                         </li>
                                         <li class="list-group-item py-1">
                                             <strong>File:</strong>&nbsp;${(spectrum.file != null) ? spectrum.file.name : ''}

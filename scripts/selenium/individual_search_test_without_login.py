@@ -24,10 +24,10 @@ def individual_search_test(homepage_url, msp_path):
         option_bar.select_by_visible_text('GC')
         choose_key.send_keys(msp_path)
         submit_button.click()
-
         # add 5 seconds delay for msp file to upload before next step
         time.sleep(5)
-
+        driver.find_element_by_id("uploadBtn").click()
+        time.sleep(2)
         # choose the first spectrum and go to the spectrum page
         spectra_table = driver.find_element_by_id("spectrum_table")
         spectra_list = spectra_table.find_elements_by_css_selector("table>tbody>tr>td")

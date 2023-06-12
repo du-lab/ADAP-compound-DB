@@ -40,6 +40,9 @@ def individual_search_test(homepage_url, msp_path, user_name, user_password):
 
         # add 5 seconds delay for msp file to upload before next step
         time.sleep(5)
+        driver.find_element_by_id("uploadBtn").click()
+        time.sleep(2)
+        
 
         # click Mass Spectra tab
         mass_spectra_tab = driver.find_element_by_id("mass_spectra_link")

@@ -27,6 +27,8 @@ def group_search_test(homepage_url, msp_path):
 
         # add 5 seconds delay for msp file to upload before next step
         time.sleep(5)
+        driver.find_element_by_id("uploadBtn").click()
+        time.sleep(2)
 
         # choose the first spectrum and go to the spectrum page
         search_menu = driver.find_element_by_id('searchMenu')
