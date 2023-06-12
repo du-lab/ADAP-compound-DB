@@ -34,11 +34,11 @@
                         <tr>
                             <th>Name</th>
                             <th>Description</th>
+                            <th>Chromatography</th>
                             <th>Size</th>
                         </tr>
                         </thead>
                         <tbody>
-
                         <%--@elvariable id="libraries" type="java.util.List<org.dulab.adapcompounddb.models.entities.Submission>"--%>
                         <c:forEach items="${libraries}" var="study" varStatus="loop">
                             <tr>
@@ -47,6 +47,7 @@
                                         <%--                        <small>${dulab:abbreviate(study.description, 80)}</small>--%>
                                 </td>
                                 <td>${dulab:abbreviate(study.description, 80)}</td>
+                                <td><span class="badge badge-primary">${study.chromatographyType.html}</span></td>
                                 <td>${study.size}</td>
                             </tr>
                         </c:forEach>
