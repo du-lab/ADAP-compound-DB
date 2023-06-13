@@ -18,29 +18,30 @@
   </div>
 </div>
 <div class="form-group row">
-  <form:label id="${param.PARAM_FOR}ScoreThreshold" path="${param.PARAM_FOR}ScoreThreshold"
+  <form:label id="scoreThreshold${param.PARAM_FOR}" path="scoreThreshold${param.PARAM_FOR}"
               cssClass="col-md-4 col-form-label">Score Threshold (1 - 1000):</form:label>
   <div class="col-md-8">
-    <form:input path="${param.PARAM_FOR}ScoreThreshold" type="number" step="1" cssClass="form-control"
+    <form:input path="scoreThreshold${param.PARAM_FOR}" type="number" step="1" cssClass="form-control"
                 value="${param.SCORE_THRESHOLD}"
-                id="${param.PARAM_FOR}ScoreThreshold"/>
+                id="scoreThreshold${param.PARAM_FOR}"/>
   </div>
 </div>
 
 <div class="form-group row">
-  <form:label path="${param.PARAM_FOR}RetentionIndexTolerance"
+  <form:label path="retentionIndexTolerance${param.PARAM_FOR}"
               cssClass="col-md-4 col-form-label">Retention Index Tolerance:</form:label>
   <div class="col-md-8">
-    <form:input id="${param.PARAM_FOR}RetentionIndexTolerance" path="${param.PARAM_FOR}RetentionIndexTolerance" type="number" cssClass="form-control"
+    <form:input id="$retentionIndexTolerance${param.PARAM_FOR}"
+                path="retentionIndexTolerance${param.PARAM_FOR}" type="number" cssClass="form-control"
                 value="${param.RETENTION_INDEX_TOLERANCE}"/>
   </div>
 </div>
 
 <div class="form-group row">
-  <form:label path="${param.PARAM_FOR}RetentionIndexMatch"
+  <form:label path="retentionIndexMatch${param.PARAM_FOR}"
               cssClass="col-md-4 col-form-label">Retention Index Match:</form:label>
   <div class="col-md-8">
-    <form:select id="retention" path="${param.PARAM_FOR}RetentionIndexMatch" cssClass="form-control">
+    <form:select id="retention" path="retentionIndexMatch${param.PARAM_FOR}" cssClass="form-control">
       <form:option value="IGNORE_MATCH"
                    selected="${param.RETENTION_INDEX_MATCH == 'IGNORE_MATCH' ? 'selected' : ''}"
       >Ignore Retention Index</form:option>
@@ -64,15 +65,15 @@
 </div>
 
 <div class="form-group row">
-  <form:label path="${param.PARAM_FOR}MZTolerance"
+  <form:label path="mzTolerance${param.PARAM_FOR}"
               cssClass="col-md-4 col-form-label">m/z tolerance</form:label>
   <div class="input-group col-md-8">
-    <form:input path="${param.PARAM_FOR}MZTolerance" type="number" step="0.001"
+    <form:input path="mzTolerance${param.PARAM_FOR}" type="number" step="0.001"
                 cssClass="form-control"
-                id="${param.PARAM_FOR}MZTolerance"
+                id="mzTolerance${param.PARAM_FOR}"
                 value="${param.MZ_TOLERANCE}"/>
     <div class="input-group-append">
-      <form:select path="${param.PARAM_FOR}MZToleranceType" cssClass="input-group-text" id="${param.PARAM_FOR}MZToleranceType">
+      <form:select path="mzToleranceType${param.PARAM_FOR}" cssClass="input-group-text" id="mzToleranceType${param.PARAM_FOR}">
         <form:option value="DA"
                      selected="${param.MZ_TOLERANCE_TYPE == 'DA' ? 'selected' : ''}"
         >Da</form:option>
@@ -85,10 +86,10 @@
 </div>
 
 <div class="form-group row">
-  <form:label path="${param.PARAM_FOR}Limit"
+  <form:label path="limit${param.PARAM_FOR}"
               cssClass="col-md-4 col-form-label">Matches per Spectrum</form:label>
   <div class="col-md-8">
-    <form:input id="${param.PARAM_FOR}Limit" path="${param.PARAM_FOR}Limit" type="number" cssClass="form-control"
+    <form:input id="limit${param.PARAM_FOR}" path="limit${param.PARAM_FOR}" type="number" cssClass="form-control"
                 value="${param.MATCHES_PER_SPECTRUM}"/>
   </div>
 </div>

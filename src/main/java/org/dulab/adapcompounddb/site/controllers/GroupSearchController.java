@@ -1,6 +1,8 @@
 package org.dulab.adapcompounddb.site.controllers;
 
 import java.util.stream.Collectors;
+
+import org.dulab.adapcompounddb.models.dto.ChromatographySearchParametersDTO;
 import org.dulab.adapcompounddb.models.dto.SpectrumDTO;
 import org.dulab.adapcompounddb.models.dto.SearchParametersDTO;
 import org.dulab.adapcompounddb.models.entities.SearchTask;
@@ -99,7 +101,8 @@ public class GroupSearchController extends BaseController {
         //check if user is login
         model.addAttribute("isLoggedIn", this.getCurrentUserPrincipal() != null);
         model.addAttribute("searchParameters", this.getCurrentUserPrincipal() != null ?
-        this.getCurrentUserPrincipal().getSearchParametersDTO() : new SearchParametersDTO());
+        this.getCurrentUserPrincipal().getSearchParametersDTO()
+                .getChromatographySearchParameters(submission.getChromatographyType()) : new SearchParametersDTO());
         return "submission/group_search_parameters";
     }
 

@@ -21,12 +21,50 @@
         <form:form modelAttribute="compoundSearchForm" method="post">
         <div class="row row-content">
             <div class="col">
+                <div class="form-row" style="margin: 15px 0 15px 0">
+                    <form:label path="chromatographyType"
+                                cssClass="col-md-5 col-form-label">Chromatography type</form:label>
+                        <%--                                <div class="col-md-8">--%>
+                        <%--                                    <form:select id="chromatographySelect" path="chromatographyType" cssClass="form-control">--%>
+                        <%--                                        <form:option id="typeValue" value="" label="Please select..."/>--%>
+                        <%--                                        <form:options items="${chromatographyTypes}" itemLabel="label"/>--%>
+                        <%--                                    </form:select>--%>
+                        <%--                                    <form:errors path="chromatographyType"--%>
+                        <%--                                                 cssClass="text-danger form-control-sm"/>--%>
+                        <%--                                </div>--%>
+                    <div class="col-md-7">
+                        <div class="btn-group btn-group-toggle" data-toggle="buttons" cssClass="form-control">
+                            <label class="btn btn-outline-primary active">
+                                <form:radiobutton path="chromatographyType"
+                                                  name="chromatographyType"
+                                                  value="GC-MS"
+                                                  label="GC-MS"
+                                                  id="gcms"
+                                />
+                            </label>
+                            <label class="btn btn-outline-primary">
+                                <form:radiobutton
+                                        path="chromatographyType"
+                                        name="chromatographyType"
+                                        value="LC-MS"
+                                        label="LC-MS"
+                                />
+                            </label>
+                            <label class="btn btn-outline-primary">
+                                <form:radiobutton path="chromatographyType"
+                                                  name="chromatographyType"
+                                                  value="LC-MS/MS"
+                                                  label="LC-MS/MS"
+                                />
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
                 <div class="form-row">
                     <div class="col">
-
                         <div class="btn-toolbar justify-content-end" role="toolbar">
-
-
                             <button id="searchButton" class="btn btn-primary align-self-end" type="submit"
                                     style="height: 100%;"
                                     <c:if test="${disableBtn}">
@@ -67,48 +105,6 @@
 
                         <div id="search" class="tab-pane fade show active" role="tabpanel">
                             <div class="alert-danger" style="margin-bottom: 5px;">${errorMessage}</div>
-
-                            <div class="form-group row">
-                                <form:label path="chromatographyType"
-                                            cssClass="col-md-4 col-form-label">Chromatography type</form:label>
-<%--                                <div class="col-md-8">--%>
-<%--                                    <form:select id="chromatographySelect" path="chromatographyType" cssClass="form-control">--%>
-<%--                                        <form:option id="typeValue" value="" label="Please select..."/>--%>
-<%--                                        <form:options items="${chromatographyTypes}" itemLabel="label"/>--%>
-<%--                                    </form:select>--%>
-<%--                                    <form:errors path="chromatographyType"--%>
-<%--                                                 cssClass="text-danger form-control-sm"/>--%>
-<%--                                </div>--%>
-                                <div class="col-md-8">
-                                    <div class="btn-group btn-group-toggle" data-toggle="buttons" cssClass="form-control">
-                                        <label class="btn btn-outline-primary active">
-                                            <form:radiobutton path="chromatographyType"
-                                                              name="chromatographyType"
-                                                              value="GC-MS"
-                                                              label="GC-MS"
-                                                              id="gcms"
-                                                              />
-                                        </label>
-                                        <label class="btn btn-outline-primary">
-                                            <form:radiobutton
-                                                    path="chromatographyType"
-                                                    name="chromatographyType"
-                                                    value="LC-MS"
-                                                    label="LC-MS"
-                                                    />
-                                        </label>
-                                        <label class="btn btn-outline-primary">
-                                            <form:radiobutton path="chromatographyType"
-                                                              name="chromatographyType"
-                                                              value="LC-MS/MS"
-                                                              label="LC-MS/MS"
-                                                              />
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-
-
 
                             <div class="form-group row">
                                 <form:label path="identifier"
@@ -179,18 +175,29 @@
                             </fieldset>
                         </div>
 
-
-
                         <div id="parameters" class="tab-pane fade" role="tabpanel">
-                            <jsp:include page="./user_search_parameters.jsp">
-                                <jsp:param name="SCORE_THRESHOLD" value="${searchParameters.scoreThreshold}"/>
-                                <jsp:param name="RETENTION_INDEX_TOLERANCE" value="${searchParameters.retentionIndexTolerance}"/>
-                                <jsp:param name="RETENTION_INDEX_MATCH" value="${searchParameters.retentionIndexMatch}"/>
-                                <jsp:param name="MZ_TOLERANCE" value="${searchParameters.mzTolerance}"/>
-                                <jsp:param name="MATCHES_PER_SPECTRUM" value="${searchParameters.limit}"/>
-                                <jsp:param name="MZ_TOLERANCE_TYPE" value="${searchParameters.mzToleranceType}"/>
-                                <jsp:param name="SHOW_DIALOG" value="true"/>
-                            </jsp:include>
+                             <span id="parameter-gas">
+                                <jsp:include page="./user_search_parameters.jsp">
+                                    <jsp:param name="SCORE_THRESHOLD" value="${searchParameters.gas.scoreThreshold}"/>
+                                    <jsp:param name="RETENTION_INDEX_TOLERANCE" value="${searchParameters.gas.retentionIndexTolerance}"/>
+                                    <jsp:param name="RETENTION_INDEX_MATCH" value="${searchParameters.gas.retentionIndexMatch}"/>
+                                    <jsp:param name="MZ_TOLERANCE" value="${searchParameters.gas.mzTolerance}"/>
+                                    <jsp:param name="MATCHES_PER_SPECTRUM" value="${searchParameters.gas.limit}"/>
+                                    <jsp:param name="MZ_TOLERANCE_TYPE" value="${searchParameters.gas.mzToleranceType}"/>
+                                    <jsp:param name="SHOW_DIALOG" value="true"/>
+                                </jsp:include>
+                            </span>
+                            <span id="parameter-lc" style="display: none">
+                                <jsp:include page="./user_search_parameters.jsp">
+                                    <jsp:param name="SCORE_THRESHOLD" value="${searchParameters.liquid.scoreThreshold}"/>
+                                    <jsp:param name="RETENTION_INDEX_TOLERANCE" value="${searchParameters.liquid.retentionIndexTolerance}"/>
+                                    <jsp:param name="RETENTION_INDEX_MATCH" value="${searchParameters.liquid.retentionIndexMatch}"/>
+                                    <jsp:param name="MZ_TOLERANCE" value="${searchParameters.liquid.mzTolerance}"/>
+                                    <jsp:param name="MATCHES_PER_SPECTRUM" value="${searchParameters.liquid.limit}"/>
+                                    <jsp:param name="MZ_TOLERANCE_TYPE" value="${searchParameters.liquid.mzToleranceType}"/>
+                                    <jsp:param name="SHOW_DIALOG" value="true"/>
+                                </jsp:include>
+                            </span>
                         </div>
 
 
@@ -249,18 +256,23 @@
             $('#precursorMZ').hide();
             $('#spectrum').show();
             $('#adduct').hide();
-
+            $('#parameter-gas').show();
+            $('#parameter-lc').hide();
         }
         else if($("input[name='chromatographyType']:checked").val() === 'LC-MS') {
             $('#spectrumInput').val('');
             $('#spectrum').hide();
             $('#precursorMZ').show();
             $('#adduct').show();
+            $('#parameter-gas').hide();
+            $('#parameter-lc').show();
         }
         else {
             $('#precursorMZ').show();
             $('#spectrum').show();
             $('#adduct').hide();
+            $('#parameter-gas').hide();
+            $('#parameter-lc').show();
         }
     }
 
@@ -299,25 +311,15 @@
         $("#adductSelect").multiselect('selectAll', false);
         chromatographyChanged();
 
-
-        // HasFormChanged();
-        // $('#parameters input').change(function() {
-        //    HasFormChanged();
-        //
-        // });
-        // $('#retention').change(function() {
-        //     HasFormChanged();
-        //
-        // })
-        //
-        // $('#limit').change(function() {
-        //    HasFormChanged();
-        //
-        // })
-
         $('#scorethreshold,#retention,#limit,#mzTolerance, #mzToleranceType,#retentionIndexTolerance').change(function() {
-            checkForChange(${searchParameters.limit},${searchParameters.mzTolerance},'${searchParameters.mzToleranceType}',
-                '${searchParameters.retentionIndexMatch}',${searchParameters.retentionIndexTolerance},${searchParameters.scoreThreshold});
+            if ($("input[name='chromatographyType']:checked").val() === 'GC-MS') {
+                checkForChange(${searchParameters.gas.limit},${searchParameters.gas.mzTolerance},'${searchParameters.gas.mzToleranceType}',
+                    '${searchParameters.gas.retentionIndexMatch}',${searchParameters.gas.retentionIndexTolerance},${searchParameters.gas.scoreThreshold});
+            } else {
+                checkForChange(${searchParameters.liquid.limit},${searchParameters.liquid.mzTolerance},'${searchParameters.liquid.mzToleranceType}',
+                    '${searchParameters.liquid.retentionIndexMatch}',${searchParameters.liquid.retentionIndexTolerance},${searchParameters.liquid.scoreThreshold});
+            }
+
         })
 
         $("input[type=radio][name='chromatographyType']").change(chromatographyChanged);

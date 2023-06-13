@@ -14,7 +14,6 @@ public class ChromatographySearchParametersDTO {
     //TODO switch names
     @JsonProperty("GAS")
     public SearchParametersDTO gas;
-
     @JsonProperty("LIQUID")
     public SearchParametersDTO liquid;
 
@@ -40,31 +39,44 @@ public class ChromatographySearchParametersDTO {
         return Objects.hash(gas, liquid, other);
     }
 
+    public SearchParametersDTO getChromatographySearchParameters(ChromatographyType chromatographyType) {
+        switch (chromatographyType) {
+            case GAS:
+                return gas;
+            case NONE:
+                return other;
+            case LIQUID_POSITIVE: case LIQUID_NEGATIVE: case LC_MSMS_POS: case LC_MSMS_NEG:
+                return liquid;
+            default:
+                return new SearchParametersDTO();
+        }
+    }
+
     public static ChromatographySearchParametersDTO buildSearchParametersDTO(SearchParametersForm searchParametersForm) {
         ChromatographySearchParametersDTO chromatographySearchParametersDTO = new ChromatographySearchParametersDTO();
         chromatographySearchParametersDTO.setGas(
-                new SearchParametersDTO(searchParametersForm.getGasScoreThreshold(),
-                        searchParametersForm.getGasRetentionIndexTolerance(),
-                        searchParametersForm.getGasRetentionIndexMatch(),
-                        searchParametersForm.getGasMZTolerance(),
-                        searchParametersForm.getGasLimit(),
-                        searchParametersForm.getGasMZToleranceType(),
+                new SearchParametersDTO(searchParametersForm.getScoreThresholdGas(),
+                        searchParametersForm.getRetentionIndexToleranceGas(),
+                        searchParametersForm.getRetentionIndexMatchGas(),
+                        searchParametersForm.getMzToleranceGas(),
+                        searchParametersForm.getLimitGas(),
+                        searchParametersForm.getMzToleranceTypeGas(),
                         false));
         chromatographySearchParametersDTO.setLiquid(
-                new SearchParametersDTO(searchParametersForm.getLiquidScoreThreshold(),
-                        searchParametersForm.getLiquidRetentionIndexTolerance(),
-                        searchParametersForm.getLiquidRetentionIndexMatch(),
-                        searchParametersForm.getLiquidMZTolerance(),
-                        searchParametersForm.getLiquidLimit(),
-                        searchParametersForm.getLiquidMZToleranceType(),
+                new SearchParametersDTO(searchParametersForm.getScoreThresholdLiquid(),
+                        searchParametersForm.getRetentionIndexToleranceLiquid(),
+                        searchParametersForm.getRetentionIndexMatchLiquid(),
+                        searchParametersForm.getMzToleranceLiquid(),
+                        searchParametersForm.getLimitLiquid(),
+                        searchParametersForm.getMzToleranceTypeLiquid(),
                         false));
         chromatographySearchParametersDTO.setOther(
-                new SearchParametersDTO(searchParametersForm.getOtherScoreThreshold(),
-                        searchParametersForm.getOtherRetentionIndexTolerance(),
-                        searchParametersForm.getOtherRetentionIndexMatch(),
-                        searchParametersForm.getOtherMZTolerance(),
-                        searchParametersForm.getOtherLimit(),
-                        searchParametersForm.getOtherMZToleranceType(),
+                new SearchParametersDTO(searchParametersForm.getScoreThresholdOther(),
+                        searchParametersForm.getRetentionIndexToleranceOther(),
+                        searchParametersForm.getRetentionIndexMatchOther(),
+                        searchParametersForm.getMzToleranceOther(),
+                        searchParametersForm.getLimitOther(),
+                        searchParametersForm.getMzToleranceTypeOther(),
                         false));
         return chromatographySearchParametersDTO;
     }

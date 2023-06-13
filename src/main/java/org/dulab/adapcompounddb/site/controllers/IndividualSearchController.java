@@ -2,6 +2,7 @@ package org.dulab.adapcompounddb.site.controllers;
 
 import com.google.gson.Gson;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
+import org.dulab.adapcompounddb.models.dto.ChromatographySearchParametersDTO;
 import org.dulab.adapcompounddb.models.dto.SearchParametersDTO;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.entities.*;
@@ -9,6 +10,7 @@ import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.site.controllers.forms.CompoundSearchForm;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterForm;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterOptions;
+import org.dulab.adapcompounddb.site.controllers.forms.SearchParametersForm;
 import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
 import org.dulab.adapcompounddb.site.controllers.utils.ConversionsUtils;
 import org.dulab.adapcompounddb.site.services.*;
@@ -217,8 +219,8 @@ public class IndividualSearchController extends BaseController {
             value = INDIVIDUAL_SEARCH_PARAMETERS_COOKIE_NAME,
             defaultValue = "") String searchParametersCookie) {
         UserPrincipal user = getCurrentUserPrincipal();
-        model.addAttribute("searchParameters", user != null ? user.getSearchParametersDTO() : new SearchParametersDTO());
-
+        model.addAttribute("searchParameters", user != null ? user.getSearchParametersDTO()
+                : new ChromatographySearchParametersDTO());
         compoundSearchForm = ConversionsUtils.byteStringToForm(searchParametersCookie, CompoundSearchForm.class);
         //Spectrum spectrum = new Spectrum();
         FilterOptions filterOptions = getFilterOptions(ChromatographyType.values());

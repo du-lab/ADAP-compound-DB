@@ -275,7 +275,7 @@
                                 <h3>GC-MS</h3>
                                 <div>
                                     <jsp:include page="../compound/user_search_parameters.jsp">
-                                        <jsp:param name="PARAM_FOR" value="gas"/>
+                                        <jsp:param name="PARAM_FOR" value="Gas"/>
                                         <jsp:param name="SCORE_THRESHOLD" value="${searchParameters.gas.scoreThreshold}"/>
                                         <jsp:param name="RETENTION_INDEX_TOLERANCE"
                                                    value="${searchParameters.gas.retentionIndexTolerance}"/>
@@ -290,7 +290,7 @@
                                 <h3>LC-MS</h3>
                                 <div>
                                     <jsp:include page="../compound/user_search_parameters.jsp">
-                                        <jsp:param name="PARAM_FOR" value="liquid"/>
+                                        <jsp:param name="PARAM_FOR" value="Liquid"/>
                                         <jsp:param name="SCORE_THRESHOLD" value="${searchParameters.liquid.scoreThreshold}"/>
                                         <jsp:param name="RETENTION_INDEX_TOLERANCE"
                                                    value="${searchParameters.gas.retentionIndexTolerance}"/>
@@ -305,7 +305,7 @@
                                 <h3>OTHER</h3>
                                 <div>
                                     <jsp:include page="../compound/user_search_parameters.jsp">
-                                        <jsp:param name="PARAM_FOR" value="other"/>
+                                        <jsp:param name="PARAM_FOR" value="Other"/>
                                         <jsp:param name="SCORE_THRESHOLD" value="${searchParameters.other.scoreThreshold}"/>
                                         <jsp:param name="RETENTION_INDEX_TOLERANCE"
                                                    value="${searchParameters.other.retentionIndexTolerance}"/>
