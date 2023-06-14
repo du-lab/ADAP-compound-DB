@@ -16,6 +16,7 @@ import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -272,10 +273,19 @@ public class SubmissionController extends BaseController {
 
         final Submission submission = Submission.from(session);
         if (errors.hasErrors()) {
-            model.addAttribute("view_submission", true);
-            model.addAttribute("edit_submission", true);
-            model.addAttribute("submissionForm", submissionForm);
-            return "submission/view";
+            if (getCurrentUserPrincipal().isAdmin()) {
+                List<String> errorMessages = new ArrayList<>();
+                for (ObjectError error : errors.getAllErrors()) {
+                    errorMessages.add(error.getDefaultMessage());
+                }
+                if (!errorMessages.contains("Creating a library is allowed only for private submissions")
+                        || errorMessages.size() > 1) {
+                    model.addAttribute("view_submission", true);
+                    model.addAttribute("edit_submission", true);
+                    model.addAttribute("submissionForm", submissionForm);
+                    return "submission/view";
+                }
+            }
         }
 
         if (submission == null) {
@@ -313,7 +323,7 @@ public class SubmissionController extends BaseController {
 
     private String submit(final Submission submission, final Model model, final SubmissionForm submissionForm) {
 
-        if (!submissionForm.getIsPrivate() && submissionForm.getIsLibrary())
+        if (!submissionForm.getIsPrivate() && submissionForm.getIsLibrary() && !getCurrentUserPrincipal().isAdmin())
             throw new IllegalStateException("Creating a library is allowed only for private submissions");
 
         if (!submissionForm.getIsLibrary() && submissionForm.getIsInHouseLibrary())
