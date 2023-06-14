@@ -1,83 +1,90 @@
 package org.dulab.adapcompounddb.models.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.Setter;
-import org.dulab.adapcompounddb.models.enums.ChromatographyType;
-import org.dulab.adapcompounddb.site.controllers.forms.SearchParametersForm;
-
-import java.util.Objects;
-
-@Getter
-@Setter
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import org.dulab.adapcompounddb.site.services.search.SearchParameters;
+@NoArgsConstructor
+@AllArgsConstructor
 public class ChromatographySearchParametersDTO {
-    //TODO switch names
-    @JsonProperty("GAS")
-    public SearchParametersDTO gas;
-    @JsonProperty("LIQUID")
-    public SearchParametersDTO liquid;
 
-    @JsonProperty("OTHER")
-    public SearchParametersDTO other;
+    private Integer scoreThreshold = 500;
 
-    public ChromatographySearchParametersDTO() {
-        this.gas = new SearchParametersDTO();
-        this.liquid = new SearchParametersDTO();
-        this.other = new SearchParametersDTO();
-    }
+    private Integer retentionIndexTolerance = 50;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ChromatographySearchParametersDTO that = (ChromatographySearchParametersDTO) o;
-        return Objects.equals(gas, that.gas) && Objects.equals(liquid, that.liquid) && Objects.equals(other, that.other);
-    }
+    private SearchParameters.RetIndexMatchType retentionIndexMatch = SearchParameters.RetIndexMatchType.IGNORE_MATCH;
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(gas, liquid, other);
-    }
+    private Double mzTolerance = 0.01;
 
-    public SearchParametersDTO getChromatographySearchParameters(ChromatographyType chromatographyType) {
-        switch (chromatographyType) {
-            case GAS:
-                return gas;
-            case NONE:
-                return other;
-            case LIQUID_POSITIVE: case LIQUID_NEGATIVE: case LC_MSMS_POS: case LC_MSMS_NEG:
-                return liquid;
-            default:
-                return new SearchParametersDTO();
+    private Integer limit = 100;
+
+    private SearchParameters.MzToleranceType mzToleranceType = SearchParameters.MzToleranceType.DA;
+
+    private boolean customParameters = false;
+
+    public void checkCustomParameters() {
+        if (this.scoreThreshold != 500
+                || this.retentionIndexTolerance != 50.0
+                || this.retentionIndexMatch != SearchParameters.RetIndexMatchType.IGNORE_MATCH
+                || this.mzTolerance != 0.01
+                || this.limit != 100
+                || this.mzToleranceType != SearchParameters.MzToleranceType.DA) {
+            customParameters = true;
         }
     }
 
-    public static ChromatographySearchParametersDTO buildSearchParametersDTO(SearchParametersForm searchParametersForm) {
-        ChromatographySearchParametersDTO chromatographySearchParametersDTO = new ChromatographySearchParametersDTO();
-        chromatographySearchParametersDTO.setGas(
-                new SearchParametersDTO(searchParametersForm.getScoreThresholdGas(),
-                        searchParametersForm.getRetentionIndexToleranceGas(),
-                        searchParametersForm.getRetentionIndexMatchGas(),
-                        searchParametersForm.getMzToleranceGas(),
-                        searchParametersForm.getLimitGas(),
-                        searchParametersForm.getMzToleranceTypeGas(),
-                        false));
-        chromatographySearchParametersDTO.setLiquid(
-                new SearchParametersDTO(searchParametersForm.getScoreThresholdLiquid(),
-                        searchParametersForm.getRetentionIndexToleranceLiquid(),
-                        searchParametersForm.getRetentionIndexMatchLiquid(),
-                        searchParametersForm.getMzToleranceLiquid(),
-                        searchParametersForm.getLimitLiquid(),
-                        searchParametersForm.getMzToleranceTypeLiquid(),
-                        false));
-        chromatographySearchParametersDTO.setOther(
-                new SearchParametersDTO(searchParametersForm.getScoreThresholdOther(),
-                        searchParametersForm.getRetentionIndexToleranceOther(),
-                        searchParametersForm.getRetentionIndexMatchOther(),
-                        searchParametersForm.getMzToleranceOther(),
-                        searchParametersForm.getLimitOther(),
-                        searchParametersForm.getMzToleranceTypeOther(),
-                        false));
-        return chromatographySearchParametersDTO;
+    public boolean isCustomParameters() {
+        return this.customParameters;
+    }
+
+    public Integer getScoreThreshold() {
+        return scoreThreshold;
+    }
+
+    public void setScoreThreshold(Integer scoreThreshold) {
+        this.scoreThreshold = scoreThreshold;
+    }
+
+    public Integer getRetentionIndexTolerance() {
+        return retentionIndexTolerance;
+    }
+
+    public void setRetentionIndexTolerance(Integer retentionIndexTolerance) {
+        this.retentionIndexTolerance = retentionIndexTolerance;
+    }
+
+    public SearchParameters.RetIndexMatchType getRetentionIndexMatch() {
+        return retentionIndexMatch;
+    }
+
+    public void setRetentionIndexMatch(SearchParameters.RetIndexMatchType retentionIndexMatch) {
+        this.retentionIndexMatch = retentionIndexMatch;
+    }
+
+    public Double getMzTolerance() {
+        return mzTolerance;
+    }
+
+    public void setMzTolerance(Double mzTolerance) {
+        this.mzTolerance = mzTolerance;
+    }
+
+    public Integer getLimit() {
+        return limit;
+    }
+
+    public void setLimit(Integer limit) {
+        this.limit = limit;
+    }
+
+    public SearchParameters.MzToleranceType getMzToleranceType() {
+        return mzToleranceType;
+    }
+
+    public void setMzToleranceType(SearchParameters.MzToleranceType mzToleranceType) {
+        this.mzToleranceType = mzToleranceType;
+    }
+
+    public void setCustomParameters(boolean customParameters) {
+        this.customParameters = customParameters;
     }
 }

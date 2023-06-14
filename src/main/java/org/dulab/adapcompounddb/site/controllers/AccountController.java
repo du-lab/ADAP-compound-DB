@@ -14,7 +14,6 @@ import org.dulab.adapcompounddb.site.controllers.forms.SearchParametersForm;
 import org.dulab.adapcompounddb.site.services.SearchTaskService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.dulab.adapcompounddb.site.services.UserPrincipalService;
-import org.dulab.adapcompounddb.site.services.search.SearchParameters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -88,11 +87,8 @@ public class AccountController extends BaseController {
     @RequestMapping(value = "/account/saveparameters", method = RequestMethod.POST)
     public String saveParameters(Model model, SearchParametersForm searchParametersForm) {
         UserPrincipal user = getCurrentUserPrincipal();
-        //TODO map chromatography search parameters
-        ChromatographySearchParametersDTO chromatographySearchParametersDTO
-                = ChromatographySearchParametersDTO.buildSearchParametersDTO(searchParametersForm);
-        ChromatographySearchParametersDTO searchParametersDTO
-                = userPrincipalService.updateSearchParameters(chromatographySearchParametersDTO, user);
+        SearchParametersDTO searchParametersDTO =
+                userPrincipalService.updateSearchParameters(SearchParametersDTO.buildSearchParametersDTO(searchParametersForm), user);
         List<Submission> submissions = submissionService.findSubmissionsWithTagsByUserId(user.getId());
         Map<Long, List<ChromatographyType>> submissionIdToChromatographyListMap =
                 submissionService.findChromatographyTypes(submissions);
@@ -235,7 +231,6 @@ public class AccountController extends BaseController {
         model.addAttribute("submissionIdToChromatographyListMap", submissionIdToChromatographyListMap);
         model.addAttribute("filterForm",new FilterForm());
         model.addAttribute("searchParametersForm",new SearchParametersForm());
-
         model.addAttribute("organizationForm",new OrganizationForm());
     }
 }

@@ -10,7 +10,6 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
 import com.google.gson.Gson;
-import org.dulab.adapcompounddb.models.dto.ChromatographySearchParametersDTO;
 import org.dulab.adapcompounddb.models.dto.SearchParametersDTO;
 import org.dulab.adapcompounddb.models.enums.UserRole;
 import org.dulab.adapcompounddb.validation.Email;
@@ -252,16 +251,16 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
     }
 
     @Transient
-    public ChromatographySearchParametersDTO getSearchParametersDTO() {
-        ChromatographySearchParametersDTO chromatographySearchParameters = new Gson().fromJson(getSearchParameters()
-                ,ChromatographySearchParametersDTO.class);
+    public SearchParametersDTO getSearchParametersDTO() {
+        SearchParametersDTO chromatographySearchParameters = new Gson().fromJson(getSearchParameters()
+                ,SearchParametersDTO.class);
         if (chromatographySearchParameters == null) {
-            return new ChromatographySearchParametersDTO();
+            return new SearchParametersDTO();
         }
         return chromatographySearchParameters;
     }
 
-    public void setSearchParameters(ChromatographySearchParametersDTO chromatographySearchParameters) {
+    public void setSearchParameters(SearchParametersDTO chromatographySearchParameters) {
         setSearchParameters(new Gson().toJson(chromatographySearchParameters));
     }
 

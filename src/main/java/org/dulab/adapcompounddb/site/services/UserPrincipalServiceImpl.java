@@ -3,11 +3,8 @@ package org.dulab.adapcompounddb.site.services;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import com.google.gson.Gson;
 import org.apache.http.client.utils.URIBuilder;
-import org.dulab.adapcompounddb.models.dto.ChromatographySearchParametersDTO;
 import org.dulab.adapcompounddb.models.dto.SearchParametersDTO;
-import org.dulab.adapcompounddb.models.entities.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
@@ -18,11 +15,8 @@ import org.dulab.adapcompounddb.models.UserParameterType;
 import org.dulab.adapcompounddb.site.repositories.UserPrincipalRepository;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.mail.MessagingException;
 
 @Service
 public class UserPrincipalServiceImpl implements UserPrincipalService {
@@ -161,8 +155,8 @@ public class UserPrincipalServiceImpl implements UserPrincipalService {
     }
 
     @Override
-    public ChromatographySearchParametersDTO updateSearchParameters(ChromatographySearchParametersDTO chromatographySearchParameters, UserPrincipal user) {
-        ChromatographySearchParametersDTO currentChromatographySearchParameters = user.getSearchParametersDTO();
+    public SearchParametersDTO updateSearchParameters(SearchParametersDTO chromatographySearchParameters, UserPrincipal user) {
+        SearchParametersDTO currentChromatographySearchParameters = user.getSearchParametersDTO();
         if (currentChromatographySearchParameters == null
                 || !currentChromatographySearchParameters.equals(chromatographySearchParameters)) {
             user.setSearchParameters(chromatographySearchParameters);
