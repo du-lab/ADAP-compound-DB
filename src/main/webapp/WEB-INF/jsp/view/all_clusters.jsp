@@ -16,7 +16,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="row form-row form-group">
-                                <label for="chromatographyType" class="col-md-6 col-form-label">Chromatography
+                                <label for="chromatographyType" class="col-md-6 col-form-label">Spectrum
                                     Type:</label>
                                 <select id="chromatographyType" class="col-md-6 form-control">
                                     <option value="all">All</option>
@@ -102,7 +102,7 @@
                             <th title="P-value of the Goodness-of-Fit test for the distribution of species">GOF P-value (species)</th>
                             <th title="P-value of the Goodness-of-Fit test for the distribution of sample source">GOF P-value (sample source)</th>
                             <th title="The Minimum P-value of the Goodness-of-Fit test">GOF P-value (minimum)</th>
-                            <th title="Chromatography type">Type</th>
+                            <th title="Spectrum type">Type</th>
                             <th></th>
                         </tr>
                         </thead>

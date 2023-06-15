@@ -5,6 +5,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<head>
+    <script src="/resources/AdapCompoundDb/js/fileUpload.js"></script>
+</head>
 <style>
     .checkbox-grid{
 
@@ -103,7 +106,7 @@
                                         <div class="row form-group">
                                             <div class="col-md-4">
                                                 <form:label path="chromatographyType"
-                                                            cssClass="col-form-label">Chromatography type</form:label>&nbsp;
+                                                            cssClass="col-form-label">Spectrum type</form:label>&nbsp;
                                             </div>
                                             <div class="col-md-8">
                                                 <form:select path="chromatographyType" cssClass="form-control">
@@ -123,7 +126,8 @@
                                             <div class="col-md-8">
                                                 <input type="file" name="files"
                                                        accept=".msp,.msl,.csv,.cdf,.mzml,.mzxml,.mgf"
-                                                       class="form-control-file" multiple/>
+                                                       class="form-control-file" multiple onchange="handleFileSelection(this)"/>
+                                                <small class="text-danger form-control-sm" id="fileErrorMessage"></small>
                                                 <form:errors path="files" cssClass="text-danger form-control-sm"/>
                                             </div>
                                         </div>

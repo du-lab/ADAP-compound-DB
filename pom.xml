@@ -4,8 +4,8 @@
 
     <groupId>org.dulab</groupId>
     <artifactId>adap-compound-db</artifactId>
-    <version>0.1.0</version>
-    <packaging>war</packaging>
+    <version>0.2.0</version>
+    <packaging>jar</packaging>
     <profiles>
         <profile>
             <id>jenkins-test</id>
@@ -115,7 +115,6 @@
         <dependency>
             <groupId>org.apache.tomcat.embed</groupId>
             <artifactId>tomcat-embed-jasper</artifactId>
-            <!--            <scope>provided</scope>-->
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -474,18 +473,23 @@
         <testSourceDirectory>src/main/test</testSourceDirectory>
 
         <plugins>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-war-plugin</artifactId>-->
+<!--                <version>3.2.2</version>-->
+<!--                <configuration>-->
+<!--                    <warSourceDirectory>src/main/webapp</warSourceDirectory>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-resources-plugin</artifactId>-->
+<!--                <version>3.2.0</version>-->
+<!--            </plugin>-->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>3.2.2</version>
-                <configuration>
-                    <warSourceDirectory>src/main/webapp</warSourceDirectory>
-                </configuration>
+                  <groupId>org.springframework.boot</groupId>
+                  <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-            <plugin>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-maven-plugin</artifactId>
-             </plugin>
             <plugin>
                 <groupId>org.apache.tomcat.maven</groupId>
                 <artifactId>tomcat7-maven-plugin</artifactId>

@@ -15,6 +15,8 @@ build:
     - master
     - merge_requests
   script:
+    - docker rm --force $CONTAINER_NAME
+    - docker system prune --force #to clean up dangling images
     - mvn -version
     - mvn clean install
     - docker build -f docker/adap-kdb-docker/Dockerfile -t adap-kdb-img .

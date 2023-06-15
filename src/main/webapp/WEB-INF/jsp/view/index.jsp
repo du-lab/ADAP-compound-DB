@@ -181,7 +181,7 @@
                                 </p>
                                 <p>
                                     Download a file, then click <strong>Upload Files</strong>, select "GC",
-                                    "LC MS/MS +", or "Mass" respectively in the <strong>Chromatography type</strong>
+                                    "LC MS/MS +", or "Mass" respectively in the <strong>Spectrum type</strong>
                                     dropdown list, select the downloaded file, and click <strong>Upload</strong>.
                                     When uploading the sample CSV file, you need to specify where to find the neutral
                                     mass information by clicking <strong>Edit Metadata Fields</strong> on the upload
