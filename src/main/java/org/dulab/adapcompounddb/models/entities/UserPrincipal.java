@@ -252,12 +252,12 @@ public class UserPrincipal implements /*Principal, Cloneable,*/ Serializable {
 
     @Transient
     public SearchParametersDTO getSearchParametersDTO() {
-        SearchParametersDTO chromatographySearchParameters = new Gson().fromJson(getSearchParameters()
+        SearchParametersDTO searchParameters = new Gson().fromJson(getSearchParameters()
                 ,SearchParametersDTO.class);
-        if (chromatographySearchParameters == null) {
+        if (searchParameters == null) {
             return new SearchParametersDTO();
         }
-        return chromatographySearchParameters;
+        return searchParameters;
     }
 
     public void setSearchParameters(SearchParametersDTO chromatographySearchParameters) {

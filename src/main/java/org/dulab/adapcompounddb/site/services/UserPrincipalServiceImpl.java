@@ -155,14 +155,14 @@ public class UserPrincipalServiceImpl implements UserPrincipalService {
     }
 
     @Override
-    public SearchParametersDTO updateSearchParameters(SearchParametersDTO chromatographySearchParameters, UserPrincipal user) {
-        SearchParametersDTO currentChromatographySearchParameters = user.getSearchParametersDTO();
-        if (currentChromatographySearchParameters == null
-                || !currentChromatographySearchParameters.equals(chromatographySearchParameters)) {
-            user.setSearchParameters(chromatographySearchParameters);
+    public SearchParametersDTO updateSearchParameters(SearchParametersDTO searchParameters, UserPrincipal user) {
+        SearchParametersDTO currentSearchParameters = user.getSearchParametersDTO();
+        if (currentSearchParameters == null
+                || !currentSearchParameters.equals(searchParameters)) {
+            user.setSearchParameters(searchParameters);
             saveUserPrincipal(user);
         }
-        return chromatographySearchParameters;
+        return searchParameters;
     }
 
     @Override
