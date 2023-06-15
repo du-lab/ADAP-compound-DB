@@ -273,18 +273,17 @@ public class SubmissionController extends BaseController {
 
         final Submission submission = Submission.from(session);
         if (errors.hasErrors()) {
-            if (getCurrentUserPrincipal().isAdmin()) {
-                List<String> errorMessages = new ArrayList<>();
-                for (ObjectError error : errors.getAllErrors()) {
-                    errorMessages.add(error.getDefaultMessage());
-                }
-                if (!errorMessages.contains("Creating a library is allowed only for private submissions")
-                        || errorMessages.size() > 1) {
-                    model.addAttribute("view_submission", true);
-                    model.addAttribute("edit_submission", true);
-                    model.addAttribute("submissionForm", submissionForm);
-                    return "submission/view";
-                }
+            List<String> errorMessages = new ArrayList<>();
+            for (ObjectError error : errors.getAllErrors()) {
+                errorMessages.add(error.getDefaultMessage());
+            }
+            if (!getCurrentUserPrincipal().isAdmin() &&
+                    (!errorMessages.contains("Creating a library is allowed only for private submissions")
+                            || errorMessages.size() > 1)) {
+                model.addAttribute("view_submission", true);
+                model.addAttribute("edit_submission", true);
+                model.addAttribute("submissionForm", submissionForm);
+                return "submission/view";
             }
         }
 
