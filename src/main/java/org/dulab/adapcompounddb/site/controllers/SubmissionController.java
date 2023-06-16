@@ -273,10 +273,10 @@ public class SubmissionController extends BaseController {
 
         final Submission submission = Submission.from(session);
         if (errors.hasErrors() && !getCurrentUserPrincipal().isAdmin()) {
-                model.addAttribute("view_submission", true);
-                model.addAttribute("edit_submission", true);
-                model.addAttribute("submissionForm", submissionForm);
-                return "submission/view";
+            model.addAttribute("view_submission", true);
+            model.addAttribute("edit_submission", true);
+            model.addAttribute("submissionForm", submissionForm);
+            return "submission/view";
         }
 
         if (submission == null) {
