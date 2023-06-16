@@ -272,19 +272,11 @@ public class SubmissionController extends BaseController {
                            final Errors errors, RedirectAttributes redirectAttributes) {
 
         final Submission submission = Submission.from(session);
-        if (errors.hasErrors()) {
-            List<String> errorMessages = new ArrayList<>();
-            for (ObjectError error : errors.getAllErrors()) {
-                errorMessages.add(error.getDefaultMessage());
-            }
-            if (!getCurrentUserPrincipal().isAdmin() &&
-                    (!errorMessages.contains("Creating a library is allowed only for private submissions")
-                            || errorMessages.size() > 1)) {
+        if (errors.hasErrors() && !getCurrentUserPrincipal().isAdmin()) {
                 model.addAttribute("view_submission", true);
                 model.addAttribute("edit_submission", true);
                 model.addAttribute("submissionForm", submissionForm);
                 return "submission/view";
-            }
         }
 
         if (submission == null) {
@@ -305,7 +297,7 @@ public class SubmissionController extends BaseController {
                                  final HttpSession session, @Valid final SubmissionForm submissionForm, final Errors errors) {
 
         final Submission submission = submissionService.findSubmission(submissionId);
-        if (errors.hasErrors()) {
+        if (errors.hasErrors() && !getCurrentUserPrincipal().isAdmin()) {
             model.addAttribute("submissionForm", submissionForm);
             model.addAttribute("submission", submission);
             model.addAttribute("view_submission", true);
