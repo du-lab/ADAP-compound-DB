@@ -1,11 +1,6 @@
 package org.dulab.adapcompounddb.site.controllers;
 
-import java.util.stream.Collectors;
-import org.dulab.adapcompounddb.models.dto.SpectrumDTO;
-import org.dulab.adapcompounddb.models.dto.SearchParametersDTO;
-import org.dulab.adapcompounddb.models.entities.SearchTask;
-import org.dulab.adapcompounddb.models.entities.UserPrincipal;
-import org.dulab.adapcompounddb.models.enums.SearchTaskStatus;
+import org.dulab.adapcompounddb.models.dto.ChromatographySearchParametersDTO;
 import org.dulab.adapcompounddb.site.services.SearchTaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,16 +17,13 @@ import org.dulab.adapcompounddb.site.services.search.GroupSearchService;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -99,7 +91,8 @@ public class GroupSearchController extends BaseController {
         //check if user is login
         model.addAttribute("isLoggedIn", this.getCurrentUserPrincipal() != null);
         model.addAttribute("searchParameters", this.getCurrentUserPrincipal() != null ?
-        this.getCurrentUserPrincipal().getSearchParametersDTO() : new SearchParametersDTO());
+        this.getCurrentUserPrincipal().getSearchParametersDTO()
+                .getChromatographySearchParameters(submission.getChromatographyType()) : new ChromatographySearchParametersDTO());
         return "submission/group_search_parameters";
     }
 

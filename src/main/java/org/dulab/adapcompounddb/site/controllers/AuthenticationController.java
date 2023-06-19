@@ -1,18 +1,15 @@
 package org.dulab.adapcompounddb.site.controllers;
 
-import com.google.gson.Gson;
 import org.dulab.adapcompounddb.models.dto.SearchParametersDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.entities.UserPrincipal;
-import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
 import org.dulab.adapcompounddb.site.services.AuthenticationService;
 import org.dulab.adapcompounddb.site.services.CaptchaService;
 import org.dulab.adapcompounddb.validation.Email;
 import org.dulab.adapcompounddb.validation.FieldMatch;
 import org.dulab.adapcompounddb.validation.Password;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;

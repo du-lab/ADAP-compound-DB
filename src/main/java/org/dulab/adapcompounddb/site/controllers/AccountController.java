@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.site.controllers;
 
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
+import org.dulab.adapcompounddb.models.dto.ChromatographySearchParametersDTO;
 import org.dulab.adapcompounddb.models.dto.SearchParametersDTO;
 import org.dulab.adapcompounddb.models.dto.SubmissionDTO;
 import org.dulab.adapcompounddb.models.entities.SearchTask;
@@ -9,10 +10,10 @@ import org.dulab.adapcompounddb.models.entities.UserPrincipal;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterForm;
 import org.dulab.adapcompounddb.site.controllers.forms.OrganizationForm;
+import org.dulab.adapcompounddb.site.controllers.forms.SearchParametersForm;
 import org.dulab.adapcompounddb.site.services.SearchTaskService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.dulab.adapcompounddb.site.services.UserPrincipalService;
-import org.dulab.adapcompounddb.site.services.search.SearchParameters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -78,22 +79,16 @@ public class AccountController extends BaseController {
         model.addAttribute("searchTaskList", searchTaskList);
         model.addAttribute("submissionIdToChromatographyListMap", submissionIdToChromatographyListMap);
         model.addAttribute("filterForm",new FilterForm());
+        model.addAttribute("searchParametersForm",new SearchParametersForm());
         model.addAttribute("organizationForm",new OrganizationForm());
         model.addAttribute("appVersion", applicationVersion);
         return "account/view";
     }
     @RequestMapping(value = "/account/saveparameters", method = RequestMethod.POST)
-    public String saveParameters(Model model,
-                                 @RequestParam ("scoreThreshold") Integer scoreThreshold,
-                                 @RequestParam ("retentionIndexTolerance") Integer retentionIndexTolerance,
-                                 @RequestParam ("retentionIndexMatch") SearchParameters.RetIndexMatchType retentionIndexMatch,
-                                 @RequestParam ("mzTolerance") Double mzTolerance,
-                                 @RequestParam ("mzToleranceType") SearchParameters.MzToleranceType mzToleranceType,
-                                 @RequestParam ("limit") Integer limit) {
+    public String saveParameters(Model model, SearchParametersForm searchParametersForm) {
         UserPrincipal user = getCurrentUserPrincipal();
-        SearchParametersDTO searchParameters = new SearchParametersDTO(scoreThreshold,retentionIndexTolerance,
-                retentionIndexMatch,mzTolerance,limit,mzToleranceType,false);
-        SearchParametersDTO searchParametersDTO = userPrincipalService.updateSearchParameters(searchParameters, user);
+        SearchParametersDTO searchParametersDTO =
+                userPrincipalService.updateSearchParameters(SearchParametersDTO.buildSearchParametersDTO(searchParametersForm), user);
         List<Submission> submissions = submissionService.findSubmissionsWithTagsByUserId(user.getId());
         Map<Long, List<ChromatographyType>> submissionIdToChromatographyListMap =
                 submissionService.findChromatographyTypes(submissions);
@@ -106,7 +101,6 @@ public class AccountController extends BaseController {
         int peakCapacity = user.getPeakCapacity();
         double maxDiskSpace = MEMORY_PER_PEAK * peakCapacity;
         double currentDiskSpace = submissionService.getPeakDiskSpaceByUser(user);
-        searchParametersDTO.checkCustomParameters();
         model.addAttribute("searchParameters",searchParametersDTO);
         model.addAttribute(("currentDiskSpace"), currentDiskSpace);
         model.addAttribute(("maxDiskSpace"), maxDiskSpace);
@@ -114,9 +108,11 @@ public class AccountController extends BaseController {
         model.addAttribute("submissionList", submissionDTOs);
         model.addAttribute("submissionIdToChromatographyListMap", submissionIdToChromatographyListMap);
         model.addAttribute("filterForm",new FilterForm());
+        model.addAttribute("searchParametersForm",new SearchParametersForm());
         model.addAttribute("organizationForm",new OrganizationForm());
         return "account/view";
     }
+
     @RequestMapping(value = "account/addUserToOrganization", method = RequestMethod.POST)
     public String inviteUsersToOrganization(Model model,
                                             @RequestParam("selectedUsers") List<Long> selectedUsers) {
@@ -234,6 +230,7 @@ public class AccountController extends BaseController {
         model.addAttribute("submissionList", submissionDTOs);
         model.addAttribute("submissionIdToChromatographyListMap", submissionIdToChromatographyListMap);
         model.addAttribute("filterForm",new FilterForm());
+        model.addAttribute("searchParametersForm",new SearchParametersForm());
         model.addAttribute("organizationForm",new OrganizationForm());
     }
 }
