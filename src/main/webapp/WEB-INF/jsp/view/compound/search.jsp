@@ -105,46 +105,6 @@
 
                         <div id="search" class="tab-pane fade show active" role="tabpanel">
                             <div class="alert-danger" style="margin-bottom: 5px;">${errorMessage}</div>
-
-                            <div class="form-group row">
-                                <form:label path="chromatographyType"
-                                            cssClass="col-md-4 col-form-label">Spectrum type</form:label>
-<%--                                <div class="col-md-8">--%>
-<%--                                    <form:select id="chromatographySelect" path="chromatographyType" cssClass="form-control">--%>
-<%--                                        <form:option id="typeValue" value="" label="Please select..."/>--%>
-<%--                                        <form:options items="${chromatographyTypes}" itemLabel="label"/>--%>
-<%--                                    </form:select>--%>
-<%--                                    <form:errors path="chromatographyType"--%>
-<%--                                                 cssClass="text-danger form-control-sm"/>--%>
-<%--                                </div>--%>
-                                <div class="col-md-8">
-                                    <div class="btn-group btn-group-toggle" data-toggle="buttons" cssClass="form-control">
-                                        <label class="btn btn-outline-primary active">
-                                            <form:radiobutton path="chromatographyType"
-                                                              name="chromatographyType"
-                                                              value="GC-MS"
-                                                              label="GC-MS"
-                                                              id="gcms"
-                                                              />
-                                        </label>
-                                        <label class="btn btn-outline-primary">
-                                            <form:radiobutton
-                                                    path="chromatographyType"
-                                                    name="chromatographyType"
-                                                    value="LC-MS"
-                                                    label="LC-MS"
-                                                    />
-                                        </label>
-                                        <label class="btn btn-outline-primary">
-                                            <form:radiobutton path="chromatographyType"
-                                                              name="chromatographyType"
-                                                              value="LC-MS/MS"
-                                                              label="LC-MS/MS"
-                                                              />
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
                             <div class="form-group row">
                                 <form:label path="identifier"
                                             cssClass="col-md-4 col-form-label">Identifier:</form:label>
