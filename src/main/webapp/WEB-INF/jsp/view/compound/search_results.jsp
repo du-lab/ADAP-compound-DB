@@ -6,7 +6,18 @@
 <%@ taglib prefix="font" uri="http://www.springframework.org/tags/form" %>
 
 <%--@elvariable id="querySpectrum" type="org.dulab.adapcompounddb.models.entities.Spectrum"--%>
-
+<script>
+    $(document).ready(function() {
+        $('#submission-select').change(function() {
+            var selectedValue = $(this).val();
+            if (selectedValue.includes('0')) {
+                $('#species-div').show();
+            } else {
+                $('#species-div').hide();
+            }
+        });
+    });
+</script>
 <div id="filterModal" class="modal fade" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
@@ -25,9 +36,9 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="row form-group">
-                                    <form:label path="submissionIds" cssClass="col-form-label">Libraries:</form:label>
+                                    <form:label path="submissionIds" cssClass="col-form-label">Libraries1:</form:label>
                                     <form:select path="submissionIds" cssClass="custom-select" multiple="multiple"
-                                                 size="10">
+                                                 size="10" id="submission-select">
                                         <c:forEach items="${filterOptions.submissions}" var="entry">
                                             <form:option value="${entry.key}"
                                                          selected="${filterForm.submissionIds.contains(entry.key) ? 'selected' : ''}">
@@ -37,7 +48,7 @@
                                     </form:select>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6" id="species-div">
                                 <div class="row form-group">
                                     <form:label path="species" cssClass="col-md-6 col-form-label">Species:</form:label>
                                     <form:select path="species" cssClass="col-md-6 form-control">
