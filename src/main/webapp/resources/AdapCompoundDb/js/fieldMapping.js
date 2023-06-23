@@ -6,17 +6,15 @@ $(document).ready(function () {
             if (mapping.hasOwnProperty(key)) {
                 let value = mapping[key];
                 if (value) {
-                    let element1 = document.querySelector('[data-inputid="' + key + '"]');
-                    if (element1) {
-                        element1.parentNode.removeChild(element1);
-                    }
-                    const element = document.querySelector('[data-filetype="' + value + '"]');
-                    while (element.firstChild) {
-                        element.firstChild.remove();
-                    }
-                    if (element) {
-                        element.appendChild(element1);
+                    let dragElement = document.querySelector('[data-inputid="' + key + '"]');
+                    const fieldElement = document.querySelector('[data-filetype="' + value + '"]');
+                    if (fieldElement && fieldElement.firstChild && dragElement) {
+                        while (fieldElement.firstChild) {
+                            fieldElement.firstChild.remove();
+                        }
+                        fieldElement.appendChild(dragElement);
                         $("#" + key).val(value.split("_")[1]);
+                        dragElement.parentNode.removeChild(dragElement);
                     }
                 }
             }
