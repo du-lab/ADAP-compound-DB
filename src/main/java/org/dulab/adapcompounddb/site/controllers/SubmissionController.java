@@ -16,6 +16,7 @@ import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -271,7 +272,7 @@ public class SubmissionController extends BaseController {
                            final Errors errors, RedirectAttributes redirectAttributes) {
 
         final Submission submission = Submission.from(session);
-        if (errors.hasErrors()) {
+        if (errors.hasErrors() && !getCurrentUserPrincipal().isAdmin()) {
             model.addAttribute("view_submission", true);
             model.addAttribute("edit_submission", true);
             model.addAttribute("submissionForm", submissionForm);
@@ -296,7 +297,7 @@ public class SubmissionController extends BaseController {
                                  final HttpSession session, @Valid final SubmissionForm submissionForm, final Errors errors) {
 
         final Submission submission = submissionService.findSubmission(submissionId);
-        if (errors.hasErrors()) {
+        if (errors.hasErrors() && !getCurrentUserPrincipal().isAdmin()) {
             model.addAttribute("submissionForm", submissionForm);
             model.addAttribute("submission", submission);
             model.addAttribute("view_submission", true);
@@ -313,7 +314,7 @@ public class SubmissionController extends BaseController {
 
     private String submit(final Submission submission, final Model model, final SubmissionForm submissionForm) {
 
-        if (!submissionForm.getIsPrivate() && submissionForm.getIsLibrary())
+        if (!submissionForm.getIsPrivate() && submissionForm.getIsLibrary() && !getCurrentUserPrincipal().isAdmin())
             throw new IllegalStateException("Creating a library is allowed only for private submissions");
 
         if (!submissionForm.getIsLibrary() && submissionForm.getIsInHouseLibrary())
