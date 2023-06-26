@@ -66,3 +66,19 @@
     width: 94%;
     margin: auto;
 }
+
+.resetMetadataButton {
+    background: none;
+    border: none;
+    color: #844d36;
+}
+
+.resetMetadataButton:hover {
+    text-decoration: underline;
+}
+
+.title-container {
+    display: flex;
+    justify-content: space-between;
+    color: #844d36;
+}
