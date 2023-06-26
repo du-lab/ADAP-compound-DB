@@ -65,7 +65,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div style="color:#844d36;">Field Mapping</div>
+                        <div class="title-container"><div>Field Mapping</div> <button class="resetMetadataButton" id="resetMetadataButton">Reset Mapping</button></div>
                         <c:forEach items="${spectrumProperties}" var="propertyList" varStatus="propertyListLoop">
                             <div class="field-container field-container_${propertyListLoop.index}">
                                 <div class="left-container">

@@ -1,26 +1,30 @@
 $(document).ready(function () {
-    const mappingCookie = localStorage.getItem("fieldMapping");
-    if (mappingCookie) {
-        let mapping = JSON.parse(mappingCookie);
-        for (let key in mapping) {
-            if (mapping.hasOwnProperty(key)) {
-                let value = mapping[key];
-                if (value) {
-                    let element1 = document.querySelector('[data-inputid="' + key + '"]');
-                    if (element1) {
-                        element1.parentNode.removeChild(element1);
-                    }
-                    const element = document.querySelector('[data-filetype="' + value + '"]');
-                    while (element.firstChild) {
-                        element.firstChild.remove();
-                    }
-                    if (element) {
-                        element.appendChild(element1);
-                        $("#" + key).val(value.split("_")[1]);
+    try {
+        const mappingCookie = localStorage.getItem("fieldMapping");
+        if (mappingCookie) {
+            let mapping = JSON.parse(mappingCookie);
+            for (let key in mapping) {
+                if (mapping.hasOwnProperty(key)) {
+                    let value = mapping[key];
+                    if (value) {
+                        let dragElement = document.querySelector('[data-inputid="' + key + '"]');
+                        const fieldElement = document.querySelector('[data-filetype="' + value + '"]');
+                        if (fieldElement && fieldElement.firstChild && dragElement) {
+                            while (fieldElement.firstChild) {
+                                fieldElement.firstChild.remove();
+                            }
+                            console.log(fieldElement, dragElement)
+                            fieldElement.appendChild(dragElement);
+                            $("#" + key).val(value.split("_")[1]);
+                            // dragElement.parentNode.removeChild(dragElement);
+                        }
                     }
                 }
             }
         }
+    } catch (e) {
+        console.log(e);
+        resetMetadataForm();
     }
 
     $(".draggable").on("dragstart", function (event) {
@@ -139,4 +143,14 @@ $(document).ready(function () {
         div.textContent = "Don't Read";
         return div;
     }
+
+    $("#resetMetadataButton").on("click", function (event) {
+        event.preventDefault(); // Prevent form submission
+        resetMetadataForm();
+    });
+    function resetMetadataForm() {
+        localStorage.removeItem("fieldMapping");
+        location.reload();
+    }
+
 });
