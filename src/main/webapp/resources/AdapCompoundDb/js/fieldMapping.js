@@ -24,8 +24,7 @@ $(document).ready(function () {
         }
     } catch (e) {
         console.log(e);
-        localStorage.removeItem("fieldMapping");
-        location.reload();
+        resetMetadataForm();
     }
 
     $(".draggable").on("dragstart", function (event) {
