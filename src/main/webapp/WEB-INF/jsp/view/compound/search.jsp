@@ -175,8 +175,8 @@
                         </div>
 
                         <div id="parameters" class="tab-pane fade" role="tabpanel">
-                            <p class="errors">You can change the default value of each parameter on the
-                                <a style="color: red;text-decoration: underline;" href="<c:url value="/account/"/>">Account</a> page.
+                            <p class="errors" style="color: black;">You can change the default value of each parameter on the
+                                <a style="color:black;text-decoration: underline;" href="<c:url value="/account/"/>">Account</a> page.
                             </p>
                              <span id="parameter-gas">
                                 <jsp:include page="./user_search_parameters.jsp">
