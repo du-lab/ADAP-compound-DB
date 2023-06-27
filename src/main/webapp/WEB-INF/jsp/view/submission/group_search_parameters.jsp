@@ -97,9 +97,6 @@
                             </div>
                         </div>
                         <div id="parameters" class="tab-pane fade" role="tabpanel">
-                            <p class="errors" style="color: black;">You can change the default value of each parameter on the
-                                <a style="color:black;text-decoration: underline;" href="<c:url value="/account/"/>">Account</a> page.
-                            </p>
                             <jsp:include page="../../view/compound/user_search_parameters.jsp">
                                 <jsp:param name="SCORE_THRESHOLD" value="${searchParameters.scoreThreshold}"/>
                                 <jsp:param name="RETENTION_INDEX_TOLERANCE" value="${searchParameters.retentionIndexTolerance}"/>

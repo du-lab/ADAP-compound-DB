@@ -13,8 +13,11 @@
 <div class="alert-danger" style="margin-bottom: 5px;">${errorMessage}</div>
 <div class="alert-success" style="margin-bottom: 5px;">${successMessage}</div>
 <div class="row">
-  <div class="col-md-8 offset-md-2">
-    <p ${param.SHOW_DIALOG ? '' : 'style="display: none;"'}>Leave parameters blanks to use the default values.</p>
+  <div class="col-md-12">
+    <p class="errors" style="color: black;">You can change the default value of each parameter on the
+      <a style="color:black;text-decoration: underline;" href="<c:url value="/account/"/>">Account</a> page.
+      Leave parameters blanks to use the default values.
+    </p>
   </div>
 </div>
 <div class="form-group row">
