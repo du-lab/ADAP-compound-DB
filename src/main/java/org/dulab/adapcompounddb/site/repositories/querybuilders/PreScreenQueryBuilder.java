@@ -49,9 +49,9 @@ public class PreScreenQueryBuilder {
 
         spectrumTypeQuery = Arrays.stream(
                 new String[]{
-                        searchConsensus ? "Spectrum.Consensus IS TRUE" : null,
-                        searchReference ? "Spectrum.Reference IS TRUE" : null,
-                        searchClusterable ? "Spectrum.Clusterable IS TRUE" : null})
+                        searchConsensus ? "Spectrum.Consensus  = 1" : null,
+                        searchReference ? "Spectrum.Reference = 1" : null,
+                        searchClusterable ? "Spectrum.Clusterable = 1" : null})
                 .filter(Objects::nonNull).collect(Collectors.joining(" OR "));
     }
 
@@ -271,9 +271,9 @@ public class PreScreenQueryBuilder {
 
         String condition;
         if (submissionIds.contains(BigInteger.ZERO) && !ids.isEmpty())
-            condition = String.format("Spectrum.Consensus IS TRUE OR Submission.Id IN (%s)", ids);
+            condition = String.format("Spectrum.Consensus = 1 OR Submission.Id IN (%s)", ids);
         else if (submissionIds.contains(BigInteger.ZERO))
-            condition = "Spectrum.Consensus IS TRUE";
+            condition = "Spectrum.Consensus = 1";
         else if (!ids.isEmpty())
             condition = String.format("Submission.Id IN (%s)", ids);
         else
