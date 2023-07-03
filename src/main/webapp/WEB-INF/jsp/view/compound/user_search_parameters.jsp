@@ -16,7 +16,7 @@
   <div class="col-md-12">
     <p class="errors" style="color: black;">You can change the default value of each parameter on the
       <a style="color:black;text-decoration: underline;" href="<c:url value="/account/"/>">Account</a> page.
-      Leave parameters blanks to use the default values.
+      Leave parameters blank to use the default values.
     </p>
   </div>
 </div>
