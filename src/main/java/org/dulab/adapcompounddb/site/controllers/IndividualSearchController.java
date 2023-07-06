@@ -361,7 +361,7 @@ public class IndividualSearchController extends BaseController {
         List<SearchResultDTO> searchResults = individualSearchService.searchConsensusSpectra(this.getCurrentUserPrincipal(), spectrum, parameters);
         model.addAttribute("querySpectrum", spectrum);
         model.addAttribute("filterForm", compoundSearchForm);
-        model.addAttribute("filterOptions", getFilterOptions(spectrum.getChromatographyType()));
+        model.addAttribute("filterOptions", getFilterOptions(formChromatographyType(compoundSearchForm)));
         model.addAttribute("searchResults", searchResults);
 
         String byteString = ConversionsUtils.formToByteString(compoundSearchForm);

@@ -4,9 +4,11 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="font" uri="http://www.springframework.org/tags/form" %>
-
+<head>
+    <script src="/resources/jQuery-3.6.3/jquery-3.6.3.min.js"></script>
+    <script src="/resources/AdapCompoundDb/js/filterSearchResults.js"></script>
+</head>
 <%--@elvariable id="querySpectrum" type="org.dulab.adapcompounddb.models.entities.Spectrum"--%>
-
 <div id="filterModal" class="modal fade" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
@@ -27,7 +29,7 @@
                                 <div class="row form-group">
                                     <form:label path="submissionIds" cssClass="col-form-label">Libraries:</form:label>
                                     <form:select path="submissionIds" cssClass="custom-select" multiple="multiple"
-                                                 size="10">
+                                                 size="10" id="submission-select">
                                         <c:forEach items="${filterOptions.submissions}" var="entry">
                                             <form:option value="${entry.key}"
                                                          selected="${filterForm.submissionIds.contains(entry.key) ? 'selected' : ''}">
@@ -37,7 +39,7 @@
                                     </form:select>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6" id="species-container">
                                 <div class="row form-group">
                                     <form:label path="species" cssClass="col-md-6 col-form-label">Species:</form:label>
                                     <form:select path="species" cssClass="col-md-6 form-control">
