@@ -219,7 +219,7 @@ public class PreScreenQueryBuilder {
         queryBlock += getPrivacyConditions(user, whereBlock);
 
         if (submissionIds != null)
-            queryBlock += String.format(" AND (%s)", buildConditionStringWithSubmissionIds());
+            queryBlock += String.format(" AND (%s)", buildConditionStringWithSubmissionIds(searchType));
 
         queryBlock += "\n";
         return queryBlock;
@@ -302,7 +302,7 @@ public class PreScreenQueryBuilder {
         return searchTypes;
     }
 
-    private String buildConditionStringWithSubmissionIds() {
+    private String buildConditionStringWithSubmissionIds(SearchType searchType) {
 
         if (submissionIds == null)
             return null;
@@ -313,11 +313,11 @@ public class PreScreenQueryBuilder {
                 .collect(Collectors.joining(","));
 
         String condition;
-        if (submissionIds.contains(BigInteger.ZERO) && !ids.isEmpty())
-            condition = String.format("Spectrum.Consensus = 1 OR Submission.Id IN (%s)", ids);
-        else if (submissionIds.contains(BigInteger.ZERO))
+//        if (submissionIds.contains(BigInteger.ZERO) && !ids.isEmpty())
+//            condition = String.format("Spectrum.Consensus = 1 OR Submission.Id IN (%s)", ids);
+        if (searchType == SearchType.CONSENSUS && submissionIds.contains(BigInteger.ZERO))
             condition = "Spectrum.Consensus = 1";
-        else if (!ids.isEmpty())
+        else if (searchType == SearchType.REFERENCE && !ids.isEmpty())
             condition = String.format("Submission.Id IN (%s)", ids);
         else
             condition = "1 = 0";
