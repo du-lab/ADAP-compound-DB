@@ -746,8 +746,36 @@ progress:after {
 
 .group-search-results-button {
     margin-left: 20px;
-    background-color: white;
     color:#542410;
     border: 2px solid #542410;
     /*width: fit-content;*/
+}
+
+/* for bread crumbs */
+ul.breadcrumb {
+    padding: 10px 16px;
+    list-style: none;
+    margin: unset !important;
+    background-color: unset !important;
+}
+
+ul.breadcrumb li {
+    display: inline;
+    font-size: 14px;
+}
+
+ul.breadcrumb li+li:before {
+    padding: 8px;
+    color: #844d36;
+    content: ">";
+}
+
+ul.breadcrumb li a {
+    color: #844d36;
+    text-decoration: none;
+}
+
+ul.breadcrumb li a:hover {
+    color: #5d3626;
+    text-decoration: underline;
 }
