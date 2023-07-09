@@ -173,7 +173,7 @@
                     Query Signals
                 </div>
 
-                <div class="card-body small container " >
+                <div class="card-body small container " style="overflow: scroll">
                     <div class = "distinct_query_container">
                         <table  id = "distinct_query_table" class="display compact " style="width: 100%; clear:none;">
                             <thead>
@@ -195,7 +195,7 @@
                 <div class="card-header card-header-single">
                     Query Spectra
                 </div>
-                <div class="card-body small container " >
+                <div class="card-body small container " style="overflow: scroll">
 
                     <div class ="query_container">
                         <table id="query_table" class="display compact query_table" style="width: 100%; clear:none;">
@@ -220,7 +220,7 @@
                 <div class="card-header card-header-single">
                     Matches
                 </div>
-                <div class="card-body small container " >
+                <div class="card-body small container " style="overflow: scroll">
 
                     <div class = "match_container">
                         <table id="match_table" class="display compact table-right" style="width: 100%; clear:none;">
