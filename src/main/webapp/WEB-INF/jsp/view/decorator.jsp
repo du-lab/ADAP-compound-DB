@@ -143,7 +143,7 @@
 <div class="wrapper">
     <%--    <div class="side">--%>
     <%--        <aside>--%>
-    <nav id="sidebar">
+    <nav id="sidebar" style="width: 18%;">
         <div class="container">
             <div class="row row-menu mb-5">
                 <div class="col-12">
@@ -270,7 +270,7 @@
         </div>
     </nav>
 
-    <article style="margin: 0 auto; width: 100%">
+    <article style="margin: 0 auto; width: 82%">
         <sitemesh:write property='body' />
     </article>
 </div>
