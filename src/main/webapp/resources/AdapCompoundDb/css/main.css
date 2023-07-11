@@ -751,3 +751,12 @@ progress:after {
     border: 2px solid #542410;
     /*width: fit-content;*/
 }
+
+@media only screen and (max-width: 1220px) {
+    #sidebar {
+        min-width: 200px;
+    }
+    .task-status {
+        width: 200px;
+    }
+}
