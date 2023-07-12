@@ -122,7 +122,7 @@
                         </ul>
                     </div>
                     <div class="homepage-button-container">
-                        <a href="">
+                        <a href="/file/upload/">
                             <button class="homepage-button btn btn-primary btn-lg btn-block">
                                 Prioritize spectra
                             </button>
