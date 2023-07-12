@@ -752,7 +752,23 @@ progress:after {
     /*width: fit-content;*/
 }
 
-@media only screen and (max-width: 1220px) {
+.homepage-image-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+    min-height: 120px;
+}
+
+
+
+.homepage-button {
+    height: 70px;
+    font-size: inherit !important;
+}
+.homepage-button-container > a:hover {
+    text-decoration: none;
+}
+@media only screen and (max-width: 1360px) {
     #sidebar {
         min-width: 200px;
     }
