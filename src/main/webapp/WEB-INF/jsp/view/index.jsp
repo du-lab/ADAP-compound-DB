@@ -47,18 +47,18 @@
     </div>
 
     <div class="row row-content">
-        <div class="col-4">
+        <div class="col-lg-4 col-sm-12">
             <div class="card">
-                <div class="card-header card-header-single">
+                <div class="card-header card-header-single homepage-card-header">
                     Search against public libraries
                 </div>
                 <div class="card-body">
                     <div class="homepage-image-container">
-                        <img class="align-self-center" height="120px"
+                        <img class="align-self-center" style="height: auto;width: 100%;"
                              src="<c:url value="/resources/AdapCompoundDb/img/homepage-1.png"/>"
                              alt="Creative Commons">
                     </div>
-                    <div style="height: 150px">
+                    <div class="card-information-container">
                         <ul style="padding-left: 18px;">
                             <li>Upload files</li>
                             <li>Search for similar spectra and compounds</li>
@@ -75,18 +75,18 @@
                 </div>
             </div>
         </div>
-        <div class="col-4">
+        <div class="col-lg-4 col-sm-12">
             <div class="card">
-                <div class="card-header card-header-single">
+                <div class="card-header card-header-single homepage-card-header">
                     Upload and search against private libraries
                 </div>
                 <div class="card-body homepage-card">
                     <div class="homepage-image-container">
-                        <img class="align-self-center" height="105px"
+                        <img class="align-self-center"  style="height: auto;width: 100%;"
                              src="<c:url value="/resources/AdapCompoundDb/img/homepage-2.png"/>"
                              alt="Creative Commons">
                     </div>
-                    <div style="height: 150px">
+                    <div class="card-information-container">
                         <ul style="padding-left: 18px;">
                             <li>Upload files</li>
                             <li>Save as a private library (user account required) </li>
@@ -103,18 +103,18 @@
                 </div>
             </div>
         </div>
-        <div class="col-4">
+        <div class="col-lg-4 col-sm-12">
             <div class="card">
-                <div class="card-header card-header-single">
+                <div class="card-header card-header-single homepage-card-header">
                     Prioritize your spectra
                 </div>
                 <div class="card-body homepage-card">
                     <div class="homepage-image-container">
-                        <img class="align-self-center" height="120px"
+                        <img class="align-self-center" style="height: 120px;"
                              src="<c:url value="/resources/AdapCompoundDb/img/homepage-3.png"/>"
                              alt="Creative Commons">
                     </div>
-                    <div style="height: 150px">
+                    <div class="card-information-container">
                         <ul style="padding-left: 18px;">
                             <li>Search against ADAP-KDB consensus spectra</li>
                             <li>Prioritize matches based on species/source/treatment distributions</li>
@@ -124,7 +124,7 @@
                     <div class="homepage-button-container">
                         <a href="/file/upload/">
                             <button class="homepage-button btn btn-primary btn-lg btn-block">
-                                Prioritize spectra
+                                Prioritize Spectra
                             </button>
                         </a>
                     </div>
