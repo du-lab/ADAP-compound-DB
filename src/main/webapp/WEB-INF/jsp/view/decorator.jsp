@@ -130,7 +130,7 @@
                     </div>
                 </c:if>
                     <a id="searchPage" class="nav-link btn group-search-results-button"
-<%--                       <c:if test="${sessionScope[dulab:groupSearchResultsAttributeName()] == null}">hidden</c:if>--%>
+                       <c:if test="${sessionScope[dulab:groupSearchResultsAttributeName()] == null}">hidden</c:if>
                        href="<c:url value="/group_search/"/>">
                         <span class="align-middle">Group Search Results</span>
                     </a>
