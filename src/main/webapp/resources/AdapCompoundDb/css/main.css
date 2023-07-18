@@ -752,11 +752,58 @@ progress:after {
     /*width: fit-content;*/
 }
 
-@media only screen and (max-width: 1220px) {
+.homepage-image-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+    min-height: 120px;
+}
+
+.homepage-button {
+    height: 70px;
+    font-size: inherit !important;
+}
+.homepage-button-container > a:hover {
+    text-decoration: none;
+}
+
+.card-information-container {
+    min-height: 170px;
+}
+@media only screen and (max-width: 1360px) {
     #sidebar {
         min-width: 200px;
     }
     .task-status {
         width: 200px;
+    }
+    .homepage-card-header {
+        min-height: 50px;
+    }
+    .card-information-container {
+        min-height: 200px;
+    }
+}
+
+@media only screen and (max-width: 1070px) {
+    .card-information-container {
+        min-height: 250px;
+    }
+}
+
+@media only screen and (max-width: 960px) {
+    .card-information-container {
+        min-height: unset;
+    }
+}
+
+@media only screen and (max-width: 500px) {
+    .card-information-container {
+        min-height: unset;
+    }
+}
+@media only screen and (max-width: 200px) {
+    .card-information-container {
+        min-height: unset;
     }
 }
