@@ -16,6 +16,7 @@ import org.dulab.adapcompounddb.site.services.SubmissionTagService;
 import org.dulab.adapcompounddb.site.services.search.GroupSearchService;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -171,6 +172,16 @@ public class GroupSearchController extends BaseController {
 
 
         return "submission/group_search";
+    }
+
+    @RequestMapping(value = "/group_search/stop", method = RequestMethod.GET)
+    public ResponseEntity<Void> groupSearchStop(Model model, HttpSession session) {
+        Future<Void> asyncResult = (Future<Void>) session.getAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME);
+        if (asyncResult != null && !asyncResult.isDone()) {
+            asyncResult.cancel(true);
+            session.removeAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME);
+        }
+        return ResponseEntity.ok().build();
     }
 
     private Collection<ChromatographyType> getChromatographyTypes(Submission submission) {

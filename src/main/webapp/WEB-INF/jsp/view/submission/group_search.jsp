@@ -10,7 +10,6 @@
 <head>
     <link rel="stylesheet" href="<c:url value="/resources/AdapCompoundDb/css/group_search.css"/>">
 </head>
-
 <div id="progressModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -58,6 +57,7 @@
                     <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow="0"
                          aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
+                <a class="btn btn-secondary mr-2" id="stopSearchBtn">Stop Search</a>
                 <a class="btn btn-primary mr-2" href="<c:url value="parameters"/>">Search Parameters</a>
             </div>
         </div>
@@ -271,7 +271,6 @@
     <script src="<c:url value="/resources/AdapCompoundDb/js/spectrumPlot.js"/>"></script>
     <script src="<c:url value="/resources/AdapCompoundDb/js/spectrumStructure.js"/>"></script>
     <script>
-
   var isSavedResultPage = '<c:out value="${submissionId}" />' ? true : false;
   $(document).ready(function () {
         var drawFirstTime = true;
@@ -298,6 +297,20 @@
           }
           return result;
         }
+
+      $("#stopSearchBtn").click(function (event) {
+          event.preventDefault();
+          $.ajax({
+              url: "/group_search/stop",
+              method: "GET",
+              success: function (data) {
+                  console.log("Search stopped");
+              },
+              error: function (xhr, status, error) {
+                  console.error("Error while stopping search:", error);
+              }
+          });
+      });
         //update the ontology level options
         $.ajax({
           url: "${pageContext.request.contextPath}/getOntologyLevels",
