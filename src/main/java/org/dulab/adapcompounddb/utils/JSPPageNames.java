@@ -25,8 +25,6 @@ public class JSPPageNames {
     public static final String SPECTRUM_INFO   = "ajax/spectrumInfo";
     public static final String SPECTRUM_SEARCH   = "submission/spectrum/search";
 
-
-
-
+    public static final String CLUSTER_DETAILS = "cluster/cluster";
 
 }

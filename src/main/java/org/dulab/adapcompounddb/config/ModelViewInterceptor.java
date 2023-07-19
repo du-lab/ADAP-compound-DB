@@ -97,12 +97,19 @@ public class ModelViewInterceptor implements HandlerInterceptor {
                     Submission submission = (Submission) model.get("submission");
                     submissionName = submission.getName();
                     submissionType = submission.getIsReference() ?
-                            "Libraries" : "Studies";
+                            "Library" : "Studies";
                 }
                 if (Objects.equals(prev.get(0).getLabel(), "Account")) {
                     breadcrumbs.add(new BreadCrumbs(submissionType, "/account/"));
                 }
                 if (Objects.equals(prev.get(0).getLabel(), "Libraries")) {
+                    if (Objects.equals(prev.get(1).getLabel(), "Consensus Spectra")) {
+                        System.out.println("Consensus Spectra");
+
+                    } else if (Objects.equals(prev.get(1).getLabel(), "Public Studies")) {
+                        System.out.println("Public Studies");
+
+                    }
 
                 }
                 if (Objects.equals(prev.get(0).getLabel(), "Upload Files")) {
@@ -128,6 +135,14 @@ public class ModelViewInterceptor implements HandlerInterceptor {
             if (prev != null) {
                 breadcrumbs.addAll(prev);
             }
+        } else if (JSPPageNames.CLUSTER_DETAILS.equals(pageName)) {
+            if (prev != null) {
+                if (Objects.equals(prev.get(0).getLabel(), "Libraries")) {
+                    breadcrumbs.add(new BreadCrumbs("Libraries", "/libraries/"));
+                    breadcrumbs.add(new BreadCrumbs("Consensus Spectra", "/all_clusters/"));
+                }
+            }
+            breadcrumbs.add(new BreadCrumbs("Cluster Details", request.getRequestURI()));
         }
         request.getSession().setAttribute("breadcrumbs", breadcrumbs);
         return breadcrumbs;
