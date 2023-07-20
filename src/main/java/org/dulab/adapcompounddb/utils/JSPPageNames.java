@@ -27,4 +27,6 @@ public class JSPPageNames {
 
     public static final String CLUSTER_DETAILS = "cluster/cluster";
 
+    public static final String REDIRECT_GROUP_SEARCH = "redirect:/group_search/";
+
 }

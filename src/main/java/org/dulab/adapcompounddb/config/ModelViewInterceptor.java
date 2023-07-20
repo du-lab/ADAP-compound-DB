@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.config;
 
+import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.utils.BreadCrumbs;
 import org.dulab.adapcompounddb.utils.JSPPageNames;
@@ -72,77 +73,130 @@ public class ModelViewInterceptor implements HandlerInterceptor {
             breadcrumbs.add(new BreadCrumbs("Add Metadata", "/submission/metadata"));
         } else if (JSPPageNames.GROUP_SEARCH_PARAMETERS.equals(pageName)) {
             if (prev != null && prev.size() > 0) {
-                if (Objects.equals(prev.get(0).getLabel(), "Upload Files")) {
-                    breadcrumbs.add(new BreadCrumbs("Upload Files", "/file/upload/"));
-                    breadcrumbs.add(new BreadCrumbs("Add Metadata", "/submission/metadata"));
-                    breadcrumbs.add(new BreadCrumbs("Data", "/file/"));
+                if (Objects.equals(prev.get(0).getLabel(), "Upload Files")
+                        && prev.size() > 2) {
+                    breadcrumbs.addAll(prev.subList(0, 3));
                     breadcrumbs.add(new BreadCrumbs("Search Parameters", "/group_search/parameters"));
                 }
             }
         } else if (JSPPageNames.GROUP_SEARCH.equals(pageName)) {
-            breadcrumbs.add(new BreadCrumbs("Upload Files", "/file/upload/"));
-            breadcrumbs.add(new BreadCrumbs("Add Metadata", "/submission/metadata"));
-            breadcrumbs.add(new BreadCrumbs("Data", "/file/"));
-            breadcrumbs.add(new BreadCrumbs("Search Parameters", "/group_search/parameters"));
-            breadcrumbs.add(new BreadCrumbs("Search Results", "/group_search/"));
-        } else if (JSPPageNames.SUBMISSIONS.equals(pageName)) {
-            String submissionName = "Data";
-            String submissionType = "Studies";
             if (prev != null && prev.size() > 0) {
-                breadcrumbs.add(prev.get(0));
-                if (prev.size() > 1 && (!Objects.equals(prev.get(0).getLabel(), "Account") && !Objects.equals(prev.get(0).getLabel(), "Library")))
-                    breadcrumbs.add(prev.get(1));
-                if (!modelAndView.isEmpty()) {
+                if (Objects.equals(prev.get(0).getLabel(), "Upload Files")
+                        && prev.size() > 3) {
+                    breadcrumbs.addAll(prev.subList(0, 4));
+                    breadcrumbs.add(new BreadCrumbs("Search Results", "/group_search/"));
+                } else {
+                    breadcrumbs.add(new BreadCrumbs("Search Results", "/group_search/"));
+                }
+            }
+        } else if (JSPPageNames.SUBMISSIONS.equals(pageName)) {
+            if (prev != null && prev.size() > 0) {
+                if (Objects.equals(prev.get(0).getLabel(), "Upload Files")
+                        && prev.size() > 5) {
+                    breadcrumbs.addAll(prev.subList(0, 6));
+                    String submissionName = "Data";
+                    Map<String, Object> model = modelAndView.getModel();
+                    Submission submission = (Submission) model.get("submission");
+                    if (submission != null && submission.getName() != null) {
+                        submissionName = submission.getName();
+
+                    }
+                    breadcrumbs.add(new BreadCrumbs(submissionName, request.getRequestURI()));
+                } else if (Objects.equals(prev.get(0).getLabel(), "Upload Files")
+                        && prev.size() > 1) {
+                    String submissionName = "Data";
+                    Map<String, Object> model = modelAndView.getModel();
+                    Submission submission = (Submission) model.get("submission");
+                    if (submission != null && submission.getName() != null) {
+                        submissionName = submission.getName();
+                    }
+                    breadcrumbs.addAll(prev.subList(0, 2));
+                    breadcrumbs.add(new BreadCrumbs(submissionName, request.getRequestURI()));
+                } else if (Objects.equals(prev.get(0).getLabel(), "Search Results") && prev.size() > 1) {
+                    breadcrumbs.addAll(prev.subList(0, 2));
+                    String submissionName = "Data";
+                    Map<String, Object> model = modelAndView.getModel();
+                    Submission submission = (Submission) model.get("submission");
+                    if (submission != null && submission.getName() != null) {
+                        submissionName = submission.getName();
+                    }
+                    breadcrumbs.add(new BreadCrumbs(submissionName, request.getRequestURI()));
+                } else if (Objects.equals(prev.get(0).getLabel(), "Account")) {
+                    String submissionType = "Studies";
+                    String submissionName = "Data";
                     Map<String, Object> model = modelAndView.getModel();
                     Submission submission = (Submission) model.get("submission");
                     submissionName = submission.getName();
                     submissionType = submission.getIsReference() ?
                             "Library" : "Studies";
-                }
-                if (Objects.equals(prev.get(0).getLabel(), "Account")) {
+                    breadcrumbs.add(new BreadCrumbs("Account", "/account/"));
                     breadcrumbs.add(new BreadCrumbs(submissionType, "/account/"));
-                }
-                if (Objects.equals(prev.get(0).getLabel(), "Libraries")) {
-                    if (Objects.equals(prev.get(1).getLabel(), "Consensus Spectra")) {
-                        System.out.println("Consensus Spectra");
-
-                    } else if (Objects.equals(prev.get(1).getLabel(), "Public Studies")) {
-                        System.out.println("Public Studies");
-
-                    }
-
-                }
-                if (Objects.equals(prev.get(0).getLabel(), "Upload Files")) {
-                    breadcrumbs.clear();
-                    breadcrumbs.addAll(prev);
+                    breadcrumbs.add(new BreadCrumbs(submissionName, request.getRequestURI()));
                 }
             }
-            breadcrumbs.add(new BreadCrumbs(submissionName, request.getRequestURI()));
         } else if (JSPPageNames.SPECTRUM.equals(pageName)) {
             if (prev != null && prev.size() > 0) {
-                if (Objects.equals(prev.get(0).getLabel(), "Upload Files")) {
-                    breadcrumbs.add(new BreadCrumbs("Upload Files", "/file/upload/"));
-                    breadcrumbs.add(new BreadCrumbs("Add Metadata", "/submission/metadata"));
-                    breadcrumbs.add(new BreadCrumbs("Data", "/file/"));
-                    breadcrumbs.add(new BreadCrumbs("Search Parameters", "/group_search/parameters"));
+                if (Objects.equals(prev.get(0).getLabel(), "Upload Files") && prev.size() > 4) {
+                    breadcrumbs.addAll(prev.subList(0, 5));
+                    String spectrumName = "Library Spectrum";
+                    Map<String, Object> model = modelAndView.getModel();
+                    Spectrum spectrum = (Spectrum) model.get("spectrum");
+                    if (spectrum != null && spectrum.getName() != null) {
+                        spectrumName = spectrum.getName();
+                    }
+                    breadcrumbs.add(new BreadCrumbs(spectrumName, request.getRequestURI()));
+                }
+                else if (Objects.equals(prev.get(0).getLabel(), "Upload Files") && prev.size() > 2) {
+                    breadcrumbs.addAll(prev.subList(0, 3));
+                    String spectrumName = "Library Spectrum";
+                    Map<String, Object> model = modelAndView.getModel();
+                    Spectrum spectrum = (Spectrum) model.get("spectrum");
+                    if (spectrum != null && spectrum.getName() != null) {
+                        spectrumName = spectrum.getName();
+                    }
+                    breadcrumbs.add(new BreadCrumbs(spectrumName, request.getRequestURI()));
+                }
+                else if (Objects.equals(prev.get(0).getLabel(), "Search Results")) {
+                    String spectrumName = "Library Spectrum";
+                    Map<String, Object> model = modelAndView.getModel();
+                    Spectrum spectrum = (Spectrum) model.get("spectrum");
+                    if (spectrum != null && spectrum.getName() != null) {
+                        spectrumName = spectrum.getName();
+                    }
                     breadcrumbs.add(new BreadCrumbs("Search Results", "/group_search/"));
-                } else {
+                    breadcrumbs.add(new BreadCrumbs(spectrumName, request.getRequestURI()));
+                }
+                else if (Objects.equals(prev.get(0).getLabel(), "Account") && prev.size() > 2) {
+                    breadcrumbs.addAll(prev.subList(0, 3));
+                    String spectrumName = "Library Spectrum";
+                    Map<String, Object> model = modelAndView.getModel();
+                    Spectrum spectrum = (Spectrum) model.get("spectrum");
+                    if (spectrum != null && spectrum.getName() != null) {
+                        spectrumName = spectrum.getName();
+                    }
+                    breadcrumbs.add(new BreadCrumbs(spectrumName, request.getRequestURI()));
+                }
+            } else {
+                String spectrumName = "Library Spectrum";
+                Map<String, Object> model = modelAndView.getModel();
+                Spectrum spectrum = (Spectrum) model.get("spectrum");
+                if (spectrum != null && spectrum.getName() != null) {
+                    spectrumName = spectrum.getName();
+                }
+                breadcrumbs.add(new BreadCrumbs(spectrumName, request.getRequestURI()));
+            }
+        } else if (JSPPageNames.SPECTRUM_INFO.equals(pageName)) {
+            if (prev != null && prev.size() > 0) {
+                if (Objects.equals(prev.get(0).getLabel(), "Upload Files")) {
+                    breadcrumbs.addAll(prev);
+                } else if (Objects.equals(prev.get(0).getLabel(), "Search Results")) {
                     breadcrumbs.addAll(prev);
                 }
             }
-            breadcrumbs.add(new BreadCrumbs("Library Spectrum", request.getRequestURI()));
-        } else if (JSPPageNames.SPECTRUM_INFO.equals(pageName)) {
-            if (prev != null) {
-                breadcrumbs.addAll(prev);
-            }
         } else if (JSPPageNames.CLUSTER_DETAILS.equals(pageName)) {
-            if (prev != null) {
-                if (Objects.equals(prev.get(0).getLabel(), "Libraries")) {
-                    breadcrumbs.add(new BreadCrumbs("Libraries", "/libraries/"));
-                    breadcrumbs.add(new BreadCrumbs("Consensus Spectra", "/all_clusters/"));
-                }
-            }
-            breadcrumbs.add(new BreadCrumbs("Cluster Details", request.getRequestURI()));
+
+        } else if (JSPPageNames.REDIRECT_GROUP_SEARCH.equals(pageName)) {
+            breadcrumbs.addAll(prev);
         }
         request.getSession().setAttribute("breadcrumbs", breadcrumbs);
         return breadcrumbs;
