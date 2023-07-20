@@ -180,6 +180,7 @@ public class GroupSearchController extends BaseController {
         if (asyncResult != null && !asyncResult.isDone()) {
             asyncResult.cancel(true);
             session.removeAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME);
+            LOGGER.info("Group search stopped by user");
         }
         return ResponseEntity.ok().build();
     }

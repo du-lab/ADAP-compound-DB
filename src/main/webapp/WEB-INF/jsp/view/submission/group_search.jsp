@@ -304,7 +304,6 @@
               url: "/group_search/stop",
               method: "GET",
               success: function (data) {
-                  console.log("Search stopped");
               },
               error: function (xhr, status, error) {
                   console.error("Error while stopping search:", error);
@@ -333,10 +332,14 @@
           }
         });
 
-        if (isSavedResultPage)
-          url = "${pageContext.request.contextPath}/file/group_search_matches/${submissionId}/data.json";
-        else
-          url = "${pageContext.request.contextPath}/distinct_spectra/data.json";
+        if (isSavedResultPage) {
+            url = "${pageContext.request.contextPath}/file/group_search_matches/${submissionId}/data.json";
+            $("#stopSearchBtn").hide();
+        }
+        else {
+            url = "${pageContext.request.contextPath}/distinct_spectra/data.json";
+            $("#stopSearchBtn").show();
+        }
 
         function initializeTable(){
           var distinct_query_table = $('#distinct_query_table').DataTable({
@@ -364,9 +367,8 @@
                 data.massError= massError;
                 data.retTimeError=reTimeError;
                 data.matchName=matchName;
-                console.log(data);
-              }
 
+              }
             },
             error: function(xhr, error) {
               console.log(xhr);
