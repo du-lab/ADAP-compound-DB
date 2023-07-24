@@ -195,6 +195,15 @@ public class ModelViewInterceptor implements HandlerInterceptor {
                             spectrumName = spectrum.getName();
                         }
                         breadcrumbs.add(new BreadCrumbs(spectrumName, request.getRequestURI()));
+                    } else if (prev.size() == 4 && "Search Results".equals(prev.get(3).getLabel())) {
+                        breadcrumbs.addAll(prev.subList(0, 4));
+                        String spectrumName = "Library Spectrum";
+                        Map<String, Object> model = modelAndView.getModel();
+                        Spectrum spectrum = (Spectrum) model.get("spectrum");
+                        if (spectrum != null && spectrum.getName() != null) {
+                            spectrumName = spectrum.getName();
+                        }
+                        breadcrumbs.add(new BreadCrumbs(spectrumName, request.getRequestURI()));
                     } else if (prev.size() == 5 && "Search Results".equals(prev.get(4).getLabel())) {
                         breadcrumbs.addAll(prev.subList(0, 5));
                         String spectrumName = "Library Spectrum";
