@@ -77,6 +77,10 @@ public class ModelViewInterceptor implements HandlerInterceptor {
                         && prev.size() > 2) {
                     breadcrumbs.addAll(prev.subList(0, 3));
                     breadcrumbs.add(new BreadCrumbs("Search Parameters", "/group_search/parameters"));
+                } else if (Objects.equals(prev.get(0).getLabel(),"Account") &&
+                        prev.size() > 2) {
+                    breadcrumbs.addAll(prev.subList(0, 3));
+                    breadcrumbs.add(new BreadCrumbs("Search Parameters", request.getRequestURI()));
                 }
             }
         } else if (JSPPageNames.GROUP_SEARCH.equals(pageName)) {
@@ -85,11 +89,26 @@ public class ModelViewInterceptor implements HandlerInterceptor {
                         && prev.size() > 3) {
                     breadcrumbs.addAll(prev.subList(0, 4));
                     breadcrumbs.add(new BreadCrumbs("Search Results", "/group_search/"));
-                } else {
+                } else if (Objects.equals(prev.get(0).getLabel(), "Account")
+                        && prev.size() > 3) {
+                    breadcrumbs.addAll(prev.subList(0, 4));
+                    breadcrumbs.add(new BreadCrumbs("Search Results", "/group_search/"));
+                }
+                else {
                     breadcrumbs.add(new BreadCrumbs("Search Results", "/group_search/"));
                 }
             }
-        } else if (JSPPageNames.SUBMISSIONS.equals(pageName)) {
+        } else if (JSPPageNames.GROUP_SEARCH_VIEW_MATCHES.equals(pageName)) {
+            if (prev != null && prev.size() > 0) {
+                if (Objects.equals(prev.get(0).getLabel(), "Account")
+                        && prev.size() > 2) {
+                    breadcrumbs.addAll(prev.subList(0, 3));
+                    breadcrumbs.add(new BreadCrumbs("Search Results", "/group_search/"));
+                } else if (Objects.equals(prev.get(0).getLabel(), "Search Results")) {
+
+                }
+            }
+        }else if (JSPPageNames.SUBMISSIONS.equals(pageName)) {
             if (prev != null && prev.size() > 0) {
                 if (Objects.equals(prev.get(0).getLabel(), "Upload Files")
                         && prev.size() > 5) {
@@ -166,15 +185,26 @@ public class ModelViewInterceptor implements HandlerInterceptor {
                     breadcrumbs.add(new BreadCrumbs("Search Results", "/group_search/"));
                     breadcrumbs.add(new BreadCrumbs(spectrumName, request.getRequestURI()));
                 }
-                else if (Objects.equals(prev.get(0).getLabel(), "Account") && prev.size() > 2) {
-                    breadcrumbs.addAll(prev.subList(0, 3));
-                    String spectrumName = "Library Spectrum";
-                    Map<String, Object> model = modelAndView.getModel();
-                    Spectrum spectrum = (Spectrum) model.get("spectrum");
-                    if (spectrum != null && spectrum.getName() != null) {
-                        spectrumName = spectrum.getName();
+                else if (Objects.equals(prev.get(0).getLabel(), "Account")) {
+                    if (prev.size() == 3) {
+                        breadcrumbs.addAll(prev.subList(0, 3));
+                        String spectrumName = "Library Spectrum";
+                        Map<String, Object> model = modelAndView.getModel();
+                        Spectrum spectrum = (Spectrum) model.get("spectrum");
+                        if (spectrum != null && spectrum.getName() != null) {
+                            spectrumName = spectrum.getName();
+                        }
+                        breadcrumbs.add(new BreadCrumbs(spectrumName, request.getRequestURI()));
+                    } else if (prev.size() == 5 && "Search Results".equals(prev.get(4).getLabel())) {
+                        breadcrumbs.addAll(prev.subList(0, 5));
+                        String spectrumName = "Library Spectrum";
+                        Map<String, Object> model = modelAndView.getModel();
+                        Spectrum spectrum = (Spectrum) model.get("spectrum");
+                        if (spectrum != null && spectrum.getName() != null) {
+                            spectrumName = spectrum.getName();
+                        }
+                        breadcrumbs.add(new BreadCrumbs(spectrumName, request.getRequestURI()));
                     }
-                    breadcrumbs.add(new BreadCrumbs(spectrumName, request.getRequestURI()));
                 }
             } else {
                 String spectrumName = "Library Spectrum";
@@ -190,6 +220,8 @@ public class ModelViewInterceptor implements HandlerInterceptor {
                 if (Objects.equals(prev.get(0).getLabel(), "Upload Files")) {
                     breadcrumbs.addAll(prev);
                 } else if (Objects.equals(prev.get(0).getLabel(), "Search Results")) {
+                    breadcrumbs.addAll(prev);
+                } else if (Objects.equals(prev.get(0).getLabel(), "Account")) {
                     breadcrumbs.addAll(prev);
                 }
             }
