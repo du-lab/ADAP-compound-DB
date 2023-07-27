@@ -20,19 +20,7 @@
     <%--        <h2>Edit Metadata</h2>--%>
     <%--    </div>--%>
     <form:form method="POST" modelAttribute="metadataForm" enctype="multipart/form-data">
-    <div class="row row-content">
-        <div class="col">
-            <div>
-                <button id="uploadBtn" name="submit" class="btn btn-primary align-right" type="submit"
-                        style="height: 100%; float: right;">
-                        <%--                        <c:if test="${loggedInUser == null && !integTest}">--%>
-                        <%--                            <c:out value="disabled='disabled'"/>--%>
-                        <%--                        </c:if>>--%>
-                    Add Metadata
-                </button>
-            </div>
-        </div>
-    </div>
+
     <div class="row row-content">
             <%--@elvariable id="showMSP" type="java.lang.Boolean"--%>
             <%--@elvariable id="showCSV" type="java.lang.Boolean"--%>
@@ -65,7 +53,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="title-container"><div>Field Mapping</div> <button class="resetMetadataButton" id="resetMetadataButton">Reset Mapping</button></div>
+                        <div class="title-container"><div>Field Mapping <span style="font-size: 12px; color: black !important; margin-left: 10px;">Drag fields from "Read As" on the right to "Detected Fields in the MSP file" on the left.</span></div> <button class="resetMetadataButton" id="resetMetadataButton">Reset Mapping</button></div>
                         <c:forEach items="${spectrumProperties}" var="propertyList" varStatus="propertyListLoop">
                             <div class="field-container field-container_${propertyListLoop.index}">
                                 <div class="left-container">
@@ -123,6 +111,16 @@
                                 </div>
                             </div>
                         </c:forEach>
+                        <div class="row row-content">
+                            <div class="col">
+                                <div>
+                                    <button id="uploadBtn" name="submit" class="btn btn-primary align-right" type="submit"
+                                            style="height: 100%; float: right;">
+                                        Add Metadata
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
