@@ -57,8 +57,8 @@
                     <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow="0"
                          aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
-                <a class="btn btn-secondary mr-2" id="stopSearchBtn">Stop Search</a>
-                <a class="btn btn-primary mr-2" href="<c:url value="parameters"/>">Search Parameters</a>
+                <a class="btn btn-danger btn-secondary mr-2" id="stopSearchBtn">Stop Search</a>
+                <a class="btn btn-primary mr-2" id="newSearchBtn" href="<c:url value="parameters"/>">New Search</a>
             </div>
         </div>
     </div>
@@ -304,6 +304,9 @@
               url: "/group_search/stop",
               method: "GET",
               success: function (data) {
+                  $('#progressBar').hide();
+                  $("#stopSearchBtn").hide();
+                  $("#newSearchBtn").show();
               },
               error: function (xhr, status, error) {
                   console.error("Error while stopping search:", error);
@@ -335,10 +338,12 @@
         if (isSavedResultPage) {
             url = "${pageContext.request.contextPath}/file/group_search_matches/${submissionId}/data.json";
             $("#stopSearchBtn").hide();
+            $("#newSearchBtn").show();
         }
         else {
             url = "${pageContext.request.contextPath}/distinct_spectra/data.json";
             $("#stopSearchBtn").show();
+            $("#newSearchBtn").hide();
         }
 
         function initializeTable(){
