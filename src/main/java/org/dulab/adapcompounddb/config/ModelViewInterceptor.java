@@ -5,6 +5,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 public class ModelViewInterceptor implements HandlerInterceptor {
 
@@ -18,6 +19,9 @@ public class ModelViewInterceptor implements HandlerInterceptor {
                            Object handler, ModelAndView modelAndView) throws Exception {
         if (modelAndView != null) {
             modelAndView.addObject("integTest", INTEGRATION_TEST);
+            if (request.getSession().getAttribute("STEP") == null) {
+                request.getSession().setAttribute("STEP", "SEARCH_PUBLIC_LIBRARIES");
+            }
         }
     }
 }

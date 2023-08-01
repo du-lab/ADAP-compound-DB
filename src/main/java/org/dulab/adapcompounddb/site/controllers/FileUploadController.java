@@ -116,12 +116,16 @@ public class FileUploadController extends BaseController {
 
     @RequestMapping(value = "/file/upload/", method = RequestMethod.GET)
     public String upload(Model model, HttpSession session,
+                         HttpServletRequest request,
                          @CookieValue(value = FILE_UPLOAD_FIELDS_COOKIE_NAME, defaultValue = "") String metaFieldsInJson) {
 
         if (Submission.from(session) != null) {
             return "redirect:/file/";
         }
-
+        boolean addPageFLow = request.getParameter("STEP") != null;
+        if (addPageFLow) {
+            session.setAttribute("STEP", request.getParameter("STEP"));
+        }
         FileUploadForm form = ConversionsUtils.byteStringToForm(metaFieldsInJson, FileUploadForm.class);
 
         model.addAttribute("fileUploadForm", form);

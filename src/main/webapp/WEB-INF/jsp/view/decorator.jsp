@@ -180,12 +180,12 @@
                                 <span class="align-middle">Libraries</span>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="<c:url value="/study_distributions/" />">
-                                <i class="material-icons align-middle">book</i>
-                                <span class="align-middle">Distributions</span>
-                            </a>
-                        </li>
+<%--                        <li class="nav-item">--%>
+<%--                            <a class="nav-link" href="<c:url value="/study_distributions/" />">--%>
+<%--                                <i class="material-icons align-middle">book</i>--%>
+<%--                                <span class="align-middle">Distributions</span>--%>
+<%--                            </a>--%>
+<%--                        </li>--%>
                         <li class="nav-item">
                             <a class="nav-link" href="<c:url value="/downloads/"/>">
                                 <i class="material-icons align-middle">download</i>

@@ -20,6 +20,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.ConstraintViolationException;
@@ -146,8 +147,11 @@ public class SubmissionController extends BaseController {
         return "submission/view";
     }
     @RequestMapping(value = "/libraries/", method = RequestMethod.GET)
-    public String publicLibraries(final Model model) {
-
+    public String publicLibraries(final Model model, final HttpSession session, final HttpServletRequest request) {
+        boolean addPageFLow = request.getParameter("STEP") != null;
+        if (addPageFLow) {
+            session.setAttribute("STEP", request.getParameter("STEP"));
+        }
         model.addAttribute("libraries", submissionService.findAllPublicLibraries());
 
         return "all_libraries";
