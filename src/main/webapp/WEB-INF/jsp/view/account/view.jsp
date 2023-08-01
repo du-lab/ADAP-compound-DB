@@ -69,15 +69,37 @@
                             Leave Organization
                         </a>
                     </div>
-                    <c:if test="${not user.organization and empty user.organizationId}">
-                        <div align="center" style="margin-top: 10px;">
+<%--                    <c:if test="${not user.organization and empty user.organizationId}">--%>
+<%--                        <div align="center" style="margin-top: 10px;">--%>
 
-                            <a href="${pageContext.request.contextPath}/account/convertToOrganization"
-                               class="btn btn-secondary">
-                                Convert to Organization
-                            </a>
-                        </div>
-                    </c:if>
+<%--                            <a href="${pageContext.request.contextPath}/account/convertToOrganization"--%>
+<%--                               class="btn btn-secondary">--%>
+<%--                                Convert to Organization--%>
+<%--                            </a>--%>
+<%--                        </div>--%>
+<%--                    </c:if>--%>
+                    <c:choose>
+                        <c:when test="${not user.organization and empty user.organizationId}">
+                            <div align="center" style="margin-top: 10px;">
+                                <a onclick="$('#dialog').confirmDeleteDialog('Confirm').show(
+                                        'Do you want to convert your User account into Organization account?',
+                                        '${pageContext.request.contextPath}/account/convertToOrganization');"
+                                   class="btn btn-secondary">
+                                    Convert to Organization
+                                </a>
+                            </div>
+                        </c:when>
+                        <c:otherwise>
+                            <div align="center" style="margin-top: 10px;">
+                                <a onclick="$('#dialog').confirmDeleteDialog('Confirm').show(
+                                        'Do you want to convert your Organization account into User account?',
+                                        '${pageContext.request.contextPath}/account/convertToUser');"
+                                   class="btn btn-secondary">
+                                    Convert to User Account
+                                </a>
+                            </div>
+                        </c:otherwise>
+                    </c:choose>
                     <hr>
                     <div class="row row-content" align="center">
                         <div class="col">
@@ -431,6 +453,7 @@
 
 
 <div id="dialog-confirm"></div>
+<div id="dialog"></div>
 
 <script src="<c:url value="/resources/jQuery-3.6.3/jquery-3.6.3.min.js"/>"></script>
 <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>

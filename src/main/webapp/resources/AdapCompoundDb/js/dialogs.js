@@ -1,5 +1,5 @@
 (function ($) {
-    $.fn.confirmDeleteDialog = function () {
+    $.fn.confirmDeleteDialog = function (buttonName = 'Delete') {
 
         var div = $(this);
 
@@ -14,7 +14,7 @@
             width: 400,
             modal: true,
             buttons: {
-                'Delete': function () {
+                [buttonName]: function () {
                     div.find('p').html('');
                     $('.ui-dialog-title').html('In Progress...')
                     $('.ui-dialog-buttonset').children().hide()
