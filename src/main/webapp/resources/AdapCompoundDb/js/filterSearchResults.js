@@ -10,9 +10,9 @@ $(document).ready(function () {
     let subElement = $('#submissionIds0')[0];
     $(subElement).on('change', function() {
         if (this.checked) {
-            $("#FilterTab").show()
+            $("#filterTab").show()
         } else {
-            $("#FilterTab").hide()
+            $("#filterTab").hide()
         }
     });
 });
