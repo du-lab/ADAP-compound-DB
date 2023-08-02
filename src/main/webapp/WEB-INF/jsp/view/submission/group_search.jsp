@@ -272,6 +272,7 @@
     <script src="<c:url value="/resources/AdapCompoundDb/js/spectrumStructure.js"/>"></script>
     <script>
   var isSavedResultPage = '<c:out value="${submissionId}" />' ? true : false;
+  var savedSubmissionId = '<c:out value="${savedSubmissionId}" />';
   $(document).ready(function () {
         var drawFirstTime = true;
         var isExportDone = true;
@@ -284,7 +285,7 @@
         var reTimeError;
         var matchName ="";
         var selectedRowIndex = null; // save the index of the selected row
-
+      console.log("isSavedResultPage", isSavedResultPage);
         // //hide the match details by default
         // $('#query_plot_match_row').hide();
         // $('.query_container').hide();
@@ -335,12 +336,20 @@
           }
         });
 
+        console.log(savedSubmissionId)
+
         if (isSavedResultPage) {
             url = "${pageContext.request.contextPath}/file/group_search_matches/${submissionId}/data.json";
             $("#stopSearchBtn").hide();
             $("#newSearchBtn").show();
+            let x = $("#newSearchBtn");
+            x.attr("href", "/group_search/parameters?submissionId=${submissionId}");
         }
         else {
+            if (savedSubmissionId) {
+                let x = $("#newSearchBtn");
+                x.attr("href", "/group_search/parameters?submissionId=${savedSubmissionId}");
+            }
             url = "${pageContext.request.contextPath}/distinct_spectra/data.json";
             $("#stopSearchBtn").show();
             $("#newSearchBtn").hide();

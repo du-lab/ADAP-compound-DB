@@ -20,10 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.Cookie;
@@ -162,14 +159,17 @@ public class GroupSearchController extends BaseController {
         String byteString = ConversionsUtils.formToByteString(form);
         Cookie metaFieldsCookie = new Cookie(SEARCH_PARAMETERS_COOKIE_NAME, byteString);
         response.addCookie(metaFieldsCookie);
-
+        if (savedSubmission)
+            redirectAttributes.addFlashAttribute("savedSubmissionId", submission.getId());
 
         return "redirect:/group_search/";
     }
 
     @RequestMapping(value = "/group_search/", method = RequestMethod.GET)
-    public String groupSearch(Model model, HttpSession session) {
-
+    public String groupSearch(RedirectAttributes redirectAttributes, Model model, HttpSession session) {
+        Long savedSubmissionId = (Long) redirectAttributes.getFlashAttributes().get("savedSubmissionId");
+        if (savedSubmissionId != null)
+            model.addAttribute("savedSubmissionId", savedSubmissionId);
 
         return "submission/group_search";
     }
