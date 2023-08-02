@@ -78,28 +78,30 @@
 <%--                            </a>--%>
 <%--                        </div>--%>
 <%--                    </c:if>--%>
-                    <c:choose>
-                        <c:when test="${not user.organization and empty user.organizationId}">
-                            <div align="center" style="margin-top: 10px;">
-                                <a onclick="$('#dialog').confirmDeleteDialog('Confirm').show(
-                                        'Do you want to convert your User account into Organization account?',
-                                        '${pageContext.request.contextPath}/account/convertToOrganization');"
-                                   class="btn btn-secondary">
-                                    Convert to Organization
-                                </a>
-                            </div>
-                        </c:when>
-                        <c:otherwise>
-                            <div align="center" style="margin-top: 10px;">
-                                <a onclick="$('#dialog').confirmDeleteDialog('Confirm').show(
-                                        'Do you want to convert your Organization account into User account?',
-                                        '${pageContext.request.contextPath}/account/convertToUser');"
-                                   class="btn btn-secondary">
-                                    Convert to User Account
-                                </a>
-                            </div>
-                        </c:otherwise>
-                    </c:choose>
+                    <c:if test="${empty user.organizationId}">
+                        <c:choose>
+                            <c:when test="${not user.organization}">
+                                <div align="center" style="margin-top: 10px;">
+                                    <a onclick="$('#dialog').confirmDeleteDialog('Confirm').show(
+                                            'Do you want to convert your User account into Organization account?',
+                                            '${pageContext.request.contextPath}/account/convertToOrganization');"
+                                       class="btn btn-secondary">
+                                        Convert to Organization
+                                    </a>
+                                </div>
+                            </c:when>
+                            <c:otherwise>
+                                <div align="center" style="margin-top: 10px;">
+                                    <a onclick="$('#dialog').confirmDeleteDialog('Confirm').show(
+                                            'Do you want to convert your Organization account into User account?',
+                                            '${pageContext.request.contextPath}/account/convertToUser');"
+                                       class="btn btn-secondary">
+                                        Convert to User Account
+                                    </a>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
+                    </c:if>
                     <hr>
                     <div class="row row-content" align="center">
                         <div class="col">
