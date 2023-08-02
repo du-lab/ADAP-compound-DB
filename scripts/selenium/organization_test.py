@@ -121,6 +121,8 @@ def leave_organization_and_convert_to_organization():
     time.sleep(1)
     driver.find_element(By.XPATH, "//a[contains(text(), 'Convert to Organization')]").click()
     time.sleep(1)
+    confirm_button = driver.find_elements(By.XPATH, "//button[text()='Confirm']")[0].click()
+    time.sleep(1)
     driver.find_element('id','organizationTab').click()
     time.sleep(1)
 
