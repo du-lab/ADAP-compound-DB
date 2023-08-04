@@ -20,7 +20,16 @@
     <%--        <h2>Edit Metadata</h2>--%>
     <%--    </div>--%>
     <form:form method="POST" modelAttribute="metadataForm" enctype="multipart/form-data">
-
+        <div class="row row-content">
+            <div class="col">
+                <div>
+                    <button id="uploadBtn" name="submit" class="btn btn-primary align-right" type="submit"
+                            style="height: 100%; float: right;">
+                        Add Metadata
+                    </button>
+                </div>
+            </div>
+        </div>
     <div class="row row-content">
             <%--@elvariable id="showMSP" type="java.lang.Boolean"--%>
             <%--@elvariable id="showCSV" type="java.lang.Boolean"--%>
@@ -111,16 +120,6 @@
                                 </div>
                             </div>
                         </c:forEach>
-                        <div class="row row-content">
-                            <div class="col">
-                                <div>
-                                    <button id="uploadBtn" name="submit" class="btn btn-primary align-right" type="submit"
-                                            style="height: 100%; float: right;">
-                                        Add Metadata
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
