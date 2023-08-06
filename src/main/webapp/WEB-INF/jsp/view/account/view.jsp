@@ -82,7 +82,7 @@
                         <c:choose>
                             <c:when test="${not user.organization}">
                                 <div align="center" style="margin-top: 10px;">
-                                    <a onclick="$('#dialog').confirmDeleteDialog('Confirm').show(
+                                    <a onclick="$('#dialog').confirmDialog().show(
                                             'Do you want to convert your User account into Organization account?',
                                             '${pageContext.request.contextPath}/account/convertToOrganization');"
                                        class="btn btn-secondary">
@@ -92,7 +92,7 @@
                             </c:when>
                             <c:otherwise>
                                 <div align="center" style="margin-top: 10px;">
-                                    <a onclick="$('#dialog').confirmDeleteDialog('Confirm').show(
+                                    <a onclick="$('#dialog').confirmDialog().show(
                                             'Do you want to convert your Organization account into User account?',
                                             '${pageContext.request.contextPath}/account/convertToUser');"
                                        class="btn btn-secondary">
@@ -205,7 +205,7 @@
                                                     class="material-icons" title="View">&#xE5D3;</i></a>
 
                                             <!-- delete -->
-                                            <a onclick="confirmDeleteDialog.show(
+                                            <a onclick="confirmDialog.show(
                                                     'Submission &quot;${study.name}&quot; and all its spectra will be deleted. Are you sure?',
                                                     '${pageContext.request.contextPath}/submission/${study.id}/delete/');">
                                                 <i class="material-icons" title="Delete">&#xE872;</i>
@@ -277,7 +277,7 @@
                                                     class="material-icons" title="View">&#xE5D3;</i></a>
 
                                             <!-- delete -->
-                                            <a onclick="confirmDeleteDialog.show(
+                                            <a onclick="confirmDialog.show(
                                                     'Submission &quot;${study.name}&quot; and all its spectra will be deleted. Are you sure?',
                                                     '${pageContext.request.contextPath}/submission/${study.id}/delete/');">
                                                 <i class="material-icons" title="Delete">&#xE872;</i>
@@ -439,7 +439,7 @@
             <div class = "card" style = "background-color:transparent; border:none;">
                 <div class = "card-body " style = "display: flex; justify-content: space-between; padding:0px;">
                         <a href="${pageContext.request.contextPath}/file/upload/" class="btn btn-primary">New Study</a>
-                        <a class="btn btn-danger" onclick="confirmDeleteDialog.show(
+                        <a class="btn btn-danger" onclick="confirmDialog.show(
                                 'Your current account &quot;${user.name}&quot; will be deleted. Are you sure?',
                                 '${pageContext.request.contextPath}/user/${user.id}/delete/');">
                             Delete Account
@@ -454,7 +454,6 @@
 
 
 
-<div id="dialog-confirm"></div>
 <div id="dialog"></div>
 
 <script src="<c:url value="/resources/jQuery-3.6.3/jquery-3.6.3.min.js"/>"></script>
@@ -466,7 +465,7 @@
 <script src="<c:url value="/resources/npm/node_modules/bootstrap/dist/js/bootstrap.min.js"/>"></script>
 
 <script>
-    var confirmDeleteDialog = $('#dialog-confirm').confirmDeleteDialog();
+    var confirmDialog = $('#dialog').confirmDialog();
 
     $(document).ready(function () {
         var t1 = $('#study_table').DataTable({

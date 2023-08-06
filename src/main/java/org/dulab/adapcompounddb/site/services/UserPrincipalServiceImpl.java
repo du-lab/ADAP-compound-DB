@@ -212,19 +212,18 @@ public class UserPrincipalServiceImpl implements UserPrincipalService {
     }
     @Override
     public void convertOrganizationAccountToUserAccount(UserPrincipal userPrincipal) {
-        Optional<List<UserPrincipal>> userPrincipalOptional=
+        List<UserPrincipal> userPrincipalOptional=
                 userPrincipalRepository.findUserPrincipalWithRolesByUsername(userPrincipal);
-        if (userPrincipalOptional.isPresent()) {
-            List<UserPrincipal> entitiesToUpdate = userPrincipalOptional.get();
-            for (UserPrincipal u : entitiesToUpdate) {
+        if (userPrincipalOptional.size() > 0) {
+            for (UserPrincipal u : userPrincipalOptional) {
                 u.setOrganizationId(null);
             }
             userPrincipal.setOrganization(false);
             userPrincipal.setOrganizationId(null);
             userPrincipal.setOrganizationRequestToken(null);
             userPrincipal.setOrganizationRequestExpirationDate(null);
-            entitiesToUpdate.add(userPrincipal);
-            userPrincipalRepository.saveAll(entitiesToUpdate);
+            userPrincipalOptional.add(userPrincipal);
+            userPrincipalRepository.saveAll(userPrincipalOptional);
         }
     }
 

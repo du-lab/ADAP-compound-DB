@@ -32,5 +32,5 @@ public interface UserPrincipalRepository extends CrudRepository<UserPrincipal, L
     void addUsersToOrganization(final Long organizationUserId, final List<Long> userId);
 
     @Query("select u from UserPrincipal u where u.organizationUser = ?1")
-    Optional<List<UserPrincipal>> findUserPrincipalWithRolesByUsername(UserPrincipal userPrincipal);
+    List<UserPrincipal> findUserPrincipalWithRolesByUsername(UserPrincipal userPrincipal);
 }
