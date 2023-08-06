@@ -57,7 +57,7 @@
                     <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow="0"
                          aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
-                <a class="btn btn-danger btn-secondary mr-2" id="stopSearchBtn">Stop Search</a>
+                <a class="btn btn-danger btn-secondary mr-2" style="display: none;" data-toggle="modal" data-target="#yesNoModal" id="stopSearchBtn">Stop Search</a>
                 <a class="btn btn-primary mr-2" id="newSearchBtn" href="<c:url value="parameters"/>">New Search</a>
             </div>
         </div>
@@ -254,6 +254,22 @@
         </div>
     </div>
 </div>
+<div id="yesNoModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"></h4>
+            </div>
+            <div class="modal-body">
+                <p class="modal-message"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                <a id="yesbutton" type="button" class="btn btn-primary" href="#">Yes</a>
+            </div>
+        </div>
+    </div>
+</div>
 </div>
 
 
@@ -273,6 +289,7 @@
     <script>
   var isSavedResultPage = '<c:out value="${submissionId}" />' ? true : false;
   var savedSubmissionId = '<c:out value="${savedSubmissionId}" />';
+
   $(document).ready(function () {
         var drawFirstTime = true;
         var isExportDone = true;
@@ -299,8 +316,9 @@
           return result;
         }
 
-      $("#stopSearchBtn").click(function (event) {
+      $("#yesbutton").click(function (event) {
           event.preventDefault();
+          $('#yesNoModal').modal('hide');
           $.ajax({
               url: "/group_search/stop",
               method: "GET",
@@ -313,6 +331,35 @@
                   console.error("Error while stopping search:", error);
               }
           });
+      });
+      $.ajax({
+          url: "/group_search/status",
+          method: "GET",
+          success: function (data) {
+              console.log(data)
+              if (data === 0){
+                  $("#stopSearchBtn").hide();
+                  $("#newSearchBtn").show();
+                  $('#progressBar').hide();
+              } else if (data === 1) {
+                  $("#stopSearchBtn").show();
+                  $("#newSearchBtn").hide();
+                  $('#progressBar').show();
+              }
+          },
+          error: function (xhr, status, error) {
+              console.error("Error while getting search status:", error);
+          }
+      });
+      $("#stopSearchBtn").click(function (event) {
+          event.preventDefault();
+          $('#yesNoModal').modal('show');
+      });
+      $('#yesNoModal').on('show.bs.modal', function (event) {
+          const modal = $(this);
+          modal.find('.modal-title').text('Stop Search');
+          modal.find('.modal-message').text('Do you want to stop the current search? ' +
+              'You will not be able to resume it when it is stopped.');
       });
         //update the ontology level options
         $.ajax({
@@ -335,8 +382,6 @@
             console.log("Error:", xhr);
           }
         });
-
-        console.log(savedSubmissionId)
 
         if (isSavedResultPage) {
             url = "${pageContext.request.contextPath}/file/group_search_matches/${submissionId}/data.json";

@@ -29,6 +29,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,8 +44,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils.GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME;
 
 @RestController
 public class GroupSearchRestController extends BaseController {
@@ -362,6 +367,15 @@ public class GroupSearchRestController extends BaseController {
         // Return json-string containing a number between 0 and 100.
         float progress = (Float) progressObject;
         return Math.round(100 * progress);
+    }
+
+    @RequestMapping(value = "/group_search/status", produces = "application/json")
+    public int fileGroupSearchStatus( HttpSession session) {
+        Future<Void> asyncResult = (Future<Void>) session.getAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME);
+        if (asyncResult != null) {
+            return 1;
+        }
+        return 0;
     }
 
     @RequestMapping(value = "/submission/group_search/{submissionId:\\d+}/progress", produces = "application/json")
