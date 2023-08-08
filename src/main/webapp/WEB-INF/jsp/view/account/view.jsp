@@ -106,7 +106,7 @@
                                                 class="nav-link active"
                                                 data-toggle="tab" href="#studies">Studies</a>
                         </li>
-                        <li class="nav-item"><a id="librariesTab" class="nav-link" data-toggle="tab" href="#libraries">Libraries</a></li>
+                        <li class="nav-item"><a id="librariesTab" class="nav-link" data-toggle="tab" href="#libraries">Private Libraries</a></li>
                         <li class="nav-item"><a id="parametersTab" class="nav-link" data-toggle="tab" href="#parameters">Parameters</a></li>
                         <li class="nav-item"><a id="searchTaskTab" class="nav-link" data-toggle="tab" href="#searchTask">Search History</a></li>
                         <c:if test="${user.organization}">
