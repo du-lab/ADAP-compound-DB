@@ -7,17 +7,17 @@
 
 <head>
     <!-- Global site tag (gtag.js) - Google Analytics -->
-<%--    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-163158069-1"></script>--%>
-<%--    <script>--%>
-<%--        window.dataLayer = window.dataLayer || [];--%>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-163158069-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
 
-<%--        function gtag() {--%>
-<%--            dataLayer.push(arguments);--%>
-<%--        }--%>
+        function gtag() {
+            dataLayer.push(arguments);
+        }
 
-<%--        gtag('js', new Date());--%>
-<%--        gtag('config', 'UA-163158069-1');--%>
-<%--    </script>--%>
+        gtag('js', new Date());
+        gtag('config', 'UA-163158069-1');
+    </script>
 
     <title>ADAP-KDB Compound Knowledgebase</title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>

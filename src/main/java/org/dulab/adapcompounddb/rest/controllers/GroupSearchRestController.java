@@ -372,7 +372,7 @@ public class GroupSearchRestController extends BaseController {
     @RequestMapping(value = "/group_search/status", produces = "application/json")
     public int fileGroupSearchStatus( HttpSession session) {
         Future<Void> asyncResult = (Future<Void>) session.getAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME);
-        if (asyncResult != null) {
+        if (asyncResult != null && !asyncResult.isDone() && !asyncResult.isCancelled()) {
             return 1;
         }
         return 0;
