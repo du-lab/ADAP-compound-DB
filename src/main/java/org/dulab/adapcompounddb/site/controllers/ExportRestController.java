@@ -58,13 +58,12 @@ public class ExportRestController {
     }
     @RequestMapping(value = "/export/submission/{id:\\d+}/", produces = MediaType.TEXT_PLAIN_VALUE)
     public void exportSubmission(@PathVariable("id") long submissionId, @RequestParam Optional<String> name,
-                                 HttpServletResponse response) {
+                                 HttpServletResponse response, HttpSession session) {
         try {
             response.setContentType(MediaType.TEXT_PLAIN_VALUE);
             response.setHeader("Content-Disposition",
                     String.format("attachment; filename=\"%s.xlsx\"", name.orElse("export")));
-            exportSubmissionService.exportSubmission(response.getOutputStream(), submissionId);
-
+            exportSubmissionService.exportSubmission(session, response.getOutputStream(), submissionId);
         } catch (IOException e) {
             LOGGER.warn("Error when writing to a file: " + e.getMessage(), e);
         }

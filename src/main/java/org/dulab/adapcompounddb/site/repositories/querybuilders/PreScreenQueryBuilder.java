@@ -13,10 +13,29 @@ import java.util.stream.IntStream;
 
 public class PreScreenQueryBuilder {
 
-    private final String spectrumTypeQuery;
-    private final Set<BigInteger> submissionIds;
+    private enum SearchType {
+        CONSENSUS("Spectrum.Consensus = 1"),
+        REFERENCE("Spectrum.Reference = 1"),
+        CLUSTERABLE("Spectrum.Clusterable = 1");
 
-    private List<ChromatographyType> chromatographyTypes;
+        private final String query;
+
+        SearchType(String query) {
+            this.query = query;
+        }
+
+        public String getQuery() {
+            return query;
+        }
+    }
+
+//    private final String spectrumTypeQuery;
+    private final Set<BigInteger> submissionIds;
+    private final boolean searchConsensus;
+    private final boolean searchReference;
+    private final boolean searchClusterable;
+
+    private Set<ChromatographyType> chromatographyTypes;
 
 
     private UserPrincipal user = null;
@@ -46,18 +65,21 @@ public class PreScreenQueryBuilder {
                                  @Nullable Set<BigInteger> submissionIds) {
 
         this.submissionIds = submissionIds;
+        this.searchConsensus = searchConsensus;
+        this.searchReference = searchReference;
+        this.searchClusterable = searchClusterable;
 
-        spectrumTypeQuery = Arrays.stream(
-                new String[]{
-                        searchConsensus ? "Spectrum.Consensus  = 1" : null,
-                        searchReference ? "Spectrum.Reference = 1" : null,
-                        searchClusterable ? "Spectrum.Clusterable = 1" : null})
-                .filter(Objects::nonNull).collect(Collectors.joining(" OR "));
+//        spectrumTypeQuery = Arrays.stream(
+//                new String[]{
+//                        searchConsensus ? "Spectrum.Consensus  = 1" : null,
+//                        searchReference ? "Spectrum.Reference = 1" : null,
+//                        searchClusterable ? "Spectrum.Clusterable = 1" : null})
+//                .filter(Objects::nonNull).collect(Collectors.joining(" OR "));
     }
 
 
     public PreScreenQueryBuilder withChromatographyTypes(ChromatographyType... chromatographyTypes) {
-        this.chromatographyTypes = new ArrayList<>(Arrays.asList(chromatographyTypes));
+        this.chromatographyTypes = Arrays.stream(chromatographyTypes).collect(Collectors.toSet());
         return this;
     }
 
@@ -118,14 +140,14 @@ public class PreScreenQueryBuilder {
         this.querySpectrum = querySpectrum;
     }
 
-    public String buildQueryBlock(int numberOfTopMz, Double queryMz) {
+    public String buildQueryBlock(int numberOfTopMz, Double queryMz, SearchType searchType) {
 
         String queryBlock = String.format("SELECT Spectrum.Id FROM Spectrum " +
                 "LEFT JOIN File ON File.Id = Spectrum.FileId " +
                 "LEFT JOIN Submission ON Submission.Id = File.SubmissionId " +
                 "LEFT JOIN UserPrincipal ON UserPrincipal.Id = Submission.UserPrincipalId\n" +
                 "LEFT JOIN Identifier ON Spectrum.Id = Identifier.SpectrumId "+
-                "WHERE (%s)", spectrumTypeQuery);
+                "WHERE %s", searchType.getQuery());
 
         if (chromatographyTypes != null){
             if(searchMassLibrary) {
@@ -197,7 +219,7 @@ public class PreScreenQueryBuilder {
         queryBlock += getPrivacyConditions(user, whereBlock);
 
         if (submissionIds != null)
-            queryBlock += String.format(" AND (%s)", buildConditionStringWithSubmissionIds());
+            queryBlock += String.format(" AND (%s)", buildConditionStringWithSubmissionIds(searchType));
 
         queryBlock += "\n";
         return queryBlock;
@@ -213,53 +235,74 @@ public class PreScreenQueryBuilder {
     }
 
     public String build() {
-        String query;
-        query = "SELECT COUNT(*) as Common, TempTable.Id FROM (\n";
+        StringBuilder query = new StringBuilder("SELECT COUNT(*) as Common, TempTable.Id FROM (\n");
 
-        if (querySpectrum != null && mzTolerance != null) {
-            if (querySpectrum.getTopMz1() != null) {
-                query += buildQueryBlock(8, querySpectrum.getTopMz1());
-            }
-            if (querySpectrum.getTopMz2() != null) {
-                query += "union all\n";
-                query += buildQueryBlock(9, querySpectrum.getTopMz2());
-            }
-            if (querySpectrum.getTopMz3() != null) {
-                query += "union all\n";
-                query += buildQueryBlock(10, querySpectrum.getTopMz3());
-            }
-            if (querySpectrum.getTopMz4() != null) {
-                query += "union all\n";
-                query += buildQueryBlock(11, querySpectrum.getTopMz4());
-            }
-            if (querySpectrum.getTopMz5() != null) {
-                query += "union all\n";
-                query += buildQueryBlock(12, querySpectrum.getTopMz5());
-            }
-            if (querySpectrum.getTopMz6() != null) {
-                query += "union all\n";
-                query += buildQueryBlock(13, querySpectrum.getTopMz6());
-            }
-            if (querySpectrum.getTopMz7() != null) {
-                query += "union all\n";
-                query += buildQueryBlock(14, querySpectrum.getTopMz7());
-            }
-            if (querySpectrum.getTopMz8() != null) {
-                query += "union all\n";
-                query += buildQueryBlock(15, querySpectrum.getTopMz8());
-            }
+        List<SearchType> searchTypes = getSearchTypes();
+        if (searchTypes.isEmpty())
+            throw new IllegalStateException(
+                    "You must search against consensus, reference, or clusterable spectra. None is specified.");
 
-        } else {
-            query += buildQueryBlock(0, null);
+        for (int i = 0; i < searchTypes.size(); i++) {
+            if (i > 0)
+                query.append("union all\n");
+
+            SearchType searchType = searchTypes.get(i);
+            if (querySpectrum != null && mzTolerance != null) {
+                if (querySpectrum.getTopMz1() != null) {
+                    query.append(buildQueryBlock(8, querySpectrum.getTopMz1(), searchType));
+                }
+                if (querySpectrum.getTopMz2() != null) {
+                    query.append("union all\n");
+                    query.append(buildQueryBlock(9, querySpectrum.getTopMz2(), searchType));
+                }
+                if (querySpectrum.getTopMz3() != null) {
+                    query.append("union all\n");
+                    query.append(buildQueryBlock(10, querySpectrum.getTopMz3(), searchType));
+                }
+                if (querySpectrum.getTopMz4() != null) {
+                    query.append("union all\n");
+                    query.append(buildQueryBlock(11, querySpectrum.getTopMz4(), searchType));
+                }
+                if (querySpectrum.getTopMz5() != null) {
+                    query.append("union all\n");
+                    query.append(buildQueryBlock(12, querySpectrum.getTopMz5(), searchType));
+                }
+                if (querySpectrum.getTopMz6() != null) {
+                    query.append("union all\n");
+                    query.append(buildQueryBlock(13, querySpectrum.getTopMz6(), searchType));
+                }
+                if (querySpectrum.getTopMz7() != null) {
+                    query.append("union all\n");
+                    query.append(buildQueryBlock(14, querySpectrum.getTopMz7(), searchType));
+                }
+                if (querySpectrum.getTopMz8() != null) {
+                    query.append("union all\n");
+                    query.append(buildQueryBlock(15, querySpectrum.getTopMz8(), searchType));
+                }
+
+            } else {
+                query.append(buildQueryBlock(0, null, searchType));
+            }
         }
-        query += ") AS TempTable\n";
+        query.append(") AS TempTable\n");
 
-        query += "\nGROUP BY Id ORDER BY Common DESC";
+        query.append("\nGROUP BY Id ORDER BY Common DESC");
 
-        return query;
+        return query.toString();
     }
 
-    private String buildConditionStringWithSubmissionIds() {
+    private List<SearchType> getSearchTypes() {
+        List<SearchType> searchTypes = new ArrayList<>();
+        if (searchConsensus)
+            searchTypes.add(SearchType.CONSENSUS);
+        if (searchReference)
+            searchTypes.add(SearchType.REFERENCE);
+        if (searchClusterable)
+            searchTypes.add(SearchType.CLUSTERABLE);
+        return searchTypes;
+    }
+
+    private String buildConditionStringWithSubmissionIds(SearchType searchType) {
 
         if (submissionIds == null)
             return null;
@@ -270,11 +313,11 @@ public class PreScreenQueryBuilder {
                 .collect(Collectors.joining(","));
 
         String condition;
-        if (submissionIds.contains(BigInteger.ZERO) && !ids.isEmpty())
-            condition = String.format("Spectrum.Consensus = 1 OR Submission.Id IN (%s)", ids);
-        else if (submissionIds.contains(BigInteger.ZERO))
+//        if (submissionIds.contains(BigInteger.ZERO) && !ids.isEmpty())
+//            condition = String.format("Spectrum.Consensus = 1 OR Submission.Id IN (%s)", ids);
+        if (searchType == SearchType.CONSENSUS && submissionIds.contains(BigInteger.ZERO))
             condition = "Spectrum.Consensus = 1";
-        else if (!ids.isEmpty())
+        else if (searchType == SearchType.REFERENCE && !ids.isEmpty())
             condition = String.format("Submission.Id IN (%s)", ids);
         else
             condition = "1 = 0";

@@ -15,7 +15,8 @@ $(document).ready(function () {
                             }
                             console.log(fieldElement, dragElement)
                             fieldElement.appendChild(dragElement);
-                            $("#" + key).val(value.split("_")[1]);
+                            let pos = value.indexOf("_");
+                            $("#" + key).val(value.substring(pos + 1));
                             // dragElement.parentNode.removeChild(dragElement);
                         }
                     }

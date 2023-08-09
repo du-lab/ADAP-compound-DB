@@ -157,6 +157,32 @@ public class Spectrum implements Serializable {
                 .collect(Collectors.joining(", "));
     }
 
+    public String getIdentifiersAsHTML() {
+        if (identifiers == null)
+            return null;
+        return identifiers.entrySet().stream()
+                .map(e -> generateLinksForIdentifiers(e.getKey(), e.getValue()))
+                .collect(Collectors.joining(", "));
+    }
+
+    private String generateLinksForIdentifiers(IdentifierType key, String value) {
+        String html = "";
+        if (key != null && value != null) {
+            String URL = "";
+            if (key == IdentifierType.PUBCHEM) {
+                URL = "https://pubchem.ncbi.nlm.nih.gov/compound/"+ value;
+            } else if (key == IdentifierType.KEGG) {
+                URL = "https://www.genome.jp/entry/cpd:"+ value;
+            } else if (key == IdentifierType.HMDB) {
+                URL = "https://hmdb.ca/metabolites/"+ value;
+            } else if (key == IdentifierType.CAS) {
+                return String.format("%s (%s)", key, value);
+            }
+            return "<a href=\""+ URL +"\" target=\"_blank\">" + String.format("%s (%s)", key, value) + "</a>";
+        }
+        return null;
+    }
+
     public void addIdentifier(IdentifierType identifierType, String value) {
         if (value == null || value.trim().isEmpty()) return;
         if (identifiers == null)

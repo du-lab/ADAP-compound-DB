@@ -116,14 +116,14 @@
             </div>
         </div>
         <div class="row row-header">
-            <div class="col-12 col-lg-8">
+            <div class="col">
                 <h1 class="text-nowrap">
                     <i class="material-icons mobile" title="Menu" id="menu">view_headline</i>
                     ADAP-KDB Spectral Knowledgebase
                     <sup><small id ="versionBadge" class="badge badge-pill badge-light"></small></sup>
                 </h1>
             </div>
-            <div class="col-12 col-lg-4" style="display:flex;justify-content: flex-end;">
+            <div class="col text-nowrap" style="display:flex;justify-content: flex-end;">
                 <%--@elvariable id="currentUser" type="org.springframework.security.core.userdetails.User"--%>
                 <c:if test="${currentUser != null}">
                     <div class="user">User: ${currentUser.username} (<a href="<c:url value="/logout"/>" onClick ="localStorage.clear()">Log out</a>)
@@ -143,7 +143,7 @@
 <div class="wrapper">
     <%--    <div class="side">--%>
     <%--        <aside>--%>
-    <nav id="sidebar">
+    <nav id="sidebar" style="width: 18%;">
         <div class="container">
             <div class="row row-menu mb-5">
                 <div class="col-12">
@@ -270,12 +270,16 @@
         </div>
     </nav>
 
+<<<<<<< HEAD
     <article style="margin: 0 auto; width: 100%">
         <ul class="breadcrumb">
             <c:forEach var="breadcrumb" items="${breadcrumbs}">
                 <li><a href="${breadcrumb.url}">${breadcrumb.label}</a></li>
             </c:forEach>
         </ul>
+=======
+    <article style="margin: 0 auto; width: 82%">
+>>>>>>> origin
         <sitemesh:write property='body' />
     </article>
 </div>

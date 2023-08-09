@@ -11,7 +11,9 @@ import org.dulab.adapcompounddb.models.entities.Submission;
 import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ucar.httpservices.HTTPSession;
 
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.function.Function;
@@ -29,10 +31,17 @@ public class ExcelExportSubmissionService {
         this.submissionRepository = submissionRepository;
     }
 
-    public Submission exportSubmission(OutputStream outputStream, long submissionId) throws IOException {
-        Submission submission = submissionRepository.findById(submissionId)
-                .orElseThrow(() -> new IllegalStateException(
-                        String.format("Cannot find submission with ID = %d", submissionId)));
+    public Submission exportSubmission(HttpSession session, OutputStream outputStream, long submissionId) throws IOException {
+        Submission submission;
+        if (submissionId == 0) {
+            submission = (Submission) session.getAttribute("submission");
+            if (submission == null)
+                throw new IllegalStateException("No submission is found in the session");
+        } else {
+            submission = submissionRepository.findById(submissionId)
+                    .orElseThrow(() -> new IllegalStateException(
+                            String.format("Cannot find submission with ID = %d", submissionId)));
+        }
         return exportSubmission(outputStream, submission);
     }
 

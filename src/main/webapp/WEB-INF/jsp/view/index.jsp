@@ -25,222 +25,126 @@
         <div class="col">
             <div class="card">
                 <div class="card-header card-header-single">
-                    ADAP-KDB Spectral Knowledgebase
+                    ADAP-KDB is a compound and mass spectra search engine. You can use it to Identify and prioritize spectra.
                 </div>
 
-                <div class="card-body">
-
-                    <div class="media">
-                        <a href="https://pubs.acs.org/doi/10.1021/acs.analchem.1c00355" target="_blank">
-                            <img class="d-flex img-thumbnail mr-3 align-self-center"
-                                 src="${pageContext.request.contextPath}/resources/AdapCompoundDb/img/analytical_chemistry_paper_300.png"
-                                 alt="Analytical Chemistry">
-                        </a>
-                        <div class="media-body">
-                            <p>
-                                The number of metabolomics studies in public data repositories such as the
-                                <a href="https://metabolomicsworkbench.org/" target="_blank">NIH’s
-                                    Metabolomics Data Repository (a.k.a. Metabolomics Workbench)</a> and
-                                <a href="https://www.ebi.ac.uk/metabolights/" target="_blank">MetaboLights</a>
-                                acquiring untargeted data from the liquid chromatography (LC-) and gas chromatography
-                                coupled to mass spectrometry (GC-MS) analytical platforms has been steadily growing.
-                                Accompanying this growth is the enormous number of known and unknown compounds contained
-                                in that data, providing an invaluable opportunity to harness the power of big data and
-                                allow for cross-species, cross-diseases, and cross-sample source analysis.
-                            </p>
-                            <p>
-                                Toward this end, we have developed ADAP-KDB, a mass spectral knowledgebase that contains
-                                consensus
-                                GC-MS and LC-MS/MS spectra constructed from untargeted, publicly available metabolomics
-                                data. At this point, all the consensus spectra are constructed from data in the
-                                <a href="https://metabolomicsworkbench.org/" target="_blank">Metabolomics Workbench</a>
-                                and spectra constructed similarly from other publicly available data repositories will
-                                be gradually added.
-                            </p>
-                            <p>
-                                ADAP-KDB enables efficient sharing and aggregation of information about both known and
-                                unknown compounds across studies and laboratories and makes those compounds easily
-                                findable.
-                            <p/>
-                        </div>
-                    </div>
-
-                    <div class="border p-3">
-                        <a href="https://pubs.acs.org/doi/10.1021/acs.analchem.1c00355" target="_blank">
-                            ADAP-KDB: A Spectral Knowledgebase for Tracking and Prioritizing Unknown GC–MS Spectra in
-                            the NIH’s Metabolomics Data Repository</a>,
-                        Aleksandr Smirnov, Yunfei Liao, Eoin Fahy, Shankar Subramaniam, and Xiuxia Du,
-                        <em>Analytical Chemistry</em> 2021 93 (36), 12213-12220
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row row-content">
-        <div class="col">
-            <div class="card">
-                <div class="card-header card-header-single">
-                    Try It!
-                </div>
-                <div class="card-body">
-                    <div id="carousel" class="carousel slide" data-ride="carousel">
-                        <div class="carousel-inner" role="listbox" style="height: 525px">
-                            <div class="carousel-item active">
-                                <h3>Explore NMDR studies</h3>
-                                <div class="media">
-                                    <div class="media-body">
-                                        Our users can browse all consensus spectra and find the studies where those
-                                        spectra come from. For instance, to search for the studies with significant
-                                        changes in glucose:
-                                        <ul>
-                                            <li>Browse all consensus spectra by clicking <strong>Libraries</strong>, and
-                                                then <strong>View All Consensus Spectra</strong>;
-                                            </li>
-                                            <li>Filter the consensus spectra by clicking <strong>Filter</strong>,
-                                                entering "glucose" to the <strong>Name Search</strong> box, and clicking
-                                                <strong>Filter</strong> again;
-                                            </li>
-                                            <li>Sort the consensus spectra clicking <strong>Average P-value</strong>
-                                                column header;
-                                            </li>
-                                        </ul>
-                                        The produced list will contain all consensus spectra with "glucose" in their
-                                        name, sorted by p-values of the in-study ANOVA tests. Clicking a consensus
-                                        spectrum (e.g. <em>d-Glucose, 2,3,4,5,6-pentakis-O-(trimethylsilyl)-,
-                                        o-methyloxyme, (1E)-</em>) will take you to the details page, where you can
-                                        browse the consensus spectra, the distributions of meta information, and the
-                                        associated studies. To see the studies, click <strong>Spectrum List</strong>
-                                        tab, and find the corresponding study under each constituent spectrum.
-                                    </div>
-                                    <img class="d-flex img-thumbnail ml-3 align-self-center"
-                                         src="${pageContext.request.contextPath}/resources/AdapCompoundDb/img/glucose_300.png"
-                                         alt="Glucose"/>
-                                </div>
-                                Such studies for <em>d-Glucose, 2,3,4,5,6-pentakis-O-(trimethylsilyl)-,
-                                o-methyloxyme, (1E)-</em> include
-                                <ul>
-                                    <li>ST000419 (“Impact Of High Sugar Diet On L-Arginine Metabolism In The Lung”),
-                                    </li>
-                                    <li>ST000390 (“Metabolomic markers of altered nucleotide metabolism in early
-                                        stage adenocarcinoma”),
-                                    </li>
-                                    <li>ST000402 (“Impact of glucose on the central metabolome of C. minutissima”),</li>
-                                    <li>and others</li>
-                                </ul>
-                            </div>
-
-                            <div class="carousel-item">
-                                <h3>Search against ADAP-KDB Library</h3>
-                                <div class="media">
-                                    <img class="d-flex img-thumbnail mr-3 align-self-center" width="250"
-                                         src="${pageContext.request.contextPath}/resources/AdapCompoundDb/img/library_matching_300.png"
-                                         alt="Library Search"/>
-                                    <div class="media-body">
-                                        <ul>
-                                            <li>Click <strong>Upload</strong> to upload MSP files with spectra, CSV
-                                                files with feature information, mzML or mzXML files with raw MS/MS
-                                                spectra, or use direct links from the Metabolomics Workbench to upload
-                                                raw MS/MS data. In addition, you can combine information from MSP and
-                                                CSV files.
-                                            </li>
-                                            <li>Click <strong>Search</strong> dropdown menu and select one of the
-                                                following options:
-                                                <ul>
-                                                    <li><strong>Search for similar spectra</strong> for matching against
-                                                        library spectra based on the spectral similarity;
-                                                    </li>
-<%--                                                    <li><strong>Search for similar spectra (with Ontology--%>
-<%--                                                        Levels)</strong> for matching against library spectra based on--%>
-<%--                                                        the spectral similarity, neutral mass, and retention time--%>
-<%--                                                        (MS/MS only);--%>
-<%--                                                    </li>--%>
-                                                    <li><strong>Search for similar studies</strong> for matching the
-                                                        uploaded spectra directly against the Metabolomics Workbench
-                                                        studies (Experimental).
-                                                    </li>
-                                                </ul>
-                                            </li>
-                                            <li>Click <strong>Filter</strong> button to select the libraries used for
-                                                the matching, and select specific species, sample source, or disease.
-                                            </li>
-                                            <li>Click <strong>Export</strong> button to export the library matching
-                                                results.
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <p>
-                                    Use one of these sample files to try the library searching:
-                                    <a href="${pageContext.request.contextPath}/resources/AdapCompoundDb/misc/st001303gcms.msp"
-                                       download>MSP file with GC-MS spectra</a>,
-                                    <a href="${pageContext.request.contextPath}/resources/AdapCompoundDb/misc/st001314lcmsms.msp"
-                                       download>MSP file with LC-MS/MS spectra</a>, or
-                                    <a href="${pageContext.request.contextPath}/resources/AdapCompoundDb/misc/st001314mass.csv"
-                                       download>CSV file with m/z-retention time features.</a>
-                                </p>
-                                <p>
-                                    Download a file, then click <strong>Upload Files</strong>, select "GC",
-                                    "LC MS/MS +", or "Mass" respectively in the <strong>Spectrum type</strong>
-                                    dropdown list, select the downloaded file, and click <strong>Upload</strong>.
-                                    When uploading the sample CSV file, you need to specify where to find the neutral
-                                    mass information by clicking <strong>Edit Metadata Fields</strong> on the upload
-                                    page and putting "neutral_mass" for the <strong>Neutral Mass Field</strong> in
-                                    the <strong>CSV</strong> column.
-                                </p>
-                            </div>
-
-                            <div class="carousel-item">
-                                <h3>Search against In-House library</h3>
-                                <div class="media">
-                                    <img class="d-flex img-thumbnail mr-3 align-self-center"
-                                         src="${pageContext.request.contextPath}/resources/AdapCompoundDb/img/in_house_library_300.png"
-                                         alt="In-House Library"/>
-                                    <div class="media-body">
-                                        Our users can search spectra against their own private in-house libraries:
-                                        <ul>
-                                            <li>Create an account on ADAP-KDB by clicking <strong>Log In / Sign
-                                                Up</strong>.
-                                            </li>
-                                            <li>Upload MSP and CSV files with the library spectra/features.</li>
-                                            <li>Save them as private in-house library spectra. <strong>Private</strong>
-                                                means that they will not be accessible to other users,
-                                                <strong>in-house</strong> means that the corresponding matches will have
-                                                a higher confidence level when searched with the ontology levels, and
-                                                <strong>library</strong> means that the spectra will be used for
-                                                searching against.
-                                            </li>
-                                            <li>Search experimental spectra against the saved library.</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <ol class="carousel-indicators mb-0">
-                            <li data-target="#carousel" data-slide-to="0" class="bg-primary active"
-                                style="height: 10px"></li>
-                            <li data-target="#carousel" data-slide-to="1" class="bg-primary" style="height: 10px"></li>
-                            <li data-target="#carousel" data-slide-to="2" class="bg-primary" style="height: 10px"></li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row row-content">
-        <div class="col">
-            <div class="card">
-                <div class="card-header card-header-single">
-                    Contact Information
-                </div>
                 <div class="card-body">
                     <p>
+                        Use this web app to search query spectra against both private and public compounds and mass spectra.
+                    </p>
+                    <p>Use it to prioritize both known and unknown mass spectra.</p>
+                    <p>Use it as a search engine to identify spectra from libraries.</p>
+                    <p style="margin-bottom: 0;">
+                        If you find ADAP-KDB useful, please cite <br>
+                        <a href="https://pubs.acs.org/doi/10.1021/acs.analchem.1c00355">
+                            Smirnov A, Liao Y, Fahy E, Subramaniam S, Du X*: <b>ADAP-KDB: A Spectral Knowledgebase for Tracking and Prioritizing Unknown GC-MS Spectra in the NIH's Metabolomics Data Repository.</b>
+                            <i>Anal Chem 2021</i>, 93(36):12213-12220
+                        </a>
+                    </p>
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row row-content">
+        <div class="col-lg-4 col-sm-12">
+            <div class="card">
+                <div class="card-header card-header-single homepage-card-header">
+                    Search against public libraries
+                </div>
+                <div class="card-body">
+                    <div class="homepage-image-container">
+                        <img class="align-self-center" style="height: auto;width: 100%;"
+                             src="<c:url value="/resources/AdapCompoundDb/img/homepage-1.png"/>"
+                             alt="Creative Commons">
+                    </div>
+                    <div class="card-information-container">
+                        <ul style="padding-left: 18px;">
+                            <li>Upload files</li>
+                            <li>Search for similar spectra and compounds</li>
+                            <li>Export results</li>
+                        </ul>
+                    </div>
+                    <div class="homepage-button-container">
+                        <a href="/libraries/">
+                            <button class="homepage-button btn btn-primary btn-lg btn-block">
+                                Search Public Libraries
+                            </button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-sm-12">
+            <div class="card">
+                <div class="card-header card-header-single homepage-card-header">
+                    Upload and search against private libraries
+                </div>
+                <div class="card-body homepage-card">
+                    <div class="homepage-image-container">
+                        <img class="align-self-center"  style="height: auto;width: 100%;"
+                             src="<c:url value="/resources/AdapCompoundDb/img/homepage-2.png"/>"
+                             alt="Creative Commons">
+                    </div>
+                    <div class="card-information-container">
+                        <ul style="padding-left: 18px;">
+                            <li>Upload files</li>
+                            <li>Save as a private library (user account required) </li>
+                            <li>Search against your libraries</li>
+                        </ul>
+                    </div>
+                    <div class="homepage-button-container">
+                        <a href="/file/upload/">
+                            <button class="homepage-button btn btn-primary btn-lg btn-block">
+                                Upload Private Libraries
+                            </button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-sm-12">
+            <div class="card">
+                <div class="card-header card-header-single homepage-card-header">
+                    Prioritize your spectra
+                </div>
+                <div class="card-body homepage-card">
+                    <div class="homepage-image-container">
+                        <img class="align-self-center" style="height: 120px;"
+                             src="<c:url value="/resources/AdapCompoundDb/img/homepage-3.png"/>"
+                             alt="Creative Commons">
+                    </div>
+                    <div class="card-information-container">
+                        <ul style="padding-left: 18px;">
+                            <li>Search against ADAP-KDB consensus spectra</li>
+                            <li>Prioritize matches based on species/source/treatment distributions</li>
+                            <li>Find linked studies from Metabolomics Workbench</li>
+                        </ul>
+                    </div>
+                    <div class="homepage-button-container">
+                        <a href="/file/upload/">
+                            <button class="homepage-button btn btn-primary btn-lg btn-block">
+                                Prioritize Spectra
+                            </button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row row-content">
+        <div class="col">
+            <div class="card">
+                <div class="card-header card-header-single">
+                    Contact Us
+                </div>
+                <div class="card-body homepage-card">
+                    <p style="text-align: center">
                         ADAP Spectral Knowledgebase is currently being actively developed by the Du-Lab team (
                         <a href="https://www.du-lab.org/" target="_blank"><strong>https://www.du-lab.org/</strong></a>).
                     </p>
-                    <p>
+                    <p style="text-align: center">
                         If you encounter any issues or would like to provide a feedback on your experience using ADAP
                         Spectral Knowledgebase click
                         <a href="https://forms.gle/zYPXt463DC1WjJMy8" target="_blank">here</a>,
