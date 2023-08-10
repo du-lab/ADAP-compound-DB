@@ -66,7 +66,7 @@
                         </ul>
                     </div>
                     <div class="homepage-button-container">
-                        <a href="/libraries/?STEP=SEARCH_PUBLIC_LIBRARIES">
+                        <a href = "/libraries/?STEP=SEARCH_PUBLIC_LIBRARIES">
                             <button class="homepage-button btn btn-primary btn-lg btn-block">
                                 Search Public Libraries
                             </button>
