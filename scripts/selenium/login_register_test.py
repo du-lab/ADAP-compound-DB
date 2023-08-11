@@ -117,7 +117,7 @@ def main():
     password_value = random_password(9)
     login_register_test(homepage_url, username_value, password_value)
     logout()
-    delete_account(homepage_url, username_value, password_value)
+    # delete_account(homepage_url, username_value, password_value)
 
 
 if __name__ == '__main__':
