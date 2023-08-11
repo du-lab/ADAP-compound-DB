@@ -13,7 +13,6 @@ def ontology_level_test(homepage_url, username, password):
 
     try:
         driver.get(homepage_url)
-        time.sleep(1)
         # Login page
         driver.find_element_by_id('loginPage').click()
         assert driver.current_url.__str__().endswith('login/')
