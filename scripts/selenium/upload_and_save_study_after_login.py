@@ -62,7 +62,7 @@ def upload_and_save_test(homepage_url, msp_path, user_name, user_password):
         delete_icon.click()
 
         #click delete button in pop up modal
-        delete_button = driver.find_elements(By.XPATH, "//button[text()='Delete']")[0]
+        delete_button = driver.find_elements(By.XPATH, "//button[text()='Confirm']")[0]
         delete_button.click()
 
     except Exception as e:
