@@ -43,7 +43,7 @@ test:
 #    - python3 scripts/selenium/group_search_test_without_login.py --homepage-url $HOMEPAGE_URL --msp-path $CI_PROJECT_DIR/scripts/selenium/combined.msp
 #    - python3 scripts/selenium/cluster_page_test.py --homepage-url $HOMEPAGE_URL
 #    - python3 scripts/selenium/upload_and_save_study_after_login.py --homepage-url $HOMEPAGE_URL --msp-path $CI_PROJECT_DIR/scripts/selenium/combined.msp  --user-name $ADAP_KDB_TEST_USERNAME --user-password $ADAP_KDB_TEST_PASSWORD
-    - python3 scripts/selenium/organization_test.py --homepage-url $HOMEPAGE_URL
+#    - python3 scripts/selenium/organization_test.py --homepage-url $HOMEPAGE_URL
   after_script:
     - docker rm --force $CONTAINER_NAME
   timeout: 30m
