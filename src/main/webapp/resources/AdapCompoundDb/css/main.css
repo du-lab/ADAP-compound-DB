@@ -135,6 +135,7 @@ header a:hover {
 #sidebar {
     max-width: 250px;
     min-width: 250px;
+    width: 18%;
     /*min-height: 100vh;*/
 }
 
@@ -770,6 +771,19 @@ progress:after {
 .card-information-container {
     min-height: 170px;
 }
+
+.mobile-user {
+    display: none !important;
+
+}
+
+.user-mobile {
+    display: flex;
+    justify-content: space-between;
+    width: fit-content;
+    align-items: center;
+}
+
 @media only screen and (max-width: 1360px) {
     #sidebar {
         min-width: 200px;
