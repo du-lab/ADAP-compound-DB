@@ -141,7 +141,7 @@
                 <h1 class="text-nowrap" style="display: flex;justify-content: space-between">
                     <div class="mobile" id="menu_ham"><i class="material-icons" title="Menu" id="menu">view_headline</i></div>
                     <div style="display:flex; align-items: center;">
-                        ADAP-KDB
+                        ADAP-KDB <span class="desktop" style="margin:0 10px;"> Spectral Knowledgebase </span>
                         <sup><small id ="versionBadge" class="badge badge-pill badge-light"></small></sup>
                     </div>
                 </h1>
