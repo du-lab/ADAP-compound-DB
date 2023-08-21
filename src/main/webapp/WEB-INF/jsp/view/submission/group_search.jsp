@@ -10,7 +10,6 @@
 <head>
     <link rel="stylesheet" href="<c:url value="/resources/AdapCompoundDb/css/group_search.css"/>">
 </head>
-
 <div id="progressModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -58,7 +57,8 @@
                     <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow="0"
                          aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
-                <a class="btn btn-primary mr-2" href="<c:url value="parameters"/>">Search Parameters</a>
+                <a class="btn btn-danger btn-secondary mr-2" style="display: none;" data-toggle="modal" data-target="#yesNoModal" id="stopSearchBtn">Stop Search</a>
+                <a class="btn btn-primary mr-2" id="newSearchBtn" href="<c:url value="parameters"/>">New Search</a>
             </div>
         </div>
     </div>
@@ -254,6 +254,22 @@
         </div>
     </div>
 </div>
+<div id="yesNoModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"></h4>
+            </div>
+            <div class="modal-body">
+                <p class="modal-message"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                <a id="yesbutton" type="button" class="btn btn-primary" href="#">Yes</a>
+            </div>
+        </div>
+    </div>
+</div>
 </div>
 
 
@@ -271,8 +287,9 @@
     <script src="<c:url value="/resources/AdapCompoundDb/js/spectrumPlot.js"/>"></script>
     <script src="<c:url value="/resources/AdapCompoundDb/js/spectrumStructure.js"/>"></script>
     <script>
-
   var isSavedResultPage = '<c:out value="${submissionId}" />' ? true : false;
+  var savedSubmissionId = '<c:out value="${savedSubmissionId}" />';
+
   $(document).ready(function () {
         var drawFirstTime = true;
         var isExportDone = true;
@@ -285,7 +302,7 @@
         var reTimeError;
         var matchName ="";
         var selectedRowIndex = null; // save the index of the selected row
-
+      console.log("isSavedResultPage", isSavedResultPage);
         // //hide the match details by default
         // $('#query_plot_match_row').hide();
         // $('.query_container').hide();
@@ -298,6 +315,52 @@
           }
           return result;
         }
+
+      $("#yesbutton").click(function (event) {
+          event.preventDefault();
+          $('#yesNoModal').modal('hide');
+          $.ajax({
+              url: "/group_search/stop",
+              method: "GET",
+              success: function (data) {
+                  $('#progressBar').hide();
+                  $("#stopSearchBtn").hide();
+                  $("#newSearchBtn").show();
+              },
+              error: function (xhr, status, error) {
+                  console.error("Error while stopping search:", error);
+              }
+          });
+      });
+      $.ajax({
+          url: "/group_search/status",
+          method: "GET",
+          success: function (data) {
+              console.log(data)
+              if (data === 0){
+                  $("#stopSearchBtn").hide();
+                  $("#newSearchBtn").show();
+                  $('#progressBar').hide();
+              } else if (data === 1) {
+                  $("#stopSearchBtn").show();
+                  $("#newSearchBtn").hide();
+                  $('#progressBar').show();
+              }
+          },
+          error: function (xhr, status, error) {
+              console.error("Error while getting search status:", error);
+          }
+      });
+      $("#stopSearchBtn").click(function (event) {
+          event.preventDefault();
+          $('#yesNoModal').modal('show');
+      });
+      $('#yesNoModal').on('show.bs.modal', function (event) {
+          const modal = $(this);
+          modal.find('.modal-title').text('Stop Search');
+          modal.find('.modal-message').text('Do you want to stop the current search? ' +
+              'You will not be able to resume it when it is stopped.');
+      });
         //update the ontology level options
         $.ajax({
           url: "${pageContext.request.contextPath}/getOntologyLevels",
@@ -320,10 +383,22 @@
           }
         });
 
-        if (isSavedResultPage)
-          url = "${pageContext.request.contextPath}/file/group_search_matches/${submissionId}/data.json";
-        else
-          url = "${pageContext.request.contextPath}/distinct_spectra/data.json";
+        if (isSavedResultPage) {
+            url = "${pageContext.request.contextPath}/file/group_search_matches/${submissionId}/data.json";
+            $("#stopSearchBtn").hide();
+            $("#newSearchBtn").show();
+            let x = $("#newSearchBtn");
+            x.attr("href", "/group_search/parameters?submissionId=${submissionId}");
+        }
+        else {
+            if (savedSubmissionId) {
+                let x = $("#newSearchBtn");
+                x.attr("href", "/group_search/parameters?submissionId=${savedSubmissionId}");
+            }
+            url = "${pageContext.request.contextPath}/distinct_spectra/data.json";
+            $("#stopSearchBtn").show();
+            $("#newSearchBtn").hide();
+        }
 
         function initializeTable(){
           var distinct_query_table = $('#distinct_query_table').DataTable({
@@ -351,9 +426,8 @@
                 data.massError= massError;
                 data.retTimeError=reTimeError;
                 data.matchName=matchName;
-                console.log(data);
-              }
 
+              }
             },
             error: function(xhr, error) {
               console.log(xhr);
