@@ -1,11 +1,10 @@
 (function ($) {
-    $.fn.confirmDeleteDialog = function () {
+    $.fn.confirmDialog = function (buttonName = 'Confirm') {
 
         var div = $(this);
-
         //creating the pop up dialog
         div.attr('title', 'Confirm');
-        div.append('<p></p>');
+        div.html('<p></p>');
 
         div.dialog({
             autoOpen: false,
@@ -14,7 +13,7 @@
             width: 400,
             modal: true,
             buttons: {
-                'Delete': function () {
+                [buttonName]: function () {
                     div.find('p').html('');
                     $('.ui-dialog-title').html('In Progress...')
                     $('.ui-dialog-buttonset').children().hide()
