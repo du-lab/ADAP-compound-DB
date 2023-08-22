@@ -69,9 +69,11 @@ public class GroupSearchService {
 
     @Async
 //    @Transactional(propagation = Propagation.REQUIRED)
-    public Future<Void> groupSearch(UserPrincipal userPrincipal, Submission submission, List<File> files, HttpSession session,
-                                    SearchParameters userParameters, Map<BigInteger, String> libraries,
-                                    boolean withOntologyLevels, boolean sendResultsToEmail, boolean savedSubmission) throws TimeoutException {
+    public Future<Void> groupSearch(UserPrincipal userPrincipal, String userIpText, Submission submission,
+                                    List<File> files, HttpSession session, SearchParameters userParameters,
+                                    Map<BigInteger, String> libraries, boolean withOntologyLevels,
+                                    boolean sendResultsToEmail, boolean savedSubmission) throws TimeoutException {
+
         long time1 = System.currentTimeMillis();
         LOGGER.info("Group search has started");
         List<SpectrumMatch> savedMatches = new ArrayList<>();
@@ -197,8 +199,8 @@ public class GroupSearchService {
                     if (++spectrumCount % 100 == 0) {
                         long time = System.currentTimeMillis();
                         LOGGER.info(String.format(
-                                "Searched %d spectra with the average time %.3f seconds per spectrum",
-                                spectrumCount, 1E-3 * (time - startTime) / spectrumCount));
+                                "Searched %d spectra with the average time %.3f seconds per spectrum for %s",
+                                spectrumCount, 1E-3 * (time - startTime) / spectrumCount, userIpText));
                     }
 
                     if (spectrumCount % 1000 == 0) {
