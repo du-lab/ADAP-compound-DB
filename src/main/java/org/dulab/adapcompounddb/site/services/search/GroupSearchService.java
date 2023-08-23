@@ -190,8 +190,8 @@ public class GroupSearchService {
                                 showSessionEndedMessage = false;
                             }
                         } else {
-                            LOGGER.warn(
-                                "It looks like the session has been closed. Stopping the group search.");
+//                            LOGGER.warn(
+//                                "It looks like the session has been closed. Stopping the group search.");
                             //return new AsyncResult<>(null);
                         }
                     }
