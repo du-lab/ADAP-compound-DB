@@ -42,12 +42,12 @@
                     </button>
                     <div class="dropdown-menu">
                         <a class="dropdown-item exportLink"
-                           href="${pageContext.request.contextPath}/export/session/${dulab:groupSearchResultsAttributeName()}/simple_csv"
+                           href="${pageContext.request.contextPath}/export/session/${dulab:groupSearchResultsAttributeName()}/simple_csv?submissionId=${submissionId}"
                            title="Exports the top match for each query feature">
                             Simple export...
                         </a>
                         <a class="dropdown-item exportLink"
-                           href="${pageContext.request.contextPath}/export/session/${dulab:groupSearchResultsAttributeName()}/advanced_csv"
+                           href="${pageContext.request.contextPath}/export/session/${dulab:groupSearchResultsAttributeName()}/advanced_csv?submissionId=${submissionId}"
                            title="Exports all matches for each query feature">
                             Advanced export...
                         </a>
@@ -1112,18 +1112,22 @@
             //update export status
             $.ajax({
               url: `${pageContext.request.contextPath}/export/check_status`,
-              success: function(response){
-                console.log("EXPORT STATUS: ", response);
-                if(response === "DONE") {
-                  $('#progressModal').modal('hide');
-                  isExportDone = true;
-                }
-              },
-              error: function(error){
-                console.log("ERROR: ", error);
-                $('#progressModal').find('.modal-body > p').text('There was an error while exporting.');
-
+              success: function(response) {
+                  console.log("EXPORT STATUS: ", response);
+                  if (response === "DONE") {
+                      $('#progressModal').modal('hide');
+                      isExportDone = true;
+                  } else if (response === "ERROR") {
+                      $('#progressModal').find('.modal-body > p').text('There was an error while exporting.');
+                      isExportDone = true;
+                  }
               }
+              // },
+              // error: function(error){
+              //   console.log("ERROR: ", error);
+              //   $('#progressModal').find('.modal-body > p').text('There was an error while exporting.');
+              //
+              // }
             });
           }
         }

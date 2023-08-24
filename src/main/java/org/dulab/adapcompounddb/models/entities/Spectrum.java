@@ -36,16 +36,16 @@ public class Spectrum implements Serializable {
 
     private String externalId;
 
-//    @OneToMany(targetEntity = Identifier.class, mappedBy = "spectrum", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
-//    private List<Identifier> identifiers;
+    @OneToMany(targetEntity = Identifier.class, mappedBy = "spectrum", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
+    private List<Identifier> identifiers;
 
-    @ElementCollection
-    @CollectionTable(name = "Identifier",
-            joinColumns = {@JoinColumn(name = "SpectrumId", referencedColumnName = "Id")})
-    @MapKeyColumn(name = "type")
-    @MapKeyEnumerated(EnumType.STRING)
-    @Column(name = "value")
-    private Map<IdentifierType, String> identifiers;
+//    @ElementCollection(fetch = FetchType.EAGER)
+//    @CollectionTable(name = "Identifier",
+//            joinColumns = {@JoinColumn(name = "SpectrumId", referencedColumnName = "Id")})
+//    @MapKeyColumn(name = "type")
+//    @MapKeyEnumerated(EnumType.STRING)
+//    @Column(name = "value")
+//    private Map<IdentifierType, String> identifiers;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "FileId", referencedColumnName = "Id")
@@ -131,37 +131,52 @@ public class Spectrum implements Serializable {
         this.id = id;
     }
 
-    public Map<IdentifierType, String> getIdentifiers() {
+//    public Map<IdentifierType, String> getIdentifiers() {
+//        return identifiers;
+//    }
+//
+//    public void setIdentifiers(Map<IdentifierType, String> identifiers) {
+//        this.identifiers = identifiers;
+//    }
+
+    public List<Identifier> getIdentifiers() {
         return identifiers;
     }
 
-    public void setIdentifiers(Map<IdentifierType, String> identifiers) {
+    public void setIdentifiers(List<Identifier> identifiers) {
         this.identifiers = identifiers;
     }
 
-    @Transient
-    public void setIdentifiers(Collection<Identifier> identifiers) {
-        if (identifiers == null) {
-            this.identifiers = null;
-        } else {
-            this.identifiers = new HashMap<>();
-            identifiers.forEach(i -> this.identifiers.put(i.getType(), i.getValue()));
-        }
+    public Map<IdentifierType, String> getIdentifiersAsMap() {
+        if (identifiers == null)
+            return null;
+        return identifiers.stream()
+                .collect(Collectors.toMap(Identifier::getType, Identifier::getValue));
     }
+
+//    @Transient
+//    public void setIdentifiers(Collection<Identifier> identifiers) {
+//        if (identifiers == null) {
+//            this.identifiers = null;
+//        } else {
+//            this.identifiers = new HashMap<>();
+//            identifiers.forEach(i -> this.identifiers.put(i.getType(), i.getValue()));
+//        }
+//    }
 
     public String getStringOfIdentifiers() {
         if (identifiers == null)
             return null;
-        return identifiers.entrySet().stream()
-                .map(e -> String.format("%s (%s)", e.getValue(), e.getKey()))
+        return identifiers.stream()
+                .map(e -> String.format("%s (%s)", e.getValue(), e.getType()))
                 .collect(Collectors.joining(", "));
     }
 
     public String getIdentifiersAsHTML() {
         if (identifiers == null)
             return null;
-        return identifiers.entrySet().stream()
-                .map(e -> generateLinksForIdentifiers(e.getKey(), e.getValue()))
+        return identifiers.stream()
+                .map(e -> generateLinksForIdentifiers(e.getType(), e.getValue()))
                 .collect(Collectors.joining(", "));
     }
 
@@ -184,10 +199,17 @@ public class Spectrum implements Serializable {
     }
 
     public void addIdentifier(IdentifierType identifierType, String value) {
-        if (value == null || value.trim().isEmpty()) return;
+        Identifier identifier = new Identifier();
+        identifier.setType(identifierType);
+        identifier.setValue(value);
+        identifier.setSpectrum(this);
         if (identifiers == null)
-            identifiers = new HashMap<>();
-        identifiers.put(identifierType, value);
+            identifiers = new ArrayList<>();
+        identifiers.add(identifier);
+//        if (value == null || value.trim().isEmpty()) return;
+//        if (identifiers == null)
+//            identifiers = new HashMap<>();
+//        identifiers.put(identifierType, value);
     }
 
     public String getExternalId() {
