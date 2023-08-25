@@ -6,10 +6,11 @@ import java.util.stream.Collectors;
 
 public class ExportUtils {
 
-    private final static String CHECK_CHARACTER = String.valueOf('\u2713');
+//    private final static String CHECK_CHARACTER = String.valueOf('\u2713');
+    private final static String YES = "Yes";
 
     public static String formatBoolean(boolean x) {
-        return x ? CHECK_CHARACTER : null;
+        return x ? YES : null;
     }
 
     public static String formatDouble(Double x, int digits) {

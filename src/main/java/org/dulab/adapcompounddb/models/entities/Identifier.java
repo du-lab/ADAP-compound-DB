@@ -24,7 +24,7 @@ public class Identifier {
         this.id = id;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "SpectrumId", referencedColumnName = "Id")
     @JsonIgnore
     public Spectrum getSpectrum() {
