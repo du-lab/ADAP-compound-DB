@@ -45,7 +45,7 @@ public class ExportRestController extends BaseController {
 
     @Autowired
     public ExportRestController(
-            @Qualifier("excelExportSearchResultsService") ExportSearchResultsService exportSearchResultsService,
+            @Qualifier("csvExportSearchResultsService") ExportSearchResultsService exportSearchResultsService,
             ExcelExportSubmissionService exportSubmissionService, SpectrumMatchService spectrumMatchService) {
 
         this.exportSearchResultsService = exportSearchResultsService;
@@ -101,7 +101,7 @@ public class ExportRestController extends BaseController {
                         Long submissionId, boolean advanced) {
         response.setContentType(MediaType.TEXT_PLAIN_VALUE);
         response.setHeader("Content-Disposition",
-                String.format("attachment; filename=\"%s.xlsx\"", advanced ? "advanced_export" : "simple_export"));
+                String.format("attachment; filename=\"%s.zip\"", advanced ? "advanced_export" : "simple_export"));
 
 
         List<SearchResultDTO> searchResults;
@@ -147,7 +147,7 @@ public class ExportRestController extends BaseController {
 //        }
 
         Set<String> libraries = searchResults.stream()
-                .map(SearchResultDTO::getSubmissionName)
+                .map(SearchResultDTO::getSubmissionName).filter(Objects::nonNull)
                 .collect(Collectors.toSet());
 
         try {
