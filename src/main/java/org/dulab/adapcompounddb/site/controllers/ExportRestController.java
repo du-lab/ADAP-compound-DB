@@ -1,6 +1,8 @@
 package org.dulab.adapcompounddb.site.controllers;
 
+import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
+
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
@@ -37,6 +39,7 @@ public class ExportRestController extends BaseController {
         DONE,
         ERROR
     }
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ExportRestController.class);
 
     private final ExportSearchResultsService exportSearchResultsService;
@@ -53,8 +56,8 @@ public class ExportRestController extends BaseController {
         this.spectrumMatchService = spectrumMatchService;
     }
 
-    @RequestMapping(value="/export/check_status", method= RequestMethod.GET)
-    public ResponseEntity<String> checkStatus(HttpSession session){
+    @RequestMapping(value = "/export/check_status", method = RequestMethod.GET)
+    public ResponseEntity<String> checkStatus(HttpSession session) {
         ExportStatus exportStatus = (ExportStatus) session.getAttribute(ControllerUtils.EXPORT_PROGRESS_ATTRIBUTE_NAME);
         return new ResponseEntity<>(exportStatus != null ? exportStatus.toString() : ExportStatus.PENDING.toString(), HttpStatus.OK);
 //        if(exportStatus == null || exportStatus == ExportStatus.ERROR)
@@ -62,6 +65,7 @@ public class ExportRestController extends BaseController {
 //        else
 //            return new ResponseEntity<>(exportStatus.toString(), HttpStatus.ACCEPTED);
     }
+
     @RequestMapping(value = "/export/submission/{id:\\d+}/", produces = MediaType.TEXT_PLAIN_VALUE)
     public void exportSubmission(@PathVariable("id") long submissionId, @RequestParam Optional<String> name,
                                  HttpServletResponse response, HttpSession session) {
@@ -75,92 +79,105 @@ public class ExportRestController extends BaseController {
         }
     }
 
+    @RequestMapping(value = "/export/session/check", produces = MediaType.TEXT_PLAIN_VALUE)
+    public String checkExportInSession(HttpSession session) {
+        Object exportData = session.getAttribute(ControllerUtils.GROUP_SEARCH_SIMPLE_EXPORT);
+        return Boolean.valueOf(exportData != null).toString();
+    }
+
     @RequestMapping(value = "/export/session/{attribute}/simple_csv", produces = MediaType.TEXT_PLAIN_VALUE)
     public void simpleExport(@PathVariable("attribute") String attributeName,
                              @RequestParam(required = false) Long submissionId,
                              HttpSession session, HttpServletResponse response) {
-        export(attributeName, session, response, submissionId, false);
+        export(ControllerUtils.GROUP_SEARCH_SIMPLE_EXPORT, session, response, submissionId, false);
     }
 
     @RequestMapping(value = "/export/session/{attribute}/advanced_csv", produces = MediaType.TEXT_PLAIN_VALUE)
     public void advancedExport(@PathVariable("attribute") String attributeName,
                                @RequestParam(required = false) Long submissionId,
                                HttpSession session, HttpServletResponse response) {
-        export(attributeName, session, response, submissionId, true);
+        export(ControllerUtils.GROUP_SEARCH_ADVANCED_EXPORT, session, response, submissionId, true);
     }
 
     /**
      * Exports a list stored in the current session into CSV file
      *
-     * @param groupSearchResultsAttributeName session attribute name that is used to store the list
-     * @param session       current session
-     * @param response      HTTP Servlet response
-     * @param advanced      if true, all matched are exported. Otherwise, only the best match is exported for each feature
+     * @param groupSearchExportAttributeName session attribute name that is used to store the list
+     * @param session                        current session
+     * @param response                       HTTP Servlet response
+     * @param advanced                       if true, all matched are exported. Otherwise, only the best match is exported for each feature
      */
-    private void export(String groupSearchResultsAttributeName, HttpSession session, HttpServletResponse response,
+    private void export(String groupSearchExportAttributeName, HttpSession session, HttpServletResponse response,
                         Long submissionId, boolean advanced) {
         response.setContentType(MediaType.TEXT_PLAIN_VALUE);
         response.setHeader("Content-Disposition",
                 String.format("attachment; filename=\"%s.zip\"", advanced ? "advanced_export" : "simple_export"));
 
-
-        List<SearchResultDTO> searchResults;
-
-        Object groupSearchResultsAttribute = session.getAttribute(groupSearchResultsAttributeName);
-        if (groupSearchResultsAttribute instanceof List) {
-            searchResults = ((List<?>) groupSearchResultsAttribute).stream()
-                    .filter(object -> object instanceof SearchResultDTO)
-                    .map(object -> (SearchResultDTO) object)
-                    .collect(Collectors.toList());
-        } else if (submissionId != null && submissionId > 0) {
-            List<SpectrumMatch> spectrumMatches = spectrumMatchService.findAllSpectrumMatchesByUserIdAndSubmissionId(
-                    this.getCurrentUserPrincipal().getId(), submissionId);
-            searchResults = new ArrayList<>(spectrumMatches.size());
-            int matchIndex = 0;
-            for (SpectrumMatch match : spectrumMatches) {
-                SearchResultDTO searchResult = MappingUtils.mapSpectrumMatchToSpectrumClusterView(
-                        match, matchIndex++, null, null, null);
-                searchResult.setChromatographyTypeLabel(match.getMatchSpectrum() != null ? match.getMatchSpectrum().getChromatographyType().getLabel() : null);
-                searchResult.setOntologyLevel(match.getOntologyLevel());
-                searchResults.add(searchResult);
-            }
-        } else {
-            LOGGER.warn("Cannot find group search results");
-            session.setAttribute(ControllerUtils.EXPORT_PROGRESS_ATTRIBUTE_NAME, ExportStatus.ERROR);
-            return;
+        byte[] exportData = (byte[]) session.getAttribute(groupSearchExportAttributeName);
+        try {
+            response.getOutputStream().write(exportData);
+        } catch (IOException e) {
+            LOGGER.warn("Error when writing to a file: " + e.getMessage(), e);
         }
 
-//        if (!(groupSearchResultsAttribute instanceof List)) {
-//            LOGGER.warn(String.format("Attribute %s is not of type List", groupSearchResultsAttribute));
+
+//        List<SearchResultDTO> searchResults;
+//
+//        Object groupSearchResultsAttribute = session.getAttribute(groupSearchExportAttributeName);
+//        if (groupSearchResultsAttribute instanceof List) {
+//            searchResults = ((List<?>) groupSearchResultsAttribute).stream()
+//                    .filter(object -> object instanceof SearchResultDTO)
+//                    .map(object -> (SearchResultDTO) object)
+//                    .collect(Collectors.toList());
+//        } else if (submissionId != null && submissionId > 0) {
+//            List<SpectrumMatch> spectrumMatches = spectrumMatchService.findAllSpectrumMatchesByUserIdAndSubmissionId(
+//                    this.getCurrentUserPrincipal().getId(), submissionId);
+//            searchResults = new ArrayList<>(spectrumMatches.size());
+//            int matchIndex = 0;
+//            for (SpectrumMatch match : spectrumMatches) {
+//                SearchResultDTO searchResult = MappingUtils.mapSpectrumMatchToSpectrumClusterView(
+//                        match, matchIndex++, null, null, null);
+//                searchResult.setChromatographyTypeLabel(match.getMatchSpectrum() != null ? match.getMatchSpectrum().getChromatographyType().getLabel() : null);
+//                searchResult.setOntologyLevel(match.getOntologyLevel());
+//                searchResults.add(searchResult);
+//            }
+//        } else {
+//            LOGGER.warn("Cannot find group search results");
 //            session.setAttribute(ControllerUtils.EXPORT_PROGRESS_ATTRIBUTE_NAME, ExportStatus.ERROR);
 //            return;
 //        }
 //
-//        Object sessionLibraries = session.getAttribute(ControllerUtils.GROUP_SEARCH_LIBRARIES_USED_FOR_MATCHING);
-//        Map<BigInteger, String> librariesUsedForMatching = new HashMap<>();
-//        if (sessionLibraries != null) {
-//             librariesUsedForMatching = (Map<BigInteger, String>) sessionLibraries;
-//                for (Map.Entry<BigInteger, String> library : librariesUsedForMatching.entrySet()) {
-//                    String formatedName = library.getValue().replaceAll("<span(.*)</span>", "");
-//                    librariesUsedForMatching.put(library.getKey(), formatedName);
-//                }
+////        if (!(groupSearchResultsAttribute instanceof List)) {
+////            LOGGER.warn(String.format("Attribute %s is not of type List", groupSearchResultsAttribute));
+////            session.setAttribute(ControllerUtils.EXPORT_PROGRESS_ATTRIBUTE_NAME, ExportStatus.ERROR);
+////            return;
+////        }
+////
+////        Object sessionLibraries = session.getAttribute(ControllerUtils.GROUP_SEARCH_LIBRARIES_USED_FOR_MATCHING);
+////        Map<BigInteger, String> librariesUsedForMatching = new HashMap<>();
+////        if (sessionLibraries != null) {
+////             librariesUsedForMatching = (Map<BigInteger, String>) sessionLibraries;
+////                for (Map.Entry<BigInteger, String> library : librariesUsedForMatching.entrySet()) {
+////                    String formatedName = library.getValue().replaceAll("<span(.*)</span>", "");
+////                    librariesUsedForMatching.put(library.getKey(), formatedName);
+////                }
+////        }
+//
+//        Set<String> libraries = searchResults.stream()
+//                .map(SearchResultDTO::getSubmissionName).filter(Objects::nonNull)
+//                .collect(Collectors.toSet());
+//
+//        try {
+//            session.setAttribute(ControllerUtils.EXPORT_PROGRESS_ATTRIBUTE_NAME, ExportStatus.PENDING);
+//
+//            if (advanced)
+//                exportSearchResultsService.exportAll(response.getOutputStream(), searchResults, libraries);
+//            else
+//                exportSearchResultsService.export(response.getOutputStream(), searchResults, libraries);
+//
+//            session.setAttribute(ControllerUtils.EXPORT_PROGRESS_ATTRIBUTE_NAME, ExportStatus.DONE);
+//        } catch (IOException | ConcurrentModificationException e) {
+//            LOGGER.warn("Error when writing to a file: " + e.getMessage(), e);
 //        }
-
-        Set<String> libraries = searchResults.stream()
-                .map(SearchResultDTO::getSubmissionName).filter(Objects::nonNull)
-                .collect(Collectors.toSet());
-
-        try {
-            session.setAttribute(ControllerUtils.EXPORT_PROGRESS_ATTRIBUTE_NAME, ExportStatus.PENDING);
-
-            if (advanced)
-                exportSearchResultsService.exportAll(response.getOutputStream(), searchResults, libraries);
-            else
-                exportSearchResultsService.export(response.getOutputStream(), searchResults, libraries);
-
-            session.setAttribute(ControllerUtils.EXPORT_PROGRESS_ATTRIBUTE_NAME, ExportStatus.DONE);
-        } catch (IOException | ConcurrentModificationException e) {
-            LOGGER.warn("Error when writing to a file: " + e.getMessage(), e);
-        }
     }
 }
