@@ -1,6 +1,8 @@
 package org.dulab.adapcompounddb.site.services.search;
 
+import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
+
 import org.dulab.adapcompounddb.models.dto.SpectrumDTO;
 import org.dulab.adapcompounddb.models.enums.SearchTaskStatus;
 import org.dulab.adapcompounddb.site.repositories.SearchTaskRepository;
@@ -22,7 +24,6 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
 
-
 import javax.servlet.http.HttpSession;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -32,6 +33,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
+
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -51,12 +53,12 @@ public class GroupSearchService {
 
     @Autowired
     public GroupSearchService(IndividualSearchService spectrumSearchService,
-                              @Qualifier("excelExportSearchResultsService") ExportSearchResultsService exportSearchResultsService,
+                              @Qualifier("csvExportSearchResultsService") ExportSearchResultsService exportSearchResultsService,
                               SpectrumRepository spectrumRepository,
                               MultiFetchRepository multiFetchRepository,
                               EmailService emailService,
                               SpectrumMatchRepository spectrumMatchRepository,
-                                SearchTaskRepository searchTaskRepository) {
+                              SearchTaskRepository searchTaskRepository) {
 
         this.spectrumSearchService = spectrumSearchService;
         this.exportSearchResultsService = exportSearchResultsService;
@@ -80,12 +82,12 @@ public class GroupSearchService {
         Set<Long> deleteMatches = new HashSet<>();
 
         /**** Group search started ****/
-        if(userPrincipal != null && savedSubmission)
-            updateSearchTask(userPrincipal, submission, libraries, SearchTaskStatus.RUNNING);
+        if (userPrincipal != null && savedSubmission)
+            updateSearchTask(userPrincipal, submission, libraries, SearchTaskStatus.RUNNING, session);
 
         try {
             final List<SearchResultDTO> groupSearchDTOList = new ArrayList<>();
-            final List<SpectrumDTO> spectrumDTOList  = new ArrayList<>();
+            final List<SpectrumDTO> spectrumDTOList = new ArrayList<>();
             session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
             session.setAttribute("spectrumDTOList", spectrumDTOList);
 
@@ -108,7 +110,6 @@ public class GroupSearchService {
             long startTime = System.currentTimeMillis();
 
 
-
             boolean showSessionEndedMessage = true;
             int spectrumCount = 0;
             int progressStep = 0;
@@ -123,8 +124,7 @@ public class GroupSearchService {
                 int sameNameIndex = 0;
                 if (spectra == null) continue;
                 for (int spectrumIndex = 0; spectrumIndex < spectra.size(); ++spectrumIndex) {  // Spectrum querySpectrum : file.getSpectra()
-                    if(System.currentTimeMillis() - startTime > 6 * 60 * 60 * 1000)
-                    {
+                    if (System.currentTimeMillis() - startTime > 6 * 60 * 60 * 1000) {
                         session.setAttribute(ControllerUtils.GROUP_SEARCH_ERROR_ATTRIBUTE_NAME, "Group search timed out");
                         throw new TimeoutException("Group search timed out");
                     }
@@ -178,9 +178,9 @@ public class GroupSearchService {
                     //spectrum dto
                     try {
                         session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME,
-                            groupSearchDTOList);
+                                groupSearchDTOList);
                         session.setAttribute(ControllerUtils.GROUP_SEARCH_PROGRESS_ATTRIBUTE_NAME,
-                            progress);
+                                progress);
                         session.setAttribute(ControllerUtils.SPECTRUM_DTO_LIST, spectrumDTOList);
 
                     } catch (IllegalStateException e) {
@@ -212,36 +212,46 @@ public class GroupSearchService {
             }
 
             /**** Group search is done ****/
-            if(userPrincipal != null && savedSubmission) {
-                //save spectrum match
-                spectrumMatchRepository.deleteByQuerySpectrumsAndUserId(userPrincipal.getId(), deleteMatches);
-                spectrumMatchRepository.saveAll(savedMatches);
-                //update search task status to FINISHED
-                updateSearchTask(userPrincipal, submission, libraries, SearchTaskStatus.FINISHED);
-            }
 
-            long time2 = System.currentTimeMillis();
-            double total = (time2 - time1) / 1000.0;
-            if (!groupSearchDTOList.isEmpty() && sendResultsToEmail && userPrincipal != null) {
-                String tmpdir = System.getProperty("java.io.tmpdir");
-                String date = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").format(LocalDateTime.now());
-                String filePath = Paths.get(tmpdir, String.format("simple_output_%s.xlsx", date)).toString();
-                LOGGER.info(String.format("Writing to file '%s'", filePath));
+//            long time2 = System.currentTimeMillis();
+//            double total = (time2 - time1) / 1000.0;
+            if (!groupSearchDTOList.isEmpty()) {
 
-                try (FileOutputStream fileOutputStream = new FileOutputStream(filePath)) {
-                    //export file locally
-                    exportSearchResultsService.export(fileOutputStream, groupSearchDTOList,
-                        libraries.values());
-                    //send email with that file
-                    emailService.sendEmailWithAttachment(filePath, userPrincipal.getEmail());
-                    //delete the local file
-                    Path path = FileSystems.getDefault().getPath(filePath);
-                    Files.delete(path);
-
-                } catch (NoSuchFileException e) {
-                    LOGGER.error(String.format("%s: no such file or directory: %s", filePath, e.getMessage()), e);
+                // Export search results to a session (simple export)
+                try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+                    exportSearchResultsService.export(outputStream, groupSearchDTOList, libraries.values());
+                    session.setAttribute(ControllerUtils.GROUP_SEARCH_SIMPLE_EXPORT, outputStream.toByteArray());
                 } catch (IOException e) {
-                    LOGGER.warn(String.format("Error when writing to file '%s': %s", filePath, e.getMessage()), e);
+                    LOGGER.warn("Error when writing the simple export to the session: " + e.getMessage(), e);
+                }
+
+                // Export search results to a session (advanced export)
+                try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+                    exportSearchResultsService.exportAll(outputStream, groupSearchDTOList, libraries.values());
+                    session.setAttribute(ControllerUtils.GROUP_SEARCH_ADVANCED_EXPORT, outputStream.toByteArray());
+                } catch (IOException e) {
+                    LOGGER.warn("Error when writing the advanced export to the session: " + e.getMessage(), e);
+                }
+
+                // Send search results to email
+                if (sendResultsToEmail && userPrincipal != null) {
+
+                    String tmpdir = System.getProperty("java.io.tmpdir");
+                    String date = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").format(LocalDateTime.now());
+                    String filePath = Paths.get(tmpdir)
+                            .resolve(String.format("simple_output_%s.zip", date))
+                            .toString();
+
+                    try (FileOutputStream fileOutputStream = new FileOutputStream(filePath)) {
+                        exportSearchResultsService.export(fileOutputStream, groupSearchDTOList, libraries.values());
+                        emailService.sendEmailWithAttachment(filePath, userPrincipal.getEmail());
+                        //delete the local file
+                        Files.delete(FileSystems.getDefault().getPath(filePath));
+                    } catch (NoSuchFileException e) {
+                        LOGGER.error(String.format("%s: no such file or directory: %s", filePath, e.getMessage()), e);
+                    } catch (IOException e) {
+                        LOGGER.warn(String.format("Error when writing to file '%s': %s", filePath, e.getMessage()), e);
+                    }
                 }
 
 
@@ -254,6 +264,14 @@ public class GroupSearchService {
 //                }
             }
 
+            if (userPrincipal != null && savedSubmission) {
+                //save spectrum match
+                spectrumMatchRepository.deleteByQuerySpectrumsAndUserId(userPrincipal.getId(), deleteMatches);
+                spectrumMatchRepository.saveAll(savedMatches);
+                //update search task status to FINISHED
+                updateSearchTask(userPrincipal, submission, libraries, SearchTaskStatus.FINISHED, session);
+            }
+
         } catch (Throwable t) {
             LOGGER.error(String.format("Error during the group search: %s", t.getMessage()), t);
             session.setAttribute("GROUP_SEARCH_ERROR", t.getMessage());
@@ -262,35 +280,42 @@ public class GroupSearchService {
 
         /**** Group search interrupted ****/
         if (Thread.currentThread().isInterrupted()) {
-            if(userPrincipal != null && savedSubmission)
-                updateSearchTask(userPrincipal, submission, libraries, SearchTaskStatus.CANCELLED);
+            if (userPrincipal != null && savedSubmission)
+                updateSearchTask(userPrincipal, submission, libraries, SearchTaskStatus.CANCELLED, session);
             LOGGER.info("Group search is cancelled");
         }
 
         return new AsyncResult<>(null);
     }
 
-    @Transactional
-    void updateSearchTask(UserPrincipal user, Submission submission, Map<BigInteger, String> filteredLibraries, SearchTaskStatus status ){
+//    @Transactional
+    public void updateSearchTask(UserPrincipal user, Submission submission, Map<BigInteger, String> filteredLibraries,
+                                 SearchTaskStatus status, HttpSession session) {
         Optional<SearchTask> retreivedSearchTask = searchTaskRepository.findByUserIdAndSubmissionId(user.getId(), submission.getId());
         SearchTask searchTask;
         //if there's already a task, update it
-        if(retreivedSearchTask.isPresent()){
+        if (retreivedSearchTask.isPresent()) {
             searchTask = retreivedSearchTask.get();
         }
         //save new searchtask
-        else{
+        else {
             searchTask = new SearchTask();
             searchTask.setSubmission(submission);
             searchTask.setUser(user);
         }
         searchTask.setLibraries(filteredLibraries);
         searchTask.setDateTime(new Date());
+
+        byte[] simpleExportData = (byte[]) session.getAttribute(ControllerUtils.GROUP_SEARCH_SIMPLE_EXPORT);
+        searchTask.setSimpleExportData(simpleExportData);
+        byte[] advancedExportData = (byte[]) session.getAttribute(ControllerUtils.GROUP_SEARCH_ADVANCED_EXPORT);
+        searchTask.setAdvancedExportData(advancedExportData);
+
         searchTask.setStatus(status);
         SearchTask savedSearchTask = searchTaskRepository.save(searchTask);
         if (savedSearchTask == null) {
             LOGGER.warn("Could not update search task with user id: " + user.getId() + "and submission id: "
-                + submission.getId());
+                    + submission.getId());
         }
 
     }

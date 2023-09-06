@@ -5,7 +5,9 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<script src="<c:url value="/resources/AdapCompoundDb/js/tagsColor.js"/>"></script>
+<script src="<c:url value='/resources/jQuery-3.6.3/jquery-3.6.3.min.js'/>"></script>
+<script src="<c:url value='/resources/AdapCompoundDb/js/tagsColor.js'/>"></script>
+<script src="<c:url value='/resources/jquery-ui-1.13.2/jquery-ui.min.js'/>"></script>
 <script>
     $( function() {
         $( "#accordion" ).accordion({
