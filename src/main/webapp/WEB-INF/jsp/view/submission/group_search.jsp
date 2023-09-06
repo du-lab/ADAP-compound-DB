@@ -37,7 +37,7 @@
         <div class="col">
             <div class="btn-toolbar justify-content-end" role="toolbar">
                 <div class="dropdown">
-                    <button id="exportButton" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" disabled>
+                    <button id="exportButton" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" ${submissionId > 0 ? "" : "disabled"}>
                         Export
                     </button>
                     <div class="dropdown-menu">
@@ -990,13 +990,13 @@
         var previousResponse;
 
         setInterval(function () {
-
-            $.ajax({
-                url: "${pageContext.request.contextPath}/export/session/check",
-                success: x => $('#exportButton').prop('disabled', x === 'false')
-            });
-
             if (!isSavedResultPage) {
+                //update the export button
+                $.ajax({
+                    url: "${pageContext.request.contextPath}/export/session/check",
+                    success: x => $('#exportButton').prop('disabled', x === 'false')
+                });
+
                 //update the ontology level options
                 $.ajax({
                     url: "${pageContext.request.contextPath}/getOntologyLevels",

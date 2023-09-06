@@ -4,8 +4,10 @@ import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
 
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
+import org.dulab.adapcompounddb.models.entities.SearchTask;
 import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
+import org.dulab.adapcompounddb.site.services.SearchTaskService;
 import org.dulab.adapcompounddb.site.services.search.SpectrumMatchService;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.slf4j.Logger;
@@ -45,15 +47,18 @@ public class ExportRestController extends BaseController {
     private final ExportSearchResultsService exportSearchResultsService;
     private final ExcelExportSubmissionService exportSubmissionService;
     private final SpectrumMatchService spectrumMatchService;
+    private final SearchTaskService searchTaskService;
 
     @Autowired
     public ExportRestController(
             @Qualifier("csvExportSearchResultsService") ExportSearchResultsService exportSearchResultsService,
-            ExcelExportSubmissionService exportSubmissionService, SpectrumMatchService spectrumMatchService) {
+            ExcelExportSubmissionService exportSubmissionService, SpectrumMatchService spectrumMatchService,
+            SearchTaskService searchTaskService) {
 
         this.exportSearchResultsService = exportSearchResultsService;
         this.exportSubmissionService = exportSubmissionService;
         this.spectrumMatchService = spectrumMatchService;
+        this.searchTaskService = searchTaskService;
     }
 
     @RequestMapping(value = "/export/check_status", method = RequestMethod.GET)
@@ -114,10 +119,21 @@ public class ExportRestController extends BaseController {
                 String.format("attachment; filename=\"%s.zip\"", advanced ? "advanced_export" : "simple_export"));
 
         byte[] exportData = (byte[]) session.getAttribute(groupSearchExportAttributeName);
-        try {
-            response.getOutputStream().write(exportData);
-        } catch (IOException e) {
-            LOGGER.warn("Error when writing to a file: " + e.getMessage(), e);
+        if (exportData == null && submissionId != null && this.getCurrentUserPrincipal() != null) {
+            SearchTask searchTask = searchTaskService
+                    .findByUserIdAndSubmissionId(this.getCurrentUserPrincipal().getId(), submissionId)
+                    .orElse(null);
+            if (searchTask != null) {
+                exportData = advanced ? searchTask.getAdvancedExportData() : searchTask.getSimpleExportData();
+            }
+        }
+
+        if (exportData != null) {
+            try {
+                response.getOutputStream().write(exportData);
+            } catch (IOException e) {
+                LOGGER.warn("Error when writing to a file: " + e.getMessage(), e);
+            }
         }
 
 

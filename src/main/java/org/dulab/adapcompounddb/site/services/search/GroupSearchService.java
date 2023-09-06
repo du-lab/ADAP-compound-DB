@@ -83,7 +83,7 @@ public class GroupSearchService {
 
         /**** Group search started ****/
         if (userPrincipal != null && savedSubmission)
-            updateSearchTask(userPrincipal, submission, libraries, SearchTaskStatus.RUNNING);
+            updateSearchTask(userPrincipal, submission, libraries, SearchTaskStatus.RUNNING, session);
 
         try {
             final List<SearchResultDTO> groupSearchDTOList = new ArrayList<>();
@@ -212,13 +212,6 @@ public class GroupSearchService {
             }
 
             /**** Group search is done ****/
-            if (userPrincipal != null && savedSubmission) {
-                //save spectrum match
-                spectrumMatchRepository.deleteByQuerySpectrumsAndUserId(userPrincipal.getId(), deleteMatches);
-                spectrumMatchRepository.saveAll(savedMatches);
-                //update search task status to FINISHED
-                updateSearchTask(userPrincipal, submission, libraries, SearchTaskStatus.FINISHED);
-            }
 
 //            long time2 = System.currentTimeMillis();
 //            double total = (time2 - time1) / 1000.0;
@@ -271,6 +264,14 @@ public class GroupSearchService {
 //                }
             }
 
+            if (userPrincipal != null && savedSubmission) {
+                //save spectrum match
+                spectrumMatchRepository.deleteByQuerySpectrumsAndUserId(userPrincipal.getId(), deleteMatches);
+                spectrumMatchRepository.saveAll(savedMatches);
+                //update search task status to FINISHED
+                updateSearchTask(userPrincipal, submission, libraries, SearchTaskStatus.FINISHED, session);
+            }
+
         } catch (Throwable t) {
             LOGGER.error(String.format("Error during the group search: %s", t.getMessage()), t);
             session.setAttribute("GROUP_SEARCH_ERROR", t.getMessage());
@@ -280,15 +281,16 @@ public class GroupSearchService {
         /**** Group search interrupted ****/
         if (Thread.currentThread().isInterrupted()) {
             if (userPrincipal != null && savedSubmission)
-                updateSearchTask(userPrincipal, submission, libraries, SearchTaskStatus.CANCELLED);
+                updateSearchTask(userPrincipal, submission, libraries, SearchTaskStatus.CANCELLED, session);
             LOGGER.info("Group search is cancelled");
         }
 
         return new AsyncResult<>(null);
     }
 
-    @Transactional
-    public void updateSearchTask(UserPrincipal user, Submission submission, Map<BigInteger, String> filteredLibraries, SearchTaskStatus status) {
+//    @Transactional
+    public void updateSearchTask(UserPrincipal user, Submission submission, Map<BigInteger, String> filteredLibraries,
+                                 SearchTaskStatus status, HttpSession session) {
         Optional<SearchTask> retreivedSearchTask = searchTaskRepository.findByUserIdAndSubmissionId(user.getId(), submission.getId());
         SearchTask searchTask;
         //if there's already a task, update it
@@ -303,6 +305,12 @@ public class GroupSearchService {
         }
         searchTask.setLibraries(filteredLibraries);
         searchTask.setDateTime(new Date());
+
+        byte[] simpleExportData = (byte[]) session.getAttribute(ControllerUtils.GROUP_SEARCH_SIMPLE_EXPORT);
+        searchTask.setSimpleExportData(simpleExportData);
+        byte[] advancedExportData = (byte[]) session.getAttribute(ControllerUtils.GROUP_SEARCH_ADVANCED_EXPORT);
+        searchTask.setAdvancedExportData(advancedExportData);
+
         searchTask.setStatus(status);
         SearchTask savedSearchTask = searchTaskRepository.save(searchTask);
         if (savedSearchTask == null) {
