@@ -23,7 +23,7 @@
                         <th scope="row">Identifiers</th>
                         <td>
                             <c:forEach items="${spectrum.identifiers}" var="identifier">
-                                ${identifier.value} (${identifier.key}),
+                                ${identifier.value} (${identifier.type}),
                             </c:forEach>
                         </td>
                     </tr>

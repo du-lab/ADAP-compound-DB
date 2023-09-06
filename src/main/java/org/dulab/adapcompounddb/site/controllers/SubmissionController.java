@@ -140,11 +140,12 @@ public class SubmissionController extends BaseController {
         model.addAttribute("view_submission", true);
         model.addAttribute("edit_submission", edit);
         model.addAttribute("availableTags", submissionService.findUniqueTagStrings());
-        model.addAttribute("is_logged_in", (getCurrentUserPrincipal()  != null)?true: false);
+        model.addAttribute("is_logged_in", (getCurrentUserPrincipal() != null) ? true : false);
         //List<SpectrumMatch> spectrumMatchList = spectrumMatchRepository.findAllSpectrumMatchByUser(getCurrentUserPrincipal());
 
         return "submission/view";
     }
+
     @RequestMapping(value = "/libraries/", method = RequestMethod.GET)
     public String publicLibraries(final Model model) {
 
@@ -286,7 +287,7 @@ public class SubmissionController extends BaseController {
         submission.setUser(getCurrentUserPrincipal());
 
         final String response = submit(submission, model, submissionForm);
-        if(response.startsWith("redirect:"))
+        if (response.startsWith("redirect:"))
             redirectAttributes.addFlashAttribute("message", model.getAttribute("message"));
         Submission.clear(session);
         return response;
@@ -404,9 +405,9 @@ public class SubmissionController extends BaseController {
         Submission submission = submissionService.findSubmission(id);
         UserPrincipal currentUser = getCurrentUserPrincipal();
 
-        if(currentUser == null)
+        if (currentUser == null)
             throw new RuntimeException("You must be logged in to perform this operation");
-        else if(!currentUser.isAdmin() && !currentUser.getUsername().equals(submission.getUser().getUsername()))
+        else if (!currentUser.isAdmin() && !currentUser.getUsername().equals(submission.getUser().getUsername()))
             throw new RuntimeException("You are not authorized to perform this operation");
         else
             submissionService.delete(id);
@@ -439,7 +440,7 @@ public class SubmissionController extends BaseController {
     @RequestMapping(value = "/submission/group_search/{submissionId:\\d+}", method = RequestMethod.GET)
     public String groupSubmission(@PathVariable("submissionId") long submissionId, final Model model) {
 
-        if(getCurrentUserPrincipal() == null)
+        if (getCurrentUserPrincipal() == null)
             return "redirect:/submission/{submissionId}/";
 //        Submission submission = submissionService.fetchSubmission(submissionId);
 //        List<File> files = submission.getFiles();

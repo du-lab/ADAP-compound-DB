@@ -48,4 +48,6 @@ public interface UserPrincipalService {
     List<UserPrincipal> fetchUsernamesForOrganization(String username, UserPrincipal user);
 
     void sendInviteToUser(UserPrincipal user, List<Long> selectedUsers) throws Exception;
+
+    void convertOrganizationAccountToUserAccount(UserPrincipal user);
 }

@@ -16,13 +16,11 @@ import org.dulab.adapcompounddb.site.services.SubmissionTagService;
 import org.dulab.adapcompounddb.site.services.search.GroupSearchService;
 import org.dulab.adapcompounddb.site.services.search.SearchParameters;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.Cookie;
@@ -91,23 +89,23 @@ public class GroupSearchController extends BaseController {
         //check if user is login
         model.addAttribute("isLoggedIn", this.getCurrentUserPrincipal() != null);
         model.addAttribute("searchParameters", this.getCurrentUserPrincipal() != null ?
-        this.getCurrentUserPrincipal().getSearchParametersDTO()
-                .getChromatographySearchParameters(submission.getChromatographyType()) : new ChromatographySearchParametersDTO());
+                this.getCurrentUserPrincipal().getSearchParametersDTO()
+                        .getChromatographySearchParameters(submission.getChromatographyType()) : new ChromatographySearchParametersDTO());
         return "submission/group_search_parameters";
     }
 
     @RequestMapping(value = "/group_search/parameters", method = RequestMethod.POST)
     public String groupSearchParametersPost(@RequestParam Optional<Long> submissionId, HttpSession session, Model model,
-                                             HttpServletRequest request, HttpServletResponse response,
-                                             @Valid FilterForm form, Errors errors,
-                                             RedirectAttributes redirectAttributes) throws TimeoutException {
+                                            HttpServletRequest request, HttpServletResponse response,
+                                            @Valid FilterForm form, Errors errors,
+                                            RedirectAttributes redirectAttributes) throws TimeoutException {
 
         Submission submission = submissionId
                 .map(submissionService::fetchSubmission)
                 .orElseGet(() -> Submission.from(session));
 
         Long id = submission.getId();
-        boolean savedSubmission =  (submission.getId() != 0)? true : false;
+        boolean savedSubmission = (submission.getId() != 0) ? true : false;
 
 
         FilterOptions filterOptions = getFilterOptions(Collections.singletonList(submission.getChromatographyType()));
@@ -143,34 +141,50 @@ public class GroupSearchController extends BaseController {
         parameters.setSubmissionIds(form.getSubmissionIds());
 
         Map<BigInteger, String> chosenLibraries = new TreeMap<>();
-        for(Map.Entry<BigInteger, String> entry : filterOptions.getSubmissions().entrySet()){
-            if(form.getSubmissionIds().contains(entry.getKey())){
+        for (Map.Entry<BigInteger, String> entry : filterOptions.getSubmissions().entrySet()) {
+            if (form.getSubmissionIds().contains(entry.getKey())) {
                 chosenLibraries.put(entry.getKey(), entry.getValue());
             }
         }
 
+        String userIpText = String.format("user %s with IP = %s [%s]",
+                this.getCurrentUserPrincipal(), request.getRemoteAddr(), request.getHeader("X-Forwarded-For"));
+
         session.setAttribute(GROUP_SEARCH_LIBRARIES_USED_FOR_MATCHING, chosenLibraries);
-        asyncResult = groupSearchService.groupSearch(this.getCurrentUserPrincipal(), submission, submission.getFiles(), session,
-                parameters, chosenLibraries, form.isWithOntologyLevels(), form.isSendResultsToEmail(), savedSubmission);
+        asyncResult = groupSearchService.groupSearch(this.getCurrentUserPrincipal(), userIpText, submission,
+                submission.getFiles(), session, parameters, chosenLibraries, form.isWithOntologyLevels(),
+                form.isSendResultsToEmail(), savedSubmission);
         session.setAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME, asyncResult);
 
-
-        LOGGER.info(String.format("Group search is started by user %s with IP = %s [%s]",
-                this.getCurrentUserPrincipal(), request.getRemoteAddr(), request.getHeader("X-Forwarded-For")));
+        LOGGER.info("Group search is started by " + userIpText);
 
         String byteString = ConversionsUtils.formToByteString(form);
         Cookie metaFieldsCookie = new Cookie(SEARCH_PARAMETERS_COOKIE_NAME, byteString);
         response.addCookie(metaFieldsCookie);
-
+        if (savedSubmission)
+            redirectAttributes.addFlashAttribute("savedSubmissionId", submission.getId());
 
         return "redirect:/group_search/";
     }
 
     @RequestMapping(value = "/group_search/", method = RequestMethod.GET)
-    public String groupSearch(Model model, HttpSession session) {
-
+    public String groupSearch(RedirectAttributes redirectAttributes, Model model, HttpSession session) {
+        Long savedSubmissionId = (Long) redirectAttributes.getFlashAttributes().get("savedSubmissionId");
+        if (savedSubmissionId != null)
+            model.addAttribute("savedSubmissionId", savedSubmissionId);
 
         return "submission/group_search";
+    }
+
+    @RequestMapping(value = "/group_search/stop", method = RequestMethod.GET)
+    public ResponseEntity<Void> groupSearchStop(Model model, HttpSession session) {
+        Future<Void> asyncResult = (Future<Void>) session.getAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME);
+        if (asyncResult != null && !asyncResult.isDone()) {
+            asyncResult.cancel(true);
+            session.removeAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME);
+            LOGGER.info("Group search stopped by user");
+        }
+        return ResponseEntity.ok().build();
     }
 
     private Collection<ChromatographyType> getChromatographyTypes(Submission submission) {

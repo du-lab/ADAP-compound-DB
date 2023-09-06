@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.site.services.search;
 
 
+import org.dulab.adapcompounddb.site.repositories.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
@@ -10,10 +11,6 @@ import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.entities.views.SpectrumClusterView;
-import org.dulab.adapcompounddb.site.repositories.SpectrumClusterRepository;
-import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
-import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
-import org.dulab.adapcompounddb.site.repositories.SubmissionRepository;
 import org.dulab.adapcompounddb.site.services.utils.DataUtils;
 import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.dulab.adapcompounddb.utils.MathUtils;
@@ -40,6 +37,7 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     private final SpectrumMatchRepository spectrumMatchRepository;
     private final SpectrumClusterRepository spectrumClusterRepository;
     private final SubmissionRepository submissionRepository;
+    private final MultiFetchRepository multiFetchRepository;
 
     private enum ColumnInformation {
         ID(0, "id"),
@@ -49,9 +47,9 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
         SCORE(4, "score"),
         AVERAGE_SIGNIFICANCE(5, "averageSignificance"),
         MINIMUM_SIGNIFICANCE(6, "minimumSignificance"),
-        SPECIES_PVALUE(7,"diseasePValue"),
+        SPECIES_PVALUE(7, "diseasePValue"),
         SAMPLE_SOURCE_PVALUE(8, "speciesPValue"),
-        DISEASE_PVALUE(9,"sampleSourcePValue"),
+        DISEASE_PVALUE(9, "sampleSourcePValue"),
         MINIMUM_PVALUE(10, "minPValue"),
         CHROMATOGRAPHYTYPE(11, "chromatographyType");
 
@@ -83,19 +81,18 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     }
 
 
-
-
-
     @Autowired
     public SpectrumMatchServiceImpl(final SpectrumRepository spectrumRepository,
                                     final SpectrumMatchRepository spectrumMatchRepository,
                                     final SpectrumClusterRepository spectrumClusterRepository,
-                                    final SubmissionRepository submissionRepository) {
+                                    final SubmissionRepository submissionRepository,
+                                    final MultiFetchRepository multiFetchRepository) {
 
         this.spectrumRepository = spectrumRepository;
         this.spectrumMatchRepository = spectrumMatchRepository;
         this.spectrumClusterRepository = spectrumClusterRepository;
         this.submissionRepository = submissionRepository;
+        this.multiFetchRepository = multiFetchRepository;
     }
 
     @Transactional
@@ -448,32 +445,36 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
     }
 
     public List<SpectrumMatch> findAllSpectrumMatchByUserIdAndQuerySpectrums(Long userId, List<Long> spectrumIds) {
-        return spectrumMatchRepository.findAllSpectrumMatchByUserIdAndQuerySpectrums( userId, spectrumIds);
+        return spectrumMatchRepository.findAllSpectrumMatchByUserIdAndQuerySpectrums(userId, spectrumIds);
+    }
+
+    public List<SpectrumMatch> findAllSpectrumMatchesByUserIdAndSubmissionId(Long userId, Long submissionId) {
+        return multiFetchRepository.getMatchesWithQueryAndMatchSpectraAndIdentifications(userId, submissionId);
+//        return spectrumMatchRepository.findAllSpectrumMatchesByUserIdAndSubmissionId(userId, submissionId);
     }
 
     @Override
     public Page<SpectrumMatch> findAllSpectrumMatchByUserIdAndQuerySpectrumsPageable(Long userId, List<Long> spectrumIds,
-                                                                                Integer start, Integer length,  String sortColumn, String sortDirection) {
+                                                                                     Integer start, Integer length, String sortColumn, String sortDirection) {
 
         Pageable pageable = DataUtils.createPageable(start, length, sortColumn, sortDirection);
-        Page<SpectrumMatch> sm = spectrumMatchRepository.findAllSpectrumMatchByUserIdAndQuerySpectrumsPageable( userId, spectrumIds, pageable);
+        Page<SpectrumMatch> sm = spectrumMatchRepository.findAllSpectrumMatchByUserIdAndQuerySpectrumsPageable(userId, spectrumIds, pageable);
         return sm;
     }
 
     @Override
     public Page<String> findAllDistinctSpectrumByUserIdAndQuerySpectrumsPageable(Long userId,
-        List<Long> spectrumIds, Integer start, Integer length, Integer showMatchesOnly,
-        String ontologyLevel, Double scoreThreshold, Double massError, Double retTimeError, String matchName) {
+                                                                                 List<Long> spectrumIds, Integer start, Integer length, Integer showMatchesOnly,
+                                                                                 String ontologyLevel, Double scoreThreshold, Double massError, Double retTimeError, String matchName) {
 
         Page<String> result;
         Pageable pageable = DataUtils.createPageable(start, length, null, null);
-        if(showMatchesOnly ==1)
-            result = spectrumMatchRepository.findAllDistinctQueryByUserIdAndQuerySpectrumsWithMatches( userId, spectrumIds, pageable,
-                ontologyLevel, scoreThreshold,  massError,  retTimeError, matchName);
-        else
-        {
-            result = spectrumMatchRepository.findAllDistinctQueryByUserIdAndQuerySpectrums( userId, spectrumIds, pageable,
-                ontologyLevel, scoreThreshold,  massError,  retTimeError, matchName);
+        if (showMatchesOnly == 1)
+            result = spectrumMatchRepository.findAllDistinctQueryByUserIdAndQuerySpectrumsWithMatches(userId, spectrumIds, pageable,
+                    ontologyLevel, scoreThreshold, massError, retTimeError, matchName);
+        else {
+            result = spectrumMatchRepository.findAllDistinctQueryByUserIdAndQuerySpectrums(userId, spectrumIds, pageable,
+                    ontologyLevel, scoreThreshold, massError, retTimeError, matchName);
         }
 
         return result;
@@ -486,12 +487,12 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
 
     @Override
     public List<SpectrumMatch> getMatchesByUserAndSpectrumName(long id, String spectrumName,
-        Integer showMatchesOnly, String ontologyLevel, Double scoreThreshold, Double massError,
-        Double retTimeError, String matchName) {
-        if(showMatchesOnly ==1 )
-         return spectrumMatchRepository.getMatchesByUserAndSpectrumName(id, spectrumName, ontologyLevel,  scoreThreshold,  massError,  retTimeError, matchName);
-      else
-        return spectrumMatchRepository.getMatchesByUserAndSpectrumNameShowMatchesOnly(id, spectrumName, ontologyLevel,  scoreThreshold,  massError,  retTimeError, matchName);
+                                                               Integer showMatchesOnly, String ontologyLevel, Double scoreThreshold, Double massError,
+                                                               Double retTimeError, String matchName) {
+        if (showMatchesOnly == 1)
+            return spectrumMatchRepository.getMatchesByUserAndSpectrumName(id, spectrumName, ontologyLevel, scoreThreshold, massError, retTimeError, matchName);
+        else
+            return spectrumMatchRepository.getMatchesByUserAndSpectrumNameShowMatchesOnly(id, spectrumName, ontologyLevel, scoreThreshold, massError, retTimeError, matchName);
     }
 
 

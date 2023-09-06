@@ -152,6 +152,22 @@ public class AccountController extends BaseController {
         return "account/view";
     }
 
+    @RequestMapping(value = "account/convertToUser", method = RequestMethod.GET)
+    public String convertExistingAccountToUser(Model model) {
+        UserPrincipal user = getCurrentUserPrincipal();
+        String errorMessage = "";
+        if (user != null && user.isOrganization()) {
+            userPrincipalService.convertOrganizationAccountToUserAccount(user);
+            populateViewModel(model, user);
+        } else {
+            errorMessage = "You are not allowed to perform this action.";
+            model.addAttribute("errorMessage", errorMessage);
+        }
+        if (errorMessage.length() == 0)
+            model.addAttribute("successMessage", "Successfully converted to user Account.");
+        return "account/view";
+    }
+
     @RequestMapping(value = "account/fetchUserNamesForOrganization", method = RequestMethod.POST)
     public String fetchUsernamesForOrganization(Model model,
                                                 @RequestParam ("username") String username) {

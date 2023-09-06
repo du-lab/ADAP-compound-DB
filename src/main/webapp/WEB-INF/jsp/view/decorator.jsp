@@ -218,7 +218,7 @@
                         <li class="nav-item">
                             <a id="libraryPage" class="nav-link text-nowrap" href="<c:url value="/libraries/" />">
                                 <i class="material-icons align-middle">equalizer</i>
-                                <span class="align-middle">Libraries</span>
+                                <span class="align-middle">Public Libraries</span>
                             </a>
                         </li>
                         <li class="nav-item">
