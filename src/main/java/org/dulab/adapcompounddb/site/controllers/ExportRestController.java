@@ -1,8 +1,15 @@
 package org.dulab.adapcompounddb.site.controllers;
 
+import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
+
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
+import org.dulab.adapcompounddb.models.entities.SearchTask;
+import org.dulab.adapcompounddb.models.entities.SpectrumMatch;
 import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
+import org.dulab.adapcompounddb.site.services.SearchTaskService;
+import org.dulab.adapcompounddb.site.services.search.SpectrumMatchService;
+import org.dulab.adapcompounddb.site.services.utils.MappingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
@@ -28,34 +35,42 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
-public class ExportRestController {
+public class ExportRestController extends BaseController {
     private enum ExportStatus {
         PENDING,
         DONE,
         ERROR
     }
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ExportRestController.class);
 
     private final ExportSearchResultsService exportSearchResultsService;
     private final ExcelExportSubmissionService exportSubmissionService;
+    private final SpectrumMatchService spectrumMatchService;
+    private final SearchTaskService searchTaskService;
 
     @Autowired
     public ExportRestController(
-            @Qualifier("excelExportSearchResultsService") ExportSearchResultsService exportSearchResultsService,
-            ExcelExportSubmissionService exportSubmissionService) {
+            @Qualifier("csvExportSearchResultsService") ExportSearchResultsService exportSearchResultsService,
+            ExcelExportSubmissionService exportSubmissionService, SpectrumMatchService spectrumMatchService,
+            SearchTaskService searchTaskService) {
 
         this.exportSearchResultsService = exportSearchResultsService;
         this.exportSubmissionService = exportSubmissionService;
+        this.spectrumMatchService = spectrumMatchService;
+        this.searchTaskService = searchTaskService;
     }
 
-    @RequestMapping(value="/export/check_status", method= RequestMethod.GET)
-    public ResponseEntity<String> checkStatus(HttpSession session){
+    @RequestMapping(value = "/export/check_status", method = RequestMethod.GET)
+    public ResponseEntity<String> checkStatus(HttpSession session) {
         ExportStatus exportStatus = (ExportStatus) session.getAttribute(ControllerUtils.EXPORT_PROGRESS_ATTRIBUTE_NAME);
-        if(exportStatus == null || exportStatus == ExportStatus.ERROR)
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        else
-            return new ResponseEntity<>(exportStatus.toString(), HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(exportStatus != null ? exportStatus.toString() : ExportStatus.PENDING.toString(), HttpStatus.OK);
+//        if(exportStatus == null || exportStatus == ExportStatus.ERROR)
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        else
+//            return new ResponseEntity<>(exportStatus.toString(), HttpStatus.ACCEPTED);
     }
+
     @RequestMapping(value = "/export/submission/{id:\\d+}/", produces = MediaType.TEXT_PLAIN_VALUE)
     public void exportSubmission(@PathVariable("id") long submissionId, @RequestParam Optional<String> name,
                                  HttpServletResponse response, HttpSession session) {
@@ -69,63 +84,116 @@ public class ExportRestController {
         }
     }
 
+    @RequestMapping(value = "/export/session/check", produces = MediaType.TEXT_PLAIN_VALUE)
+    public String checkExportInSession(HttpSession session) {
+        Object exportData = session.getAttribute(ControllerUtils.GROUP_SEARCH_SIMPLE_EXPORT);
+        return Boolean.valueOf(exportData != null).toString();
+    }
+
     @RequestMapping(value = "/export/session/{attribute}/simple_csv", produces = MediaType.TEXT_PLAIN_VALUE)
     public void simpleExport(@PathVariable("attribute") String attributeName,
+                             @RequestParam(required = false) Long submissionId,
                              HttpSession session, HttpServletResponse response) {
-        export(attributeName, session, response, false);
+        export(ControllerUtils.GROUP_SEARCH_SIMPLE_EXPORT, session, response, submissionId, false);
     }
 
     @RequestMapping(value = "/export/session/{attribute}/advanced_csv", produces = MediaType.TEXT_PLAIN_VALUE)
     public void advancedExport(@PathVariable("attribute") String attributeName,
+                               @RequestParam(required = false) Long submissionId,
                                HttpSession session, HttpServletResponse response) {
-        export(attributeName, session, response, true);
+        export(ControllerUtils.GROUP_SEARCH_ADVANCED_EXPORT, session, response, submissionId, true);
     }
 
     /**
      * Exports a list stored in the current session into CSV file
      *
-     * @param attributeName session attribute name that is used to store the list
-     * @param session       current session
-     * @param response      HTTP Servlet response
-     * @param advanced      if true, all matched are exported. Otherwise, only the best match is exported for each feature
+     * @param groupSearchExportAttributeName session attribute name that is used to store the list
+     * @param session                        current session
+     * @param response                       HTTP Servlet response
+     * @param advanced                       if true, all matched are exported. Otherwise, only the best match is exported for each feature
      */
-    private void export(String attributeName, HttpSession session, HttpServletResponse response, boolean advanced) {
+    private void export(String groupSearchExportAttributeName, HttpSession session, HttpServletResponse response,
+                        Long submissionId, boolean advanced) {
         response.setContentType(MediaType.TEXT_PLAIN_VALUE);
         response.setHeader("Content-Disposition",
-                String.format("attachment; filename=\"%s.xlsx\"", advanced ? "advanced_export" : "simple_export"));
+                String.format("attachment; filename=\"%s.zip\"", advanced ? "advanced_export" : "simple_export"));
 
-        Object attribute = session.getAttribute(attributeName);
-        if (!(attribute instanceof List)) {
-            LOGGER.warn(String.format("Attribute %s is not of type List", attributeName));
-            session.setAttribute(ControllerUtils.EXPORT_PROGRESS_ATTRIBUTE_NAME, ExportStatus.ERROR);
-            return;
+        byte[] exportData = (byte[]) session.getAttribute(groupSearchExportAttributeName);
+        if (exportData == null && submissionId != null && this.getCurrentUserPrincipal() != null) {
+            SearchTask searchTask = searchTaskService
+                    .findByUserIdAndSubmissionId(this.getCurrentUserPrincipal().getId(), submissionId)
+                    .orElse(null);
+            if (searchTask != null) {
+                exportData = advanced ? searchTask.getAdvancedExportData() : searchTask.getSimpleExportData();
+            }
         }
 
-        Object sessionLibraries = session.getAttribute(ControllerUtils.GROUP_SEARCH_LIBRARIES_USED_FOR_MATCHING);
-        Map<BigInteger, String> librariesUsedForMatching = new HashMap<>();
-        if (sessionLibraries != null) {
-             librariesUsedForMatching = (Map<BigInteger, String>) sessionLibraries;
-                for (Map.Entry<BigInteger, String> library : librariesUsedForMatching.entrySet()) {
-                    String formatedName = library.getValue().replaceAll("<span(.*)</span>", "");
-                    librariesUsedForMatching.put(library.getKey(), formatedName);
-                }
+        if (exportData != null) {
+            try {
+                response.getOutputStream().write(exportData);
+            } catch (IOException e) {
+                LOGGER.warn("Error when writing to a file: " + e.getMessage(), e);
+            }
         }
 
-        try {
-            session.setAttribute(ControllerUtils.EXPORT_PROGRESS_ATTRIBUTE_NAME, ExportStatus.PENDING);
-            List<SearchResultDTO> searchResults = ((List<?>) attribute).stream()
-                    .filter(object -> object instanceof SearchResultDTO)
-                    .map(object -> (SearchResultDTO) object)
-                    .collect(Collectors.toList());
 
-            if (advanced)
-                exportSearchResultsService.exportAll(response.getOutputStream(), searchResults, librariesUsedForMatching.values());
-            else
-                exportSearchResultsService.export(response.getOutputStream(), searchResults, librariesUsedForMatching.values());
-
-            session.setAttribute(ControllerUtils.EXPORT_PROGRESS_ATTRIBUTE_NAME, ExportStatus.DONE);
-        } catch (IOException | ConcurrentModificationException e) {
-            LOGGER.warn("Error when writing to a file: " + e.getMessage(), e);
-        }
+//        List<SearchResultDTO> searchResults;
+//
+//        Object groupSearchResultsAttribute = session.getAttribute(groupSearchExportAttributeName);
+//        if (groupSearchResultsAttribute instanceof List) {
+//            searchResults = ((List<?>) groupSearchResultsAttribute).stream()
+//                    .filter(object -> object instanceof SearchResultDTO)
+//                    .map(object -> (SearchResultDTO) object)
+//                    .collect(Collectors.toList());
+//        } else if (submissionId != null && submissionId > 0) {
+//            List<SpectrumMatch> spectrumMatches = spectrumMatchService.findAllSpectrumMatchesByUserIdAndSubmissionId(
+//                    this.getCurrentUserPrincipal().getId(), submissionId);
+//            searchResults = new ArrayList<>(spectrumMatches.size());
+//            int matchIndex = 0;
+//            for (SpectrumMatch match : spectrumMatches) {
+//                SearchResultDTO searchResult = MappingUtils.mapSpectrumMatchToSpectrumClusterView(
+//                        match, matchIndex++, null, null, null);
+//                searchResult.setChromatographyTypeLabel(match.getMatchSpectrum() != null ? match.getMatchSpectrum().getChromatographyType().getLabel() : null);
+//                searchResult.setOntologyLevel(match.getOntologyLevel());
+//                searchResults.add(searchResult);
+//            }
+//        } else {
+//            LOGGER.warn("Cannot find group search results");
+//            session.setAttribute(ControllerUtils.EXPORT_PROGRESS_ATTRIBUTE_NAME, ExportStatus.ERROR);
+//            return;
+//        }
+//
+////        if (!(groupSearchResultsAttribute instanceof List)) {
+////            LOGGER.warn(String.format("Attribute %s is not of type List", groupSearchResultsAttribute));
+////            session.setAttribute(ControllerUtils.EXPORT_PROGRESS_ATTRIBUTE_NAME, ExportStatus.ERROR);
+////            return;
+////        }
+////
+////        Object sessionLibraries = session.getAttribute(ControllerUtils.GROUP_SEARCH_LIBRARIES_USED_FOR_MATCHING);
+////        Map<BigInteger, String> librariesUsedForMatching = new HashMap<>();
+////        if (sessionLibraries != null) {
+////             librariesUsedForMatching = (Map<BigInteger, String>) sessionLibraries;
+////                for (Map.Entry<BigInteger, String> library : librariesUsedForMatching.entrySet()) {
+////                    String formatedName = library.getValue().replaceAll("<span(.*)</span>", "");
+////                    librariesUsedForMatching.put(library.getKey(), formatedName);
+////                }
+////        }
+//
+//        Set<String> libraries = searchResults.stream()
+//                .map(SearchResultDTO::getSubmissionName).filter(Objects::nonNull)
+//                .collect(Collectors.toSet());
+//
+//        try {
+//            session.setAttribute(ControllerUtils.EXPORT_PROGRESS_ATTRIBUTE_NAME, ExportStatus.PENDING);
+//
+//            if (advanced)
+//                exportSearchResultsService.exportAll(response.getOutputStream(), searchResults, libraries);
+//            else
+//                exportSearchResultsService.export(response.getOutputStream(), searchResults, libraries);
+//
+//            session.setAttribute(ControllerUtils.EXPORT_PROGRESS_ATTRIBUTE_NAME, ExportStatus.DONE);
+//        } catch (IOException | ConcurrentModificationException e) {
+//            LOGGER.warn("Error when writing to a file: " + e.getMessage(), e);
+//        }
     }
 }

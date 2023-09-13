@@ -35,7 +35,7 @@ public class SaveIdentifiersQueryBuilder {
         List<String> identifierTriples = new ArrayList<>();
         int identifierCount = 0;
         for (int i = 0; i < spectrumList.size(); i++) {
-            Map<IdentifierType, String> identifiers = spectrumList.get(i).getIdentifiers();
+            Map<IdentifierType, String> identifiers = spectrumList.get(i).getIdentifiersAsMap();
             if (identifiers == null)
                 continue;
 

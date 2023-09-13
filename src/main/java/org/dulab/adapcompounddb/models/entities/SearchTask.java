@@ -2,6 +2,7 @@ package org.dulab.adapcompounddb.models.entities;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -40,6 +41,12 @@ public class SearchTask implements Serializable {
 
     @Enumerated(EnumType.STRING)
     private SearchTaskStatus status = SearchTaskStatus.NOT_STARTED;
+
+    @Lob
+    private byte[] simpleExportData;
+
+    @Lob
+    private byte[] advancedExportData;
 
     public Long getId() {
         return id;
@@ -98,6 +105,22 @@ public class SearchTask implements Serializable {
 
     public void setUser(UserPrincipal user) {
         this.user = user;
+    }
+
+    public byte[] getSimpleExportData() {
+        return simpleExportData;
+    }
+
+    public void setSimpleExportData(byte[] simpleExportData) {
+        this.simpleExportData = simpleExportData;
+    }
+
+    public byte[] getAdvancedExportData() {
+        return advancedExportData;
+    }
+
+    public void setAdvancedExportData(byte[] advancedExportData) {
+        this.advancedExportData = advancedExportData;
     }
 
     @Override

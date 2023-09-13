@@ -5,7 +5,9 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<script src="<c:url value="/resources/AdapCompoundDb/js/tagsColor.js"/>"></script>
+<script src="<c:url value='/resources/jQuery-3.6.3/jquery-3.6.3.min.js'/>"></script>
+<script src="<c:url value='/resources/AdapCompoundDb/js/tagsColor.js'/>"></script>
+<script src="<c:url value='/resources/jquery-ui-1.13.2/jquery-ui.min.js'/>"></script>
 <script>
     $( function() {
         $( "#accordion" ).accordion({
@@ -69,14 +71,38 @@
                             Leave Organization
                         </a>
                     </div>
-                    <c:if test="${not user.organization and empty user.organizationId}">
-                        <div align="center" style="margin-top: 10px;">
+<%--                    <c:if test="${not user.organization and empty user.organizationId}">--%>
+<%--                        <div align="center" style="margin-top: 10px;">--%>
 
-                            <a href="${pageContext.request.contextPath}/account/convertToOrganization"
-                               class="btn btn-secondary">
-                                Convert to Organization
-                            </a>
-                        </div>
+<%--                            <a href="${pageContext.request.contextPath}/account/convertToOrganization"--%>
+<%--                               class="btn btn-secondary">--%>
+<%--                                Convert to Organization--%>
+<%--                            </a>--%>
+<%--                        </div>--%>
+<%--                    </c:if>--%>
+                    <c:if test="${empty user.organizationId}">
+                        <c:choose>
+                            <c:when test="${not user.organization}">
+                                <div align="center" style="margin-top: 10px;">
+                                    <a onclick="$('#dialog').confirmDialog().show(
+                                            'Do you want to convert your User account into Organization account?',
+                                            '${pageContext.request.contextPath}/account/convertToOrganization');"
+                                       class="btn btn-secondary">
+                                        Convert to Organization
+                                    </a>
+                                </div>
+                            </c:when>
+                            <c:otherwise>
+                                <div align="center" style="margin-top: 10px;">
+                                    <a onclick="$('#dialog').confirmDialog().show(
+                                            'Do you want to convert your Organization account into User account?',
+                                            '${pageContext.request.contextPath}/account/convertToUser');"
+                                       class="btn btn-secondary">
+                                        Convert to User Account
+                                    </a>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
                     </c:if>
                     <hr>
                     <div class="row row-content" align="center">
@@ -106,7 +132,7 @@
                                                 class="nav-link active"
                                                 data-toggle="tab" href="#studies">Studies</a>
                         </li>
-                        <li class="nav-item"><a id="librariesTab" class="nav-link" data-toggle="tab" href="#libraries">Libraries</a></li>
+                        <li class="nav-item"><a id="librariesTab" class="nav-link" data-toggle="tab" href="#libraries">Private Libraries</a></li>
                         <li class="nav-item"><a id="parametersTab" class="nav-link" data-toggle="tab" href="#parameters">Parameters</a></li>
                         <li class="nav-item"><a id="searchTaskTab" class="nav-link" data-toggle="tab" href="#searchTask">Search History</a></li>
                         <c:if test="${user.organization}">
@@ -181,7 +207,7 @@
                                                     class="material-icons" title="View">&#xE5D3;</i></a>
 
                                             <!-- delete -->
-                                            <a onclick="confirmDeleteDialog.show(
+                                            <a onclick="confirmDialog.show(
                                                     'Submission &quot;${study.name}&quot; and all its spectra will be deleted. Are you sure?',
                                                     '${pageContext.request.contextPath}/submission/${study.id}/delete/');">
                                                 <i class="material-icons" title="Delete">&#xE872;</i>
@@ -253,7 +279,7 @@
                                                     class="material-icons" title="View">&#xE5D3;</i></a>
 
                                             <!-- delete -->
-                                            <a onclick="confirmDeleteDialog.show(
+                                            <a onclick="confirmDialog.show(
                                                     'Submission &quot;${study.name}&quot; and all its spectra will be deleted. Are you sure?',
                                                     '${pageContext.request.contextPath}/submission/${study.id}/delete/');">
                                                 <i class="material-icons" title="Delete">&#xE872;</i>
@@ -415,7 +441,7 @@
             <div class = "card" style = "background-color:transparent; border:none;">
                 <div class = "card-body " style = "display: flex; justify-content: space-between; padding:0px;">
                         <a href="${pageContext.request.contextPath}/file/upload/" class="btn btn-primary">New Study</a>
-                        <a class="btn btn-danger" onclick="confirmDeleteDialog.show(
+                        <a class="btn btn-danger" onclick="confirmDialog.show(
                                 'Your current account &quot;${user.name}&quot; will be deleted. Are you sure?',
                                 '${pageContext.request.contextPath}/user/${user.id}/delete/');">
                             Delete Account
@@ -430,7 +456,7 @@
 
 
 
-<div id="dialog-confirm"></div>
+<div id="dialog"></div>
 
 <script src="<c:url value="/resources/jQuery-3.6.3/jquery-3.6.3.min.js"/>"></script>
 <script src="<c:url value="/resources/DataTables-1.10.16/js/jquery.dataTables.min.js"/>"></script>
@@ -441,7 +467,7 @@
 <script src="<c:url value="/resources/npm/node_modules/bootstrap/dist/js/bootstrap.min.js"/>"></script>
 
 <script>
-    var confirmDeleteDialog = $('#dialog-confirm').confirmDeleteDialog();
+    var confirmDialog = $('#dialog').confirmDialog();
 
     $(document).ready(function () {
         var t1 = $('#study_table').DataTable({

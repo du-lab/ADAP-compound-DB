@@ -166,7 +166,7 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
             this.inHouse = matchSpectrum.isInHouseReference();
             this.inChIKey = matchSpectrum.getInChiKey();
 
-            Map<IdentifierType, String> identifiers = matchSpectrum.getIdentifiers();
+            Map<IdentifierType, String> identifiers = matchSpectrum.getIdentifiersAsMap();
             if (identifiers != null) {
                 this.casId = identifiers.get(IdentifierType.CAS);
                 this.hmdbId = identifiers.get(IdentifierType.HMDB);
