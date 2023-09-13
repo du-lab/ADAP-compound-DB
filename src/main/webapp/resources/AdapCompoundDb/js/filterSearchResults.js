@@ -7,4 +7,12 @@ $(document).ready(function () {
             $('#species-container').hide();
         }
     });
+    let subElement = $('#submissionIds0')[0];
+    $(subElement).on('change', function() {
+        if (this.checked) {
+            $("#filterTab").show()
+        } else {
+            $("#filterTab").hide()
+        }
+    });
 });

@@ -24,7 +24,7 @@
                             <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#libraries">
                                 Libraries
                             </a></li>
-                            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#filter">
+                            <li class="nav-item" id="filterTab"><a class="nav-link" data-toggle="tab" href="#filter">
                                 Filter
                             </a></li>
                             <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#parameters">
@@ -138,6 +138,7 @@
         </div>
     </form:form>
 </div>
+<script src="/resources/AdapCompoundDb/js/filterSearchResults.js"></script>
 <script>
     function checkForChange(limitFetched, mzToleranceFetched, mzToleranceTypeFetched,
                             retentionIndexMatchFetched, retentionIndexToleranceFetched,
