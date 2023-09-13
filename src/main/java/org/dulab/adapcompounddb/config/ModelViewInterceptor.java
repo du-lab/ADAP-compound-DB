@@ -35,10 +35,12 @@ public class ModelViewInterceptor implements HandlerInterceptor {
             modelAndView.addObject("breadcrumbs", generateBreadcrumbs(modelAndView, request));
         }
     }
-
+    // method to generate breadcrumbs
     private List<BreadCrumbs> generateBreadcrumbs(ModelAndView modelAndView, HttpServletRequest request) {
+        // get the current page name
         String pageName = modelAndView.getViewName();
         List<BreadCrumbs> breadcrumbs = new ArrayList<>();
+        // get the previous breadcrumbs
         ArrayList<BreadCrumbs> prev = (ArrayList<BreadCrumbs>) request.getSession().getAttribute("breadcrumbs");
         if (JSPPageNames.ALL_LIBRARIES.equals(pageName)) {
             breadcrumbs.add(new BreadCrumbs("Libraries", "/libraries/"));
@@ -66,6 +68,8 @@ public class ModelViewInterceptor implements HandlerInterceptor {
         } else if (JSPPageNames.UPLOAD.equals(pageName)) {
             breadcrumbs.add(new BreadCrumbs("Files Uploads", "/file/upload/"));
         } else if (JSPPageNames.METADATA.equals(pageName)) {
+            //Files Uploads
+            //Add Metadata
             breadcrumbs.add(new BreadCrumbs("Files Uploads", "/file/upload/"));
             breadcrumbs.add(new BreadCrumbs("Add Metadata", "/submission/metadata"));
         } else if (JSPPageNames.REDIRECT_FILE.equals(pageName)) {
@@ -112,6 +116,7 @@ public class ModelViewInterceptor implements HandlerInterceptor {
             if (prev != null && prev.size() > 0) {
                 if (Objects.equals(prev.get(0).getLabel(), "Upload Files")
                         && prev.size() > 5) {
+                    //Upload Files -> Add Metadata -> New Study -> Search Parameters -> Search Results -> Data
                     breadcrumbs.addAll(prev.subList(0, 6));
                     String submissionName = "Data";
                     Map<String, Object> model = modelAndView.getModel();
@@ -123,6 +128,7 @@ public class ModelViewInterceptor implements HandlerInterceptor {
                     breadcrumbs.add(new BreadCrumbs(submissionName, request.getRequestURI()));
                 } else if (Objects.equals(prev.get(0).getLabel(), "Upload Files")
                         && prev.size() > 1) {
+                    // Upload Files->Add Metadata->New Study
                     String submissionName = "Data";
                     Map<String, Object> model = modelAndView.getModel();
                     Submission submission = (Submission) model.get("submission");
@@ -132,6 +138,7 @@ public class ModelViewInterceptor implements HandlerInterceptor {
                     breadcrumbs.addAll(prev.subList(0, 2));
                     breadcrumbs.add(new BreadCrumbs(submissionName, request.getRequestURI()));
                 } else if (Objects.equals(prev.get(0).getLabel(), "Search Results") && prev.size() > 1) {
+                    // starts with search results (group search button is clicked)
                     breadcrumbs.addAll(prev.subList(0, 2));
                     String submissionName = "Data";
                     Map<String, Object> model = modelAndView.getModel();
@@ -141,6 +148,7 @@ public class ModelViewInterceptor implements HandlerInterceptor {
                     }
                     breadcrumbs.add(new BreadCrumbs(submissionName, request.getRequestURI()));
                 } else if (Objects.equals(prev.get(0).getLabel(), "Account")) {
+                    // starts with account page
                     String submissionType = "Studies";
                     String submissionName = "Data";
                     Map<String, Object> model = modelAndView.getModel();
@@ -156,6 +164,7 @@ public class ModelViewInterceptor implements HandlerInterceptor {
         } else if (JSPPageNames.SPECTRUM.equals(pageName)) {
             if (prev != null && prev.size() > 0) {
                 if (Objects.equals(prev.get(0).getLabel(), "Upload Files") && prev.size() > 4) {
+                    // Upload Files -> Add Metadata  -> New Study -> Search Parameters -> Search Results -> Data -> Spectrum
                     breadcrumbs.addAll(prev.subList(0, 5));
                     String spectrumName = "Library Spectrum";
                     Map<String, Object> model = modelAndView.getModel();
@@ -166,6 +175,7 @@ public class ModelViewInterceptor implements HandlerInterceptor {
                     breadcrumbs.add(new BreadCrumbs(spectrumName, request.getRequestURI()));
                 }
                 else if (Objects.equals(prev.get(0).getLabel(), "Upload Files") && prev.size() > 2) {
+                    // Upload Files -> Add Metadata  -> New Study -> Spectrum
                     breadcrumbs.addAll(prev.subList(0, 3));
                     String spectrumName = "Library Spectrum";
                     Map<String, Object> model = modelAndView.getModel();
@@ -176,6 +186,7 @@ public class ModelViewInterceptor implements HandlerInterceptor {
                     breadcrumbs.add(new BreadCrumbs(spectrumName, request.getRequestURI()));
                 }
                 else if (Objects.equals(prev.get(0).getLabel(), "Search Results")) {
+                    // starts with search results (group search button is clicked)
                     String spectrumName = "Library Spectrum";
                     Map<String, Object> model = modelAndView.getModel();
                     Spectrum spectrum = (Spectrum) model.get("spectrum");
@@ -186,7 +197,9 @@ public class ModelViewInterceptor implements HandlerInterceptor {
                     breadcrumbs.add(new BreadCrumbs(spectrumName, request.getRequestURI()));
                 }
                 else if (Objects.equals(prev.get(0).getLabel(), "Account")) {
+                    // starts with account page
                     if (prev.size() == 3) {
+                        //Account -> Studies -> New Study -> Spectrum
                         breadcrumbs.addAll(prev.subList(0, 3));
                         String spectrumName = "Library Spectrum";
                         Map<String, Object> model = modelAndView.getModel();
@@ -196,6 +209,7 @@ public class ModelViewInterceptor implements HandlerInterceptor {
                         }
                         breadcrumbs.add(new BreadCrumbs(spectrumName, request.getRequestURI()));
                     } else if (prev.size() == 4 && "Search Results".equals(prev.get(3).getLabel())) {
+                        // Account -> Studies -> New Study -> Search Results -> Spectrum
                         breadcrumbs.addAll(prev.subList(0, 4));
                         String spectrumName = "Library Spectrum";
                         Map<String, Object> model = modelAndView.getModel();
