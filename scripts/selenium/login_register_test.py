@@ -94,7 +94,7 @@ def delete_account(homepage_url, username, password):
         time.sleep(1)
         driver.find_element(By.XPATH, "//a[contains(text(), 'Delete Account')]").click()
         time.sleep(1)
-        driver.find_element(By.XPATH, "//button[text()='Delete']").click()
+        driver.find_element(By.XPATH, "//button[text()='Confirm']").click()
         time.sleep(1)
     except Exception as e:
         driver.quit()

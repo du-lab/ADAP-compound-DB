@@ -87,6 +87,11 @@ public interface SpectrumMatchRepository extends JpaRepository<SpectrumMatch, Lo
     @Query("SELECT sm FROM SpectrumMatch sm WHERE (sm.userPrincipalId=:userid and sm.querySpectrum.id in :ids)")
     List<SpectrumMatch> findAllSpectrumMatchByUserIdAndQuerySpectrums(@Param("userid") Long userId, @Param("ids")List<Long> spectrumIds);
 
+    @Query("SELECT sm FROM SpectrumMatch sm JOIN FETCH sm.querySpectrum q JOIN FETCH sm.matchSpectrum m " +
+            "WHERE sm.userPrincipalId = :userid and sm.querySpectrum.file.submission.id = :submissionId")
+    List<SpectrumMatch> findAllSpectrumMatchesByUserIdAndSubmissionId(@Param("userid") Long userId,
+                                                                      @Param("submissionId") long submissionId);
+
     @Query("Select sm FROM SpectrumMatch sm WHERE (sm.userPrincipalId=:userid and sm.querySpectrum.id =:queryId and sm.matchSpectrum.id =:matchId)")
     List<SpectrumMatch> findByuserPrincipalIdAndquerySpectrumIdAndMatchId(@Param("userid")Long userId, @Param("queryId")Long spectrumId, @Param("matchId")Long matchId);
 }

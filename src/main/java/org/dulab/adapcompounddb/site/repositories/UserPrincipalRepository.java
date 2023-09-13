@@ -30,4 +30,7 @@ public interface UserPrincipalRepository extends CrudRepository<UserPrincipal, L
     @Transactional
     @Query("UPDATE UserPrincipal u SET u.organizationId = ?1 WHERE u.id in ?2")
     void addUsersToOrganization(final Long organizationUserId, final List<Long> userId);
+
+    @Query("select u from UserPrincipal u where u.organizationUser = ?1")
+    List<UserPrincipal> findUserPrincipalWithRolesByUsername(UserPrincipal userPrincipal);
 }

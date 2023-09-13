@@ -210,6 +210,22 @@ public class UserPrincipalServiceImpl implements UserPrincipalService {
         }
         return userPrincipalList;
     }
+    @Override
+    public void convertOrganizationAccountToUserAccount(UserPrincipal userPrincipal) {
+        List<UserPrincipal> userPrincipalOptional=
+                userPrincipalRepository.findUserPrincipalWithRolesByUsername(userPrincipal);
+        if (userPrincipalOptional.size() > 0) {
+            for (UserPrincipal u : userPrincipalOptional) {
+                u.setOrganizationId(null);
+            }
+            userPrincipal.setOrganization(false);
+            userPrincipal.setOrganizationId(null);
+            userPrincipal.setOrganizationRequestToken(null);
+            userPrincipal.setOrganizationRequestExpirationDate(null);
+            userPrincipalOptional.add(userPrincipal);
+            userPrincipalRepository.saveAll(userPrincipalOptional);
+        }
+    }
 
     @Override
     public void sendInviteToUser(UserPrincipal orgUser, List<Long> selectedUsers) throws Exception {
@@ -219,7 +235,7 @@ public class UserPrincipalServiceImpl implements UserPrincipalService {
                 UserPrincipal user = userPrincipleList.next();
                 // For test environment for automation testing, INTEGRATION_TEST is true, and we store username as token
                 String inviteToken = INTEGRATION_TEST ? user.getUsername() : UUID.randomUUID().toString();
-                Date expirationDate = new Date(System.currentTimeMillis() + 3600000);//1 hour expiration time
+                Date expirationDate = new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000);//24 hour expiration time
                 user.setOrganizationRequestToken(inviteToken);
                 user.setOrganizationRequestExpirationDate(expirationDate);
                 saveUserPrincipal(user);

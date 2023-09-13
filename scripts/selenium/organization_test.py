@@ -27,9 +27,9 @@ def create_account(homepage_url, username, password, organization):
     driver.find_element("id", 'confirmedEmail').send_keys(username + '@gmail.com')
     driver.find_element("id", 'password').send_keys(password)
     driver.find_element("id", 'confirmedPassword').send_keys(password)
-    if organization :
-        checkbox = driver.find_element('id', "orgAcc")
-        driver.execute_script("arguments[0].click();", checkbox)
+    # if organization :
+    #     checkbox = driver.find_element('id', "orgAcc")
+    #     driver.execute_script("arguments[0].click();", checkbox)
     time.sleep(1)
     #submit new registration
     driver.find_element("id", 'submit').click()
@@ -43,6 +43,11 @@ def create_account(homepage_url, username, password, organization):
     account_page_button = driver.find_element("id", "accountPage")
     account_page_button.click()
     time.sleep(1)
+
+    if organization:
+        driver.find_element(By.XPATH, "//a[contains(text(), 'Convert to Organization')]").click()
+        time.sleep(1)
+        confirm_button = driver.find_elements(By.XPATH, "//button[text()='Confirm']")[0].click()
 
     # validate if current url is account page
     assert (driver.current_url.startswith(urljoin(homepage_url, 'account/')))
@@ -116,6 +121,8 @@ def leave_organization_and_convert_to_organization():
     time.sleep(1)
     driver.find_element(By.XPATH, "//a[contains(text(), 'Convert to Organization')]").click()
     time.sleep(1)
+    confirm_button = driver.find_elements(By.XPATH, "//button[text()='Confirm']")[0].click()
+    time.sleep(1)
     driver.find_element('id','organizationTab').click()
     time.sleep(1)
 
@@ -134,7 +141,7 @@ def delete_account(homepage_url, acc_username, password):
     time.sleep(1)
     driver.find_element(By.XPATH, "//a[contains(text(), 'Delete Account')]").click()
     time.sleep(1)
-    driver.find_element(By.XPATH, "//button[text()='Delete']").click()
+    driver.find_element(By.XPATH, "//button[text()='Confirm']").click()
     time.sleep(1)
 
 
