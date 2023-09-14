@@ -26,12 +26,7 @@ public class ModelViewInterceptor implements HandlerInterceptor {
     public void postHandle(HttpServletRequest request, HttpServletResponse response,
                            Object handler, ModelAndView modelAndView) throws Exception {
         if (modelAndView != null) {
-            String Pathinfo = request.getPathInfo();
-            String x = request.getRequestURL().toString();
-            String requestURI = request.getRequestURI();
             modelAndView.addObject("integTest", INTEGRATION_TEST);
-            String s = modelAndView.getViewName();
-            System.out.println("ViewName : " +s);
             modelAndView.addObject("breadcrumbs", generateBreadcrumbs(modelAndView, request));
         }
     }
