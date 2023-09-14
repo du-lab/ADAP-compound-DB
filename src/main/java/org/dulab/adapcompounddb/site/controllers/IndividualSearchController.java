@@ -17,6 +17,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -528,8 +530,11 @@ public class IndividualSearchController extends BaseController {
                     submissionService.findUserPrivateSubmissions(this.getCurrentUserPrincipal(), chromatographyType));
             submissions.putAll(submissionService.findPublicSubmissions(chromatographyType));
         }
-        submissions.put(BigInteger.ZERO, "ADAP-KDB Consensus Spectra");
-
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        if (request.getSession().getAttribute("STEP") != null
+                && request.getSession().getAttribute("STEP").equals("PRIORITIZE_SPECTRA")) {
+            submissions.put(BigInteger.ZERO, "ADAP-KDB Consensus Spectra");
+        }
         return new FilterOptions(speciesList, sourceList, diseaseList, submissions);
     }
 

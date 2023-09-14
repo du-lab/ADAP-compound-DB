@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    $("#species-container").hide();
     $('#submission-select').change(function () {
         let selectedValue = $(this).val();
         if (selectedValue.includes('0')) {
