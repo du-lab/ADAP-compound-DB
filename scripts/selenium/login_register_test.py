@@ -83,6 +83,7 @@ def delete_account(homepage_url, username, password):
         driver.get(homepage_url)
         # go to login page
         driver.find_element("id", 'loginPage').click()
+        time.sleep(5)
         # login with details
         driver.find_element("id", 'username').send_keys(username)
         driver.find_element("id", 'password').send_keys(password)
