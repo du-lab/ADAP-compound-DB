@@ -34,6 +34,7 @@ test:
     - merge_requests
   script:
     - pwd
+    - mvn clean install
     - docker rm --force $CONTAINER_NAME
     - docker system prune --force #to clean up dangling images
     - docker build -f docker/adap-kdb-docker/Dockerfile -t adap-kdb-img .
