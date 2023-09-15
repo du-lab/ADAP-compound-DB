@@ -88,7 +88,7 @@ public class Submission implements Serializable {
     private String externalId;
 
     private String source;
-    private boolean isPrivate;
+    private boolean isPrivate = true;
 
     private boolean clusterable;
     private boolean raw;
