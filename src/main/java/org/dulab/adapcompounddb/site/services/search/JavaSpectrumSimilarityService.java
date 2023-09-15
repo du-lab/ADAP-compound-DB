@@ -134,7 +134,7 @@ public class JavaSpectrumSimilarityService {
                 similarityScore = calculateCosineSimilarity(querySpectrum, librarySpectrum,
                         mzTolerance, ppm, params.isPenalizeQueryImpurities(), params.isPenalizeDominantPeak());
 
-            System.out.printf("%s %s %f%n", querySpectrum.getName(), librarySpectrum.getName(), similarityScore);
+//            System.out.printf("%s %s %f%n", querySpectrum.getName(), librarySpectrum.getName(), similarityScore);
 
             double isotopicSimilarity = calculateCosineSimilarity(
                     querySpectrum.getIsotopesAsArray(), librarySpectrum.getIsotopesAsArray());
