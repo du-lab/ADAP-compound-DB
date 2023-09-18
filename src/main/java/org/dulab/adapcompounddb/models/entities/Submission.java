@@ -77,6 +77,9 @@ public class Submission implements Serializable {
     )
     private List<File> files;
 
+    @OneToMany(mappedBy = "submission", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SearchTask> searchTasks;
+
     @NotNull(message = "You must log in to submit mass spectra to the library.")
     @Valid
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
@@ -174,6 +177,14 @@ public class Submission implements Serializable {
     public void setFiles(final List<File> files) {
         this.files = files;
         this.size = (files != null) ? files.stream().mapToInt(File::getSize).sum() : 0;
+    }
+
+    public List<SearchTask> getSearchTasks() {
+        return searchTasks;
+    }
+
+    public void setSearchTasks(List<SearchTask> searchTasks) {
+        this.searchTasks = searchTasks;
     }
 
     public UserPrincipal getUser() {
