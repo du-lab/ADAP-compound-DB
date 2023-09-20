@@ -134,6 +134,8 @@ public class JavaSpectrumSimilarityService {
                 similarityScore = calculateCosineSimilarity(querySpectrum, librarySpectrum,
                         mzTolerance, ppm, params.isPenalizeQueryImpurities(), params.isPenalizeDominantPeak());
 
+//            System.out.printf("%s %s %f%n", querySpectrum.getName(), librarySpectrum.getName(), similarityScore);
+
             double isotopicSimilarity = calculateCosineSimilarity(
                     querySpectrum.getIsotopesAsArray(), librarySpectrum.getIsotopesAsArray());
 
@@ -254,12 +256,20 @@ public class JavaSpectrumSimilarityService {
         return spectraList;
     }
 
+    private List<Peak> filterPeaks(List<Peak> peaks) {
+        if (peaks == null) return null;
+        double maxIntensity = peaks.stream().mapToDouble(Peak::getIntensity).max().orElse(0.0);
+        return peaks.stream()
+                .filter(p -> p.getIntensity() >= 0.025 * maxIntensity)
+                .collect(Collectors.toList());
+    }
+
     private double calculateCosineSimilarity(Spectrum querySpectrum, Spectrum librarySpectrum,
                                              double tolerance, boolean ppm,
                                              boolean penalizeQueryImpurities, boolean penalizeDominantPeak) {
 
-        List<Peak> queryPeaks = querySpectrum.getPeaks();
-        List<Peak> libraryPeaks = librarySpectrum.getPeaks();
+        List<Peak> queryPeaks = filterPeaks(querySpectrum.getPeaks());
+        List<Peak> libraryPeaks = filterPeaks(librarySpectrum.getPeaks());
 
         double queryOmegaFactor = penalizeDominantPeak ? querySpectrum.getOmegaFactor() : 0.0;
         double libraryOmegaFactor = penalizeDominantPeak ? librarySpectrum.getOmegaFactor() : 0.0;

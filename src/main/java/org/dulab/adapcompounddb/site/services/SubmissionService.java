@@ -27,14 +27,13 @@ import java.util.stream.Collectors;
 public class SubmissionService {
 
 
-
     private enum ColumnInformation {
 
         ID(0, "id"),
         DATETIME(1, "datetime"),
         NAME(2, "name"),
         EXTERNAL_ID(3, "externalId"),
-        PROPERTIES(4,"properties");
+        PROPERTIES(4, "properties");
 
         private final int position;
         private final String sortColumnName;
@@ -59,6 +58,7 @@ public class SubmissionService {
             return null;
         }
     }
+
     private static final Logger LOG = LoggerFactory.getLogger(SubmissionService.class);
 
     private static final double MEMORY_PER_PEAK = 1.3e-7; //in GB
@@ -140,11 +140,11 @@ public class SubmissionService {
         return response;
     }
 
-    public Iterable<Submission> findAllPublicLibraries(){
+    public Iterable<Submission> findAllPublicLibraries() {
         return submissionRepository.findByPrivateFalseAndReferenceTrue();
     }
 
-//    @Transactional
+    //    @Transactional
     public List<Submission> findSubmissionsWithTagsByUserId(long userId) {
         return MappingUtils.toList(submissionRepository.findWithTagsByUserId(userId));
     }
@@ -160,7 +160,7 @@ public class SubmissionService {
         UserPrincipal user = submission.getUser();
         String userName = user.getUsername();
         int count = 0;
-        if(!user.isAdmin()) {
+        if (!user.isAdmin()) {
             count = user.getPeakNumber();
             if (count == 0) {
                 count = submissionRepository.getPeaksByUserName(user.getUsername());
@@ -219,7 +219,7 @@ public class SubmissionService {
                 }
                 userPrincipalRepository.save(user);
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             LOG.error("Error while calculating and saving peak number for submission : " + submission.getId() + "" +
                     " for user : " + user.getId() + " : " + e);
         }
@@ -228,21 +228,23 @@ public class SubmissionService {
     @Transactional
     public void deleteSubmission(final Submission submission) {
         submissionRepository.delete(submission);
+        UserPrincipal user = submission.getUser();
+        if (user != null) {
+//            PeakNumber here cannot be zero (if user has files) account page calculate PeakNumber and to delete we need
+//            to go to account page, and account page calculates PeakNumber if user.peakNumber is zero
+            calculateAndSavePeakNumber(submission, user.getPeakNumber(), Submission.DELETE_SUBMISSION);
+        }
     }
 
     @Transactional
     public void delete(final long submissionId) {
         Optional<Submission> submission = submissionRepository.findById(submissionId);
         if (submission.isPresent()) {
-            UserPrincipal user = submission.get().getUser();
-            submissionRepository.deleteById(submissionId);
-//            PeakNumber here cannot be zero (if user has files) account page calculate PeakNumber and to delete we need
-//            to go to account page, and account page calculates PeakNumber if user.peakNumber is zero
-            calculateAndSavePeakNumber(submission.get(), user.getPeakNumber(), Submission.DELETE_SUBMISSION);
-        }
-        else
+            deleteSubmission(submission.get());
+        } else {
             LOG.warn(String.format(
                     "Fail to delete submission %d because this submission is not in the database", submissionId));
+        }
     }
 
     @Transactional
@@ -337,7 +339,7 @@ public class SubmissionService {
 
     public SortedMap<BigInteger, String> findUserPrivateSubmissions(UserPrincipal user, ChromatographyType type) {
         Iterable<Submission> submissions;
-        if (user != null && user.getOrganizationId() !=  null) {
+        if (user != null && user.getOrganizationId() != null) {
             submissions = submissionRepository
                     .findByPrivateTrueAndReferenceTrueAndUserOrOrgAndChromatographyType(user, user.getOrganizationUser(), type);
         } else {
@@ -352,7 +354,7 @@ public class SubmissionService {
                 badgeType = "warning";
                 submissionType = "organization";
             }
-            String html = String.format("%s <span class='badge badge-"+badgeType+"'>"+submissionType+"</span>%s",
+            String html = String.format("%s <span class='badge badge-" + badgeType + "'>" + submissionType + "</span>%s",
                     submission.getName(),
                     submission.isInHouseReference() ? " <span class='badge badge-success'>in-house</span>" : "");
             submissionIdToNameMap.put(BigInteger.valueOf(submission.getId()), html);
@@ -390,7 +392,7 @@ public class SubmissionService {
     }
 
 
-    public boolean isSearchable(Submission s){
+    public boolean isSearchable(Submission s) {
         s.setSearchable(submissionRepository.getIsSearchable(s.getId()));
         return s.isSearchable();
     }
@@ -408,12 +410,12 @@ public class SubmissionService {
         Pageable pageable = DataUtils.createPageable(start, length, sortColumn, sortDirection);
 
         // fetch x records at a time based on start page .
-        Page<Submission>pagedResult = submissionRepository.findSubmissionByClusterableTrue(pageable);
+        Page<Submission> pagedResult = submissionRepository.findSubmissionByClusterableTrue(pageable);
 
         //create submission dto
         List<SubmissionDTO> submissionDTOList = new ArrayList<>();
-        for(Submission s : pagedResult.getContent()) {
-            submissionDTOList.add(new SubmissionDTO(s,s.getIsReference(),false, true));
+        for (Submission s : pagedResult.getContent()) {
+            submissionDTOList.add(new SubmissionDTO(s, s.getIsReference(), false, true));
         }
         final DataTableResponse response = new DataTableResponse(submissionDTOList);
         response.setRecordsTotal(pagedResult.getTotalElements());

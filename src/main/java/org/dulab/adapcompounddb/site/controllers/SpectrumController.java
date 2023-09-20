@@ -69,9 +69,9 @@ public class SpectrumController extends BaseController {
         File file = spectrum.getFile();
         if (file != null) {
             Submission submission = file.getSubmission();
-            if (submission.isPrivate() && (this.getCurrentUserPrincipal() == null
-                    || ((!submission.getUser().equals(this.getCurrentUserPrincipal())
-                    && !submission.getUser().equals(this.getCurrentUserPrincipal().getOrganizationUser())))))
+            if (submission.isPrivate() && submission.getId() > 0 && (this.getCurrentUserPrincipal() == null
+                    || (!submission.getUser().equals(this.getCurrentUserPrincipal())
+                    && !submission.getUser().equals(this.getCurrentUserPrincipal().getOrganizationUser()))))
                 return "redirect:/error?errorMsg=" + ACCESS_DENIED_MESSAGE;
         }
 

@@ -148,7 +148,7 @@ public class IndividualSearchService {
     modifiedParameters.setRetIndexTolerance(null);
     modifiedParameters.setRetIndexMatchType(SearchParameters.RetIndexMatchType.IGNORE_MATCH);
     modifiedParameters.setMassTolerance(null, Parameters.MASS_TOLERANCE_PPM);
-    modifiedParameters.setPenalizeQueryImpurities(false);
+    modifiedParameters.setPenalizeQueryImpurities(true);
     modifiedParameters.setPenalizeDominantPeak(false);
 
     List<Adduct> adducts = adductService.findAdductsByChromatography(

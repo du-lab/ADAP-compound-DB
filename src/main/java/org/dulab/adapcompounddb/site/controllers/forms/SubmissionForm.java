@@ -25,7 +25,7 @@ public class SubmissionForm {
 
     private String source;
     private String description;
-    private boolean isPrivate;
+    private boolean isPrivate = true;
     private boolean isLibrary;
     private boolean isInHouseLibrary;
     @URL(message = "The field Reference must be a valid URL.")
