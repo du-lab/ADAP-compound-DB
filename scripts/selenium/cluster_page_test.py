@@ -13,6 +13,8 @@ def cluster_page_test(homepage_url):
     try:
         driver.get(homepage_url)
 
+        button_element = driver.find_element_by_id("prioritizeSpectraMode")
+
          # go to login page
         library_page_button = driver.find_element_by_id('libraryPage')
         library_page_button.click()
