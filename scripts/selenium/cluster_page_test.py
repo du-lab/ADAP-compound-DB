@@ -11,9 +11,7 @@ def cluster_page_test(homepage_url):
     driver = webdriver.Chrome('scripts/selenium/drivers/chromedriver')
 
     try:
-        driver.get(homepage_url)
-
-        driver.find_element_by_id("prioritizeSpectraMode").click()
+        driver.get(homepage_url+"file/upload/?APPLICATION_MODE=PRIORITIZE_SPECTRA")
 
          # go to login page
         library_page_button = driver.find_element_by_id('libraryPage')
