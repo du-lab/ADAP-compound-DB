@@ -19,8 +19,8 @@ public class ModelViewInterceptor implements HandlerInterceptor {
                            Object handler, ModelAndView modelAndView) throws Exception {
         if (modelAndView != null) {
             modelAndView.addObject("integTest", INTEGRATION_TEST);
-            if (request.getSession().getAttribute("STEP") == null) {
-                request.getSession().setAttribute("STEP", "SEARCH_PUBLIC_LIBRARIES");
+            if (request.getSession().getAttribute("APPLICATION_MODE") == null) {
+                request.getSession().setAttribute("APPLICATION_MODE", "SEARCH_PUBLIC_LIBRARIES");
             }
         }
     }

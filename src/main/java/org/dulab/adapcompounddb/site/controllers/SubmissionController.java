@@ -148,10 +148,11 @@ public class SubmissionController extends BaseController {
     }
 
     @RequestMapping(value = "/libraries/", method = RequestMethod.GET)
-    public String publicLibraries(final Model model, final HttpSession session, final HttpServletRequest request) {
-        boolean addPageFLow = request.getParameter("STEP") != null;
-        if (addPageFLow) {
-            session.setAttribute("STEP", request.getParameter("STEP"));
+    public String publicLibraries(final Model model,
+                                  final HttpSession session,
+                                  @RequestParam(required=false) String applicationMode) {
+        if (applicationMode != null) {
+            session.setAttribute("APPLICATION_MODE", applicationMode);
         }
         model.addAttribute("libraries", submissionService.findAllPublicLibraries());
 

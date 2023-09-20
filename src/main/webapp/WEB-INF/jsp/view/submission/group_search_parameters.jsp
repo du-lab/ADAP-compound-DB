@@ -24,7 +24,7 @@
                             <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#libraries">
                                 Libraries
                             </a></li>
-                            <c:if test="${sessionScope.STEP == 'PRIORITIZE_SPECTRA'}">
+                            <c:if test="${sessionScope.APPLICATION_MODE == 'PRIORITIZE_SPECTRA'}">
                             <li class="nav-item" id="filterTab"><a class="nav-link" data-toggle="tab" href="#filter">
                                 Filter
                             </a></li>
@@ -73,7 +73,7 @@
                                 <input type="hidden" name="_submissionIds" value="on">
                             </fieldset>
                         </div>
-                        <c:if test="${sessionScope.STEP == 'PRIORITIZE_SPECTRA'}">
+                        <c:if test="${sessionScope.APPLICATION_MODE == 'PRIORITIZE_SPECTRA'}">
                             <div id="filter" class="tab-pane fade" role="tabpanel">
                                 <div class="row form-group">
                                     <form:label path="species" cssClass="col-md-4 col-form-label">Species:</form:label>

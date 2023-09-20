@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.site.controllers;
 
 import org.dulab.adapcompounddb.models.dto.ChromatographySearchParametersDTO;
+import org.dulab.adapcompounddb.models.enums.ApplicationMode;
 import org.dulab.adapcompounddb.site.services.SearchTaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +66,7 @@ public class GroupSearchController extends BaseController {
     @RequestMapping(value = "/group_search/parameters", method = RequestMethod.GET)
     public String groupSearchParametersGet(@RequestParam Optional<Boolean> withOntologyLevels,
                                            @RequestParam Optional<Long> submissionId,
-                                             HttpServletRequest request,
+                                           @RequestParam(required=false) String applicationMode,
                                            HttpSession session, Model model,
                                            @CookieValue(
                                                    value = SEARCH_PARAMETERS_COOKIE_NAME,
@@ -88,7 +89,7 @@ public class GroupSearchController extends BaseController {
             form.setSubmissionIds(filterOptions.getSubmissions().keySet());
         form.setWithOntologyLevels(withOntologyLevels.orElse(false));
         model.addAttribute("filterForm", form);
-        session.setAttribute("step", request.getSession().getAttribute("STEP"));
+        session.setAttribute("APPLICATION_MODE", applicationMode);
 
         //check if user is login
         model.addAttribute("isLoggedIn", this.getCurrentUserPrincipal() != null);
@@ -220,8 +221,8 @@ public class GroupSearchController extends BaseController {
             submissions.putAll(submissionService.findPublicSubmissions(chromatographyType));
         }
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        if (request.getSession().getAttribute("STEP") != null
-                && request.getSession().getAttribute("STEP").equals("PRIORITIZE_SPECTRA")) {
+        if (request.getSession().getAttribute("APPLICATION_MODE") != null
+                && request.getSession().getAttribute("APPLICATION_MODE").equals(ApplicationMode.PRIORITIZE_SPECTRA)) {
             submissions.put(BigInteger.ZERO, "ADAP-KDB Consensus Spectra");
         }
 

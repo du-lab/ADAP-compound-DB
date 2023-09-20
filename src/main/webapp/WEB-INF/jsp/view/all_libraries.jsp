@@ -5,7 +5,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <script src="<c:url value="/resources/AdapCompoundDb/js/tagsColor.js"/>"></script>
 <div class="container">
-    <c:if test="${sessionScope.STEP == 'PRIORITIZE_SPECTRA'}">
+    <c:if test="${sessionScope.APPLICATION_MODE == 'PRIORITIZE_SPECTRA'}">
         <div class="row row-content">
             <div class="col">
                 <div class="card">

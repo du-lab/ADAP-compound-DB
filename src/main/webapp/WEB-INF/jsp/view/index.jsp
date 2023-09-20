@@ -66,7 +66,7 @@
                         </ul>
                     </div>
                     <div class="homepage-button-container">
-                        <a href = "/libraries/?STEP=SEARCH_PUBLIC_LIBRARIES">
+                        <a href = "/libraries/?APPLICATION_MODE=SEARCH_PUBLIC_LIBRARIES">
                             <button class="homepage-button btn btn-primary btn-lg btn-block">
                                 Search Public Libraries
                             </button>
@@ -94,7 +94,7 @@
                         </ul>
                     </div>
                     <div class="homepage-button-container">
-                        <a href="/file/upload/?STEP=UPLOAD_PRIVATE_LIBRARIES">
+                        <a href="/file/upload/?APPLICATION_MODE=UPLOAD_PRIVATE_LIBRARIES">
                             <button class="homepage-button btn btn-primary btn-lg btn-block">
                                 Upload Private Libraries
                             </button>
@@ -122,7 +122,7 @@
                         </ul>
                     </div>
                     <div class="homepage-button-container">
-                        <a href="/file/upload/?STEP=PRIORITIZE_SPECTRA">
+                        <a href="/file/upload/?APPLICATION_MODE=PRIORITIZE_SPECTRA">
                             <button class="homepage-button btn btn-primary btn-lg btn-block">
                                 Prioritize Spectra
                             </button>
