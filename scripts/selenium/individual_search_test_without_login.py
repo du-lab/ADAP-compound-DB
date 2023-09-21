@@ -20,8 +20,8 @@ def individual_search_test(homepage_url, msp_path):
         upload_page_button.click()
 
         option_bar = Select(driver.find_element('id','chromatographyType'))
-        choose_key = driver.find_element('id','files')
-        submit_button = driver.find_element('id',"submit")
+        choose_key = driver.find_element('name','files')
+        submit_button = driver.find_element('name',"submit")
         option_bar.select_by_visible_text('GC')
         choose_key.send_keys(msp_path)
         submit_button.click()
