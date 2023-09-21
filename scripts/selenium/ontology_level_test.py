@@ -26,7 +26,7 @@ def ontology_level_test(homepage_url, username, password):
         driver.find_element('id','accountPage').click()
         assert driver.current_url.__str__().endswith('account/')
         driver.find_element('id','librariesTab').click()
-        driver.find_elements(By.XPATH, '//div[@id="libraries"]//a[contains(@href, "/submission/")]').click()
+        driver.find_element(By.XPATH, '//div[@id="libraries"]//a[contains(@href, "/submission/")]').click()
         time.sleep(5)
         # Submission page
         assert '/submission/' in driver.current_url.__str__()
