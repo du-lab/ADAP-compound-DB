@@ -20,7 +20,7 @@ def ontology_level_test(homepage_url, username, password):
         assert driver.current_url.__str__().endswith('login/')
         driver.find_element('id','username').send_keys(username)
         driver.find_element('id','password').send_keys(password)
-        driver.fild_element('name', 'submit').click()
+        driver.find_element('name', 'submit').click()
         time.sleep(5)
         # Account page
         driver.find_element('id','accountPage').click()
