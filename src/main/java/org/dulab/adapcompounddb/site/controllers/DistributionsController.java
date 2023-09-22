@@ -23,6 +23,6 @@ public class DistributionsController {
     public String tagDistributionNullClusterId(final Model model) {
         final List<TagDistribution> allDistributions = distributionService.getAllClusterIdNullDistributions();
         model.addAttribute("distributions", allDistributions);
-        return "/study_distributions";
+        return "study_distributions";
     }
 }

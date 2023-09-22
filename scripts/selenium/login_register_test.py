@@ -81,6 +81,7 @@ def login_register_test(homepage_url, username_value, password_value):
 def delete_account(homepage_url, username, password):
     try:
         driver.get(homepage_url)
+        time.sleep(5)
         # go to login page
         driver.find_element("id", 'loginPage').click()
         time.sleep(5)
@@ -102,7 +103,7 @@ def delete_account(homepage_url, username, password):
 
 def logout():
     time.sleep(1)
-    driver.find_element('id','logoutPage').click();
+    driver.find_element('id','logoutPage').click()
     time.sleep(1)
 
 def main():

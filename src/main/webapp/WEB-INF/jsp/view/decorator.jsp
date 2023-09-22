@@ -270,7 +270,12 @@
         </div>
     </nav>
 
-    <article style="margin: 0 auto; width: 82%">
+    <article style="margin: 0 auto; width: 100%">
+        <ul class="breadcrumb">
+            <c:forEach var="breadcrumb" items="${breadcrumbs}">
+                <li><a href="${breadcrumb.url}">${breadcrumb.label}</a></li>
+            </c:forEach>
+        </ul>
         <sitemesh:write property='body' />
     </article>
 </div>
