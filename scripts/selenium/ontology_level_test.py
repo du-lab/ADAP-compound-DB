@@ -7,10 +7,10 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 from urllib.parse import urljoin
 from selenium.webdriver.common.by import By
-
-
+from selenium.webdriver.chrome.service import Service as ChromeService
+chrome_service = ChromeService('scripts/selenium/drivers/chromedriver')
 def ontology_level_test(homepage_url, username, password):
-    driver = webdriver.Chrome('scripts/selenium/drivers/chromedriver')
+    driver = webdriver.Chrome(service=chrome_service)
 
     try:
         driver.get(homepage_url)
@@ -43,7 +43,7 @@ def ontology_level_test(homepage_url, username, password):
         driver.find_elements(By.XPATH, '//table[@id="match_table"]//*[text()="OL_1"]')
 
         # Log out
-        driver.find_element_by_xpath('//a[@id="logoutPage"]').click()
+        driver.find_element(By.XPATH,'//a[@id="logoutPage"]').click()
         assert len(driver.find_elements('id','accountPage')) < 1
 
     except Exception as e:
