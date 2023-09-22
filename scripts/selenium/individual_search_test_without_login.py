@@ -53,7 +53,7 @@ def individual_search_test(homepage_url, msp_path):
 
         # check if the matching table contains values
         matching_table = driver.find_element('id','table')
-        data_list = matching_table.find_element('table>tbody>tr')
+        data_list = matching_table.find_element('css selector', 'table>tbody>tr')
         assert data_list
 
     except Exception as e:
