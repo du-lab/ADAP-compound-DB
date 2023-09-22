@@ -6,10 +6,12 @@ from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.by import By
 
 from urllib.parse import urljoin
-
+from selenium.webdriver.chrome.service import Service as ChromeService
+chrome_service = ChromeService('scripts/selenium/drivers/chromedriver')
 
 def upload_and_save_test(homepage_url, msp_path, user_name, user_password):
-    driver = webdriver.Chrome('scripts/selenium/drivers/chromedriver')
+    driver = webdriver.Chrome(service=ChromeService('scripts/selenium/drivers/chromedriver'))
+
 
     try:
         driver.get(homepage_url)

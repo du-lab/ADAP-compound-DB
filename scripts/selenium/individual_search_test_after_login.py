@@ -7,10 +7,10 @@ import time
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.by import By
-
+from selenium.webdriver.chrome.service import Service as ChromeService
 
 def individual_search_test(homepage_url, msp_path, user_name, user_password):
-    driver = webdriver.Chrome('scripts/selenium/drivers/chromedriver')
+    driver = webdriver.Chrome(service=ChromeService('scripts/selenium/drivers/chromedriver'))
 
     try:
         driver.get(homepage_url)

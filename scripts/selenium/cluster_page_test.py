@@ -6,9 +6,10 @@ import time
 from selenium import webdriver
 from urllib.parse import urljoin
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service as ChromeService
 
 def cluster_page_test(homepage_url):
-    driver = webdriver.Chrome('scripts/selenium/drivers/chromedriver')
+    driver = webdriver.Chrome(service=ChromeService('scripts/selenium/drivers/chromedriver'))
 
     try:
         driver.get(homepage_url)

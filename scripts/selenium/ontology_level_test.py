@@ -8,9 +8,8 @@ from selenium.webdriver.support.ui import Select
 from urllib.parse import urljoin
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service as ChromeService
-chrome_service = ChromeService('scripts/selenium/drivers/chromedriver')
 def ontology_level_test(homepage_url, username, password):
-    driver = webdriver.Chrome(service=chrome_service)
+    driver = webdriver.Chrome(service=ChromeService('scripts/selenium/drivers/chromedriver'))
 
     try:
         driver.get(homepage_url)

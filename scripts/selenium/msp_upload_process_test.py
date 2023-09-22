@@ -7,9 +7,10 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 from urllib.parse import urljoin
 import time
+from selenium.webdriver.chrome.service import Service as ChromeService
 
 def upload_process_test(homepage_url, msp_path):
-    driver = webdriver.Chrome('scripts/selenium/drivers/chromedriver')
+    driver = webdriver.Chrome(service=ChromeService('scripts/selenium/drivers/chromedriver'))
 
     try:
         driver.get(homepage_url)
