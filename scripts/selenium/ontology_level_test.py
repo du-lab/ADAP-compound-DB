@@ -45,7 +45,7 @@ def ontology_level_test(homepage_url, username, password):
         assert len(driver.find_elements('id','accountPage')) < 1
 
     except Exception as e:
-        driver.quit()
+#         driver.quit()
         raise e
 
 
