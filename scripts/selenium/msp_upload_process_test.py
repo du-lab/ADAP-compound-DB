@@ -7,24 +7,25 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 from urllib.parse import urljoin
 import time
+from selenium.webdriver.chrome.service import Service as ChromeService
 
 def upload_process_test(homepage_url, msp_path):
-    driver = webdriver.Chrome('scripts/selenium/drivers/chromedriver')
+    driver = webdriver.Chrome(service=ChromeService('scripts/selenium/drivers/chromedriver'))
 
     try:
         driver.get(homepage_url)
 
-        upload_page_button = driver.find_element_by_id('uploadPage')
+        upload_page_button = driver.find_element('id', 'uploadPage')
         upload_page_button.click()
 
-        option_bar = Select(driver.find_element_by_id('chromatographyType'))
-        choose_key = driver.find_element_by_name('files')
-        submit_button = driver.find_element_by_name("submit")
+        option_bar = Select(driver.find_element('id', 'chromatographyType'))
+        choose_key = driver.find_element('name','files')
+        submit_button = driver.find_element('name',"submit")
         option_bar.select_by_visible_text('GC')
         choose_key.send_keys(msp_path)
         submit_button.click()
         time.sleep(2)
-        driver.find_element_by_id("uploadBtn").click()
+        driver.find_element('id', "uploadBtn").click()
         assert (driver.current_url.__str__().startswith(urljoin(homepage_url, 'file/')))
 
     except Exception as e:

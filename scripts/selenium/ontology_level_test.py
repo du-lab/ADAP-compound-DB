@@ -6,43 +6,43 @@ import time
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 from urllib.parse import urljoin
-
-
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service as ChromeService
 def ontology_level_test(homepage_url, username, password):
-    driver = webdriver.Chrome('scripts/selenium/drivers/chromedriver')
+    driver = webdriver.Chrome(service=ChromeService('scripts/selenium/drivers/chromedriver'))
 
     try:
         driver.get(homepage_url)
         # Login page
-        driver.find_element_by_id('loginPage').click()
+        driver.find_element('id','loginPage').click()
         assert driver.current_url.__str__().endswith('login/')
-        driver.find_element_by_id('username').send_keys(username)
-        driver.find_element_by_id('password').send_keys(password)
-        driver.find_element_by_name('submit').click()
+        driver.find_element('id','username').send_keys(username)
+        driver.find_element('id','password').send_keys(password)
+        driver.find_element('name', 'submit').click()
         time.sleep(5)
         # Account page
-        driver.find_element_by_id('accountPage').click()
+        driver.find_element('id','accountPage').click()
         assert driver.current_url.__str__().endswith('account/')
-        driver.find_element_by_id('librariesTab').click()
-        driver.find_element_by_xpath('//div[@id="libraries"]//a[contains(@href, "/submission/")]').click()
+        driver.find_element('id','librariesTab').click()
+        driver.find_element(By.XPATH, '//div[@id="libraries"]//a[contains(@href, "/submission/")]').click()
         time.sleep(5)
         # Submission page
         assert '/submission/' in driver.current_url.__str__()
-        driver.find_element_by_id('searchMenu').click()
-        driver.find_element_by_id('searchWithOntologyLevels').click()
+        driver.find_element('id','searchMenu').click()
+        driver.find_element('id','searchWithOntologyLevels').click()
         time.sleep(10)
         # Search parameters page
         assert '/group_search/parameters' in driver.current_url.__str__()
-        driver.find_element_by_id('searchButton').click()
+        driver.find_element('id','searchButton').click()
         time.sleep(60)
 
         # Search results page
         assert '/group_search/' in driver.current_url.__str__()
-        driver.find_element_by_xpath('//table[@id="match_table"]//*[text()="OL_1"]')
+        driver.find_elements(By.XPATH, '//table[@id="match_table"]//*[text()="OL_1"]')
 
         # Log out
-        driver.find_element_by_xpath('//a[@id="logoutPage"]').click()
-        assert len(driver.find_elements_by_id('accountPage')) < 1
+        driver.find_element(By.XPATH,'//a[@id="logoutPage"]').click()
+        assert len(driver.find_elements('id','accountPage')) < 1
 
     except Exception as e:
         driver.quit()
