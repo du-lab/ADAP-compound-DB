@@ -29,9 +29,9 @@
           href="<c:url value="/resources/npm/node_modules/bootstrap4-toggle/css/bootstrap4-toggle.min.css"/>">
     <link rel="stylesheet"
           href="<c:url value="/resources/DataTables/DataTables-1.10.23/css/jquery.dataTables.min.css"/>">
-    <link rel="stylesheet" type="text/css" media="(max-width: 480px)"
+    <link rel="stylesheet" type="text/css" media="(max-width: 800px)"
           href="<c:url value="/resources/AdapCompoundDb/css/main_mobile_portrait.css"/>">
-    <link rel="stylesheet" type="text/css" media="(min-width: 481px)"
+    <link rel="stylesheet" type="text/css" media="(min-width: 801px)"
           href="<c:url value="/resources/AdapCompoundDb/css/main.css"/>">
 
     <link rel="stylesheet" href="<c:url value="/resources/jquery-ui-1.13.2/jquery-ui.min.css"/>">
@@ -45,6 +45,7 @@
           href="<c:url value="https://fonts.googleapis.com/css?family=Crimson+Text|Proza+Libre|Lato:300,400"/>">
     <link rel="stylesheet" href="<c:url value="/resources/tagify-master/tagify.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/SpeckTackle/st.css"/>">
+    <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
     <sitemesh:write property="head"/>
 </head>
 
@@ -94,6 +95,26 @@
               $("#versionBadge").text(data);
             }
         });
+        $("#menu_ham").click(function (event) {
+            event.preventDefault();
+            let sidebar = $("#sidebar");
+            if (sidebar.hasClass("width-100")) {
+                sidebar.removeClass("width-100");
+                $(".sidebar-container-mobile").removeClass("opacity-unset");
+                window.onscroll=function(){};
+            } else {
+                sidebar.addClass("width-100");
+                $(".sidebar-container-mobile").addClass("opacity-unset");
+                window.onscroll = function () { window.scrollTo(0, 0); };
+            }
+        });
+        $("#close_sidebar").click(function (event) {
+            event.preventDefault();
+            let sidebar = $("#sidebar");
+            sidebar.removeClass("width-100");
+            $(".sidebar-container-mobile").removeClass("opacity-unset");
+            window.onscroll=function(){};
+        });
     });
     if (localStorage.getItem("cookieSeen") !== "shown") {
         $(".cookie-banner").delay(2000).fadeIn();
@@ -105,7 +126,7 @@
     })
 </script>
 
-<header  style="z-index: 100; width: 100%; position: sticky; top: 0;">
+<header  style="z-index: 100; width: 100%; top: 0;">
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
@@ -116,12 +137,27 @@
             </div>
         </div>
         <div class="row row-header">
-            <div class="col">
-                <h1 class="text-nowrap">
-                    <i class="material-icons mobile" title="Menu" id="menu">view_headline</i>
-                    ADAP-KDB Spectral Knowledgebase
-                    <sup><small id ="versionBadge" class="badge badge-pill badge-light"></small></sup>
+            <div class="mobile-header-container">
+                <h1 class="text-nowrap" style="display: flex;justify-content: space-between">
+                    <div class="mobile" id="menu_ham"><i class="material-icons" title="Menu" id="menu">view_headline</i></div>
+                    <div style="display:flex; align-items: center;">
+                        ADAP-KDB <span class="desktop" style="margin:0 10px;"> Spectral Knowledgebase </span>
+                        <sup><small id ="versionBadge" class="badge badge-pill badge-light"></small></sup>
+                    </div>
                 </h1>
+                <div class="mobile-user">
+                    <c:if test="${currentUser != null}">
+                        <div class="user-mobile text-nowrap">User:
+                            <c:if test="${currentUser.username.length() <= 7}">
+                                ${currentUser.username}
+                            </c:if>
+                            <c:if test="${currentUser.username.length() > 7}">
+                                ${fn:substring(currentUser.username,0,6)}...
+                            </c:if>
+                            (<a href="<c:url value="/logout"/>" onClick ="localStorage.clear()">Log out</a>)
+                        </div>
+                    </c:if>
+                </div>
             </div>
             <div class="col text-nowrap" style="display:flex;justify-content: flex-end;">
                 <%--@elvariable id="currentUser" type="org.springframework.security.core.userdetails.User"--%>
@@ -143,9 +179,14 @@
 <div class="wrapper">
     <%--    <div class="side">--%>
     <%--        <aside>--%>
-    <nav id="sidebar" style="width: 18%;">
-        <div class="container">
-            <div class="row row-menu mb-5">
+    <nav id="sidebar">
+        <div class="container sidebar-container-mobile">
+            <li class="nav-item mobile closebtn-container">
+                <a id="close_sidebar" class="closebtn">
+                    <i class="material-icons align-middle">close</i>
+                </a>
+            </li>
+            <div class="row row-menu mb-5" style="width: fit-content;">
                 <div class="col-12">
                     <ul class="nav flex-column">
                         <li class="nav-item">
@@ -155,13 +196,13 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a id="manualSearchPage" class="nav-link" href="<c:url value="/compound/search/"/>">
+                            <a id="manualSearchPage" class="nav-link text-nowrap" href="<c:url value="/compound/search/"/>">
                                 <i class="material-icons align-middle">search</i>
                                 <span class="align-middle">Manual Search</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a id="uploadPage" class="nav-link" href="<c:url value="/file/upload/" />">
+                            <a id="uploadPage" class="nav-link text-nowrap" href="<c:url value="/file/upload/" />">
                                 <i class="material-icons align-middle">cloud_upload</i>
                                 <span class="align-middle">Upload Files</span>
                             </a>
@@ -175,32 +216,32 @@
 <%--                            </a>--%>
 <%--                        </li>--%>
                         <li class="nav-item">
-                            <a id="libraryPage" class="nav-link" href="<c:url value="/libraries/" />">
+                            <a id="libraryPage" class="nav-link text-nowrap" href="<c:url value="/libraries/" />">
                                 <i class="material-icons align-middle">equalizer</i>
                                 <span class="align-middle">Public Libraries</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="<c:url value="/study_distributions/" />">
+                            <a class="nav-link text-nowrap" href="<c:url value="/study_distributions/" />">
                                 <i class="material-icons align-middle">book</i>
                                 <span class="align-middle">Distributions</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="<c:url value="/downloads/"/>">
+                            <a class="nav-link text-nowrap" href="<c:url value="/downloads/"/>">
                                 <i class="material-icons align-middle">download</i>
                                 <span class="align-middle">Downloads</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="<c:url value="/about/"/>">
+                            <a class="nav-link text-nowrap" href="<c:url value="/about/"/>">
                                 <i class="material-icons align-middle">help</i>
                                 <span class="align-middle">About</span>
                             </a>
                         </li>
 
                         <c:if test="${currentUser == null}">
-                            <li class="nav-item">
+                            <li class="nav-item text-nowrap">
                                 <a id="loginPage" class="nav-link" href="<c:url value="/login/"/>">
                                     <i class="material-icons align-middle">person</i>
                                     <span class="align-middle">Log-in / Sign-up</span>
@@ -236,7 +277,7 @@
             <div class="row mt-5">
                 <div class="col-12">
                     <a class="feedback" href="https://forms.gle/zYPXt463DC1WjJMy8" target="_blank">
-                        <strong>Leave Feedback</strong>
+                       <span class="text-nowrap"><strong>Leave Feedback</strong></span>
                     </a>
                 </div>
             </div>

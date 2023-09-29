@@ -123,9 +123,9 @@ aside li a:hover {
     margin: 0px 10px;
     padding: 10px;
     border-radius: 10% 50% 50% 10%;
-    background: #ffffff;
-    color: #542410;
-    text-shadow: 0 0 5px #542410;
+    background: #542410;
+    color: white;
+    text-shadow: 0 0 5px white;
     text-align: center;
 }
 
@@ -580,4 +580,136 @@ progress:after {
 
 .no-bullet-list {
     list-style-type: none;
+}
+
+.wrapper {
+    margin-top: 100px;
+}
+
+#sidebar {
+    width: 0;
+    position: fixed;
+    height: 100vh;
+    color: white;
+    left: 0;
+    max-width: 310px;
+    z-index: 2;
+    transition: width .2s ease-in-out;
+    overflow-x: hidden;
+}
+.sidebar-container-mobile {
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    backdrop-filter: blur(10px);
+    height: inherit;
+    width: 100%;
+}
+
+.width-100 {
+    width: 80% !important;
+    transition: width .2s ease-in-out;
+}
+
+.width-0 {
+    width: 0;
+    transition: width .2s ease-in-out;
+}
+.closebtn-container {
+    display: flex;
+    justify-content: right;
+}
+.closebtn {
+
+}
+
+/*.sidebar-container-mobile {*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*    justify-content: space-between;*/
+/*    align-items: center;*/
+/*    backdrop-filter: blur(10px);*/
+/*}*/
+
+/*#sidebar {*/
+/*    width: 80% !important;*/
+/*    position: absolute;*/
+/*    height: 100vh;*/
+/*    color: white;*/
+/*    left: 0;*/
+/*    z-index: 2;*/
+/*}*/
+
+.user-mobile {
+    display: flex;
+    justify-content: space-between;
+    width: fit-content;
+    align-items: center;
+}
+.mobile-user {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mobile-header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+@media only screen and (max-width: 1000px) {
+    .card-information-container {
+        min-height: unset;
+    }
+
+    .task-status {
+        display: none;
+    }
+
+    .feedback {
+        height: fit-content;
+    }
+
+    header div.user {
+        display: none !important;
+    }
+    .user-mobile {
+        display: flex;
+        justify-content: space-between;
+        width: fit-content;
+        align-items: center;
+    }
+    header h1 {
+        font-size: 1.05em;
+    }
+    .badge {
+        font-size: 50%;
+    }
+    h1 {
+        font-size: 2em;
+    }
+    .card {
+        margin-bottom: 20px;
+    }
+}
+@media only screen and (max-width: 400px) {
+    .wrapper {
+        margin-top: 140px;
+    }
+    h1 {
+        font-size: 1.5em;
+    }
+    .card {
+        margin-bottom: 20px;
+    }
+}
+@media only screen and (max-width: 200px) {
+    .card-information-container {
+        min-height: unset;
+    }
+    header div.user {
+        display: none !important;
+    }
 }
