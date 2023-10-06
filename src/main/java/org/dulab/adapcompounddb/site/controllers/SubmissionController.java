@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.site.controllers;
 
+import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.entities.*;
@@ -152,7 +153,7 @@ public class SubmissionController extends BaseController {
                                   final HttpSession session,
                                   @RequestParam(required=false) String applicationMode) {
         if (applicationMode != null) {
-            session.setAttribute("APPLICATION_MODE", applicationMode);
+            session.setAttribute(ControllerUtils.APPLICATION_MODE_ATTRIBUTE, applicationMode);
         }
         model.addAttribute("libraries", submissionService.findAllPublicLibraries());
 

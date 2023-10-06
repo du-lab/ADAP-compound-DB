@@ -2,6 +2,7 @@ package org.dulab.adapcompounddb.config;
 
 import org.dulab.adapcompounddb.models.entities.Spectrum;
 import org.dulab.adapcompounddb.models.entities.Submission;
+import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
 import org.dulab.adapcompounddb.utils.BreadCrumbs;
 import org.dulab.adapcompounddb.utils.JSPPageNames;
 import org.springframework.ui.Model;
@@ -28,8 +29,8 @@ public class ModelViewInterceptor implements HandlerInterceptor {
                            Object handler, ModelAndView modelAndView) throws Exception {
         if (modelAndView != null) {
             modelAndView.addObject("integTest", INTEGRATION_TEST);
-            if (request.getSession().getAttribute("APPLICATION_MODE") == null) {
-                request.getSession().setAttribute("APPLICATION_MODE", "SEARCH_PUBLIC_LIBRARIES");
+            if (request.getSession().getAttribute(ControllerUtils.APPLICATION_MODE_ATTRIBUTE) == null) {
+                request.getSession().setAttribute(ControllerUtils.APPLICATION_MODE_ATTRIBUTE, "SEARCH_PUBLIC_LIBRARIES");
             }
             modelAndView.addObject("breadcrumbs", generateBreadcrumbs(modelAndView, request));
         }

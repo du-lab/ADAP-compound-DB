@@ -9,6 +9,7 @@ import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.site.controllers.forms.CompoundSearchForm;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterForm;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterOptions;
+import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
 import org.dulab.adapcompounddb.site.controllers.utils.ConversionsUtils;
 import org.dulab.adapcompounddb.site.services.*;
 import org.dulab.adapcompounddb.site.services.search.IndividualSearchService;
@@ -532,8 +533,8 @@ public class IndividualSearchController extends BaseController {
             submissions.putAll(submissionService.findPublicSubmissions(chromatographyType));
         }
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        if (request.getSession().getAttribute("APPLICATION_MODE") != null
-                && request.getSession().getAttribute("APPLICATION_MODE").equals(ApplicationMode.PRIORITIZE_SPECTRA)) {
+        if (request.getSession().getAttribute(ControllerUtils.APPLICATION_MODE_ATTRIBUTE) != null
+                && request.getSession().getAttribute(ControllerUtils.APPLICATION_MODE_ATTRIBUTE).equals(ApplicationMode.PRIORITIZE_SPECTRA)) {
             submissions.put(BigInteger.ZERO, "ADAP-KDB Consensus Spectra");
         }
         return new FilterOptions(speciesList, sourceList, diseaseList, submissions);

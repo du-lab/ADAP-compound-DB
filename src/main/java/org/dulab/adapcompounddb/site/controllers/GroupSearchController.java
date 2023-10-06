@@ -2,6 +2,7 @@ package org.dulab.adapcompounddb.site.controllers;
 
 import org.dulab.adapcompounddb.models.dto.ChromatographySearchParametersDTO;
 import org.dulab.adapcompounddb.models.enums.ApplicationMode;
+import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
 import org.dulab.adapcompounddb.site.services.SearchTaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,7 +90,7 @@ public class GroupSearchController extends BaseController {
             form.setSubmissionIds(filterOptions.getSubmissions().keySet());
         form.setWithOntologyLevels(withOntologyLevels.orElse(false));
         model.addAttribute("filterForm", form);
-        session.setAttribute("APPLICATION_MODE", applicationMode);
+        session.setAttribute(ControllerUtils.APPLICATION_MODE_ATTRIBUTE, applicationMode);
 
         //check if user is login
         model.addAttribute("isLoggedIn", this.getCurrentUserPrincipal() != null);
@@ -221,8 +222,8 @@ public class GroupSearchController extends BaseController {
             submissions.putAll(submissionService.findPublicSubmissions(chromatographyType));
         }
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        if (request.getSession().getAttribute("APPLICATION_MODE") != null
-                && request.getSession().getAttribute("APPLICATION_MODE").equals(ApplicationMode.PRIORITIZE_SPECTRA)) {
+        if (request.getSession().getAttribute(APPLICATION_MODE_ATTRIBUTE) != null
+                && request.getSession().getAttribute(APPLICATION_MODE_ATTRIBUTE).equals(ApplicationMode.PRIORITIZE_SPECTRA)) {
             submissions.put(BigInteger.ZERO, "ADAP-KDB Consensus Spectra");
         }
 
