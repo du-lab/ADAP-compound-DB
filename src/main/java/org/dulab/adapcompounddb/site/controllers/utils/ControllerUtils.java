@@ -50,7 +50,7 @@ public class ControllerUtils {
     public static final String INDIVIDUAL_SEARCH_PARAMETERS_COOKIE_NAME = "individual_parameters_form";
     public static final String SPECTRUM_LIST = "spectrum_list";
 
-    public static final String APPLICATION_MODE_ATTRIBUTE = ControllerUtils.APPLICATION_MODE_ATTRIBUTE;
+    public static final String APPLICATION_MODE_ATTRIBUTE = "APPLICATION_MODE";
 
     @Autowired
     SpectrumClusterer spectrumClusterer;
