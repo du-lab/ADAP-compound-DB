@@ -19,11 +19,11 @@ public interface ExportSearchResultsService {
 
 
     void exportAll(OutputStream outputStream, List<SearchResultDTO> searchResults,
-        Collection<String> librariesUsedForMatching) throws IOException;
+        Collection<String> librariesUsedForMatching, String searchParametersAsString) throws IOException;
 
     default void export(OutputStream outputStream, List<SearchResultDTO> searchResults,
-        Collection<String> librariesUsedForMatching) throws IOException {
-        exportAll(outputStream, selectTopResults(searchResults), librariesUsedForMatching);
+        Collection<String> librariesUsedForMatching, String searchParametersAsString) throws IOException {
+        exportAll(outputStream, selectTopResults(searchResults), librariesUsedForMatching, searchParametersAsString);
 //        exportAll(outputStream, searchResults);
     }
 

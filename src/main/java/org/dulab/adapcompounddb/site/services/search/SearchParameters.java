@@ -27,6 +27,8 @@ public class SearchParameters implements Cloneable {
     private Boolean greedy;
     private Double scoreThreshold;
     private Double mzTolerance;
+
+    private MzToleranceType mzToleranceType;
     private Integer mzTolerancePPM;
     private Double precursorTolerance;
     private Integer precursorTolerancePPM;
@@ -70,6 +72,14 @@ public class SearchParameters implements Cloneable {
     public SearchParameters setScoreThreshold(Double scoreThreshold) {
         this.scoreThreshold = scoreThreshold;
         return this;
+    }
+
+    public void setMZToleranceType(MzToleranceType mzToleranceType) {
+        this.mzToleranceType = mzToleranceType;
+    }
+
+    public MzToleranceType getMZToleranceType() {
+        return mzToleranceType;
     }
 
     public Double getMzTolerance() {
@@ -389,5 +399,14 @@ public class SearchParameters implements Cloneable {
             parameters.setSpectrumIds(spectrumIds);
         }
         return parameters;
+    }
+
+    public String getSearchParametersAsString() {
+        final String COMMA = ", ";
+        return "Score Threshold = " + getScoreThreshold() + COMMA +
+                "Retention Index Tolerance = " + getRetIndexTolerance() + COMMA +
+                "Retention Index Match = " + getRetIndexMatchType() + COMMA +
+                "M/Z Tolerance = " + getMzTolerance() + " " + getMZToleranceType() + COMMA +
+                "Matches per Spectrum = " + getLimit();
     }
 }

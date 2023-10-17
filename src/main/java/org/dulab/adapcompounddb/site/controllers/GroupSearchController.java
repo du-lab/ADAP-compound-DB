@@ -134,6 +134,7 @@ public class GroupSearchController extends BaseController {
                 form.getRetentionIndexTolerance() != null ? (double) form.getRetentionIndexTolerance() : null);
         parameters.setRetIndexMatchType(form.getRetentionIndexMatch());
         parameters.setMzTolerance(form.getMzTolerance(), form.getMzToleranceType());
+        parameters.setMZToleranceType(form.getMzToleranceType());
         parameters.setLimit(form.getLimit());
         parameters.setSpecies(species);
         parameters.setSource(source);

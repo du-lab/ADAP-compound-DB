@@ -90,6 +90,7 @@ public class GroupSearchService {
             final List<SpectrumDTO> spectrumDTOList = new ArrayList<>();
             session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
             session.setAttribute("spectrumDTOList", spectrumDTOList);
+            session.setAttribute(ControllerUtils.GROUP_SEARCH_PARAMETERS, userParameters);
 
             // Calculate total number of spectra
             long totalSteps = files.stream()
@@ -216,10 +217,11 @@ public class GroupSearchService {
 //            long time2 = System.currentTimeMillis();
 //            double total = (time2 - time1) / 1000.0;
             if (!groupSearchDTOList.isEmpty()) {
-
+                SearchParameters searchParametersFromSession = (SearchParameters) session.getAttribute(ControllerUtils.GROUP_SEARCH_PARAMETERS);
                 // Export search results to a session (simple export)
                 try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-                    exportSearchResultsService.export(outputStream, groupSearchDTOList, libraries.values());
+                    exportSearchResultsService.export(outputStream, groupSearchDTOList, libraries.values(),
+                            searchParametersFromSession.getSearchParametersAsString());
                     session.setAttribute(ControllerUtils.GROUP_SEARCH_SIMPLE_EXPORT, outputStream.toByteArray());
                 } catch (IOException e) {
                     LOGGER.warn("Error when writing the simple export to the session: " + e.getMessage(), e);
@@ -227,7 +229,8 @@ public class GroupSearchService {
 
                 // Export search results to a session (advanced export)
                 try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-                    exportSearchResultsService.exportAll(outputStream, groupSearchDTOList, libraries.values());
+                    exportSearchResultsService.exportAll(outputStream, groupSearchDTOList, libraries.values(),
+                            searchParametersFromSession.getSearchParametersAsString());
                     session.setAttribute(ControllerUtils.GROUP_SEARCH_ADVANCED_EXPORT, outputStream.toByteArray());
                 } catch (IOException e) {
                     LOGGER.warn("Error when writing the advanced export to the session: " + e.getMessage(), e);
@@ -243,7 +246,8 @@ public class GroupSearchService {
                             .toString();
 
                     try (FileOutputStream fileOutputStream = new FileOutputStream(filePath)) {
-                        exportSearchResultsService.export(fileOutputStream, groupSearchDTOList, libraries.values());
+                        exportSearchResultsService.export(fileOutputStream, groupSearchDTOList, libraries.values(),
+                                searchParametersFromSession.getSearchParametersAsString());
                         emailService.sendEmailWithAttachment(filePath, userPrincipal.getEmail());
                         //delete the local file
                         Files.delete(FileSystems.getDefault().getPath(filePath));

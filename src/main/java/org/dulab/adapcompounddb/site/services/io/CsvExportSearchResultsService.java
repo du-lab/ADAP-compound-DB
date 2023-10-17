@@ -34,7 +34,7 @@ public class CsvExportSearchResultsService implements ExportSearchResultsService
 
     @Override
     public void exportAll(OutputStream outputStream, List<SearchResultDTO> searchResults,
-        Collection<String> libraries) throws IOException {
+        Collection<String> libraries, String searchParametersAsString) throws IOException {
 
 //        long[] matchIds = searchResults.stream()
 //                .mapToLong(SearchResultDTO::getSpectrumId)
@@ -65,7 +65,7 @@ public class CsvExportSearchResultsService implements ExportSearchResultsService
 
             zipOutput.putNextEntry(new ZipEntry("export_data.csv"));
             CSVWriter csvWriter = new CSVWriter(new OutputStreamWriter(zipOutput));
-            for (String[] row : createHeader(applicationVersion, libraries)) {
+            for (String[] row : createHeader(applicationVersion, libraries, searchParametersAsString)) {
                 csvWriter.writeNext(row);
             }
             for (SearchResultDTO searchResult : searchResults) {
@@ -75,13 +75,13 @@ public class CsvExportSearchResultsService implements ExportSearchResultsService
         }
     }
 
-    private String[][] createHeader(String applicationVersion, Collection<String> libraryNames) {
+    private String[][] createHeader(String applicationVersion, Collection<String> libraryNames, String searchParametersAsString) {
         //The first line: "Library matching results produced by ADAP-KDB v0.0.1"
         String[] firstRow = new String[]{"Library matching results produced by ADAP-KDB version " + applicationVersion};
 
         //The second line: "Libraries used for matching: LibraryName1, LibraryName2"
         String[] secondRow = new String[]{"Libraries used for matching: " + String.join(", ", libraryNames)};
-
+        String [] parametersRow = new String[]{"Parameters: " + searchParametersAsString};
         // Third line
         Set<String> writtenCategories = new HashSet<>();
         String[] thirdRow = Arrays.stream(ExportField.values())
@@ -103,7 +103,7 @@ public class CsvExportSearchResultsService implements ExportSearchResultsService
 
 //        fields.addAll(propertyNames);
 
-        return new String[][] {firstRow, secondRow, thirdRow, fourthRow};
+        return new String[][] {firstRow, parametersRow, secondRow, thirdRow, fourthRow};
     }
 
     private String[] createRow(SearchResultDTO searchResult) {

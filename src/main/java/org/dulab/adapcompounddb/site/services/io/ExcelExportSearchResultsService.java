@@ -28,7 +28,7 @@ public class ExcelExportSearchResultsService implements ExportSearchResultsServi
 
     @Override
     public void exportAll(OutputStream outputStream, List<SearchResultDTO> searchResults,
-        Collection<String> libraries) throws IOException {
+        Collection<String> libraries, String searchParametersAsString) throws IOException {
 
         LOGGER.info("Exporting search results to Excel...");
 
