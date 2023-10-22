@@ -262,6 +262,7 @@ public class FileUploadController extends BaseController {
                     .collect(Collectors.toList()));
             fileTypes.add(file.getFileType());
         }
+        fileTypes.sort(Comparator.comparingInt(FileType::getPriority));
         model.addAttribute("metadataForm", form);
         model.addAttribute("spectrumProperties", propertyList);
         model.addAttribute("cookieForm", cookieMap);
