@@ -160,15 +160,22 @@
                                 <form:label path="submissionIds"
                                             cssClass="col-md-4 col-form-label">Search in Libraries:</form:label>
                                 <div class="col-md-8">
-                                    <c:forEach items="${filterOptions.submissions}" var="submission" varStatus="status">
-                                        <div class="custom-control custom-switch">
-                                            <input class="custom-control-input" type="checkbox" name="submissionIds"
-                                                   id="submissionIds${status.index}" value="${submission.key}"
-                                                   <c:if test="${compoundSearchForm.getSubmissionIds().contains(submission.key)}">checked</c:if>>
-                                            <label class="custom-control-label"
-                                                   for="submissionIds${status.index}">${submission.value}</label>
-                                        </div>
-                                    </c:forEach>
+                                    <c:choose>
+                                        <c:when test="${empty filterOptions.submissions}">
+                                            <p>No libraries found</p>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <c:forEach items="${filterOptions.submissions}" var="submission" varStatus="status">
+                                                <div class="custom-control custom-switch">
+                                                    <input class="custom-control-input" type="checkbox" name="submissionIds"
+                                                           id="submissionIds${status.index}" value="${submission.key}"
+                                                           <c:if test="${compoundSearchForm.getSubmissionIds().contains(submission.key)}">checked</c:if>>
+                                                    <label class="custom-control-label"
+                                                           for="submissionIds${status.index}">${submission.value}</label>
+                                                </div>
+                                            </c:forEach>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </div>
                                 <input type="hidden" name="_submissionIds" value="on">
                             </fieldset>

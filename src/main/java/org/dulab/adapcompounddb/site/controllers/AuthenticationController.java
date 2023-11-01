@@ -11,6 +11,8 @@ import org.dulab.adapcompounddb.validation.FieldMatch;
 import org.dulab.adapcompounddb.validation.Password;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -215,6 +217,10 @@ public class AuthenticationController extends BaseController {
     @RequestMapping(value = "logout", method = RequestMethod.GET)
     public ModelAndView logout(final HttpSession session) {
         session.invalidate();
+        Authentication authentication = getAuthentication();
+        if (authentication != null) {
+            SecurityContextHolder.clearContext();
+        }
         return getHomeRedirect();
     }
 

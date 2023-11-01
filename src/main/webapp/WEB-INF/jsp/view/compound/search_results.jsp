@@ -27,7 +27,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="row form-group">
-                                    <form:label path="submissionIds" cssClass="col-form-label">Libraries1:</form:label>
+                                    <form:label path="submissionIds" cssClass="col-form-label">Libraries:</form:label>
                                     <form:select path="submissionIds" cssClass="custom-select" multiple="multiple"
                                                  size="10" id="submission-select">
                                         <c:forEach items="${filterOptions.submissions}" var="entry">

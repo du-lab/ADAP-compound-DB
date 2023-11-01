@@ -20,12 +20,12 @@ build:
     - mvn -version
     - mvn clean install
     - docker build -f docker/adap-kdb-docker/Dockerfile -t adap-kdb-img .
-    - docker run --name $CONTAINER_NAME -e DATABASE=cci-cardia.uncc.edu -e INTEGRATION_TEST=true -d -p8080:8080 adap-kdb-img
+    - docker run --name $CONTAINER_NAME -e DATABASE=cci-dulab.uncc.edu -e INTEGRATION_TEST=true -d -p8080:8080 adap-kdb-img
     - python3 --version
     - python3 scripts/selenium/initial_test.py --homepage-url $HOMEPAGE_URL
   timeout: 15m
   tags:
-    - test_mac
+    - test_mac_printer
 
 test:
   stage: test
@@ -34,6 +34,12 @@ test:
     - merge_requests
   script:
     - pwd
+    - mvn clean install
+    - docker rm --force $CONTAINER_NAME
+    - docker system prune --force #to clean up dangling images
+    - docker build -f docker/adap-kdb-docker/Dockerfile -t adap-kdb-img .
+    - docker run --name $CONTAINER_NAME -e DATABASE=cci-dulab.uncc.edu -e INTEGRATION_TEST=true -d -p8080:8080 adap-kdb-img
+    - sleep 10 #wait for the server to start
     - python3 scripts/selenium/ontology_level_test.py --homepage-url $HOMEPAGE_URL --username $ADAP_KDB_TEST_USERNAME --password $ADAP_KDB_TEST_PASSWORD
     - python3 scripts/selenium/manual_search_test.py --homepage-url $HOMEPAGE_URL --identifier "eicosatrienoic acid" --spectrum "79 100; 67 90.3325; 80 75.8722; 81 59.0838; 93 54.0933"
     - python3 scripts/selenium/msp_upload_process_test.py --homepage-url $HOMEPAGE_URL --msp-path $CI_PROJECT_DIR/scripts/selenium/combined.msp
@@ -48,7 +54,7 @@ test:
     - docker rm --force $CONTAINER_NAME
   timeout: 30m
   tags:
-    - test_mac
+    - test_mac_printer
 
 package:
   stage: deploy
@@ -67,5 +73,5 @@ package:
     - merge_requests
   timeout: 15m
   tags:
-      - test_mac
+      - test_mac_printer
 
