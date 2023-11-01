@@ -1,6 +1,8 @@
 package org.dulab.adapcompounddb.site.controllers;
 
 import org.dulab.adapcompounddb.models.dto.ChromatographySearchParametersDTO;
+import org.dulab.adapcompounddb.models.enums.ApplicationMode;
+import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
 import org.dulab.adapcompounddb.site.services.SearchTaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +23,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.Cookie;
@@ -63,6 +67,7 @@ public class GroupSearchController extends BaseController {
     @RequestMapping(value = "/group_search/parameters", method = RequestMethod.GET)
     public String groupSearchParametersGet(@RequestParam Optional<Boolean> withOntologyLevels,
                                            @RequestParam Optional<Long> submissionId,
+                                           @RequestParam(required=false) String applicationMode,
                                            HttpSession session, Model model,
                                            @CookieValue(
                                                    value = SEARCH_PARAMETERS_COOKIE_NAME,
@@ -85,6 +90,7 @@ public class GroupSearchController extends BaseController {
             form.setSubmissionIds(filterOptions.getSubmissions().keySet());
         form.setWithOntologyLevels(withOntologyLevels.orElse(false));
         model.addAttribute("filterForm", form);
+        session.setAttribute(ControllerUtils.APPLICATION_MODE_ATTRIBUTE, applicationMode);
 
         //check if user is login
         model.addAttribute("isLoggedIn", this.getCurrentUserPrincipal() != null);
@@ -155,7 +161,6 @@ public class GroupSearchController extends BaseController {
                 submission.getFiles(), session, parameters, chosenLibraries, form.isWithOntologyLevels(),
                 form.isSendResultsToEmail(), savedSubmission);
         session.setAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME, asyncResult);
-
         LOGGER.info("Group search is started by " + userIpText);
 
         String byteString = ConversionsUtils.formToByteString(form);
@@ -216,7 +221,11 @@ public class GroupSearchController extends BaseController {
                     submissionService.findUserPrivateSubmissions(this.getCurrentUserPrincipal(), chromatographyType));
             submissions.putAll(submissionService.findPublicSubmissions(chromatographyType));
         }
-        submissions.put(BigInteger.ZERO, "ADAP-KDB Consensus Spectra");
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        if (request.getSession().getAttribute(APPLICATION_MODE_ATTRIBUTE) != null
+                && request.getSession().getAttribute(APPLICATION_MODE_ATTRIBUTE).equals(ApplicationMode.PRIORITIZE_SPECTRA)) {
+            submissions.put(BigInteger.ZERO, "ADAP-KDB Consensus Spectra");
+        }
 
         return new FilterOptions(speciesList, sourceList, diseaseList, submissions);
     }

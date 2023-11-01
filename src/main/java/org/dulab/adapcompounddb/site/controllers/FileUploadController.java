@@ -116,8 +116,11 @@ public class FileUploadController extends BaseController {
 
     @RequestMapping(value = "/file/upload/", method = RequestMethod.GET)
     public String upload(Model model, HttpSession session,
+                         @RequestParam(required=false) String applicationMode,
                          @CookieValue(value = FILE_UPLOAD_FIELDS_COOKIE_NAME, defaultValue = "") String metaFieldsInJson) {
-
+        if (applicationMode != null) {
+            session.setAttribute(ControllerUtils.APPLICATION_MODE_ATTRIBUTE, applicationMode);
+        }
         if (Submission.from(session) != null) {
             return "redirect:/file/";
         }
