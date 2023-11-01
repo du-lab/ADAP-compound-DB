@@ -221,12 +221,12 @@
                                 <span class="align-middle">Public Libraries</span>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-nowrap" href="<c:url value="/study_distributions/" />">
-                                <i class="material-icons align-middle">book</i>
-                                <span class="align-middle">Distributions</span>
-                            </a>
-                        </li>
+<%--                        <li class="nav-item">--%>
+<%--                            <a class="nav-link" href="<c:url value="/study_distributions/" />">--%>
+<%--                                <i class="material-icons align-middle">book</i>--%>
+<%--                                <span class="align-middle">Distributions</span>--%>
+<%--                            </a>--%>
+<%--                        </li>--%>
                         <li class="nav-item">
                             <a class="nav-link text-nowrap" href="<c:url value="/downloads/"/>">
                                 <i class="material-icons align-middle">download</i>
@@ -311,7 +311,7 @@
         </div>
     </nav>
 
-    <article style="margin: 0 auto; width: 82%">
+    <article style="margin: 0 auto; width: 100%">
         <sitemesh:write property='body' />
     </article>
 </div>

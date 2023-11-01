@@ -4,10 +4,12 @@ import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
 import org.dulab.adapcompounddb.models.dto.SearchParametersDTO;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.entities.*;
+import org.dulab.adapcompounddb.models.enums.ApplicationMode;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.dulab.adapcompounddb.site.controllers.forms.CompoundSearchForm;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterForm;
 import org.dulab.adapcompounddb.site.controllers.forms.FilterOptions;
+import org.dulab.adapcompounddb.site.controllers.utils.ControllerUtils;
 import org.dulab.adapcompounddb.site.controllers.utils.ConversionsUtils;
 import org.dulab.adapcompounddb.site.services.*;
 import org.dulab.adapcompounddb.site.services.search.IndividualSearchService;
@@ -17,6 +19,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -528,8 +532,11 @@ public class IndividualSearchController extends BaseController {
                     submissionService.findUserPrivateSubmissions(this.getCurrentUserPrincipal(), chromatographyType));
             submissions.putAll(submissionService.findPublicSubmissions(chromatographyType));
         }
-        submissions.put(BigInteger.ZERO, "ADAP-KDB Consensus Spectra");
-
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        if (request.getSession().getAttribute(ControllerUtils.APPLICATION_MODE_ATTRIBUTE) != null
+                && request.getSession().getAttribute(ControllerUtils.APPLICATION_MODE_ATTRIBUTE).equals(ApplicationMode.PRIORITIZE_SPECTRA)) {
+            submissions.put(BigInteger.ZERO, "ADAP-KDB Consensus Spectra");
+        }
         return new FilterOptions(speciesList, sourceList, diseaseList, submissions);
     }
 
