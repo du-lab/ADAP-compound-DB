@@ -66,7 +66,7 @@
                         </ul>
                     </div>
                     <div class="homepage-button-container">
-                        <a href="/libraries/">
+                        <a href = "/libraries/?applicationMode=SEARCH_PUBLIC_LIBRARIES" id="searchPublicLibrariesMode">
                             <button class="homepage-button btn btn-primary btn-lg btn-block">
                                 Search Public Libraries
                             </button>
@@ -94,7 +94,7 @@
                         </ul>
                     </div>
                     <div class="homepage-button-container">
-                        <a href="/file/upload/">
+                        <a href="/file/upload/?applicationMode=UPLOAD_PRIVATE_LIBRARIES" id="uploadPrivateLibrariesMode">
                             <button class="homepage-button btn btn-primary btn-lg btn-block">
                                 Upload Private Libraries
                             </button>
@@ -122,7 +122,7 @@
                         </ul>
                     </div>
                     <div class="homepage-button-container">
-                        <a href="/file/upload/">
+                        <a href="/file/upload/?applicationMode=PRIORITIZE_SPECTRA" id="prioritizeSpectraMode">
                             <button class="homepage-button btn btn-primary btn-lg btn-block">
                                 Prioritize Spectra
                             </button>

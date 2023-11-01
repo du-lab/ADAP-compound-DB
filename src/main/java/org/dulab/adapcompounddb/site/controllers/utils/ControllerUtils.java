@@ -52,6 +52,8 @@ public class ControllerUtils {
 
     public static final String GROUP_SEARCH_PARAMETERS = "group_search_parameters";
 
+    public static final String APPLICATION_MODE_ATTRIBUTE = "APPLICATION_MODE";
+
     @Autowired
     SpectrumClusterer spectrumClusterer;
 

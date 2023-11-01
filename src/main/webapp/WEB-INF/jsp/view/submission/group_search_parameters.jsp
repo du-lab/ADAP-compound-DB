@@ -24,9 +24,11 @@
                             <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#libraries">
                                 Libraries
                             </a></li>
-                            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#filter">
+                            <c:if test="${sessionScope.APPLICATION_MODE == 'PRIORITIZE_SPECTRA'}">
+                            <li class="nav-item" id="filterTab"><a class="nav-link" data-toggle="tab" href="#filter">
                                 Filter
                             </a></li>
+                            </c:if>
                             <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#parameters">
                                 Parameters
                                 <span id="custom" class="badge badge-info" style="display: none">
@@ -51,51 +53,58 @@
                                 <form:label path="submissionIds"
                                             cssClass="col-md-4 col-form-label">Search in Libraries:</form:label>
                                 <div class="col-md-8">
-                                    <c:forEach items="${filterOptions.submissions}" var="submission" varStatus="status">
-                                        <div class="custom-control custom-switch">
-                                            <input class="custom-control-input" type="checkbox" name="submissionIds"
-                                                   id="submissionIds${status.index}" value="${submission.key}"
-                                                   <c:if test="${filterForm.submissionIds.contains(submission.key)}">checked</c:if>>
-                                            <label class="custom-control-label"
-                                                   for="submissionIds${status.index}">${submission.value}</label>
-                                        </div>
-                                    </c:forEach>
+                                    <c:choose>
+                                        <c:when test="${empty filterForm.submissionIds}">
+                                            <p>No libraries found</p>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <c:forEach items="${filterOptions.submissions}" var="submission" varStatus="status">
+                                                <div class="custom-control custom-switch">
+                                                    <input class="custom-control-input" type="checkbox" name="submissionIds"
+                                                           id="submissionIds${status.index}" value="${submission.key}"
+                                                           <c:if test="${filterForm.submissionIds.contains(submission.key)}">checked</c:if>>
+                                                    <label class="custom-control-label"
+                                                           for="submissionIds${status.index}">${submission.value}</label>
+                                                </div>
+                                            </c:forEach>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </div>
                                 <input type="hidden" name="_submissionIds" value="on">
                             </fieldset>
                         </div>
+                        <c:if test="${sessionScope.APPLICATION_MODE == 'PRIORITIZE_SPECTRA'}">
+                            <div id="filter" class="tab-pane fade" role="tabpanel">
+                                <div class="row form-group">
+                                    <form:label path="species" cssClass="col-md-4 col-form-label">Species:</form:label>
+                                    <div class="col-md-8">
+                                        <form:select path="species" cssClass="form-control">
+                                            <form:option value="all">All</form:option>
+                                            <form:options items="${filterOptions.speciesList}"/>
+                                        </form:select>
+                                    </div>
+                                </div>
+                                <div class="row form-group">
+                                    <form:label path="source" cssClass="col-md-4 col-form-label">Source:</form:label>
+                                    <div class="col-md-8">
+                                        <form:select path="source" cssClass="form-control">
+                                            <form:option value="all">All</form:option>
+                                            <form:options items="${filterOptions.sourceList}"/>
+                                        </form:select>
+                                    </div>
+                                </div>
 
-                        <div id="filter" class="tab-pane fade" role="tabpanel">
-                            <div class="row form-group">
-                                <form:label path="species" cssClass="col-md-4 col-form-label">Species:</form:label>
-                                <div class="col-md-8">
-                                    <form:select path="species" cssClass="form-control">
-                                        <form:option value="all">All</form:option>
-                                        <form:options items="${filterOptions.speciesList}"/>
-                                    </form:select>
+                                <div class="row form-group">
+                                    <form:label path="disease" cssClass="col-md-4 col-form-label">Disease:</form:label>
+                                    <div class="col-md-8">
+                                        <form:select path="disease" cssClass="form-control">
+                                            <form:option value="all">All</form:option>
+                                            <form:options items="${filterOptions.diseaseList}"/>
+                                        </form:select>
+                                    </div>
                                 </div>
                             </div>
-
-                            <div class="row form-group">
-                                <form:label path="source" cssClass="col-md-4 col-form-label">Source:</form:label>
-                                <div class="col-md-8">
-                                    <form:select path="source" cssClass="form-control">
-                                        <form:option value="all">All</form:option>
-                                        <form:options items="${filterOptions.sourceList}"/>
-                                    </form:select>
-                                </div>
-                            </div>
-
-                            <div class="row form-group">
-                                <form:label path="disease" cssClass="col-md-4 col-form-label">Disease:</form:label>
-                                <div class="col-md-8">
-                                    <form:select path="disease" cssClass="form-control">
-                                        <form:option value="all">All</form:option>
-                                        <form:options items="${filterOptions.diseaseList}"/>
-                                    </form:select>
-                                </div>
-                            </div>
-                        </div>
+                        </c:if>
                         <div id="parameters" class="tab-pane fade" role="tabpanel">
                             <jsp:include page="../../view/compound/user_search_parameters.jsp">
                                 <jsp:param name="SCORE_THRESHOLD" value="${searchParameters.scoreThreshold}"/>
@@ -138,6 +147,7 @@
         </div>
     </form:form>
 </div>
+<script src="/resources/AdapCompoundDb/js/filterSearchResults.js"></script>
 <script>
     function checkForChange(limitFetched, mzToleranceFetched, mzToleranceTypeFetched,
                             retentionIndexMatchFetched, retentionIndexToleranceFetched,

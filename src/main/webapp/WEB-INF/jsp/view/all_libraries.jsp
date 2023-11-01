@@ -5,23 +5,25 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <script src="<c:url value="/resources/AdapCompoundDb/js/tagsColor.js"/>"></script>
 <div class="container">
-    <div class="row row-content">
-        <div class="col">
-            <div class="card">
-                <div class="card-header card-header-single">
-                    Consensus Spectra
-                </div>
-                <section class="no-background">
-                    <div align="center">
-                        <a id="consensusPage" href="${pageContext.request.contextPath}/allClusters/"
-                           class="btn btn-primary">View All Consensus Spectra</a>
-                        <a id="publicSubmissionPage" href="${pageContext.request.contextPath}/publicSubmission/"
-                           class="btn btn-primary">View All Public Studies</a>
+    <c:if test="${sessionScope.APPLICATION_MODE == 'PRIORITIZE_SPECTRA'}">
+        <div class="row row-content">
+            <div class="col">
+                <div class="card">
+                    <div class="card-header card-header-single">
+                        Consensus Spectra
                     </div>
-                </section>
+                    <section class="no-background">
+                        <div align="center">
+                            <a id="consensusPage" href="${pageContext.request.contextPath}/allClusters/"
+                               class="btn btn-primary">View All Consensus Spectra</a>
+                            <a id="publicSubmissionPage" href="${pageContext.request.contextPath}/publicSubmission/"
+                               class="btn btn-primary">View All Public Studies</a>
+                        </div>
+                    </section>
+                </div>
             </div>
         </div>
-    </div>
+    </c:if>
     <div class="row row-content">
         <div class="col">
             <div class="card">
