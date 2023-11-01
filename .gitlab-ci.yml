@@ -25,7 +25,7 @@ build:
     - python3 scripts/selenium/initial_test.py --homepage-url $HOMEPAGE_URL
   timeout: 15m
   tags:
-    - test_mac
+    - test_mac_printer
 
 test:
   stage: test
@@ -54,7 +54,7 @@ test:
     - docker rm --force $CONTAINER_NAME
   timeout: 30m
   tags:
-    - test_mac
+    - test_mac_printer
 
 package:
   stage: deploy
@@ -73,5 +73,5 @@ package:
     - merge_requests
   timeout: 15m
   tags:
-      - test_mac
+      - test_mac_printer
 
