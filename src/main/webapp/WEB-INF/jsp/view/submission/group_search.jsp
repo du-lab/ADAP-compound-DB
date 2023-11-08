@@ -1048,6 +1048,10 @@
                     else {
                         progressBar.removeClass('progress-bar-striped progress-bar-animated');
                     }
+                    if (x === 100) {
+                        $("#stopSearchBtn").hide();
+                        $("#newSearchBtn").show();
+                    }
                 });
             }
         }, 1000);
