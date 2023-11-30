@@ -837,6 +837,13 @@
                                 $(row).attr('data-queryId', data.querySpectrumId);
                                 $(row).attr('data-queryFileIndex', data.queryFileIndex);
                                 $(row).attr('data-querySpectrumIndex', data.querySpectrumIndex);
+                                $(row).data('data-queryPeakMzs', (data.queryPeakMzs));
+                                $(row).data('data-libraryPeakMzs', (data.libraryPeakMzs));
+
+                                // console.log("===queryPeakMzs:", data.queryPeakMzs);
+                                // console.log("===libraryPeakMzs:", data.libraryPeakMzs);
+
+
                             },
                             columns: [
                                 {
@@ -932,6 +939,11 @@
             let queryFileIndex = $(row).attr('data-queryFileIndex');
             let querySpectrumIndex = $(row).attr('data-querySpectrumIndex');
             let matchId = $(row).attr('data-matchId');
+            let queryPeakMzs = $(row).data('data-queryPeakMzs');
+            let libraryPeakMzs = $(row).data('data-libraryPeakMzs');
+
+            console.log("===queryPeakMzs:", queryPeakMzs);
+            console.log("===libraryPeakMzs:", libraryPeakMzs);
 
             <%--let queryUrl = `${pageContext.request.contextPath}/file/\${queryFileIndex}/\${querySpectrumIndex}/search/`;--%>
             let queryUrl = `${pageContext.request.contextPath}\${queryHRef}search/`;
@@ -954,7 +966,7 @@
             // $('#queryInfo').spectrumInfo(queryUrl + 'info.json');
             // $('#matchInfo').spectrumInfo(matchUrl + 'info.json');
             $('#query-plot-match-panel').collapse('show');
-            $('#plot').spectrumPlot(position, queryUrl + 'positive/peaks.json', matchUrl + 'negative/peaks.json',
+            $('#plot').spectrumPlot(position, queryUrl + 'positive/peaks.json', matchUrl + 'negative/peaks.json', queryPeakMzs, libraryPeakMzs,
                 function (complete) {
                     if (complete) {
                         //reset styles

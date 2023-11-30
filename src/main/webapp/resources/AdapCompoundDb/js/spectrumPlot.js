@@ -2,7 +2,7 @@
  * @requires jQuery, D3, SpeckTackle
  */
 
-jQuery.fn.spectrumPlot = function (id, restURL1, restURL2, onComplete) {
+jQuery.fn.spectrumPlot = function (id, restURL1, restURL2, queryPeakMzs, libraryPeakMzs, onComplete) {
     let div = $(this);
 
     // let oldId = div.attr('data-id')
@@ -15,7 +15,13 @@ jQuery.fn.spectrumPlot = function (id, restURL1, restURL2, onComplete) {
 
     div.attr('data-id', id);
 
-    $.when($.ajax({dataType: 'json', url: restURL1}), $.ajax({dataType: 'json', url: restURL2}))
+    let mzs = {
+        queryPeakMzs: queryPeakMzs,
+        libraryPeakMzs: libraryPeakMzs
+    };
+
+    $.when($.ajax({type: "POST", dataType: 'json', contentType: 'application/json',url: restURL1, data: JSON.stringify(mzs)}),
+        $.ajax({type: "POST", dataType: 'json', contentType: 'application/json', url: restURL2, data: JSON.stringify(mzs)}))
         .then(function (resp1, resp2) {
 
 
