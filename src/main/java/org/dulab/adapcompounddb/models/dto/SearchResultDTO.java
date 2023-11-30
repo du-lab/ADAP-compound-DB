@@ -11,6 +11,7 @@ import org.springframework.lang.Nullable;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -51,6 +52,7 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
     private String[] queryPrecursorTypes;
     private Double queryMass;
     private Double queryRetTime;
+    private List<Double> queryPeakMzs;
 
     // Match
     private MatchType matchType;
@@ -83,6 +85,7 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
     private String submissionName;
     private Boolean inHouse;
     private Long submissionId;
+    private List<Double> libraryPeakMzs;
 
     // Other
     private int position;
@@ -662,6 +665,22 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
 
     public void setPosition(int position) {
         this.position = position;
+    }
+
+    public List<Double> getQueryPeakMzs() {
+        return queryPeakMzs;
+    }
+
+    public void setQueryPeakMzs(List<Double> queryPeakMzs) {
+        this.queryPeakMzs = queryPeakMzs;
+    }
+
+    public List<Double> getLibraryPeakMzs() {
+        return libraryPeakMzs;
+    }
+
+    public void setLibraryPeakMzs(List<Double> libraryPeakMzs) {
+        this.libraryPeakMzs = libraryPeakMzs;
     }
 
     public String getHRef() {

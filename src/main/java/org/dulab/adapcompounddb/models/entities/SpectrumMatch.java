@@ -1,8 +1,11 @@
 package org.dulab.adapcompounddb.models.entities;
 
 import java.io.Serializable;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -34,7 +37,12 @@ public class SpectrumMatch implements Serializable {
 
     private String ontologyLevel;
     private Long userPrincipalId;
-
+    @Lob
+    @Column(name = "QueryPeakMzs", columnDefinition="BLOB")
+    private byte[] queryPeakMzs;
+    @Lob
+    @Column(name = "LibraryPeakMzs", columnDefinition="BLOB")
+    private byte[] libraryPeakMzs;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public long getId() {
@@ -138,6 +146,74 @@ public class SpectrumMatch implements Serializable {
 
     public void setRetIndexError(Double retIndexError) {
         this.retIndexError = retIndexError;
+    }
+    @Transient
+    public List<Double> getQueryPeakMzList() {
+        if (queryPeakMzs == null || queryPeakMzs.length == 0) {
+            return new ArrayList<>();
+        }
+
+        ByteBuffer bb = ByteBuffer.wrap(queryPeakMzs);
+        int numberOfDoubles = queryPeakMzs.length / Double.BYTES;
+        List<Double> doublesList = new ArrayList<>(numberOfDoubles);
+
+        for (int i = 0; i < numberOfDoubles; i++) {
+            doublesList.add(bb.getDouble());
+        }
+
+        return doublesList;
+    }
+    public byte[] getQueryPeakMzs() {
+        return queryPeakMzs;
+    }
+
+    public void setQueryPeakMzs(List<Double> queryPeakMzs) {
+        double[] queryPeakMzsArray = queryPeakMzs.stream()
+                .mapToDouble(Double::doubleValue)
+                .toArray();
+        try {
+            ByteBuffer bb = ByteBuffer.allocate(queryPeakMzsArray.length * 8);
+            for(double mz : queryPeakMzsArray ){
+                bb.putDouble(mz);
+            }
+            this.queryPeakMzs = bb.array();
+        } catch (Exception e) {
+            throw new RuntimeException("Error converting double[] to byte[]", e);
+        }
+    }
+    @Transient
+    public List<Double> getLibraryPeakMzList() {
+        if (libraryPeakMzs == null || libraryPeakMzs.length == 0) {
+            return new ArrayList<>();
+        }
+
+        ByteBuffer bb = ByteBuffer.wrap(libraryPeakMzs);
+        int numberOfDoubles = libraryPeakMzs.length / Double.BYTES;
+        List<Double> doublesList = new ArrayList<>(numberOfDoubles);
+
+        for (int i = 0; i < numberOfDoubles; i++) {
+            doublesList.add(bb.getDouble());
+        }
+
+        return doublesList;
+    }
+    public byte[] getLibraryPeakMzs() {
+        return libraryPeakMzs;
+    }
+
+    public void setLibraryPeakMzs(List<Double> libraryPeakMzs) {
+        double[] libraryPeakMzsArray = libraryPeakMzs.stream()
+                .mapToDouble(Double::doubleValue)
+                .toArray();
+        try {
+            ByteBuffer bb = ByteBuffer.allocate(libraryPeakMzsArray.length * 8);
+            for(double mz : libraryPeakMzsArray ){
+                bb.putDouble(mz);
+            }
+            this.libraryPeakMzs = bb.array();
+        } catch (Exception e) {
+            throw new RuntimeException("Error converting double[] to byte[]", e);
+        }
     }
 
     public String getOntologyLevel() {
