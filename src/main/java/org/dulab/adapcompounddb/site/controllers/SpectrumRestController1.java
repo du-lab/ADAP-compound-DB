@@ -1,7 +1,5 @@
 package org.dulab.adapcompounddb.site.controllers;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.exceptions.EmptySearchResultException;
@@ -15,10 +13,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -34,31 +33,19 @@ public class SpectrumRestController1 {
         this.spectrumService = spectrumService;
     }
 
-    @PostMapping(value = {
+    @RequestMapping(value = {
             "/spectrum/{spectrumId:\\d+}/search/{sign}/peaks.json",
             "/submission/*/spectrum/{spectrumId:\\d+}/search/{sign}/peaks.json"},
             produces = "application/json")
     public String spectrumSearchPeaks(@PathVariable("spectrumId") long spectrumId,
-                                      @PathVariable("sign") String sign, @RequestBody JsonNode mzs) {
+                                      @PathVariable("sign") String sign) {
         Spectrum spectrum = null;
-        List<Double> queryPeakMzs = new ArrayList<>();
-        List<Double> libraryPeakMzs = new ArrayList<>();
         try {
             spectrum = spectrumService.find(spectrumId);
-            ArrayNode queryPeakMzsNode = (ArrayNode) mzs.get("queryPeakMzs");
-            ArrayNode libraryPeakMzsNode = (ArrayNode) mzs.get("libraryPeakMzs");
-
-            for (int i = 0; i < queryPeakMzsNode.size(); i++) {
-                queryPeakMzs.add(queryPeakMzsNode.get(i).asDouble());
-            }
-
-            for (int i = 0; i < libraryPeakMzsNode.size(); i++) {
-                libraryPeakMzs.add(libraryPeakMzsNode.get(i).asDouble());
-            }
         } catch (EmptySearchResultException e) {
             LOGGER.warn("Cannot find spectrum with ID = " + spectrumId);
         }
-        return spectrumToJsonPeaks(spectrum, sign, queryPeakMzs, libraryPeakMzs);
+        return spectrumToJsonPeaks(spectrum, sign);
     }
 
     @RequestMapping(value = "/file/{fileIndex:\\d+}/{spectrumIndex:\\d+}/search/{sign}/peaks.json", produces = "application/json")
@@ -74,10 +61,10 @@ public class SpectrumRestController1 {
             return "";
         }
 
-        return spectrumToJsonPeaks(spectrum, sign, null , null);
+        return spectrumToJsonPeaks(spectrum, sign);
     }
 
-    private String spectrumToJsonPeaks(@Nullable Spectrum spectrum, String sign, List<Double> queryPeakMzs, List<Double> libraryPeakMzs) {
+    private String spectrumToJsonPeaks(@Nullable Spectrum spectrum, String sign) {
 
         if (spectrum == null)
             return "";
@@ -91,21 +78,7 @@ public class SpectrumRestController1 {
         if (spectrum.getPeaks() != null) {
             for (Peak peak : spectrum.getPeaks()) {
                 JSONObject p = new JSONObject();
-                if(sign.equals("positive")){
-                    if(queryPeakMzs != null)
-                    {
-                        if(queryPeakMzs.contains(peak.getMz()))
-                            p.put("mz", peak.getMz());
-                    }
-                }
-                else{
-                    if(libraryPeakMzs != null)
-                    {
-                        if(libraryPeakMzs.contains(peak.getMz()))
-                            p.put("mz", peak.getMz());
-                    }
-                }
-
+                p.put("mz", peak.getMz());
                 p.put("intensity", intensityFactor * peak.getIntensity());
                 peaks.put(p);
             }

@@ -2,67 +2,99 @@
  * @requires jQuery, D3, SpeckTackle
  */
 
-jQuery.fn.spectrumPlot = function (id, restURL1, restURL2, queryPeakMzs, libraryPeakMzs, onComplete) {
-    let div = $(this);
+let chart ;
+jQuery.fn.spectrumPlot = function (id, score, restURL1, restURL2, queryPeakMzs, libraryPeakMzs, onComplete) {
+    let canvas = $(this)[0];
 
-    // let oldId = div.attr('data-id')
-    // if (id === oldId) return;
+    //clear plot
+    const context = canvas.getContext('2d');
+    context.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Remove all child elements
-    div.text(null);
-    while (div.firstChild)
-        div.firstChild.remove();
+    if (chart) {
+        chart.destroy();
+    }
 
-    div.attr('data-id', id);
-
-    let mzs = {
-        queryPeakMzs: queryPeakMzs,
-        libraryPeakMzs: libraryPeakMzs
-    };
-
-    $.when($.ajax({type: "POST", dataType: 'json', contentType: 'application/json',url: restURL1, data: JSON.stringify(mzs)}),
-        $.ajax({type: "POST", dataType: 'json', contentType: 'application/json', url: restURL2, data: JSON.stringify(mzs)}))
+    $.when($.ajax({dataType: 'json', url: restURL1}), $.ajax({dataType: 'json', url: restURL2}))
         .then(function (resp1, resp2) {
-
-
             //render graph if there's both peaks
             if(resp1[0].peaks.length != 0 && resp2[0].peaks.length !=0) {
                 $('#plot_content').show();
-                chart = st.chart.ms()
-                    .legend(true)
-                    .labels(true)
+                chart = new Chart(canvas, {
+                    type: 'bar',
+                    data: {
+                        datasets: [{
+                            label: 'Signal',
+                            data: resp1[0].peaks,
+                            barThickness: 2,
+                            //https://www.chartjs.org/docs/latest/general/options.html
+                            backgroundColor: function(context, options){
+                                const index = context.dataIndex;
+                                const value = context.dataset.data[index]
+                                //grey for unmatched peaks
+                                return queryPeakMzs.includes(value.mz) ? '#FF0000' : '#808080' ;
+                            },
+                            grouped: false
+                        }, {
+                            label: 'Match',
+                            data: resp2[0].peaks,
+                            barThickness: 2,
+                            backgroundColor: function(context, options){
+                                const index = context.dataIndex;
+                                const value = context.dataset.data[index]
+                                //grey for unmatched peaks
+                                return libraryPeakMzs.includes(value.mz) ? '#0000FF' : '#808080' ;
+                            },
+                            grouped: false
+                        }, {
+                            label: 'Score = ' + score.toFixed(3) * 1000
+                        }]
+                    },
+                    options: {
+                        legend: {
+                            display: true,
 
-                    // .xlabel('m/z')
-                    // .ylabel('Intensity')
-                    .margins([10, 60, 40, 100]);
+                            color: 'rgb(255, 99, 132)'
 
-                // div.css('width', '70%');
-                // div.css('height', '70%');
-                chart.render(div[0]);
-
-                let handle = st.data.set()
-                    .x('peaks.mz')
-                    .y('peaks.intensity')
-                    .title('name');
-
-                chart.load(handle);
-                query = resp1[0];
-                query['name'] = 'Query';
-                match = resp2[0];
-                match['name'] = 'Match';
-                handle.add([query, match]);
+                        },
+                        parsing: {
+                            xAxisKey: 'mz',
+                            yAxisKey: 'intensity'
+                        },
+                        scales: {
+                            x: {
+                                type: 'linear',
+                                position: 'bottom',
+                                title: { display: true, text: 'm/z' },
+                            },
+                            y: {
+                                ticks: { display: false },
+                            }
+                        },
+                        animation: { duration: 500 },
+                        plugins: {
+                            zoom: {
+                                zoom: {
+                                    drag: { enabled: true },
+                                    mode: 'x'
+                                }
+                            }
+                        }
+                    }
+                });
 
                 $(".st-xaxis, .st-yaxis, .st-options, .st-legend").css("font-size","80%");
+                $('#resetZoom').on('click', function() {
+                    if (chart) chart.resetZoom();
+                });
+                $('#plot').dblclick(function(){
+                    if(chart) chart.resetZoom();
+                });
                 onComplete(true);
             }
             else
             {
-
                 onComplete(false);
-
             }
-
-
 
 
         });
