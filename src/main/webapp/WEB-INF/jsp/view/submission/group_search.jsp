@@ -142,9 +142,9 @@
                 <div class="col-4" id="plot_content">
                     <div class="card" style="height: auto">
                         <div id="plotPanel">
-                            <div class="card header card-header-single query-plot-match-title">
-                                Plot
-                            </div>
+<%--                            <div class="card header card-header-single query-plot-match-title">--%>
+<%--                                Plot--%>
+<%--                            </div>--%>
                             <%--                <div class="card-body small overflow-auto" style="height: 300px">--%>
                             <div id="bar_under_plot" class="card-body card-body-compact small overflow-auto"
                                  style="height: auto">
@@ -707,6 +707,9 @@
                         $(row).attr('data-queryId', data.querySpectrumId);
                         $(row).attr('data-queryFileIndex', data.queryFileIndex);
                         $(row).attr('data-querySpectrumIndex', data.querySpectrumIndex);
+                        $(row).data('data-queryPeakMzs', (data.queryPeakMzs));
+                        $(row).data('data-libraryPeakMzs', (data.libraryPeakMzs));
+                        $(row).data('data-score', data.score);
                     },
                     columns: [
                         {

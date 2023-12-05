@@ -1,5 +1,5 @@
 /**
- * @requires jQuery, D3, SpeckTackle
+ * @requires jQuery
  */
 
 let chart ;
@@ -19,43 +19,45 @@ jQuery.fn.spectrumPlot = function (id, score, restURL1, restURL2, queryPeakMzs, 
             //render graph if there's both peaks
             if(resp1[0].peaks.length != 0 && resp2[0].peaks.length !=0) {
                 $('#plot_content').show();
+
+                let matchedQueryPeaks = resp1[0].peaks.filter(peak => queryPeakMzs.includes(peak.mz));
+                let unmatchedQueryPeaks = resp1[0].peaks.filter(peak => !queryPeakMzs.includes(peak.mz));
+
+                let matchedLibraryPeaks = resp2[0].peaks.filter(peak => libraryPeakMzs.includes(peak.mz));
+                let unmatchedLibraryPeaks = resp2[0].peaks.filter(peak => !libraryPeakMzs.includes(peak.mz));
+
                 chart = new Chart(canvas, {
                     type: 'bar',
                     data: {
                         datasets: [{
                             label: 'Signal',
-                            data: resp1[0].peaks,
+                            data: matchedQueryPeaks,
                             barThickness: 2,
-                            //https://www.chartjs.org/docs/latest/general/options.html
-                            backgroundColor: function(context, options){
-                                const index = context.dataIndex;
-                                const value = context.dataset.data[index]
-                                //grey for unmatched peaks
-                                return queryPeakMzs.includes(value.mz) ? '#FF0000' : '#808080' ;
-                            },
+                            backgroundColor: '#FF0000',
                             grouped: false
                         }, {
                             label: 'Match',
-                            data: resp2[0].peaks,
+                            data: matchedLibraryPeaks,
                             barThickness: 2,
-                            backgroundColor: function(context, options){
-                                const index = context.dataIndex;
-                                const value = context.dataset.data[index]
-                                //grey for unmatched peaks
-                                return libraryPeakMzs.includes(value.mz) ? '#0000FF' : '#808080' ;
-                            },
+                            backgroundColor: '#0000FF',
                             grouped: false
                         }, {
+                            label: 'Unmatched',
+                            data: unmatchedQueryPeaks,
+                            barThickness: 2,
+                            backgroundColor: '#808080',
+                            grouped: false
+                        }, {
+                            label: 'Unmatched',
+                            data: unmatchedLibraryPeaks,
+                            barThickness: 2,
+                            backgroundColor: '#808080',
+                            grouped: false
+                        },  {
                             label: 'Score = ' + score.toFixed(3) * 1000
                         }]
                     },
                     options: {
-                        legend: {
-                            display: true,
-
-                            color: 'rgb(255, 99, 132)'
-
-                        },
                         parsing: {
                             xAxisKey: 'mz',
                             yAxisKey: 'intensity'
@@ -72,6 +74,13 @@ jQuery.fn.spectrumPlot = function (id, score, restURL1, restURL2, queryPeakMzs, 
                         },
                         animation: { duration: 500 },
                         plugins: {
+                            legend: {
+                                labels: {
+                                    filter: function(item, chart) {
+                                        return  item.text == null || !item.text.includes('Unmatched');
+                                    }
+                                }
+                            },
                             zoom: {
                                 zoom: {
                                     drag: { enabled: true },
@@ -96,10 +105,6 @@ jQuery.fn.spectrumPlot = function (id, score, restURL1, restURL2, queryPeakMzs, 
                 onComplete(false);
             }
 
-
         });
-
-
-
 
 }

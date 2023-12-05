@@ -166,7 +166,10 @@ public class SpectrumMatch implements Serializable {
     public byte[] getQueryPeakMzs() {
         return queryPeakMzs;
     }
-
+    public void setLibraryPeakMzs(byte[] libraryPeakMzs) {
+        this.libraryPeakMzs = libraryPeakMzs;
+    }
+    @Transient
     public void setQueryPeakMzs(List<Double> queryPeakMzs) {
         double[] queryPeakMzsArray = queryPeakMzs.stream()
                 .mapToDouble(Double::doubleValue)
@@ -201,6 +204,7 @@ public class SpectrumMatch implements Serializable {
         return libraryPeakMzs;
     }
 
+    @Transient
     public void setLibraryPeakMzs(List<Double> libraryPeakMzs) {
         double[] libraryPeakMzsArray = libraryPeakMzs.stream()
                 .mapToDouble(Double::doubleValue)
@@ -215,6 +219,11 @@ public class SpectrumMatch implements Serializable {
             throw new RuntimeException("Error converting double[] to byte[]", e);
         }
     }
+
+    public void setQueryPeakMzs(byte[] queryPeakMzs) {
+        this.queryPeakMzs = queryPeakMzs;
+    }
+
 
     public String getOntologyLevel() {
         return this.ontologyLevel;

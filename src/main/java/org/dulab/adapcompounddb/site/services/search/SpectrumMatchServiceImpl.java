@@ -490,9 +490,9 @@ public class SpectrumMatchServiceImpl implements SpectrumMatchService {
                                                                Integer showMatchesOnly, String ontologyLevel, Double scoreThreshold, Double massError,
                                                                Double retTimeError, String matchName) {
         if (showMatchesOnly == 1)
-            return spectrumMatchRepository.getMatchesByUserAndSpectrumName(id, spectrumName, ontologyLevel, scoreThreshold, massError, retTimeError, matchName);
-        else
             return spectrumMatchRepository.getMatchesByUserAndSpectrumNameShowMatchesOnly(id, spectrumName, ontologyLevel, scoreThreshold, massError, retTimeError, matchName);
+        else
+            return spectrumMatchRepository.getMatchesByUserAndSpectrumName(id, spectrumName, ontologyLevel, scoreThreshold, massError, retTimeError, matchName);
     }
 
 
