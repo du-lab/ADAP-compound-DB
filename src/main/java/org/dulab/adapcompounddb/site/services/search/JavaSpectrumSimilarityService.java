@@ -122,9 +122,6 @@ public class JavaSpectrumSimilarityService {
 
         // iterate each spectrum in the adap-kdb library
         for (Spectrum librarySpectrum : librarySpectra) {
-            List<Double> queryPeakMzs = new ArrayList<>();
-            List<Double> libraryPeakMzs = new ArrayList<>();
-
             double precursorError = Double.MAX_VALUE;
             double precursorErrorPPM = Double.MAX_VALUE;
             if (querySpectrum.getPrecursor() != null && librarySpectrum.getPrecursor() != null) {
@@ -133,6 +130,8 @@ public class JavaSpectrumSimilarityService {
             }
 
             double similarityScore = 0.0;
+            List<Double> queryPeakMzs = new ArrayList<>();
+            List<Double> libraryPeakMzs = new ArrayList<>();
             if (mzTolerance != null && querySpectrum.getPeaks() != null && librarySpectrum.getPeaks() != null)
                 similarityScore = calculateCosineSimilarity(querySpectrum, librarySpectrum,
                         mzTolerance, ppm, params.isPenalizeQueryImpurities(), params.isPenalizeDominantPeak(), queryPeakMzs, libraryPeakMzs);

@@ -69,7 +69,10 @@ public class IndividualSearchService {
           matchIndex++, parameters.getSpecies(), parameters.getSource(), parameters.getDisease());
       searchResult.setChromatographyTypeLabel(
           match.getMatchSpectrum().getChromatographyType().getLabel());
+      searchResult.setLibraryPeakMzs(match.getLibraryPeakMzList());
+      searchResult.setQueryPeakMzs(match.getQueryPeakMzList());
       searchResults.add(searchResult);
+
     }
 
     return searchResults;

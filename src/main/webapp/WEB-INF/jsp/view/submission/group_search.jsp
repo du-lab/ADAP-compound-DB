@@ -149,7 +149,6 @@
                             <div id="bar_under_plot" class="card-body card-body-compact small overflow-auto"
                                  style="height: auto">
                                 <canvas id="plot"></canvas>
-                                <button id="resetZoom" >Reset Zoom</button>
                             </div>
                         </div>
                         <%--                </div>--%>

@@ -25,7 +25,33 @@ jQuery.fn.spectrumPlot = function (id, score, restURL1, restURL2, queryPeakMzs, 
 
                 let matchedLibraryPeaks = resp2[0].peaks.filter(peak => libraryPeakMzs.includes(peak.mz));
                 let unmatchedLibraryPeaks = resp2[0].peaks.filter(peak => !libraryPeakMzs.includes(peak.mz));
+                //custom plugin
+                const customText = {
+                    id: 'customText',
+                    afterDraw: (chart, args, options) => {
+                        const {
+                            ctx,
+                            canvas
+                        } = chart;
+                        textObjects = options.text;
 
+                        if (textObjects.length === 0) {
+                            return;
+                        }
+
+                        textObjects.forEach((textObj) => {
+                            ctx.save();
+
+                            ctx.textAlign = textObj.textAlign;
+                            ctx.font = `${textObj.size } ${textObj.font || 'Arial'}`;
+                            ctx.fillStyle = textObj.color;
+                            ctx.fillText(textObj.text, textObj.x, textObj.y)
+
+                            ctx.restore();
+                        })
+                    }
+                }
+                Chart.register(customText);
                 chart = new Chart(canvas, {
                     type: 'bar',
                     data: {
@@ -42,14 +68,8 @@ jQuery.fn.spectrumPlot = function (id, score, restURL1, restURL2, queryPeakMzs, 
                             backgroundColor: '#0000FF',
                             grouped: false
                         }, {
-                            label: 'Unmatched',
-                            data: unmatchedQueryPeaks,
-                            barThickness: 2,
-                            backgroundColor: '#808080',
-                            grouped: false
-                        }, {
-                            label: 'Unmatched',
-                            data: unmatchedLibraryPeaks,
+                            label: 'Unmatched/Filtered out',
+                            data: unmatchedQueryPeaks.concat(unmatchedLibraryPeaks),
                             barThickness: 2,
                             backgroundColor: '#808080',
                             grouped: false
@@ -72,14 +92,17 @@ jQuery.fn.spectrumPlot = function (id, score, restURL1, restURL2, queryPeakMzs, 
                                 ticks: { display: false },
                             }
                         },
-                        animation: { duration: 500 },
+                        animation: {duration: 500},
                         plugins: {
-                            legend: {
-                                labels: {
-                                    filter: function(item, chart) {
-                                        return  item.text == null || !item.text.includes('Unmatched');
-                                    }
-                                }
+                            customText: {
+                                text: [{
+                                    text: 'Double-click to Zoom out',
+                                    x: 100,
+                                    y: 50,
+                                    textAlign: 'center',
+                                    size: '15px',
+                                    color: '#808080'
+                                }]
                             },
                             zoom: {
                                 zoom: {
@@ -92,9 +115,6 @@ jQuery.fn.spectrumPlot = function (id, score, restURL1, restURL2, queryPeakMzs, 
                 });
 
                 $(".st-xaxis, .st-yaxis, .st-options, .st-legend").css("font-size","80%");
-                $('#resetZoom').on('click', function() {
-                    if (chart) chart.resetZoom();
-                });
                 $('#plot').dblclick(function(){
                     if(chart) chart.resetZoom();
                 });
