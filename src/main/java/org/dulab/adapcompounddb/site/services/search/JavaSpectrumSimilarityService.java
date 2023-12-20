@@ -260,12 +260,33 @@ public class JavaSpectrumSimilarityService {
         return spectraList;
     }
 
-    private List<Peak> filterPeaks(List<Peak> peaks) {
+    private List<Peak> filterPeaks(Spectrum spectrum, double tolerance, boolean ppm) {
+        if (spectrum == null) return null;
+
+        List<Peak> peaks = spectrum.getPeaks();
         if (peaks == null) return null;
+
+        if (spectrum.getPrecursor() != null) {
+            double precursor = spectrum.getPrecursor();
+            double lowerBoundary = getLowerBoundary(precursor, tolerance, ppm);
+            double upperBoundary = getUpperBoundary(precursor, tolerance, ppm);
+            peaks = peaks.stream()
+                    .filter(p -> p.getMz() < lowerBoundary || p.getMz() > upperBoundary)
+                    .collect(Collectors.toList());
+        }
+
         double maxIntensity = peaks.stream().mapToDouble(Peak::getIntensity).max().orElse(0.0);
         return peaks.stream()
                 .filter(p -> p.getIntensity() >= 0.025 * maxIntensity)
                 .collect(Collectors.toList());
+    }
+
+    private double getLowerBoundary(double mz, double tolerance, boolean ppm) {
+        return ppm ? mz * (1.0 - 1E-6 * tolerance) : mz - tolerance;
+    }
+
+    private double getUpperBoundary(double mz, double tolerance, boolean ppm) {
+        return ppm ? mz * (1.0 + 1E-6 * tolerance) : mz + tolerance;
     }
 
     private double calculateCosineSimilarity(Spectrum querySpectrum, Spectrum librarySpectrum,
@@ -273,8 +294,8 @@ public class JavaSpectrumSimilarityService {
                                              boolean penalizeQueryImpurities, boolean penalizeDominantPeak,
                                              List<Double> queryPeakMzs, List<Double> libraryPeakMzs) {
 
-        List<Peak> queryPeaks = filterPeaks(querySpectrum.getPeaks());
-        List<Peak> libraryPeaks = filterPeaks(librarySpectrum.getPeaks());
+        List<Peak> queryPeaks = filterPeaks(querySpectrum, tolerance, ppm);
+        List<Peak> libraryPeaks = filterPeaks(librarySpectrum, tolerance, ppm);
 
         double queryOmegaFactor = penalizeDominantPeak ? querySpectrum.getOmegaFactor() : 0.0;
         double libraryOmegaFactor = penalizeDominantPeak ? librarySpectrum.getOmegaFactor() : 0.0;
@@ -282,8 +303,8 @@ public class JavaSpectrumSimilarityService {
         queryPeaks.sort(Comparator.comparingDouble(Peak::getMz));
         libraryPeaks.sort(Comparator.comparingDouble(Peak::getMz));
 
-        double lowerFactor = 1.0 - 1E-6 * tolerance;
-        double upperFactor = 1.0 + 1E-6 * tolerance;
+//        double lowerFactor = 1.0 - 1E-6 * tolerance;
+//        double upperFactor = 1.0 + 1E-6 * tolerance;
 
         double dotProduct = 0.0;
         double queryNorm2 = 0.0;
@@ -315,8 +336,10 @@ public class JavaSpectrumSimilarityService {
             double queryMz = queryPeak.getMz();
             double libraryMz = libraryPeak.getMz();
 
-            boolean queryMzLessThanLibraryMz = ppm ? queryMz < libraryMz * lowerFactor : queryMz < libraryMz - tolerance;
-            boolean queryMzGreaterThanLibraryMz = ppm ? libraryMz * upperFactor < queryMz : queryMz > libraryMz + tolerance;
+//            boolean queryMzLessThanLibraryMz = ppm ? queryMz < libraryMz * lowerFactor : queryMz < libraryMz - tolerance;
+//            boolean queryMzGreaterThanLibraryMz = ppm ? libraryMz * upperFactor < queryMz : queryMz > libraryMz + tolerance;
+            boolean queryMzLessThanLibraryMz = queryMz < getLowerBoundary(libraryMz, tolerance, ppm);
+            boolean queryMzGreaterThanLibraryMz = queryMz > getUpperBoundary(libraryMz, tolerance, ppm);
 
             if (queryMzLessThanLibraryMz) {
                 if (penalizeQueryImpurities) {

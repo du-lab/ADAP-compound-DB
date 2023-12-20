@@ -2,6 +2,7 @@
 
 .field-container {
     display: flex;
+    flex-direction: column;
     justify-content: space-between;
     margin: 20px;
     user-select: none;

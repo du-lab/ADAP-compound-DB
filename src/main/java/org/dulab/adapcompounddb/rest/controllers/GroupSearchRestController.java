@@ -142,7 +142,7 @@ public class GroupSearchRestController extends BaseController {
             String spectrumName = jsonObj.get("querySpectrumName").asText();
             List<SearchResultDTO> searchResultFromSession = new ArrayList<>((List<SearchResultDTO>) sessionObject);
             List<SearchResultDTO> matches = searchResultFromSession.stream()
-                .filter(s -> s.getQuerySpectrumIndex()==spectrumIndex && s.getQuerySpectrumName()
+                .filter(s -> s.getQuerySpectrumIndex().equals(spectrumIndex) && s.getQuerySpectrumName()
                         .equals(spectrumName)).collect(Collectors.toList());
             session.setAttribute(ControllerUtils.GROUP_SEARCH_MATCHES, matches);
 
@@ -236,17 +236,22 @@ public class GroupSearchRestController extends BaseController {
 
 
         Object sessionObject = session.getAttribute(ControllerUtils.SPECTRUM_LIST);
+        Object sessionGroupSearchResultFilteredObject =session.getAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_FILTERED);
         DataTableResponse response = new DataTableResponse();
 
         List<SpectrumDTO> querySpectrumsFromSession = (List<SpectrumDTO>) sessionObject;
-        List<SearchResultDTO> querySpectrums = querySpectrumsFromSession.stream().map(spectrum ->{
-            SearchResultDTO searchResultDTO = new SearchResultDTO();
-            searchResultDTO.setQuerySpectrumName(spectrum.getName());
-            searchResultDTO.setQuerySpectrumIndex(spectrum.getSpectrumIndex());
-            searchResultDTO.setRetTime(spectrum.getRetentionTime());
-            searchResultDTO.setExternalId(spectrum.getExternalId());
-            return searchResultDTO;
-        }).collect(Collectors.toList());
+        List<SearchResultDTO> groupSearchResultFiltered = (List<SearchResultDTO>) sessionGroupSearchResultFilteredObject;
+        List<SearchResultDTO> querySpectrums = querySpectrumsFromSession.stream()
+                .filter(spectrum -> groupSearchResultFiltered.stream()
+                        .anyMatch(filteredResult -> filteredResult.getQuerySpectrumIndex().equals(spectrum.getSpectrumIndex())))
+                .map(spectrum ->{
+                    SearchResultDTO searchResultDTO = new SearchResultDTO();
+                    searchResultDTO.setQuerySpectrumName(spectrum.getName());
+                    searchResultDTO.setQuerySpectrumIndex(spectrum.getSpectrumIndex());
+                    searchResultDTO.setRetTime(spectrum.getRetentionTime());
+                    searchResultDTO.setExternalId(spectrum.getExternalId());
+                    return searchResultDTO;
+                }).collect(Collectors.toList());
 
         response = groupSearchSort(false, searchStr,  start, length, querySpectrums, columnStr);
 
