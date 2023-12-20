@@ -77,10 +77,12 @@
     <div class="row row-content">
         <div class="col">
             <div class="btn-toolbar justify-content-end" role="toolbar">
-                <button id="filterButton" type="button" class="btn btn-primary mr-2" data-toggle="modal"
-                        data-target="#filterModal">Filter...
-                </button>
-                <button id="searchButton" type="button" class="btn btn-primary">Search</button>
+<%--                <button id="filterButton" type="button" class="btn btn-primary mr-2" data-toggle="modal"--%>
+<%--                        data-target="#filterModal">Filter...--%>
+<%--                </button>--%>
+<%--                <button id="searchButton" type="button" class="btn btn-primary">Search</button>--%>
+                <a class="btn btn-primary mr-2" id="newSearchBtn" href="<c:url value="/compound/search/"/>">New Search</a>
+
             </div>
         </div>
     </div>
