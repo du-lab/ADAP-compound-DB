@@ -86,7 +86,7 @@ public class IndividualSearchService {
     List<SpectrumMatch> matches = javaSpectrumSimilarityService.searchConsensusAndReference(
         querySpectrum, parameters, user);
 
-    if (user != null && savedSubmission) {
+    if (user != null && savedSubmission && (saveMatches != null && deleteMatches != null)) {
       if (!matches.isEmpty()) {
         matches.forEach(match -> match.setUserPrincipalId(user.getId()));
         saveMatches.addAll(matches);
@@ -203,7 +203,7 @@ public class IndividualSearchService {
 
       step++;
     }
-    if (user != null && savedSubmission) {
+    if (user != null && savedSubmission && (saveMatches != null && deleteMatches != null)) {
       if (!matches.isEmpty()) {
         matches.forEach(match -> match.setUserPrincipalId(user.getId()));
         saveMatches.addAll(matches);

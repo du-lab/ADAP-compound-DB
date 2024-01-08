@@ -57,6 +57,9 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         // The pages does not require login
         http.authorizeRequests().antMatchers("/", "/login", "/logout").permitAll();
 
+        //rest api
+        http.csrf().disable().authorizeRequests().antMatchers(HttpMethod.POST, "/rest/groupsearch").authenticated().and().httpBasic();
+
         // For ADMIN only.
         http.authorizeRequests().antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')");
         http.authorizeRequests().antMatchers("/user/*/delete").access("hasRole('ROLE_ADMIN')");

@@ -1,7 +1,11 @@
 package org.dulab.adapcompounddb.rest.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.dulab.adapcompounddb.models.entities.User;
+import org.dulab.adapcompounddb.site.services.UserPrincipalService;
+import org.dulab.adapcompounddb.site.services.search.GroupSearchService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.MetaDataMapping;
@@ -15,15 +19,17 @@ import org.dulab.adapcompounddb.site.controllers.utils.MultipartFileUtils;
 import org.dulab.adapcompounddb.site.services.AuthenticationService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.math.BigInteger;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 public class FileUploadRestController {
@@ -32,12 +38,16 @@ public class FileUploadRestController {
 
     private final AuthenticationService authenticationService;
     private final SubmissionService submissionService;
+    private final UserPrincipalService userPrincipalService;
+    private final GroupSearchService groupSearchService;
     private final Gson gson = new GsonBuilder().create();
 
     @Autowired
-    public FileUploadRestController(AuthenticationService authenticationService, SubmissionService submissionService) {
+    public FileUploadRestController(AuthenticationService authenticationService, SubmissionService submissionService, GroupSearchService groupSearchService, UserPrincipalService userPrincipalService) {
         this.authenticationService = authenticationService;
         this.submissionService = submissionService;
+        this.groupSearchService = groupSearchService;
+        this.userPrincipalService = userPrincipalService;
     }
 
     @RequestMapping(value = "/rest/fileupload/", method = RequestMethod.POST, consumes = {"multipart/form-data"})
@@ -89,5 +99,79 @@ public class FileUploadRestController {
         }
     }
 
+    //api to get user's libraries
+    @GetMapping(value="/rest/libraries")
+    public Map<Long, String> getLibraries(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Map<Long, String> librariesToIds = new HashMap<>();
+        List<Submission> submissions = (List<Submission>) submissionService.findAllPublicLibraries();
+        //return public and private lirbaries if user is authenticated
+        if(!(authentication instanceof AnonymousAuthenticationToken)){
+            String username = authentication.getName();
+            UserPrincipal userPrincipal = userPrincipalService.findUserByUsername(username);
+            List<Submission> userSubmissions = submissionService.findSubmissionsByUserId(userPrincipal.getId());
+            for(Submission submission : submissions){
+                librariesToIds.put(submission.getId(), submission.getName());
+            }
+            for(Submission userSubmission : userSubmissions){
+                librariesToIds.put(userSubmission.getId(), userSubmission.getName());
+            }
+        }
+        //return public lib if user is not authenticated
+        else{
+            for(Submission s : submissions){
+                librariesToIds.put(s.getId(), s.getName());
+            }
+        }
+        return librariesToIds;
+    }
+    //group search api
+    @RequestMapping(value = "/rest/groupsearch/", method = RequestMethod.POST, consumes = {"multipart/form-data"})
+    public void startGroupSearch(@RequestPart("files") @NotNull @NotBlank List<MultipartFile> files,
+                                 @RequestParam("libraryIds") String libraryIdsJson, //libraries to search agianst
+                                 @RequestParam("withOntologyLevel") String withOntologyLevelString,
+                                 @RequestParam("chromatographyString") String chromatographyString
+    ) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Set<BigInteger> libraryIds;
+        try {
 
+            if(authentication.isAuthenticated()) {
+                String username = authentication.getName();
+                UserPrincipal userPrincipal = userPrincipalService.findUserByUsername(username);
+
+
+                Submission submission = new Submission();
+                submission.setUser(userPrincipal);
+                submission.setDateTime(new Date());
+                submission.getTags().forEach(tag -> tag.setSubmission(submission));
+                ChromatographyType chromatographyType = ChromatographyType.valueOf(chromatographyString);
+                MetaDataMapping metaDataMapping = new MetaDataMapping();
+                metaDataMapping.setFieldName(Field.NAME, "Name");
+                metaDataMapping.setFieldName(Field.MASS, "Mass");
+                metaDataMapping.setFieldName(Field.FORMULA, "Formula");
+                //TODO Replace Field.EXTENRAL_ID with Field.CAS_ID
+                //TODO Map "NIST Id" to Field.EXTENRAL_ID
+                metaDataMapping.setFieldName(Field.CAS_ID, "CASNO");
+                metaDataMapping.setFieldName(Field.EXTERNAL_ID, "NIST Id");
+                metaDataMapping.setFieldName(Field.INCHI_KEY, "INCHI_KEY");
+                metaDataMapping.setFieldName(Field.RETENTION_TIME, "RT");
+                metaDataMapping.setFieldName(Field.PRECURSOR_MZ, "PrecursorMz");
+                metaDataMapping.setFieldName(Field.PRECURSOR_TYPE, "Precursor_type");
+
+                Map<FileType, MetaDataMapping> metaDataMappingMap = new HashMap<>();
+                metaDataMappingMap.put(FileType.MSP, metaDataMapping);
+
+                MultipartFileUtils.readMultipartFile(submission, files, chromatographyType, metaDataMappingMap,
+                        false, false);
+
+                libraryIds = Arrays.stream(libraryIdsJson.split(",")).map(BigInteger::new).collect(Collectors.toSet());
+                boolean withOntology = Boolean.parseBoolean(withOntologyLevelString) ;
+                groupSearchService.groupSearch(userPrincipal,submission.getFiles(),libraryIds,withOntology);
+            }
+
+        } catch (Exception e) {
+            LOGGER.warn(e.getMessage(), e);
+        }
+    }
 }

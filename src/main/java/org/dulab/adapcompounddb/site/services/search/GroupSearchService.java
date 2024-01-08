@@ -68,7 +68,107 @@ public class GroupSearchService {
         this.emailService = emailService;
         this.searchTaskRepository = searchTaskRepository;
     }
+    @Async
+//    @Transactional(propagation = Propagation.REQUIRED)
+    public Future<Void> groupSearch(UserPrincipal userPrincipal, List<File> files, Set<BigInteger> libraryIds, boolean withOntologyLevels) throws TimeoutException {
+        try {
+            final List<SearchResultDTO> groupSearchDTOList = new ArrayList<>();
+            final List<SpectrumDTO> spectrumDTOList = new ArrayList<>();
 
+            // Calculate total number of spectra
+            long totalSteps = files.stream()
+                    .map(File::getSpectra).filter(Objects::nonNull)
+                    .mapToInt(List::size)
+                    .sum();
+
+            if (totalSteps == 0) {
+                LOGGER.warn("No query spectra for performing a group search");
+                return new AsyncResult<>(null);
+            }
+
+            // Reset entity manager. Otherwise it'll eventually use up the entire memory.
+            multiFetchRepository.resetEntityManager();
+            spectrumRepository.resetEntityManager();
+
+            long startTime = System.currentTimeMillis();
+
+
+            boolean showSessionEndedMessage = true;
+            int spectrumCount = 0;
+            int progressStep = 0;
+            float progress = 0F;
+            int position = 0;
+
+
+            for (int fileIndex = 0; fileIndex < files.size(); ++fileIndex) {
+
+                File file = files.get(fileIndex);
+                List<Spectrum> spectra = file.getSpectra();
+                int sameNameIndex = 0;
+                if (spectra == null) continue;
+                for (int spectrumIndex = 0; spectrumIndex < spectra.size(); ++spectrumIndex) {  // Spectrum querySpectrum : file.getSpectra()
+                    if (System.currentTimeMillis() - startTime > 6 * 60 * 60 * 1000) {
+                        throw new TimeoutException("Group search timed out");
+                    }
+
+                    Spectrum querySpectrum = spectra.get(spectrumIndex);
+
+                    if (Thread.currentThread().isInterrupted()) break;
+                    SearchParameters parameters =
+                            SearchParameters.getDefaultParameters(querySpectrum.getChromatographyType());
+
+                    parameters.setSubmissionIds(libraryIds);
+//                    parameters.setLimit(10);
+
+                    List<SearchResultDTO> individualSearchResults;
+                    try {
+                        individualSearchResults = (withOntologyLevels)
+                                ? spectrumSearchService.searchWithOntologyLevels(userPrincipal, querySpectrum, null, false, null, null)
+                                : spectrumSearchService.searchConsensusSpectra(userPrincipal, querySpectrum, null, false, null, null);
+                    } catch (IllegalSpectrumSearchException e) {
+                        LOGGER.error(String.format("Error when searching %s [%d]: %s",
+                                querySpectrum.getName(), querySpectrum.getId(), e.getMessage()));
+                        SearchResultDTO searchResultDTO = new SearchResultDTO(querySpectrum);
+                        searchResultDTO.setErrorMessage(e.getMessage());
+                        individualSearchResults = Collections.singletonList(searchResultDTO);
+                    }
+
+                    if (individualSearchResults.isEmpty())
+                        individualSearchResults.add(new SearchResultDTO(querySpectrum));
+
+                    //search result dto
+                    for (SearchResultDTO searchResult : individualSearchResults) {
+                        searchResult.setPosition(1 + position++);
+                        searchResult.setQueryFileIndex(fileIndex);
+                        searchResult.setQuerySpectrumIndex(spectrumIndex);
+                    }
+
+                    if (Thread.currentThread().isInterrupted()) break;
+                    progress = (float) ++progressStep / totalSteps;
+                    //search result dto
+                    groupSearchDTOList.addAll(individualSearchResults);
+
+
+                    if (++spectrumCount % 100 == 0) {
+//                        long time = System.currentTimeMillis();
+//                        LOGGER.info(String.format(
+//                                "Searched %d spectra with the average time %.3f seconds per spectrum for %s",
+//                                spectrumCount, 1E-3 * (time - startTime) / spectrumCount, userIpText));
+                    }
+
+                    if (spectrumCount % 1000 == 0) {
+                        // Reset entity manager. Otherwise it'll eventually use up the entire memory.
+                        multiFetchRepository.resetEntityManager();
+                        spectrumRepository.resetEntityManager();
+                    }
+                }
+            }
+        } catch (Throwable t) {
+            LOGGER.error(String.format("Error during the group search: %s", t.getMessage()), t);
+            throw t;
+        }
+        return new AsyncResult<>(null);
+    }
     @Async
 //    @Transactional(propagation = Propagation.REQUIRED)
     public Future<Void> groupSearch(UserPrincipal userPrincipal, String userIpText, Submission submission,
