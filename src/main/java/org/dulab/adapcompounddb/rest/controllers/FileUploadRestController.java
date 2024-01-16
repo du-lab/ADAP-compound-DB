@@ -3,9 +3,11 @@ package org.dulab.adapcompounddb.rest.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.entities.User;
 import org.dulab.adapcompounddb.site.services.UserPrincipalService;
 import org.dulab.adapcompounddb.site.services.search.GroupSearchService;
+import org.dulab.adapcompounddb.site.services.utils.GroupSearchStorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.models.MetaDataMapping;
@@ -19,6 +21,7 @@ import org.dulab.adapcompounddb.site.controllers.utils.MultipartFileUtils;
 import org.dulab.adapcompounddb.site.services.AuthenticationService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -40,14 +43,17 @@ public class FileUploadRestController {
     private final SubmissionService submissionService;
     private final UserPrincipalService userPrincipalService;
     private final GroupSearchService groupSearchService;
+    private final GroupSearchStorageService groupSearchStorageService;
     private final Gson gson = new GsonBuilder().create();
 
     @Autowired
-    public FileUploadRestController(AuthenticationService authenticationService, SubmissionService submissionService, GroupSearchService groupSearchService, UserPrincipalService userPrincipalService) {
+    public FileUploadRestController(AuthenticationService authenticationService, SubmissionService submissionService,
+                                    GroupSearchService groupSearchService, UserPrincipalService userPrincipalService, GroupSearchStorageService groupSearchStorageService) {
         this.authenticationService = authenticationService;
         this.submissionService = submissionService;
         this.groupSearchService = groupSearchService;
         this.userPrincipalService = userPrincipalService;
+        this.groupSearchStorageService = groupSearchStorageService;
     }
 
     @RequestMapping(value = "/rest/fileupload/", method = RequestMethod.POST, consumes = {"multipart/form-data"})
@@ -125,12 +131,34 @@ public class FileUploadRestController {
         }
         return librariesToIds;
     }
-    //group search api
+    //get progress of group search
+    @GetMapping(value="/rest/groupsearch/progress")
+    public ResponseEntity<Integer> getProgress(@RequestParam("jobId") String jobId) {
+        Integer progress = groupSearchStorageService.getProgress(jobId);
+        if (progress != null) {
+            return ResponseEntity.ok(progress);
+        } else {
+            //job id not found
+            return ResponseEntity.notFound().build();
+        }
+    }
+    //get group search results
+    @GetMapping(value = "/rest/groupsearch/results")
+    public ResponseEntity<List<SearchResultDTO>> getGroupSearchResults(@RequestParam("jobId") String jobId) {
+        List<SearchResultDTO> results = groupSearchStorageService.getResults(jobId);
+        if (results != null && !results.isEmpty()) {
+            return ResponseEntity.ok(results);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    //run group search
     @RequestMapping(value = "/rest/groupsearch/", method = RequestMethod.POST, consumes = {"multipart/form-data"})
     public void startGroupSearch(@RequestPart("files") @NotNull @NotBlank List<MultipartFile> files,
                                  @RequestParam("libraryIds") String libraryIdsJson, //libraries to search agianst
                                  @RequestParam("withOntologyLevel") String withOntologyLevelString,
-                                 @RequestParam("chromatographyString") String chromatographyString
+                                 @RequestParam("chromatographyString") String chromatographyString,
+                                 @RequestParam("jobId") String jobId
     ) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Set<BigInteger> libraryIds;
@@ -166,7 +194,7 @@ public class FileUploadRestController {
 
                 libraryIds = Arrays.stream(libraryIdsJson.split(",")).map(BigInteger::new).collect(Collectors.toSet());
                 boolean withOntology = Boolean.parseBoolean(withOntologyLevelString) ;
-                groupSearchService.groupSearch(userPrincipal,submission.getFiles(),libraryIds,withOntology);
+                groupSearchService.groupSearch(userPrincipal,submission.getFiles(),libraryIds,withOntology,jobId);
             }
 
         } catch (Exception e) {

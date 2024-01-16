@@ -7,6 +7,8 @@ import org.dulab.adapcompounddb.models.dto.SpectrumDTO;
 import org.dulab.adapcompounddb.models.enums.SearchTaskStatus;
 import org.dulab.adapcompounddb.site.repositories.SearchTaskRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
+import org.dulab.adapcompounddb.site.services.utils.GroupSearchStorageService;
+import org.dulab.adapcompounddb.site.services.utils.GroupSearchStorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.exceptions.IllegalSpectrumSearchException;
@@ -50,6 +52,7 @@ public class GroupSearchService {
     private final SpectrumMatchRepository spectrumMatchRepository;
 
     private final SearchTaskRepository searchTaskRepository;
+    private final GroupSearchStorageService groupSearchStorageService;
 
     @Autowired
     public GroupSearchService(IndividualSearchService spectrumSearchService,
@@ -58,7 +61,8 @@ public class GroupSearchService {
                               MultiFetchRepository multiFetchRepository,
                               EmailService emailService,
                               SpectrumMatchRepository spectrumMatchRepository,
-                              SearchTaskRepository searchTaskRepository) {
+                              SearchTaskRepository searchTaskRepository,
+                              GroupSearchStorageService groupSearchStorageService) {
 
         this.spectrumSearchService = spectrumSearchService;
         this.exportSearchResultsService = exportSearchResultsService;
@@ -67,10 +71,12 @@ public class GroupSearchService {
         this.multiFetchRepository = multiFetchRepository;
         this.emailService = emailService;
         this.searchTaskRepository = searchTaskRepository;
+        this.groupSearchStorageService = groupSearchStorageService;
     }
     @Async
 //    @Transactional
-    public Future<Void> groupSearch(UserPrincipal userPrincipal, List<File> files, Set<BigInteger> libraryIds, boolean withOntologyLevels) throws TimeoutException {
+    public Future<Void> groupSearch(UserPrincipal userPrincipal, List<File> files,
+                                    Set<BigInteger> libraryIds, boolean withOntologyLevels,String jobId) throws TimeoutException {
         try {
             final List<SearchResultDTO> groupSearchDTOList = new ArrayList<>();
             final List<SpectrumDTO> spectrumDTOList = new ArrayList<>();
@@ -98,8 +104,6 @@ public class GroupSearchService {
             int progressStep = 0;
             float progress = 0F;
             int position = 0;
-            List<SpectrumMatch> savedMatches = new ArrayList<>();
-            Set<Long> deleteMatches = new HashSet<>();
 
             for (int fileIndex = 0; fileIndex < files.size(); ++fileIndex) {
 
@@ -124,8 +128,8 @@ public class GroupSearchService {
                     List<SearchResultDTO> individualSearchResults;
                     try {
                         individualSearchResults = (withOntologyLevels)
-                                ? spectrumSearchService.searchWithOntologyLevels(userPrincipal, querySpectrum, parameters, true, savedMatches, deleteMatches)
-                                : spectrumSearchService.searchConsensusSpectra(userPrincipal, querySpectrum, parameters, true, savedMatches, deleteMatches);
+                                ? spectrumSearchService.searchWithOntologyLevels(userPrincipal, querySpectrum, parameters, true, null, null)
+                                : spectrumSearchService.searchConsensusSpectra(userPrincipal, querySpectrum, parameters, true, null, null);
                     } catch (IllegalSpectrumSearchException e) {
                         LOGGER.error(String.format("Error when searching %s [%d]: %s",
                                 querySpectrum.getName(), querySpectrum.getId(), e.getMessage()));
@@ -148,7 +152,8 @@ public class GroupSearchService {
                     progress = (float) ++progressStep / totalSteps;
                     //search result dto
                     groupSearchDTOList.addAll(individualSearchResults);
-
+                    groupSearchStorageService.storeResults(jobId, individualSearchResults);
+                    groupSearchStorageService.updateProgress(jobId, (int) progress*100);
 
                     if (++spectrumCount % 100 == 0) {
                         long time = System.currentTimeMillis();
@@ -164,10 +169,11 @@ public class GroupSearchService {
                     }
                 }
             }
+            //store grousearchDTO list in "session" which can be fetch later in another api
             if (userPrincipal != null) {
                 //save spectrum match
-                spectrumMatchRepository.deleteByQuerySpectrumsAndUserId(userPrincipal.getId(), deleteMatches);
-                spectrumMatchRepository.saveAll(savedMatches);
+//                spectrumMatchRepository.deleteByQuerySpectrumsAndUserId(userPrincipal.getId(), deleteMatches);
+//                spectrumMatchRepository.saveAll(savedMatches);
                 LOGGER.info("Done saving matches for user: " + userPrincipal.getName());
             }
         } catch (Throwable t) {
