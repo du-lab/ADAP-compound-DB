@@ -152,8 +152,8 @@ public class GroupSearchService {
                     progress = (float) ++progressStep / totalSteps;
                     //search result dto
                     groupSearchDTOList.addAll(individualSearchResults);
-                    groupSearchStorageService.storeResults(jobId, individualSearchResults);
-                    groupSearchStorageService.updateProgress(jobId, (int) progress*100);
+                    groupSearchStorageService.storeResults(jobId, groupSearchDTOList);
+                    groupSearchStorageService.updateProgress(jobId, (int) (progress*100));
 
                     if (++spectrumCount % 100 == 0) {
                         long time = System.currentTimeMillis();
@@ -169,7 +169,6 @@ public class GroupSearchService {
                     }
                 }
             }
-            //store grousearchDTO list in "session" which can be fetch later in another api
             if (userPrincipal != null) {
                 //save spectrum match
 //                spectrumMatchRepository.deleteByQuerySpectrumsAndUserId(userPrincipal.getId(), deleteMatches);
