@@ -144,7 +144,6 @@ public class FileUploadRestController {
                 Submission submission = new Submission();
                 submission.setUser(userPrincipal);
                 submission.setDateTime(new Date());
-                submission.getTags().forEach(tag -> tag.setSubmission(submission));
                 ChromatographyType chromatographyType = ChromatographyType.valueOf(chromatographyString);
                 MetaDataMapping metaDataMapping = new MetaDataMapping();
                 metaDataMapping.setFieldName(Field.NAME, "Name");

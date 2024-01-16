@@ -69,7 +69,7 @@ public class GroupSearchService {
         this.searchTaskRepository = searchTaskRepository;
     }
     @Async
-//    @Transactional(propagation = Propagation.REQUIRED)
+//    @Transactional
     public Future<Void> groupSearch(UserPrincipal userPrincipal, List<File> files, Set<BigInteger> libraryIds, boolean withOntologyLevels) throws TimeoutException {
         try {
             final List<SearchResultDTO> groupSearchDTOList = new ArrayList<>();
@@ -98,7 +98,8 @@ public class GroupSearchService {
             int progressStep = 0;
             float progress = 0F;
             int position = 0;
-
+            List<SpectrumMatch> savedMatches = new ArrayList<>();
+            Set<Long> deleteMatches = new HashSet<>();
 
             for (int fileIndex = 0; fileIndex < files.size(); ++fileIndex) {
 
@@ -123,8 +124,8 @@ public class GroupSearchService {
                     List<SearchResultDTO> individualSearchResults;
                     try {
                         individualSearchResults = (withOntologyLevels)
-                                ? spectrumSearchService.searchWithOntologyLevels(userPrincipal, querySpectrum, null, false, null, null)
-                                : spectrumSearchService.searchConsensusSpectra(userPrincipal, querySpectrum, null, false, null, null);
+                                ? spectrumSearchService.searchWithOntologyLevels(userPrincipal, querySpectrum, parameters, true, savedMatches, deleteMatches)
+                                : spectrumSearchService.searchConsensusSpectra(userPrincipal, querySpectrum, parameters, true, savedMatches, deleteMatches);
                     } catch (IllegalSpectrumSearchException e) {
                         LOGGER.error(String.format("Error when searching %s [%d]: %s",
                                 querySpectrum.getName(), querySpectrum.getId(), e.getMessage()));
@@ -150,10 +151,10 @@ public class GroupSearchService {
 
 
                     if (++spectrumCount % 100 == 0) {
-//                        long time = System.currentTimeMillis();
-//                        LOGGER.info(String.format(
-//                                "Searched %d spectra with the average time %.3f seconds per spectrum for %s",
-//                                spectrumCount, 1E-3 * (time - startTime) / spectrumCount, userIpText));
+                        long time = System.currentTimeMillis();
+                        LOGGER.info(String.format(
+                                "Searched %d spectra with the average time %.3f seconds per spectrum for %s",
+                                spectrumCount, 1E-3 * (time - startTime) / spectrumCount));
                     }
 
                     if (spectrumCount % 1000 == 0) {
@@ -162,6 +163,12 @@ public class GroupSearchService {
                         spectrumRepository.resetEntityManager();
                     }
                 }
+            }
+            if (userPrincipal != null) {
+                //save spectrum match
+                spectrumMatchRepository.deleteByQuerySpectrumsAndUserId(userPrincipal.getId(), deleteMatches);
+                spectrumMatchRepository.saveAll(savedMatches);
+                LOGGER.info("Done saving matches for user: " + userPrincipal.getName());
             }
         } catch (Throwable t) {
             LOGGER.error(String.format("Error during the group search: %s", t.getMessage()), t);
