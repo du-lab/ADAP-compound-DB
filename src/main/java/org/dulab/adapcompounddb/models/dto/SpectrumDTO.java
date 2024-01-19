@@ -1,6 +1,11 @@
 package org.dulab.adapcompounddb.models.dto;
 
+import org.dulab.adapcompounddb.models.entities.Peak;
+
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class SpectrumDTO implements Serializable {
 
@@ -24,7 +29,7 @@ public class SpectrumDTO implements Serializable {
 
     private String externalId;
 
-
+    private List<PeakDTO> peaks = new ArrayList<>();
 
 //    private Integer position;
 
@@ -185,4 +190,17 @@ public class SpectrumDTO implements Serializable {
         this.externalId = externalId;
     }
 
+    public List<PeakDTO> getPeaks() {
+        return peaks;
+    }
+
+    public void setPeakDTOs(List<Peak> peaks) {
+        if(peaks == null)
+            this.peaks = new ArrayList<>();
+        else {
+            this.peaks = peaks.stream()
+                    .map(peak -> new PeakDTO(peak.getId(), peak.getMz(), peak.getIntensity()))
+                    .collect(Collectors.toList());
+        }
+    }
 }

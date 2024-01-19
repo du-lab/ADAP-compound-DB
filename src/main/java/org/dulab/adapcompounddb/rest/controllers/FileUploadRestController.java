@@ -144,9 +144,10 @@ public class FileUploadRestController {
     }
     //get group search results
     @GetMapping(value = "/rest/groupsearch/results")
-    public ResponseEntity<List<SearchResultDTO>> getGroupSearchResults(@RequestParam("jobId") String jobId) {
-        List<SearchResultDTO> results = groupSearchStorageService.getResults(jobId);
-        if (results != null && !results.isEmpty()) {
+    public ResponseEntity<Map<String,Object>> getGroupSearchResults(@RequestParam("jobId") String jobId) {
+        Map<String,Object> results = groupSearchStorageService.getResults(jobId);
+
+        if (results != null) {
             return ResponseEntity.ok(results);
         } else {
             return ResponseEntity.notFound().build();

@@ -1,5 +1,7 @@
 package org.dulab.adapcompounddb.models.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.dulab.adapcompounddb.models.MetaDataMapping;
 import org.dulab.adapcompounddb.models.dto.SpectrumProperty;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
@@ -49,6 +51,7 @@ public class Spectrum implements Serializable {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "FileId", referencedColumnName = "Id")
+    @JsonIgnore
     private File file;
 
     @NotNull(message = "Spectrum: peak list is required.")

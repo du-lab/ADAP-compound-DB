@@ -99,7 +99,7 @@ public class GroupSearchService {
             long startTime = System.currentTimeMillis();
 
 
-            boolean showSessionEndedMessage = true;
+            List<SpectrumDTO> allSpectra = new ArrayList<>();
             int spectrumCount = 0;
             int progressStep = 0;
             float progress = 0F;
@@ -109,7 +109,7 @@ public class GroupSearchService {
 
                 File file = files.get(fileIndex);
                 List<Spectrum> spectra = file.getSpectra();
-                int sameNameIndex = 0;
+
                 if (spectra == null) continue;
                 for (int spectrumIndex = 0; spectrumIndex < spectra.size(); ++spectrumIndex) {  // Spectrum querySpectrum : file.getSpectra()
                     if (System.currentTimeMillis() - startTime > 6 * 60 * 60 * 1000) {
@@ -147,6 +147,14 @@ public class GroupSearchService {
                         searchResult.setQueryFileIndex(fileIndex);
                         searchResult.setQuerySpectrumIndex(spectrumIndex);
                     }
+                    SpectrumDTO spectrumDTO = new SpectrumDTO();
+                    spectrumDTO.setName(querySpectrum.getName());
+                    spectrumDTO.setSpectrumIndex(spectrumIndex);
+                    spectrumDTO.setExternalId(querySpectrum.getExternalId());
+                    spectrumDTO.setPrecursor(querySpectrum.getPrecursor());
+                    spectrumDTO.setRetentionTime(querySpectrum.getRetentionTime());
+                    spectrumDTO.setPeakDTOs(querySpectrum.getPeaks());
+                    allSpectra.add(spectrumDTO);
 
                     if (Thread.currentThread().isInterrupted()) break;
                     progress = (float) ++progressStep / totalSteps;
@@ -170,10 +178,8 @@ public class GroupSearchService {
                 }
             }
             if (userPrincipal != null) {
-                //save spectrum match
-//                spectrumMatchRepository.deleteByQuerySpectrumsAndUserId(userPrincipal.getId(), deleteMatches);
-//                spectrumMatchRepository.saveAll(savedMatches);
-                LOGGER.info("Done saving matches for user: " + userPrincipal.getName());
+                groupSearchStorageService.addSpectraToResults(jobId, allSpectra);
+                LOGGER.info("Done group search for user: " + userPrincipal.getName());
             }
         } catch (Throwable t) {
             LOGGER.error(String.format("Error during the group search: %s", t.getMessage()), t);
