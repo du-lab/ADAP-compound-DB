@@ -67,7 +67,7 @@
                                         </c:when>
                                         <c:otherwise>
                                             <div class="custom-control custom-switch">
-                                                <input class="custom-control-input" type="checkbox" id="checkAll" checked />
+                                                <input class="custom-control-input" type="checkbox" id="checkAll" />
                                                 <label class="custom-control-label" for="checkAll">Select/Deselect All</label><br/><br/>
                                             </div>
                                             <c:forEach items="${filterOptions.submissions}" var="submission" varStatus="status">

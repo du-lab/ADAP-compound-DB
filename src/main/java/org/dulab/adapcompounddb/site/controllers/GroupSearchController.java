@@ -110,7 +110,6 @@ public class GroupSearchController extends BaseController {
                 .map(submissionService::fetchSubmission)
                 .orElseGet(() -> Submission.from(session));
 
-        Long id = submission.getId();
         boolean savedSubmission = (submission.getId() != 0) ? true : false;
 
 
@@ -155,7 +154,8 @@ public class GroupSearchController extends BaseController {
         }
         if(chosenLibraries.isEmpty()){
             redirectAttributes.addFlashAttribute("errorMessage", "Please, select at least one library to search against");
-            redirectAttributes.addAttribute("submissionId", id);
+            if(submission.getId() != 0)
+                redirectAttributes.addAttribute("submissionId", submission.getId());
             redirectAttributes.addAttribute("withOntologyLevel", form.isWithOntologyLevels());
             return "redirect:/group_search/parameters";
         }
