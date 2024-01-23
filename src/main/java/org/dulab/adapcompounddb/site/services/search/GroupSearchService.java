@@ -3,10 +3,12 @@ package org.dulab.adapcompounddb.site.services.search;
 import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
 
+import org.dulab.adapcompounddb.models.dto.PeakDTO;
 import org.dulab.adapcompounddb.models.dto.SpectrumDTO;
 import org.dulab.adapcompounddb.models.enums.SearchTaskStatus;
 import org.dulab.adapcompounddb.site.repositories.SearchTaskRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
+import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.dulab.adapcompounddb.site.services.utils.GroupSearchStorageService;
 import org.dulab.adapcompounddb.site.services.utils.GroupSearchStorageService;
 import org.slf4j.Logger;
@@ -53,6 +55,7 @@ public class GroupSearchService {
 
     private final SearchTaskRepository searchTaskRepository;
     private final GroupSearchStorageService groupSearchStorageService;
+    private final SpectrumService spectrumService;
 
     @Autowired
     public GroupSearchService(IndividualSearchService spectrumSearchService,
@@ -62,7 +65,8 @@ public class GroupSearchService {
                               EmailService emailService,
                               SpectrumMatchRepository spectrumMatchRepository,
                               SearchTaskRepository searchTaskRepository,
-                              GroupSearchStorageService groupSearchStorageService) {
+                              GroupSearchStorageService groupSearchStorageService,
+                              SpectrumService spectrumService) {
 
         this.spectrumSearchService = spectrumSearchService;
         this.exportSearchResultsService = exportSearchResultsService;
@@ -72,6 +76,7 @@ public class GroupSearchService {
         this.emailService = emailService;
         this.searchTaskRepository = searchTaskRepository;
         this.groupSearchStorageService = groupSearchStorageService;
+        this.spectrumService = spectrumService;
     }
     @Async
 //    @Transactional
@@ -97,9 +102,6 @@ public class GroupSearchService {
             spectrumRepository.resetEntityManager();
 
             long startTime = System.currentTimeMillis();
-
-
-            List<SpectrumDTO> allSpectra = new ArrayList<>();
             int spectrumCount = 0;
             int progressStep = 0;
             float progress = 0F;
@@ -147,14 +149,6 @@ public class GroupSearchService {
                         searchResult.setQueryFileIndex(fileIndex);
                         searchResult.setQuerySpectrumIndex(spectrumIndex);
                     }
-                    SpectrumDTO spectrumDTO = new SpectrumDTO();
-                    spectrumDTO.setName(querySpectrum.getName());
-                    spectrumDTO.setSpectrumIndex(spectrumIndex);
-                    spectrumDTO.setExternalId(querySpectrum.getExternalId());
-                    spectrumDTO.setPrecursor(querySpectrum.getPrecursor());
-                    spectrumDTO.setRetentionTime(querySpectrum.getRetentionTime());
-                    spectrumDTO.setPeakDTOs(querySpectrum.getPeaks());
-                    allSpectra.add(spectrumDTO);
 
                     if (Thread.currentThread().isInterrupted()) break;
                     progress = (float) ++progressStep / totalSteps;
@@ -178,7 +172,20 @@ public class GroupSearchService {
                 }
             }
             if (userPrincipal != null) {
-                groupSearchStorageService.addSpectraToResults(jobId, allSpectra);
+                List<SpectrumDTO> matchedSpectraDTOs = new ArrayList<>();
+                for(SearchResultDTO searchResult : groupSearchDTOList){
+                    List<Peak> peaksIterable = spectrumRepository.findPeaksBySpectrumId(searchResult.getSpectrumId());
+//                    List<Peak> peaksList = new ArrayList<>();
+//
+//                    for (Peak peak : peaksIterable) {
+//                        peaksList.add(peak);
+//                    }
+                    SpectrumDTO spectrumDTO = new SpectrumDTO();
+                    spectrumDTO.setId(searchResult.getSpectrumId());
+                    spectrumDTO.setPeakDTOs(peaksIterable);
+                    matchedSpectraDTOs.add(spectrumDTO);
+                }
+                groupSearchStorageService.addSpectraToResults(jobId, matchedSpectraDTOs);
                 LOGGER.info("Done group search for user: " + userPrincipal.getName());
             }
         } catch (Throwable t) {

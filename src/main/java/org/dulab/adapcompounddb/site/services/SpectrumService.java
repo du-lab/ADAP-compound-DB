@@ -2,6 +2,7 @@ package org.dulab.adapcompounddb.site.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +81,10 @@ public class SpectrumService {
         return spectrumRepository.findById(id)
                 .orElseThrow(() -> new EmptySearchResultException((id)));
     }
-
+    @Transactional
+    public List<Spectrum> findByIds(Set<Long> ids){
+      return spectrumRepository.findByIdIn(ids);
+    }
     @Transactional
     public DataTableResponse findSpectrumBySubmissionId(long submissionId, String search,
                                                         int start, int length, String column, String direction) {
