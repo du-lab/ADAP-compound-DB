@@ -155,13 +155,14 @@ public class GroupSearchService {
                     //search result dto
                     groupSearchDTOList.addAll(individualSearchResults);
                     groupSearchStorageService.storeResults(jobId, groupSearchDTOList);
-                    groupSearchStorageService.updateProgress(jobId, (int) (progress*100));
+                    if(progress < 1)
+                        groupSearchStorageService.updateProgress(jobId, (int) (progress*100));
 
                     if (++spectrumCount % 100 == 0) {
                         long time = System.currentTimeMillis();
-                        LOGGER.info(String.format(
-                                "Searched %d spectra with the average time %.3f seconds per spectrum for %s",
-                                spectrumCount, 1E-3 * (time - startTime) / spectrumCount));
+//                        LOGGER.info(String.format(
+//                                "Searched %d spectra with the average time %.3f seconds per spectrum for %s",
+//                                spectrumCount, 1E-3 * (time - startTime) / spectrumCount));
                     }
 
                     if (spectrumCount % 1000 == 0) {
@@ -185,6 +186,7 @@ public class GroupSearchService {
                     spectrumDTO.setPeakDTOs(peaksIterable);
                     matchedSpectraDTOs.add(spectrumDTO);
                 }
+                groupSearchStorageService.updateProgress(jobId, 100);
                 groupSearchStorageService.addSpectraToResults(jobId, matchedSpectraDTOs);
                 LOGGER.info("Done group search for user: " + userPrincipal.getName());
             }

@@ -148,6 +148,7 @@ public class FileUploadRestController {
         Map<String,Object> results = groupSearchStorageService.getResults(jobId);
 
         if (results != null) {
+            //TODO: clear the storage
             return ResponseEntity.ok(results);
         } else {
             return ResponseEntity.notFound().build();
