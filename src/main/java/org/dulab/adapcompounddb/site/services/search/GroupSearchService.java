@@ -126,12 +126,16 @@ public class GroupSearchService {
 
                     parameters.setSubmissionIds(libraryIds);
 //                    parameters.setLimit(10);
+//                    parameters.setMZToleranceType(SearchParameters.MzToleranceType.DA);
+//                    parameters.setPrecursorTolerance(0.01);
+//                    parameters.setRetIndexTolerance(50.0);
+//                    parameters.setRetIndexMatchType(SearchParameters.RetIndexMatchType.IGNORE_MATCH);
 
                     List<SearchResultDTO> individualSearchResults;
                     try {
                         individualSearchResults = (withOntologyLevels)
-                                ? spectrumSearchService.searchWithOntologyLevels(userPrincipal, querySpectrum, parameters, true, null, null)
-                                : spectrumSearchService.searchConsensusSpectra(userPrincipal, querySpectrum, parameters, true, null, null);
+                                ? spectrumSearchService.searchWithOntologyLevels(userPrincipal, querySpectrum, parameters, false, null, null)
+                                : spectrumSearchService.searchConsensusSpectra(userPrincipal, querySpectrum, parameters, false, null, null);
                     } catch (IllegalSpectrumSearchException e) {
                         LOGGER.error(String.format("Error when searching %s [%d]: %s",
                                 querySpectrum.getName(), querySpectrum.getId(), e.getMessage()));
@@ -174,6 +178,7 @@ public class GroupSearchService {
             }
             if (userPrincipal != null) {
                 List<SpectrumDTO> matchedSpectraDTOs = new ArrayList<>();
+                //matched spectra
                 for(SearchResultDTO searchResult : groupSearchDTOList){
                     List<Peak> peaksIterable = spectrumRepository.findPeaksBySpectrumId(searchResult.getSpectrumId());
 //                    List<Peak> peaksList = new ArrayList<>();
@@ -184,6 +189,10 @@ public class GroupSearchService {
                     SpectrumDTO spectrumDTO = new SpectrumDTO();
                     spectrumDTO.setId(searchResult.getSpectrumId());
                     spectrumDTO.setPeakDTOs(peaksIterable);
+                    spectrumDTO.setName(searchResult.getName());
+                    spectrumDTO.setMass(searchResult.getMass());
+                    spectrumDTO.setPrecursorType(searchResult.getPrecursorType());
+
                     matchedSpectraDTOs.add(spectrumDTO);
                 }
                 groupSearchStorageService.updateProgress(jobId, 100);
