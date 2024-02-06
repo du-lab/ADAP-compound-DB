@@ -160,7 +160,7 @@ public class GroupSearchService {
                     groupSearchDTOList.addAll(individualSearchResults);
                     groupSearchStorageService.storeResults(jobId, groupSearchDTOList);
                     if(progress < 1)
-                        groupSearchStorageService.updateProgress(jobId, (int) (progress*100));
+                        groupSearchStorageService.updateProgress(jobId, progress);
 
                     if (++spectrumCount % 100 == 0) {
                         long time = System.currentTimeMillis();
@@ -181,26 +181,18 @@ public class GroupSearchService {
                 //matched spectra
                 for(SearchResultDTO searchResult : groupSearchDTOList){
                     List<Peak> peaksIterable = spectrumRepository.findPeaksBySpectrumId(searchResult.getSpectrumId());
-//                    List<Peak> peaksList = new ArrayList<>();
-//
-//                    for (Peak peak : peaksIterable) {
-//                        peaksList.add(peak);
-//                    }
                     SpectrumDTO spectrumDTO = new SpectrumDTO();
                     spectrumDTO.setId(searchResult.getSpectrumId());
                     spectrumDTO.setPeakDTOs(peaksIterable);
-                    spectrumDTO.setName(searchResult.getName());
-                    spectrumDTO.setMass(searchResult.getMass());
-                    spectrumDTO.setPrecursorType(searchResult.getPrecursorType());
-
                     matchedSpectraDTOs.add(spectrumDTO);
                 }
-                groupSearchStorageService.updateProgress(jobId, 100);
+                groupSearchStorageService.updateProgress(jobId, 1); //job is done
                 groupSearchStorageService.addSpectraToResults(jobId, matchedSpectraDTOs);
                 LOGGER.info("Done group search for user: " + userPrincipal.getName());
             }
         } catch (Throwable t) {
             LOGGER.error(String.format("Error during the group search: %s", t.getMessage()), t);
+            groupSearchStorageService.updateProgress(jobId, -1); //job has error
             throw t;
         }
         return new AsyncResult<>(null);

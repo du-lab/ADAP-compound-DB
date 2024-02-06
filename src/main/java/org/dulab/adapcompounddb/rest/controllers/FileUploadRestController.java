@@ -133,12 +133,11 @@ public class FileUploadRestController {
     }
     //get progress of group search
     @GetMapping(value="/rest/groupsearch/progress")
-    public ResponseEntity<Integer> getProgress(@RequestParam("jobId") String jobId) {
-        Integer progress = groupSearchStorageService.getProgress(jobId);
+    public ResponseEntity<Double> getProgress(@RequestParam("jobId") String jobId) {
+        Double progress = groupSearchStorageService.getProgress(jobId);
         if (progress != null) {
             return ResponseEntity.ok(progress);
         } else {
-            //job id not found
             return ResponseEntity.notFound().build();
         }
     }
@@ -148,7 +147,7 @@ public class FileUploadRestController {
         Map<String,Object> results = groupSearchStorageService.getResults(jobId);
 
         if (results != null) {
-            //TODO: clear the storage
+            groupSearchStorageService.clear(jobId);
             return ResponseEntity.ok(results);
         } else {
             return ResponseEntity.notFound().build();

@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GroupSearchStorageService {
 
     private static final Map<String, Map<String,Object>> searchResults = new ConcurrentHashMap<>();
-    private static final Map<String, Integer> searchProgress = new ConcurrentHashMap<>();
+    private static final Map<String, Double> searchProgress = new ConcurrentHashMap<>();
 
     public void storeResults(String jobId, List<SearchResultDTO> results) {
         Map<String, Object> wrapper = new HashMap<>();
@@ -26,18 +26,22 @@ public class GroupSearchStorageService {
         return searchResults.get(jobId);
     }
 
-    public void updateProgress(String jobId, int progress) {
+    public void updateProgress(String jobId, double progress) {
         searchProgress.put(jobId, progress);
     }
 
-    public int getProgress(String jobId) {
+    public Double getProgress(String jobId) {
         return searchProgress.get(jobId);
     }
 
     public void addSpectraToResults(String jobId, List<SpectrumDTO> spectra){
-        Map<String, Object> wrapper = searchResults.get(jobId);
-        if(wrapper!= null)
-            wrapper.put("spectra", spectra);
+        Map<String, Object> result = searchResults.get(jobId);
+        if(result!= null)
+            result.put("spectra", spectra);
     }
 
+    public void clear(String jobId) {
+       searchResults.remove(jobId);
+       searchProgress.remove(jobId);
+    }
 }
