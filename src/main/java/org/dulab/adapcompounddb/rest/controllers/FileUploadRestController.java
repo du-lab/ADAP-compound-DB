@@ -1,5 +1,6 @@
 package org.dulab.adapcompounddb.rest.controllers;
 
+import com.amazonaws.Response;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -21,6 +22,7 @@ import org.dulab.adapcompounddb.site.controllers.utils.MultipartFileUtils;
 import org.dulab.adapcompounddb.site.services.AuthenticationService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -155,11 +157,11 @@ public class FileUploadRestController {
     }
     //run group search
     @RequestMapping(value = "/rest/groupsearch/", method = RequestMethod.POST, consumes = {"multipart/form-data"})
-    public void startGroupSearch(@RequestPart("files") @NotNull @NotBlank List<MultipartFile> files,
-                                 @RequestParam("libraryIds") String libraryIdsJson, //libraries to search agianst
-                                 @RequestParam("withOntologyLevel") String withOntologyLevelString,
-                                 @RequestParam("chromatographyString") String chromatographyString,
-                                 @RequestParam("jobId") String jobId
+    public ResponseEntity<?> startGroupSearch(@RequestPart("files") @NotNull @NotBlank List<MultipartFile> files,
+                                     @RequestParam("libraryIds") String libraryIdsJson, //libraries to search agianst
+                                     @RequestParam("withOntologyLevel") String withOntologyLevelString,
+                                     @RequestParam("chromatographyString") String chromatographyString,
+                                     @RequestParam("jobId") String jobId
     ) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Set<BigInteger> libraryIds;
@@ -200,6 +202,8 @@ public class FileUploadRestController {
 
         } catch (Exception e) {
             LOGGER.warn(e.getMessage(), e);
+            return new ResponseEntity<>("An error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
