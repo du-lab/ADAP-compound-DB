@@ -196,8 +196,11 @@ public class FileUploadRestController {
                         false, false);
 
                 libraryIds = Arrays.stream(libraryIdsJson.split(",")).map(BigInteger::new).collect(Collectors.toSet());
+                Map<BigInteger, String> libraryIdMap = new HashMap<>();
+                libraryIds.forEach(id -> libraryIdMap.put(id, null));
                 boolean withOntology = Boolean.parseBoolean(withOntologyLevelString) ;
-                groupSearchService.groupSearch(userPrincipal,submission.getFiles(),libraryIds,withOntology,jobId);
+                groupSearchService.groupSearch(userPrincipal,null, null, submission.getFiles(),
+                        null, null, libraryIdMap, withOntology, false, false, jobId);
             }
 
         } catch (Exception e) {

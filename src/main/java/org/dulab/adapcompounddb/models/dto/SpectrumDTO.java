@@ -194,7 +194,7 @@ public class SpectrumDTO implements Serializable {
         return peaks;
     }
 
-    public void setPeakDTOs(List<Peak> peaks) {
+    public void setPeaks(List<Peak> peaks) {
         if(peaks == null)
             this.peaks = new ArrayList<>();
         else {

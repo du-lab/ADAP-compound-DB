@@ -160,7 +160,7 @@ public class GroupSearchController extends BaseController {
         session.setAttribute(GROUP_SEARCH_LIBRARIES_USED_FOR_MATCHING, chosenLibraries);
         asyncResult = groupSearchService.groupSearch(this.getCurrentUserPrincipal(), userIpText, submission,
                 submission.getFiles(), session, parameters, chosenLibraries, form.isWithOntologyLevels(),
-                form.isSendResultsToEmail(), savedSubmission);
+                form.isSendResultsToEmail(), savedSubmission, null);
         session.setAttribute(GROUP_SEARCH_ASYNC_ATTRIBUTE_NAME, asyncResult);
         LOGGER.info("Group search is started by " + userIpText);
 

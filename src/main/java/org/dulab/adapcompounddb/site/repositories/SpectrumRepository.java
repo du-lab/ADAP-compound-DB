@@ -52,8 +52,11 @@ public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, Spec
     @Query("SELECT p FROM Peak p WHERE p.spectrum.id IN :ids")
     Iterable<Peak> findPeaksBySpectrumIds(@Param("ids") Set<Long> spectrumIds);
 
+    @Query("SELECT p, p.spectrum.id FROM Peak p WHERE p.spectrum.id IN :ids")
+    List<Object[]> findPeaksAndSpectrumIdsBySpectrumIds(@Param("ids") Set<Long> ids);
     @Query("SELECT p FROM Peak p WHERE p.spectrum.id = :id")
     List<Peak> findPeaksBySpectrumId(@Param("id") Long id);
+
     long countByConsensusIsFalse();
 
     //***** Statistics *****
