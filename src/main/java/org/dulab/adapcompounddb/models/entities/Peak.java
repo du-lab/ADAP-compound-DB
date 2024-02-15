@@ -4,6 +4,7 @@ import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.Serializable;
@@ -18,6 +19,7 @@ public class Peak implements Serializable {
 
     @NotNull(message = "Peak requires to specify Spectrum.")
     @Valid
+    @JsonBackReference
     private Spectrum spectrum;
 
     private double mz;

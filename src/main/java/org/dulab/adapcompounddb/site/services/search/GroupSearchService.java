@@ -3,10 +3,14 @@ package org.dulab.adapcompounddb.site.services.search;
 import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
 
+import org.dulab.adapcompounddb.models.dto.PeakDTO;
 import org.dulab.adapcompounddb.models.dto.SpectrumDTO;
 import org.dulab.adapcompounddb.models.enums.SearchTaskStatus;
 import org.dulab.adapcompounddb.site.repositories.SearchTaskRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
+import org.dulab.adapcompounddb.site.services.SpectrumService;
+import org.dulab.adapcompounddb.site.services.utils.GroupSearchStorageService;
+import org.dulab.adapcompounddb.site.services.utils.GroupSearchStorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.exceptions.IllegalSpectrumSearchException;
@@ -33,6 +37,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,6 +55,8 @@ public class GroupSearchService {
     private final SpectrumMatchRepository spectrumMatchRepository;
 
     private final SearchTaskRepository searchTaskRepository;
+    private final GroupSearchStorageService groupSearchStorageService;
+    private final SpectrumService spectrumService;
 
     @Autowired
     public GroupSearchService(IndividualSearchService spectrumSearchService,
@@ -58,7 +65,9 @@ public class GroupSearchService {
                               MultiFetchRepository multiFetchRepository,
                               EmailService emailService,
                               SpectrumMatchRepository spectrumMatchRepository,
-                              SearchTaskRepository searchTaskRepository) {
+                              SearchTaskRepository searchTaskRepository,
+                              GroupSearchStorageService groupSearchStorageService,
+                              SpectrumService spectrumService) {
 
         this.spectrumSearchService = spectrumSearchService;
         this.exportSearchResultsService = exportSearchResultsService;
@@ -67,6 +76,8 @@ public class GroupSearchService {
         this.multiFetchRepository = multiFetchRepository;
         this.emailService = emailService;
         this.searchTaskRepository = searchTaskRepository;
+        this.groupSearchStorageService = groupSearchStorageService;
+        this.spectrumService = spectrumService;
     }
 
     @Async
@@ -74,24 +85,23 @@ public class GroupSearchService {
     public Future<Void> groupSearch(UserPrincipal userPrincipal, String userIpText, Submission submission,
                                     List<File> files, HttpSession session, SearchParameters userParameters,
                                     Map<BigInteger, String> libraries, boolean withOntologyLevels,
-                                    boolean sendResultsToEmail, boolean savedSubmission) throws TimeoutException {
+                                    boolean sendResultsToEmail, boolean savedSubmission, String jobId) throws TimeoutException {
 
         long time1 = System.currentTimeMillis();
         LOGGER.info("Group search has started");
-        List<SpectrumMatch> savedMatches = new ArrayList<>();
-        Set<Long> deleteMatches = new HashSet<>();
 
         /**** Group search started ****/
-        if (userPrincipal != null && savedSubmission)
+        if (userPrincipal != null && savedSubmission && jobId == null)
             updateSearchTask(userPrincipal, submission, libraries, SearchTaskStatus.RUNNING, session);
 
         try {
             final List<SearchResultDTO> groupSearchDTOList = new ArrayList<>();
             final List<SpectrumDTO> spectrumDTOList = new ArrayList<>();
-            session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
-            session.setAttribute("spectrumDTOList", spectrumDTOList);
-            session.setAttribute(ControllerUtils.GROUP_SEARCH_PARAMETERS, userParameters);
-
+            if(jobId == null) {
+                session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
+                session.setAttribute("spectrumDTOList", spectrumDTOList);
+                session.setAttribute(ControllerUtils.GROUP_SEARCH_PARAMETERS, userParameters);
+            }
             // Calculate total number of spectra
             long totalSteps = files.stream()
                     .map(File::getSpectra).filter(Objects::nonNull)
@@ -100,7 +110,8 @@ public class GroupSearchService {
 
             if (totalSteps == 0) {
                 LOGGER.warn("No query spectra for performing a group search");
-                session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
+                if(jobId == null)
+                    session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
                 return new AsyncResult<>(null);
             }
 
@@ -116,7 +127,8 @@ public class GroupSearchService {
             int progressStep = 0;
             float progress = 0F;
             int position = 0;
-
+            List<SpectrumMatch> savedMatches = new ArrayList<>();
+            Set<Long> deleteMatches = new HashSet<>();
 
             for (int fileIndex = 0; fileIndex < files.size(); ++fileIndex) {
 
@@ -137,6 +149,8 @@ public class GroupSearchService {
                     SearchParameters parameters =
                             SearchParameters.getDefaultParameters(querySpectrum.getChromatographyType());
                     parameters.merge(userParameters);
+                    if(jobId != null)
+                        parameters.setSubmissionIds(libraries.keySet());
 //                    parameters.setLimit(10);
 
                     List<SearchResultDTO> individualSearchResults;
@@ -162,39 +176,45 @@ public class GroupSearchService {
                         searchResult.setQuerySpectrumIndex(spectrumIndex);
                     }
 
-                    //for every sepctra in file we save copy in spectrum DTO
-                    SpectrumDTO spectrumDTO = new SpectrumDTO();
-                    spectrumDTO.setName(querySpectrum.getName());
-                    spectrumDTO.setSpectrumIndex(spectrumIndex);
-                    spectrumDTO.setExternalId(querySpectrum.getExternalId());
-                    spectrumDTO.setPrecursor(querySpectrum.getPrecursor());
-                    spectrumDTO.setRetentionTime(querySpectrum.getRetentionTime());
-
-                    spectrumDTOList.add(spectrumDTO);
-
                     if (Thread.currentThread().isInterrupted()) break;
                     progress = (float) ++progressStep / totalSteps;
                     //search result dto
                     groupSearchDTOList.addAll(individualSearchResults);
-                    //spectrum dto
-                    try {
-                        session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME,
-                                groupSearchDTOList);
-                        session.setAttribute(ControllerUtils.GROUP_SEARCH_PROGRESS_ATTRIBUTE_NAME,
-                                progress);
-                        session.setAttribute(ControllerUtils.SPECTRUM_DTO_LIST, spectrumDTOList);
 
-                    } catch (IllegalStateException e) {
-                        if (sendResultsToEmail) {
-                            if (showSessionEndedMessage) {
-                                LOGGER.warn("It looks like the session has been closed.");
-                                showSessionEndedMessage = false;
-                            }
-                        } else {
+                    if(jobId == null) {
+                        //for every sepctra in file we save copy in spectrum DTO
+                        SpectrumDTO spectrumDTO = new SpectrumDTO();
+                        spectrumDTO.setName(querySpectrum.getName());
+                        spectrumDTO.setSpectrumIndex(spectrumIndex);
+                        spectrumDTO.setExternalId(querySpectrum.getExternalId());
+                        spectrumDTO.setPrecursor(querySpectrum.getPrecursor());
+                        spectrumDTO.setRetentionTime(querySpectrum.getRetentionTime());
+                        spectrumDTOList.add(spectrumDTO);
+                        try {
+                            session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME,
+                                        groupSearchDTOList);
+                            session.setAttribute(ControllerUtils.GROUP_SEARCH_PROGRESS_ATTRIBUTE_NAME,
+                                    progress);
+                            session.setAttribute(ControllerUtils.SPECTRUM_DTO_LIST, spectrumDTOList);
+
+                        } catch (IllegalStateException e) {
+                            if (sendResultsToEmail) {
+                                if (showSessionEndedMessage) {
+                                    LOGGER.warn("It looks like the session has been closed.");
+                                    showSessionEndedMessage = false;
+                                }
+                            } else {
 //                            LOGGER.warn(
 //                                "It looks like the session has been closed. Stopping the group search.");
-                            //return new AsyncResult<>(null);
+//                                return new AsyncResult<>(null);
+                            }
                         }
+
+                    }
+                    else{
+                        groupSearchStorageService.storeResults(jobId, groupSearchDTOList);
+                        if (progress < 1)
+                            groupSearchStorageService.updateProgress(jobId, progress);
                     }
 
                     if (++spectrumCount % 100 == 0) {
@@ -213,10 +233,10 @@ public class GroupSearchService {
             }
 
             /**** Group search is done ****/
-
 //            long time2 = System.currentTimeMillis();
 //            double total = (time2 - time1) / 1000.0;
-            if (!groupSearchDTOList.isEmpty()) {
+       
+            if (jobId == null && !groupSearchDTOList.isEmpty()) {
                 SearchParameters searchParametersFromSession = (SearchParameters) session.getAttribute(ControllerUtils.GROUP_SEARCH_PARAMETERS);
                 // Export search results to a session (simple export)
                 try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
@@ -257,34 +277,63 @@ public class GroupSearchService {
                         LOGGER.warn(String.format("Error when writing to file '%s': %s", filePath, e.getMessage()), e);
                     }
                 }
+            }
+            if (userPrincipal != null) {
+                //group search api
+                if(jobId != null){
+                    List<SpectrumDTO> matchedSpectraDTOs = new ArrayList<>();
+                    Set<Long> spectrumIds = groupSearchDTOList.stream()
+                            .map(SearchResultDTO::getSpectrumId)
+                            .collect(Collectors.toSet());
 
+                    long t = System.currentTimeMillis();
+                    List<Object[]> peaksAndSpectrumIds = spectrumRepository.findPeaksAndSpectrumIdsBySpectrumIds(spectrumIds);
+                    long duration = System.currentTimeMillis() - t;
 
-//                filePath = Paths.get(userHome, String.format("advanced_output_%s.xlsx", date)).toString();
-//                LOGGER.info(String.format("Writing to file '%s'", filePath));
-//                try (FileOutputStream fileOutputStream = new FileOutputStream(filePath)) {
-//                    exportSearchResultsService.exportAll(fileOutputStream, groupSearchDTOList);
-//                } catch (IOException e) {
-//                    LOGGER.warn(String.format("Error when writing to file '%s': %s", filePath, e.getMessage()), e);
-//                }
+                    Map<Long, List<Peak>> peaksBySpectrumIds = new HashMap<>();
+                    for(Object[] result : peaksAndSpectrumIds){
+                        Long spectrumId = (Long) result[1];
+                        Peak peak = (Peak) result[0];
+
+                        peaksBySpectrumIds.computeIfAbsent(spectrumId, k -> new ArrayList<>());
+                        peaksBySpectrumIds.get(spectrumId).add(peak);
+
+                    }
+                    //create matched spectra
+                    for(Map.Entry<Long, List<Peak>> entry : peaksBySpectrumIds.entrySet() ){
+                        SpectrumDTO spectrumDTO = new SpectrumDTO();
+                        spectrumDTO.setId(entry.getKey());
+                        spectrumDTO.setPeaks(entry.getValue());
+                        matchedSpectraDTOs.add(spectrumDTO);
+                    }
+
+                    groupSearchStorageService.updateProgress(jobId, 1); //job is done
+                    groupSearchStorageService.addSpectraToResults(jobId, matchedSpectraDTOs);
+                    LOGGER.info("Done group search for user: " + userPrincipal.getName());
+                }
+                //from browser
+                else if(savedSubmission) {
+                    //save spectrum match
+                    spectrumMatchRepository.deleteByQuerySpectrumsAndUserId(userPrincipal.getId(), deleteMatches);
+                    spectrumMatchRepository.saveAll(savedMatches);
+                    //update search task status to FINISHED
+                    updateSearchTask(userPrincipal, submission, libraries, SearchTaskStatus.FINISHED, session);
+                }
             }
 
-            if (userPrincipal != null && savedSubmission) {
-                //save spectrum match
-                spectrumMatchRepository.deleteByQuerySpectrumsAndUserId(userPrincipal.getId(), deleteMatches);
-                spectrumMatchRepository.saveAll(savedMatches);
-                //update search task status to FINISHED
-                updateSearchTask(userPrincipal, submission, libraries, SearchTaskStatus.FINISHED, session);
-            }
 
         } catch (Throwable t) {
             LOGGER.error(String.format("Error during the group search: %s", t.getMessage()), t);
-            session.setAttribute("GROUP_SEARCH_ERROR", t.getMessage());
+            if(jobId != null)
+                groupSearchStorageService.updateProgress(jobId, -1); //job has error
+            else
+                session.setAttribute("GROUP_SEARCH_ERROR", t.getMessage());
             throw t;
         }
 
         /**** Group search interrupted ****/
         if (Thread.currentThread().isInterrupted()) {
-            if (userPrincipal != null && savedSubmission)
+            if (userPrincipal != null && savedSubmission && jobId == null)
                 updateSearchTask(userPrincipal, submission, libraries, SearchTaskStatus.CANCELLED, session);
             LOGGER.info("Group search is cancelled");
         }
