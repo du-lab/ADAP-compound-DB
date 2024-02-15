@@ -109,6 +109,7 @@ public class JavaSpectrumSimilarityService {
 
         List<SpectrumMatch> matches = new ArrayList<>();
 
+
         Double mzTolerance;
         boolean ppm;
         if (params.getMzTolerancePPM() != null) {
@@ -121,7 +122,6 @@ public class JavaSpectrumSimilarityService {
 
         // iterate each spectrum in the adap-kdb library
         for (Spectrum librarySpectrum : librarySpectra) {
-
             double precursorError = Double.MAX_VALUE;
             double precursorErrorPPM = Double.MAX_VALUE;
             if (querySpectrum.getPrecursor() != null && librarySpectrum.getPrecursor() != null) {
@@ -130,9 +130,11 @@ public class JavaSpectrumSimilarityService {
             }
 
             double similarityScore = 0.0;
+            List<Double> queryPeakMzs = new ArrayList<>();
+            List<Double> libraryPeakMzs = new ArrayList<>();
             if (mzTolerance != null && querySpectrum.getPeaks() != null && librarySpectrum.getPeaks() != null)
                 similarityScore = calculateCosineSimilarity(querySpectrum, librarySpectrum,
-                        mzTolerance, ppm, params.isPenalizeQueryImpurities(), params.isPenalizeDominantPeak());
+                        mzTolerance, ppm, params.isPenalizeQueryImpurities(), params.isPenalizeDominantPeak(), queryPeakMzs, libraryPeakMzs);
 
 //            System.out.printf("%s %s %f%n", querySpectrum.getName(), librarySpectrum.getName(), similarityScore);
 
@@ -207,6 +209,8 @@ public class JavaSpectrumSimilarityService {
                 match.setMassErrorPPM(massErrorPPM < Double.MAX_VALUE ? massErrorPPM : null);
                 match.setRetTimeError(retTimeError < Double.MAX_VALUE ? retTimeError : null);
                 match.setRetIndexError(retIndexError < Double.MAX_VALUE ? retIndexError : null);
+                match.setQueryPeakMzs(queryPeakMzs);
+                match.setLibraryPeakMzs(libraryPeakMzs);
 
                 if (params.getRetIndexTolerance() != null && retIndexError >= params.getRetIndexTolerance()) {
 
@@ -287,7 +291,8 @@ public class JavaSpectrumSimilarityService {
 
     private double calculateCosineSimilarity(Spectrum querySpectrum, Spectrum librarySpectrum,
                                              double tolerance, boolean ppm,
-                                             boolean penalizeQueryImpurities, boolean penalizeDominantPeak) {
+                                             boolean penalizeQueryImpurities, boolean penalizeDominantPeak,
+                                             List<Double> queryPeakMzs, List<Double> libraryPeakMzs) {
 
         List<Peak> queryPeaks = filterPeaks(querySpectrum, tolerance, ppm);
         List<Peak> libraryPeaks = filterPeaks(librarySpectrum, tolerance, ppm);
@@ -351,6 +356,11 @@ public class JavaSpectrumSimilarityService {
             } else {  // queryMz and libraryMz are withing the tolerance
                 double x = scale(queryPeak, queryOmegaFactor);
                 double y = scale(libraryPeak, libraryOmegaFactor);
+
+                //TODO: store querypeakmz and library peak mz
+                queryPeakMzs.add(queryPeak.getMz());
+                libraryPeakMzs.add(libraryPeak.getMz());
+
                 dotProduct += x * y;
                 queryNorm2 += x * x;
                 libraryNorm2 += y * y;

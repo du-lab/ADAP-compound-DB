@@ -286,6 +286,8 @@ public class GroupSearchRestController extends BaseController {
                 sm.getMatchSpectrum().getChromatographyType().getLabel());
             result.setRetTimeError(sm.getRetTimeError());
             result.setOntologyLevel(sm.getOntologyLevel());
+            result.setQueryPeakMzs(sm.getQueryPeakMzList());
+            result.setLibraryPeakMzs(sm.getLibraryPeakMzList());
             searchResultDTOs.add(result);
         }
         response = groupSearchSort(false, searchStr,  start, length, searchResultDTOs, columnStr);
@@ -312,6 +314,8 @@ public class GroupSearchRestController extends BaseController {
                 match, matchIndex++, null, null, null);
             searchResult.setChromatographyTypeLabel(match.getMatchSpectrum() != null ? match.getMatchSpectrum().getChromatographyType().getLabel() : null);
             searchResult.setOntologyLevel(match.getOntologyLevel());
+            searchResult.setQueryPeakMzs(match.getQueryPeakMzList());
+            searchResult.setLibraryPeakMzs(match.getLibraryPeakMzList());
             matches.add(searchResult);
         }
         response = groupSearchSort(false, searchStr, start, length, matches, columnStr);
