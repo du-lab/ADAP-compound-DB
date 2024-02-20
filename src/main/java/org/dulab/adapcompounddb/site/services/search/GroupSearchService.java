@@ -283,7 +283,7 @@ public class GroupSearchService {
                 if(jobId != null){
                     List<SpectrumDTO> matchedSpectraDTOs = new ArrayList<>();
                     Set<Long> spectrumIds = groupSearchDTOList.stream()
-                            .filter(r -> r.getScore() != null && r.getScore() >0)
+//                            .filter(r -> r.getScore() != null && r.getScore() >0)
                             .map(SearchResultDTO::getSpectrumId)
                             .collect(Collectors.toSet());
 
