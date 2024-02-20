@@ -1,3 +1,9 @@
+# Version 1.7.0
+- Display matched and unmatched peaks in different colors
+- Implement API to send data between ADAP-BIG and ADAP-KDB
+- Improve the metadata page
+- Exclude precursor m/z from MS/MS similarity score
+
 # Version 1.5.1
 - Fix a bug when access is denied for just uploaded files
 
