@@ -1,3 +1,6 @@
+# Version 1.7.1
+- Update the Rest API
+
 # Version 1.7.0
 - Display matched and unmatched peaks in different colors
 - Implement API to send data between ADAP-BIG and ADAP-KDB
