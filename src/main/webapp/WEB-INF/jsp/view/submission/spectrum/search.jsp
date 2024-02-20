@@ -95,9 +95,9 @@
             </div>
         </div>
         <div class="col">
-            <div class="card">
+            <div class="card" id="plot_content" style="height: auto">
                 <div class="card-header card-header-single">Plot</div>
-                <div id="plot" style="height: 300px"></div>
+                <canvas id="plot"></canvas>
             </div>
         </div>
         <div class="col">
@@ -138,7 +138,11 @@
                         <%--@elvariable id="searchResults" type="java.util.List<org.dulab.adapcompounddb.models.dto.SearchResultDTO>"--%>
                         <c:if test="${searchResults != null}">
                             <c:forEach items="${searchResults}" var="searchResult" varStatus="status">
-                                <tr data-id="${searchResult.spectrumId}">
+                                <tr data-id="${searchResult.spectrumId}"
+                                    data-score="${searchResult.score}"
+                                    data-queryPeakMzs="${searchResult.queryPeakMzs}"
+                                    data-libraryPeakMzs="${searchResult.libraryPeakMzs}">
+
                                     <td>${status.index + 1}</td>
                                     <td>${searchResult.querySpectrumName}</td>
                                     <td>
@@ -171,7 +175,10 @@
         </div>
     </div>
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.3.0/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/2.0.1/chartjs-plugin-zoom.min.js"></script>
 <script src="<c:url value="/resources/npm/node_modules/jquery/dist/jquery.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/popper.js/dist/umd/popper.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/bootstrap/dist/js/bootstrap.min.js"/>"></script>
@@ -226,10 +233,14 @@
 
             let row = table.row(indexes).node();
             let spectrumId = $(row).attr('data-id');
+            let score = parseFloat($(row).attr('data-score'));
+            let queryPeakMzs = JSON.parse($(row).attr('data-queryPeakMzs'));
+            let libraryPeakMzs = JSON.parse($(row).attr('data-libraryPeakMzs'));
             $('#matchInfo').spectrumInfo(`${pageContext.request.contextPath}/spectrum/\${spectrumId}/search/info.json`);
-            $('#plot').spectrumPlot(indexes,
+
+            $('#plot').spectrumPlot(indexes, score,
                 'positive/peaks.json',
-                `${pageContext.request.contextPath}/spectrum/\${spectrumId}/search/negative/peaks.json`);
+                `${pageContext.request.contextPath}/spectrum/\${spectrumId}/search/negative/peaks.json`, queryPeakMzs, libraryPeakMzs);
 
             // if (spectrum == null) return;
             //
@@ -250,14 +261,5 @@
             $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;Search')
         });
 
-        // $('span[data-id="property_table"]').spa(function () {
-        //     console.log(this.style.overflow);
-        // });
-
-        // $('#filterForm').appendTo('#filter');
-
-        // $('#species, #source, #disease').change(function () {
-        //     $('#filterForm').submit();
-        // });
     })
 </script>

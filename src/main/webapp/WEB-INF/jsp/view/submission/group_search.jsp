@@ -142,13 +142,13 @@
                 <div class="col-4" id="plot_content">
                     <div class="card" style="height: auto">
                         <div id="plotPanel">
-                            <div class="card header card-header-single query-plot-match-title">
-                                Plot
-                            </div>
+<%--                            <div class="card header card-header-single query-plot-match-title">--%>
+<%--                                Plot--%>
+<%--                            </div>--%>
                             <%--                <div class="card-body small overflow-auto" style="height: 300px">--%>
                             <div id="bar_under_plot" class="card-body card-body-compact small overflow-auto"
-                                 style="height: 280px">
-                                <div id="plot" style="min-height: 280px"></div>
+                                 style="height: auto">
+                                <canvas id="plot"></canvas>
                             </div>
                         </div>
                         <%--                </div>--%>
@@ -281,7 +281,10 @@
 </div>
 </div>
 
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.3.0/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/2.0.1/chartjs-plugin-zoom.min.js"></script>
 <script src="<c:url value="/resources/npm/node_modules/jquery/dist/jquery.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/popper.js/dist/umd/popper.min.js"/>"></script>
 <script src="<c:url value="/resources/npm/node_modules/bootstrap/dist/js/bootstrap.min.js"/>"></script>
@@ -703,6 +706,9 @@
                         $(row).attr('data-queryId', data.querySpectrumId);
                         $(row).attr('data-queryFileIndex', data.queryFileIndex);
                         $(row).attr('data-querySpectrumIndex', data.querySpectrumIndex);
+                        $(row).data('data-queryPeakMzs', (data.queryPeakMzs));
+                        $(row).data('data-libraryPeakMzs', (data.libraryPeakMzs));
+                        $(row).data('data-score', data.score);
                     },
                     columns: [
                         {
@@ -837,6 +843,13 @@
                                 $(row).attr('data-queryId', data.querySpectrumId);
                                 $(row).attr('data-queryFileIndex', data.queryFileIndex);
                                 $(row).attr('data-querySpectrumIndex', data.querySpectrumIndex);
+                                $(row).data('data-queryPeakMzs', (data.queryPeakMzs));
+                                $(row).data('data-libraryPeakMzs', (data.libraryPeakMzs));
+                                $(row).data('data-score', data.score);
+                                // console.log("===queryPeakMzs:", data.queryPeakMzs);
+                                // console.log("===libraryPeakMzs:", data.libraryPeakMzs);
+
+
                             },
                             columns: [
                                 {
@@ -932,6 +945,12 @@
             let queryFileIndex = $(row).attr('data-queryFileIndex');
             let querySpectrumIndex = $(row).attr('data-querySpectrumIndex');
             let matchId = $(row).attr('data-matchId');
+            let queryPeakMzs = $(row).data('data-queryPeakMzs');
+            let libraryPeakMzs = $(row).data('data-libraryPeakMzs');
+            let score = $(row).data('data-score');
+
+            // console.log("===queryPeakMzs:", queryPeakMzs);
+            // console.log("===libraryPeakMzs:", libraryPeakMzs);
 
             <%--let queryUrl = `${pageContext.request.contextPath}/file/\${queryFileIndex}/\${querySpectrumIndex}/search/`;--%>
             let queryUrl = `${pageContext.request.contextPath}\${queryHRef}search/`;
@@ -954,7 +973,7 @@
             // $('#queryInfo').spectrumInfo(queryUrl + 'info.json');
             // $('#matchInfo').spectrumInfo(matchUrl + 'info.json');
             $('#query-plot-match-panel').collapse('show');
-            $('#plot').spectrumPlot(position, queryUrl + 'positive/peaks.json', matchUrl + 'negative/peaks.json',
+            $('#plot').spectrumPlot(position, score, queryUrl + 'positive/peaks.json', matchUrl + 'negative/peaks.json', queryPeakMzs, libraryPeakMzs,
                 function (complete) {
                     if (complete) {
                         //reset styles

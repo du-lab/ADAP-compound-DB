@@ -69,7 +69,10 @@ public class IndividualSearchService {
           matchIndex++, parameters.getSpecies(), parameters.getSource(), parameters.getDisease());
       searchResult.setChromatographyTypeLabel(
           match.getMatchSpectrum().getChromatographyType().getLabel());
+      searchResult.setLibraryPeakMzs(match.getLibraryPeakMzList());
+      searchResult.setQueryPeakMzs(match.getQueryPeakMzList());
       searchResults.add(searchResult);
+
     }
 
     return searchResults;
@@ -113,6 +116,8 @@ public class IndividualSearchService {
           matchIndex++, parameters.getSpecies(), parameters.getSource(), parameters.getDisease());
       searchResult.setChromatographyTypeLabel(
           match.getMatchSpectrum().getChromatographyType().getLabel());
+      searchResult.setQueryPeakMzs(match.getQueryPeakMzList());
+      searchResult.setLibraryPeakMzs(match.getLibraryPeakMzList());
       searchResults.add(searchResult);
     }
 
@@ -170,9 +175,12 @@ public class IndividualSearchService {
 
     List<SearchResultDTO> results = new ArrayList<>(matches.size());
     for (int i = 0; i < matches.size(); ++i) {
-      results.add(MappingUtils.mapSpectrumMatchToSpectrumClusterView(matches.get(i), i,
+      SearchResultDTO searchResult = (MappingUtils.mapSpectrumMatchToSpectrumClusterView(matches.get(i), i,
           modifiedParameters.getSpecies(), modifiedParameters.getSource(),
           modifiedParameters.getDisease()));
+      searchResult.setQueryPeakMzs(matches.get(i).getQueryPeakMzList());
+      searchResult.setLibraryPeakMzs(matches.get(i).getLibraryPeakMzList());
+      results.add(searchResult);
     }
     int step = 0;
     List<SearchResultDTO> resultsWithOntology = new ArrayList<>();
