@@ -30,7 +30,7 @@ public class SpectrumDTO implements Serializable {
     private String externalId;
 
     private List<PeakDTO> peaks = new ArrayList<>();
-
+    private String submissionName ;
 //    private Integer position;
 
     // ****************************
@@ -202,5 +202,13 @@ public class SpectrumDTO implements Serializable {
                     .map(peak -> new PeakDTO(peak.getId(), peak.getMz(), peak.getIntensity()))
                     .collect(Collectors.toList());
         }
+    }
+
+    public String getSubmissionName() {
+        return submissionName;
+    }
+
+    public void setSubmissionName(String submissionName) {
+        this.submissionName = submissionName;
     }
 }

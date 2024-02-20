@@ -283,12 +283,17 @@ public class GroupSearchService {
                 if(jobId != null){
                     List<SpectrumDTO> matchedSpectraDTOs = new ArrayList<>();
                     Set<Long> spectrumIds = groupSearchDTOList.stream()
+                            .filter(r -> r.getScore() != null && r.getScore() >0)
                             .map(SearchResultDTO::getSpectrumId)
                             .collect(Collectors.toSet());
 
                     long t = System.currentTimeMillis();
                     List<Object[]> peaksAndSpectrumIds = spectrumRepository.findPeaksAndSpectrumIdsBySpectrumIds(spectrumIds);
-                    long duration = System.currentTimeMillis() - t;
+                    long duration1 = System.currentTimeMillis() - t;
+
+                    long t2 = System.currentTimeMillis();
+                    List<Object[]> submissionsAndSpectrumIds = spectrumRepository.findSubmissionNamesBySpectrumIds(spectrumIds);
+                    long duration2 = System.currentTimeMillis() - t2;
 
                     Map<Long, List<Peak>> peaksBySpectrumIds = new HashMap<>();
                     for(Object[] result : peaksAndSpectrumIds){
@@ -299,11 +304,20 @@ public class GroupSearchService {
                         peaksBySpectrumIds.get(spectrumId).add(peak);
 
                     }
+                    Map<Long, String> submissionNamesBySpectrumIds = new HashMap<>();
+                    for(Object[] result : submissionsAndSpectrumIds){
+                        Long spectrumId = (Long) result[0];
+
+                        String submissionName = (String) result[1];
+                        submissionNamesBySpectrumIds.put(spectrumId, submissionName);
+                    }
                     //create matched spectra
                     for(Map.Entry<Long, List<Peak>> entry : peaksBySpectrumIds.entrySet() ){
+                        Long spectrumId = entry.getKey();
                         SpectrumDTO spectrumDTO = new SpectrumDTO();
-                        spectrumDTO.setId(entry.getKey());
+                        spectrumDTO.setId(spectrumId);
                         spectrumDTO.setPeaks(entry.getValue());
+                        spectrumDTO.setSubmissionName(submissionNamesBySpectrumIds.get(spectrumId));
                         matchedSpectraDTOs.add(spectrumDTO);
                     }
 
