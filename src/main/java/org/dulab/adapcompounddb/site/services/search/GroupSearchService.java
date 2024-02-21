@@ -129,7 +129,7 @@ public class GroupSearchService {
             int position = 0;
             List<SpectrumMatch> savedMatches = new ArrayList<>();
             Set<Long> deleteMatches = new HashSet<>();
-
+            SearchParameters parameters = null;
             for (int fileIndex = 0; fileIndex < files.size(); ++fileIndex) {
 
                 File file = files.get(fileIndex);
@@ -146,7 +146,7 @@ public class GroupSearchService {
 
                     if (Thread.currentThread().isInterrupted()) break;
 
-                    SearchParameters parameters =
+                    parameters =
                             SearchParameters.getDefaultParameters(querySpectrum.getChromatographyType());
                     parameters.merge(userParameters);
                     if(jobId != null)
@@ -283,12 +283,18 @@ public class GroupSearchService {
                 if(jobId != null){
                     List<SpectrumDTO> matchedSpectraDTOs = new ArrayList<>();
                     Set<Long> spectrumIds = groupSearchDTOList.stream()
-//                            .filter(r -> r.getScore() != null && r.getScore() >0)
                             .map(SearchResultDTO::getSpectrumId)
                             .collect(Collectors.toSet());
 
+                    double scoreThreshold = parameters != null ? parameters.getScoreThreshold() : 0;
+                    Set<Long> spectrumIdsWithPeaks = groupSearchDTOList.stream()
+                            .filter(r -> r.getScore() != null && r.getScore() > scoreThreshold)
+                            .map(SearchResultDTO::getSpectrumId)
+                            .collect(Collectors.toSet());
+
+
                     long t = System.currentTimeMillis();
-                    List<Object[]> peaksAndSpectrumIds = spectrumRepository.findPeaksAndSpectrumIdsBySpectrumIds(spectrumIds);
+                    List<Object[]> peaksAndSpectrumIds = spectrumRepository.findPeaksAndSpectrumIdsBySpectrumIds(spectrumIdsWithPeaks);
                     long duration1 = System.currentTimeMillis() - t;
 
                     long t2 = System.currentTimeMillis();
@@ -312,12 +318,12 @@ public class GroupSearchService {
                         submissionNamesBySpectrumIds.put(spectrumId, submissionName);
                     }
                     //create matched spectra
-                    for(Map.Entry<Long, List<Peak>> entry : peaksBySpectrumIds.entrySet() ){
+                    for(Map.Entry<Long, String> entry : submissionNamesBySpectrumIds.entrySet() ){
                         Long spectrumId = entry.getKey();
                         SpectrumDTO spectrumDTO = new SpectrumDTO();
                         spectrumDTO.setId(spectrumId);
-                        spectrumDTO.setPeaks(entry.getValue());
-                        spectrumDTO.setSubmissionName(submissionNamesBySpectrumIds.get(spectrumId));
+                        spectrumDTO.setPeaks(peaksBySpectrumIds.get(spectrumId));
+                        spectrumDTO.setSubmissionName(entry.getValue());
                         matchedSpectraDTOs.add(spectrumDTO);
                     }
 
