@@ -1,3 +1,6 @@
+# Version 1.7.2
+- Update the Rest API
+
 # Version 1.7.1
 - Update the Rest API
 
