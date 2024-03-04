@@ -34,7 +34,7 @@ public class RawFileReaderService implements FileReaderService {
         try {
             FileUtils.copyInputStreamToFile(inputStream, file);
 
-            RawDataFile rawDataFile = InputModule.readFile(file.toPath(), null);
+            RawDataFile rawDataFile = InputModule.readFile(file.toPath(), null, null);
             if (rawDataFile == null) return spectra;
 
             List<Scan> scans = rawDataFile.getScans();
@@ -106,7 +106,7 @@ public class RawFileReaderService implements FileReaderService {
 
         Spectrum spectrum = new Spectrum();
         spectrum.setName(scan.getName());
-        spectrum.setRetentionTime(scan.getRetTime());
+        spectrum.setRetentionTime((double) scan.getRetTime());
         spectrum.setPrecursor(scan.getPrecursorMz());
         spectrum.setChromatographyType(adjustPolarity(scan, chromatographyType));
 
