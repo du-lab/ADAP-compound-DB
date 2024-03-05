@@ -1,3 +1,8 @@
+# Version 1.8.0
+- Add a list of supported browsers
+- Select and deselect all libraries in search parameters
+- Update the version of the Input package to 1.2.0
+
 # Version 1.7.2
 - Update the Rest API
 
