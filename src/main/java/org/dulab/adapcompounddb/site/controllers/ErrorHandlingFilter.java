@@ -47,7 +47,8 @@ public class ErrorHandlingFilter implements Filter {
                         errorMessage),
                 (withStackTrace) ? t : null);
 
-        String errorUrl = String.format("/error?errorMsg=%s", URLEncoder.encode(errorMessage, "UTF-8"));
+        String errorUrl = String.format("/error?errorMsg=%s",
+                errorMessage != null ? URLEncoder.encode(errorMessage, "UTF-8") : null);
         RequestDispatcher requestDispatcher = request.getRequestDispatcher(errorUrl);
         requestDispatcher.forward(request, response);
     }

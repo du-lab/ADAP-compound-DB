@@ -72,18 +72,19 @@ public class SubmissionController extends BaseController {
         if (submission == null) {
             return redirectFileUpload();
         }
-        final boolean authenticated = session.getAttribute(SESSION_ATTRIBUTE_KEY) != null;
-
-        final SubmissionForm submissionForm = new SubmissionForm(submission);
-        submissionForm.setAuthorized(authenticated);
-        submissionForm.setIsLibrary(submission.getIsReference());
-        model.addAttribute("submission", submission);
-        model.addAttribute("submissionForm", submissionForm);
-        model.addAttribute("view_submission", authenticated); // User is logged in
-        model.addAttribute("edit_submission", authenticated); // User is logged in
-        model.addAttribute("availableTags", submissionService.findUniqueTagStrings());
-
-        return "submission/view";
+        return view(submission, model, false);
+//        final boolean authenticated = session.getAttribute(SESSION_ATTRIBUTE_KEY) != null;
+//
+//        final SubmissionForm submissionForm = new SubmissionForm(submission);
+//        submissionForm.setAuthorized(authenticated);
+//        submissionForm.setIsLibrary(submission.getIsReference());
+//        model.addAttribute("submission", submission);
+//        model.addAttribute("submissionForm", submissionForm);
+//        model.addAttribute("view_submission", authenticated); // User is logged in
+//        model.addAttribute("edit_submission", authenticated); // User is logged in
+//        model.addAttribute("availableTags", submissionService.findUniqueTagStrings());
+//
+//        return "submission/view";
     }
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/edit", method = RequestMethod.GET)

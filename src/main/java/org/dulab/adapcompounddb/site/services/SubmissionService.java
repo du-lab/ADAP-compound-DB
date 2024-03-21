@@ -393,7 +393,27 @@ public class SubmissionService {
 
 
     public boolean isSearchable(Submission s) {
-        s.setSearchable(submissionRepository.getIsSearchable(s.getId()));
+        if (s.getId() > 0) {
+            s.setSearchable(submissionRepository.getIsSearchable(s.getId()));
+        } else {
+            if (!s.isRaw()) {
+                s.setSearchable(true);
+            } else {
+                Set<ChromatographyType> chromatographyTypes = s.getFiles().stream()
+                        .flatMap(f -> f.getSpectra().stream())
+                        .map(Spectrum::getChromatographyType)
+                        .collect(Collectors.toSet());
+
+                if (chromatographyTypes.size() != 1) {
+                    s.setSearchable(false);
+                } else {
+                    ChromatographyType chromatographyType = chromatographyTypes.iterator().next();
+                    s.setSearchable(chromatographyType == ChromatographyType.GAS
+                            || chromatographyType == ChromatographyType.LC_MSMS_POS
+                            || chromatographyType == ChromatographyType.LC_MSMS_NEG);
+                }
+            }
+        }
         return s.isSearchable();
     }
 

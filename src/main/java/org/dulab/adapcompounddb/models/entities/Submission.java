@@ -91,7 +91,7 @@ public class Submission implements Serializable {
     private String externalId;
 
     private String source;
-    private boolean isPrivate = true;
+    private boolean isPrivate = false;
 
     private boolean clusterable;
     private boolean raw;
@@ -329,8 +329,8 @@ public class Submission implements Serializable {
      */
     @Transient
     public boolean isSearchable() {
-        if (!isRaw()) return true;
-
+//        if (!isRaw()) return true;
+//
 //        Set<ChromatographyType> chromatographyTypes = files.stream()
 //                .flatMap(f -> f.getSpectra().stream())
 //                .map(Spectrum::getChromatographyType)

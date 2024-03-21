@@ -248,7 +248,7 @@ public class FileUploadController extends BaseController {
 
         List<FileType> fileTypes = new ArrayList<>();
         Submission submission = Submission.from(session);
-        if(submission != null && submission.getFiles() != null && submission.getFiles().stream().mapToInt(File::getSize).sum() == 0)
+        if(submission == null || submission.getFiles() == null || submission.getFiles().stream().mapToInt(File::getSize).sum() == 0)
             return "redirect:/file/";
         //MetadataForm form = (MetadataForm) model.getAttribute("form");
         MetadataForm form = ConversionsUtils.byteStringToForm(metaFieldsInJson, MetadataForm.class);
@@ -259,7 +259,7 @@ public class FileUploadController extends BaseController {
         List<List<String>> propertyList = new ArrayList<>();
         for (File file : submission.getFiles()) {
             propertyList.add(file.getSpectra().stream()
-                    .map(Spectrum::getProperties)
+                    .map(Spectrum::getProperties).filter(Objects::nonNull)
                     .flatMap(Collection::stream)
                     .map(SpectrumProperty::getName)
                     .distinct()
@@ -267,6 +267,11 @@ public class FileUploadController extends BaseController {
                     .collect(Collectors.toList()));
             fileTypes.add(file.getFileType());
         }
+
+        if (propertyList.stream().mapToInt(List::size).sum() == 0) {
+            return "redirect:/file/";
+        }
+
         fileTypes.sort(Comparator.comparingInt(FileType::getPriority));
         model.addAttribute("metadataForm", form);
         model.addAttribute("spectrumProperties", propertyList);
