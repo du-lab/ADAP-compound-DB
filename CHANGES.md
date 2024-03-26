@@ -1,3 +1,6 @@
+# Version 1.8.1
+- Fix a bug when viewing NMDR raw data files
+
 # Version 1.8.0
 - Add a list of supported browsers
 - Select and deselect all libraries in search parameters
