@@ -11,6 +11,7 @@ import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.dulab.adapcompounddb.site.services.utils.GroupSearchStorageService;
 import org.dulab.adapcompounddb.site.services.utils.GroupSearchStorageService;
+import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.dulab.adapcompounddb.exceptions.IllegalSpectrumSearchException;
@@ -281,7 +282,7 @@ public class GroupSearchService {
             if (userPrincipal != null) {
                 //group search api
                 if(jobId != null){
-                    List<SpectrumDTO> matchedSpectraDTOs = new ArrayList<>();
+
                     Set<Long> spectrumIds = groupSearchDTOList.stream()
                             .map(SearchResultDTO::getSpectrumId)
                             .collect(Collectors.toSet());
@@ -317,18 +318,20 @@ public class GroupSearchService {
                         String submissionName = (String) result[1];
                         submissionNamesBySpectrumIds.put(spectrumId, submissionName);
                     }
+                     List<Map<String, Object>> spectra = new ArrayList<>();
                     //create matched spectra
                     for(Map.Entry<Long, String> entry : submissionNamesBySpectrumIds.entrySet() ){
+                        Map<String, Object> spectraJson = new HashMap<>();
                         Long spectrumId = entry.getKey();
-                        SpectrumDTO spectrumDTO = new SpectrumDTO();
-                        spectrumDTO.setId(spectrumId);
-                        spectrumDTO.setPeaks(peaksBySpectrumIds.get(spectrumId));
-                        spectrumDTO.setSubmissionName(entry.getValue());
-                        matchedSpectraDTOs.add(spectrumDTO);
+                        spectraJson.put("id", spectrumId);
+                        spectraJson.put("peaks", peaksBySpectrumIds.get(spectrumId)==null ? new JSONArray() : peaksBySpectrumIds.get(spectrumId));
+                        spectraJson.put("submissionName", entry.getValue());
+
+                        spectra.add(spectraJson);
                     }
 
                     groupSearchStorageService.updateProgress(jobId, 1); //job is done
-                    groupSearchStorageService.addSpectraToResults(jobId, matchedSpectraDTOs);
+                    groupSearchStorageService.addSpectraToResults(jobId, spectra);
                     LOGGER.info("Done group search for user: " + userPrincipal.getName());
                 }
                 //from browser
