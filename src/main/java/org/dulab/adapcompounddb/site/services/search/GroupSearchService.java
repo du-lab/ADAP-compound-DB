@@ -302,13 +302,13 @@ public class GroupSearchService {
                     List<Object[]> submissionsAndSpectrumIds = spectrumRepository.findSubmissionNamesBySpectrumIds(spectrumIds);
                     long duration2 = System.currentTimeMillis() - t2;
 
-                    Map<Long, List<Peak>> peaksBySpectrumIds = new HashMap<>();
+                    Map<Long, List<PeakDTO>> peaksBySpectrumIds = new HashMap<>();
                     for(Object[] result : peaksAndSpectrumIds){
                         Long spectrumId = (Long) result[1];
                         Peak peak = (Peak) result[0];
-
+                        PeakDTO peakDTO = new PeakDTO(peak.getId(), peak.getMz(), peak.getIntensity());
                         peaksBySpectrumIds.computeIfAbsent(spectrumId, k -> new ArrayList<>());
-                        peaksBySpectrumIds.get(spectrumId).add(peak);
+                        peaksBySpectrumIds.get(spectrumId).add(peakDTO);
 
                     }
                     Map<Long, String> submissionNamesBySpectrumIds = new HashMap<>();
@@ -324,7 +324,8 @@ public class GroupSearchService {
                         Map<String, Object> spectraJson = new HashMap<>();
                         Long spectrumId = entry.getKey();
                         spectraJson.put("id", spectrumId);
-                        spectraJson.put("peaks", peaksBySpectrumIds.get(spectrumId)==null ? new JSONArray() : peaksBySpectrumIds.get(spectrumId));
+                        if(peaksBySpectrumIds.containsKey(spectrumId))
+                            spectraJson.put("peaks", peaksBySpectrumIds.get(spectrumId));
                         spectraJson.put("submissionName", entry.getValue());
 
                         spectra.add(spectraJson);

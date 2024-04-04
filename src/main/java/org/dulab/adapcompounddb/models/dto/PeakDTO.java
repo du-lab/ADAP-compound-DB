@@ -1,10 +1,13 @@
 package org.dulab.adapcompounddb.models.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.Serializable;
 
 public class PeakDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    @JsonIgnore
     private long id;
     private double mz;
     private double intensity;
