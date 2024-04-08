@@ -213,9 +213,12 @@ public class GroupSearchService {
 
                     }
                     else{
-                        groupSearchStorageService.storeResults(jobId, groupSearchDTOList);
-                        if (progress < 1)
+//                        groupSearchStorageService.storeResults(jobId, groupSearchDTOList);
+                        if (progress < 1) {
                             groupSearchStorageService.updateProgress(jobId, progress);
+//                            LOGGER.info(String.format("Group search progress for job ID %s from user %s: %.2f", jobId,
+//                                    userPrincipal.getName(),progress*100));
+                        }
                     }
 
                     if (++spectrumCount % 100 == 0) {
@@ -332,6 +335,7 @@ public class GroupSearchService {
                     }
 
                     groupSearchStorageService.updateProgress(jobId, 1); //job is done
+                    groupSearchStorageService.storeResults(jobId, groupSearchDTOList);
                     groupSearchStorageService.addSpectraToResults(jobId, spectra);
                     LOGGER.info("Done group search for user: " + userPrincipal.getName());
                 }
