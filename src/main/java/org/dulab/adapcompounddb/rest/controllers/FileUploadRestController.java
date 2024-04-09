@@ -169,7 +169,6 @@ public class FileUploadRestController {
                 zos.putNextEntry(entry);
                 zos.write(jsonData);
                 zos.closeEntry();
-                zos.finish();
 
                 ByteArrayResource byteArrayResource = new ByteArrayResource(baos.toByteArray());
 
