@@ -29,6 +29,10 @@ def individual_search_test(homepage_url, msp_path):
         time.sleep(5)
         driver.find_element('id', "uploadBtn").click()
         time.sleep(2)
+
+        # Select the Data tab
+        driver.find_element('id', 'mass_spectra_link').click()
+
         # choose the first spectrum and go to the spectrum page
         spectra_table = driver.find_element('id',"spectrum_table")
         spectra_list = spectra_table.find_elements(By.CSS_SELECTOR, "table>tbody>tr>td")

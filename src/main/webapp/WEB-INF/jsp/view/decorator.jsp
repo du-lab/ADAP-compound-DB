@@ -133,6 +133,8 @@
                 <div class="small text-warning text-center">
                     We are actively working on improving the ADAP-KDB website and adding new features and updates every Sunday, 1pm - 11pm GMT.
                     You may experience interruptions in the website work during that period.
+                    <br>
+                    Please use Google Chrome, Firefox, Safari, or Microsoft Edge browser.
                 </div>
             </div>
         </div>

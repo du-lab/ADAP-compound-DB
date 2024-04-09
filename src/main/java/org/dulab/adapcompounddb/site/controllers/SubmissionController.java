@@ -72,18 +72,21 @@ public class SubmissionController extends BaseController {
         if (submission == null) {
             return redirectFileUpload();
         }
+
         final boolean authenticated = session.getAttribute(SESSION_ATTRIBUTE_KEY) != null;
+        return view(submission, model, authenticated, authenticated);
 
-        final SubmissionForm submissionForm = new SubmissionForm(submission);
-        submissionForm.setAuthorized(authenticated);
-        submissionForm.setIsLibrary(submission.getIsReference());
-        model.addAttribute("submission", submission);
-        model.addAttribute("submissionForm", submissionForm);
-        model.addAttribute("view_submission", authenticated); // User is logged in
-        model.addAttribute("edit_submission", authenticated); // User is logged in
-        model.addAttribute("availableTags", submissionService.findUniqueTagStrings());
-
-        return "submission/view";
+//
+//        final SubmissionForm submissionForm = new SubmissionForm(submission);
+//        submissionForm.setAuthorized(authenticated);
+//        submissionForm.setIsLibrary(submission.getIsReference());
+//        model.addAttribute("submission", submission);
+//        model.addAttribute("submissionForm", submissionForm);
+//        model.addAttribute("view_submission", authenticated); // User is logged in
+//        model.addAttribute("edit_submission", authenticated); // User is logged in
+//        model.addAttribute("availableTags", submissionService.findUniqueTagStrings());
+//
+//        return "submission/view";
     }
 
     @RequestMapping(value = "/submission/{submissionId:\\d+}/edit", method = RequestMethod.GET)
@@ -125,7 +128,11 @@ public class SubmissionController extends BaseController {
         return "submission/select_submission";
     }
 
-    private String view(final Submission submission, final Model model, final boolean edit) {
+    private String view(Submission submission, Model model, boolean edit) {
+        return view(submission, model, edit, true);
+    }
+
+    private String view(final Submission submission, final Model model, final boolean edit, final boolean viewSubmission) {
 
         // User is authorized to edit the submission
         final boolean authorized = submission.isAuthorized(getCurrentUserPrincipal());
@@ -139,7 +146,7 @@ public class SubmissionController extends BaseController {
         submission.setSearchable(submissionService.isSearchable(submission));
         model.addAttribute("submission", submission);
         model.addAttribute("submissionForm", submissionForm);
-        model.addAttribute("view_submission", true);
+        model.addAttribute("view_submission", viewSubmission);
         model.addAttribute("edit_submission", edit);
         model.addAttribute("availableTags", submissionService.findUniqueTagStrings());
         model.addAttribute("is_logged_in", (getCurrentUserPrincipal() != null) ? true : false);

@@ -3,7 +3,8 @@
 <div class="container">
     <%--@elvariable id="filterForm" type="org.dulab.adapcompounddb.site.controllers.forms.FilterForm"--%>
     <%--@elvariable id="filterOptions" type="org.dulab.adapcompounddb.site.controllers.forms.FilterOptions"--%>
-    <form:form modelAttribute="filterForm" method="post">
+
+        <form:form modelAttribute="filterForm" method="post">
         <div class="row row-content">
             <div class="col">
                 <div class="form-row">
@@ -53,11 +54,22 @@
                                 <form:label path="submissionIds"
                                             cssClass="col-md-4 col-form-label">Search in Libraries:</form:label>
                                 <div class="col-md-8">
+                                    <c:if test="${not empty errorMessage}">
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <p class="text-danger">${errorMessage}</p>
+                                            </div>
+                                        </div>
+                                    </c:if>
                                     <c:choose>
                                         <c:when test="${empty filterForm.submissionIds}">
                                             <p>No libraries found</p>
                                         </c:when>
                                         <c:otherwise>
+                                            <div class="custom-control custom-switch">
+                                                <input class="custom-control-input" type="checkbox" id="checkAll" />
+                                                <label class="custom-control-label" for="checkAll">Select/Deselect All</label><br/><br/>
+                                            </div>
                                             <c:forEach items="${filterOptions.submissions}" var="submission" varStatus="status">
                                                 <div class="custom-control custom-switch">
                                                     <input class="custom-control-input" type="checkbox" name="submissionIds"
@@ -149,6 +161,7 @@
 </div>
 <script src="/resources/AdapCompoundDb/js/filterSearchResults.js"></script>
 <script>
+
     function checkForChange(limitFetched, mzToleranceFetched, mzToleranceTypeFetched,
                             retentionIndexMatchFetched, retentionIndexToleranceFetched,
                             scoreThresholdFetched) {
@@ -181,7 +194,12 @@
         $('#scorethreshold,#retention,#limit,#mzTolerance, #mzToleranceType,#retentionIndexTolerance').change(function () {
             checkForChange(${ searchParameters.limit }, ${ searchParameters.mzTolerance }, '${searchParameters.mzToleranceType}',
                 '${searchParameters.retentionIndexMatch}', ${ searchParameters.retentionIndexTolerance }, ${ searchParameters.scoreThreshold });
-        }) });
+        })
+        $("#checkAll").change(function () {
+            $("input:checkbox").prop('checked', $(this).prop("checked"));
+        });
+
+    });
 </script>
 
 <script src="<c:url value="/resources/npm/node_modules/jquery/dist/jquery.min.js"/>"></script>

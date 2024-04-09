@@ -31,6 +31,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -72,7 +73,7 @@ public class FileUploadController extends BaseController {
 
     @RequestMapping(value = "/file/upload/nmdr", method = RequestMethod.GET)
     public String uploadFromNMDR(@RequestParam String archive, @RequestParam String file,
-                                 @RequestParam String chromatography,
+                                 @RequestParam String chromatography, HttpServletRequest httpRequest,
                                  Model model, HttpSession session, HttpServletResponse httpServletResponse) {
 
         LOG.info(String.format("Uploading NMDR data from archive '%s' file '%s'", archive, file));
@@ -107,7 +108,7 @@ public class FileUploadController extends BaseController {
             fileUploadForm.setFiles(Collections.singletonList(multipartFile));
 
             Submission.clear(session);
-            return upload(model, session, fileUploadForm, null, httpServletResponse, null, null);
+            return upload(model, session, fileUploadForm, null, httpServletResponse, httpRequest, null);
 
         } catch (IOException e) {
             throw new IllegalStateException(String.format("Cannot read NMDR file %s from archive %s", archive, file), e);
@@ -139,7 +140,7 @@ public class FileUploadController extends BaseController {
         String responseString = request.getParameter(CaptchaService.GOOGLE_CAPTCHA_RESPONSE);
 
         try {
-            if (getCurrentUserPrincipal() == null) {
+            if (responseString != null && getCurrentUserPrincipal() == null) {
                 captchaService.processResponse(responseString, request.getRemoteAddr());
             }
         } catch (Exception e) {
@@ -171,6 +172,8 @@ public class FileUploadController extends BaseController {
         Cookie metaFieldsCookie = new Cookie(FILE_UPLOAD_FIELDS_COOKIE_NAME, byteString);
         response.addCookie(metaFieldsCookie);
 
+        if(redirectAttributes == null)
+             redirectAttributes = new RedirectAttributesModelMap();
         redirectAttributes.addFlashAttribute("form", form);
         return "redirect:/submission/metadata";
     }
@@ -245,6 +248,8 @@ public class FileUploadController extends BaseController {
 
         List<FileType> fileTypes = new ArrayList<>();
         Submission submission = Submission.from(session);
+        if(submission == null || submission.getFiles() == null || submission.getFiles().stream().mapToInt(File::getSize).sum() == 0)
+            return "redirect:/file/";
         //MetadataForm form = (MetadataForm) model.getAttribute("form");
         MetadataForm form = ConversionsUtils.byteStringToForm(metaFieldsInJson, MetadataForm.class);
 
@@ -254,7 +259,7 @@ public class FileUploadController extends BaseController {
         List<List<String>> propertyList = new ArrayList<>();
         for (File file : submission.getFiles()) {
             propertyList.add(file.getSpectra().stream()
-                    .map(Spectrum::getProperties)
+                    .map(Spectrum::getProperties).filter(Objects::nonNull)
                     .flatMap(Collection::stream)
                     .map(SpectrumProperty::getName)
                     .distinct()
@@ -262,6 +267,11 @@ public class FileUploadController extends BaseController {
                     .collect(Collectors.toList()));
             fileTypes.add(file.getFileType());
         }
+
+        if (propertyList.stream().mapToInt(List::size).sum() == 0) {
+            return "redirect:/file/";
+        }
+
         fileTypes.sort(Comparator.comparingInt(FileType::getPriority));
         model.addAttribute("metadataForm", form);
         model.addAttribute("spectrumProperties", propertyList);

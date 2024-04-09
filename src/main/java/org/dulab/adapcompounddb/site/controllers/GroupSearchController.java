@@ -74,7 +74,6 @@ public class GroupSearchController extends BaseController {
                                                    defaultValue = "") String searchParametersCookie) {
 
 //        session.removeAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
-
         Submission submission = submissionId
                 .map(submissionService::findSubmission)
                 .orElseGet(() -> Submission.from(session));
@@ -90,7 +89,8 @@ public class GroupSearchController extends BaseController {
             form.setSubmissionIds(filterOptions.getSubmissions().keySet());
         form.setWithOntologyLevels(withOntologyLevels.orElse(false));
         model.addAttribute("filterForm", form);
-        session.setAttribute(ControllerUtils.APPLICATION_MODE_ATTRIBUTE, applicationMode);
+        if(applicationMode!= null)
+            session.setAttribute(ControllerUtils.APPLICATION_MODE_ATTRIBUTE, applicationMode);
 
         //check if user is login
         model.addAttribute("isLoggedIn", this.getCurrentUserPrincipal() != null);
@@ -110,7 +110,6 @@ public class GroupSearchController extends BaseController {
                 .map(submissionService::fetchSubmission)
                 .orElseGet(() -> Submission.from(session));
 
-        Long id = submission.getId();
         boolean savedSubmission = (submission.getId() != 0) ? true : false;
 
 
@@ -152,6 +151,13 @@ public class GroupSearchController extends BaseController {
             if (form.getSubmissionIds().contains(entry.getKey())) {
                 chosenLibraries.put(entry.getKey(), entry.getValue());
             }
+        }
+        if(chosenLibraries.isEmpty()){
+            redirectAttributes.addFlashAttribute("errorMessage", "Please, select at least one library to search against");
+            if(submission.getId() != 0)
+                redirectAttributes.addAttribute("submissionId", submission.getId());
+            redirectAttributes.addAttribute("withOntologyLevel", form.isWithOntologyLevels());
+            return "redirect:/group_search/parameters";
         }
 
         String userIpText = String.format("user %s with IP = %s [%s]",
