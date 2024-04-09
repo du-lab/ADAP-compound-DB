@@ -1,6 +1,7 @@
 package org.dulab.adapcompounddb.rest.controllers;
 
 import com.amazonaws.Response;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -22,7 +23,10 @@ import org.dulab.adapcompounddb.site.controllers.utils.MultipartFileUtils;
 import org.dulab.adapcompounddb.site.services.AuthenticationService;
 import org.dulab.adapcompounddb.site.services.SubmissionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -32,9 +36,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @RestController
 public class FileUploadRestController {
@@ -145,12 +153,34 @@ public class FileUploadRestController {
     }
     //get group search results
     @GetMapping(value = "/rest/groupsearch/results")
-    public ResponseEntity<Map<String,Object>> getGroupSearchResults(@RequestParam("jobId") String jobId) {
+    public ResponseEntity<?> getGroupSearchResults(@RequestParam("jobId") String jobId) throws IOException {
         Map<String,Object> results = groupSearchStorageService.getResults(jobId);
 
         if (results != null) {
+            //clear storage
             groupSearchStorageService.clear(jobId);
-            return ResponseEntity.ok(results);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            byte[] jsonData = objectMapper.writeValueAsBytes(results);
+            //generate zip file
+            try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                 ZipOutputStream zos = new ZipOutputStream(baos)) {
+                ZipEntry entry = new ZipEntry(jobId + ".json");
+                zos.putNextEntry(entry);
+                zos.write(jsonData);
+                zos.closeEntry();
+
+                ByteArrayResource byteArrayResource = new ByteArrayResource(baos.toByteArray());
+
+                HttpHeaders headers = new HttpHeaders();
+                headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + jobId + ".zip");
+
+                return ResponseEntity.ok()
+                        .headers(headers)
+                        .contentLength(byteArrayResource.contentLength())
+                        .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                        .body(byteArrayResource);
+            }
         } else {
             return ResponseEntity.notFound().build();
         }
