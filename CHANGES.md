@@ -1,3 +1,6 @@
+# Version 1.8.2
+- Update the Rest API
+
 # Version 1.8.1
 - Fix a bug when viewing NMDR raw data files
 
