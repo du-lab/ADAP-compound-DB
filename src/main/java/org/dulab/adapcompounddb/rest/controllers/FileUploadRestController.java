@@ -117,29 +117,35 @@ public class FileUploadRestController {
 
     //api to get user's libraries
     @GetMapping(value="/rest/libraries")
-    public Map<Long, String> getLibraries(){
+    public List<Map<String, Object>> getLibraries(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Map<Long, String> librariesToIds = new HashMap<>();
+        List<Map<String, Object>> libraries = new ArrayList<>();
         List<Submission> submissions = (List<Submission>) submissionService.findAllPublicLibraries();
-        //return public and private lirbaries if user is authenticated
+
+        //all public libraries
+        for(Submission submission : submissions){
+            Map<String, Object> library = new HashMap<>();
+            library.put("id", submission.getId());
+            library.put("name", submission.getName());
+            library.put("chromatographyType", submission.getChromatographyType());
+            libraries.add(library);
+        }
+        //private if user is authenticated
         if(!(authentication instanceof AnonymousAuthenticationToken)){
             String username = authentication.getName();
             UserPrincipal userPrincipal = userPrincipalService.findUserByUsername(username);
             List<Submission> userSubmissions = submissionService.findSubmissionsByUserId(userPrincipal.getId());
-            for(Submission submission : submissions){
-                librariesToIds.put(submission.getId(), submission.getName());
-            }
+
             for(Submission userSubmission : userSubmissions){
-                librariesToIds.put(userSubmission.getId(), userSubmission.getName());
+                Map<String, Object> library = new HashMap<>();
+                library.put("id", userSubmission.getId());
+                library.put("name", userSubmission.getName());
+                library.put("chromatographyType", userSubmission.getChromatographyType());
+                libraries.add(library);
             }
         }
-        //return public lib if user is not authenticated
-        else{
-            for(Submission s : submissions){
-                librariesToIds.put(s.getId(), s.getName());
-            }
-        }
-        return librariesToIds;
+
+        return libraries;
     }
     //get progress of group search
     @GetMapping(value="/rest/groupsearch/progress")
