@@ -9,6 +9,7 @@ import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.entities.User;
 import org.dulab.adapcompounddb.site.services.UserPrincipalService;
 import org.dulab.adapcompounddb.site.services.search.GroupSearchService;
+import org.dulab.adapcompounddb.site.services.search.SearchParameters;
 import org.dulab.adapcompounddb.site.services.utils.GroupSearchStorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -117,29 +118,35 @@ public class FileUploadRestController {
 
     //api to get user's libraries
     @GetMapping(value="/rest/libraries")
-    public Map<Long, String> getLibraries(){
+    public List<Map<String, Object>> getLibraries(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Map<Long, String> librariesToIds = new HashMap<>();
+        List<Map<String, Object>> libraries = new ArrayList<>();
         List<Submission> submissions = (List<Submission>) submissionService.findAllPublicLibraries();
-        //return public and private lirbaries if user is authenticated
+
+        //all public libraries
+        for(Submission submission : submissions){
+            Map<String, Object> library = new HashMap<>();
+            library.put("id", submission.getId());
+            library.put("name", submission.getName());
+            library.put("chromatographyType", submission.getChromatographyType());
+            libraries.add(library);
+        }
+        //private if user is authenticated
         if(!(authentication instanceof AnonymousAuthenticationToken)){
             String username = authentication.getName();
             UserPrincipal userPrincipal = userPrincipalService.findUserByUsername(username);
             List<Submission> userSubmissions = submissionService.findSubmissionsByUserId(userPrincipal.getId());
-            for(Submission submission : submissions){
-                librariesToIds.put(submission.getId(), submission.getName());
-            }
+
             for(Submission userSubmission : userSubmissions){
-                librariesToIds.put(userSubmission.getId(), userSubmission.getName());
+                Map<String, Object> library = new HashMap<>();
+                library.put("id", userSubmission.getId());
+                library.put("name", userSubmission.getName());
+                library.put("chromatographyType", userSubmission.getChromatographyType());
+                libraries.add(library);
             }
         }
-        //return public lib if user is not authenticated
-        else{
-            for(Submission s : submissions){
-                librariesToIds.put(s.getId(), s.getName());
-            }
-        }
-        return librariesToIds;
+
+        return libraries;
     }
     //get progress of group search
     @GetMapping(value="/rest/groupsearch/progress")
@@ -188,10 +195,16 @@ public class FileUploadRestController {
     //run group search
     @RequestMapping(value = "/rest/groupsearch/", method = RequestMethod.POST, consumes = {"multipart/form-data"})
     public ResponseEntity<?> startGroupSearch(@RequestPart("files") @NotNull @NotBlank List<MultipartFile> files,
-                                     @RequestParam("libraryIds") String libraryIdsJson, //libraries to search agianst
-                                     @RequestParam("withOntologyLevel") String withOntologyLevelString,
-                                     @RequestParam("chromatographyString") String chromatographyString,
-                                     @RequestParam("jobId") String jobId
+                                      @RequestParam("libraryIds") String libraryIdsJson, //libraries to search agians
+                                      @RequestParam("withOntologyLevel") String withOntologyLevelString,
+                                      @RequestParam("chromatographyString") String chromatographyString,
+                                      @RequestParam("scoreThreshold") String scoreThreshold,
+                                      @RequestParam("retentionIndexTolerance") String retentionIndexTolerance,
+                                      @RequestParam("retentionIndexMatch") String retentionIndexMatch,
+                                      @RequestParam("mzTolerance") String mzTolerance,
+                                      @RequestParam("mzToleranceType") String mzToleranceType,
+                                      @RequestParam("matchesPerSpectrum") String matchesPerSpectrum,
+                                      @RequestParam("jobId") String jobId
     ) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Set<BigInteger> libraryIds;
@@ -229,8 +242,41 @@ public class FileUploadRestController {
                 Map<BigInteger, String> libraryIdMap = new HashMap<>();
                 libraryIds.forEach(id -> libraryIdMap.put(id, null));
                 boolean withOntology = Boolean.parseBoolean(withOntologyLevelString) ;
+
+                //other parameters
+                SearchParameters parameters = new SearchParameters();
+                parameters.setScoreThreshold(scoreThreshold != null ? Double.parseDouble(scoreThreshold) / 1000.0 : null);
+                parameters.setRetIndexTolerance(Double.parseDouble(retentionIndexTolerance));
+                SearchParameters.RetIndexMatchType matchType;
+                switch (retentionIndexMatch) {
+                    case "Ignore Retention Index":
+                        matchType = SearchParameters.RetIndexMatchType.IGNORE_MATCH;
+                        break;
+                    case "Penalize matches without Retention Index (Strong)":
+                        matchType = SearchParameters.RetIndexMatchType.PENALIZE_NO_MATCH_STRONG;
+                        break;
+                    case "Penalize matches without Retention Index (Average)":
+                        matchType = SearchParameters.RetIndexMatchType.PENALIZE_NO_MATCH_AVERAGE;
+                        break;
+                    case "Penalize matches without Retention Index (Weak)":
+                        matchType = SearchParameters.RetIndexMatchType.PENALIZE_NO_MATCH_WEAK;
+                        break;
+                    case "Always match Retention Index":
+                        matchType = SearchParameters.RetIndexMatchType.ALWAYS_MATCH;
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Invalid retention index match description: " + retentionIndexMatch);
+                }
+                parameters.setRetIndexMatchType(matchType);
+                parameters.setMzTolerance(Double.parseDouble(mzTolerance), SearchParameters.MzToleranceType.valueOf(mzToleranceType.toUpperCase()) );
+                parameters.setMZToleranceType(SearchParameters.MzToleranceType.valueOf(mzToleranceType.toUpperCase()));
+                parameters.setLimit(Integer.parseInt(matchesPerSpectrum));
+//                parameters.setSpecies(species);
+//                parameters.setSource(source);
+//                parameters.setDisease(disease);
+                parameters.setSubmissionIds(libraryIds);
                 groupSearchService.groupSearch(userPrincipal,null, null, submission.getFiles(),
-                        null, null, libraryIdMap, withOntology, false, false, jobId);
+                        null, parameters, libraryIdMap, withOntology, false, false, jobId);
             }
 
         } catch (Exception e) {
