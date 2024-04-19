@@ -150,8 +150,8 @@ public class GroupSearchService {
                     parameters =
                             SearchParameters.getDefaultParameters(querySpectrum.getChromatographyType());
                     parameters.merge(userParameters);
-                    if(jobId != null)
-                        parameters.setSubmissionIds(libraries.keySet());
+//                    if(jobId != null)
+//                        parameters.setSubmissionIds(libraries.keySet());
 //                    parameters.setLimit(10);
 
                     List<SearchResultDTO> individualSearchResults;
