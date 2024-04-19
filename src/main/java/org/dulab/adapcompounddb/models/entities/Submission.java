@@ -291,7 +291,7 @@ public class Submission implements Serializable {
 
 
     public boolean isAuthorized(final UserPrincipal user) {
-        boolean authorized = false;
+        boolean authorized = true;
         if (user == null) {
             authorized = false;
         } else if (user.isAdmin()) {
