@@ -22,7 +22,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SubmissionRepository extends JpaRepository<Submission,Long> {
-
     Iterable<Submission> findByUserId(long userPrincipalId);
 
     @Query(value = "select s from Submission s " + "where s.name like %:search%")
@@ -83,6 +82,9 @@ public interface SubmissionRepository extends JpaRepository<Submission,Long> {
     @Query("select distinct s from Submission s " +
             "where s.user = :user and s.isPrivate = true and s.isReference = true")
     Iterable<Submission> findByPrivateTrueAndReferenceTrueAndUser(@Param("user") UserPrincipal user);
+    @Query("select distinct s from Submission s " +
+            "where s.user.id = :userId and s.isPrivate = true and s.isReference = true")
+    Iterable<Submission> findByPrivateTrueAndReferenceTrueAndUserId(@Param("userId") long userId);
 
     @Query("select distinct s.id, s.chromatographyType from Submission s where s.id in :ids")
     Iterable<Object[]> findChromatographyTypesBySubmissionId(@Param("ids") List<Long> submissionIds);

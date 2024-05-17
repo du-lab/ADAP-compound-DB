@@ -135,7 +135,9 @@ public class FileUploadRestController {
         if(!(authentication instanceof AnonymousAuthenticationToken)){
             String username = authentication.getName();
             UserPrincipal userPrincipal = userPrincipalService.findUserByUsername(username);
-            List<Submission> userSubmissions = submissionService.findSubmissionsByUserId(userPrincipal.getId());
+
+            long id = userPrincipal.getOrganizationId() != null ? userPrincipal.getOrganizationId() : userPrincipal.getId();
+            List<Submission> userSubmissions = submissionService.findPrivateSubmissionByUserId(id);
 
             for(Submission userSubmission : userSubmissions){
                 Map<String, Object> library = new HashMap<>();
