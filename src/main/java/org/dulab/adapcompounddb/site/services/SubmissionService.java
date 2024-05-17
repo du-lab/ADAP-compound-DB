@@ -112,6 +112,11 @@ public class SubmissionService {
     }
 
     @Transactional
+    public List<Submission> findPrivateSubmissionByUserId(final long userId){
+        return MappingUtils.toList(submissionRepository.findByPrivateTrueAndReferenceTrueAndUserId(userId));
+    }
+
+    @Transactional
     public DataTableResponse findAllSubmissions(String search, Pageable pageable) {
 
         Page<Submission> submissionPage = submissionRepository.findAllSubmissions(search, pageable);
