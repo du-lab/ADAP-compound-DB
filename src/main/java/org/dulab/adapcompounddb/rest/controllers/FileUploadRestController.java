@@ -287,4 +287,20 @@ public class FileUploadRestController {
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @RequestMapping(value = "/rest/auth/", method = RequestMethod.POST)
+    public ResponseEntity<?> validateCredentials(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        try {
+            if (authentication.isAuthenticated()) {
+                return ResponseEntity.ok("Login and password are correct!");
+            } else
+                return ResponseEntity.notFound().build();
+        }
+        catch (Exception e) {
+            LOGGER.warn(e.getMessage(), e);
+            return new ResponseEntity<>("An error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
 }
