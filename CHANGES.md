@@ -1,4 +1,4 @@
-# Version 1.8.3
+# Version 1.8.4
 - Update the Rest API (add endpoint to validate credentials)
 - 
 # Version 1.8.3
