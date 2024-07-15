@@ -79,6 +79,20 @@ See [link](INSTALL_LINUX.md)
 1. Create an app password for your email. See [link](https://support.google.com/accounts/answer/185833?hl=en#zippy=%2Cwhy-you-may-need-an-app-password)
 2. Set email and password as your environmental variables. Use ADAP_EMAIL_LOGIN and ADAP_PASSWORD
 
+### Create a new version of ADAP-KDB
+1. Update the version in the `pom.xml` file
+2. Add a new version to the `CHANGES.md` file and describe the changes
+3. Commit the changes to the repository
+4. Create a tag with the new version `git tag -a vX.X.X -m "Version X.X.X"`
+5. Push the changes to the online repository `git push && git push --tags`
+
+### Deploy to Amazon Web Services EC2 machine
+1. Login to the AWS EC2 machine with `ssh -i "your-key.pem" ubuntu@adapc.cloud`
+2. Move to the ADAP-KDB repository: `cd ADAP-compound-DB`
+3. Pull the latest changes from the repository `git pull`
+4. Check the system processes with the command`top` and make sure that nobody is using ADAP-KDB at the moment.
+5. Deploy the project `mvn clean install tomcat7:redeploy -Denvironment=production`
+
 ### Package structure
 * `org.dulab.adapcompounddb.config` configure the web application
 * `org.dulab.adapcompounddb.models.entities` represent entities of tables in the MySQL database
