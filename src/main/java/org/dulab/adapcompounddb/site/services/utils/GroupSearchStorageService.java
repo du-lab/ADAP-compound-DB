@@ -44,6 +44,7 @@ public class GroupSearchStorageService {
             if (result.getQuerySpectrumName() != null) matchesJson.put("querySpectrumName", result.getQuerySpectrumName());
             if(result.getScore() != null) matchesJson.put("score", result.getScore());
             if(result.getRetTimeError() != null) matchesJson.put("retTimeError", result.getRetTimeError());
+            if(result.getPrecursorErrorPPM() != null) matchesJson.put("precursorErrorPPM", result.getPrecursorErrorPPM());
             if (result.getMassError() != null) matchesJson.put("massError", result.getMassError());
             if (result.getOntologyLevel() != null) matchesJson.put("ontologyLevel", result.getOntologyLevel());
             resultJson.get("matches").add(matchesJson);

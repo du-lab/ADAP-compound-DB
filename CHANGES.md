@@ -1,3 +1,6 @@
+# Version 1.8.5
+- Add precursor Error(PPM) field to library search result which is returned to ADAP-BIG
+
 # Version 1.8.4
 - Update the Rest API (add endpoint to validate credentials)
 - 
