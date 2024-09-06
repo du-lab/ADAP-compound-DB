@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 @Service
@@ -15,6 +16,7 @@ public class GroupSearchStorageService {
 
     private static final Map<String, Map<String,Object>> searchResults = new ConcurrentHashMap<>();
     private static final Map<String, Double> searchProgress = new ConcurrentHashMap<>();
+    private static final Map<String, Future<?>> activeGroupSearches = new ConcurrentHashMap<>();
     public void storeResults(String jobId, List<SearchResultDTO> results) {
         Map<String, List<Map<String, Object>>> resultJson = new HashMap<>();
         resultJson.put("matches", new ArrayList<>());
@@ -55,7 +57,21 @@ public class GroupSearchStorageService {
         wrapper.put("search-results", resultJson);
         searchResults.put(jobId, wrapper);
     }
-
+    public void storeSearchJob(String jobId, Future<?> searchTask) {
+        activeGroupSearches.put(jobId, searchTask);
+    }
+    public boolean cancelSearchJob(String jobId) {
+        Future<?> task = activeGroupSearches.get(jobId);
+        if (task != null && !task.isDone()) {
+            // cancel task and remove task from memory
+            boolean cancelled = task.cancel(true);
+            if (cancelled) {
+                activeGroupSearches.remove(jobId);
+            }
+            return cancelled;
+        }
+        return false;
+    }
     public Map<String,Object> getResults(String jobId) {
         return searchResults.get(jobId);
     }

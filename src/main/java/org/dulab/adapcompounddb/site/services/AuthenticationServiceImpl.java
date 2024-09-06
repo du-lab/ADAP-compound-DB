@@ -101,5 +101,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return userPrincipalRepository.findById(id);
     }
 
-
+    public static void main(String[] args){
+        String salt = BCrypt.gensalt(10);
+        LOG.info("Hashing the password with the generated salt...");
+        System.out.println(BCrypt.hashpw("", salt));
+    }
 }

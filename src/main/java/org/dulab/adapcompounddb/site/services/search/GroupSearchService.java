@@ -337,6 +337,7 @@ public class GroupSearchService {
                     groupSearchStorageService.updateProgress(jobId, 1); //job is done
                     groupSearchStorageService.storeResults(jobId, groupSearchDTOList);
                     groupSearchStorageService.addSpectraToResults(jobId, spectra);
+                    groupSearchStorageService.cancelSearchJob(jobId);
                     LOGGER.info("Done group search for user: " + userPrincipal.getName());
                 }
                 //from browser
