@@ -284,60 +284,66 @@ public class GroupSearchService {
             }
             if (userPrincipal != null) {
                 //group search api
-                if(jobId != null){
+                if(jobId != null ){
+                    if(groupSearchStorageService.isCanceled(jobId)){
+                        groupSearchStorageService.storeResults(jobId, new ArrayList<>());
+                        groupSearchStorageService.addSpectraToResults(jobId, new ArrayList<>());// store empty result
+                    }
+                    else {
+                        Set<Long> spectrumIds = groupSearchDTOList.stream()
+                                .map(SearchResultDTO::getSpectrumId)
+                                .collect(Collectors.toSet());
 
-                    Set<Long> spectrumIds = groupSearchDTOList.stream()
-                            .map(SearchResultDTO::getSpectrumId)
-                            .collect(Collectors.toSet());
-
-                    double scoreThreshold = parameters != null ? parameters.getScoreThreshold() : 0;
-                    Set<Long> spectrumIdsWithPeaks = groupSearchDTOList.stream()
-                            .filter(r -> r.getScore() != null && r.getScore() > scoreThreshold)
-                            .map(SearchResultDTO::getSpectrumId)
-                            .collect(Collectors.toSet());
+                        double scoreThreshold = parameters != null ? parameters.getScoreThreshold() : 0;
+                        Set<Long> spectrumIdsWithPeaks = groupSearchDTOList.stream()
+                                .filter(r -> r.getScore() != null && r.getScore() > scoreThreshold)
+                                .map(SearchResultDTO::getSpectrumId)
+                                .collect(Collectors.toSet());
 
 
-                    long t = System.currentTimeMillis();
-                    List<Object[]> peaksAndSpectrumIds = spectrumRepository.findPeaksAndSpectrumIdsBySpectrumIds(spectrumIdsWithPeaks);
-                    long duration1 = System.currentTimeMillis() - t;
+                        long t = System.currentTimeMillis();
+                        List<Object[]> peaksAndSpectrumIds = spectrumRepository.findPeaksAndSpectrumIdsBySpectrumIds(spectrumIdsWithPeaks);
+                        long duration1 = System.currentTimeMillis() - t;
 
-                    long t2 = System.currentTimeMillis();
-                    List<Object[]> submissionsAndSpectrumIds = spectrumRepository.findSubmissionNamesBySpectrumIds(spectrumIds);
-                    long duration2 = System.currentTimeMillis() - t2;
+                        long t2 = System.currentTimeMillis();
+                        List<Object[]> submissionsAndSpectrumIds = spectrumRepository.findSubmissionNamesBySpectrumIds(spectrumIds);
+                        long duration2 = System.currentTimeMillis() - t2;
 
-                    Map<Long, List<PeakDTO>> peaksBySpectrumIds = new HashMap<>();
-                    for(Object[] result : peaksAndSpectrumIds){
-                        Long spectrumId = (Long) result[1];
-                        Peak peak = (Peak) result[0];
-                        PeakDTO peakDTO = new PeakDTO(peak.getId(), peak.getMz(), peak.getIntensity());
-                        peaksBySpectrumIds.computeIfAbsent(spectrumId, k -> new ArrayList<>());
-                        peaksBySpectrumIds.get(spectrumId).add(peakDTO);
+                        Map<Long, List<PeakDTO>> peaksBySpectrumIds = new HashMap<>();
+                        for (Object[] result : peaksAndSpectrumIds) {
+                            Long spectrumId = (Long) result[1];
+                            Peak peak = (Peak) result[0];
+                            PeakDTO peakDTO = new PeakDTO(peak.getId(), peak.getMz(), peak.getIntensity());
+                            peaksBySpectrumIds.computeIfAbsent(spectrumId, k -> new ArrayList<>());
+                            peaksBySpectrumIds.get(spectrumId).add(peakDTO);
+
+                        }
+                        Map<Long, String> submissionNamesBySpectrumIds = new HashMap<>();
+                        for (Object[] result : submissionsAndSpectrumIds) {
+                            Long spectrumId = (Long) result[0];
+
+                            String submissionName = (String) result[1];
+                            submissionNamesBySpectrumIds.put(spectrumId, submissionName);
+                        }
+                        List<Map<String, Object>> spectra = new ArrayList<>();
+                        //create matched spectra
+                        for (Map.Entry<Long, String> entry : submissionNamesBySpectrumIds.entrySet()) {
+                            Map<String, Object> spectraJson = new HashMap<>();
+                            Long spectrumId = entry.getKey();
+                            spectraJson.put("id", spectrumId);
+                            if (peaksBySpectrumIds.containsKey(spectrumId))
+                                spectraJson.put("peaks", peaksBySpectrumIds.get(spectrumId));
+                            spectraJson.put("submissionName", entry.getValue());
+
+                            spectra.add(spectraJson);
+                        }
+                        groupSearchStorageService.storeResults(jobId, groupSearchDTOList);
+                        groupSearchStorageService.addSpectraToResults(jobId, spectra);
 
                     }
-                    Map<Long, String> submissionNamesBySpectrumIds = new HashMap<>();
-                    for(Object[] result : submissionsAndSpectrumIds){
-                        Long spectrumId = (Long) result[0];
-
-                        String submissionName = (String) result[1];
-                        submissionNamesBySpectrumIds.put(spectrumId, submissionName);
-                    }
-                     List<Map<String, Object>> spectra = new ArrayList<>();
-                    //create matched spectra
-                    for(Map.Entry<Long, String> entry : submissionNamesBySpectrumIds.entrySet() ){
-                        Map<String, Object> spectraJson = new HashMap<>();
-                        Long spectrumId = entry.getKey();
-                        spectraJson.put("id", spectrumId);
-                        if(peaksBySpectrumIds.containsKey(spectrumId))
-                            spectraJson.put("peaks", peaksBySpectrumIds.get(spectrumId));
-                        spectraJson.put("submissionName", entry.getValue());
-
-                        spectra.add(spectraJson);
-                    }
-
                     groupSearchStorageService.updateProgress(jobId, 1); //job is done
-                    groupSearchStorageService.storeResults(jobId, groupSearchDTOList);
-                    groupSearchStorageService.addSpectraToResults(jobId, spectra);
-                    groupSearchStorageService.cancelSearchJob(jobId);
+                    // after job is done and we stored the search results, remove the active job
+                    groupSearchStorageService.removeSearchJob(jobId);
                     LOGGER.info("Done group search for user: " + userPrincipal.getName());
                 }
                 //from browser
@@ -353,8 +359,10 @@ public class GroupSearchService {
 
         } catch (Throwable t) {
             LOGGER.error(String.format("Error during the group search: %s", t.getMessage()), t);
-            if(jobId != null)
+            if(jobId != null) {
                 groupSearchStorageService.updateProgress(jobId, -1); //job has error
+                groupSearchStorageService.removeSearchJob(jobId);
+            }
             else
                 session.setAttribute("GROUP_SEARCH_ERROR", t.getMessage());
             throw t;
