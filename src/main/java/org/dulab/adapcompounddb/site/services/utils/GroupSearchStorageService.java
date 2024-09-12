@@ -60,13 +60,16 @@ public class GroupSearchStorageService {
     public void storeSearchJob(String jobId, Future<?> searchTask) {
         activeSearchJobs.put(jobId, searchTask);
     }
+
     public boolean cancelSearchJob(String jobId) {
         Future<?> task = activeSearchJobs.get(jobId);
         if (task != null) {
-            // cancel task and remove task from memory
+            // cancel task and remove task and its results from memory
             boolean cancelled = task.cancel(true);
-//            activeSearchJobs.remove(jobId);
-            return cancelled;
+            if(cancelled){
+                clear(jobId);
+                return true;
+            }
         }
         return false;
     }
@@ -98,5 +101,6 @@ public class GroupSearchStorageService {
     public void clear(String jobId) {
        searchResults.remove(jobId);
        searchProgress.remove(jobId);
+       activeSearchJobs.remove(jobId);
     }
 }

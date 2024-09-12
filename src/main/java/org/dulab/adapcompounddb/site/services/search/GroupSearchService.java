@@ -285,7 +285,7 @@ public class GroupSearchService {
             if (userPrincipal != null) {
                 //group search api
                 if(jobId != null ){
-                    if(groupSearchStorageService.isCanceled(jobId)){
+                    if(Thread.currentThread().isInterrupted()){
                         groupSearchStorageService.storeResults(jobId, new ArrayList<>());
                         groupSearchStorageService.addSpectraToResults(jobId, new ArrayList<>());// store empty result
                     }
@@ -361,7 +361,8 @@ public class GroupSearchService {
             LOGGER.error(String.format("Error during the group search: %s", t.getMessage()), t);
             if(jobId != null) {
                 groupSearchStorageService.updateProgress(jobId, -1); //job has error
-                groupSearchStorageService.removeSearchJob(jobId);
+                groupSearchStorageService.clear(jobId);
+                LOGGER.info("Cleared resources for job ID: " + jobId);
             }
             else
                 session.setAttribute("GROUP_SEARCH_ERROR", t.getMessage());
