@@ -1,3 +1,6 @@
+# Version 1.8.6
+- Minor change to the precursor Error(PPM) in library search result 
+- 
 # Version 1.8.5
 - Add precursor Error(PPM) field to library search result which is returned to ADAP-BIG
 

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 @Service
@@ -15,6 +16,7 @@ public class GroupSearchStorageService {
 
     private static final Map<String, Map<String,Object>> searchResults = new ConcurrentHashMap<>();
     private static final Map<String, Double> searchProgress = new ConcurrentHashMap<>();
+    private static final Map<String, Future<?>> activeSearchJobs = new ConcurrentHashMap<>();
     public void storeResults(String jobId, List<SearchResultDTO> results) {
         Map<String, List<Map<String, Object>>> resultJson = new HashMap<>();
         resultJson.put("matches", new ArrayList<>());
@@ -56,7 +58,29 @@ public class GroupSearchStorageService {
         wrapper.put("search-results", resultJson);
         searchResults.put(jobId, wrapper);
     }
+    public void storeSearchJob(String jobId, Future<?> searchTask) {
+        activeSearchJobs.put(jobId, searchTask);
+    }
 
+    public boolean cancelSearchJob(String jobId) {
+        Future<?> task = activeSearchJobs.get(jobId);
+        if (task != null) {
+            // cancel task and remove task and its results from memory
+            boolean cancelled = task.cancel(true);
+            if(cancelled){
+                clear(jobId);
+                return true;
+            }
+        }
+        return false;
+    }
+    public boolean isCanceled(String jobId) {
+        Future<?> job = activeSearchJobs.get(jobId);
+        return (job != null && job.isCancelled()) ;
+    }
+    public void removeSearchJob(String jobId) {
+        activeSearchJobs.remove(jobId);
+    }
     public Map<String,Object> getResults(String jobId) {
         return searchResults.get(jobId);
     }
@@ -78,5 +102,6 @@ public class GroupSearchStorageService {
     public void clear(String jobId) {
        searchResults.remove(jobId);
        searchProgress.remove(jobId);
+       activeSearchJobs.remove(jobId);
     }
 }

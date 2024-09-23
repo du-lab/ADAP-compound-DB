@@ -100,6 +100,5 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public Optional<UserPrincipal> findUser(long id) {
         return userPrincipalRepository.findById(id);
     }
-
-
+    
 }

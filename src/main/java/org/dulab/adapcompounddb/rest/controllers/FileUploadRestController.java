@@ -41,6 +41,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -277,8 +278,9 @@ public class FileUploadRestController {
 //                parameters.setSource(source);
 //                parameters.setDisease(disease);
                 parameters.setSubmissionIds(libraryIds);
-                groupSearchService.groupSearch(userPrincipal,null, null, submission.getFiles(),
+                Future<Void> asyncResult = groupSearchService.groupSearch(userPrincipal,null, null, submission.getFiles(),
                         null, parameters, libraryIdMap, withOntology, false, false, jobId);
+                groupSearchStorageService.storeSearchJob(jobId, asyncResult);
             }
 
         } catch (Exception e) {
@@ -303,4 +305,24 @@ public class FileUploadRestController {
         }
 
     }
+    @RequestMapping(value="/rest/group_search/cancel",method = RequestMethod.POST)
+    public ResponseEntity<?> cancelGroupSearch(@RequestParam("jobId") String jobId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!authentication.isAuthenticated())
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        try {
+            boolean isCancelled = groupSearchStorageService.cancelSearchJob(jobId);
+            if (isCancelled) {
+                LOGGER.info("Group search canceled through rest api for job ID: " + jobId);
+                return ResponseEntity.ok("Group search cancelled successfully.");
+            } else {
+                return ResponseEntity.badRequest().body("Failed to cancel group search");
+            }
+        } catch (Exception e) {
+            LOGGER.warn(e.getMessage(), e);
+            return new ResponseEntity<>("An error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
 }
