@@ -32,6 +32,7 @@ public class GroupSearchStorageService {
                 if (result.getSpectrumId() != 0) compound.put("spectrumId", result.getSpectrumId());
                 if(result.getName() != null) compound.put("name", result.getName());
                 if (result.getMass() != null) compound.put("mass", result.getMass());
+                if (result.getQueryPrecursorMz() != null) compound.put("precursorMz", result.getQueryPrecursorMz());
                 if (result.getPrecursorType() != null) compound.put("precursorType", result.getPrecursorType());
                 if (result.getFormula() != null) compound.put("formula", result.getFormula());
                 if (result.getCasId() != null) compound.put("casId", result.getCasId());
@@ -45,7 +46,7 @@ public class GroupSearchStorageService {
             if(result.getScore() != null) matchesJson.put("score", result.getScore());
             if(result.getRetTimeError() != null) matchesJson.put("retTimeError", result.getRetTimeError());
             if(result.getPrecursorErrorPPM() != null) matchesJson.put("precursorErrorPPM", result.getPrecursorErrorPPM());
-            if (result.getMassError() != null) matchesJson.put("massError", result.getMassError());
+            if (result.getMassErrorPPM() != null) matchesJson.put("massError", result.getMassErrorPPM());
             if (result.getOntologyLevel() != null) matchesJson.put("ontologyLevel", result.getOntologyLevel());
             resultJson.get("matches").add(matchesJson);
 
