@@ -1,3 +1,7 @@
+# Version 1.8.7
+- Change Mass Error(DA) to Mass Error(PPM) in the search result
+- Added precursor m/z field in the search result
+
 # Version 1.8.6
 - Minor change to the precursor Error(PPM) in library search result 
 - 
