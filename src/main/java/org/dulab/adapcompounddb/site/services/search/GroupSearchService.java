@@ -138,7 +138,7 @@ public class GroupSearchService {
                 int sameNameIndex = 0;
                 if (spectra == null) continue;
                 for (int spectrumIndex = 0; spectrumIndex < spectra.size(); ++spectrumIndex) {  // Spectrum querySpectrum : file.getSpectra()
-                    if (System.currentTimeMillis() - startTime > 24 * 60 * 60 * 1000) {
+                    if (System.currentTimeMillis() - startTime > 96 * 60 * 60 * 1000) {
                         session.setAttribute(ControllerUtils.GROUP_SEARCH_ERROR_ATTRIBUTE_NAME, "Group search timed out");
                         throw new TimeoutException("Group search timed out");
                     }
