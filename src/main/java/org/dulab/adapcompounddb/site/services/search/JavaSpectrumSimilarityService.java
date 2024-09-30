@@ -164,8 +164,10 @@ public class JavaSpectrumSimilarityService {
 
 //            System.out.printf("%s %s %f%n", querySpectrum.getName(), librarySpectrum.getName(), similarityScore);
 
-            double isotopicSimilarity = calculateCosineSimilarity(
-                    querySpectrum.getIsotopesAsArray(), librarySpectrum.getIsotopesAsArray());
+            double[] queryIsotopes = querySpectrum.getIsotopesAsArray();
+            double isotopicSimilarity = (queryIsotopes != null)
+                    ? calculateCosineSimilarity(queryIsotopes, librarySpectrum.getIsotopesAsArray())
+                    : 0.0;
 
             double massError = Double.MAX_VALUE;
             double massErrorPPM = Double.MAX_VALUE;
