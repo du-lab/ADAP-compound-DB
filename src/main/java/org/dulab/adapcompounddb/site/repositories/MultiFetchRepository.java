@@ -92,35 +92,43 @@ public class MultiFetchRepository {
         return submission;
     }
 
-    //@TransactionAttribute(TransactionAttributeType.NEVER)
+    @TransactionAttribute(TransactionAttributeType.NEVER)
     public List<Spectrum> getSpectraWithPeaksIsotopes(Set<Long> spectrumIds) {
 
         if (spectrumIds.stream().anyMatch(Objects::isNull))
             throw new IllegalStateException("Some of spectrum IDs are null: " + spectrumIds);
 
+//        long time = System.currentTimeMillis();
         List<Spectrum> spectra = entityManager
                 .createQuery("select s from Spectrum s where s.id in (:spectrumIds)", Spectrum.class)
                 .setParameter("spectrumIds", spectrumIds)
                 .setHint(QueryHints.READ_ONLY, true)
                 .getResultList();
+//        LOGGER.info("Spectra query time: " + (System.currentTimeMillis() - time) + " ms");
 
+//        time = System.currentTimeMillis();
         List<Peak> peaks = entityManager
                 .createQuery("select p from Peak p where p.spectrum.id in (:spectrumIds)", Peak.class)
                 .setParameter("spectrumIds", spectrumIds)
                 .setHint(QueryHints.READ_ONLY, true)
                 .getResultList();
+//        LOGGER.info("Peaks query time: " + (System.currentTimeMillis() - time) + " ms");
 
+//        time = System.currentTimeMillis();
         List<Isotope> isotopes = entityManager
                 .createQuery("select i from Isotope i where i.spectrum.id in (:spectrumIds)", Isotope.class)
                 .setParameter("spectrumIds", spectrumIds)
                 .setHint(QueryHints.READ_ONLY, true)
                 .getResultList();
+//        LOGGER.info("Isotopes query time: " + (System.currentTimeMillis() - time) + " ms");
 
+//        time = System.currentTimeMillis();
         List<Identifier> identifiers = entityManager
                 .createQuery("select i from Identifier i where i.spectrum.id in (:spectrumIds)", Identifier.class)
                 .setParameter("spectrumIds", spectrumIds)
                 .setHint(QueryHints.READ_ONLY, true)
                 .getResultList();
+//        LOGGER.info("Identifiers query time: " + (System.currentTimeMillis() - time) + " ms");
 
         assignChildrenToParents(peaks, Peak::getSpectrum, spectra, Spectrum::setPeaks, Spectrum::getId);
         assignChildrenToParents(isotopes, Isotope::getSpectrum, spectra, Spectrum::setIsotopes, Spectrum::getId);
