@@ -26,6 +26,13 @@ public class JavaSpectrumSimilarityService {
     private final SpectrumRepository spectrumRepository;
     private final MultiFetchRepository multiFetchRepository;
 
+    private final LinkedHashMap<Long, Spectrum> spectrumCache = new LinkedHashMap<>() {
+        @Override
+        protected boolean removeEldestEntry(Map.Entry<Long, Spectrum> eldest) {
+            return size() > 10000;
+        }
+    };
+
 
     public JavaSpectrumSimilarityService(SpectrumRepository spectrumRepository,
                                          MultiFetchRepository multiFetchRepository) {
@@ -86,9 +93,28 @@ public class JavaSpectrumSimilarityService {
                 .mapToLong(BigInteger::longValue)
                 .boxed()
                 .collect(Collectors.toSet());
+
+        // Fetch spectra from the cache or the database
+        List<Spectrum> preScreenedSpectra = new ArrayList<>();
+        Set<Long> uncachedSpectrumIds = new HashSet<>();
+        for (Long spectrumId : preScreenedSpectrumIdsSet) {
+            Spectrum spectrum = spectrumCache.get(spectrumId);
+            if (spectrum != null) {
+                preScreenedSpectra.add(spectrum);
+            } else {
+                uncachedSpectrumIds.add(spectrumId);
+            }
+        }
+
         long time3 = System.currentTimeMillis();
-        Iterable<Spectrum> preScreenedSpectra =
-                multiFetchRepository.getSpectraWithPeaksIsotopes(preScreenedSpectrumIdsSet);
+        if (!uncachedSpectrumIds.isEmpty()) {
+            Iterable<Spectrum> spectra =
+                    multiFetchRepository.getSpectraWithPeaksIsotopes(uncachedSpectrumIds);
+            for (Spectrum spectrum : spectra) {
+                preScreenedSpectra.add(spectrum);
+                spectrumCache.put(spectrum.getId(), spectrum);
+            }
+        }
         long time4 = System.currentTimeMillis();
         double fetchSpectraTime = (time4 - time3) / 1000.0;
 
@@ -97,7 +123,7 @@ public class JavaSpectrumSimilarityService {
         long time6 = System.currentTimeMillis();
         double similarityTime = (time6 - time5) / 1000.0;
 
-        double totalTime = (time6 - time1) / 1000.0;
+//        double totalTime = (time6 - time1) / 1000.0;
 //        LOGGER.info(String.format("Pre-screen: %.2f; Fetch (%d): %.2f; Similarity: %.2f; Total: %.2f",
 //                preScreenTime, preScreenedSpectrumIdsSet.size(), fetchSpectraTime, similarityTime, totalTime));
 
