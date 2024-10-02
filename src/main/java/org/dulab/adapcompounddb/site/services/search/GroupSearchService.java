@@ -241,11 +241,12 @@ public class GroupSearchService {
 //            double total = (time2 - time1) / 1000.0;
        
             if (jobId == null && !groupSearchDTOList.isEmpty()) {
-                SearchParameters searchParametersFromSession = (SearchParameters) session.getAttribute(ControllerUtils.GROUP_SEARCH_PARAMETERS);
+
                 // Export search results to a session (simple export)
                 try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+//                    SearchParameters searchParametersFromSession = (SearchParameters) session.getAttribute(ControllerUtils.GROUP_SEARCH_PARAMETERS);
                     exportSearchResultsService.export(outputStream, groupSearchDTOList, libraries.values(),
-                            searchParametersFromSession.getSearchParametersAsString());
+                            parameters != null ? parameters.getSearchParametersAsString() : "");  // searchParametersFromSession
                     session.setAttribute(ControllerUtils.GROUP_SEARCH_SIMPLE_EXPORT, outputStream.toByteArray());
                 } catch (IOException e) {
                     LOGGER.warn("Error when writing the simple export to the session: " + e.getMessage(), e);
@@ -253,8 +254,9 @@ public class GroupSearchService {
 
                 // Export search results to a session (advanced export)
                 try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+//                    SearchParameters searchParametersFromSession = (SearchParameters) session.getAttribute(ControllerUtils.GROUP_SEARCH_PARAMETERS);
                     exportSearchResultsService.exportAll(outputStream, groupSearchDTOList, libraries.values(),
-                            searchParametersFromSession.getSearchParametersAsString());
+                            parameters != null ? parameters.getSearchParametersAsString() : "");
                     session.setAttribute(ControllerUtils.GROUP_SEARCH_ADVANCED_EXPORT, outputStream.toByteArray());
                 } catch (IOException e) {
                     LOGGER.warn("Error when writing the advanced export to the session: " + e.getMessage(), e);
@@ -271,7 +273,7 @@ public class GroupSearchService {
 
                     try (FileOutputStream fileOutputStream = new FileOutputStream(filePath)) {
                         exportSearchResultsService.export(fileOutputStream, groupSearchDTOList, libraries.values(),
-                                searchParametersFromSession.getSearchParametersAsString());
+                                parameters != null ? parameters.getSearchParametersAsString() : "");
                         emailService.sendEmailWithAttachment(filePath, userPrincipal.getEmail());
                         //delete the local file
                         Files.delete(FileSystems.getDefault().getPath(filePath));
