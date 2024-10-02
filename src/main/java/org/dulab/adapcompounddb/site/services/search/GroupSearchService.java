@@ -298,7 +298,7 @@ public class GroupSearchService {
 
                         double scoreThreshold = parameters != null ? parameters.getScoreThreshold() : 0;
                         Set<Long> spectrumIdsWithPeaks = groupSearchDTOList.stream()
-                                .filter(r -> r.getScore() != null && r.getScore() > scoreThreshold)
+                                .filter(r -> r.getScore() > 0.0 && r.getScore() > scoreThreshold)
                                 .map(SearchResultDTO::getSpectrumId)
                                 .collect(Collectors.toSet());
 

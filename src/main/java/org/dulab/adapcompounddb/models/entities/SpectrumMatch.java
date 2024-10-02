@@ -148,17 +148,18 @@ public class SpectrumMatch implements Serializable {
         this.retIndexError = retIndexError;
     }
     @Transient
-    public List<Double> getQueryPeakMzList() {
+    public double[] getQueryPeakMzList() {
         if (queryPeakMzs == null || queryPeakMzs.length == 0) {
-            return new ArrayList<>();
+            return new double[0];
         }
 
         ByteBuffer bb = ByteBuffer.wrap(queryPeakMzs);
         int numberOfDoubles = queryPeakMzs.length / Double.BYTES;
-        List<Double> doublesList = new ArrayList<>(numberOfDoubles);
+        double[] doublesList = new double[numberOfDoubles];
 
         for (int i = 0; i < numberOfDoubles; i++) {
-            doublesList.add(bb.getDouble());
+            doublesList[i] = bb.getDouble();
+//            doublesList.add(bb.getDouble());
         }
 
         return doublesList;
@@ -185,17 +186,18 @@ public class SpectrumMatch implements Serializable {
         }
     }
     @Transient
-    public List<Double> getLibraryPeakMzList() {
+    public double[] getLibraryPeakMzList() {
         if (libraryPeakMzs == null || libraryPeakMzs.length == 0) {
-            return new ArrayList<>();
+            return new double[0];
         }
 
         ByteBuffer bb = ByteBuffer.wrap(libraryPeakMzs);
         int numberOfDoubles = libraryPeakMzs.length / Double.BYTES;
-        List<Double> doublesList = new ArrayList<>(numberOfDoubles);
+        double[] doublesList = new double[numberOfDoubles];
 
         for (int i = 0; i < numberOfDoubles; i++) {
-            doublesList.add(bb.getDouble());
+            doublesList[i] = bb.getDouble();
+//            doublesList.add(bb.getDouble());
         }
 
         return doublesList;

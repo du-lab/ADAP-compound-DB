@@ -192,13 +192,13 @@ public class IndividualSearchService {
 
       if (ontologyLevel != null) {
         if (ontologyLevel.getScoreThreshold() == null) {
-          result.setScore(null);
+          result.setScore(0.0);
         }
         if (ontologyLevel.getRetTimeTolerance() == null) {
-          result.setRetTimeError(null);
+          result.setRetTimeError(Double.MAX_VALUE);
         }
         if (ontologyLevel.getMassTolerancePPM() == null) {
-          result.setMassErrorPPM(null);
+          result.setMassErrorPPM(Double.MAX_VALUE);
         }
 
         result.setOntologyLevel(ontologyLevel);

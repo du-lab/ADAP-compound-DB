@@ -142,7 +142,7 @@ public class GroupSearchRestController extends BaseController {
             String spectrumName = jsonObj.get("querySpectrumName").asText();
             List<SearchResultDTO> searchResultFromSession = new ArrayList<>((List<SearchResultDTO>) sessionObject);
             List<SearchResultDTO> matches = searchResultFromSession.stream()
-                .filter(s -> s.getQuerySpectrumIndex().equals(spectrumIndex) && s.getQuerySpectrumName()
+                .filter(s -> s.getQuerySpectrumIndex() == spectrumIndex && s.getQuerySpectrumName()
                         .equals(spectrumName)).collect(Collectors.toList());
             session.setAttribute(ControllerUtils.GROUP_SEARCH_MATCHES, matches);
 
@@ -200,15 +200,15 @@ public class GroupSearchRestController extends BaseController {
                 Collectors.toList());
             //filter by score Threshold
             if(scoreThreshold != null)
-                spectrumDtoList = spectrumDtoList.stream().filter(s-> s.getScore() != null).filter(s-> s.getScore() > scoreThreshold).collect(
+                spectrumDtoList = spectrumDtoList.stream().filter(s-> s.getScore() > 0.0).filter(s-> s.getScore() > scoreThreshold).collect(
                     Collectors.toList());
             //filter by massError
             if(massError != null)
-                spectrumDtoList = spectrumDtoList.stream().filter(s-> s.getMassError() != null).filter(s-> s.getMassError() < massError).collect(
+                spectrumDtoList = spectrumDtoList.stream().filter(s-> s.getMassError() > 0.0).filter(s-> s.getMassError() < massError).collect(
                     Collectors.toList());
             //filter by retTimeError
             if(retTimeError != null)
-                spectrumDtoList = spectrumDtoList.stream().filter(s-> s.getRetTimeError() != null).filter(s-> s.getRetTimeError() < retTimeError).collect(
+                spectrumDtoList = spectrumDtoList.stream().filter(s-> s.getRetTimeError() > 0.0).filter(s-> s.getRetTimeError() < retTimeError).collect(
                     Collectors.toList());
             //filter by match name
             if(!matchName.isEmpty())
@@ -243,7 +243,7 @@ public class GroupSearchRestController extends BaseController {
         List<SearchResultDTO> groupSearchResultFiltered = (List<SearchResultDTO>) sessionGroupSearchResultFilteredObject;
         List<SearchResultDTO> querySpectrums = querySpectrumsFromSession.stream()
                 .filter(spectrum -> groupSearchResultFiltered.stream()
-                        .anyMatch(filteredResult -> filteredResult.getQuerySpectrumIndex().equals(spectrum.getSpectrumIndex())))
+                        .anyMatch(filteredResult -> filteredResult.getQuerySpectrumIndex() == spectrum.getSpectrumIndex()))
                 .map(spectrum ->{
                     SearchResultDTO searchResultDTO = new SearchResultDTO();
                     searchResultDTO.setQuerySpectrumName(spectrum.getName());

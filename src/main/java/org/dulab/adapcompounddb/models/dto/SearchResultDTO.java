@@ -41,62 +41,62 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
     // *************************
 
     // Query
-    private Long querySpectrumId;
-    private Integer querySpectrumIndex;
-    private Integer queryFileIndex;
+    private long querySpectrumId;
+    private int querySpectrumIndex;
+    private int queryFileIndex;
     private String querySpectrumName;
     private String querySpectrumShortName;
     private String queryExternalId;
     private boolean queryWithPeaks;
     private double[] queryPrecursorMzs;
     private String[] queryPrecursorTypes;
-    private Double queryMass;
-    private Double queryRetTime;
-    private List<Double> queryPeakMzs;
+    private double queryMass;
+    private double queryRetTime;
+    private double[] queryPeakMzs;
 
     // Match
     private MatchType matchType;
-    private Integer matchIndex;
+    private int matchIndex;
     private long spectrumId;
-    private Long clusterId;
+    private long clusterId;
     private String externalId;
     private String name;
     private String precursorType;
-    private Integer size;
-    private Double aveSignificance;
-    private Double minSignificance;
-    private Double maxSignificance;
-    private Double minPValue;
-    private Double diseasePValue;
-    private Double speciesPValue;
-    private Double sampleSourcePValue;
+    private int size;
+    private double aveSignificance;
+    private double minSignificance;
+    private double maxSignificance;
+    private double minPValue;
+    private double diseasePValue;
+    private double speciesPValue;
+    private double sampleSourcePValue;
     private String ontologyLevel;
-    private Integer ontologyPriority;
+    private int ontologyPriority;
     private String chromatographyTypeLabel;
     private String chromatographyTypePath;
     private String json;
-    private Double mass;
-    private Double retTime;
+    private double mass;
+    private double retTime;
     private String formula;
     private String casId;
     private String hmdbId;
     private String pubChemId;
     private String inChIKey;
     private String submissionName;
-    private Boolean inHouse;
-    private Long submissionId;
-    private List<Double> libraryPeakMzs;
+    private boolean inHouse;
+    private long submissionId;
+    private double[] libraryPeakMzs;
 
     // Other
     private int position;
-    private Double score;
-    private Double isotopicSimilarity;
-    private Double precursorError;
-    private Double precursorErrorPPM;
-    private Double massError;
-    private Double massErrorPPM;
-    private Double retTimeError;
-    private Double retIndexError;
+    private double score;
+    private double isotopicSimilarity;
+    private double precursorError;
+    private double precursorErrorPPM;
+    private double massError;
+    private double massErrorPPM;
+    private double retTimeError;
+    private double retIndexError;
     private boolean marked;
     private String errorMessage = null;
 
@@ -143,7 +143,8 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
             this.queryWithPeaks = querySpectrum.getPeaks() != null;
             this.setQueryPrecursorMz(querySpectrum.getPrecursor());
             this.setQueryPrecursorType(querySpectrum.getPrecursorType());
-            this.queryMass = querySpectrum.getMass();
+            if (querySpectrum.getMass() != null)
+                this.queryMass = querySpectrum.getMass();
             this.queryRetTime = querySpectrum.getRetentionTime();
             if(querySpectrum.getChromatographyType() != null) {
                 this.chromatographyTypeLabel = querySpectrum.getChromatographyType().getLabel();
@@ -163,8 +164,10 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
             this.name = matchSpectrum.getShortName();
             this.externalId = matchSpectrum.getExternalId();
             this.size = 1;
-            this.mass = matchSpectrum.getMass();
-            this.retTime = matchSpectrum.getRetentionTime();
+            if (matchSpectrum.getMass() != null)
+                this.mass = matchSpectrum.getMass();
+            if (matchSpectrum.getRetentionTime() != null)
+                this.retTime = matchSpectrum.getRetentionTime();
             this.formula = matchSpectrum.getFormula();
             this.inHouse = matchSpectrum.isInHouseReference();
             this.inChIKey = matchSpectrum.getInChiKey();
@@ -176,15 +179,23 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
                 this.pubChemId = identifiers.get(IdentifierType.PUBCHEM);
             }
 
-            this.score = spectrumMatch.getScore();
-            this.isotopicSimilarity = spectrumMatch.getIsotopicSimilarity();
-            this.precursorError = spectrumMatch.getPrecursorError();
-            this.precursorErrorPPM = spectrumMatch.getPrecursorErrorPPM();
+            if (spectrumMatch.getScore() != null)
+                this.score = spectrumMatch.getScore();
+            if (spectrumMatch.getIsotopicSimilarity() != null)
+                this.isotopicSimilarity = spectrumMatch.getIsotopicSimilarity();
+            if (spectrumMatch.getPrecursorError() != null)
+                this.precursorError = spectrumMatch.getPrecursorError();
+            if (spectrumMatch.getPrecursorErrorPPM() != null)
+                this.precursorErrorPPM = spectrumMatch.getPrecursorErrorPPM();
             this.precursorType = spectrumMatch.getPrecursorType();
-            this.massError = spectrumMatch.getMassError();
-            this.massErrorPPM = spectrumMatch.getMassErrorPPM();
-            this.retTimeError = spectrumMatch.getRetTimeError();
-            this.retIndexError = spectrumMatch.getRetIndexError();
+            if (spectrumMatch.getMassError() != null)
+                this.massError = spectrumMatch.getMassError();
+            if (spectrumMatch.getMassErrorPPM() != null)
+                this.massErrorPPM = spectrumMatch.getMassErrorPPM();
+            if (spectrumMatch.getRetTimeError() != null)
+                this.retTimeError = spectrumMatch.getRetTimeError();
+            if (spectrumMatch.getRetIndexError() != null)
+                this.retIndexError = spectrumMatch.getRetIndexError();
 
             SpectrumCluster cluster = matchSpectrum.getCluster();
             if (cluster != null) {
@@ -229,11 +240,11 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
     // ***** Getters and setters *****
     // *******************************
 
-    public Integer getMatchIndex() {
+    public int getMatchIndex() {
         return matchIndex;
     }
 
-    public void setMatchIndex(Integer matchIndex) {
+    public void setMatchIndex(int matchIndex) {
         this.matchIndex = matchIndex;
     }
 
@@ -245,11 +256,11 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
         this.spectrumId = spectrumId;
     }
 
-    public Long getClusterId() {
+    public long getClusterId() {
         return clusterId;
     }
 
-    public void setClusterId(Long clusterId) {
+    public void setClusterId(long clusterId) {
         this.clusterId = clusterId;
     }
 
@@ -261,11 +272,11 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
         this.externalId = externalId;
     }
 
-    public Integer getSize() {
+    public int getSize() {
         return size;
     }
 
-    public void setSize(final Integer size) {
+    public void setSize(final int size) {
         this.size = size;
     }
 
@@ -277,86 +288,86 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
         this.precursorType = precursorType;
     }
 
-    public Double getScore() {
+    public double getScore() {
         return score;
     }
 
-    public Long getNISTScore() {
-        return (score != null) ? Math.round(score * 1000) : null;
+    public long getNISTScore() {
+        return (score != 0) ? Math.round(score * 1000) : 0;
     }
 
-    public void setScore(final Double score) {
+    public void setScore(final double score) {
         this.score = score;
     }
 
-    public Double getIsotopicSimilarity() {
+    public double getIsotopicSimilarity() {
         return isotopicSimilarity;
     }
 
-    public void setIsotopicSimilarity(Double isotopicSimilarity) {
+    public void setIsotopicSimilarity(double isotopicSimilarity) {
         this.isotopicSimilarity = isotopicSimilarity;
     }
 
-    public Double getAveSignificance() {
+    public double getAveSignificance() {
         return aveSignificance;
     }
 
-    public void setAveSignificance(final Double aveSignificance) {
+    public void setAveSignificance(final double aveSignificance) {
         this.aveSignificance = aveSignificance;
     }
 
-    public Double getMinSignificance() {
+    public double getMinSignificance() {
         return minSignificance;
     }
 
-    public void setMinSignificance(final Double minSignificance) {
+    public void setMinSignificance(final double minSignificance) {
         this.minSignificance = minSignificance;
     }
 
-    public Double getMaxSignificance() {
+    public double getMaxSignificance() {
         return maxSignificance;
     }
 
-    public void setMaxSignificance(final Double maxSignificance) {
+    public void setMaxSignificance(final double maxSignificance) {
         this.maxSignificance = maxSignificance;
     }
 
-    public Double getMinPValue()
+    public double getMinPValue()
     {
         return minPValue;
     }
 
-    public void setMinPValue(Double minPValue)
+    public void setMinPValue(double minPValue)
     {
         this.minPValue = minPValue;
     }
 
-    public Double getDiseasePValue()
+    public double getDiseasePValue()
     {
         return diseasePValue;
     }
 
-    public void setDiseasePValue(Double diseasePValue)
+    public void setDiseasePValue(double diseasePValue)
     {
         this.diseasePValue = diseasePValue;
     }
 
-    public Double getSpeciesPValue()
+    public double getSpeciesPValue()
     {
         return speciesPValue;
     }
 
-    public void setSpeciesPValue(Double speciesPValue)
+    public void setSpeciesPValue(double speciesPValue)
     {
         this.speciesPValue = speciesPValue;
     }
 
-    public Double getSampleSourcePValue()
+    public double getSampleSourcePValue()
     {
         return sampleSourcePValue;
     }
 
-    public void setSampleSourcePValue(Double sampleSourcePValue)
+    public void setSampleSourcePValue(double sampleSourcePValue)
     {
         this.sampleSourcePValue = sampleSourcePValue;
     }
@@ -369,11 +380,11 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
         this.ontologyLevel = ontologyLevel;
     }
 
-    public Integer getOntologyPriority() {
+    public int getOntologyPriority() {
         return ontologyPriority;
     }
 
-    public void setOntologyPriority(Integer ontologyPriority) {
+    public void setOntologyPriority(int ontologyPriority) {
         this.ontologyPriority = ontologyPriority;
     }
 
@@ -383,7 +394,7 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
             this.setOntologyPriority(ontologyLevel.getPriority());
         } else {
             this.setOntologyLevel((String) null);
-            this.setOntologyPriority(null);
+            this.setOntologyPriority(0);
         }
     }
 
@@ -435,19 +446,19 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
         this.submissionName = submissionName;
     }
 
-    public Long getSubmissionId() {
+    public long getSubmissionId() {
         return submissionId;
     }
 
-    public void setSubmissionId(Long submissionId) {
+    public void setSubmissionId(long submissionId) {
         this.submissionId = submissionId;
     }
 
-    public Boolean getInHouse() {
+    public boolean getInHouse() {
         return inHouse;
     }
 
-    public void setInHouse(Boolean inHouse) {
+    public void setInHouse(boolean inHouse) {
         this.inHouse = inHouse;
     }
 
@@ -467,7 +478,7 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
         this.querySpectrumShortName = querySpectrumShortName;
     }
 
-    public Long getQuerySpectrumId() {
+    public long getQuerySpectrumId() {
         return querySpectrumId;
     }
 
@@ -475,19 +486,19 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
         this.querySpectrumId = querySpectrumId;
     }
 
-    public Integer getQuerySpectrumIndex() {
+    public int getQuerySpectrumIndex() {
         return querySpectrumIndex;
     }
 
-    public void setQuerySpectrumIndex(Integer querySpectrumIndex) {
+    public void setQuerySpectrumIndex(int querySpectrumIndex) {
         this.querySpectrumIndex = querySpectrumIndex;
     }
 
-    public Integer getQueryFileIndex() {
+    public int getQueryFileIndex() {
         return queryFileIndex;
     }
 
-    public void setQueryFileIndex(Integer queryFileIndex) {
+    public void setQueryFileIndex(int queryFileIndex) {
         this.queryFileIndex = queryFileIndex;
     }
 
@@ -507,14 +518,14 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
         this.queryWithPeaks = queryWithPeaks;
     }
 
-    public Double getQueryPrecursorMz() {
+    public double getQueryPrecursorMz() {
         if (queryPrecursorMzs != null && queryPrecursorMzs.length > 0)
             return queryPrecursorMzs[0];
-        return null;
+        return 0.0;
     }
 
-    public void setQueryPrecursorMz(Double precursorMz) {
-        this.queryPrecursorMzs = precursorMz != null ? new double[]{precursorMz} : null;
+    public void setQueryPrecursorMz(double precursorMz) {
+        this.queryPrecursorMzs = precursorMz > 0.0 ? new double[]{precursorMz} : null;
     }
 
     public double[] getQueryPrecursorMzs() {
@@ -595,67 +606,67 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
         this.matchType = matchType;
     }
 
-    public Double getMass() {
+    public double getMass() {
         return mass;
     }
 
-    public void setMass(Double mass) {
+    public void setMass(double mass) {
         this.mass = mass;
     }
 
-    public Double getRetTime() {
+    public double getRetTime() {
         return retTime;
     }
 
-    public void setRetTime(Double retTime) {
+    public void setRetTime(double retTime) {
         this.retTime = retTime;
     }
 
-    public Double getPrecursorError() {
+    public double getPrecursorError() {
         return precursorError;
     }
 
-    public void setPrecursorError(Double precursorError) {
+    public void setPrecursorError(double precursorError) {
         this.precursorError = precursorError;
     }
 
-    public Double getPrecursorErrorPPM() {
+    public double getPrecursorErrorPPM() {
         return precursorErrorPPM;
     }
 
-    public void setPrecursorErrorPPM(Double precursorErrorPPM) {
+    public void setPrecursorErrorPPM(double precursorErrorPPM) {
         this.precursorErrorPPM = precursorErrorPPM;
     }
 
-    public Double getMassError() {
+    public double getMassError() {
         return massError;
     }
 
-    public void setMassError(Double massError) {
+    public void setMassError(double massError) {
         this.massError = massError;
     }
 
-    public Double getMassErrorPPM() {
+    public double getMassErrorPPM() {
         return massErrorPPM;
     }
 
-    public void setMassErrorPPM(Double massErrorPPM) {
+    public void setMassErrorPPM(double massErrorPPM) {
         this.massErrorPPM = massErrorPPM;
     }
 
-    public Double getRetTimeError() {
+    public double getRetTimeError() {
         return retTimeError;
     }
 
-    public void setRetTimeError(Double retTimeError) {
+    public void setRetTimeError(double retTimeError) {
         this.retTimeError = retTimeError;
     }
 
-    public Double getRetIndexError() {
+    public double getRetIndexError() {
         return retIndexError;
     }
 
-    public void setRetIndexError(Double retIndexError) {
+    public void setRetIndexError(double retIndexError) {
         this.retIndexError = retIndexError;
     }
 
@@ -667,19 +678,19 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
         this.position = position;
     }
 
-    public List<Double> getQueryPeakMzs() {
+    public double[] getQueryPeakMzs() {
         return queryPeakMzs;
     }
 
-    public void setQueryPeakMzs(List<Double> queryPeakMzs) {
+    public void setQueryPeakMzs(double[] queryPeakMzs) {
         this.queryPeakMzs = queryPeakMzs;
     }
 
-    public List<Double> getLibraryPeakMzs() {
+    public double[] getLibraryPeakMzs() {
         return libraryPeakMzs;
     }
 
-    public void setLibraryPeakMzs(List<Double> libraryPeakMzs) {
+    public void setLibraryPeakMzs(double[] libraryPeakMzs) {
         this.libraryPeakMzs = libraryPeakMzs;
     }
 
@@ -690,7 +701,7 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
     }
 
     public String getQueryHRef() {
-        if (querySpectrumId != null && querySpectrumId > 0)
+        if (querySpectrumId != 0 && querySpectrumId > 0)
             return String.format("/spectrum/%d/", querySpectrumId);
         else
             return String.format("/file/%d/%d/", queryFileIndex, querySpectrumIndex);
