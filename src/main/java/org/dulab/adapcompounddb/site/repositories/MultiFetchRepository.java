@@ -122,17 +122,17 @@ public class MultiFetchRepository {
                 .getResultList();
 //        LOGGER.info("Isotopes query time: " + (System.currentTimeMillis() - time) + " ms");
 
-////        time = System.currentTimeMillis();
-//        List<Identifier> identifiers = entityManager
-//                .createQuery("select i from Identifier i where i.spectrum.id in (:spectrumIds)", Identifier.class)
-//                .setParameter("spectrumIds", spectrumIds)
-//                .setHint(QueryHints.READ_ONLY, true)
-//                .getResultList();
-////        LOGGER.info("Identifiers query time: " + (System.currentTimeMillis() - time) + " ms");
+//        time = System.currentTimeMillis();
+        List<Identifier> identifiers = entityManager
+                .createQuery("select i from Identifier i where i.spectrum.id in (:spectrumIds)", Identifier.class)
+                .setParameter("spectrumIds", spectrumIds)
+                .setHint(QueryHints.READ_ONLY, true)
+                .getResultList();
+//        LOGGER.info("Identifiers query time: " + (System.currentTimeMillis() - time) + " ms");
 
         assignChildrenToParents(peaks, Peak::getSpectrum, spectra, Spectrum::setPeaks, Spectrum::getId);
         assignChildrenToParents(isotopes, Isotope::getSpectrum, spectra, Spectrum::setIsotopes, Spectrum::getId);
-        assignChildrenToParents(Collections.emptyList(), Identifier::getSpectrum, spectra, Spectrum::setIdentifiers, Spectrum::getId);  // identifiers
+        assignChildrenToParents(identifiers, Identifier::getSpectrum, spectra, Spectrum::setIdentifiers, Spectrum::getId);  // identifiers
 
         return spectra;
     }
