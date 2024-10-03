@@ -29,138 +29,145 @@ import java.util.stream.IntStream;
 @Service
 public class IndividualSearchService {
 
-  private final SpectrumRepository spectrumRepository;
-  private final SubmissionService submissionService;
-  private final AdductService adductService;
-  private final JavaSpectrumSimilarityService javaSpectrumSimilarityService;
-  private final SpectrumMatchRepository spectrumMatchRepository;
+    private final SpectrumRepository spectrumRepository;
+    private final SubmissionService submissionService;
+    private final AdductService adductService;
+    private final JavaSpectrumSimilarityService javaSpectrumSimilarityService;
+    private final SpectrumMatchRepository spectrumMatchRepository;
 
-  @Autowired
-  public IndividualSearchService(SpectrumRepository spectrumRepository, AdductService adductService,
-      JavaSpectrumSimilarityService javaSpectrumSimilarityService,
-      SubmissionService submissionService, SpectrumMatchRepository spectrumMatchRepository) {
+    @Autowired
+    public IndividualSearchService(SpectrumRepository spectrumRepository, AdductService adductService,
+                                   JavaSpectrumSimilarityService javaSpectrumSimilarityService,
+                                   SubmissionService submissionService, SpectrumMatchRepository spectrumMatchRepository) {
 
-    this.spectrumRepository = spectrumRepository;
-    this.adductService = adductService;
-    this.javaSpectrumSimilarityService = javaSpectrumSimilarityService;
-    this.submissionService = submissionService;
-    this.spectrumMatchRepository = spectrumMatchRepository;
-  }
-
-  @Transactional
-  public List<SpectrumMatch> search(Spectrum querySpectrum, QueryParameters parameters) {
-    return spectrumRepository.spectrumSearch(SearchType.SIMILARITY_SEARCH, querySpectrum,
-        parameters);
-  }
-
-  @Transactional
-  public List<SearchResultDTO> searchConsensusSpectra(UserPrincipal user, Spectrum querySpectrum,
-      SearchParameters parameters) {
-
-    List<SearchResultDTO> searchResults = new ArrayList<>();
-    int matchIndex = 0;
-
-    List<SpectrumMatch> matches = javaSpectrumSimilarityService.searchConsensusAndReference(
-        querySpectrum, parameters, user);
-
-    for (SpectrumMatch match : matches) {
-
-      SearchResultDTO searchResult = MappingUtils.mapSpectrumMatchToSpectrumClusterView(match,
-          matchIndex++, parameters.getSpecies(), parameters.getSource(), parameters.getDisease());
-      searchResult.setChromatographyTypeLabel(
-          match.getMatchSpectrum().getChromatographyType().getLabel());
-      searchResult.setLibraryPeakMzs(match.getLibraryPeakMzList());
-      searchResult.setQueryPeakMzs(match.getQueryPeakMzList());
-      searchResults.add(searchResult);
-
+        this.spectrumRepository = spectrumRepository;
+        this.adductService = adductService;
+        this.javaSpectrumSimilarityService = javaSpectrumSimilarityService;
+        this.submissionService = submissionService;
+        this.spectrumMatchRepository = spectrumMatchRepository;
     }
 
-    return searchResults;
-  }
-
-  @Transactional
-  public List<SearchResultDTO> searchConsensusSpectra(UserPrincipal user, Spectrum querySpectrum,
-      SearchParameters parameters, boolean savedSubmission, List<SpectrumMatch> saveMatches,
-      Set<Long> deleteMatches) {
-
-    List<SearchResultDTO> searchResults = new ArrayList<>();
-    int matchIndex = 0;
-
-    List<SpectrumMatch> matches = javaSpectrumSimilarityService.searchConsensusAndReference(
-        querySpectrum, parameters, user);
-
-    if (user != null && savedSubmission && (saveMatches != null && deleteMatches != null)) {
-      if (!matches.isEmpty()) {
-        matches.forEach(match -> match.setUserPrincipalId(user.getId()));
-        saveMatches.addAll(matches);
-        deleteMatches.addAll(
-            matches.stream().map(SpectrumMatch::getQuerySpectrum).map(Spectrum::getId)
-                .collect(Collectors.toList()));
-
-
-      } else {
-
-        deleteMatches.add(querySpectrum.getId());
-        SpectrumMatch emptyMatch = new SpectrumMatch();
-        emptyMatch.setQuerySpectrum(querySpectrum);
-        emptyMatch.setUserPrincipalId(user.getId());
-        saveMatches.add(emptyMatch);
-
-
-      }
+    @Transactional
+    public List<SpectrumMatch> search(Spectrum querySpectrum, QueryParameters parameters) {
+        return spectrumRepository.spectrumSearch(SearchType.SIMILARITY_SEARCH, querySpectrum,
+                parameters);
     }
 
-    for (SpectrumMatch match : matches) {
+    @Transactional
+    public List<SearchResultDTO> searchConsensusSpectra(UserPrincipal user, Spectrum querySpectrum,
+                                                        SearchParameters parameters) {
 
-      SearchResultDTO searchResult = MappingUtils.mapSpectrumMatchToSpectrumClusterView(match,
-          matchIndex++, parameters.getSpecies(), parameters.getSource(), parameters.getDisease());
-      searchResult.setChromatographyTypeLabel(
-          match.getMatchSpectrum().getChromatographyType().getLabel());
-      searchResult.setQueryPeakMzs(match.getQueryPeakMzList());
-      searchResult.setLibraryPeakMzs(match.getLibraryPeakMzList());
-      searchResults.add(searchResult);
+        List<SearchResultDTO> searchResults = new ArrayList<>();
+        int matchIndex = 0;
+
+        List<SpectrumMatch> matches = javaSpectrumSimilarityService.searchConsensusAndReference(
+                querySpectrum, parameters, user);
+
+        for (SpectrumMatch match : matches) {
+
+            SearchResultDTO searchResult = MappingUtils.mapSpectrumMatchToSpectrumClusterView(match,
+                    matchIndex++, parameters.getSpecies(), parameters.getSource(), parameters.getDisease());
+            searchResult.setChromatographyTypeLabel(
+                    match.getMatchSpectrum().getChromatographyType().getLabel());
+            searchResult.setLibraryPeakMzs(match.getLibraryPeakMzList());
+            searchResult.setQueryPeakMzs(match.getQueryPeakMzList());
+            searchResults.add(searchResult);
+
+        }
+
+        return searchResults;
     }
 
-    return searchResults;
-  }
+    @Transactional
+    public List<SearchResultDTO> searchConsensusSpectra(UserPrincipal user, Spectrum querySpectrum,
+                                                        SearchParameters parameters, boolean savedSubmission, List<SpectrumMatch> saveMatches,
+                                                        Set<Long> deleteMatches) {
+
+        List<SearchResultDTO> searchResults = new ArrayList<>();
+        int matchIndex = 0;
+
+        List<SpectrumMatch> matches = javaSpectrumSimilarityService.searchConsensusAndReference(
+                querySpectrum, parameters, user);
+
+        if (user != null && savedSubmission && (saveMatches != null && deleteMatches != null)) {
+            if (!matches.isEmpty()) {
+                matches.forEach(match -> match.setUserPrincipalId(user.getId()));
+                saveMatches.addAll(matches);
+                deleteMatches.addAll(
+                        matches.stream().map(SpectrumMatch::getQuerySpectrum).map(Spectrum::getId)
+                                .collect(Collectors.toList()));
 
 
-  //    @Transactional
-  public List<SearchResultDTO> searchWithOntologyLevels(UserPrincipal user, Spectrum spectrum,
-      SearchParameters parameters, boolean savedSubmission, List<SpectrumMatch> saveMatches,
-      Set<Long> deleteMatches) {
+            } else {
 
-    // Check if there are ontology levels for a given chromatography type
-    int[] priorities = OntologySupplier.findPrioritiesByChromatographyType(
-        spectrum.getChromatographyType());
+                deleteMatches.add(querySpectrum.getId());
+                SpectrumMatch emptyMatch = new SpectrumMatch();
+                emptyMatch.setQuerySpectrum(querySpectrum);
+                emptyMatch.setUserPrincipalId(user.getId());
+                saveMatches.add(emptyMatch);
 
-    if (priorities == null) {
-      throw new IllegalStateException(
-          "No priority values found for " + spectrum.getChromatographyType());
+
+            }
+        }
+
+        for (SpectrumMatch match : matches) {
+
+            SearchResultDTO searchResult = MappingUtils.mapSpectrumMatchToSpectrumClusterView(match,
+                    matchIndex++, parameters.getSpecies(), parameters.getSource(), parameters.getDisease());
+            searchResult.setChromatographyTypeLabel(
+                    match.getMatchSpectrum().getChromatographyType().getLabel());
+            searchResult.setQueryPeakMzs(match.getQueryPeakMzList());
+            searchResult.setLibraryPeakMzs(match.getLibraryPeakMzList());
+            searchResults.add(searchResult);
+        }
+
+        return searchResults;
     }
 
-    SearchParameters modifiedParameters;
-    try {
-      modifiedParameters = parameters.clone();
-    } catch (CloneNotSupportedException e) {
-      throw new IllegalStateException(e.getMessage(), e);
-    }
 
-    modifiedParameters.setScoreThreshold(null);
-    modifiedParameters.setMzTolerance(null, Parameters.MZ_TOLERANCE_PPM);
-    modifiedParameters.setPrecursorTolerance(null, null);
-    modifiedParameters.setRetTimeTolerance(null);
-    modifiedParameters.setRetIndexTolerance(null);
-    modifiedParameters.setRetIndexMatchType(SearchParameters.RetIndexMatchType.IGNORE_MATCH);
-    modifiedParameters.setMassTolerance(null, Parameters.MASS_TOLERANCE_PPM);
-    modifiedParameters.setPenalizeQueryImpurities(true);
-    modifiedParameters.setPenalizeDominantPeak(false);
+    //    @Transactional
+    public List<SearchResultDTO> searchWithOntologyLevels(UserPrincipal user, Spectrum spectrum,
+                                                          SearchParameters parameters, boolean savedSubmission, List<SpectrumMatch> saveMatches,
+                                                          Set<Long> deleteMatches) {
 
-    List<Adduct> adducts = adductService.findAdductsByChromatography(
-        spectrum.getChromatographyType());
-    if (spectrum.getMass() == null && adducts != null && spectrum.getPrecursor() != null) {
-      modifiedParameters.setAdducts(adducts);
-    }
+        // Check if there are ontology levels for a given chromatography type
+        int[] priorities = OntologySupplier.findPrioritiesByChromatographyType(
+                spectrum.getChromatographyType());
+
+        if (priorities == null) {
+            throw new IllegalStateException(
+                    "No priority values found for " + spectrum.getChromatographyType());
+        }
+
+//        SearchParameters modifiedParameters;
+//        try {
+//            modifiedParameters = parameters.clone();
+//        } catch (CloneNotSupportedException e) {
+//            throw new IllegalStateException(e.getMessage(), e);
+//        }
+
+        parameters.setScoreThreshold(null);
+        parameters.setMzTolerance(null, Parameters.MZ_TOLERANCE_PPM);
+        parameters.setPrecursorTolerance(null, null);
+        parameters.setRetTimeTolerance(null);
+        parameters.setRetIndexTolerance(null);
+        parameters.setRetIndexMatchType(SearchParameters.RetIndexMatchType.IGNORE_MATCH);
+        parameters.setMassTolerance(null, Parameters.MASS_TOLERANCE_PPM);
+        parameters.setPenalizeQueryImpurities(true);
+        parameters.setPenalizeDominantPeak(false);
+
+        SearchParameters modifiedParameters;
+        try {
+            modifiedParameters = parameters.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
+
+        List<Adduct> adducts = adductService.findAdductsByChromatography(
+                spectrum.getChromatographyType());
+        if (spectrum.getMass() == null && adducts != null && spectrum.getPrecursor() != null) {
+            modifiedParameters.setAdducts(adducts);
+        }
 //                    adducts.stream()
 //                    .collect(Collectors.toMap(a -> a.calculateNeutralMass(spectrum.getPrecursor()), Adduct::getName));
 //                    .mapToDouble(adduct -> adduct.calculateNeutralMass(spectrum.getPrecursor()))
@@ -170,73 +177,73 @@ public class IndividualSearchService {
 //                submissionService.findUserPrivateSubmissions(user, spectrum.getChromatographyType());
 //        Set<Long> privateSubmissionIds = privateSubmissionIdMap.keySet();
 
-    List<SpectrumMatch> matches = javaSpectrumSimilarityService.searchConsensusAndReference(
-        spectrum, modifiedParameters, user);
+        List<SpectrumMatch> matches = javaSpectrumSimilarityService.searchConsensusAndReference(
+                spectrum, modifiedParameters, user);
 
-    List<SearchResultDTO> results = new ArrayList<>(matches.size());
-    for (int i = 0; i < matches.size(); ++i) {
-      SearchResultDTO searchResult = (MappingUtils.mapSpectrumMatchToSpectrumClusterView(matches.get(i), i,
-          modifiedParameters.getSpecies(), modifiedParameters.getSource(),
-          modifiedParameters.getDisease()));
-      searchResult.setQueryPeakMzs(matches.get(i).getQueryPeakMzList());
-      searchResult.setLibraryPeakMzs(matches.get(i).getLibraryPeakMzList());
-      results.add(searchResult);
-    }
-    int step = 0;
-    List<SearchResultDTO> resultsWithOntology = new ArrayList<>();
-    for (SearchResultDTO result : results) {
-
-      OntologyLevel ontologyLevel = OntologySupplier.select(spectrum.getChromatographyType(),
-          result.getInHouse(), result.getScore(), result.getPrecursorErrorPPM(),
-          result.getMassErrorPPM(), result.getRetTimeError(), result.getIsotopicSimilarity());
-
-      if (ontologyLevel != null) {
-        if (ontologyLevel.getScoreThreshold() == null) {
-          result.setScore(0.0);
+        List<SearchResultDTO> results = new ArrayList<>(matches.size());
+        for (int i = 0; i < matches.size(); ++i) {
+            SearchResultDTO searchResult = (MappingUtils.mapSpectrumMatchToSpectrumClusterView(matches.get(i), i,
+                    modifiedParameters.getSpecies(), modifiedParameters.getSource(),
+                    modifiedParameters.getDisease()));
+            searchResult.setQueryPeakMzs(matches.get(i).getQueryPeakMzList());
+            searchResult.setLibraryPeakMzs(matches.get(i).getLibraryPeakMzList());
+            results.add(searchResult);
         }
-        if (ontologyLevel.getRetTimeTolerance() == null) {
-          result.setRetTimeError(Double.MAX_VALUE);
+        int step = 0;
+        List<SearchResultDTO> resultsWithOntology = new ArrayList<>();
+        for (SearchResultDTO result : results) {
+
+            OntologyLevel ontologyLevel = OntologySupplier.select(spectrum.getChromatographyType(),
+                    result.getInHouse(), result.getScore(), result.getPrecursorErrorPPM(),
+                    result.getMassErrorPPM(), result.getRetTimeError(), result.getIsotopicSimilarity());
+
+            if (ontologyLevel != null) {
+                if (ontologyLevel.getScoreThreshold() == null) {
+                    result.setScore(0.0);
+                }
+                if (ontologyLevel.getRetTimeTolerance() == null) {
+                    result.setRetTimeError(Double.MAX_VALUE);
+                }
+                if (ontologyLevel.getMassTolerancePPM() == null) {
+                    result.setMassErrorPPM(Double.MAX_VALUE);
+                }
+
+                result.setOntologyLevel(ontologyLevel);
+
+                //set ontology level to matches as well
+                matches.get(step).setOntologyLevelObj(ontologyLevel);
+            }
+
+            resultsWithOntology.add(result);
+
+            step++;
         }
-        if (ontologyLevel.getMassTolerancePPM() == null) {
-          result.setMassErrorPPM(Double.MAX_VALUE);
+        if (user != null && savedSubmission && (saveMatches != null && deleteMatches != null)) {
+            if (!matches.isEmpty()) {
+                matches.forEach(match -> match.setUserPrincipalId(user.getId()));
+                saveMatches.addAll(matches);
+                deleteMatches.addAll(
+                        matches.stream().map(SpectrumMatch::getQuerySpectrum).map(Spectrum::getId)
+                                .collect(Collectors.toList()));
+            } else {
+                //save query spectrum even when there's no match
+                deleteMatches.add(spectrum.getId());
+                SpectrumMatch emptyMatch = new SpectrumMatch();
+                emptyMatch.setQuerySpectrum(spectrum);
+                emptyMatch.setUserPrincipalId(user.getId());
+                saveMatches.add(emptyMatch);
+
+            }
+        }
+        IntStream.range(0, resultsWithOntology.size())
+                .forEach(i -> resultsWithOntology.get(i).setMatchIndex(i));
+
+        if (!resultsWithOntology.isEmpty()) {
+            markBestSearchResults(resultsWithOntology);
         }
 
-        result.setOntologyLevel(ontologyLevel);
-
-        //set ontology level to matches as well
-        matches.get(step).setOntologyLevelObj(ontologyLevel);
-      }
-
-      resultsWithOntology.add(result);
-
-      step++;
+        return resultsWithOntology;
     }
-    if (user != null && savedSubmission && (saveMatches != null && deleteMatches != null)) {
-      if (!matches.isEmpty()) {
-        matches.forEach(match -> match.setUserPrincipalId(user.getId()));
-        saveMatches.addAll(matches);
-        deleteMatches.addAll(
-            matches.stream().map(SpectrumMatch::getQuerySpectrum).map(Spectrum::getId)
-                .collect(Collectors.toList()));
-      } else {
-        //save query spectrum even when there's no match
-        deleteMatches.add(spectrum.getId());
-        SpectrumMatch emptyMatch = new SpectrumMatch();
-        emptyMatch.setQuerySpectrum(spectrum);
-        emptyMatch.setUserPrincipalId(user.getId());
-        saveMatches.add(emptyMatch);
-
-      }
-    }
-    IntStream.range(0, resultsWithOntology.size())
-        .forEach(i -> resultsWithOntology.get(i).setMatchIndex(i));
-
-    if (!resultsWithOntology.isEmpty()) {
-      markBestSearchResults(resultsWithOntology);
-    }
-
-    return resultsWithOntology;
-  }
 
 //    private Set<BigInteger> getSubmissionIds(SearchParameters parameters) {
 //        Set<BigInteger> submissionIds = (parameters.getSubmissionIds() != null)
@@ -252,34 +259,34 @@ public class IndividualSearchService {
 //        return submissionIds;
 //    }
 
-  private void markBestSearchResults(List<SearchResultDTO> searchResults) {
-    List<SearchResultDTO> bestSearchResults = new ArrayList<>();
-    for (SearchResultDTO searchResult : searchResults) {
+    private void markBestSearchResults(List<SearchResultDTO> searchResults) {
+        List<SearchResultDTO> bestSearchResults = new ArrayList<>();
+        for (SearchResultDTO searchResult : searchResults) {
 
-      boolean higher = true;
-      boolean equal = true;
-      for (SearchResultDTO bestSearchResult : bestSearchResults) {
-        int comparison = searchResult.compareTo(bestSearchResult);
-        if (comparison <= 0) {
-          higher = false;
-        }
-        if (comparison != 0) {
-          equal = false;
-        }
-      }
+            boolean higher = true;
+            boolean equal = true;
+            for (SearchResultDTO bestSearchResult : bestSearchResults) {
+                int comparison = searchResult.compareTo(bestSearchResult);
+                if (comparison <= 0) {
+                    higher = false;
+                }
+                if (comparison != 0) {
+                    equal = false;
+                }
+            }
 
-      if (higher) {
-        bestSearchResults.clear();
-      }
-      if (higher || equal) {
-        bestSearchResults.add(searchResult);
-      }
-    }
+            if (higher) {
+                bestSearchResults.clear();
+            }
+            if (higher || equal) {
+                bestSearchResults.add(searchResult);
+            }
+        }
 
 //        if (bestSearchResults.size() < searchResults.size()) {
-    bestSearchResults.forEach(r -> r.setMarked(true));
+        bestSearchResults.forEach(r -> r.setMarked(true));
 //        }
-  }
+    }
 
 //    private List<SearchResultDTO> searchWithoutOntologyLevels(
 //            Set<BigInteger> submissionIds, Spectrum querySpectrum, SearchParameters parameters, UserPrincipal user) {
