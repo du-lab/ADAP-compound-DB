@@ -5,9 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import javax.json.JsonObject;
 import javax.naming.directory.SearchResult;
 import javax.xml.crypto.Data;
@@ -40,10 +38,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
 import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -88,12 +82,11 @@ public class GroupSearchRestController extends BaseController {
         DataTableResponse response = new DataTableResponse();
         if (sessionObject != null) {
 
-            @SuppressWarnings("unchecked") List<SearchResultDTO> sessionMatches = (List<SearchResultDTO>) sessionObject;
+            List<SearchResultDTO> sessionMatches = Collections.synchronizedList((List<SearchResultDTO>) sessionObject);
 
-            //Avoid ConcurrentModificationException by make a copy for sorting
-            matches = new ArrayList<>(sessionMatches);
-            response = groupSearchSort(false, searchStr, start, length, matches, columnStr);
-
+//            //Avoid ConcurrentModificationException by make a copy for sorting
+//            matches = new ArrayList<>(sessionMatches);
+            response = groupSearchSort(false, searchStr, start, length, sessionMatches, columnStr);
 
         }
 
@@ -117,16 +110,14 @@ public class GroupSearchRestController extends BaseController {
                 return null;
         }
         else {
-            List<SearchResultDTO> searchResultFromSession;
-            Object sessionObject = session.getAttribute(
-                    ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
+            Set<String> ontologyLevelsFromSession;
+            Object sessionObject = session.getAttribute(ControllerUtils.ONTOLOGY_LEVEL_LIST);
 
             if (sessionObject == null)
                 return null;
             else {
-                searchResultFromSession = new ArrayList<>((List<SearchResultDTO>) sessionObject);
-                return searchResultFromSession.stream().map(s -> s.getOntologyLevel()).filter(Objects::nonNull)
-                        .distinct().collect(Collectors.toList());
+                ontologyLevelsFromSession = (Set<String>) sessionObject;
+                return new ArrayList<>(ontologyLevelsFromSession);
             }
         }
     }
@@ -185,12 +176,13 @@ public class GroupSearchRestController extends BaseController {
             @RequestParam("matchName") final String matchName,
             final HttpSession session) throws JsonProcessingException {
 
-        List<SearchResultDTO> spectrumDtoList;
+        List<SearchResultDTO> spectrumDtoList ;
         Object sessionObject = session.getAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
         DataTableResponse response = new DataTableResponse();
+
+        // TODO: optimize filter and wrap result in sycnrhonized list
         if (sessionObject != null) {
-            List<SearchResultDTO> spectrumsFromSession = (List<SearchResultDTO>) sessionObject;
-            spectrumDtoList = new ArrayList<>(spectrumsFromSession);
+            spectrumDtoList = Collections.synchronizedList((List<SearchResultDTO>) sessionObject);
             //filter matches only
             if(showMatchesOnly ==1)
                 spectrumDtoList = spectrumDtoList.stream().filter(s->s.getSpectrumId() != 0).collect(Collectors.toList());
@@ -248,7 +240,7 @@ public class GroupSearchRestController extends BaseController {
                     SearchResultDTO searchResultDTO = new SearchResultDTO();
                     searchResultDTO.setQuerySpectrumName(spectrum.getName());
                     searchResultDTO.setQuerySpectrumIndex(spectrum.getSpectrumIndex());
-                    searchResultDTO.setRetTime(spectrum.getRetentionTime());
+                    searchResultDTO.setRetTime(spectrum.getRetentionTime() != null ? spectrum.getRetentionTime() : 0.0);
                     searchResultDTO.setExternalId(spectrum.getExternalId());
                     return searchResultDTO;
                 }).collect(Collectors.toList());

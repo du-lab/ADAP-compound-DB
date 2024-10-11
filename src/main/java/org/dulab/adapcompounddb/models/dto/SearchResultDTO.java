@@ -145,7 +145,8 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
             this.setQueryPrecursorType(querySpectrum.getPrecursorType());
             if (querySpectrum.getMass() != null)
                 this.queryMass = querySpectrum.getMass();
-            this.queryRetTime = querySpectrum.getRetentionTime();
+
+            this.queryRetTime = (querySpectrum.getRetentionTime() != null) ? querySpectrum.getRetentionTime() : 0.0;
             if(querySpectrum.getChromatographyType() != null) {
                 this.chromatographyTypeLabel = querySpectrum.getChromatographyType().getLabel();
                 this.chromatographyTypePath = querySpectrum.getChromatographyType().getIconPath();
