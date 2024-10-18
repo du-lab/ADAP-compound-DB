@@ -131,10 +131,11 @@ public class GroupSearchRestController extends BaseController {
         else{
             Integer spectrumIndex = jsonObj.get("querySpectrumIndex").asInt();
             String spectrumName = jsonObj.get("querySpectrumName").asText();
-            List<SearchResultDTO> searchResultFromSession = new ArrayList<>((List<SearchResultDTO>) sessionObject);
+            List<SearchResultDTO> searchResultFromSession = Collections.synchronizedList((List<SearchResultDTO>) sessionObject);
             List<SearchResultDTO> matches = searchResultFromSession.stream()
                 .filter(s -> s.getQuerySpectrumIndex() == spectrumIndex && s.getQuerySpectrumName()
                         .equals(spectrumName)).collect(Collectors.toList());
+            matches = Collections.synchronizedList(matches);
             session.setAttribute(ControllerUtils.GROUP_SEARCH_MATCHES, matches);
 
             return mapper.writeValueAsString(matches);
@@ -151,12 +152,13 @@ public class GroupSearchRestController extends BaseController {
             return null;
         else {
             String spectrumName = jsonObj.get("querySpectrumName").asText();
-            List<SpectrumDTO> spectrumDTOListFromSession = new ArrayList<>((List<SpectrumDTO>) sessionObject);
+            List<SpectrumDTO> spectrumDTOListFromSession = (List<SpectrumDTO>) sessionObject;
 
             List<SpectrumDTO> spectrumDTOList = spectrumDTOListFromSession.stream()
                 .filter(s -> s.getName().equals(spectrumName)).collect(Collectors.toList());
 
             //spectrum List which is shown on 2nd table
+            spectrumDTOList = Collections.synchronizedList(spectrumDTOList);
             session.setAttribute(ControllerUtils.SPECTRUM_LIST, spectrumDTOList);
 
             return mapper.writeValueAsString(spectrumDTOList);
@@ -183,38 +185,31 @@ public class GroupSearchRestController extends BaseController {
         // TODO: optimize filter and wrap result in sycnrhonized list
         if (sessionObject != null) {
             spectrumDtoList = Collections.synchronizedList((List<SearchResultDTO>) sessionObject);
-            //filter matches only
-            if(showMatchesOnly ==1)
-                spectrumDtoList = spectrumDtoList.stream().filter(s->s.getSpectrumId() != 0).collect(Collectors.toList());
-            //filter by ontology level
-            if(!ontologyLevel.isEmpty())
-                spectrumDtoList = spectrumDtoList.stream().filter(s-> s.getOntologyLevel() != null).filter(s->s.getOntologyLevel().equals(ontologyLevel)).collect(
-                Collectors.toList());
-            //filter by score Threshold
-            if(scoreThreshold != null)
-                spectrumDtoList = spectrumDtoList.stream().filter(s-> s.getScore() > 0.0).filter(s-> s.getScore() > scoreThreshold).collect(
-                    Collectors.toList());
-            //filter by massError
-            if(massError != null)
-                spectrumDtoList = spectrumDtoList.stream().filter(s-> s.getMassError() > 0.0).filter(s-> s.getMassError() < massError).collect(
-                    Collectors.toList());
-            //filter by retTimeError
-            if(retTimeError != null)
-                spectrumDtoList = spectrumDtoList.stream().filter(s-> s.getRetTimeError() > 0.0).filter(s-> s.getRetTimeError() < retTimeError).collect(
-                    Collectors.toList());
-            //filter by match name
-            if(!matchName.isEmpty())
-                spectrumDtoList = spectrumDtoList.stream().filter(s -> s.getName() != null).filter(s-> s.getName().contains(matchName)).collect(
-                    Collectors.toList());
+            List<SearchResultDTO> filteredList = new ArrayList<>(spectrumDtoList);
+//            List<SearchResultDTO> filteredList;
 
-            session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_FILTERED, spectrumDtoList);
+            filteredList = filteredList.stream()
+                    .filter(s -> (showMatchesOnly != 1 || s.getSpectrumId() != 0))  // Filter by matches only
+                    .filter(s -> (ontologyLevel.isEmpty() || (s.getOntologyLevel() != null && s.getOntologyLevel().equals(ontologyLevel))))  // Filter by ontology level
+                    .filter(s -> (scoreThreshold == null || (s.getScore() > 0.0 && s.getScore() > scoreThreshold)))  // Filter by score threshold
+                    .filter(s -> (massError == null || (s.getMassError() > 0.0 && s.getMassError() < massError)))  // Filter by mass error
+                    .filter(s -> (retTimeError == null || (s.getRetTimeError() > 0.0 && s.getRetTimeError() < retTimeError)))  // Filter by retention time error
+                    .filter(s -> (matchName.isEmpty() || (s.getName() != null && s.getName().contains(matchName))))  // Filter by match name
+                    .collect(Collectors.toList());
+
+
+            filteredList = Collections.synchronizedList(filteredList);
+            session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_FILTERED, filteredList);
+
             //get the distinct spectra
             Set<String> distinctSpectraNames = new HashSet<>();
-            spectrumDtoList = spectrumDtoList.stream().filter(
-                s -> distinctSpectraNames.add(
-                    s.getQuerySpectrumName())).collect(Collectors.toList());
+            filteredList = filteredList.stream().filter(
+                    s -> distinctSpectraNames.add(
+                            s.getQuerySpectrumName())).collect(Collectors.toList());
 
-            response = groupSearchSort(false, searchStr,  start, length, spectrumDtoList, columnStr);
+
+            response = groupSearchSort(false, searchStr, start, length, filteredList, columnStr);
+
         }
         return mapper.writeValueAsString(response);
     }

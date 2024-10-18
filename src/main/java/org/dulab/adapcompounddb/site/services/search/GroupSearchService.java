@@ -187,7 +187,10 @@ public class GroupSearchService {
                     if (Thread.currentThread().isInterrupted()) break;
                     progress = (float) ++progressStep / totalSteps;
                     //search result dto
-                    groupSearchDTOList.addAll(individualSearchResults);
+                    synchronized(groupSearchDTOList){
+                        groupSearchDTOList.addAll(individualSearchResults);
+                    }
+
 
                     if(jobId == null) {
                         //for every sepctra in file we save copy in spectrum DTO
@@ -197,7 +200,9 @@ public class GroupSearchService {
                         spectrumDTO.setExternalId(querySpectrum.getExternalId());
                         spectrumDTO.setPrecursor(querySpectrum.getPrecursor());
                         spectrumDTO.setRetentionTime(querySpectrum.getRetentionTime());
-                        spectrumDTOList.add(spectrumDTO);
+                        synchronized(spectrumDTOList) {
+                            spectrumDTOList.add(spectrumDTO);
+                        }
                         try {
                             session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME,
                                         groupSearchDTOList);
