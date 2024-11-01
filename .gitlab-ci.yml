@@ -19,6 +19,8 @@ build:
     - docker system prune --force #to clean up dangling images
     - mvn -version
     - mvn clean install
+    - python3 -m venv venv
+    - source venv/bin/activate
     - docker build -f docker/adap-kdb-docker/Dockerfile -t adap-kdb-img .
     - docker run --name $CONTAINER_NAME -e DATABASE=cci-dulab.uncc.edu -e INTEGRATION_TEST=true -d -p8080:8080 adap-kdb-img
     - python3 --version
