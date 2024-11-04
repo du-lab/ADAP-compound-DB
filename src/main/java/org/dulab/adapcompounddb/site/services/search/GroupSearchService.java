@@ -96,8 +96,8 @@ public class GroupSearchService {
             updateSearchTask(userPrincipal, submission, libraries, SearchTaskStatus.RUNNING, session);
 
         try {
-            final List<SearchResultDTO> groupSearchDTOList = new ArrayList<>();
-            final List<SpectrumDTO> spectrumDTOList = new ArrayList<>();
+            final List<SearchResultDTO> groupSearchDTOList = Collections.synchronizedList(new ArrayList<>());
+            final List<SpectrumDTO> spectrumDTOList = Collections.synchronizedList(new ArrayList<>());
             if(jobId == null) {
                 session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
                 session.setAttribute("spectrumDTOList", spectrumDTOList);
@@ -130,6 +130,7 @@ public class GroupSearchService {
             int position = 0;
             List<SpectrumMatch> savedMatches = new ArrayList<>();
             Set<Long> deleteMatches = new HashSet<>();
+            Set<String> ontologyLevels = new HashSet<>();
             SearchParameters parameters = null;
             for (int fileIndex = 0; fileIndex < files.size(); ++fileIndex) {
 
@@ -175,12 +176,21 @@ public class GroupSearchService {
                         searchResult.setPosition(1 + position++);
                         searchResult.setQueryFileIndex(fileIndex);
                         searchResult.setQuerySpectrumIndex(spectrumIndex);
+
+                        // list of unique ontology levels
+                        if (searchResult.getOntologyLevel() != null) {
+                            ontologyLevels.add(searchResult.getOntologyLevel());
+                        }
+
                     }
 
                     if (Thread.currentThread().isInterrupted()) break;
                     progress = (float) ++progressStep / totalSteps;
                     //search result dto
-                    groupSearchDTOList.addAll(individualSearchResults);
+                    synchronized(groupSearchDTOList){
+                        groupSearchDTOList.addAll(individualSearchResults);
+                    }
+
 
                     if(jobId == null) {
                         //for every sepctra in file we save copy in spectrum DTO
@@ -190,13 +200,16 @@ public class GroupSearchService {
                         spectrumDTO.setExternalId(querySpectrum.getExternalId());
                         spectrumDTO.setPrecursor(querySpectrum.getPrecursor());
                         spectrumDTO.setRetentionTime(querySpectrum.getRetentionTime());
-                        spectrumDTOList.add(spectrumDTO);
+                        synchronized(spectrumDTOList) {
+                            spectrumDTOList.add(spectrumDTO);
+                        }
                         try {
                             session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME,
                                         groupSearchDTOList);
                             session.setAttribute(ControllerUtils.GROUP_SEARCH_PROGRESS_ATTRIBUTE_NAME,
                                     progress);
                             session.setAttribute(ControllerUtils.SPECTRUM_DTO_LIST, spectrumDTOList);
+                            session.setAttribute(ControllerUtils.ONTOLOGY_LEVEL_LIST, ontologyLevels);
 
                         } catch (IllegalStateException e) {
                             if (sendResultsToEmail) {

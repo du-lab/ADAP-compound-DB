@@ -1004,12 +1004,36 @@
 
         });
 
+        var previousResponse;
+        let updateSearchResults = true;
+        const inactivityLimit = 10000 // 10 seconds
+        var inactivityTimer ;
+
+        function resetInactivityTimer() {
+            // clear any previous timeouts to prevent multiple timeouts from running
+            clearTimeout(inactivityTimer)
+            inactivityTimer = setTimeout(() => {
+                console.log("No activity detected. Stopping updates.");
+                updateSearchResults = false;
+            }, inactivityLimit);
+
+        }
+        // resume search result updates when detect user's activity
+        document.addEventListener('mousemove', () =>{
+            // console.log("Mouse move detedcted")
+            updateSearchResults = true;
+            resetInactivityTimer();
+        });
+        document.addEventListener('keypress', () =>{
+            // console.log("Key press detected")
+            updateSearchResults = true;
+            resetInactivityTimer();
+        });
 
         // refresh the datatable and progress bar every 1 second
-        var previousResponse;
-
         setInterval(function () {
-            if (!isSavedResultPage) {
+            if (!isSavedResultPage && updateSearchResults) {
+                console.log("Updating search results")
                 //update the export button
                 $.ajax({
                     url: "${pageContext.request.contextPath}/export/session/check",
@@ -1043,11 +1067,13 @@
                         console.log("Error:", xhr);
                     }
                 });
-
+                // update the error
                 $.ajax({
                     url: `${pageContext.request.contextPath}/ajax/group_search/error`,
                     success: d => $('#errorDiv').html(d)
                 });
+
+                // update the data table
                 // if($('#progressBar').attr('aria-valuenow') < 100)
                 $('#distinct_query_table').DataTable().ajax.reload(function () {
                     if (selectedRowIndex !== null) {
@@ -1056,6 +1082,7 @@
                     }
                 }, false);
 
+                // update progress bar
                 $.getJSON(window.location.origin + window.location.pathname + 'progress', function (x) {
                     const width = x + '%';
                     const progressBar = $('#progressBar')

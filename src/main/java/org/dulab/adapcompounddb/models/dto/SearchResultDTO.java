@@ -113,17 +113,17 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
             this.clusterId = view.getClusterId();
             this.name = (isReference ? "[Ref Spec] " : "[Con Spec] ") + view.getName();
             this.size = view.getSize();
-            this.score = view.getScore();
-            this.massError = view.getMassError();
-            this.massErrorPPM = view.getMassErrorPPM();
-            this.retTimeError = view.getRetTimeError();
-            this.aveSignificance = view.getAverageSignificance();
-            this.minSignificance = view.getMinimumSignificance();
-            this.maxSignificance = view.getMaximumSignificance();
-            this.diseasePValue = view.getDiseasePValue();
-            this.speciesPValue = view.getSpeciesPValue();
-            this.sampleSourcePValue = view.getSampleSourcePValue();
-            this.minPValue = view.getMinPValue();
+            this.score = view.getScore() != null ? view.getScore() : 0.0;
+            this.massError = view.getMassError() != null ? view.getMassError() : 0.0;
+            this.massErrorPPM = view.getMassErrorPPM() != null ? view.getMassErrorPPM() : 0.0;
+            this.retTimeError = view.getRetTimeError() != null ? view.getRetTimeError() : 0.0;
+            this.aveSignificance = view.getAverageSignificance() != null ? view.getAverageSignificance() : 0.0;
+            this.minSignificance = view.getMinimumSignificance() != null ? view.getMinimumSignificance() : 0.0;
+            this.maxSignificance = view.getMaximumSignificance() != null ? view.getMaximumSignificance() : 0.0;
+            this.diseasePValue = view.getDiseasePValue() != null ? view.getDiseasePValue() : 0.0;
+            this.speciesPValue = view.getSpeciesPValue() != null ? view.getSpeciesPValue() : 0.0;
+            this.sampleSourcePValue = view.getSampleSourcePValue() != null ? view.getSampleSourcePValue() : 0.0;
+            this.minPValue = view.getMinPValue() != null ? view.getMinPValue() : 0.0;
             this.chromatographyTypeLabel = view.getChromatographyType().getLabel();
             this.chromatographyTypePath = view.getChromatographyType().getIconPath();
         }
@@ -141,7 +141,7 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
             this.querySpectrumShortName = querySpectrum.getShortName();
             this.queryExternalId = querySpectrum.getExternalId();
             this.queryWithPeaks = querySpectrum.getPeaks() != null;
-            this.setQueryPrecursorMz(querySpectrum.getPrecursor());
+            this.setQueryPrecursorMz((querySpectrum.getPrecursor() != null) ? querySpectrum.getPrecursor() : 0.0);
             this.setQueryPrecursorType(querySpectrum.getPrecursorType());
             if (querySpectrum.getMass() != null)
                 this.queryMass = querySpectrum.getMass();
