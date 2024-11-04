@@ -141,7 +141,7 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
             this.querySpectrumShortName = querySpectrum.getShortName();
             this.queryExternalId = querySpectrum.getExternalId();
             this.queryWithPeaks = querySpectrum.getPeaks() != null;
-            this.setQueryPrecursorMz(querySpectrum.getPrecursor());
+            this.setQueryPrecursorMz((querySpectrum.getPrecursor() != null) ? querySpectrum.getPrecursor() : 0.0);
             this.setQueryPrecursorType(querySpectrum.getPrecursorType());
             if (querySpectrum.getMass() != null)
                 this.queryMass = querySpectrum.getMass();
