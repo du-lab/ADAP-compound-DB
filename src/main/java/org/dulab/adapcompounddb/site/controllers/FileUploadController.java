@@ -255,9 +255,12 @@ public class FileUploadController extends BaseController {
 
         ObjectMapper objectMapper = new ObjectMapper();
         Map cookieMap = objectMapper.convertValue(form, Map.class);
-        // TODO try to keep order x
         List<List<String>> propertyList = new ArrayList<>();
-        for (File file : submission.getFiles()) {
+        // Sort the files by their priorities
+        List<File> sortedFiles = submission.getFiles().stream()
+                .sorted(Comparator.comparingInt(file -> file.getFileType().getPriority()))
+                .collect(Collectors.toList());
+        for (File file : sortedFiles) {
             propertyList.add(file.getSpectra().stream()
                     .map(Spectrum::getProperties).filter(Objects::nonNull)
                     .flatMap(Collection::stream)
@@ -272,7 +275,6 @@ public class FileUploadController extends BaseController {
             return "redirect:/file/";
         }
 
-        fileTypes.sort(Comparator.comparingInt(FileType::getPriority));
         model.addAttribute("metadataForm", form);
         model.addAttribute("spectrumProperties", propertyList);
         model.addAttribute("cookieForm", cookieMap);
