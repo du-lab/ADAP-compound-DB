@@ -1,3 +1,6 @@
+# Version 1.8.9
+- Fixes file upload bug 
+
 # Version 1.8.8
 - Optimize group search memory usage 
 - Bug fixes 
