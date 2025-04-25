@@ -320,6 +320,7 @@ public class FileUploadController extends BaseController {
         formFieldType1.add(new FormField("KeggField", "KEGG ID"));
         formFieldType1.add(new FormField("HmdbField", "HMDB ID"));
         formFieldType1.add(new FormField("PubChemField", "Pub Chem ID"));
+        formFieldType1.add(new FormField("RefMetField", "Ref Met ID"));
         List<FormField> formFieldType2 = new ArrayList<>();
         formFieldType2.add(new FormField("PrecursorMzField", "Precursor Mz"));
         formFieldType2.add(new FormField("RetentionTimeField", "Retention Time"));
