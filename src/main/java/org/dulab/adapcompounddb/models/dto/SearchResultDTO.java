@@ -81,6 +81,8 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
     private String casId;
     private String hmdbId;
     private String pubChemId;
+    private String keggId;
+    private String refMetId;
     private String inChIKey;
     private String submissionName;
     private boolean inHouse;
@@ -177,6 +179,8 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
                 this.casId = identifiers.get(IdentifierType.CAS);
                 this.hmdbId = identifiers.get(IdentifierType.HMDB);
                 this.pubChemId = identifiers.get(IdentifierType.PUBCHEM);
+                this.keggId = identifiers.get(IdentifierType.KEGG);
+                this.refMetId = identifiers.get(IdentifierType.REFMET);
             }
 
             if (spectrumMatch.getScore() != null)
@@ -428,6 +432,22 @@ public class SearchResultDTO implements Serializable, Comparable<SearchResultDTO
 
     public void setPubChemId(String pubChemId) {
         this.pubChemId = pubChemId;
+    }
+
+    public String getKeggId() {
+        return keggId;
+    }
+
+    public void setKeggId(String keggId) {
+        this.keggId = keggId;
+    }
+
+    public String getRefMetId() {
+        return refMetId;
+    }
+
+    public void setRefMetId(String refMetId) {
+        this.refMetId = refMetId;
     }
 
     public String getInChIKey() {
