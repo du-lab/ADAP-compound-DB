@@ -18,6 +18,7 @@ public class MetadataForm {
     private String mspKeggField;
     private String mspHmdbField;
     private String mspPubChemField;
+    private String mspRefMetField;
     private String mspPrecursorMzField;
     private String mspRetentionTimeField;
     private String mspRetentionIndexField;
@@ -35,6 +36,7 @@ public class MetadataForm {
     private String csvKeggField;
     private String csvHmdbField;
     private String csvPubChemField;
+    private String csvRefMetField;
     private String csvPrecursorMzField;
     private String csvRetentionTimeField;
     private String csvRetentionIndexField;
@@ -459,6 +461,21 @@ public class MetadataForm {
         this.mgfIsotopeField = mgfIsotopeField;
     }
 
+    public String getMspRefMetField() {
+        return mspRefMetField;
+    }
+
+    public void setMspRefMetField(String mspRefMetField) {
+        this.mspRefMetField = mspRefMetField;
+    }
+
+    public String getCsvRefMetField() {
+        return csvRefMetField;
+    }
+
+    public void setCsvRefMetField(String csvRefMetField) {
+        this.csvRefMetField = csvRefMetField;
+    }
 
     @JsonIgnore
     public Map<FileType, MetaDataMapping> getMetaDataMappings() {
@@ -492,6 +509,7 @@ public class MetadataForm {
         mapping.setFieldName(MetaDataMapping.Field.HMDB_ID, mspHmdbField);
         mapping.setFieldName(MetaDataMapping.Field.KEGG_ID, mspKeggField);
         mapping.setFieldName(MetaDataMapping.Field.PUBCHEM_ID, mspPubChemField);
+        mapping.setFieldName(MetaDataMapping.Field.REFMET_ID, mspRefMetField);
         mapping.setFieldName(MetaDataMapping.Field.PRECURSOR_MZ, mspPrecursorMzField);
         mapping.setFieldName(MetaDataMapping.Field.PRECURSOR_TYPE, null);
         mapping.setFieldName(MetaDataMapping.Field.RETENTION_TIME, mspRetentionTimeField);
@@ -515,6 +533,7 @@ public class MetadataForm {
         mapping.setFieldName(MetaDataMapping.Field.HMDB_ID, csvHmdbField);
         mapping.setFieldName(MetaDataMapping.Field.KEGG_ID, csvKeggField);
         mapping.setFieldName(MetaDataMapping.Field.PUBCHEM_ID, csvPubChemField);
+        mapping.setFieldName(MetaDataMapping.Field.REFMET_ID, csvRefMetField);
         mapping.setFieldName(MetaDataMapping.Field.PRECURSOR_MZ, csvPrecursorMzField);
         mapping.setFieldName(MetaDataMapping.Field.PRECURSOR_TYPE, null);
         mapping.setFieldName(MetaDataMapping.Field.RETENTION_TIME, csvRetentionTimeField);

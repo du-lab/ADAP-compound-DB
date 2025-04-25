@@ -1,3 +1,6 @@
+# Version 1.8.10
+- Added RefMet ID to metadata mapping
+
 # Version 1.8.9
 - Fixes file upload bug 
 

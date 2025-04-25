@@ -43,6 +43,7 @@ public class FileUploadForm {
 
     private boolean editKeggField;
     private boolean editPubChemField;
+    private boolean editRefMetField;
     private boolean editPrecursorMzField;
     private boolean editRetentionTimeField;
     private boolean editRetentionIndexField;
@@ -218,7 +219,11 @@ public class FileUploadForm {
         this.editKeggField = editKeggField;
     }
 
+    public boolean isEditRefMetField() {
+        return editRefMetField;
+    }
 
-    
-    
+    public void setEditRefMetField(boolean editRefMetField) {
+        this.editRefMetField = editRefMetField;
+    }
 }

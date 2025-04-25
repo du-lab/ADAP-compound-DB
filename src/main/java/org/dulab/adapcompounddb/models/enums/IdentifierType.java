@@ -1,5 +1,5 @@
 package org.dulab.adapcompounddb.models.enums;
 
 public enum IdentifierType {
-    CAS, HMDB, KEGG, PUBCHEM
+    CAS, HMDB, KEGG, PUBCHEM, REFMET
 }
