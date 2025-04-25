@@ -14,7 +14,7 @@ import static org.dulab.adapcompounddb.site.services.utils.MappingUtils.parseDou
 public class MetaDataMapping {
 
     public enum Field {
-        NAME, SYNONYM, EXTERNAL_ID, CAS_ID, HMDB_ID, KEGG_ID, PUBCHEM_ID, PRECURSOR_MZ, PRECURSOR_TYPE, RETENTION_TIME,
+        NAME, SYNONYM, EXTERNAL_ID, CAS_ID, HMDB_ID, KEGG_ID, REFMET_ID, PUBCHEM_ID, PRECURSOR_MZ, PRECURSOR_TYPE, RETENTION_TIME,
         RETENTION_INDEX, MASS, FORMULA, SMILES, INCHI_KEY, INCHI, ISOTOPIC_DISTRIBUTION
     }
 
@@ -34,6 +34,7 @@ public class MetaDataMapping {
         fieldToFunctionMap.put(Field.CAS_ID, (s, v) -> s.addIdentifier(IdentifierType.CAS, v));
         fieldToFunctionMap.put(Field.HMDB_ID, (s, v) -> s.addIdentifier(IdentifierType.HMDB, v));
         fieldToFunctionMap.put(Field.KEGG_ID, (s, v) -> s.addIdentifier(IdentifierType.KEGG, v));
+        fieldToFunctionMap.put(Field.REFMET_ID, (s, v) -> s.addIdentifier(IdentifierType.REFMET, v));
         fieldToFunctionMap.put(Field.PUBCHEM_ID, (s, v) -> s.addIdentifier(IdentifierType.PUBCHEM, v));
         fieldToFunctionMap.put(Field.PRECURSOR_MZ, (s, v) -> s.setPrecursor(parseDouble(v)));
         fieldToFunctionMap.put(Field.PRECURSOR_TYPE, Spectrum::setPrecursorType);
