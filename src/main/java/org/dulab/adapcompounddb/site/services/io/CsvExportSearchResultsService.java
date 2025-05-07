@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -77,7 +78,7 @@ public class CsvExportSearchResultsService implements ExportSearchResultsService
 
     private String[][] createHeader(String applicationVersion, Collection<String> libraryNames, String searchParametersAsString) {
         //The first line: "Library matching results produced by ADAP-KDB v0.0.1"
-        String[] firstRow = new String[]{"Library matching results produced by ADAP-KDB version " + applicationVersion};
+        String[] firstRow = new String[]{"Library matching results produced by ADAP-KDB version " + applicationVersion + " on " + LocalDate.now()};
 
         //The second line: "Libraries used for matching: LibraryName1, LibraryName2"
         String[] secondRow = new String[]{"Libraries used for matching: " + String.join(", ", libraryNames)};

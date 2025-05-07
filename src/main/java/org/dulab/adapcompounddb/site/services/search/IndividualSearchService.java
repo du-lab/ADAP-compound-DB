@@ -146,15 +146,15 @@ public class IndividualSearchService {
 //            throw new IllegalStateException(e.getMessage(), e);
 //        }
 
-        parameters.setScoreThreshold(null);
-        parameters.setMzTolerance(null, Parameters.MZ_TOLERANCE_PPM);
-        parameters.setPrecursorTolerance(null, null);
-        parameters.setRetTimeTolerance(null);
-        parameters.setRetIndexTolerance(null);
-        parameters.setRetIndexMatchType(SearchParameters.RetIndexMatchType.IGNORE_MATCH);
-        parameters.setMassTolerance(null, Parameters.MASS_TOLERANCE_PPM);
-        parameters.setPenalizeQueryImpurities(true);
-        parameters.setPenalizeDominantPeak(false);
+//        parameters.setScoreThreshold(null);
+//        parameters.setMzTolerance(null, Parameters.MZ_TOLERANCE_PPM);
+//        parameters.setPrecursorTolerance(null, null);
+//        parameters.setRetTimeTolerance(null);
+//        parameters.setRetIndexTolerance(null);
+//        parameters.setRetIndexMatchType(SearchParameters.RetIndexMatchType.IGNORE_MATCH);
+//        parameters.setMassTolerance(null, Parameters.MASS_TOLERANCE_PPM);
+//        parameters.setPenalizeQueryImpurities(true);
+//        parameters.setPenalizeDominantPeak(false);
 
         SearchParameters modifiedParameters;
         try {
