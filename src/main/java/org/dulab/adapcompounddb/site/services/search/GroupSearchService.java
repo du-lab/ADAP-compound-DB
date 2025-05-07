@@ -255,10 +255,14 @@ public class GroupSearchService {
        
             if (jobId == null && !groupSearchDTOList.isEmpty()) {
 
+                Collection<String> cleanLibraryNames = libraries.values().stream()
+                        .map(name -> name.replaceAll("\\s*<span[^>]*>.*?</span>\\s*", "").trim())  // removes all <span> tags
+                        .collect(Collectors.toList());
+
                 // Export search results to a session (simple export)
                 try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
 //                    SearchParameters searchParametersFromSession = (SearchParameters) session.getAttribute(ControllerUtils.GROUP_SEARCH_PARAMETERS);
-                    exportSearchResultsService.export(outputStream, groupSearchDTOList, libraries.values(),
+                    exportSearchResultsService.export(outputStream, groupSearchDTOList, cleanLibraryNames,
                             parameters != null ? parameters.getSearchParametersAsString() : "");  // searchParametersFromSession
                     session.setAttribute(ControllerUtils.GROUP_SEARCH_SIMPLE_EXPORT, outputStream.toByteArray());
                 } catch (IOException e) {
@@ -268,7 +272,7 @@ public class GroupSearchService {
                 // Export search results to a session (advanced export)
                 try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
 //                    SearchParameters searchParametersFromSession = (SearchParameters) session.getAttribute(ControllerUtils.GROUP_SEARCH_PARAMETERS);
-                    exportSearchResultsService.exportAll(outputStream, groupSearchDTOList, libraries.values(),
+                    exportSearchResultsService.exportAll(outputStream, groupSearchDTOList, cleanLibraryNames,
                             parameters != null ? parameters.getSearchParametersAsString() : "");
                     session.setAttribute(ControllerUtils.GROUP_SEARCH_ADVANCED_EXPORT, outputStream.toByteArray());
                 } catch (IOException e) {
@@ -285,7 +289,7 @@ public class GroupSearchService {
                             .toString();
 
                     try (FileOutputStream fileOutputStream = new FileOutputStream(filePath)) {
-                        exportSearchResultsService.export(fileOutputStream, groupSearchDTOList, libraries.values(),
+                        exportSearchResultsService.export(fileOutputStream, groupSearchDTOList, cleanLibraryNames,
                                 parameters != null ? parameters.getSearchParametersAsString() : "");
                         emailService.sendEmailWithAttachment(filePath, userPrincipal.getEmail());
                         //delete the local file
@@ -309,7 +313,9 @@ public class GroupSearchService {
                                 .map(SearchResultDTO::getSpectrumId)
                                 .collect(Collectors.toSet());
 
-                        double scoreThreshold = parameters != null ? parameters.getScoreThreshold() : 0;
+                        Double scoreThreshold = (parameters != null && parameters.getScoreThreshold() != null)
+                                ? parameters.getScoreThreshold()
+                                : 0.0;
                         Set<Long> spectrumIdsWithPeaks = groupSearchDTOList.stream()
                                 .filter(r -> r.getScore() > 0.0 && r.getScore() > scoreThreshold)
                                 .map(SearchResultDTO::getSpectrumId)
