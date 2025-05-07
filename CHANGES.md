@@ -1,3 +1,6 @@
+# Version 1.8.11
+- Fix bugs in the export result
+- 
 # Version 1.8.10
 - Added RefMet ID to metadata mapping
 
