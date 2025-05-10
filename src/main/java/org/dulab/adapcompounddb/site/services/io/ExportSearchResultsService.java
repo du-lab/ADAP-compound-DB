@@ -223,7 +223,7 @@ public interface ExportSearchResultsService {
         QUERY_PRECURSOR_TYPE("Adduct", ExportCategory.MEASURED, r -> formatStringArray(r.getQueryPrecursorTypes())),
         QUERY_MASS("Neutral Mass (Da)", ExportCategory.MEASURED, r -> formatDouble(r.getQueryMass(), 4)),
         FRAGMENTATION_SPECTRUM("With Fragmentation Spectrum or not", ExportCategory.MEASURED, r -> formatBoolean(r.isQueryWithPeaks())),
-        RET_TIME_ERROR("Retention Time Error (min)", ExportCategory.DIFFERENCE, r -> formatDouble(r.getRetTimeError(), 3)),
+        RET_TIME_ERROR("Retention Time Error (min)", ExportCategory.DIFFERENCE, r -> r.getRetTimeError() == Double.MAX_VALUE ? "" : formatDouble(r.getRetTimeError() , 3) ),
         MASS_ERROR_PPM("Precursor Mass Error (ppm)", ExportCategory.DIFFERENCE, r -> formatDouble(r.getMassErrorPPM(), 4)),
         PRECURSOR_TYPE("Matching Adduct", ExportCategory.DIFFERENCE, SearchResultDTO::getPrecursorType),
         ISOTOPIC_SIMILARITY("Isotopic Similarity", ExportCategory.DIFFERENCE,
