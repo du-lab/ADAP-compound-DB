@@ -28,6 +28,7 @@ def upload_and_save_test(homepage_url, msp_path, user_name, user_password):
 
         driver.find_element(By.NAME, "submit").click()
 
+        time.sleep(10)
         #upload file
         upload_page_button = driver.find_element(By.ID, 'uploadPage')
         upload_page_button.click()
