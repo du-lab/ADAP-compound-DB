@@ -93,6 +93,11 @@ def add_user_to_organization(homepage_url, organization_username, token):
                "organization/addUser?"
                "token="+token+"&orgEmail="
                +organization_username)
+    print("HOMEPAGE_URL:", homepage_url)
+    print("TOKEN:", token)
+    print("ORG_EMAIL:", organization_username)
+    print("Final URL:", homepage_url + "organization/addUser?" + "token=" + token + "&orgEmail=" + organization_username)
+
     time.sleep(5)
     driver.find_element(By.XPATH, "//p[contains(text(), 'Thank you for accepting the invite')]")
     time.sleep(1)
