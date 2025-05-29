@@ -6,6 +6,7 @@ import java.math.BigInteger;
 import org.dulab.adapcompounddb.models.dto.PeakDTO;
 import org.dulab.adapcompounddb.models.dto.SpectrumDTO;
 import org.dulab.adapcompounddb.models.enums.SearchTaskStatus;
+import org.dulab.adapcompounddb.models.ontology.Parameters;
 import org.dulab.adapcompounddb.site.repositories.SearchTaskRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
@@ -259,11 +260,11 @@ public class GroupSearchService {
                         .map(name -> name.replaceAll("\\s*<span[^>]*>.*?</span>\\s*", "").trim())  // removes all <span> tags
                         .collect(Collectors.toList());
 
+                String searchParametersAsString = getSearchParameterString(parameters, withOntologyLevels);
                 // Export search results to a session (simple export)
                 try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
 //                    SearchParameters searchParametersFromSession = (SearchParameters) session.getAttribute(ControllerUtils.GROUP_SEARCH_PARAMETERS);
-                    exportSearchResultsService.export(outputStream, groupSearchDTOList, cleanLibraryNames,
-                            parameters != null ? parameters.getSearchParametersAsString() : "");  // searchParametersFromSession
+                    exportSearchResultsService.export(outputStream, groupSearchDTOList, cleanLibraryNames, searchParametersAsString);
                     session.setAttribute(ControllerUtils.GROUP_SEARCH_SIMPLE_EXPORT, outputStream.toByteArray());
                 } catch (IOException e) {
                     LOGGER.warn("Error when writing the simple export to the session: " + e.getMessage(), e);
@@ -272,8 +273,7 @@ public class GroupSearchService {
                 // Export search results to a session (advanced export)
                 try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
 //                    SearchParameters searchParametersFromSession = (SearchParameters) session.getAttribute(ControllerUtils.GROUP_SEARCH_PARAMETERS);
-                    exportSearchResultsService.exportAll(outputStream, groupSearchDTOList, cleanLibraryNames,
-                            parameters != null ? parameters.getSearchParametersAsString() : "");
+                    exportSearchResultsService.exportAll(outputStream, groupSearchDTOList, cleanLibraryNames, searchParametersAsString);
                     session.setAttribute(ControllerUtils.GROUP_SEARCH_ADVANCED_EXPORT, outputStream.toByteArray());
                 } catch (IOException e) {
                     LOGGER.warn("Error when writing the advanced export to the session: " + e.getMessage(), e);
@@ -289,8 +289,7 @@ public class GroupSearchService {
                             .toString();
 
                     try (FileOutputStream fileOutputStream = new FileOutputStream(filePath)) {
-                        exportSearchResultsService.export(fileOutputStream, groupSearchDTOList, cleanLibraryNames,
-                                parameters != null ? parameters.getSearchParametersAsString() : "");
+                        exportSearchResultsService.export(fileOutputStream, groupSearchDTOList, cleanLibraryNames, searchParametersAsString);
                         emailService.sendEmailWithAttachment(filePath, userPrincipal.getEmail());
                         //delete the local file
                         Files.delete(FileSystems.getDefault().getPath(filePath));
@@ -430,6 +429,11 @@ public class GroupSearchService {
                     + submission.getId());
         }
 
+    }
+    public static String getSearchParameterString(SearchParameters params, boolean withOntologyLevels) {
+        return withOntologyLevels
+                ? Parameters.getSearchParametersAsString()
+                : (params != null ? params.getSearchParametersAsString() : "");
     }
 
 }

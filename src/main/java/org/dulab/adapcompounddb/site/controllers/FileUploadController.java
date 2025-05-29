@@ -139,14 +139,14 @@ public class FileUploadController extends BaseController {
 
         String responseString = request.getParameter(CaptchaService.GOOGLE_CAPTCHA_RESPONSE);
 
-//        try {
-//            if (responseString != null && getCurrentUserPrincipal() == null) {
-//                captchaService.processResponse(responseString, request.getRemoteAddr());
-//            }
-//        } catch (Exception e) {
-//            model.addAttribute("message", "Verify that you are human");
-//            return "submission/upload";
-//        }
+        try {
+            if (responseString != null && getCurrentUserPrincipal() == null) {
+                captchaService.processResponse(responseString, request.getRemoteAddr());
+            }
+        } catch (Exception e) {
+            model.addAttribute("message", "Verify that you are human");
+            return "submission/upload";
+        }
 
         if (Submission.from(session) != null) {
             return "redirect:/file/";

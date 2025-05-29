@@ -30,12 +30,14 @@
                                 Filter
                             </a></li>
                             </c:if>
-                            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#parameters">
-                                Parameters
-                                <span id="custom" class="badge badge-info" style="display: none">
-                                    Custom Parameters
-                                </span>
-                            </a></li>
+                            <c:if test="${!filterForm.withOntologyLevels}">
+                                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#parameters">
+                                    Parameters
+                                    <span id="custom" class="badge badge-info" style="display: none">
+                                        Custom Parameters
+                                    </span>
+                                </a></li>
+                            </c:if>
                             <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#email">
                                 Email
                             </a></li>

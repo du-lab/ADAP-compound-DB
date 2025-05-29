@@ -26,6 +26,7 @@ def individual_search_test(homepage_url, msp_path, user_name, user_password):
         password_login = driver.find_element('id','password')
         password_login.send_keys(user_password)
 
+        time.sleep(10)
         driver.find_element('name', "submit").click()
 
         # upload msp file
