@@ -124,8 +124,8 @@ public class JavaSpectrumSimilarityService {
         double similarityTime = (time6 - time5) / 1000.0;
 
         double totalTime = (time6 - time1) / 1000.0;
-        LOGGER.info(String.format("Pre-screen: %.2f; Fetch (%d): %.2f; Similarity: %.2f; Total: %.2f",
-                preScreenTime, preScreenedSpectrumIdsSet.size(), fetchSpectraTime, similarityTime, totalTime));
+//        LOGGER.info(String.format("Pre-screen: %.2f; Fetch (%d): %.2f; Similarity: %.2f; Total: %.2f",
+//                preScreenTime, preScreenedSpectrumIdsSet.size(), fetchSpectraTime, similarityTime, totalTime));
 
         return new ArrayList<>(matches.subList(0, Math.min(parameters.getLimit(), matches.size())));
     }
