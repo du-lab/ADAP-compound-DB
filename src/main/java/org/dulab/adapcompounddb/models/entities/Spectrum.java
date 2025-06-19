@@ -118,6 +118,11 @@ public class Spectrum implements Serializable {
 
     private double omegaFactor;
 
+    @Column(name = "PeakDataEncoded", columnDefinition = "MEDIUMTEXT")
+    private String peakDataEncoded;
+    @Column(name = "IdentifiersJson", columnDefinition = "TEXT")
+    private String identifiersJson;
+
     @NotNull(message = "Spectrum: the field Chromatography Type is requirexd.")
     @Enumerated(EnumType.STRING)
     private ChromatographyType chromatographyType;
@@ -125,7 +130,20 @@ public class Spectrum implements Serializable {
     // *******************************
     // ***** Getters and setters *****
     // *******************************
+    public String getIdentifiersJson() {
+        return identifiersJson;
+    }
 
+    public void setIdentifiersJson(String identifiersJson) {
+        this.identifiersJson = identifiersJson;
+    }
+    public String getPeakDataEncoded() {
+        return peakDataEncoded;
+    }
+
+    public void setPeakDataEncoded(String peakDataEncoded) {
+        this.peakDataEncoded = peakDataEncoded;
+    }
     public long getId() {
         return id;
     }
