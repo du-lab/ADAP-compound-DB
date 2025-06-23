@@ -4,6 +4,7 @@ import org.dulab.adapcompounddb.models.entities.*;
 import org.dulab.adapcompounddb.models.enums.ChromatographyType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -15,7 +16,7 @@ import java.util.Set;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, SpectrumRepositoryCustom {
+public interface SpectrumRepository extends JpaRepository<Spectrum, Long>, SpectrumRepositoryCustom {
 
     @Query("SELECT s FROM Spectrum s WHERE s.matches IS EMPTY")
     Iterable<Spectrum> findAllByMatchesIsEmpty();
@@ -51,6 +52,9 @@ public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, Spec
 
     @Query("SELECT p FROM Peak p WHERE p.spectrum.id IN :ids")
     Iterable<Peak> findPeaksBySpectrumIds(@Param("ids") Set<Long> spectrumIds);
+
+    @Query("SELECT p FROM Peak p WHERE p.spectrum.id IN :ids")
+    List<Peak> findPeakListBySpectrumIds(@Param("ids") List<Long> spectrumIds);
 
     @Query("SELECT p, p.spectrum.id FROM Peak p WHERE p.spectrum.id IN :ids")
     List<Object[]> findPeaksAndSpectrumIdsBySpectrumIds(@Param("ids") Set<Long> ids);
@@ -141,4 +145,6 @@ public interface SpectrumRepository extends CrudRepository<Spectrum, Long>, Spec
     List<File> getFilesFromSpectrum(@Param("spectrumIds") long[] spectrumIds);
 
     List<Spectrum> findByIdIn(Set<Long> ids);
+    @Query("SELECT s.id FROM Spectrum s")
+    List<Long> findAllSpectrumIds();
 }

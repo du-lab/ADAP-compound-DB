@@ -1,15 +1,21 @@
 package org.dulab.adapcompounddb.site.repositories.querybuilders;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.dulab.adapcompounddb.models.entities.File;
+import org.dulab.adapcompounddb.models.entities.Identifier;
 import org.dulab.adapcompounddb.models.entities.Spectrum;
+import org.dulab.adapcompounddb.models.entities.Peak;
+import org.dulab.adapcompounddb.site.repositories.SpectrumRepositoryImpl;
+import org.dulab.adapcompounddb.site.services.utils.ByteArrayUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class SaveSpectraQueryBuilder {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SaveSpectraQueryBuilder.class);
 
     public static final String COMMA = ",";
 
@@ -49,7 +55,9 @@ public class SaveSpectraQueryBuilder {
             new SqlField("TopMz13", "%f", Spectrum::getTopMz13),
             new SqlField("TopMz14", "%f", Spectrum::getTopMz14),
             new SqlField("TopMz15", "%f", Spectrum::getTopMz15),
-            new SqlField("TopMz16", "%f", Spectrum::getTopMz16)
+            new SqlField("TopMz16", "%f", Spectrum::getTopMz16),
+            new SqlField("PeakDataEncoded", "%s", s -> quote(s.getPeakDataEncoded())),
+            new SqlField("IdentifiersJson", "%s", s -> quote(s.getIdentifiersJson()))
     };
 
 
@@ -84,6 +92,29 @@ public class SaveSpectraQueryBuilder {
                 final Spectrum spectrum = spectra.get(j);
                 spectrum.setFile(fileList.get(i));
 
+                // Set peakDataEncoded
+                if (spectrum.getPeakDataEncoded() == null && spectrum.getPeaks() != null && !spectrum.getPeaks().isEmpty()) {
+                    double[] mz = spectrum.getPeaks().stream().mapToDouble(Peak::getMz).toArray();
+                    double[] intensity = spectrum.getPeaks().stream().mapToDouble(Peak::getIntensity).toArray();
+                    try {
+                        spectrum.setPeakDataEncoded(ByteArrayUtils.compressDoubleArrays(mz, intensity));
+                    }
+                    catch (Exception e) {
+                        LOGGER.error("Failed to encode peaks for spectrum: " + spectrum.getName() + " (ID: " + spectrum.getId() + ")");
+                    }
+                }
+                // Set identifiersJson
+                if (spectrum.getIdentifiersJson() == null && spectrum.getIdentifiers() != null && !spectrum.getIdentifiers().isEmpty()) {
+                    Map<String, String> jsonMap = new LinkedHashMap<>();
+                    for (Identifier identifier : spectrum.getIdentifiers()) {
+                        jsonMap.put(identifier.getType().toString(), identifier.getValue());
+                    }
+                    try {
+                        spectrum.setIdentifiersJson(new ObjectMapper().writeValueAsString(jsonMap));
+                    } catch (Exception e) {
+                        spectrum.setIdentifiersJson(null);
+                    }
+                }
                 insertSql.append(String.format("(%s)",
                         Arrays.stream(spectrumFields)
                                 .map(field -> String.format(field.format, field.function.apply(spectrum)))
