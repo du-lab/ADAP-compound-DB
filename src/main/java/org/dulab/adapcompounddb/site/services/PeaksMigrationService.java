@@ -30,8 +30,8 @@ public class PeaksMigrationService implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        migratePeaks();
-        migrateIdentifiers();
+        // migratePeaks();
+        // migrateIdentifiers();
 
     }
 
