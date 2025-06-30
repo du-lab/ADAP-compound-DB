@@ -140,7 +140,7 @@ public class MultiFetchRepository {
                 LOGGER.error("Error while decompressing spectra data: " + e.getMessage());
             }
         }
-        LOGGER.info("Peaks query time: " + (System.currentTimeMillis() - time) + " ms");
+//        LOGGER.info("Peaks query time: " + (System.currentTimeMillis() - time) + " ms");
 
 
         time = System.currentTimeMillis();
@@ -149,7 +149,7 @@ public class MultiFetchRepository {
                 .setParameter("spectrumIds", spectrumIds)
                 .setHint(QueryHints.READ_ONLY, true)
                 .getResultList();
-        LOGGER.info("Isotopes query time: " + (System.currentTimeMillis() - time) + " ms");
+//        LOGGER.info("Isotopes query time: " + (System.currentTimeMillis() - time) + " ms");
 
         time = System.currentTimeMillis();
 //        List<Identifier> identifiers = entityManager
@@ -185,7 +185,7 @@ public class MultiFetchRepository {
                 LOGGER.error("Failed to parse identifiers for Spectrum " + s.getId());
             }
         }
-        LOGGER.info("Identifiers query time: " + (System.currentTimeMillis() - time) + " ms");
+//        LOGGER.info("Identifiers query time: " + (System.currentTimeMillis() - time) + " ms");
 
 
         assignChildrenToParents(peaks, Peak::getSpectrum, spectra, Spectrum::setPeaks, Spectrum::getId);
