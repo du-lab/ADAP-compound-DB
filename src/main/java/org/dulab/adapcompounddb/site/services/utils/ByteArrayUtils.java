@@ -74,15 +74,17 @@ public class ByteArrayUtils {
 
         // Wrap in ByteBuffer and split into mz and intensity
         ByteBuffer byteBuffer = ByteBuffer.wrap(decompressedBytes);
-        int length = decompressedBytes.length / 16; // 8 bytes per double, 2 arrays
-        double[] mzArray = new double[length];
-        double[] intensityArray = new double[length];
-        for (int i = 0; i < length; i++) mzArray[i] = byteBuffer.getDouble();
-        for (int i = 0; i < length; i++) intensityArray[i] = byteBuffer.getDouble();
+
+        int mzLength = byteBuffer.getInt();         // first 4 bytes
+        int intensityLength = byteBuffer.getInt();  // next 4 bytes
+
+        double[] mzArray = new double[mzLength];
+        double[] intensityArray = new double[intensityLength];
+        for (int i = 0; i < mzLength; i++) mzArray[i] = byteBuffer.getDouble();
+        for (int i = 0; i < intensityLength; i++) intensityArray[i] = byteBuffer.getDouble();
 
         return new double[][]{ mzArray, intensityArray };
     }
-
-
+    
 
 } 
