@@ -1,3 +1,7 @@
+# Version 1.9.0
+- Optimize group search
+- Reduce number of concurrent search from 4 to 1
+
 # Version 1.8.11
 - Fix bugs in the export result
 - 
