@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk11:jre-11.0.19_7-ubuntu
+FROM --platform=linux/amd64 adoptopenjdk/openjdk11:jre-11.0.19_7-ubuntu
 #For s3
 ENV ACCESS_ID="AKIA57CZCFX53PQDCA6K"
 ENV ACCESS_KEY="Z8YWRt6b4iGe73Lx90NgMvHaDhfZm+ABpNICNazK"
