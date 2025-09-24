@@ -28,7 +28,7 @@ build:
     - python3 scripts/selenium/initial_test.py --homepage-url $HOMEPAGE_URL
   timeout: 15m
   tags:
-    - dulabimac
+    - toan-macbookpro
 
 test:
   stage: test
@@ -60,7 +60,7 @@ test:
     - docker rm --force $CONTAINER_NAME
   timeout: 30m
   tags:
-    - dulabimac
+    - toan-macbookpro
 
 package:
   stage: deploy
@@ -79,5 +79,5 @@ package:
     - merge_requests
   timeout: 15m
   tags:
-      - dulabimac
+    - toan-macbookpro
 
