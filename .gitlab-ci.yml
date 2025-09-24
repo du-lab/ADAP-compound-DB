@@ -42,7 +42,14 @@ test:
     - docker system prune --force #to clean up dangling images
     - docker build -f docker/adap-kdb-docker/Dockerfile -t adap-kdb-img .
     - docker run --name $CONTAINER_NAME -e DATABASE=cci-dulab.uncc.edu -e INTEGRATION_TEST=true -d -p8080:8080 adap-kdb-img
-    - sleep 30 #wait for the server to start
+#    - sleep 30
+      #wait for the server to start
+    - |
+      echo "Waiting for app at $HOMEPAGE_URL ..."
+      until curl -fsS "$HOMEPAGE_URL" >/dev/null; do
+        sleep 2
+      done
+
     - python3 -m venv venv
     - source venv/bin/activate
     - pip3 install selenium==4.8.0
