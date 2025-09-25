@@ -111,35 +111,35 @@ public class MultiFetchRepository {
         LOGGER.info("Spectra query time: " + (System.currentTimeMillis() - time) + " ms");
 
         time = System.currentTimeMillis();
-//        List<Peak> peaks = entityManager
-//                .createQuery("select p from Peak p where p.spectrum.id in (:spectrumIds)", Peak.class)
-//                .setParameter("spectrumIds", spectrumIds)
-//                .setHint(QueryHints.READ_ONLY, true)
-//                .getResultList();
-//        LOGGER.info("Old Peaks query time: " + (System.currentTimeMillis() - time) + " ms");
+        List<Peak> peaks = entityManager
+                .createQuery("select p from Peak p where p.spectrum.id in (:spectrumIds)", Peak.class)
+                .setParameter("spectrumIds", spectrumIds)
+                .setHint(QueryHints.READ_ONLY, true)
+                .getResultList();
+        LOGGER.info("Old Peaks query time: " + (System.currentTimeMillis() - time) + " ms");
 
-        time = System.currentTimeMillis();
-        List<Peak> peaks = new ArrayList<>();
-        for(Spectrum s : spectra){
-            String encoded = s.getPeakDataEncoded();
-            if (encoded == null) continue;
-            try {
-                double[][] decoded = ByteArrayUtils.decompressToDoubleArrays(encoded);
-                double[] mz = decoded[0];
-                double[] intensity = decoded[1];
-
-                for (int i = 0; i < mz.length; i++) {
-                    Peak peak = new Peak();
-                    peak.setIntensity(intensity[i]);
-                    peak.setMz(mz[i]);
-                    peak.setSpectrum(s);
-                    peaks.add(peak);
-                }
-            }
-            catch (Exception e) {
-                LOGGER.error("Error while decompressing spectra data: " + e.getMessage());
-            }
-        }
+//        time = System.currentTimeMillis();
+//        List<Peak> peaks = new ArrayList<>();
+//        for(Spectrum s : spectra){
+//            String encoded = s.getPeakDataEncoded();
+//            if (encoded == null) continue;
+//            try {
+//                double[][] decoded = ByteArrayUtils.decompressToDoubleArrays(encoded);
+//                double[] mz = decoded[0];
+//                double[] intensity = decoded[1];
+//
+//                for (int i = 0; i < mz.length; i++) {
+//                    Peak peak = new Peak();
+//                    peak.setIntensity(intensity[i]);
+//                    peak.setMz(mz[i]);
+//                    peak.setSpectrum(s);
+//                    peaks.add(peak);
+//                }
+//            }
+//            catch (Exception e) {
+//                LOGGER.error("Error while decompressing spectra data: " + e.getMessage());
+//            }
+//        }
 //        LOGGER.info("Peaks query time: " + (System.currentTimeMillis() - time) + " ms");
 
 
@@ -149,42 +149,42 @@ public class MultiFetchRepository {
                 .setParameter("spectrumIds", spectrumIds)
                 .setHint(QueryHints.READ_ONLY, true)
                 .getResultList();
-//        LOGGER.info("Isotopes query time: " + (System.currentTimeMillis() - time) + " ms");
+        LOGGER.info("Isotopes query time: " + (System.currentTimeMillis() - time) + " ms");
 
         time = System.currentTimeMillis();
-//        List<Identifier> identifiers = entityManager
-//                .createQuery("select i from Identifier i where i.spectrum.id in (:spectrumIds)", Identifier.class)
-//                .setParameter("spectrumIds", spectrumIds)
-//                .setHint(QueryHints.READ_ONLY, true)
-//                .getResultList();
+        List<Identifier> identifiers = entityManager
+                .createQuery("select i from Identifier i where i.spectrum.id in (:spectrumIds)", Identifier.class)
+                .setParameter("spectrumIds", spectrumIds)
+                .setHint(QueryHints.READ_ONLY, true)
+                .getResultList();
 
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map<Long, List<Identifier>> fromJson = new HashMap<>();
-
-        List<Identifier> identifiers = new ArrayList<>();
-        for (Spectrum s : spectra) {
-            String encoded = s.getIdentifiersJson();
-            if (encoded == null) continue;
-
-            try {
-                Map<String, String> idMap = objectMapper.readValue(encoded, new TypeReference<Map<String, String>>() {});
-                List<Identifier> identifiers_ = new ArrayList<>();
-
-                for (Map.Entry<String, String> entry : idMap.entrySet()) {
-                    Identifier identifier = new Identifier();
-                    identifier.setType(IdentifierType.valueOf(entry.getKey()));
-                    identifier.setValue(entry.getValue());
-                    identifier.setSpectrum(s);
-                    identifiers_.add(identifier);
-                }
-                identifiers.addAll(identifiers_);
-                fromJson.put(s.getId(), identifiers_);
-
-            } catch (Exception e) {
-                LOGGER.error("Failed to parse identifiers for Spectrum " + s.getId());
-            }
-        }
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        Map<Long, List<Identifier>> fromJson = new HashMap<>();
+//
+//        List<Identifier> identifiers = new ArrayList<>();
+//        for (Spectrum s : spectra) {
+//            String encoded = s.getIdentifiersJson();
+//            if (encoded == null) continue;
+//
+//            try {
+//                Map<String, String> idMap = objectMapper.readValue(encoded, new TypeReference<Map<String, String>>() {});
+//                List<Identifier> identifiers_ = new ArrayList<>();
+//
+//                for (Map.Entry<String, String> entry : idMap.entrySet()) {
+//                    Identifier identifier = new Identifier();
+//                    identifier.setType(IdentifierType.valueOf(entry.getKey()));
+//                    identifier.setValue(entry.getValue());
+//                    identifier.setSpectrum(s);
+//                    identifiers_.add(identifier);
+//                }
+//                identifiers.addAll(identifiers_);
+//                fromJson.put(s.getId(), identifiers_);
+//
+//            } catch (Exception e) {
+//                LOGGER.error("Failed to parse identifiers for Spectrum " + s.getId());
+//            }
+//        }
 //        LOGGER.info("Identifiers query time: " + (System.currentTimeMillis() - time) + " ms");
 
 
