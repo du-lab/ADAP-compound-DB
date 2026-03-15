@@ -52,7 +52,7 @@ build:
 
     - docker build -f docker/adap-kdb-docker/Dockerfile -t adap-kdb-img .
     - docker run --name $CONTAINER_NAME -e DATABASE=cci-dulab.uncc.edu -e INTEGRATION_TEST=true -d -p8080:8080 adap-kdb-img
-
+    - sleep 20
     - venv/bin/python -c "import selenium; print(selenium.__version__)"
     - .tools/chrome-for-testing/chromedriver-mac-arm64/chromedriver --version
     - venv/bin/python scripts/selenium/initial_test.py --homepage-url "$HOMEPAGE_URL"
