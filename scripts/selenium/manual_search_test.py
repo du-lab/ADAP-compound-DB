@@ -5,8 +5,10 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service as ChromeService
 
+from webdriver_factory import create_driver
+
 def manual_search_test(homepage_url, identifier = 'eicosatrienoic acid', spectrum = '79 100\n 67 90.3325\n 80 75.8722\n 81 59.0838\n 93 54.0933'):
-	driver = webdriver.Chrome(service=ChromeService('scripts/selenium/drivers/chromedriver'))
+	driver = create_driver()
 
 	try:
 		driver.get(homepage_url)

@@ -9,8 +9,9 @@ from urllib.parse import urljoin
 import time
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service as ChromeService
+from webdriver_factory import create_driver
 
-driver = webdriver.Chrome(service=ChromeService('scripts/selenium/drivers/chromedriver'))
+driver = create_driver()
 
 #  generate random string as username
 def random_string(stringLength):

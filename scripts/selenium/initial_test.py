@@ -1,13 +1,11 @@
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 import argparse
 import time
+from webdriver_factory import create_driver
 
 def initial_test(homepage_url):
-
-
     # Open the Chrome browser
-    driver = webdriver.Chrome('scripts/selenium/drivers/chromedriver')
+    # driver = webdriver.Chrome('scripts/selenium/drivers/chromedriver')
+    driver = create_driver()
 
     try:
         # Add some delay
