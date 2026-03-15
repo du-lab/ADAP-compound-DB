@@ -14,19 +14,49 @@ build:
   only:
     - master
     - merge_requests
+  # Reuse downloaded browser binaries and Python packages between runs
+  # so the runner does not re-download everything every time.
+  cache:
+    key: chrome-for-testing-mac-arm64
+    paths:
+      - .tools/chrome-for-testing/
+      - venv/
+
   script:
-    - docker rm --force $CONTAINER_NAME
-    - docker system prune --force #to clean up dangling images
+    - docker rm --force $CONTAINER_NAME || true
+    # Remove dangling image
+    - docker system prune --force
     - mvn -version
     - mvn clean install
+
+    # Create an isolated Python environment for Selenium test dependencies.
     - python3 -m venv venv
-    - source venv/bin/activate
-    - pip3 install --upgrade pip
-    - pip3 install --upgrade selenium
+    - venv/bin/pip install --upgrade pip
+    - venv/bin/pip install --upgrade selenium
+
+    # Download Chrome for Testing + matching ChromeDriver for arm64
+    # only if they are not already cached.
+    - mkdir -p .tools/chrome-for-testing
+    - |
+      if [ ! -x .tools/chrome-for-testing/chromedriver-mac-arm64/chromedriver ]; then
+        cd .tools/chrome-for-testing
+        VERSION=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_145.0.7632)
+        echo "Using Chrome for Testing version: $VERSION"
+        curl -LO "https://storage.googleapis.com/chrome-for-testing-public/${VERSION}/mac-arm64/chrome-mac-arm64.zip"
+        curl -LO "https://storage.googleapis.com/chrome-for-testing-public/${VERSION}/mac-arm64/chromedriver-mac-arm64.zip"
+        unzip -o chrome-mac-arm64.zip
+        unzip -o chromedriver-mac-arm64.zip
+        chmod +x chromedriver-mac-arm64/chromedriver
+        cd "$CI_PROJECT_DIR"
+      fi
+
     - docker build -f docker/adap-kdb-docker/Dockerfile -t adap-kdb-img .
     - docker run --name $CONTAINER_NAME -e DATABASE=cci-dulab.uncc.edu -e INTEGRATION_TEST=true -d -p8080:8080 adap-kdb-img
-    - python3 --version
-    - python3 scripts/selenium/initial_test.py --homepage-url $HOMEPAGE_URL
+
+    - venv/bin/python -c "import selenium; print(selenium.__version__)"
+    - .tools/chrome-for-testing/chromedriver-mac-arm64/chromedriver --version
+    - venv/bin/python scripts/selenium/initial_test.py --homepage-url "$HOMEPAGE_URL"
+
   timeout: 15m
   tags:
     - toan-macbookpro
