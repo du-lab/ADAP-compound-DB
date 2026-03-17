@@ -7,10 +7,12 @@ from selenium.webdriver.common.by import By
 
 from urllib.parse import urljoin
 from selenium.webdriver.chrome.service import Service as ChromeService
-chrome_service = ChromeService('scripts/selenium/drivers/chromedriver')
+from webdriver_factory import create_driver
+
+# chrome_service = ChromeService('scripts/selenium/drivers/chromedriver')
 
 def upload_and_save_test(homepage_url, msp_path, user_name, user_password):
-    driver = webdriver.Chrome(service=ChromeService('scripts/selenium/drivers/chromedriver'))
+    driver = create_driver()
 
 
     try:

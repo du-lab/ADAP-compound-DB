@@ -3,13 +3,11 @@
 """this script is using for auto-testing cluster page"""
 import argparse
 import time
-from selenium import webdriver
 from urllib.parse import urljoin
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service as ChromeService
-
+from webdriver_factory import create_driver
 def cluster_page_test(homepage_url):
-    driver = webdriver.Chrome(service=ChromeService('scripts/selenium/drivers/chromedriver'))
+    driver = create_driver()
 
     try:
         driver.get(urljoin(homepage_url, "file/upload/?applicationMode=PRIORITIZE_SPECTRA"))
