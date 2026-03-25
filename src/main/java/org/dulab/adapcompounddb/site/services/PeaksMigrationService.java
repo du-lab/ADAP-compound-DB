@@ -6,6 +6,7 @@ import org.dulab.adapcompounddb.models.entities.Identifier;
 import org.dulab.adapcompounddb.site.repositories.SpectrumRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.dulab.adapcompounddb.site.services.utils.ByteArrayUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +24,9 @@ public class PeaksMigrationService implements CommandLineRunner {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Value("${migration.run:false}")
+    private boolean runMigration;
+
     public PeaksMigrationService(SpectrumRepository spectrumRepository) {
         this.spectrumRepository = spectrumRepository;
     }
@@ -30,8 +34,10 @@ public class PeaksMigrationService implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        // migratePeaks();
-        // migrateIdentifiers();
+        if (runMigration) {
+            migratePeaks();
+            migrateIdentifiers();
+        }
 
     }
 
