@@ -48,6 +48,17 @@
                                 </div>
                             </div>
                         </li>
+                        <li class="list-group-item">
+                            <div class="media">
+                                <div class="mr-3">
+                                    <div class="badge badge-primary">MANUAL</div>
+                                </div>
+                                <div class="media-body">
+                                    <a href="<c:url value="/resources/AdapCompoundDb/docs/adap-kdb-user-manual.html"/>" target="_blank">
+                                        ADAP-KDB User Manual</a>
+                                </div>
+                            </div>
+                        </li>
                     </ul>
                 </div>
             </div>
