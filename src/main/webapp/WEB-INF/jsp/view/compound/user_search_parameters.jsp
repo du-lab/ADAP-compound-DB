@@ -27,6 +27,10 @@
     <form:input path="scoreThreshold${param.PARAM_FOR}" type="number" step="1" cssClass="form-control"
                 value="${param.SCORE_THRESHOLD}"
                 id="scoreThreshold${param.PARAM_FOR}"/>
+    <small class="form-text text-muted">
+      Minimum similarity score required for a match to be considered valid. Higher values make matching
+      more stringent (fewer false positives, but may miss weaker true matches).
+    </small>
   </div>
 </div>
 
@@ -37,6 +41,10 @@
     <form:input id="$retentionIndexTolerance${param.PARAM_FOR}"
                 path="retentionIndexTolerance${param.PARAM_FOR}" type="number" cssClass="form-control"
                 value="${param.RETENTION_INDEX_TOLERANCE}"/>
+    <small class="form-text text-muted">
+      Maximum allowed difference between the experimental retention index and the library retention index.
+      Smaller values enforce stricter chromatographic agreement.
+    </small>
   </div>
 </div>
 
@@ -64,6 +72,11 @@
                    selected="${param.RETENTION_INDEX_MATCH == 'ALWAYS_MATCH' ? 'selected' : ''}"
       >Always match Retention Index</form:option>
     </form:select>
+    <small class="form-text text-muted">
+      Determines how retention index information is used during matching (for example required, optional,
+      or weighted in scoring depending on the selected mode). Ignore Retention Index means retention
+      index is not used during matching and only spectral similarity is considered.
+    </small>
   </div>
 </div>
 
@@ -86,6 +99,14 @@
       </form:select>
     </div>
   </div>
+  <div class="col-md-8 offset-md-4">
+    <small class="form-text text-muted">
+      Allowed mass error when comparing fragment ions between spectra. Smaller tolerance values increase
+      precision but may miss matches if mass calibration is slightly off. Also used when excluding the
+      precursor ion peak from an MS/MS spectrum: any peak within plus or minus this tolerance around the
+      precursor m/z is removed.
+    </small>
+  </div>
 </div>
 
 <div class="form-group row">
@@ -94,5 +115,9 @@
   <div class="col-md-8">
     <form:input id="limit${param.PARAM_FOR}" path="limit${param.PARAM_FOR}" type="number" cssClass="form-control"
                 value="${param.MATCHES_PER_SPECTRUM}"/>
+    <small class="form-text text-muted">
+      Maximum number of candidate matches returned for each spectrum. Higher values provide more
+      possibilities but may include lower-confidence hits.
+    </small>
   </div>
 </div>
