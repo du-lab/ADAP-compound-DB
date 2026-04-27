@@ -1,3 +1,6 @@
+# Version 1.9.1
+- Add user manual
+- 
 # Version 1.9.0
 - Optimize group search
 - Reduce number of concurrent search from 4 to 1
