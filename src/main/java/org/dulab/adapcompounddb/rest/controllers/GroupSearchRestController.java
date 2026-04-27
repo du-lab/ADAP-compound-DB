@@ -55,17 +55,23 @@ public class GroupSearchRestController extends BaseController {
     private final SubmissionService submissionService;
 
     private final SpectrumService spectrumService;
+    private final org.dulab.adapcompounddb.site.repositories.TempSpectrumMatchRepository tempSpectrumMatchRepository;
 
     static {
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
     }
 
     @Autowired
-    public GroupSearchRestController(final SpectrumMatchService spectrumMatchService, final GroupSearchService groupSearchService, final SubmissionService submissionService, final SpectrumService spectrumService) {
+    public GroupSearchRestController(final SpectrumMatchService spectrumMatchService,
+                                     final GroupSearchService groupSearchService,
+                                     final SubmissionService submissionService,
+                                     final SpectrumService spectrumService,
+                                     final org.dulab.adapcompounddb.site.repositories.TempSpectrumMatchRepository tempSpectrumMatchRepository) {
         this.spectrumMatchService = spectrumMatchService;
         this.groupSearchService = groupSearchService;
         this.submissionService = submissionService;
         this.spectrumService = spectrumService;
+        this.tempSpectrumMatchRepository = tempSpectrumMatchRepository;
     }
 
     @RequestMapping(value = "/file/group_search/data.json", produces = "application/json")
@@ -121,6 +127,191 @@ public class GroupSearchRestController extends BaseController {
             }
         }
     }
+    // ===== Temp match endpoints for unsaved-submission group search =====
+
+    @GetMapping(value = "/temp/distinct_spectra/data.json", produces = "application/json")
+    public String tempDistinctSpectra(
+            @RequestParam("start") final Integer start,
+            @RequestParam("length") final Integer length,
+            @RequestParam("search") final String searchStr,
+            @RequestParam("columnStr") final String columnStr,
+            @RequestParam("matchFilter") final Integer showMatchesOnly,
+            @RequestParam("ontologyLevel") final String ontologyLevel,
+            @RequestParam(value = "scoreThreshold", required = false) final Double scoreThreshold,
+            @RequestParam(value = "massError", required = false) final Double massError,
+            @RequestParam(value = "retTimeError", required = false) final Double retTimeError,
+            @RequestParam("matchName") final String matchName,
+            final HttpSession session) throws JsonProcessingException {
+
+        DataTableResponse response = new DataTableResponse();
+        String sessionId = session.getId();
+        List<String> queryNames = tempSpectrumMatchRepository.findDistinctQueryNames(
+                sessionId, showMatchesOnly,
+                ontologyLevel != null ? ontologyLevel : "",
+                scoreThreshold, massError, retTimeError);
+
+        List<SearchResultDTO> searchResultDTOList = new ArrayList<>();
+        int position = 0;
+        for (String name : queryNames) {
+            if (matchName != null && !matchName.isEmpty()) {
+                List<org.dulab.adapcompounddb.models.entities.TempSpectrumMatch> matches =
+                        tempSpectrumMatchRepository.findMatchesBySessionAndQueryName(
+                                sessionId, name, 0, "", null, null, null);
+                boolean hasMatchName = matches.stream()
+                        .anyMatch(m -> m.getMatchSpectrum() != null
+                                && m.getMatchSpectrum().getName() != null
+                                && m.getMatchSpectrum().getName().contains(matchName));
+                if (!hasMatchName) continue;
+            }
+            SearchResultDTO dto = new SearchResultDTO();
+            dto.setQuerySpectrumName(name);
+            dto.setPosition(position++);
+            searchResultDTOList.add(dto);
+        }
+
+        response = groupSearchSort(false, searchStr, start, length, searchResultDTOList, columnStr);
+        return mapper.writeValueAsString(response);
+    }
+
+    @GetMapping(value = "/temp/getSpectraForQuery", produces = "application/json")
+    public String tempSpectraForQuery(
+            @RequestParam("start") final Integer start,
+            @RequestParam("length") final Integer length,
+            @RequestParam("search") final String searchStr,
+            @RequestParam("columnStr") final String columnStr,
+            @RequestParam("querySpectrumName") final String spectrumName,
+            @RequestParam("matchFilter") final Integer showMatchesOnly,
+            @RequestParam("ontologyLevel") final String ontologyLevel,
+            @RequestParam(value = "scoreThreshold", required = false) final Double scoreThreshold,
+            @RequestParam(value = "massError", required = false) final Double massError,
+            @RequestParam(value = "retTimeError", required = false) final Double retTimeError,
+            @RequestParam("matchName") final String matchName,
+            final HttpSession session) throws JsonProcessingException {
+
+        String sessionId = session.getId();
+        List<org.dulab.adapcompounddb.models.entities.TempSpectrumMatch> tempMatches =
+                tempSpectrumMatchRepository.findMatchesBySessionAndQueryName(
+                        sessionId, spectrumName, showMatchesOnly,
+                        ontologyLevel != null ? ontologyLevel : "",
+                        scoreThreshold, massError, retTimeError);
+
+        Submission submission = Submission.from(session);
+        List<SearchResultDTO> resultDTOs = new ArrayList<>();
+        int matchIndex = 0;
+        for (org.dulab.adapcompounddb.models.entities.TempSpectrumMatch tm : tempMatches) {
+            SearchResultDTO dto = mapTempMatchToDTO(tm, matchIndex++, submission);
+            resultDTOs.add(dto);
+        }
+
+        DataTableResponse response = groupSearchSort(false, searchStr, start, length, resultDTOs, columnStr);
+        return mapper.writeValueAsString(response);
+    }
+
+    @GetMapping(value = "/temp/getMatchDetails", produces = "application/json")
+    public String tempMatchDetails(
+            @RequestParam("start") final Integer start,
+            @RequestParam("length") final Integer length,
+            @RequestParam("search") final String searchStr,
+            @RequestParam("columnStr") final String columnStr,
+            @RequestParam("fileIndex") final Integer fileIndex,
+            @RequestParam("spectrumIndex") final Integer spectrumIndex,
+            final HttpSession session) throws JsonProcessingException {
+
+        String sessionId = session.getId();
+        List<org.dulab.adapcompounddb.models.entities.TempSpectrumMatch> tempMatches =
+                tempSpectrumMatchRepository.findBySessionIdAndFileIndexAndSpectrumIndex(
+                        sessionId, fileIndex, spectrumIndex);
+
+        Submission submission = Submission.from(session);
+        List<SearchResultDTO> resultDTOs = new ArrayList<>();
+        int matchIndex = 0;
+        for (org.dulab.adapcompounddb.models.entities.TempSpectrumMatch tm : tempMatches) {
+            SearchResultDTO dto = mapTempMatchToDTO(tm, matchIndex++, submission);
+            resultDTOs.add(dto);
+        }
+
+        DataTableResponse response = groupSearchSort(false, searchStr, start, length, resultDTOs, columnStr);
+        return mapper.writeValueAsString(response);
+    }
+
+    private SearchResultDTO mapTempMatchToDTO(
+            org.dulab.adapcompounddb.models.entities.TempSpectrumMatch tm,
+            int matchIndex, Submission submission) {
+
+        SearchResultDTO dto = new SearchResultDTO();
+        dto.setQuerySpectrumName(tm.getQuerySpectrumName());
+        dto.setQueryFileIndex(tm.getFileIndex());
+        dto.setQuerySpectrumIndex(tm.getSpectrumIndex());
+        dto.setMatchIndex(matchIndex);
+
+        if (submission != null && submission.getFiles() != null) {
+            try {
+                Spectrum querySpec = submission.getFiles().get(tm.getFileIndex())
+                        .getSpectra().get(tm.getSpectrumIndex());
+                dto.setQueryExternalId(querySpec.getExternalId());
+                dto.setQueryWithPeaks(querySpec.getPeaks() != null);
+                if (querySpec.getPrecursor() != null)
+                    dto.setQueryPrecursorMz(querySpec.getPrecursor());
+                if (querySpec.getRetentionTime() != null)
+                    dto.setQueryRetTime(querySpec.getRetentionTime());
+            } catch (IndexOutOfBoundsException ignored) {}
+        }
+
+        Spectrum matchSpectrum = tm.getMatchSpectrum();
+        if (matchSpectrum != null) {
+            dto.setSpectrumId(matchSpectrum.getId());
+            dto.setName(matchSpectrum.getShortName());
+            dto.setExternalId(matchSpectrum.getExternalId());
+            if (matchSpectrum.getMass() != null)
+                dto.setMass(matchSpectrum.getMass());
+            if (matchSpectrum.getRetentionTime() != null)
+                dto.setRetTime(matchSpectrum.getRetentionTime());
+            dto.setFormula(matchSpectrum.getFormula());
+            dto.setInHouse(matchSpectrum.isInHouseReference());
+            dto.setChromatographyTypeLabel(matchSpectrum.getChromatographyType().getLabel());
+
+            SpectrumCluster cluster = matchSpectrum.getCluster();
+            if (cluster != null) {
+                dto.setClusterId(cluster.getId());
+                dto.setSize(cluster.getSize());
+                dto.setAveSignificance(cluster.getAveSignificance());
+                dto.setMinSignificance(cluster.getMinSignificance());
+                dto.setMaxSignificance(cluster.getMaxSignificance());
+            }
+
+            File file = matchSpectrum.getFile();
+            if (file != null && file.getSubmission() != null) {
+                dto.setSubmissionName(file.getSubmission().getName());
+                dto.setSubmissionId(file.getSubmission().getId());
+            }
+        }
+
+        if (tm.getScore() != null) dto.setScore(tm.getScore());
+        if (tm.getIsotopicSimilarity() != null) dto.setIsotopicSimilarity(tm.getIsotopicSimilarity());
+        if (tm.getPrecursorError() != null) dto.setPrecursorError(tm.getPrecursorError());
+        if (tm.getPrecursorErrorPPM() != null) dto.setPrecursorErrorPPM(tm.getPrecursorErrorPPM());
+        if (tm.getMassError() != null) dto.setMassError(tm.getMassError());
+        if (tm.getMassErrorPPM() != null) dto.setMassErrorPPM(tm.getMassErrorPPM());
+        if (tm.getRetTimeError() != null) dto.setRetTimeError(tm.getRetTimeError());
+        if (tm.getRetIndexError() != null) dto.setRetIndexError(tm.getRetIndexError());
+        dto.setOntologyLevel(tm.getOntologyLevel());
+
+        if (tm.getQueryPeakMzs() != null)
+            dto.setQueryPeakMzs(bytesToDoubles(tm.getQueryPeakMzs()));
+        if (tm.getLibraryPeakMzs() != null)
+            dto.setLibraryPeakMzs(bytesToDoubles(tm.getLibraryPeakMzs()));
+
+        return dto;
+    }
+
+    private static double[] bytesToDoubles(byte[] bytes) {
+        java.nio.ByteBuffer bb = java.nio.ByteBuffer.wrap(bytes);
+        int count = bytes.length / Double.BYTES;
+        double[] result = new double[count];
+        for (int i = 0; i < count; i++) result[i] = bb.getDouble();
+        return result;
+    }
+
     @PostMapping(value = "/getMatches")
     public String getMatchesById(@RequestBody JsonNode jsonObj, final HttpSession session)
         throws JsonProcessingException {
@@ -182,34 +373,46 @@ public class GroupSearchRestController extends BaseController {
         Object sessionObject = session.getAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME);
         DataTableResponse response = new DataTableResponse();
 
-        // TODO: optimize filter and wrap result in sycnrhonized list
         if (sessionObject != null) {
             spectrumDtoList = Collections.synchronizedList((List<SearchResultDTO>) sessionObject);
             List<SearchResultDTO> filteredList = new ArrayList<>(spectrumDtoList);
-//            List<SearchResultDTO> filteredList;
 
             filteredList = filteredList.stream()
-                    .filter(s -> (showMatchesOnly != 1 || s.getSpectrumId() != 0))  // Filter by matches only
-                    .filter(s -> (ontologyLevel.isEmpty() || (s.getOntologyLevel() != null && s.getOntologyLevel().equals(ontologyLevel))))  // Filter by ontology level
-                    .filter(s -> (scoreThreshold == null || (s.getScore() > 0.0 && s.getScore() > scoreThreshold)))  // Filter by score threshold
-                    .filter(s -> (massError == null || (s.getMassError() > 0.0 && s.getMassError() < massError)))  // Filter by mass error
-                    .filter(s -> (retTimeError == null || (s.getRetTimeError() > 0.0 && s.getRetTimeError() < retTimeError)))  // Filter by retention time error
-                    .filter(s -> (matchName.isEmpty() || (s.getName() != null && s.getName().contains(matchName))))  // Filter by match name
+                    .filter(s -> (showMatchesOnly != 1 || s.getSpectrumId() != 0))
+                    .filter(s -> (ontologyLevel.isEmpty() || (s.getOntologyLevel() != null && s.getOntologyLevel().equals(ontologyLevel))))
+                    .filter(s -> (scoreThreshold == null || (s.getScore() > 0.0 && s.getScore() > scoreThreshold)))
+                    .filter(s -> (massError == null || (s.getMassError() > 0.0 && s.getMassError() < massError)))
+                    .filter(s -> (retTimeError == null || (s.getRetTimeError() > 0.0 && s.getRetTimeError() < retTimeError)))
+                    .filter(s -> (matchName.isEmpty() || (s.getName() != null && s.getName().contains(matchName))))
                     .collect(Collectors.toList());
-
 
             filteredList = Collections.synchronizedList(filteredList);
             session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_FILTERED, filteredList);
 
-            //get the distinct spectra
-            Set<String> distinctSpectraNames = new HashSet<>();
-            filteredList = filteredList.stream().filter(
-                    s -> distinctSpectraNames.add(
-                            s.getQuerySpectrumName())).collect(Collectors.toList());
+            Set<String> distinctSpectraNames = new LinkedHashSet<>();
 
+            // Merge in distinct query names from temp table (previously batch-saved)
+            List<String> tempNames = tempSpectrumMatchRepository.findDistinctQueryNames(
+                    session.getId(), showMatchesOnly,
+                    ontologyLevel != null ? ontologyLevel : "",
+                    scoreThreshold, massError, retTimeError);
+            distinctSpectraNames.addAll(tempNames);
 
-            response = groupSearchSort(false, searchStr, start, length, filteredList, columnStr);
+            // Add names from current in-session batch
+            for (SearchResultDTO dto : filteredList) {
+                distinctSpectraNames.add(dto.getQuerySpectrumName());
+            }
 
+            List<SearchResultDTO> distinctList = new ArrayList<>();
+            int pos = 0;
+            for (String name : distinctSpectraNames) {
+                SearchResultDTO dto = new SearchResultDTO();
+                dto.setQuerySpectrumName(name);
+                dto.setPosition(pos++);
+                distinctList.add(dto);
+            }
+
+            response = groupSearchSort(false, searchStr, start, length, distinctList, columnStr);
         }
         return mapper.writeValueAsString(response);
     }
@@ -271,7 +474,8 @@ public class GroupSearchRestController extends BaseController {
                 matchIndex++, null, null, null);
             result.setChromatographyTypeLabel(
                 sm.getMatchSpectrum().getChromatographyType().getLabel());
-            result.setRetTimeError(sm.getRetTimeError());
+            if (sm.getRetTimeError() != null)
+                result.setRetTimeError(sm.getRetTimeError());
             result.setOntologyLevel(sm.getOntologyLevel());
             result.setQueryPeakMzs(sm.getQueryPeakMzList());
             result.setLibraryPeakMzs(sm.getLibraryPeakMzList());
