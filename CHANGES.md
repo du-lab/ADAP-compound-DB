@@ -1,3 +1,6 @@
+# Version 1.9.2
+- Improve memory consumption by storing search result in database
+
 # Version 1.9.1
 - Add user manual
 - 
