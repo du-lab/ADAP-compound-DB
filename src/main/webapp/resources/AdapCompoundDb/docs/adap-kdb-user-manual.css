@@ -1,0 +1,416 @@
+/* ADAP-KDB User Manual stylesheet
+ * Layout modeled after adap-big.github.io/user-manual.html
+ * Color palette aligned with ADAP-KDB site brown theme:
+ *   Primary       #844d36
+ *   Primary Light #b67960
+ *   Primary Dark  #542410
+ *   Grey          #f2f2f2
+ *   Grey Dark     #bfbfbf
+ */
+
+html {
+    color: #1a1a1a;
+    background-color: #fdfdfd;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    hyphens: auto;
+    overflow-wrap: break-word;
+    text-rendering: optimizeLegibility;
+    font-kerning: normal;
+}
+
+/* -------- Side navigation (sticky like adap-big) -------- */
+#TOC,
+#sidebar {
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    height: 100vh;
+    width: 30%;
+    max-width: 320px;
+    flex-shrink: 0;
+    background: #844d36;
+    color: #ffffff;
+    padding: 24px 20px;
+    overflow-y: auto;
+    overflow-x: auto;
+    box-sizing: border-box;
+    font-size: 1rem;
+    box-shadow: 2px 0 6px rgba(84, 36, 16, 0.25);
+}
+
+#TOC::before,
+#sidebar::before {
+    content: "Contents";
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    color: #ffffff;
+    border-bottom: 1px solid #b67960;
+    padding-bottom: 0.4rem;
+}
+
+#TOC ul,
+#sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0.25em 0 0;
+}
+
+#TOC li,
+#sidebar li {
+    margin-bottom: 10px;
+    list-style: none;
+}
+
+#TOC > ul,
+#sidebar > ul {
+    padding-left: 0;
+}
+
+#TOC ul ul,
+#sidebar ul ul {
+    padding-left: 0.9em;
+    margin-top: 6px;
+}
+
+#TOC li li,
+#sidebar li li,
+#sidebar li.subsection {
+    margin-left: 6px;
+    font-size: 0.95em;
+    margin-bottom: 6px;
+}
+
+#TOC a,
+#sidebar a {
+    text-decoration: none;
+    color: #ffffff;
+    display: inline-block;
+    padding: 2px 4px;
+    border-radius: 3px;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+#TOC a:hover,
+#sidebar a:hover {
+    background: #b67960;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+#TOC a:not(:hover) {
+    text-decoration: none;
+}
+
+/* -------- Main centered content -------- */
+/* Wrap pandoc content in <main> via post-processing. */
+main {
+    flex: 1 1 auto;
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 40px 32px 60px;
+    box-sizing: border-box;
+    min-width: 0; /* prevents flex overflow for wide tables/images */
+}
+
+/* -------- Pandoc title header -------- */
+header,
+#title-block-header {
+    background: #844d36;
+    color: #ffffff;
+    padding: 1.8em 2em 1.4em;
+    margin: -40px -32px 2em;
+    text-align: center;
+    box-shadow: 0 3px 8px rgba(84, 36, 16, 0.25);
+}
+
+header h1,
+#title-block-header h1,
+header .title,
+#title-block-header .title {
+    color: #ffffff;
+    margin-top: 0;
+    text-shadow: 0 0 6px #542410;
+}
+
+header .author,
+header .date,
+#title-block-header .author,
+#title-block-header .date {
+    color: #f2f2f2;
+}
+
+header a,
+#title-block-header a {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+/* -------- Headings -------- */
+h1, h2 {
+    color: #542410;
+}
+
+h3, h4 {
+    color: #844d36;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin-top: 1.4em;
+}
+
+h5, h6 {
+    font-size: 1em;
+    font-style: italic;
+}
+
+h6 {
+    font-weight: normal;
+}
+
+/* -------- Generic content -------- */
+p {
+    margin: 1em 0;
+}
+
+a {
+    color: #844d36;
+}
+
+a:visited {
+    color: #542410;
+}
+
+a:hover {
+    color: #b67960;
+}
+
+/* -------- Uniform image styling -------- */
+img {
+    display: block;
+    width: 100%;
+    max-width: 640px;
+    height: auto;
+    max-height: 420px;
+    object-fit: contain;
+    margin: 1.25em auto;
+    border-radius: 4px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* Pandoc renders many figure captions in the same paragraph as the image. */
+main p:has(> img) {
+    max-width: 640px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+svg {
+    height: auto;
+    max-width: 100%;
+}
+
+/* Captions immediately after an image */
+img + em,
+p > img + br + em {
+    display: block;
+    text-align: center;
+    color: #606060;
+    font-size: 0.9em;
+    margin-top: -0.5em;
+    margin-bottom: 1em;
+}
+
+/* -------- Lists, blockquote, code, tables -------- */
+ol, ul {
+    padding-left: 1.7em;
+    margin-top: 1em;
+}
+
+li > ol, li > ul {
+    margin-top: 0;
+}
+
+blockquote {
+    margin: 1em 0 1em 1.7em;
+    padding-left: 1em;
+    border-left: 3px solid #b67960;
+    color: #606060;
+}
+
+code {
+    font-family: Menlo, Monaco, Consolas, "Lucida Console", monospace;
+    font-size: 85%;
+    margin: 0;
+    hyphens: manual;
+    white-space: pre-wrap;
+    background: #f2f2f2;
+    padding: 0 3px;
+    border-radius: 3px;
+}
+
+pre {
+    margin: 1em 0;
+    overflow: auto;
+    background: #f2f2f2;
+    padding: 0.75em 1em;
+    border-left: 3px solid #b67960;
+    border-radius: 3px;
+}
+
+pre code {
+    padding: 0;
+    overflow: visible;
+    overflow-wrap: normal;
+    background: transparent;
+}
+
+.sourceCode {
+    background-color: transparent;
+    overflow: visible;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #bfbfbf;
+    height: 1px;
+    margin: 1em 0;
+}
+
+table {
+    margin: 1em 0;
+    border-collapse: collapse;
+    width: 100%;
+    overflow-x: auto;
+    display: block;
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+table caption {
+    margin-bottom: 0.75em;
+    color: #542410;
+    font-weight: 600;
+}
+
+thead th {
+    background: #b67960;
+    color: #ffffff;
+}
+
+tbody {
+    margin-top: 0.5em;
+    border-top: 1px solid #542410;
+    border-bottom: 1px solid #542410;
+}
+
+th {
+    border-top: 1px solid #542410;
+    padding: 0.35em 0.6em;
+    text-align: left;
+}
+
+td {
+    padding: 0.25em 0.6em;
+}
+
+tbody tr:nth-child(even) {
+    background: #faf5f1;
+}
+
+/* -------- Misc helpers -------- */
+span.smallcaps {
+    font-variant: small-caps;
+}
+
+div.columns {
+    display: flex;
+    gap: min(4vw, 1.5em);
+}
+
+div.column {
+    flex: auto;
+    overflow-x: auto;
+}
+
+div.hanging-indent {
+    margin-left: 1.5em;
+    text-indent: -1.5em;
+}
+
+ul.task-list[class] {
+    list-style: none;
+}
+
+ul.task-list li input[type="checkbox"] {
+    font-size: inherit;
+    width: 0.8em;
+    margin: 0 0.8em 0.2em -1.6em;
+    vertical-align: middle;
+}
+
+/* -------- Responsive -------- */
+@media (max-width: 768px) {
+    body {
+        display: block;
+    }
+
+    #TOC,
+    #sidebar {
+        position: relative;
+        width: 100%;
+        max-width: none;
+        height: auto;
+        border-right: none;
+        border-bottom: 2px solid #542410;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px;
+    }
+
+    #TOC ul,
+    #sidebar ul {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    #TOC li,
+    #sidebar li {
+        margin-bottom: 0;
+    }
+
+    #TOC li li,
+    #sidebar li li,
+    #sidebar li.subsection {
+        margin-left: 0;
+        font-size: 1em;
+    }
+
+    main {
+        padding: 16px 14px 30px;
+    }
+
+    header,
+    #title-block-header {
+        margin: -16px -14px 1.5em;
+        padding: 1.5em 1em;
+    }
+
+    img {
+        max-height: none;
+    }
+}

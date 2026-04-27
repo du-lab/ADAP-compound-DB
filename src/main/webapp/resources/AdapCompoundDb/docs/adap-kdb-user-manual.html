@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>adap-kdb-user-manual</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="adap-kdb-user-manual.css" />
+  <meta name="decorator" content="none" />
+  <meta name="sitemesh.decorator" content="none" />
+</head>
+<body>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#adap-kdb-v1.9.0-user-manual"
+id="toc-adap-kdb-v1.9.0-user-manual">ADAP-KDB v1.9.0 User Manual</a>
+<ul>
+<li><a href="#chapter-1.-introduction"
+id="toc-chapter-1.-introduction">Chapter 1. Introduction</a>
+<ul>
+<li><a href="#what-is-adap-kdb" id="toc-what-is-adap-kdb">1.1 What is
+ADAP-KDB ?</a></li>
+<li><a href="#adap-informatics-ecosystem"
+id="toc-adap-informatics-ecosystem">1.2 ADAP Informatics
+Ecosystem</a></li>
+<li><a href="#user-interface-overview"
+id="toc-user-interface-overview">1.3 User Interface Overview</a></li>
+<li><a href="#providing-feedback-and-reporting-issues"
+id="toc-providing-feedback-and-reporting-issues">1.4 Providing Feedback
+and Reporting Issues</a></li>
+</ul></li>
+<li><a href="#chapter-2.-creating-an-account"
+id="toc-chapter-2.-creating-an-account">Chapter 2. Creating an
+Account</a>
+<ul>
+<li><a href="#account-types-and-permissions"
+id="toc-account-types-and-permissions">2.1 Account Types and
+Permissions</a></li>
+<li><a href="#registration-login-and-session-management"
+id="toc-registration-login-and-session-management">2.2 Registration,
+Login, and Session Management</a></li>
+<li><a href="#password-recovery-and-sign-out"
+id="toc-password-recovery-and-sign-out">2.3 Password Recovery and
+Sign-Out</a></li>
+<li><a href="#account-page-overview" id="toc-account-page-overview">2.4
+Account Page Overview</a></li>
+</ul></li>
+<li><a href="#chapter-3.-spectral-search"
+id="toc-chapter-3.-spectral-search">Chapter 3. Spectral Search</a>
+<ul>
+<li><a href="#when-to-use-spectral-search"
+id="toc-when-to-use-spectral-search">3.1 When to Use Spectral
+Search</a></li>
+<li><a href="#launching-a-spectralgroup-search-job"
+id="toc-launching-a-spectralgroup-search-job">3.2 Launching a
+Spectral/Group Search Job</a></li>
+<li><a href="#parameter-fields-and-library-selection"
+id="toc-parameter-fields-and-library-selection">3.3 Parameter Fields and
+Library Selection</a></li>
+<li><a href="#monitoring-progress-and-managing-jobs"
+id="toc-monitoring-progress-and-managing-jobs">3.4 Monitoring Progress
+and Managing Jobs</a></li>
+<li><a href="#reviewing-spectralgroup-search-results"
+id="toc-reviewing-spectralgroup-search-results">3.5 Reviewing
+Spectral/Group Search Results</a></li>
+<li><a href="#exporting-group-search-reports"
+id="toc-exporting-group-search-reports">3.6 Exporting Group Search
+Reports</a></li>
+</ul></li>
+<li><a href="#chapter-4.-manual-search"
+id="toc-chapter-4.-manual-search">Chapter 4. Manual Search</a>
+<ul>
+<li><a href="#running-a-manual-search"
+id="toc-running-a-manual-search">4.1 Running a Manual Search</a></li>
+<li><a href="#configuring-search-parameters"
+id="toc-configuring-search-parameters">4.2 Configuring Search
+Parameters</a></li>
+</ul></li>
+<li><a href="#chapter-5.-individual-search"
+id="toc-chapter-5.-individual-search">Chapter 5. Individual Search</a>
+<ul>
+<li><a href="#running-an-individual-search"
+id="toc-running-an-individual-search">5.1 Running an Individual
+Search</a></li>
+<li><a href="#interpreting-individual-search-results"
+id="toc-interpreting-individual-search-results">5.2 Interpreting
+Individual Search Results</a></li>
+<li><a href="#visualising-query-vs.-match-spectra"
+id="toc-visualising-query-vs.-match-spectra">5.3 Visualising Query
+vs. Match Spectra</a></li>
+<li><a href="#viewing-and-saving-individual-matches"
+id="toc-viewing-and-saving-individual-matches">5.4 Viewing and Saving
+Individual Matches</a></li>
+</ul></li>
+<li><a href="#chapter-6.-uploading-and-managing-user-spectra"
+id="toc-chapter-6.-uploading-and-managing-user-spectra">Chapter 6.
+Uploading and Managing User Spectra</a>
+<ul>
+<li><a href="#supported-file-types-and-chromatography-modes"
+id="toc-supported-file-types-and-chromatography-modes">6.1 Supported
+File Types and Chromatography Modes</a></li>
+<li><a href="#file-upload" id="toc-file-upload">6.2 File Upload</a></li>
+<li><a href="#metadata-mapping" id="toc-metadata-mapping">6.3 Metadata
+Mapping</a></li>
+<li><a href="#submission-review-and-editing"
+id="toc-submission-review-and-editing">6.4 Submission Review and
+Editing</a></li>
+<li><a href="#viewing-and-downloading-files"
+id="toc-viewing-and-downloading-files">6.5 Viewing and Downloading
+Files</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+<main>
+<h1 id="adap-kdb-v1.9.0-user-manual">ADAP-KDB v1.9.0 User Manual</h1>
+<p>Du-lab Team<br />
+Department of Bioinformatics and Genomics<br />
+University of North Carolina at Charlotte<br />
+dulab.binf@gmail.com — <a href="https://www.du-lab.org/"
+class="uri">https://www.du-lab.org/</a><br />
+October 24, 2025</p>
+<hr />
+<h2 id="chapter-1.-introduction">Chapter 1. Introduction</h2>
+<h3 id="what-is-adap-kdb">1.1 What is ADAP-KDB ?</h3>
+<p>ADAP-KDB is a web application for compound identification,
+annotations, and prioritization. Users can upload spectra to ADAP-KDB to
+perform library matching against publicly available and user-provided
+private spectral libraries. ADAP-KDB serves as a compound and mass
+spectra search engine that enables the users to identify and prioritize
+spectra through comprehensive library matching capabilities.</p>
+<p>The application is accessible through a public cloud instance at <a
+href="https://adap.cloud" class="uri">https://adap.cloud</a> and
+requires a desktop browser with JavaScript enabled (Google Chrome,
+Firefox, Safari, or Microsoft Edge). A 1920×1080 resolution is
+recommended for optimal data tables and plots visualization, and a
+stable internet connection is essential for large file uploads and
+long-running searches.</p>
+<h3 id="adap-informatics-ecosystem">1.2 ADAP Informatics Ecosystem</h3>
+<p>ADAP-KDB is a part of the ADAP informatics ecosystem.</p>
+<p><img src="fig/user-manual/adap-ecosystem.png" alt="adap-ecosystem" />
+Figure 1.2: ADAP Informatics Ecosystem for processing and analyzing mass
+spectrometry data.</p>
+<ul>
+<li><strong>ADAP-BIG</strong> performs data preprocessing on raw GC-MS
+and LC-MS datasets. It extracts compound signals from instrument files,
+detects chromatographic peaks, groups them into features, and export CSV
+files containing detected features (m/z, retention time, intensity,
+etc.) and MSP files containing MS/MS spectra for features that have
+fragmentation data. This stage converts complex raw MS data into
+structured, analysis-ready feature tables and spectral libraries.</li>
+<li><strong>ADAP-Analytics</strong> (accessible through ADAP-BIG)
+performs statistical and machine-learning analysis (ANOVA, PCA,
+PLS-DA).</li>
+<li><strong>ADAP-KDB</strong> ADAP-KDB is a web-based compound
+identification, annotation, and prioritization engine where users can
+upload spectral files to perform library matching against private and/or
+public libraries.</li>
+<li><strong>MetaboFood + ADAP-Exposome</strong> (in development) focuses
+on biological interpretation of metabolomics data.</li>
+</ul>
+<p>Together, these components supply an end-to-end solution: from raw
+signal processing (ADAP-BIG) to knowledgebase-driven identification and
+prioritisation (ADAP-KDB).</p>
+<h3 id="user-interface-overview">1.3 User Interface Overview</h3>
+<p><img src="fig/user-manual/homepage.png" alt="homepage" /> Figure 1.3:
+ADAP-KDB Landing Page</p>
+<p>The landing page presents three guided entry points:</p>
+<ol type="1">
+<li><strong>Search public libraries</strong> - Browse and explore
+publicly available spectral libraries to discover known compounds and
+their spectral data.</li>
+<li><strong>Upload and search against private libraries</strong> —
+Upload your own spectral data files and search them against your private
+libraries or public libraries for compound identification.</li>
+<li><strong>Prioritise your spectra</strong> — (in development)</li>
+</ol>
+<p>Primary navigation (left sidebar) links to:</p>
+<ul>
+<li><strong>Manual Search</strong> - Quickly search for compound matches
+by entering spectrum data directly without uploading files. Ideal for
+testing single spectra or when you have spectrum data ready to
+paste.</li>
+<li><strong>Libraries</strong> — Browse and explore available spectral
+libraries, including public libraries and consensus spectra compiled
+from multiple sources.</li>
+<li><strong>Downloads</strong> — Access pre-compiled consensus library
+exports for offline use or integration with other tools.</li>
+<li><strong>Account</strong> — Manage your user account, including
+registration, login, profile settings, and access to your saved
+submissions and search history.</li>
+</ul>
+<h3 id="providing-feedback-and-reporting-issues">1.4 Providing Feedback
+and Reporting Issues</h3>
+<ul>
+<li>Email: <strong>adap.helpdesk@gmail.com</strong></li>
+<li>Feedback form: <a href="https://forms.gle/zYPXt463DC1WjJMy8"
+class="uri">https://forms.gle/zYPXt463DC1WjJMy8</a></li>
+</ul>
+<p>Please include your contact information, reproduction steps, browser
+details, when reporting issues for the best troubleshooting
+experience.</p>
+<hr />
+<h2 id="chapter-2.-creating-an-account">Chapter 2. Creating an
+Account</h2>
+<h3 id="account-types-and-permissions">2.1 Account Types and
+Permissions</h3>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 75%" />
+</colgroup>
+<thead>
+<tr>
+<th>Role</th>
+<th>Library Search Capabilities</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Guest (unauthenticated)</td>
+<td>Browse public libraries, run spectral search, consensus clusters,
+and downloads. Uploading files permitted but saving requires login and
+CAPTCHA.</td>
+</tr>
+<tr>
+<td>Registered user</td>
+<td>Create private libraries, run spectral searches, manage own studies,
+access private results, export matches.</td>
+</tr>
+<tr>
+<td>Organization Account</td>
+<td>All registered user capabilities plus organization-wide management:
+aprove, edit, and delete any studies within the organization, and manage
+organization members and their access.</td>
+</tr>
+</tbody>
+</table>
+<p>Private studies remain invisible to guests and other users.</p>
+<h3 id="registration-login-and-session-management">2.2 Registration,
+Login, and Session Management</h3>
+<p><img src="fig/user-manual/sign-up.png" alt="sign-up" /> Figure 2.1:
+Sign-up page</p>
+<ol type="1">
+<li>To register for an account, click on “Register” on the
+Log-in/Sign-up page.
+<ul>
+<li>All fields are required.</li>
+<li>Password policy: ≥8 characters including uppercase, lowercase,
+digit, and special character; no whitespace.</li>
+<li>Complete the Google reCAPTCHA before submission.</li>
+</ul></li>
+<li>Confirm your email (if validation is configured) and log in via
+Log-in/Sign-up page.</li>
+<li>Successful login redirects to the landing page.</li>
+<li>Sessions remain active until logout or browser closure.</li>
+</ol>
+<h3 id="password-recovery-and-sign-out">2.3 Password Recovery and
+Sign-Out</h3>
+<ul>
+<li><strong>Forgot username/password</strong>: Click on <strong>Forgot
+username ?</strong> or <strong>Forgot password ?</strong> (from the
+login page). Provide your username or email to receive reset
+instructions.</li>
+<li><strong>Logout</strong>: select <code>Logout</code> from the
+top-right menu.</li>
+</ul>
+<h3 id="account-page-overview">2.4 Account Page Overview</h3>
+<p><img src="fig/user-manual/account-page-2.png" alt="account-age" />
+Fiture 2.2: Account page</p>
+<p>The Account page aggregates user-scoped tools and data across several
+tabs. Tabs visible to you depend on role and organization membership.
+Organizations enable data sharing and collaboration within a lab or
+team, allowing members to share private studies and in-house libraries.
+For more information about organization accounts and their capabilities,
+see section 2.1.</p>
+<h4 id="studies">Studies</h4>
+<ul>
+<li>Lists your uploaded studies (private by default) with status,
+spectrum counts, chromatography type, and visibility flags.</li>
+<li>Actions: view/edit studies, run group search, toggle private/public
+(where permitted), export studies.</li>
+</ul>
+<h4 id="private-libraries">Private Libraries</h4>
+<ul>
+<li>Shows your in-house reference libraries.</li>
+<li>Can view and edit library’s metadata by clicking on the library
+name.</li>
+<li>Can view spectrum information</li>
+<li>Visibility: private to you</li>
+</ul>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li>User defaults for search forms:
+<ul>
+<li>Score threshold (0–1000)</li>
+<li>m/z tolerance value and units (Da or ppm)</li>
+<li>Retention time/index tolerances and matching mode (GC-MS only)</li>
+<li>Matches per spectrum (limit)</li>
+</ul></li>
+<li>Leaving a field blank uses the system default; saved values pre-fill
+Individual and Group Search.</li>
+</ul>
+<h4 id="search-history">Search History</h4>
+<ul>
+<li>Chronological log of your recent Group Searches with timestamps,
+submission/file context, software version, and parameter snapshots.</li>
+<li>Actions: reopen a result, re-run with updated parameters, or export
+recent reports.</li>
+</ul>
+<h4 id="manage-organization-for-organization-account">Manage
+Organization (for organization account)</h4>
+<ul>
+<li>Search for users by username and invite them to join the
+organization by sending an email invitation. Revoke access for current
+organization members as needed.</li>
+</ul>
+<hr />
+<h2 id="chapter-3.-spectral-search">Chapter 3. Spectral Search</h2>
+<h3 id="when-to-use-spectral-search">3.1 When to Use Spectral
+Search</h3>
+<p>Spectral Search runs library matching for every spectrum in an
+uploaded file or previously saved study, then aggregates results. Use it
+when you need to:</p>
+<ul>
+<li>Identify spectra by matching against private libraries</li>
+<li>Annotate spectra by matching against public libraries</li>
+<li>Produce match tables for downstream statistics or reporting.</li>
+<li>Re-run an analysis with updated parameters/libraries without manual
+per‑spectrum work.</li>
+</ul>
+<p>Choose Individual Search (Chapter 5) when evaluating a single
+spectrum interactively.</p>
+<h3 id="launching-a-spectralgroup-search-job">3.2 Launching a
+Spectral/Group Search Job</h3>
+<p>There are two typical starting points for a spectra search:</p>
+<ul>
+<li>From a new upload (session‑based, not yet saved)</li>
+<li>From an existing submission (saved in your account)</li>
+</ul>
+<p>Step-by-step (recommended workflow):</p>
+<ol type="1">
+<li>Upload files (see more details in <strong>chapter 6.4</strong>)
+<ul>
+<li>Click <strong>Upload File</strong> and select the correct
+chromatography type (GC‑MS, LC‑MS, or LC‑MS/MS). This determines
+matching logic and available parameters.</li>
+<li>Add MSP/MGF (spectra) and optionally CSV metadata. You can mix file
+types.</li>
+</ul></li>
+<li>Map metadata (optional but recommended)
+<ul>
+<li>On the <strong>Add Metadata</strong> page, map detected fields
+(e.g., Name, Formula, Precursor m/z, Retention Time, Identifiers); See
+<strong>Chapter 6.3</strong> for details on metadata mapping.</li>
+<li>If the same field exists in MSP and CSV, mapped values are
+merged.</li>
+</ul></li>
+<li>Review/save the submission
+<ul>
+<li>After adding metadata, a submission overview page is shown. On this
+page, you can save submission, view spectral data, or download the
+files. See more details in <strong>chapter 6.4</strong>.</li>
+<li>Spectral/Group search can be run <strong>wihtout saving</strong>;
+the submission stays in your session until cleared or expired.</li>
+<li>Saving creates a persistent submission visible under Account -&gt;
+Studies.</li>
+</ul></li>
+<li>Open Spectral/Group Search parameters
+<ul>
+<li><p>Click on the <strong>Search</strong> button on the top right.
+<img src="fig/user-manual/search-options.png" alt="search-options" />
+Figure 3.1: Group search options</p></li>
+<li><p>Choose whether to search with or without ontology level
+(optional).</p>
+<ul>
+<li><strong>Without ontology levels</strong>: Uses your custom search
+parameters (score threshold, m/z tolerance, etc.) and returns all
+matches that meet those criteria. This gives you full control over
+filtering criteria.</li>
+<li><strong>With ontology levels</strong>: Uses standardized, stricter
+search parameters and automatically classifies matches into confidence
+levels (NV, Level 1, Level 2, Level 3) based on multiple criteria
+including fragmentation score, mass error, retention time error, and
+isotopic similarity. This provides a standardized confidence
+classification system that helps prioritize high-quality
+identifications. Note that matches that don’t meet the thresholds for
+any ontology level will not be assigned a level.</li>
+</ul></li>
+<li><p>Pick target libraries (public, your private, and/or
+organization‑shared libraries). The libraries shown are filtered based
+on the chromatography type (positive or negative mode) of the uploaded
+files.</p></li>
+<li><p>Set parameters (only available when searching
+<strong>without</strong> ontology levels): score threshold, m/z
+tolerance (Da or ppm), retention options, matches per spectrum. When
+searching with ontology levels, these parameters are automatically set
+to standardized values and cannot be customized.</p></li>
+<li><p>Enable <strong>Send Result to Email</strong> to receive export
+files via email (registered users only).</p></li>
+</ul></li>
+<li>Launch and monitor
+<ul>
+<li>Start the job; the progress bar updates as spectra are processed.
+You can stop the job or start a new one with different parameters.</li>
+<li>Closing the browser does not stop the job; revisit the search result
+page by clicking on the <strong>Group Search Results</strong>
+button.</li>
+</ul></li>
+</ol>
+<h3 id="parameter-fields-and-library-selection">3.3 Parameter Fields and
+Library Selection</h3>
+<p>Key fields in the Spectral/Group Search parameters (<em>Only
+available when searching without ontology levels.</em>):</p>
+<ul>
+<li><strong>Score threshold</strong> (0–1000): Minimum similarity score
+for matches to be included in results.</li>
+<li><strong>m/z tolerance</strong> with selectable units (Da/ppm): Mass
+accuracy tolerance for matching peaks.</li>
+<li><strong>Retention time tolerance</strong> (minutes) and retention
+index tolerance (units defined by dataset): Optional retention-based
+filtering.</li>
+<li><strong>Ontology level aggregation</strong>: Choose whether to
+search with or without ontology level aggregation.
+<ul>
+<li><strong>Without ontology levels</strong>: Uses your custom search
+parameters and returns all matches meeting those criteria.</li>
+<li><strong>With ontology levels</strong>: Uses standardized, stricter
+parameters and automatically classifies matches into confidence levels
+(NV, Level 1, Level 2, Level 3) based on fragmentation score, mass
+error, retention time error, and isotopic similarity. Matches that don’t
+meet thresholds for any level will not be assigned an ontology
+level.</li>
+</ul></li>
+<li><strong>Library selector</strong>: multi-select list of public and
+private studies available to the user. At least one library is
+required.</li>
+<li><strong>Email delivery</strong>: Enable this option to automatically
+send CSV export files to your account email address when the search
+completes (registered users only).</li>
+</ul>
+<h3 id="monitoring-progress-and-managing-jobs">3.4 Monitoring Progress
+and Managing Jobs</h3>
+<p>After submission, the application:</p>
+<ul>
+<li>Updates a progress bar</li>
+<li>Provides a <strong>Stop Search</strong> button to cancel long
+runs.</li>
+</ul>
+<p>Closed browsers do not cancel the job; click on the <strong>Group
+Search Results</strong> button to monitor the search.</p>
+<h3 id="reviewing-spectralgroup-search-results">3.5 Reviewing
+Spectral/Group Search Results</h3>
+<p><img src="fig/user-manual/group-search.png" alt="group-search" />
+Figure 3.2: Group Search dashboard The Group Search dashboard
+displays:</p>
+<ul>
+<li><strong>Filters</strong> — options to toggle “matches only,” adjust
+ontology level, and set score, mass-error, and retention-error
+thresholds.</li>
+<li><strong>Results table</strong> — a comprehensive list of matched
+compounds with query metadata, match metadata, similarity scores,
+errors, and ontology labels.</li>
+<li><strong>Query pane</strong> — details of the currently selected
+query spectrum, including metadata and molecule structure.</li>
+<li><strong>Match pane</strong> — metadata for the highlighted library
+match, including formula, precursor type, identifiers, and a molecular
+structure.</li>
+<li><strong>MS/MS spectral match plot</strong> — compares the
+experimental MS/MS spectrum (red) with the reference library spectrum
+(blue), showing matched and unmatched ions across the m/z range. Greater
+alignment in peak positions and intensities indicates a higher
+similarity score.</li>
+<li><strong>Distinct Query table</strong> — list of unique query
+spectra, enabling quick navigation through results.</li>
+</ul>
+<p>Users can use the built-in DataTables search, filtering, and column
+sorting to quickly prioritise matches of interest.</p>
+<h3 id="exporting-group-search-reports">3.6 Exporting Group Search
+Reports</h3>
+<p>Two CSV exports are available:</p>
+<ol type="1">
+<li><strong>Simple export</strong> — top-ranked match per query (ideal
+for quick reviews).</li>
+<li><strong>Advanced export</strong> — all qualifying matches per query
+(comprehensive).</li>
+</ol>
+<hr />
+<h2 id="chapter-4.-manual-search">Chapter 4. Manual Search</h2>
+<p>Manual Search allows users to search without uploading files by
+manually entering spectrum data.</p>
+<h3 id="running-a-manual-search">4.1 Running a Manual Search</h3>
+<p><strong>To run a Manual Search:</strong></p>
+<ol type="1">
+<li>Navigate to <strong>Manual Search</strong> from the left
+sidebar.</li>
+<li>Select the <strong>Chromatography type</strong> tab (GC-MS, LC-MS,
+or LC-MS/MS).</li>
+<li>Fill in the query fields:
+<ul>
+<li><p><strong>Identifier</strong> (optional): Compound name, CAS, HMDB,
+KEGG, PubChem ID, or InChIKey.</p></li>
+<li><p><strong>Neutral Mass</strong> (optional): Neutral mass of the
+compound in Da.</p></li>
+<li><p><strong>Precursor m/z</strong> (optional): Precursor m/z value
+for LC-MS/MS.</p></li>
+<li><p><strong>Spectrum</strong>: Paste m/z-intensity pairs. Accepts
+formats like:</p>
+<pre><code>79 100
+67 90.33
+80 75.87</code></pre>
+<p>Or space/tab/comma-separated: <code>79,100; 67,90.33; 80,75.87</code>
+<img src="fig/user-manual/search-parameter1.png"
+alt="manual-search-1" /> Figure 4.1: Manual search parameters
+example</p></li>
+</ul></li>
+<li>Open the <strong>Libraries</strong> tab and select target libraries
+(at least one required).</li>
+<li>Open the <strong>Parameters</strong> tab and adjust:
+<ul>
+<li>Score threshold (default 500; lower values return more matches)</li>
+<li>m/z tolerance (0.01 Da or 10-20 ppm typical for
+high-resolution)</li>
+<li>Retention index settings (GC-MS only)</li>
+<li>Matches per spectrum limit</li>
+</ul></li>
+<li>Click <strong>Search</strong> to run the query.</li>
+</ol>
+<p><strong>Note:</strong> If you leave Identifier blank, the search
+matches purely by spectral similarity. If you fill Identifier, results
+must also match that identifier.</p>
+<h3 id="configuring-search-parameters">4.2 Configuring Search
+Parameters</h3>
+<p><img src="fig/user-manual/search-parameter2.png"
+alt="search-parameters" /> Figure 4.2: Manual Search parameters</p>
+<p>Search parameters configurations:</p>
+<ul>
+<li><strong>Score Threshold</strong> (<code>0–1000</code>, default 500):
+filters matches by NIST score. Disable by leaving blank.</li>
+<li><strong>m/z tolerance</strong> (default 0.01): supports
+<strong>Da</strong> or <strong>ppm</strong> tolerances.</li>
+<li><strong>Retention index tolerance</strong> (GC only) and
+<strong>retention index</strong> matching (exact, windowed, or
+ignored).</li>
+<li><strong>Matches per Spectrum</strong>: maximum number of matches per
+query (default 100).</li>
+</ul>
+<p>Settings persist in a cookie, allowing rapid reuse across
+sessions.</p>
+<hr />
+<h2 id="chapter-5.-individual-search">Chapter 5. Individual Search</h2>
+<p>Individual Search allows users to search a spectrum that was already
+uploaded or saved in a submission.</p>
+<h3 id="running-an-individual-search">5.1 Running an Individual
+Search</h3>
+<p><strong>To run an Individual Search:</strong></p>
+<ol type="1">
+<li><p><strong>Option A — From uploaded files (session):</strong></p>
+<ul>
+<li>Upload files by clicking on the <strong>Upload Files</strong> button
+(see Chapter 6.2).</li>
+<li>Navigate to the submission review page.</li>
+<li>Click on a spectrum to view it.</li>
+<li>Click the <strong>Search</strong> button in the spectrum view.</li>
+</ul></li>
+<li><p><strong>Option B — From saved submission:</strong></p>
+<ul>
+<li>Go to Account → Studies and open your submission.</li>
+<li>Click on a spectrum to view it.</li>
+<li>Click the <strong>Search</strong> button in the spectrum view.</li>
+</ul></li>
+<li><p>The search automatically uses the query spectrum’s metadata
+(precursor m/z, retention time, etc.) and displays available filters in
+a modal.</p></li>
+<li><p>Click <strong>Search</strong> to initiate the search; results
+load on the same page.</p></li>
+<li><p>You can later change the libraries searched against by clicking
+on the <strong>Filter…</strong> button on the result page.</p></li>
+</ol>
+<p><img src="fig/user-manual/search-result-page.png"
+alt="manual-search-result" /> Figure 5.1: Individual Search result
+page</p>
+<h3 id="interpreting-individual-search-results">5.2 Interpreting
+Individual Search Results</h3>
+<p>The results table reports:</p>
+<ul>
+<li><strong>#</strong> — rank order by score.</li>
+<li><strong>Query Spectrum</strong> — name of the uploaded
+spectrum.</li>
+<li><strong>Match</strong> — hyperlink to the matched spectrum (public
+or private).</li>
+<li><strong>Neutral Mass</strong>, <strong>Library Size</strong> —
+metadata from the match.</li>
+<li><strong>NIST Score</strong> — scaled 0–1.000 (displayed as
+0–1000).</li>
+<li><strong>Mass Error (mDa / ppm)</strong> — calculated from precursor
+values.</li>
+<li><strong>Retention Time Error</strong> — minutes difference if
+retention data supplied.</li>
+<li><strong>ANOVA p-values</strong> — average, minimum, and maximum
+significance (when available).</li>
+<li><strong>Ontology Level</strong> — match confidence level badge.</li>
+</ul>
+<p>Use table sorting and column filters (where available) to refine the
+view. Clicking the view icon opens the match spectrum page for deeper
+inspection.</p>
+<h3 id="visualising-query-vs.-match-spectra">5.3 Visualising Query
+vs. Match Spectra</h3>
+<p>The page embeds interactive components:</p>
+<ul>
+<li><strong>Two-spectrum plot</strong>: overlays query and match peaks
+with zoom/pan controls.</li>
+<li><strong>SpectrumInfo panels</strong>: summarise standard properties
+(precursor m/z, neutral mass, retention) and custom metadata gathered
+during upload.</li>
+<li><strong>Structure rendering</strong>: when canonical SMILES or InChI
+is provided, the system generates 2D figures.</li>
+</ul>
+<p>Hover over peaks to read m/z and intensity; use the toggle controls
+to swap between absolute and normalised intensity views.</p>
+<h3 id="viewing-and-saving-individual-matches">5.4 Viewing and Saving
+Individual Matches</h3>
+<p>For single-spectrum investigations:</p>
+<ul>
+<li><strong>View match details</strong>: Click on a match in the results
+table to view detailed information about that matched spectrum,
+including its properties and structure.</li>
+<li><strong>Note</strong>: There is no export option for the search
+results table itself. To export multiple matches in CSV format, run a
+<strong>Group Search</strong> (Chapter 3) which provides CSV export
+options for batch reporting.</li>
+</ul>
+<hr />
+<h2 id="chapter-6.-uploading-and-managing-user-spectra">Chapter 6.
+Uploading and Managing User Spectra</h2>
+<h3 id="supported-file-types-and-chromatography-modes">6.1 Supported
+File Types and Chromatography Modes</h3>
+<p><strong>File formats:</strong></p>
+<ul>
+<li><strong>MSP / MSL</strong> — canonical spectral format.</li>
+<li><strong>MGF</strong> — tandem spectra.</li>
+<li><strong>CSV</strong> — tabular annotations.</li>
+<li><strong>RAW</strong> (<code>mzML</code>, <code>mzXML</code>,
+<code>CDF</code>) — raw profiles converted into spectra.</li>
+</ul>
+<p>Each upload is tied to a single chromatography type:</p>
+<ul>
+<li>GC-MS<br />
+</li>
+<li>LC-MS (positive/negative pseudo spectra)<br />
+</li>
+<li>LC-MS/MS (positive/negative)<br />
+</li>
+<li>None (mass spectra without chromatography metadata)</li>
+</ul>
+<h3 id="file-upload">6.2 File Upload</h3>
+<ol type="1">
+<li>Click on <strong>Upload Files</strong> on the side bar.</li>
+<li>Choose chromatography type (mandatory).</li>
+<li>Select one or more files. <strong>MSP files are more important and
+the default/recommended format</strong> for most users, as they contain
+both spectral data (peaks/m/z-intensity pairs) and metadata in a single
+file. <strong>Peaks are essential for library matching</strong>—the
+matching algorithm compares fragmentation spectra using cosine
+similarity, so signals without peaks cannot be matched. <strong>CSV
+files are supplementary</strong> and contain only metadata (no peaks).
+<strong>Mixing MSP with CSV files is an advanced option</strong> that
+allows you to supplement MSP metadata with additional information from
+CSV files, or to include signals that only have metadata (no
+fragmentation spectra) from CSV files—though these CSV-only signals will
+not produce matches.</li>
+<li>Optional: enable <strong>Round m/z values</strong> to standardise
+precision.</li>
+<li>Submit the form. For unauthenticated users, the system validates the
+reCAPTCHA response before reading files.</li>
+</ol>
+<p>Uploaded data are stored in the HTTP session until saved or
+cleared.</p>
+<h3 id="metadata-mapping">6.3 Metadata Mapping</h3>
+<p><img src="fig/user-manual/metadata-age.png" alt="metadata-page" />
+Figure 6.1: Metadata page</p>
+<p>If uploaded files contain metadata columns, the system requests
+mapping:</p>
+<ul>
+<li><strong>Auto-detected properties</strong> appear in a list per file
+type.</li>
+<li>The mapping interface displays:
+<ul>
+<li><strong>Left side</strong>: Available fields from your uploaded
+files</li>
+<li><strong>Right side</strong>: ADAP-KDB metadata fields (Name,
+Synonym, External ID, CAS, KEGG, HMDB, PubChem, RefMet, Precursor m/z,
+Retention Time, Retention Index, Neutral Mass, Formula, Canonical
+SMILES, InChI, InChIKey, Isotopic Distribution)</li>
+</ul></li>
+<li><strong>Drag and drop</strong> the metadata fields on the right to
+the fields on the left if applicable to read them in the files.</li>
+<li>Enable <strong>Merge files</strong> to combine multiple sources into
+a single <code>File</code> entity.</li>
+</ul>
+<p>Field selections persist in cookies to streamline future uploads.</p>
+<h3 id="submission-review-and-editing">6.4 Submission Review and
+Editing</h3>
+<p>After metadata mapping, users are redirected to the submission review
+page where users can:</p>
+<ul>
+<li><strong>Review uploaded files</strong>: See a list of all files with
+their types and the number of spectra detected in each file.</li>
+<li><strong>Edit submission information</strong>:
+<ul>
+<li><strong>Name</strong>: Give your submission a descriptive name.</li>
+<li><strong>Description</strong>: Add details about your study or
+dataset.</li>
+<li><strong>External ID</strong>: Optional identifier from an external
+database.</li>
+<li><strong>Reference URL</strong>: Link to a publication or related
+resource.</li>
+<li><strong>Source</strong>: Text field describing the origin of the
+data.</li>
+<li><strong>Tags</strong>: Add tags to categorize your submission (e.g.,
+species, source, disease).</li>
+</ul></li>
+<li><strong>Set visibility and library options</strong>:
+<ul>
+<li><strong>Private</strong>: Only users and administrators can see this
+submission. Private submissions are available for users to search
+against immediately after submission. If users are a member of an
+organization, private submissions are also shared with other
+organization members and will appear in their group search library
+selection page (marked with an “organization” badge).</li>
+<li><strong>Public study</strong>: Uncheck “Private” to make the
+submission viewable via direct URL. However, public studies are
+<strong>not</strong> shown in the public libraries page and
+<strong>cannot</strong> be searched against in group search. They are
+only viewable if someone has the direct submission URL.</li>
+<li><strong>Public library</strong>: Only administrators can mark a
+submission as a public library. Public libraries are visible to all
+users, appear in the public libraries page, and can be searched against
+in group search.</li>
+<li><strong>In-house reference library</strong>: Mark this as an
+internal reference dataset (only available for private
+submissions).</li>
+</ul></li>
+<li><strong>View and download files</strong>: Users can download the
+original files you uploaded (MSP, CSV, etc.) by clicking the download
+icon next to each file. This allows them to retrieve their own uploaded
+data, not the library/study files they searched against.</li>
+<li><strong>Clear submission</strong>: Remove all uploaded files and
+start over (only available for unsaved submissions).</li>
+</ul>
+<p>All changes are stored in the session until users click
+<strong>Submit</strong>. If required fields are missing, errors will be
+highlighted when users attempt to submit.</p>
+<h3 id="viewing-and-downloading-files">6.5 Viewing and Downloading
+Files</h3>
+<p>From the submission review page, users can:</p>
+<ul>
+<li><strong>View file contents</strong>: Click the view icon next to any
+file to see its contents in a new browser tab. This displays the raw
+file content (e.g., MSP format) for verification.</li>
+<li><strong>Download files</strong>: Click the download icon to save the
+original file to your computer with its original filename.</li>
+</ul>
+<p>These options are available both for files in your current session
+(before submission) and for files in saved submissions.</p>
+<hr />
+<p><em>End of manual.</em></p>
+</main>
+</body>
+</html>
