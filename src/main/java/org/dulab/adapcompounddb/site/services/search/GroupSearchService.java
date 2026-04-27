@@ -9,6 +9,7 @@ import org.dulab.adapcompounddb.models.enums.SearchTaskStatus;
 import org.dulab.adapcompounddb.models.ontology.Parameters;
 import org.dulab.adapcompounddb.site.repositories.SearchTaskRepository;
 import org.dulab.adapcompounddb.site.repositories.SpectrumMatchRepository;
+import org.dulab.adapcompounddb.site.repositories.TempSpectrumMatchRepository;
 import org.dulab.adapcompounddb.site.services.SpectrumService;
 import org.dulab.adapcompounddb.site.services.utils.GroupSearchStorageService;
 import org.dulab.adapcompounddb.site.services.utils.GroupSearchStorageService;
@@ -55,6 +56,7 @@ public class GroupSearchService {
     private final MultiFetchRepository multiFetchRepository;
     private final EmailService emailService;
     private final SpectrumMatchRepository spectrumMatchRepository;
+    private final TempSpectrumMatchRepository tempSpectrumMatchRepository;
 
     private final SearchTaskRepository searchTaskRepository;
     private final GroupSearchStorageService groupSearchStorageService;
@@ -67,6 +69,7 @@ public class GroupSearchService {
                               MultiFetchRepository multiFetchRepository,
                               EmailService emailService,
                               SpectrumMatchRepository spectrumMatchRepository,
+                              TempSpectrumMatchRepository tempSpectrumMatchRepository,
                               SearchTaskRepository searchTaskRepository,
                               GroupSearchStorageService groupSearchStorageService,
                               SpectrumService spectrumService) {
@@ -75,6 +78,7 @@ public class GroupSearchService {
         this.exportSearchResultsService = exportSearchResultsService;
         this.spectrumRepository = spectrumRepository;
         this.spectrumMatchRepository = spectrumMatchRepository;
+        this.tempSpectrumMatchRepository = tempSpectrumMatchRepository;
         this.multiFetchRepository = multiFetchRepository;
         this.emailService = emailService;
         this.searchTaskRepository = searchTaskRepository;
@@ -91,6 +95,7 @@ public class GroupSearchService {
 
         long time1 = System.currentTimeMillis();
         LOGGER.info("Group search has started");
+        logMemoryUsage("GROUP_SEARCH_START", 0, 0, 0);
 
         /**** Group search started ****/
         if (userPrincipal != null && savedSubmission && jobId == null)
@@ -99,6 +104,32 @@ public class GroupSearchService {
         try {
             final List<SearchResultDTO> groupSearchDTOList = Collections.synchronizedList(new ArrayList<>());
             final List<SpectrumDTO> spectrumDTOList = Collections.synchronizedList(new ArrayList<>());
+
+            // Delete old matches for this submission before starting
+            if (userPrincipal != null && savedSubmission && jobId == null && submission != null) {
+                List<Long> querySpectrumIds = files.stream()
+                        .flatMap(f -> f.getSpectra() != null ? f.getSpectra().stream() : java.util.stream.Stream.empty())
+                        .map(Spectrum::getId)
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+                if (!querySpectrumIds.isEmpty()) {
+                    LOGGER.info(String.format("Deleting old matches for %d query spectra in submission %d...",
+                            querySpectrumIds.size(), submission.getId()));
+                    spectrumMatchRepository.deleteByQuerySpectrumsAndUserId(
+                            userPrincipal.getId(), new HashSet<>(querySpectrumIds));
+                    LOGGER.info("Done deleting old matches for submission " + submission.getId());
+                }
+            }
+
+            // For unsaved submissions, delete old temp matches for this session
+            String httpSessionId = null;
+            List<TempSpectrumMatch> tempMatches = new ArrayList<>();
+            if (!savedSubmission && jobId == null) {
+                httpSessionId = session.getId();
+                tempSpectrumMatchRepository.deleteBySessionId(httpSessionId);
+                LOGGER.info("Deleted old temp matches for session " + httpSessionId);
+            }
+
             if(jobId == null) {
                 session.setAttribute(ControllerUtils.GROUP_SEARCH_RESULTS_ATTRIBUTE_NAME, groupSearchDTOList);
                 session.setAttribute("spectrumDTOList", spectrumDTOList);
@@ -187,9 +218,40 @@ public class GroupSearchService {
 
                     if (Thread.currentThread().isInterrupted()) break;
                     progress = (float) ++progressStep / totalSteps;
-                    //search result dto
                     synchronized(groupSearchDTOList){
                         groupSearchDTOList.addAll(individualSearchResults);
+                    }
+
+                    // For unsaved submissions, accumulate TempSpectrumMatch records
+                    if (httpSessionId != null) {
+                        for (SearchResultDTO dto : individualSearchResults) {
+                            if (dto.getSpectrumId() <= 0 && dto.getName() == null)
+                                continue;
+                            TempSpectrumMatch temp = new TempSpectrumMatch();
+                            temp.setSessionId(httpSessionId);
+                            temp.setFileIndex(fileIndex);
+                            temp.setSpectrumIndex(spectrumIndex);
+                            temp.setQuerySpectrumName(querySpectrum.getName());
+                            if (dto.getSpectrumId() > 0) {
+                                Spectrum matchRef = new Spectrum();
+                                matchRef.setId(dto.getSpectrumId());
+                                temp.setMatchSpectrum(matchRef);
+                            }
+                            temp.setScore(dto.getScore());
+                            temp.setIsotopicSimilarity(dto.getIsotopicSimilarity());
+                            temp.setPrecursorError(dto.getPrecursorError());
+                            temp.setPrecursorErrorPPM(dto.getPrecursorErrorPPM());
+                            temp.setMassError(dto.getMassError());
+                            temp.setMassErrorPPM(dto.getMassErrorPPM());
+                            temp.setRetTimeError(dto.getRetTimeError());
+                            temp.setRetIndexError(dto.getRetIndexError());
+                            temp.setOntologyLevel(dto.getOntologyLevel());
+                            temp.setQueryPeakMzs(dto.getQueryPeakMzs() != null ?
+                                    doublesToBytes(dto.getQueryPeakMzs()) : null);
+                            temp.setLibraryPeakMzs(dto.getLibraryPeakMzs() != null ?
+                                    doublesToBytes(dto.getLibraryPeakMzs()) : null);
+                            tempMatches.add(temp);
+                        }
                     }
 
 
@@ -235,15 +297,34 @@ public class GroupSearchService {
                         }
                     }
 
+                    // Batch-save matches to DB every 500 spectra to avoid memory accumulation
+                    if (userPrincipal != null && savedSubmission && jobId == null
+                            && !savedMatches.isEmpty() && spectrumCount % 500 == 0) {
+                        spectrumMatchRepository.saveAll(savedMatches);
+                        LOGGER.info(String.format("Batch-saved %d matches to DB at spectrum %d",
+                                savedMatches.size(), spectrumCount));
+                        savedMatches.clear();
+                        deleteMatches.clear();
+                    }
+
+                    // Batch-save temp matches every 500 spectra for unsaved submissions
+                    if (httpSessionId != null && !tempMatches.isEmpty() && spectrumCount % 500 == 0) {
+                        tempSpectrumMatchRepository.saveAll(tempMatches);
+                        LOGGER.info(String.format("Batch-saved %d temp matches to DB at spectrum %d",
+                                tempMatches.size(), spectrumCount));
+                        tempMatches.clear();
+                    }
+
                     if (++spectrumCount % 100 == 0) {
                         long time = System.currentTimeMillis();
                         LOGGER.info(String.format(
                                 "Searched %d spectra with the average time %.3f seconds per spectrum for %s",
                                 spectrumCount, 1E-3 * (time - startTime) / spectrumCount, userIpText));
+                        logMemoryUsage("SEARCH_LOOP", spectrumCount,
+                                groupSearchDTOList.size(), savedMatches.size());
                     }
 
                     if (spectrumCount % 1000 == 0) {
-                        // Reset entity manager. Otherwise it'll eventually use up the entire memory.
                         multiFetchRepository.resetEntityManager();
                         spectrumRepository.resetEntityManager();
                     }
@@ -251,19 +332,18 @@ public class GroupSearchService {
             }
 
             /**** Group search is done ****/
-//            long time2 = System.currentTimeMillis();
-//            double total = (time2 - time1) / 1000.0;
-       
+            logMemoryUsage("SEARCH_DONE", spectrumCount,
+                    groupSearchDTOList.size(), savedMatches.size());
+
             if (jobId == null && !groupSearchDTOList.isEmpty()) {
 
                 Collection<String> cleanLibraryNames = libraries.values().stream()
-                        .map(name -> name.replaceAll("\\s*<span[^>]*>.*?</span>\\s*", "").trim())  // removes all <span> tags
+                        .map(name -> name.replaceAll("\\s*<span[^>]*>.*?</span>\\s*", "").trim())
                         .collect(Collectors.toList());
 
                 String searchParametersAsString = getSearchParameterString(parameters, withOntologyLevels);
                 // Export search results to a session (simple export)
                 try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-//                    SearchParameters searchParametersFromSession = (SearchParameters) session.getAttribute(ControllerUtils.GROUP_SEARCH_PARAMETERS);
                     exportSearchResultsService.export(outputStream, groupSearchDTOList, cleanLibraryNames, searchParametersAsString);
                     session.setAttribute(ControllerUtils.GROUP_SEARCH_SIMPLE_EXPORT, outputStream.toByteArray());
                 } catch (IOException e) {
@@ -272,7 +352,6 @@ public class GroupSearchService {
 
                 // Export search results to a session (advanced export)
                 try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-//                    SearchParameters searchParametersFromSession = (SearchParameters) session.getAttribute(ControllerUtils.GROUP_SEARCH_PARAMETERS);
                     exportSearchResultsService.exportAll(outputStream, groupSearchDTOList, cleanLibraryNames, searchParametersAsString);
                     session.setAttribute(ControllerUtils.GROUP_SEARCH_ADVANCED_EXPORT, outputStream.toByteArray());
                 } catch (IOException e) {
@@ -368,12 +447,31 @@ public class GroupSearchService {
                 }
                 //from browser
                 else if(savedSubmission) {
-                    //save spectrum match
-                    spectrumMatchRepository.deleteByQuerySpectrumsAndUserId(userPrincipal.getId(), deleteMatches);
-                    spectrumMatchRepository.saveAll(savedMatches);
+                    // Save any remaining matches from the last batch
+                    if (!savedMatches.isEmpty()) {
+                        spectrumMatchRepository.saveAll(savedMatches);
+                        LOGGER.info(String.format("Final batch-saved %d matches to DB", savedMatches.size()));
+                        savedMatches.clear();
+                        deleteMatches.clear();
+                    }
                     //update search task status to FINISHED
                     updateSearchTask(userPrincipal, submission, libraries, SearchTaskStatus.FINISHED, session);
                 }
+            }
+
+            // Final save of remaining temp matches for unsaved submissions
+            if (httpSessionId != null && !tempMatches.isEmpty()) {
+                tempSpectrumMatchRepository.saveAll(tempMatches);
+                LOGGER.info(String.format("Final batch-saved %d temp matches to DB", tempMatches.size()));
+                tempMatches.clear();
+            }
+
+            // Clear groupSearchDTOList after CSV export for unsaved submissions — frontend reads from temp table
+            if (httpSessionId != null) {
+                synchronized (groupSearchDTOList) {
+                    groupSearchDTOList.clear();
+                }
+                LOGGER.info("Cleared groupSearchDTOList after CSV export for unsaved submission");
             }
 
 
@@ -395,6 +493,9 @@ public class GroupSearchService {
                 updateSearchTask(userPrincipal, submission, libraries, SearchTaskStatus.CANCELLED, session);
             LOGGER.info("Group search is cancelled");
         }
+
+        long totalTimeMs = System.currentTimeMillis() - time1;
+        LOGGER.info(String.format("GROUP_SEARCH_TOTAL_TIME: %.2fs", totalTimeMs / 1000.0));
 
         return new AsyncResult<>(null);
     }
@@ -434,6 +535,25 @@ public class GroupSearchService {
         return withOntologyLevels
                 ? Parameters.getSearchParametersAsString()
                 : (params != null ? params.getSearchParametersAsString() : "");
+    }
+
+    private static byte[] doublesToBytes(double[] values) {
+        java.nio.ByteBuffer bb = java.nio.ByteBuffer.allocate(values.length * Double.BYTES);
+        for (double v : values) bb.putDouble(v);
+        return bb.array();
+    }
+
+    private static void logMemoryUsage(String phase, int spectrumCount,
+                                       int dtoListSize, int savedMatchesSize) {
+        Runtime rt = Runtime.getRuntime();
+        long usedMB = (rt.totalMemory() - rt.freeMemory()) / (1024 * 1024);
+        long totalMB = rt.totalMemory() / (1024 * 1024);
+        long maxMB = rt.maxMemory() / (1024 * 1024);
+        LOGGER.info(String.format(
+                "[MEMORY] %s | used: %d MB | total: %d MB | max: %d MB | "
+                + "spectraSearched: %d | groupSearchDTOList: %d | savedMatches: %d",
+                phase, usedMB, totalMB, maxMB,
+                spectrumCount, dtoListSize, savedMatchesSize));
     }
 
 }

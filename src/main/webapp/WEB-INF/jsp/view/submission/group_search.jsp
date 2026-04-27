@@ -299,6 +299,7 @@
 <script>
     var isSavedResultPage = '<c:out value="${submissionId}" />' ? true : false;
     var savedSubmissionId = '<c:out value="${savedSubmissionId}" />';
+    var isUnsavedSearch = !isSavedResultPage && !savedSubmissionId;
 
     $(document).ready(function () {
         var drawFirstTime = true;
@@ -402,7 +403,7 @@
         } else {
             if (savedSubmissionId) {
                 let x = $("#newSearchBtn");
-                x.attr("href", "/group_search/parameters?submissionId=${savedSubmissionId}");
+                x.attr("href", "/group_search/parameters?submissionId=" + savedSubmissionId);
             }
             url = "${pageContext.request.contextPath}/distinct_spectra/data.json";
             $("#stopSearchBtn").show();
@@ -555,16 +556,74 @@
                     ]
                     ,
                     "initComplete": function () {
-                        //alert('Data loaded successfully');
-                        //default choose the first row in query table
                         $('.query_container').show();
                         $('#query_table').DataTable().rows(0).select();
                     }
 
                 });
+            } else if (isUnsavedSearch) {
+                var query_table = $('#query_table').DataTable({
+                    serverSide: true,
+                    sortable: true,
+                    processing: true,
+                    order: [[0, 'desc']],
+                    responsive: true,
+                    info: false,
+                    select: {style: 'single', info: false},
+                    searching: false,
+                    scrollX: true,
+                    rowId: 'position',
+                    ajax: {
+                        type: "GET",
+                        url: "${pageContext.request.contextPath}/temp/getSpectraForQuery",
+                        data: function (data) {
+                            data.columnStr = getColumnStr(data);
+                            data.search = data.search["value"];
+                            data.querySpectrumName = query.querySpectrumName;
+                            data.matchFilter = showMatchesOnly;
+                            data.ontologyLevel = ontologyLevel;
+                            data.scoreThreshold = scoreThreshold;
+                            data.massError = massError;
+                            data.retTimeError = reTimeError;
+                            data.matchName = matchName;
+                        }
+                    },
+                    destroy: true,
+
+                    columns: [
+                        {
+                            data: function (row, type, val, meta) {
+                                return meta.row + 1;
+                            }
+                        },
+                        {
+                            data: "querySpectrumName"
+                        },
+                        {
+                            data: "queryExternalId"
+                        },
+                        {
+                            data: function (row, type, val, meta) {
+                                if (row.queryPrecursorMzs == null)
+                                    return ''
+                                roundedMzs = row.queryPrecursorMzs.map(function (e) {
+                                    return Number(e.toFixed(3));
+                                });
+
+                                return roundedMzs;
+                            }
+                        },
+                        {
+                            data: row => row.queryRetTime != null ? row.queryRetTime.toFixed(3) : ''
+                        }
+                    ],
+
+                    "initComplete": function () {
+                        $('.query_container').show();
+                        $('#query_table').DataTable().rows(0).select();
+                    }
+                });
             } else {
-                //TODO: simiplify this funtion?
-                //display spectrum for selected query
                 $.ajax({
                     type: "POST",
                     url: "${pageContext.request.contextPath}/getSpectrumsByName",
@@ -572,9 +631,6 @@
                     dataType: "json",
                     data: JSON.stringify(query),
                     success: function (result) {
-                        //create a new datatable
-                        console.log(result);
-
                         var query_table = $('#query_table').DataTable({
                             serverSide: true,
                             sortable: true,
@@ -590,51 +646,34 @@
                                 type: "GET",
                                 url: "${pageContext.request.contextPath}/spectra/data.json",
                                 data: function (data) {
-                                    //column index
-                                    data.columnStr = data.columnStr = getColumnStr(data);
-                                    console.log(data);
+                                    data.columnStr = getColumnStr(data);
                                     data.search = data.search["value"];
                                 }
-
                             },
                             destroy: true,
-
                             columns: [
                                 {
                                     data: function (row, type, val, meta) {
                                         return meta.row + 1;
                                     }
                                 },
-                                {
-                                    data: "querySpectrumName"
-                                },
-                                {
-                                    data: "queryExternalId"
-                                },
+                                { data: "querySpectrumName" },
+                                { data: "queryExternalId" },
                                 {
                                     data: function (row, type, val, meta) {
-                                        if (row.queryPrecursorMzs == null)
-                                            return ''
-                                        roundedMzs = row.queryPrecursorMzs.map(function (e) {
+                                        if (row.queryPrecursorMzs == null) return '';
+                                        return row.queryPrecursorMzs.map(function (e) {
                                             return Number(e.toFixed(3));
                                         });
-
-                                        return roundedMzs;
                                     }
                                 },
-                                {
-                                    data: row => row.queryRetTime != null ? row.queryRetTime.toFixed(3) : ''
-                                }
+                                { data: row => row.queryRetTime != null ? row.queryRetTime.toFixed(3) : '' }
                             ],
-
                             "initComplete": function () {
-                                //alert('Data loaded successfully');
-                                //default choose the first row in query table
                                 $('.query_container').show();
                                 $('#query_table').DataTable().rows(0).select();
                             }
                         });
-
                     },
                     error: function (xhr, error) {
                         console.log(xhr);
@@ -677,18 +716,11 @@
                             data.spectrumId = spectrumData.querySpectrumId;
                             data.matchId = spectrumData.spectrumId;
                             console.log(data);
-                            <%--console.log(${spectrumIds});--%>
-                            <%--data.spectrumIds = ${spectrumIds}--%>
                         },
                         dataSrc: function (d) {
                             // Hide columns with no data
                             match_table.column(3).visible(d.data.map(row => row['mass']).join(''));
                             match_table.column(4).visible(d.data.map(row => row['size']).join(''));
-                            // table.column(5).visible(d.data.map(row => row['score']).join(''));
-                            // table.column(6).visible(d.data.map(row => row['massError']).join(''));
-                            // table.column(7).visible(d.data.map(row => row['massErrorPPM']).join(''));
-                            // table.column(8).visible(d.data.map(row => row['retTimeError']).join(''));
-                            // table.column(9).visible(d.data.map(row => row['retIndexError']).join(''));
                             match_table.column(11).visible(d.data.map(row => row['aveSignificance']).join(''));
                             match_table.column(12).visible(d.data.map(row => row['minSignificance']).join(''));
                             match_table.column(13).visible(d.data.map(row => row['maxSignificance']).join(''));
@@ -768,11 +800,7 @@
                         }
                     ]
                     , "initComplete": function () {
-                        //alert('Data loaded successfully');
-
-                        //adjust columns of all tables displayed on the page.
                         $.fn.dataTable.tables({visible: true, api: true}).columns.adjust();
-                        //default choose the first row in query table
                         if (match) {
                             $('.match_container').show();
                             $('#match_table').DataTable().rows(0).select();
@@ -781,8 +809,117 @@
                     }
                 });
             }
-            //TODO: simiplify this funtion
-            else {
+            else if (isUnsavedSearch) {
+                let match_table = $('#match_table').DataTable({
+
+                    serverSide: true,
+                    order: [[0, 'desc']],
+                    processing: true,
+                    responsive: true,
+                    info: false,
+                    scrollX: true,
+                    destroy: true,
+                    searching: false,
+                    select: {style: 'single', info: false},
+                    scroller: true,
+                    rowId: 'position',
+                    ajax: {
+                        url: "${pageContext.request.contextPath}/temp/getMatchDetails",
+                        data: function (data) {
+                            data.columnStr = getColumnStr(data);
+                            data.search = data.search["value"];
+                            data.fileIndex = spectrumData.queryFileIndex;
+                            data.spectrumIndex = spectrumData.querySpectrumIndex;
+                        },
+                        dataSrc: function (d) {
+                            match_table.column(3).visible(d.data.map(row => row['mass']).join(''));
+                            match_table.column(4).visible(d.data.map(row => row['size']).join(''));
+                            match_table.column(11).visible(d.data.map(row => row['aveSignificance']).join(''));
+                            match_table.column(12).visible(d.data.map(row => row['minSignificance']).join(''));
+                            match_table.column(13).visible(d.data.map(row => row['maxSignificance']).join(''));
+                            return d.data;
+                        },
+                        error: function (xhr, error, code) {
+                            logging.logToServer('<c:url value="/js-log"/>', `\${xhr.status} - \${error} - \${code}`);
+                        }
+                    },
+                    fnCreatedRow: function (row, data, dataIndex) {
+                        $(row).attr('data-position', dataIndex);
+                        $(row).attr('data-matchId', data.spectrumId);
+                        $(row).attr('data-queryHRef', data.queryHRef);
+                        $(row).attr('data-queryId', data.querySpectrumId);
+                        $(row).attr('data-queryFileIndex', data.queryFileIndex);
+                        $(row).attr('data-querySpectrumIndex', data.querySpectrumIndex);
+                        $(row).data('data-queryPeakMzs', (data.queryPeakMzs));
+                        $(row).data('data-libraryPeakMzs', (data.libraryPeakMzs));
+                        $(row).data('data-score', data.score);
+                    },
+                    columns: [
+                        {
+                            data: function (row, type, val, meta) {
+                                return meta.row + 1;
+                            }
+                        },
+                        {
+                            data: function (row) {
+                                const href = (row.querySpectrumId !== 0)
+                                    ? `<c:url value="/spectrum/\${row.querySpectrumId}/"/>`
+                                    : `<c:url value="/file/\${row.queryFileIndex}/\${row.querySpectrumIndex}/"/>`;
+                                return `<a href="\${href}">\${row.querySpectrumName}</a>`;
+                            },
+                            visible: false
+                        },
+                        {
+                            data: row => {
+                                let string = '';
+                                if (row.name == null) {
+                                    match = false;
+                                    $('.match_container').hide();
+                                    $('#query_plot_match_row').hide();
+                                    return string;
+                                } else if (row.name != null) {
+                                    string += `<a href="<c:url value="/\${row.href}" />">\${row.name}</a>`;
+                                }
+                                if (row.errorMessage != null)
+                                    string += `<span class="badge badge-danger" title="\${row.errorMessage}">ERROR</span>`
+                                return string;
+                            }
+                        },
+                        {data: row => (row.mass != null) ? row.mass.toFixed(3) : ''},
+                        {data: row => (row.size != null) ? row.size : ''},
+                        {data: row => (row.score != null) ? row.score.toFixed(3) * 1000 : ''},
+                        {data: row => (row.massError != null) ? (1000 * row.massError).toFixed(3) : ''},
+                        {data: row => (row.massErrorPPM != null) ? row.massErrorPPM.toFixed(3) : ''},
+                        {data: row => (row.retTimeError != null) ? row.retTimeError.toFixed(3) : ''},
+                        {data: row => (row.retIndexError != null) ? row.retIndexError.toFixed(1) : ''},
+                        {data: row => (row.isotopicSimilarity != null) ? row.isotopicSimilarity.toFixed(3) * 1000 : ''},
+                        {data: row => (row.aveSignificance != null) ? row.aveSignificance.toFixed(3) : ''},
+                        {data: row => (row.minSignificance != null) ? row.minSignificance.toFixed(3) : ''},
+                        {data: row => (row.maxSignificance != null) ? row.maxSignificance.toFixed(3) : ''},
+                        {data: 'ontologyLevel'},
+                        {
+                            data: row => (row.chromatographyTypeLabel != null)
+                                ? `<span class="badge badge-secondary">\${row.chromatographyTypeLabel}</span>` : ''
+                        },
+                        {
+                            data: function (row) {
+                                const href = (row.querySpectrumId !== 0)
+                                    ? `<c:url value="/spectrum/\${row.querySpectrumId}/search/"/>`
+                                    : `<c:url value="/file/\${row.queryFileIndex}/\${row.querySpectrumIndex}/search/"/>`;
+                                return `<a href="\${href}"><i class="material-icons" title="Search spectrum">&#xE8B6;</i></a>`;
+                            }
+                        }
+                    ],
+                    "initComplete": function () {
+                        $.fn.dataTable.tables({visible: true, api: true}).columns.adjust();
+                        if (match) {
+                            $('.match_container').show();
+                            $('#match_table').DataTable().rows(0).select();
+                            $('#query_plot_match_row').show();
+                        }
+                    }
+                });
+            } else {
                 $.ajax({
                     type: "POST",
                     url: "${pageContext.request.contextPath}/getMatches",
@@ -790,11 +927,8 @@
                     dataType: "json",
                     data: JSON.stringify(spectrumData),
                     success: function (result) {
-
                         console.log("**MATCHES: ", result);
-
                         let match_table = $('#match_table').DataTable({
-
                             serverSide: true,
                             order: [[0, 'desc']],
                             processing: true,
@@ -809,23 +943,13 @@
                             ajax: {
                                 url: "${pageContext.request.contextPath}/file/group_search/data.json",
                                 data: function (data) {
-
                                     data.columnStr = data.columnStr = getColumnStr(data);
                                     console.log(data);
                                     data.search = data.search["value"];
-
-                                    <%--console.log(${spectrumIds});--%>
-                                    <%--data.spectrumIds = ${spectrumIds}--%>
                                 },
                                 dataSrc: function (d) {
-                                    // Hide columns with no data
                                     match_table.column(3).visible(d.data.map(row => row['mass']).join(''));
                                     match_table.column(4).visible(d.data.map(row => row['size']).join(''));
-                                    // table.column(5).visible(d.data.map(row => row['score']).join(''));
-                                    // table.column(6).visible(d.data.map(row => row['massError']).join(''));
-                                    // table.column(7).visible(d.data.map(row => row['massErrorPPM']).join(''));
-                                    // table.column(8).visible(d.data.map(row => row['retTimeError']).join(''));
-                                    // table.column(9).visible(d.data.map(row => row['retIndexError']).join(''));
                                     match_table.column(11).visible(d.data.map(row => row['aveSignificance']).join(''));
                                     match_table.column(12).visible(d.data.map(row => row['minSignificance']).join(''));
                                     match_table.column(13).visible(d.data.map(row => row['maxSignificance']).join(''));
@@ -836,7 +960,6 @@
                                 }
                             },
                             fnCreatedRow: function (row, data, dataIndex) {
-
                                 $(row).attr('data-position', dataIndex);
                                 $(row).attr('data-matchId', data.spectrumId);
                                 $(row).attr('data-queryHRef', data.queryHRef);
@@ -846,10 +969,6 @@
                                 $(row).data('data-queryPeakMzs', (data.queryPeakMzs));
                                 $(row).data('data-libraryPeakMzs', (data.libraryPeakMzs));
                                 $(row).data('data-score', data.score);
-                                // console.log("===queryPeakMzs:", data.queryPeakMzs);
-                                // console.log("===libraryPeakMzs:", data.libraryPeakMzs);
-
-
                             },
                             columns: [
                                 {
@@ -869,7 +988,6 @@
                                 {
                                     data: row => {
                                         let string = '';
-                                        //if there's no match
                                         if (row.name == null) {
                                             match = false;
                                             $('.match_container').hide();
@@ -880,7 +998,6 @@
                                         }
                                         if (row.errorMessage != null)
                                             string += `<span class="badge badge-danger" title="\${row.errorMessage}">ERROR</span>`
-
                                         return string;
                                     }
                                 },
@@ -910,10 +1027,7 @@
                                 }
                             ],
                             "initComplete": function () {
-                                //alert('Data loaded successfully');
-                                //adjust column
                                 $.fn.dataTable.tables({visible: true, api: true}).columns.adjust();
-                                //default choose the first row in query table
                                 if (match) {
                                     $('.match_container').show();
                                     $('#match_table').DataTable().rows(0).select();
@@ -921,7 +1035,6 @@
                                 }
                             }
                         });
-
                     },
                     error: function (xhr, error) {
                         console.log(xhr);
