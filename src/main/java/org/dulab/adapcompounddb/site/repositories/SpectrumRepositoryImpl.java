@@ -46,12 +46,11 @@ public class SpectrumRepositoryImpl implements SpectrumRepositoryCustom {
 
     @Override
     public void resetEntityManager() {
-//        try {
-//            preScreenEntityManager.clear();
-//            LOGGER.info("Cleared entity manager");
-//        } catch (Exception e) {
-//            LOGGER.warn("Cannot clean entity manager");
-//        }
+        try {
+            preScreenEntityManager.clear();
+        } catch (Exception e) {
+            LOGGER.warn("Cannot clear SpectrumRepository entity manager: " + e.getMessage());
+        }
     }
 
     @Deprecated

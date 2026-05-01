@@ -29,12 +29,11 @@ public class MultiFetchRepository {
             EntityManager entityManager;
 
     public void resetEntityManager() {
-//        try {
-//            entityManager.clear();
-//            LOGGER.info("Cleared entity manager");
-//        } catch (Exception e) {
-//            LOGGER.warn("Cannot clear entity manager");
-//        }
+        try {
+            entityManager.clear();
+        } catch (Exception e) {
+            LOGGER.warn("Cannot clear MultiFetchRepository entity manager: " + e.getMessage());
+        }
     }
 
     public Submission getSubmissionWithFilesSpectraPeaksIsotopes(long submissionId) {
