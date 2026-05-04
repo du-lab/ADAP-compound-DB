@@ -29,7 +29,7 @@ public class JavaSpectrumSimilarityService {
     private final LinkedHashMap<Long, Spectrum> spectrumCache = new LinkedHashMap<>() {
         @Override
         protected boolean removeEldestEntry(Map.Entry<Long, Spectrum> eldest) {
-            return size() > 1000;
+            return size() > 100;
         }
     };
 
