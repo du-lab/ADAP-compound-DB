@@ -9,6 +9,8 @@ import java.util.*;
 import javax.json.JsonObject;
 import javax.naming.directory.SearchResult;
 import javax.xml.crypto.Data;
+
+import org.dulab.adapcompounddb.models.MatchType;
 import org.dulab.adapcompounddb.models.dto.DataTableResponse;
 import org.dulab.adapcompounddb.models.dto.SearchResultDTO;
 import org.dulab.adapcompounddb.models.dto.SpectrumDTO;
@@ -262,6 +264,7 @@ public class GroupSearchRestController extends BaseController {
             dto.setSpectrumId(matchSpectrum.getId());
             dto.setName(matchSpectrum.getShortName());
             dto.setExternalId(matchSpectrum.getExternalId());
+            dto.setMatchType(matchSpectrum.isConsensus() ? MatchType.CLUSTER : MatchType.SPECTRUM);
             if (matchSpectrum.getMass() != null)
                 dto.setMass(matchSpectrum.getMass());
             if (matchSpectrum.getRetentionTime() != null)
