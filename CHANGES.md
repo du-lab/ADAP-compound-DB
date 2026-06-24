@@ -1,3 +1,6 @@
+# Version 1.9.3
+- Fix an issue with viewing library spectrum on the Matches table
+
 # Version 1.9.2
 - Improve memory consumption by storing search result in database
 
