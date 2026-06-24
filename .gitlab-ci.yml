@@ -17,12 +17,17 @@ build:
   script:
     - mvn -version
     - mvn clean install
+  artifacts:
+    paths:
+      - target/
+    expire_in: 1 hour
   timeout: 15m
   tags:
     - toan-macbookpro
 
 test:
   stage: test
+  needs: ["build"]
   only:
     - master
     - merge_requests
@@ -38,8 +43,6 @@ test:
     - docker rm --force $CONTAINER_NAME || true
     # Remove dangling image
     - docker system prune --force
-    - mvn -version
-    - mvn clean install
 
     # Create an isolated Python environment for Selenium test dependencies.
     - python3 -m venv venv
@@ -80,7 +83,7 @@ test:
     - venv/bin/python scripts/selenium/upload_and_save_study_after_login.py --homepage-url $HOMEPAGE_URL --msp-path $CI_PROJECT_DIR/scripts/selenium/combined.msp  --user-name $ADAP_KDB_TEST_USERNAME --user-password $ADAP_KDB_TEST_PASSWORD
     - venv/bin/python scripts/selenium/organization_test.py --homepage-url $HOMEPAGE_URL
 
-  timeout: 15m
+  timeout: 45m
   after_script:
     - docker rm --force $CONTAINER_NAME
   tags:
